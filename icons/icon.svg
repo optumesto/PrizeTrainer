@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0c1018"/>
+  <rect x="30" y="30" width="452" height="452" fill="none" stroke="#d8a820" stroke-width="18"/>
+  <rect x="48" y="48" width="416" height="416" fill="#131924"/>
+  <!-- Card shape -->
+  <rect x="96" y="80" width="200" height="280" rx="16" fill="#19202e" stroke="#d8a820" stroke-width="8"/>
+  <rect x="216" y="152" width="200" height="280" rx="16" fill="#1a2535" stroke="#2e8ec8" stroke-width="8"/>
+  <!-- Star/prize indicator -->
+  <text x="196" y="340" font-size="120" text-anchor="middle" fill="#d8a820" font-family="sans-serif">★</text>
+  <!-- Corner dots -->
+  <rect x="30" y="30" width="16" height="16" fill="#d8a820"/>
+  <rect x="466" y="30" width="16" height="16" fill="#d8a820"/>
+  <rect x="30" y="466" width="16" height="16" fill="#d8a820"/>
+  <rect x="466" y="466" width="16" height="16" fill="#d8a820"/>
+</svg>

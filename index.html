@@ -1,0 +1,3720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prize Trainer</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d8a820">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prize Trainer">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0c1018;
+    --bg-mid:  #131924;
+    --bg-card: #19202e;
+    --bg-panel:#101520;
+
+    /* TCG type colours */
+    --fire:    #e04030;
+    --water:   #2e8ec8;
+    --grass:   #3ea040;
+    --electric:#d8b800;
+    --psychic: #b040c0;
+    --fighting:#b06028;
+    --dark:    #405068;
+    --metal:   #8898a8;
+    --dragon:  #5040c8;
+
+    /* Gold accent */
+    --gold:     #d8a820;
+    --gold-lt:  #f0cc60;
+    --gold-dim: #70540c;
+    --gold-bg:  rgba(216,168,32,0.08);
+
+    /* UI */
+    --text:     #e4dcc8;
+    --text-dim: #6070880;
+    --muted:    #2a3444;
+    --red:      #d03028;
+    --green:    #38a030;
+    --border:   rgba(216,168,32,0.22);
+
+    --px: 'M PLUS 1 Code', monospace;
+    --body: 'Nunito', sans-serif;
+  }
+
+  html,body { height:100%; background:var(--bg); color:var(--text); font-family:var(--body); font-size:15px; overflow-x:hidden; }
+  body {
+    background-image:
+      radial-gradient(ellipse 100% 35% at 50% 0%, rgba(46,142,200,0.08) 0%, transparent 65%),
+      repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(255,255,255,0.015) 32px, rgba(255,255,255,0.015) 33px),
+      repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(255,255,255,0.015) 32px, rgba(255,255,255,0.015) 33px);
+    min-height:100vh;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display:none; min-height:100vh; flex-direction:column; }
+  .screen.active { display:flex; }
+  .scrollable { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
+
+  /* ══════════════════════════════
+     TCG PANEL  — sprite box motif
+     Thick border + corner squares + inset shadow
+  ══════════════════════════════ */
+  .tcg-box {
+    --c: var(--gold);
+    position:relative;
+    background:var(--bg-card);
+    border:3px solid var(--c);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.7), 3px 3px 0 rgba(0,0,0,0.45);
+  }
+  .tcg-box::before,.tcg-box::after {
+    content:''; position:absolute; width:8px; height:8px; background:var(--c); z-index:2;
+  }
+  .tcg-box::before { top:-2px; left:-2px; }
+  .tcg-box::after  { bottom:-2px; right:-2px; }
+
+  /* ── TCG BANNER  — colored end-caps + center text like HGSS textboxes ── */
+  .tcg-banner {
+    --c: var(--gold);
+    position:relative;
+    background:var(--bg-panel);
+    border-top:3px solid var(--c);
+    border-bottom:3px solid var(--c);
+    padding:0.55rem 1.1rem;
+    display:flex; align-items:center; gap:0.6rem;
+    flex-shrink:0;
+    overflow:hidden;
+  }
+  .tcg-banner::before,.tcg-banner::after {
+    content:''; position:absolute; top:-3px; bottom:-3px; width:10px; background:var(--c);
+  }
+  .tcg-banner::before { left:0; }
+  .tcg-banner::after  { right:0; }
+  .tcg-banner-text {
+    font-family:var(--px);
+    font-size:0.62rem;
+    color:var(--c);
+    letter-spacing:0.04em;
+    text-shadow:0 0 8px var(--c);
+    padding:0 0.5rem;
+    line-height:1.5;
+  }
+
+  /* Section divider */
+  .section-title {
+    font-family:var(--px); font-size:0.46rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--gold-dim); margin-bottom:0.85rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .section-title::before,.section-title::after {
+    content:''; flex:1; height:2px; background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+  }
+
+  /* ══════════════════════════════
+     HOME SCREEN
+  ══════════════════════════════ */
+  #screen-home { padding-bottom:2.5rem; }
+
+  .app-header {
+    --c:var(--gold);
+    text-align:center; padding:1.6rem 1.2rem 1.2rem;
+    position:relative; background:var(--bg-panel);
+    border-bottom:3px solid var(--c); overflow:hidden;
+  }
+  .app-header::before,.app-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .app-header::before { left:0; }
+  .app-header::after  { right:0; }
+  /* Pokeball watermark */
+  .app-header .pball {
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    width:52px; height:52px; opacity:0.08;
+    background:conic-gradient(var(--gold) 0deg 180deg, transparent 180deg 360deg);
+    border-radius:50%; border:4px solid var(--gold);
+  }
+  .app-header .pball::after {
+    content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:14px; height:14px; border-radius:50%;
+    background:var(--gold); border:3px solid var(--bg-panel);
+  }
+
+  .app-title {
+    font-family:var(--px); font-size:clamp(0.85rem,3.2vw,1.3rem); font-weight:700;
+    color:var(--gold); text-shadow:0 0 16px rgba(216,168,32,0.6), 2px 2px 0 rgba(0,0,0,0.9);
+    letter-spacing:0.06em; line-height:1.5;
+  }
+  .app-subtitle {
+    font-size:0.73rem; font-weight:700; color:#506080; margin-top:0.35rem; letter-spacing:0.08em;
+  }
+
+  .home-content { flex:1; padding:1.1rem 0.9rem; max-width:640px; margin:0 auto; width:100%; }
+
+  /* Deck cards */
+  .deck-list { display:flex; flex-direction:column; gap:0.55rem; margin-bottom:1.4rem; }
+
+  .deck-card {
+    --c:var(--water);
+    background:var(--bg-card);
+    border:3px solid var(--c);
+    padding:0.7rem 0.8rem;
+    display:flex; align-items:center; gap:0.8rem;
+    cursor:pointer; transition:all 0.12s;
+    -webkit-tap-highlight-color:transparent;
+    position:relative;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.6), 3px 3px 0 rgba(0,0,0,0.4);
+  }
+  .deck-card::before,.deck-card::after {
+    content:''; position:absolute; width:7px; height:7px; background:var(--c); z-index:2;
+  }
+  .deck-card::before { top:-2px; left:-2px; }
+  .deck-card::after  { bottom:-2px; right:-2px; }
+  .deck-card:active { transform:translate(2px,2px); box-shadow:inset 0 0 0 1px rgba(0,0,0,0.6),1px 1px 0 rgba(0,0,0,0.4); }
+
+  .deck-thumb-wrap {
+    display:flex; flex-direction:column; align-items:center; gap:0.2rem; flex-shrink:0;
+  }
+  .deck-thumb {
+    width:40px; height:56px; border:2px solid var(--c); background:var(--bg-panel);
+    overflow:hidden; display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; box-shadow:2px 2px 0 rgba(0,0,0,0.5);
+  }
+  .deck-thumb img { width:100%; height:100%; object-fit:cover; }
+  .btn-thumb-edit {
+    font-size:0.6rem; line-height:1;
+    background:none; border:none; padding:0;
+    cursor:pointer; opacity:0.45;
+    -webkit-tap-highlight-color:transparent;
+    transition:opacity 0.15s;
+  }
+  .btn-thumb-edit:active { opacity:1; }
+
+  .deck-info { flex:1; min-width:0; }
+  .deck-name {
+    font-family:var(--px); font-size:0.52rem; font-weight:700; color:var(--text);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.7;
+  }
+  .deck-meta { font-size:0.72rem; font-weight:700; color:#506080; margin-top:0.15rem; }
+  .deck-best { font-size:0.68rem; font-weight:800; color:var(--gold); margin-top:0.1rem; }
+  .deck-warn { font-size:0.65rem; font-weight:800; color:var(--red); margin-top:0.1rem; }
+
+  .deck-actions { display:flex; gap:0.3rem; flex-shrink:0; }
+
+  .empty-state {
+    text-align:center; padding:3rem 1rem; color:#40506a; font-weight:700; font-size:0.82rem;
+  }
+  .empty-state .icon { font-size:2.5rem; margin-bottom:0.65rem; display:block; opacity:0.25; }
+
+  /* ══════════════════════════════
+     BUTTONS
+  ══════════════════════════════ */
+  .btn {
+    --bc:var(--gold-dim);
+    --bct:var(--gold);
+    font-family:var(--px); font-size:0.5rem; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase;
+    padding:0.55rem 0.9rem; line-height:1.5;
+    border:2px solid var(--bc); background:rgba(255,255,255,0.03); color:var(--bct);
+    cursor:pointer; transition:all 0.1s;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.55);
+    position:relative; display:inline-flex; align-items:center; justify-content:center; gap:0.3rem;
+  }
+  .btn:active { transform:translate(2px,2px); box-shadow:none; }
+  .btn:disabled { opacity:0.35; cursor:not-allowed; }
+
+  .btn-primary { --bc:var(--gold); --bct:var(--gold-lt); background:var(--gold-bg); }
+  .btn-danger  { --bc:var(--red); --bct:#f08080; background:rgba(208,48,40,0.07); }
+  .btn-grass   { --bc:var(--grass); --bct:#70d870; background:rgba(62,160,64,0.08); }
+  .btn-water   { --bc:var(--water); --bct:#70c0f0; background:rgba(46,142,200,0.08); }
+  .btn-sm { padding:0.38rem 0.65rem; font-size:0.44rem; }
+  .btn-block { width:100%; padding:0.85rem 1rem; font-size:0.55rem; }
+
+  /* Play button — big solid green like FIGHT button */
+  .play-btn {
+    width:100%; padding:0.8rem;
+    font-family:var(--px); font-size:0.68rem; font-weight:700;
+    background:var(--grass); color:#000;
+    border:3px solid #206824;
+    cursor:pointer; transition:all 0.1s;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:3px 3px 0 rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,255,255,0.25);
+    letter-spacing:0.08em;
+  }
+  .play-btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 rgba(0,0,0,0.55); }
+
+  /* ── IMPORT MODAL ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.88); z-index:100;
+    align-items:center; justify-content:center;
+    padding:1rem; backdrop-filter:blur(6px);
+  }
+  .modal-overlay.active { display:flex; }
+
+  .modal {
+    --c:var(--electric);
+    background:var(--bg-mid); border:3px solid var(--c);
+    width:100%; max-width:500px; max-height:90vh; overflow-y:auto;
+    position:relative; box-shadow:5px 5px 0 rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.5);
+  }
+  .modal::before,.modal::after {
+    content:''; position:absolute; width:8px; height:8px; background:var(--c); z-index:3;
+  }
+  .modal::before { top:-2px; left:-2px; }
+  .modal::after  { bottom:-2px; right:-2px; }
+
+  .modal-inner { padding:1.1rem 1rem; }
+  .modal-title { font-family:var(--px); font-size:0.62rem; color:var(--electric); margin-bottom:1rem; line-height:1.6; }
+
+  label { display:block; font-size:0.65rem; font-weight:800; color:#506080; margin-bottom:0.32rem; letter-spacing:0.04em; }
+  .mb { margin-bottom:0.85rem; }
+
+  input[type="text"], textarea {
+    width:100%; background:var(--bg); border:2px solid var(--gold-dim);
+    color:var(--text); font-family:var(--body); font-size:0.88rem; font-weight:700;
+    padding:0.52rem 0.72rem; outline:none; transition:border-color 0.15s;
+    -webkit-appearance:none; box-shadow:inset 2px 2px 0 rgba(0,0,0,0.4);
+  }
+  input:focus, textarea:focus {
+    border-color:var(--electric);
+    box-shadow:inset 2px 2px 0 rgba(0,0,0,0.4), 0 0 0 2px rgba(216,184,0,0.15);
+  }
+  textarea { height:185px; resize:vertical; line-height:1.55; font-size:0.8rem; }
+
+  .modal-hint { font-size:0.68rem; font-weight:700; color:#40506a; margin-top:0.4rem; }
+  .modal-actions { display:flex; gap:0.55rem; margin-top:0.9rem; justify-content:flex-end; }
+  .parse-preview { margin-top:0.65rem; font-size:0.7rem; font-weight:800; color:var(--grass); }
+
+  /* ══════════════════════════════
+     DECK REVIEW SCREEN
+  ══════════════════════════════ */
+  #screen-review { padding:0; }
+
+  .review-header {
+    --c:var(--psychic);
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    display:flex; align-items:center; gap:0.7rem;
+    padding:0.65rem 0.9rem; flex-shrink:0; position:relative; overflow:hidden;
+  }
+  .review-header::before,.review-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .review-header::before { left:0; }
+  .review-header::after  { right:0; }
+  .review-deck-name {
+    font-family:var(--px); font-size:0.58rem; font-weight:700; color:var(--psychic);
+    flex:1; padding:0 0.5rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.6;
+  }
+
+  .review-body { flex:1; overflow-y:auto; padding:0.9rem; -webkit-overflow-scrolling:touch; }
+  .review-group { margin-bottom:1.4rem; }
+
+  .review-group-title {
+    font-family:var(--px); font-size:0.44rem; letter-spacing:0.1em; text-transform:uppercase;
+    margin-bottom:0.65rem; display:flex; align-items:center; gap:0.45rem;
+  }
+  .review-group-title.pokemon  { color:var(--fire); }
+  .review-group-title.trainer  { color:var(--water); }
+  .review-group-title.energy   { color:var(--electric); }
+  .review-group-title::after { content:''; flex:1; height:2px; background:currentColor; opacity:0.25; }
+
+  .review-cards { display:grid; grid-template-columns:repeat(5,1fr); gap:0.4rem; }
+  .review-card { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
+  .review-card-img {
+    width:100%; aspect-ratio:2.5/3.5;
+    background:var(--bg-panel); border:2px solid rgba(255,255,255,0.07); overflow:hidden; position:relative;
+  }
+  .review-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .review-placeholder { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#2a3444; }
+  .review-card-qty {
+    position:absolute; top:2px; right:2px;
+    background:rgba(0,0,0,0.88); color:var(--gold);
+    font-family:var(--px); font-size:0.4rem; padding:1px 3px; line-height:1.5;
+  }
+  .review-card-name {
+    font-family:var(--px); font-size:0.38rem; font-weight:500; color:#506080;
+    text-align:center; line-height:1.3; width:100%; overflow:hidden;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  }
+
+  .review-footer {
+    --c:var(--psychic);
+    padding:0.65rem 0.9rem 0.85rem; border-top:3px solid var(--c);
+    background:var(--bg-panel); flex-shrink:0; display:flex; flex-direction:column; gap:0.55rem;
+  }
+  .review-stats { display:flex; justify-content:center; gap:0.45rem; flex-wrap:wrap; }
+  .review-stat {
+    display:flex; align-items:center; gap:0.28rem;
+    border:2px solid var(--gold-dim); background:var(--bg-card);
+    padding:0.28rem 0.6rem; box-shadow:2px 2px 0 rgba(0,0,0,0.4);
+  }
+  .review-stat-num { font-family:var(--px); font-size:0.62rem; color:var(--gold); }
+  .review-stat-label { font-size:0.65rem; font-weight:800; color:#506080; text-transform:uppercase; }
+
+  /* ══════════════════════════════
+     GAME SCREEN
+  ══════════════════════════════ */
+  #screen-game { background:var(--bg); }
+
+  .game-header {
+    --c:var(--fire);
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    padding:0.65rem 0.9rem; display:flex; align-items:center; gap:0.7rem;
+    position:relative; overflow:hidden; flex-shrink:0;
+  }
+  .game-header::before,.game-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .game-header::before { left:0; }
+  .game-header::after  { right:0; }
+
+  .game-deck-name {
+    font-family:var(--px); font-size:0.52rem; font-weight:700; color:var(--fire);
+    flex:1; padding:0 0.5rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.6;
+  }
+  .game-timer {
+    font-family:var(--px); font-size:0.82rem; color:var(--text);
+    letter-spacing:0.06em; min-width:52px; text-align:right;
+  }
+  .game-timer.warning { color:var(--red); animation:blink 0.7s step-end infinite; }
+  @keyframes blink { 50% { opacity:0.3; } }
+
+  /* Card Viewer */
+  .card-viewer {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    padding:1.1rem 0.9rem; position:relative; overflow:hidden;
+  }
+
+  .card-counter {
+    font-family:var(--px); font-size:0.45rem; color:#506080; letter-spacing:0.06em;
+    margin-bottom:0.85rem; background:var(--bg-panel);
+    padding:0.35rem 0.75rem; border:2px solid var(--muted);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.4);
+  }
+
+  /* Carousel */
+  .card-stage {
+    position:relative; width:100%; flex:1;
+    display:flex; align-items:center; justify-content:center;
+    perspective:900px; overflow:hidden; min-height:230px;
+  }
+  .carousel-track {
+    position:relative; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    transform-style:preserve-3d;
+  }
+  .card-display {
+    position:absolute; width:165px; aspect-ratio:2.5/3.5;
+    border:3px solid rgba(255,255,255,0.1); background:var(--bg-card); overflow:hidden;
+    box-shadow:0 6px 28px rgba(0,0,0,0.7);
+    transition:transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease, box-shadow 0.3s ease;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; will-change:transform,opacity;
+  }
+  .card-display.is-center {
+    width:190px; border:3px solid var(--gold);
+    box-shadow:0 10px 40px rgba(0,0,0,0.9), 0 0 0 1px var(--gold-dim), 0 0 18px rgba(216,168,32,0.22);
+    z-index:10; cursor:default;
+  }
+  .card-display img { width:100%;height:100%;object-fit:cover;display:block;pointer-events:none; }
+  .card-display .card-placeholder {
+    width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:0.4rem;color:#2a3444;font-size:0.76rem;font-weight:700;pointer-events:none;
+  }
+  .card-name-label {
+    position:absolute;bottom:0;left:0;right:0;
+    background:linear-gradient(0deg,rgba(0,0,0,0.95) 0%,transparent 100%);
+    padding:1.1rem 0.55rem 0.4rem;
+    font-family:var(--px);font-size:0.42rem;color:var(--gold);text-align:center;pointer-events:none;line-height:1.6;
+  }
+
+  .swipe-nav { display:flex;align-items:center;justify-content:center;margin-top:0.6rem;padding-bottom:0.35rem; }
+  .progress-dots { display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:200px; }
+  .progress-dot {
+    width:6px;height:6px;background:var(--bg-card);border:1px solid var(--muted);
+    transition:background 0.15s;
+  }
+  .progress-dot.seen { background:var(--gold-dim);border-color:var(--gold-dim); }
+  .progress-dot.current { background:var(--gold);border-color:var(--gold);box-shadow:0 0 5px var(--gold); }
+
+  /* Guess Section */
+  .guess-section {
+    --c:var(--electric);
+    background:var(--bg-panel); border-top:3px solid var(--c);
+    padding:0.75rem 0.85rem; position:relative; overflow:hidden; flex-shrink:0;
+  }
+  .guess-section::before,.guess-section::after {
+    content:''; position:absolute; top:-3px; bottom:0; width:10px; background:var(--c);
+  }
+  .guess-section::before { left:0; }
+  .guess-section::after  { right:0; }
+
+  .guess-label {
+    font-family:var(--px);font-size:0.4rem;color:var(--electric);margin-bottom:0.5rem;letter-spacing:0.06em;
+  }
+
+  .prize-slots {
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0.38rem;margin-bottom:0.65rem;
+  }
+  .prize-slot {
+    background:var(--bg-card); border:2px dashed var(--muted);
+    padding:0.35rem 0.22rem; text-align:center;
+    font-family:var(--px); font-size:0.36rem; color:#2a3444;
+    min-height:32px; display:flex;align-items:center;justify-content:center;
+    transition:all 0.15s; position:relative; line-height:1.5;
+  }
+  .prize-slot.filled  { border-style:solid;border-color:var(--electric);color:var(--electric);background:rgba(216,184,0,0.06); }
+  .prize-slot.correct { border-style:solid;border-color:var(--green);color:var(--green);background:rgba(56,160,48,0.07); }
+  .prize-slot.wrong   { border-style:solid;border-color:var(--red);color:var(--red);background:rgba(208,48,40,0.07); }
+  .prize-slot .remove-btn { position:absolute;top:1px;right:3px;font-size:0.55rem;color:#2a3444;cursor:pointer;line-height:1; }
+
+  .guess-input-row { display:flex;gap:0.45rem; }
+  .guess-input-row input { flex:1; }
+
+  .guess-feedback { font-family:var(--px);font-size:0.38rem;margin-top:0.38rem;min-height:1.1em;color:#506080;line-height:1.6; }
+  .guess-feedback.good { color:var(--green); }
+  .guess-feedback.bad  { color:var(--red); }
+
+  .game-actions { display:flex;gap:0.45rem;margin-top:0.65rem;flex-wrap:wrap; }
+
+  /* ══════════════════════════════
+     RESULTS SCREEN
+  ══════════════════════════════ */
+  #screen-results { padding:0; }
+
+  .results-header {
+    --c:var(--gold);
+    text-align:center; padding:1.8rem 1rem 1.4rem;
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    position:relative; overflow:hidden;
+  }
+  .results-header::before,.results-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .results-header::before { left:0; }
+  .results-header::after  { right:0; }
+
+  .results-score {
+    font-family:var(--px);font-size:clamp(2.5rem,11vw,4.5rem);font-weight:700;
+    color:var(--gold);text-shadow:0 0 30px rgba(216,168,32,0.5),3px 3px 0 rgba(0,0,0,0.9);line-height:1;
+  }
+  .results-score-label { font-family:var(--px);font-size:0.46rem;color:#506080;letter-spacing:0.12em;margin-top:0.4rem; }
+  .results-time { font-family:var(--px);font-size:0.72rem;color:var(--text);margin-top:0.5rem; }
+
+  .prize-reveal { padding:1.2rem 0.9rem;max-width:640px;margin:0 auto;width:100%; }
+  .prize-reveal-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0.65rem;margin-bottom:1.4rem; }
+
+  .prize-reveal-card {
+    overflow:hidden;border:3px solid var(--border);position:relative;aspect-ratio:2.5/3.5;
+    background:var(--bg-card);box-shadow:3px 3px 0 rgba(0,0,0,0.45);
+  }
+  .prize-reveal-card img { width:100%;height:100%;object-fit:cover;display:block; }
+  .prize-reveal-card .badge {
+    position:absolute;top:4px;right:4px;width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--px);font-size:0.45rem;font-weight:700;
+  }
+  .badge.correct { background:var(--green);color:#000; }
+  .badge.wrong   { background:var(--red);  color:#fff; }
+  .prize-card-name {
+    position:absolute;bottom:0;left:0;right:0;
+    background:linear-gradient(0deg,rgba(0,0,0,0.94) 0%,transparent 100%);
+    padding:0.9rem 0.35rem 0.28rem;
+    font-family:var(--px);font-size:0.38rem;color:var(--gold);text-align:center;line-height:1.5;
+  }
+
+  .history-section { padding:0 0.9rem 1rem;max-width:640px;margin:0 auto;width:100%; }
+  .history-table { width:100%;border-collapse:collapse;font-size:0.82rem;font-weight:700; }
+  .history-table th {
+    font-family:var(--px);font-size:0.42rem;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--gold-dim);border-bottom:2px solid var(--muted);padding:0.38rem 0.5rem;text-align:left;
+  }
+  .history-table td { padding:0.4rem 0.5rem;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text); }
+  .history-table tr:last-child td { border-bottom:none; }
+  .score-perfect { color:var(--gold);font-weight:900; }
+
+  .results-actions { display:flex;gap:0.65rem;padding:0.9rem;flex-wrap:wrap;justify-content:center;max-width:640px;margin:0 auto; }
+
+  /* Loading */
+  .loading-overlay {
+    display:none;position:fixed;inset:0;background:rgba(10,14,24,0.92);
+    z-index:200;align-items:center;justify-content:center;
+    flex-direction:column;gap:1rem;backdrop-filter:blur(5px);
+  }
+  .loading-overlay.active { display:flex; }
+  .spinner {
+    width:44px;height:44px;border:3px solid var(--muted);border-top-color:var(--gold);
+    border-radius:50%;animation:spin 0.75s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-text { font-family:var(--px);font-size:0.5rem;color:#506080; }
+
+  /* Toast */
+  .toast {
+    position:fixed;bottom:1.4rem;left:50%;
+    transform:translateX(-50%) translateY(90px);
+    background:var(--bg-mid);border:2px solid var(--gold-dim);
+    color:var(--text);font-family:var(--px);font-size:0.5rem;
+    padding:0.55rem 1.1rem;z-index:300;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    white-space:nowrap;box-shadow:3px 3px 0 rgba(0,0,0,0.6);
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  @media (max-width:360px) {
+    .prize-slots { grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ── WEAK SPOTS SCREEN ── */
+  #screen-weakspots { padding:0; }
+
+  .ws-header {
+    --c:var(--fire);
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    padding:0.65rem 0.9rem; display:flex; align-items:center; gap:0.7rem;
+    flex-shrink:0; position:relative; overflow:hidden;
+  }
+  .ws-header::before,.ws-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .ws-header::before { left:0; }
+  .ws-header::after  { right:0; }
+  .ws-title {
+    font-family:var(--px); font-size:0.58rem; color:var(--fire);
+    flex:1; padding:0 0.5rem; line-height:1.5;
+  }
+
+  .ws-body-inner { padding:1rem 0.9rem; max-width:640px; margin:0 auto; width:100%; }
+
+  /* Summary stat bar */
+  .ws-summary {
+    --c:var(--fire);
+    border:3px solid var(--c); background:var(--bg-card);
+    position:relative; padding:0.9rem 1rem; margin-bottom:1.2rem;
+    box-shadow:3px 3px 0 rgba(0,0,0,0.45);
+  }
+  .ws-summary::before,.ws-summary::after {
+    content:''; position:absolute; width:7px; height:7px; background:var(--c);
+  }
+  .ws-summary::before { top:-2px; left:-2px; }
+  .ws-summary::after  { bottom:-2px; right:-2px; }
+  .ws-summary-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem; text-align:center;
+  }
+  .ws-stat-val {
+    font-family:var(--px); font-size:1.1rem; font-weight:700; color:var(--gold); line-height:1;
+  }
+  .ws-stat-lbl {
+    font-family:var(--px); font-size:0.38rem; color:#506080; margin-top:0.3rem; line-height:1.4;
+  }
+
+  /* Card miss rate rows */
+  .ws-card-row {
+    display:flex; align-items:center; gap:0.7rem;
+    padding:0.55rem 0.6rem; margin-bottom:0.4rem;
+    background:var(--bg-card); border-left:4px solid transparent;
+    position:relative;
+  }
+  .ws-card-row.danger { border-left-color:var(--red); }
+  .ws-card-row.warning { border-left-color:var(--electric); }
+  .ws-card-row.good { border-left-color:var(--green); }
+
+  .ws-card-thumb {
+    width:30px; height:42px; flex-shrink:0;
+    background:var(--bg-panel); border:1px solid rgba(255,255,255,0.07);
+    overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:0.9rem;
+  }
+  .ws-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .ws-card-info { flex:1; min-width:0; }
+  .ws-card-name {
+    font-family:var(--px); font-size:0.46rem; color:var(--text); line-height:1.5;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ws-card-sub { font-size:0.68rem; font-weight:700; color:#506080; margin-top:0.1rem; }
+
+  /* Bar graph */
+  .ws-bar-wrap { width:90px; flex-shrink:0; }
+  .ws-bar-track {
+    height:8px; background:var(--muted); position:relative; overflow:hidden;
+  }
+  .ws-bar-fill {
+    position:absolute; top:0; left:0; height:100%;
+    transition:width 0.4s ease;
+  }
+  .ws-bar-fill.danger  { background:var(--red); }
+  .ws-bar-fill.warning { background:var(--electric); }
+  .ws-bar-fill.good    { background:var(--green); }
+  .ws-bar-pct {
+    font-family:var(--px); font-size:0.42rem; color:var(--text); text-align:right; margin-top:0.2rem;
+  }
+
+  /* Insight callout box */
+  .ws-insight {
+    --c:var(--psychic);
+    border:2px solid var(--c); background:rgba(176,64,192,0.07);
+    padding:0.7rem 0.8rem; margin-bottom:1rem; position:relative;
+  }
+  .ws-insight::before,.ws-insight::after {
+    content:''; position:absolute; width:6px; height:6px; background:var(--c);
+  }
+  .ws-insight::before { top:-1px; left:-1px; }
+  .ws-insight::after  { bottom:-1px; right:-1px; }
+  .ws-insight-title {
+    font-family:var(--px); font-size:0.44rem; color:var(--psychic); margin-bottom:0.4rem;
+  }
+  .ws-insight-text { font-size:0.75rem; font-weight:700; color:var(--text); line-height:1.5; }
+
+  /* Trend mini-chart */
+  .ws-trend-wrap { margin-bottom:1.2rem; }
+  .ws-trend-bars {
+    display:flex; align-items:flex-end; gap:3px; height:48px; margin-top:0.4rem;
+  }
+  .ws-trend-bar-col { display:flex; flex-direction:column; align-items:center; gap:2px; flex:1; }
+  .ws-trend-bar {
+    width:100%; background:var(--muted); position:relative;
+    min-height:4px; transition:background 0.2s;
+  }
+  .ws-trend-bar.perfect { background:var(--gold); }
+  .ws-trend-bar.good    { background:var(--green); }
+  .ws-trend-bar.mid     { background:var(--electric); }
+  .ws-trend-bar.bad     { background:var(--red); }
+  .ws-trend-label { font-family:var(--px); font-size:0.35rem; color:#506080; }
+
+  /* Button in deck info to open weak spots */
+  .btn-weakspot-link {
+    font-family:var(--px); font-size:0.4rem; font-weight:700;
+    background:none; border:none; color:var(--fire); padding:0;
+    cursor:pointer; margin-top:0.25rem; display:block; letter-spacing:0.04em;
+    -webkit-tap-highlight-color:transparent;
+    opacity:0.8;
+  }
+  .btn-weakspot-link:active { opacity:1; }
+
+  /* ── Thumbnail Picker Modal ── */
+  .picker-modal {
+    --c:var(--fire);
+    background:var(--bg-mid); border:3px solid var(--c);
+    width:100%; max-width:500px; max-height:85vh;
+    display:flex; flex-direction:column;
+    position:relative; box-shadow:5px 5px 0 rgba(0,0,0,0.7);
+  }
+  .picker-modal::before,.picker-modal::after {
+    content:''; position:absolute; width:8px; height:8px; background:var(--c); z-index:3;
+  }
+  .picker-modal::before { top:-2px; left:-2px; }
+  .picker-modal::after  { bottom:-2px; right:-2px; }
+
+  .picker-header {
+    --c:var(--fire);
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    padding:0.65rem 0.9rem; display:flex; align-items:center; gap:0.7rem;
+    flex-shrink:0; position:relative; overflow:hidden;
+  }
+  .picker-header::before,.picker-header::after {
+    content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c);
+  }
+  .picker-header::before { left:0; }
+  .picker-header::after  { right:0; }
+  .picker-title {
+    font-family:var(--px); font-size:0.56rem; color:var(--fire);
+    flex:1; padding:0 0.5rem; line-height:1.5;
+  }
+
+  .picker-grid {
+    overflow-y:auto; padding:0.8rem;
+    display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .picker-card {
+    display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .picker-card-img {
+    width:100%; aspect-ratio:2.5/3.5;
+    background:var(--bg-panel); border:2px solid rgba(255,255,255,0.08);
+    overflow:hidden; position:relative; transition:border-color 0.15s;
+  }
+  .picker-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .picker-card:active .picker-card-img { border-color:var(--fire); }
+  .picker-card.selected .picker-card-img {
+    border-color:var(--gold); box-shadow:0 0 0 2px var(--gold-dim);
+  }
+  .picker-card-name {
+    font-family:var(--px); font-size:0.36rem; color:#506080;
+    text-align:center; line-height:1.3; width:100%; overflow:hidden;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  }
+  .picker-placeholder { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#2a3444; }
+
+  /* Icon-only action buttons */
+  .btn-icon {
+    --bc:var(--gold-dim);
+    --bct:var(--gold);
+    font-family:var(--px); font-size:0.7rem;
+    padding:0; width:32px; height:32px;
+    border:2px solid var(--bc); background:rgba(255,255,255,0.03); color:var(--bct);
+    cursor:pointer; transition:all 0.1s;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.55);
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .btn-icon:active { transform:translate(2px,2px); box-shadow:none; }
+  .btn-icon.btn-danger { --bc:var(--red); --bct:#f08080; background:rgba(208,48,40,0.07); }
+
+  /* Deck list button — tall square, spans both small buttons */
+  .btn-icon-tall {
+    --bc:var(--gold-dim);
+    --bct:var(--gold);
+    font-size:1rem;
+    padding:0; width:32px;
+    /* height = 32 + 32 + gap(~4.5px) = ~69px */
+    height:69px;
+    border:2px solid var(--bc); background:rgba(255,255,255,0.03); color:var(--bct);
+    cursor:pointer; transition:all 0.1s;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.55);
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .btn-icon-tall:active { transform:translate(2px,2px); box-shadow:none; }
+
+  /* Right side: tall list btn + column of 2 small btns */
+  .deck-actions-col {
+    display:flex; flex-direction:row; align-items:stretch; gap:0.28rem; flex-shrink:0;
+  }
+  .deck-actions-col .small-btns {
+    display:flex; flex-direction:column; gap:0.28rem;
+  }
+
+  /* Make deck card tall enough */
+  .deck-card { align-items:center; min-height:90px; }
+
+
+
+  /* ── MODE PICKER MODAL ── */
+  .mode-modal {
+    --c:var(--dragon);
+    background:var(--bg-mid); border:3px solid var(--c);
+    width:100%; max-width:460px;
+    position:relative; box-shadow:5px 5px 0 rgba(0,0,0,0.7);
+  }
+  .mode-modal::before,.mode-modal::after { content:''; position:absolute; width:8px; height:8px; background:var(--c); z-index:3; }
+  .mode-modal::before { top:-2px; left:-2px; }
+  .mode-modal::after  { bottom:-2px; right:-2px; }
+  .mode-header {
+    --c:var(--dragon);
+    background:var(--bg-panel); border-bottom:3px solid var(--c);
+    padding:0.65rem 0.9rem; display:flex; align-items:center; gap:0.7rem;
+    position:relative; overflow:hidden;
+  }
+  .mode-header::before,.mode-header::after { content:''; position:absolute; top:0; bottom:-3px; width:10px; background:var(--c); }
+  .mode-header::before { left:0; }
+  .mode-header::after  { right:0; }
+  .mode-header-title { font-family:var(--px); font-size:0.58rem; color:var(--dragon); flex:1; padding:0 0.5rem; }
+  .mode-inner { padding:1rem; display:flex; flex-direction:column; gap:0.55rem; }
+
+  .mode-section-label {
+    font-family:var(--px); font-size:0.4rem; color:#506080;
+    letter-spacing:0.08em; margin-bottom:0.3rem;
+  }
+  .mode-toggle-group { display:flex; gap:0.3rem; flex-wrap:wrap; }
+  .mode-opt {
+    font-family:var(--px); font-size:0.44rem; padding:0.35rem 0.6rem;
+    border:2px solid var(--muted); background:var(--bg-card); color:#506080;
+    cursor:pointer; transition:all 0.1s; -webkit-tap-highlight-color:transparent;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.4);
+  }
+  .mode-opt.active { border-color:var(--dragon); color:var(--dragon); background:rgba(80,64,200,0.1); box-shadow:2px 2px 0 rgba(0,0,0,0.4),0 0 8px rgba(80,64,200,0.2); }
+  .mode-opt:active  { transform:translate(2px,2px); box-shadow:none; }
+
+  .mode-divider { height:1px; background:var(--muted); margin:0.1rem 0; }
+
+  .mode-play-btn {
+    width:100%; padding:0.75rem; margin-top:0.2rem;
+    font-family:var(--px); font-size:0.62rem;
+    background:var(--dragon); color:#fff;
+    border:3px solid #3020a0;
+    cursor:pointer; transition:all 0.1s;
+    box-shadow:3px 3px 0 rgba(0,0,0,0.55);
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .mode-delete-btn {
+    width:100%; padding:0.6rem;
+    font-family:var(--px); font-size:0.5rem;
+    background:transparent; color:var(--red);
+    border:2px solid var(--red);
+    cursor:pointer; transition:all 0.1s;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.4);
+    -webkit-tap-highlight-color:transparent;
+    margin-top:0.2rem;
+  }
+  .mode-delete-btn:active { transform:translate(2px,2px); box-shadow:none; background:rgba(208,48,40,0.1); }
+  .mode-play-btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 rgba(0,0,0,0.55); }
+
+  /* Mode badge shown in game header */
+  .mode-badge {
+    font-family:var(--px); font-size:0.36rem; padding:0.2rem 0.45rem;
+    border:1px solid var(--dragon); color:var(--dragon);
+    background:rgba(80,64,200,0.15); letter-spacing:0.04em;
+  }
+
+
+  /* ── TIMER BAR (timed challenge) ── */
+  .timer-bar-wrap {
+    height:4px; background:var(--muted); position:relative; flex-shrink:0;
+  }
+  .timer-bar-fill {
+    position:absolute; top:0; left:0; height:100%;
+    background:var(--green); transition:width 0.5s linear, background 0.5s;
+  }
+  .timer-bar-fill.warn { background:var(--electric); }
+  .timer-bar-fill.crit { background:var(--red); }
+
+  /* ── RATING badge on results ── */
+  .session-rating {
+    font-family:var(--px); font-size:2.5rem; font-weight:700;
+    line-height:1; margin-top:0.3rem;
+    text-shadow:3px 3px 0 rgba(0,0,0,0.8);
+  }
+  .rating-s { color:#f0c040; }
+  .rating-a { color:#60d060; }
+  .rating-b { color:#4090e0; }
+  .rating-c { color:#c0c0c0; }
+  .rating-d { color:#e04040; }
+
+  /* ── PERSONAL BESTS box ── */
+  .pb-box {
+    --c:var(--gold);
+    border:2px solid var(--c); background:rgba(216,168,32,0.05);
+    padding:0.6rem 0.8rem; margin-bottom:0.8rem; position:relative;
+  }
+  .pb-box::before,.pb-box::after { content:''; position:absolute; width:6px; height:6px; background:var(--c); }
+  .pb-box::before { top:-1px; left:-1px; }
+  .pb-box::after  { bottom:-1px; right:-1px; }
+  .pb-title { font-family:var(--px); font-size:0.42rem; color:var(--gold); margin-bottom:0.45rem; }
+  .pb-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.4rem; }
+  .pb-cell { text-align:center; }
+  .pb-val { font-family:var(--px); font-size:0.72rem; color:var(--gold); line-height:1; }
+  .pb-lbl { font-family:var(--px); font-size:0.34rem; color:#506080; margin-top:0.2rem; line-height:1.4; }
+  .pb-new { color:var(--electric); animation:pbpulse 1s ease-in-out 3; }
+  @keyframes pbpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── CONFETTI canvas ── */
+  #confetti-canvas {
+    position:fixed; inset:0; pointer-events:none; z-index:500;
+  }
+
+  /* ── ARCHIVE badge ── */
+  .deck-archived { opacity:0.5; }
+  .archived-badge {
+    font-family:var(--px); font-size:0.36rem; color:#506080;
+    border:1px solid #2a3444; padding:0.15rem 0.35rem; display:inline-block; margin-top:0.15rem;
+  }
+
+  /* ── AUTOCOMPLETE dropdown ── */
+  .autocomplete-wrap { position:relative; flex:1; }
+  .autocomplete-list {
+    position:absolute; bottom:100%; left:0; right:0; margin-bottom:3px;
+    background:var(--bg-mid); border:2px solid var(--electric);
+    max-height:140px; overflow-y:auto; z-index:50;
+    box-shadow:0 -4px 16px rgba(0,0,0,0.6);
+  }
+  .autocomplete-item {
+    font-family:var(--px); font-size:0.44rem; padding:0.45rem 0.6rem;
+    color:var(--text); cursor:pointer; border-bottom:1px solid var(--muted);
+    -webkit-tap-highlight-color:transparent; line-height:1.5;
+  }
+  .autocomplete-item:last-child { border-bottom:none; }
+  .autocomplete-item:active,.autocomplete-item.highlighted { background:rgba(216,184,0,0.1); color:var(--electric); }
+
+  /* ── DECK FORMAT BADGE ── */
+  .fmt-badge {
+    font-family:var(--px); font-size:0.34rem; padding:0.12rem 0.35rem;
+    display:inline-block; margin-left:0.3rem; vertical-align:middle;
+  }
+  .fmt-standard { border:1px solid var(--water); color:var(--water); }
+  .fmt-expanded { border:1px solid var(--fighting); color:var(--fighting); }
+
+  /* Deck format toggle in import modal */
+  .fmt-toggle-row { display:flex; gap:0.4rem; margin-top:0.5rem; }
+  .fmt-opt {
+    font-family:var(--px); font-size:0.44rem; padding:0.3rem 0.6rem;
+    border:2px solid var(--muted); background:var(--bg-card); color:#506080;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.4); flex:1; text-align:center;
+  }
+  .fmt-opt.active.standard { border-color:var(--water); color:var(--water); background:rgba(46,142,200,0.08); }
+  .fmt-opt.active.expanded { border-color:var(--fighting); color:var(--fighting); background:rgba(176,96,40,0.08); }
+  .fmt-opt:active { transform:translate(1px,1px); box-shadow:none; }
+
+  /* ── Edit deck modal (rename + edit list) ── */
+  .edit-modal-inner { padding:1rem; display:flex; flex-direction:column; gap:0.7rem; }
+
+  /* ── Deck history panel ── */
+  .deck-history-row {
+    display:flex; gap:0.3rem; margin-top:0.25rem; flex-wrap:wrap;
+  }
+  .deck-hist-pip {
+    font-family:var(--px); font-size:0.34rem; padding:0.15rem 0.35rem;
+    border:1px solid var(--muted); color:#506080;
+    min-width:28px; text-align:center;
+  }
+  .deck-hist-pip.perfect { border-color:var(--gold); color:var(--gold); }
+  .deck-hist-pip.good    { border-color:var(--green); color:var(--green); }
+  .deck-hist-pip.mid     { border-color:var(--electric); color:#a08800; }
+  .deck-hist-pip.bad     { border-color:var(--red); color:var(--red); }
+
+  /* avg score pill */
+  .deck-avg {
+    font-family:var(--px); font-size:0.38rem; color:#506080; margin-top:0.1rem;
+  }
+  .deck-avg b { color:var(--text); }
+
+
+  /* ── GLOBAL STATS in header ── */
+  .header-stats {
+    display:flex; gap:0.6rem; justify-content:center; margin-top:0.3rem;
+  }
+  .header-stat {
+    font-family:var(--px); font-size:0.38rem; color:#506080;
+  }
+  .header-stat b { color:var(--gold-lt); }
+
+  /* ── STREAK badge ── */
+  .streak-badge {
+    font-family:var(--px); font-size:0.38rem; padding:0.15rem 0.45rem;
+    border:1px solid var(--electric); color:var(--electric);
+    background:rgba(216,184,0,0.07); display:inline-block; margin-top:0.1rem;
+  }
+
+  /* ── BACKUP/RESTORE modal ── */
+  .backup-inner { padding:1rem; display:flex; flex-direction:column; gap:0.7rem; }
+  .backup-textarea {
+    width:100%; height:100px; font-size:0.5rem; font-family:var(--px);
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--muted);
+    padding:0.5rem; resize:none;
+  }
+
+  /* ── BETTER RESULTS — guess comparison ── */
+  .guess-comparison { padding:0 0.9rem 0; max-width:640px; margin:0 auto; width:100%; }
+  .guess-compare-title { font-family:var(--px); font-size:0.42rem; color:#506080; letter-spacing:0.08em; margin-bottom:0.5rem; }
+  .guess-compare-grid { display:flex; flex-direction:column; gap:0.3rem; margin-bottom:1rem; }
+  .guess-compare-row {
+    display:grid; grid-template-columns:1fr auto 1fr; gap:0.4rem; align-items:center;
+    padding:0.35rem 0.5rem; background:var(--bg-card);
+    border-left:3px solid transparent;
+  }
+  .guess-compare-row.hit  { border-left-color:var(--green); }
+  .guess-compare-row.miss { border-left-color:var(--red); }
+  .gcr-guess { font-family:var(--px); font-size:0.4rem; color:var(--text); }
+  .gcr-arrow { font-size:0.6rem; color:#2a3444; }
+  .gcr-prize { font-family:var(--px); font-size:0.4rem; }
+  .gcr-prize.matched { color:var(--green); }
+  .gcr-prize.missed  { color:var(--red); }
+  .gcr-prize.unguessed { color:#506080; font-style:italic; }
+
+  .deck-card.deck-hidden {
+    opacity: 0.45;
+    filter: grayscale(0.6);
+  }
+  .deck-card.deck-hidden .deck-thumb img { filter: brightness(0.5); }
+  .hidden-toggle-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.5rem; margin: 0.3rem 0 0.8rem;
+    font-family: var(--px); font-size: 0.38rem; color: #506080;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .hidden-toggle-row:active { color: var(--gold); }
+
+  /* ══════════════════════════════════════════
+     DESKTOP RESPONSIVE  ≥ 768px
+  ══════════════════════════════════════════ */
+  @media (min-width: 768px) {
+    html, body { font-size: 18px; }
+
+    .screen.active {
+      max-width: 1100px; margin: 0 auto;
+      min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,0.6);
+    }
+
+    /* ── Deck buttons scale with rem ── */
+    .btn-icon      { width: 2.4rem; height: 2.4rem; font-size: 1.1rem; }
+    .btn-icon-tall { width: 2.4rem; height: 5.1rem; font-size: 1.4rem; }
+    .deck-card     { min-height: 5.5rem; padding: 0.85rem 1rem; gap: 1rem; }
+    .deck-thumb    { width: 3rem; height: 4.2rem; }
+    .deck-name     { font-size: 0.62rem; }
+    .deck-meta     { font-size: 0.78rem; }
+    .deck-avg      { font-size: 0.44rem; }
+
+    /* ── HOME ── */
+    .app-header  { padding: 2rem 2.5rem 1.6rem; }
+    .app-title   { font-size: clamp(1rem, 2.5vw, 1.6rem); }
+    .app-subtitle { font-size: 0.8rem; }
+    .home-content { max-width: 900px; padding: 1.6rem 2rem; }
+    .deck-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 1.6rem; }
+    .btn-block { font-size: 0.65rem; padding: 1rem 1.2rem; }
+
+    /* ── MODALS ── */
+    .modal { max-width: 540px; }
+    .modal-title { font-size: 0.72rem; }
+    label { font-size: 0.72rem; }
+
+    /* ── REVIEW ── */
+    .review-body  { padding: 1.4rem 2rem; max-width: 100%; margin: 0 auto; width: 100%; }
+    .review-cards { grid-template-columns: repeat(7, 1fr); }
+    .review-footer { padding: 1rem 2rem 1.2rem; }
+
+    /* ── GAME — side by side ── */
+    .game-body-desktop { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .game-body-desktop .card-viewer {
+      flex: 1; border-right: 2px solid var(--muted); overflow-y: auto; padding: 1.4rem 1.8rem;
+    }
+    .game-body-desktop .guess-section {
+      width: 22rem; flex-shrink: 0; overflow-y: auto;
+      background: var(--bg-panel); border-top: none;
+      display: flex; flex-direction: column; padding: 1.2rem 1.2rem;
+    }
+    .card-stage { min-height: 340px; }
+    .card-display { width: 180px; }
+    .card-display.is-center { width: 210px; }
+    .game-actions { margin-top: auto; padding-top: 1rem; }
+    .btn-grass { width: 100%; }
+    .guess-label { font-size: 0.5rem; }
+    .prize-slot { font-size: 0.44rem; padding: 0.5rem 0.4rem; }
+
+    /* ── RESULTS ── */
+    .results-scrollable-desktop {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start;
+    }
+    .prize-reveal  { max-width: none; border-right: 2px solid var(--muted); }
+    .prize-reveal-grid { grid-template-columns: repeat(3, 1fr); }
+    .history-section { max-width: none; }
+    .guess-comparison { max-width: none; }
+    .results-actions { max-width: none; padding: 1rem 1.8rem; justify-content: flex-start; }
+    #pb-display { max-width: none; padding: 0 1.8rem; }
+    .results-score { font-size: clamp(3rem, 7vw, 5rem); }
+
+    /* ── WEAK SPOTS ── */
+    .ws-body-inner { max-width: 100%; padding: 1.4rem 2rem; }
+
+    /* ── FOOTER ── */
+    .btn-sm { font-size: 0.5rem; padding: 0.5rem 0.9rem; }
+  }
+
+  /* ── Wide desktop 1200px ── */
+  @media (min-width: 1200px) {
+    html, body { font-size: 20px; }
+    .screen.active { max-width: 1360px; }
+    .home-content { max-width: 1200px; }
+    .deck-list { grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; }
+    .btn-icon      { width: 2.6rem; height: 2.6rem; font-size: 1.2rem; }
+    .btn-icon-tall { width: 2.6rem; height: 5.5rem; font-size: 1.5rem; }
+    .deck-thumb    { width: 3.4rem; height: 4.8rem; }
+    .review-cards  { grid-template-columns: repeat(9, 1fr); }
+    .game-body-desktop .guess-section { width: 24rem; }
+    .card-display { width: 200px; }
+    .card-display.is-center { width: 235px; }
+    .card-stage { min-height: 420px; }
+    .prize-reveal-grid { grid-template-columns: repeat(4, 1fr); }
+    .modal { max-width: 620px; }
+    .btn-block { font-size: 0.7rem; }
+  }
+
+  /* ── Ultra wide 1600px ── */
+  @media (min-width: 1600px) {
+    html, body { font-size: 22px; }
+    .screen.active { max-width: 1580px; }
+    .home-content { max-width: 1480px; }
+    .deck-list { grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+    .btn-icon      { width: 2.8rem; height: 2.8rem; font-size: 1.4rem; }
+    .btn-icon-tall { width: 2.8rem; height: 5.9rem; font-size: 1.7rem; }
+    .deck-thumb    { width: 3.8rem; height: 5.3rem; }
+    .deck-card     { min-height: 6.2rem; padding: 1rem 1.2rem; }
+    .review-cards  { grid-template-columns: repeat(10, 1fr); }
+    .game-body-desktop .guess-section { width: 28rem; }
+    .card-display { width: 220px; }
+    .card-display.is-center { width: 260px; }
+    .card-stage { min-height: 500px; }
+    .prize-reveal-grid { grid-template-columns: repeat(4, 1fr); }
+    .ws-body-inner { max-width: 1500px; }
+    .modal { max-width: 700px; }
+    .review-body { max-width: 1500px; }
+    .btn-block { font-size: 0.75rem; }
+  }
+
+  /* ── COUNTDOWN OVERLAY ── */
+  .countdown-overlay {
+    display:none; position:fixed; inset:0; z-index:500;
+    align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.75); backdrop-filter:blur(4px);
+  }
+  .countdown-overlay.active { display:flex; }
+  .countdown-num {
+    font-family:var(--px); font-size:clamp(5rem,20vw,12rem); font-weight:700;
+    color:var(--gold); text-shadow:0 0 60px rgba(216,168,32,0.7), 4px 4px 0 rgba(0,0,0,0.9);
+    animation:countPop 0.85s ease-out forwards;
+  }
+  @keyframes countPop {
+    0%   { transform:scale(1.4); opacity:0; }
+    20%  { transform:scale(1.0); opacity:1; }
+    75%  { transform:scale(1.0); opacity:1; }
+    100% { transform:scale(0.6); opacity:0; }
+  }
+
+  /* ── LARGE TIMER DISPLAY during timed mode ── */
+  .game-countdown-big {
+    font-family:var(--px); font-size:clamp(1.4rem,5vw,3rem); font-weight:700;
+    color:var(--gold); text-align:center; letter-spacing:0.08em;
+    padding:0.3rem 0; flex-shrink:0;
+    transition:color 0.3s;
+  }
+  .game-countdown-big.warning { color:var(--red); animation:blink 0.7s step-end infinite; }
+  .game-countdown-big.hidden  { display:none; }
+
+  /* ── POST-GAME PRIZE BROWSER ── */
+  .prize-browser-overlay {
+    display:none; position:fixed; inset:0; z-index:400;
+    background:rgba(0,0,0,0.95); flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .prize-browser-overlay.active { display:flex; }
+  .prize-browser-header {
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    padding:0.7rem 1.2rem; border-bottom:3px solid var(--gold);
+    background:var(--bg-panel); flex-shrink:0;
+  }
+  .prize-browser-title {
+    font-family:var(--px); font-size:0.58rem; color:var(--gold); letter-spacing:0.06em;
+  }
+  .prize-browser-body {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    width:100%; position:relative; overflow:hidden; padding:1rem;
+  }
+  .prize-browser-card {
+    max-height:72vh; max-width:min(85vw, 380px);
+    aspect-ratio:2.5/3.5; object-fit:cover;
+    border:3px solid var(--gold);
+    box-shadow:0 0 60px rgba(0,0,0,0.9), 0 0 20px rgba(216,168,32,0.25);
+    border-radius:2px;
+  }
+  .prize-browser-placeholder {
+    max-height:72vh; max-width:min(85vw,380px); aspect-ratio:2.5/3.5;
+    background:var(--bg-card); border:3px solid var(--gold);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1rem; font-size:0.9rem; font-weight:700; color:#506080;
+  }
+  .prize-browser-placeholder span:first-child { font-size:3rem; }
+  .prize-browser-footer {
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    padding:0.8rem 1.2rem; border-top:3px solid var(--gold-dim);
+    background:var(--bg-panel); flex-shrink:0; gap:0.5rem;
+  }
+  .prize-browser-name {
+    font-family:var(--px); font-size:0.52rem; color:var(--text);
+    flex:1; text-align:center; padding:0 0.5rem; line-height:1.5;
+  }
+  .prize-browser-badge {
+    font-family:var(--px); font-size:0.46rem; padding:0.25rem 0.6rem;
+    font-weight:700; flex-shrink:0;
+  }
+  .prize-browser-badge.correct { background:var(--green); color:#000; }
+  .prize-browser-badge.wrong   { background:var(--red);   color:#fff; }
+  .prize-browser-counter {
+    font-family:var(--px); font-size:0.44rem; color:#506080;
+    text-align:center; padding:0.3rem 0; flex-shrink:0;
+  }
+  .prize-browser-nav { display:flex; gap:0.5rem; flex-shrink:0; }
+
+  /* ── SOUND TOGGLE btn ── */
+  .sound-toggle {
+    position:fixed; bottom:1.1rem; right:1.1rem; z-index:50;
+    background:var(--bg-panel); border:2px solid var(--muted);
+    color:var(--text); font-size:1.1rem; width:2.4rem; height:2.4rem;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:2px 2px 0 rgba(0,0,0,0.5); transition:border-color 0.15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .sound-toggle:hover { border-color:var(--gold); }
+  .sound-toggle.muted { opacity:0.4; }
+
+  /* ── KEYBOARD HINT bar (desktop only) ── */
+  @media (min-width:768px) {
+    .kb-hints {
+      display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;
+      padding:0.4rem 1rem; background:var(--bg-panel);
+      border-top:1px solid var(--muted); flex-shrink:0;
+      font-size:0.68rem; font-weight:700; color:#40506a;
+    }
+    .kb-hints kbd {
+      display:inline-block; background:var(--bg-card);
+      border:1px solid var(--muted); border-bottom:3px solid var(--muted);
+      padding:0.05rem 0.4rem; font-family:var(--px); font-size:0.42rem;
+      color:var(--text); margin-right:0.3rem; border-radius:2px;
+    }
+  }
+  @media (max-width:767px) { .kb-hints { display:none; } }
+
+  /* countdown overlay removed */
+
+  /* ── BIG TIMER (shows when time limit active, center of card viewer) ── */
+  .big-timer {
+    position:absolute; top:0.6rem; right:0.8rem; z-index:20;
+    font-family:var(--px); font-size:clamp(1.4rem,5vw,2.8rem); font-weight:700;
+    color:var(--gold); text-shadow:0 0 12px rgba(216,168,32,0.5), 2px 2px 0 rgba(0,0,0,0.9);
+    letter-spacing:0.04em; pointer-events:none; display:none;
+  }
+  .big-timer.active { display:block; }
+  .big-timer.warning { color:var(--red); animation:blink 0.7s step-end infinite; }
+
+  /* ── SOUND TOGGLE ── */
+  .sound-toggle {
+    position:fixed; bottom:1.2rem; right:1.2rem; z-index:150;
+    background:var(--bg-panel); border:2px solid var(--gold-dim);
+    color:var(--gold); font-size:1.1rem;
+    width:2.4rem; height:2.4rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:2px 2px 0 rgba(0,0,0,0.5);
+    -webkit-tap-highlight-color:transparent;
+    transition:opacity 0.15s;
+  }
+  .sound-toggle.muted { opacity:0.35; }
+
+  /* ── POST-GAME CARD BROWSER ── */
+  .prize-browser-overlay {
+    display:none; position:fixed; inset:0; z-index:180;
+    background:rgba(5,8,16,0.96); backdrop-filter:blur(8px);
+    flex-direction:column; align-items:center; justify-content:center;
+  }
+  .prize-browser-overlay.active { display:flex; }
+  .prize-browser-header {
+    font-family:var(--px); font-size:0.55rem; color:var(--gold);
+    letter-spacing:0.08em; margin-bottom:1rem; text-align:center;
+  }
+  .prize-browser-stage {
+    position:relative; width:100%; max-width:340px; aspect-ratio:2.5/3.5;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .prize-browser-card {
+    width:100%; height:100%;
+    border:3px solid var(--gold);
+    box-shadow:0 0 40px rgba(216,168,32,0.3), 0 12px 40px rgba(0,0,0,0.9);
+    overflow:hidden; background:var(--bg-card);
+    transition:opacity 0.2s;
+  }
+  .prize-browser-card img { width:100%; height:100%; object-fit:cover; display:block; }
+  .prize-browser-card .pb-placeholder {
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+    font-size:4rem; color:#2a3444;
+  }
+  .prize-browser-name {
+    font-family:var(--px); font-size:0.55rem; color:var(--gold);
+    text-align:center; margin-top:0.8rem; letter-spacing:0.04em;
+  }
+  .prize-browser-badge {
+    font-size:0.5rem; font-weight:800; margin-top:0.3rem; text-align:center;
+  }
+  .prize-browser-badge.hit  { color:var(--green); }
+  .prize-browser-badge.miss { color:var(--red); }
+  .prize-browser-nav {
+    display:flex; gap:1.2rem; margin-top:1.2rem; align-items:center;
+  }
+  .prize-browser-nav .btn { min-width:5rem; }
+  .prize-browser-counter {
+    font-family:var(--px); font-size:0.45rem; color:#506080; min-width:4rem; text-align:center;
+  }
+  .prize-browser-close {
+    position:absolute; top:1rem; right:1rem;
+  }
+
+  /* ── KEYBOARD HINT (desktop only) ── */
+  .kbd-hint {
+    display:none;
+    font-size:0.38rem; color:#2a3444; font-family:var(--px);
+    text-align:center; margin-top:0.4rem; letter-spacing:0.04em;
+  }
+  @media (min-width:768px) {
+    .kbd-hint { display:block; }
+    .big-timer { font-size:clamp(1.8rem,3vw,3.2rem); }
+  }
+
+  /* ── SHARE MODAL TABS ── */
+  .share-tab {
+    font-family:var(--px); font-size:0.44rem; font-weight:700;
+    padding:0.35rem 0.7rem; cursor:pointer;
+    border:2px solid var(--muted); background:var(--bg-card); color:#506080;
+    transition:all 0.1s; -webkit-tap-highlight-color:transparent;
+  }
+  .share-tab.active {
+    border-color:var(--water); color:var(--water); background:rgba(46,142,200,0.08);
+  }
+  .share-tab:active { transform:translate(1px,1px); }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- COUNTDOWN OVERLAY -->
+<div class="countdown-overlay" id="countdown-overlay" style="display:none!important">
+  <div class="countdown-num" id="countdown-num">3</div>
+</div>
+
+<!-- PRIZE BROWSER OVERLAY -->
+<div class="prize-browser-overlay" id="prize-browser-overlay">
+  <div class="prize-browser-header">
+    <button class="btn btn-sm" onclick="closePrizeBrowser()">✕ CLOSE</button>
+    <div class="prize-browser-title" id="pb-title">◆ PRIZE CARDS</div>
+    <div class="prize-browser-counter" id="pb-count">1 / 6</div>
+  </div>
+  <div class="prize-browser-body" id="pb-body"></div>
+  <div class="prize-browser-footer">
+    <div class="prize-browser-nav">
+      <button class="btn btn-sm" id="pb-prev" onclick="browsePrize(-1)">◀ PREV</button>
+      <button class="btn btn-sm" id="pb-next" onclick="browsePrize(1)">NEXT ▶</button>
+    </div>
+    <div class="prize-browser-name" id="pb-name"></div>
+    <div class="prize-browser-badge" id="pb-badge"></div>
+  </div>
+</div>
+
+<!-- SOUND TOGGLE -->
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle sound">🔊</button>
+
+<!-- ═══════════════════════════ HOME SCREEN -->
+<div id="screen-home" class="screen active">
+  <div class="app-header">
+    <div class="pball"></div>
+    <div class="app-title">▶ PRIZE TRAINER</div>
+    <div class="app-subtitle">POKÉMON TCG · PRIZE CARD MEMORY GAME</div>
+    <div class="header-stats" id="header-stats"></div>
+  </div>
+  <div class="home-content scrollable">
+    <div class="section-title">Your Decks</div>
+    <div class="deck-list" id="deck-list">
+      <div class="empty-state">
+        <span class="icon">🃏</span>
+        No decks yet.<br>Import your first deck below.
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="openImportModal()">+ IMPORT NEW DECK</button>
+    <button class="btn btn-block" onclick="shareApp()" style="margin-top:0.5rem;font-size:0.5rem;">📤 SHARE WITH A FRIEND</button>
+    <button class="btn btn-block" onclick="openHowToPlay()" style="margin-top:0.5rem;font-size:0.5rem;opacity:0.75;">? HOW TO PLAY</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;"><button class="btn btn-sm" onclick="openBackupModal()" style="font-size:0.38rem;padding:0.3rem 0.6rem;">⬆⬇ MANUAL BACKUP</button><button class="btn btn-danger btn-sm" onclick="clearAllData()" style="font-size:0.38rem;opacity:0.55;padding:0.3rem 0.6rem;">⚠ clear data</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ DECK REVIEW SCREEN -->
+<div id="screen-review" class="screen">
+  <div class="review-header">
+    <button class="btn btn-sm" onclick="showScreen('home')">◀ BACK</button>
+    <div class="review-deck-name" id="review-deck-name">Deck</div>
+  </div>
+  <div class="review-body" id="review-body"></div>
+  <div class="review-footer">
+    <div class="review-stats" id="review-stats"></div>
+    <button class="play-btn" onclick="startGameFromReview()">▶  PLAY</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ GAME SCREEN -->
+<div id="screen-game" class="screen">
+  <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timer-bar" style="width:100%"></div></div>
+  <div class="game-header">
+    <button class="btn btn-sm" onclick="confirmQuit()">✕ QUIT</button>
+    <div class="game-deck-name" id="game-deck-name">Deck Name</div>
+    <div id="mode-badge-wrap"></div>
+    <div class="game-timer" id="game-timer">0:00</div>
+  </div>
+  <div class="game-countdown-big hidden" id="game-countdown-big">0:00</div>
+  <div class="kb-hints">
+    <span><kbd>←</kbd><kbd>→</kbd> Navigate cards</span>
+    <span><kbd>Tab</kbd> Focus guess</span>
+    <span><kbd>Enter</kbd> Submit guess</span>
+    <span><kbd>R</kbd> Reveal prizes</span>
+  </div>
+  <div class="game-body-desktop">
+  <div class="card-viewer" style="position:relative;">
+    <div class="big-timer" id="big-timer">0:00</div>
+    <div class="card-counter" id="card-counter">CARD 1 OF 54</div>
+    <div class="card-stage" id="card-stage">
+      <div class="carousel-track" id="carousel-track"></div>
+    </div>
+    <div class="swipe-nav">
+      <div class="progress-dots" id="progress-dots"></div>
+    </div>
+  </div>
+  </div><!-- /card-viewer -->
+  <div class="guess-section">
+    <div class="guess-label" id="guess-label">◆ YOUR 6 PRIZE GUESSES</div>
+    <div class="prize-slots" id="prize-slots">
+      <div class="prize-slot" data-slot="0">PRIZE 1</div>
+      <div class="prize-slot" data-slot="1">PRIZE 2</div>
+      <div class="prize-slot" data-slot="2">PRIZE 3</div>
+      <div class="prize-slot" data-slot="3">PRIZE 4</div>
+      <div class="prize-slot" data-slot="4">PRIZE 5</div>
+      <div class="prize-slot" data-slot="5">PRIZE 6</div>
+    </div>
+    <div class="guess-input-row">
+      <div class="autocomplete-wrap">
+        <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
+        <input type="text" id="guess-input" placeholder="Guess a prize card name…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <button class="btn btn-sm btn-primary" onclick="submitGuess()">GUESS</button>
+    </div>
+    <div class="guess-feedback" id="guess-feedback"></div>
+    <div class="game-actions">
+      <button class="btn btn-sm btn-grass" onclick="revealPrizes()">★ REVEAL PRIZES</button>
+    </div>
+  </div><!-- /guess-section -->
+  </div><!-- /game-body-desktop -->
+</div>
+
+<!-- ═══════════════════════════ RESULTS SCREEN -->
+<div id="screen-results" class="screen">
+  <div class="results-header">
+    <div class="results-score" id="results-score">0/6</div>
+    <div class="session-rating" id="session-rating"></div>
+    <div class="results-score-label">PRIZE CARDS FOUND</div>
+    <div class="results-time" id="results-time">TIME: 0:00</div>
+  </div>
+  <div class="scrollable">
+    <div class="results-scrollable-desktop">
+    <div class="prize-reveal" id="prize-reveal-area">
+      <div class="section-title">The Prize Cards Were</div>
+      <div class="prize-reveal-grid" id="prize-reveal-grid"></div>
+    </div>
+    <div class="guess-comparison">
+      <div class="guess-compare-title">YOUR GUESSES VS ACTUAL PRIZES</div>
+      <div class="guess-compare-grid" id="guess-compare-grid"></div>
+    </div>
+    <div class="history-section">
+      <div class="section-title">Session History</div>
+      <table class="history-table">
+        <thead><tr><th>#</th><th>Score</th><th>Time</th><th>Date</th></tr></thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </div>
+    <div id="pb-display" style="padding:0 0.9rem;max-width:640px;margin:0 auto;width:100%;"></div>
+    </div><!-- /results-scrollable-desktop -->
+    <div class="results-actions">
+      <button class="btn btn-primary" onclick="playAgain()">▶ PLAY AGAIN</button>
+      <button class="btn btn-water" onclick="openPrizeBrowser()">◉ VIEW PRIZE CARDS</button>
+      <button class="btn" onclick="goHome()">◀ ALL DECKS</button>
+      <button class="btn btn-sm" onclick="exportHistory()" style="font-size:0.38rem;">⬇ EXPORT CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ WEAK SPOTS SCREEN -->
+<div id="screen-weakspots" class="screen">
+  <div class="ws-header">
+    <button class="btn btn-sm" onclick="showScreen('home');renderHome()">◀ BACK</button>
+    <div class="ws-title" id="ws-title">WEAK SPOTS</div>
+  </div>
+  <div class="scrollable" id="ws-body"></div>
+</div>
+
+<!-- ═══════════════════════════ MODE PICKER MODAL -->
+<div class="modal-overlay" id="mode-modal">
+  <div class="mode-modal">
+    <div class="mode-header">
+      <button class="btn btn-sm" onclick="closeModeModal()">✕</button>
+      <div class="mode-header-title">SELECT MODE</div>
+    </div>
+    <div class="mode-inner">
+
+      <div class="mode-section-label">PRIZE CARDS</div>
+      <div class="mode-toggle-group" id="mode-prizes">
+        <div class="mode-opt" data-val="4" onclick="setModeOpt('prizes',4)">4</div>
+        <div class="mode-opt active" data-val="6" onclick="setModeOpt('prizes',6)">6 ★</div>
+        <div class="mode-opt" data-val="8" onclick="setModeOpt('prizes',8)">8</div>
+      </div>
+
+      <div class="mode-section-label">TIME LIMIT</div>
+      <div class="mode-toggle-group" id="mode-timelimit">
+        <div class="mode-opt active" data-val="0" onclick="setModeOpt('timelimit',0)">OFF</div>
+        <div class="mode-opt" data-val="60" onclick="setModeOpt('timelimit',60)">1 MIN</div>
+        <div class="mode-opt" data-val="90" onclick="setModeOpt('timelimit',90)">90 SEC</div>
+        <div class="mode-opt" data-val="120" onclick="setModeOpt('timelimit',120)">2 MIN</div>
+      </div>
+
+      <button class="mode-play-btn" onclick="startGameFromMode()">▶ START GAME</button>
+      <button class="mode-delete-btn" id="mode-hide-btn" onclick="toggleHideDeckFromModal()" style="border-color:var(--muted);color:#506080;margin-bottom:0.3rem;">🙈 HIDE DECK</button>
+      <button class="mode-delete-btn" onclick="deleteDeckFromModal()">🗑 DELETE DECK</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ HOW TO PLAY MODAL -->
+<div class="modal-overlay" id="how-to-modal">
+  <div class="modal">
+    <div class="modal-inner" style="padding:1rem;">
+      <div class="modal-title">◆ HOW TO PLAY</div>
+      <div style="display:flex;flex-direction:column;gap:0.7rem;margin-top:0.5rem;">
+        <div class="instr-step">
+          <div class="instr-num">1</div>
+          <div class="instr-body"><b>IMPORT YOUR DECK:</b> Paste your Limitless TCG 60-card list and the app builds your card gallery automatically.</div>
+        </div>
+        <div class="instr-step">
+          <div class="instr-num">2</div>
+          <div class="instr-body"><b>FLIP THROUGH THE VISIBLE CARDS:</b> Swipe left and right. Some cards are secretly set aside as prizes before you start.</div>
+        </div>
+        <div class="instr-step">
+          <div class="instr-num">3</div>
+          <div class="instr-body"><b>GUESS ALL THE PRIZE CARDS:</b> Use the autocomplete input to enter your guesses, then hit Reveal Prizes.</div>
+        </div>
+        <div class="instr-step">
+          <div class="instr-num">4</div>
+          <div class="instr-body"><b>CHALLENGE MODES:</b> Use the ⚙ to change prize count (4 / 6 / 8), add a time limit, or mix both for extra pressure.</div>
+        </div>
+        <div class="instr-step">
+          <div class="instr-num">5</div>
+          <div class="instr-body"><b>TRACK WEAK SPOTS:</b> After 3 sessions the app shows which cards you miss most often so you know what to focus on.</div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:1rem;">
+        <button class="btn btn-sm btn-primary" onclick="closeHowToPlay()">GOT IT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ BACKUP MODAL -->
+<div class="modal-overlay" id="backup-modal">
+  <div class="modal">
+    <div class="modal-inner backup-inner">
+      <div class="modal-title">◆ BACKUP / RESTORE</div>
+      <div style="font-size:0.72rem;font-weight:700;color:#506080;line-height:1.5;">
+        <b>Backup:</b> Copy the text below and save it somewhere safe.<br>
+        <b>Restore:</b> Paste a previous backup into the box and tap Restore.
+      </div>
+      <textarea class="backup-textarea" id="backup-textarea" placeholder="Your backup data will appear here…"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeBackupModal()">CANCEL</button>
+        <button class="btn btn-sm" onclick="copyBackup()">⎘ COPY</button>
+        <button class="btn btn-sm btn-primary" onclick="restoreBackup()">⬇ RESTORE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ EDIT DECK MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-inner edit-modal-inner">
+      <div class="modal-title">◆ EDIT DECK</div>
+      <div class="mb">
+        <label>DECK NAME</label>
+        <input type="text" id="edit-name" placeholder="Deck name">
+      </div>
+      <div>
+        <label>DECK LIST</label>
+        <textarea id="edit-list" placeholder="4 Charizard ex OBF 125&#10;..."></textarea>
+        <div class="modal-hint">Edit your full 60-card list then save.</div>
+        <div class="parse-preview" id="edit-preview"></div>
+      </div>
+      <div class="mb" style="margin-top:0.6rem;">
+        <label>FORMAT</label>
+        <div class="fmt-toggle-row">
+          <div class="fmt-opt standard" id="edit-fmt-standard" onclick="setEditFormat('standard')">STANDARD</div>
+          <div class="fmt-opt expanded" id="edit-fmt-expanded" onclick="setEditFormat('expanded')">EXPANDED</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeEditModal()">CANCEL</button>
+        <button class="btn btn-sm" onclick="duplicateDeckFromEdit()" style="--bc:var(--psychic);--bct:var(--psychic);">⧉ DUPLICATE</button>
+        <button class="btn btn-sm btn-primary" onclick="saveEditDeck()">SAVE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ THUMB PICKER MODAL -->
+<div class="modal-overlay" id="thumb-picker-modal">
+  <div class="picker-modal">
+    <div class="picker-header">
+      <button class="btn btn-sm" onclick="closeThumbPicker()">✕ CANCEL</button>
+      <div class="picker-title">CHOOSE THUMBNAIL CARD</div>
+    </div>
+    <div class="picker-grid" id="picker-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-inner">
+      <div class="modal-title">◆ IMPORT DECK</div>
+      <div class="mb">
+        <label>DECK NAME</label>
+        <input type="text" id="import-name" placeholder="e.g. Dragapult ex">
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.3rem;"><label>DECK LIST (LIMITLESS TCG FORMAT)</label><button class="btn btn-sm" onclick="pasteFromClipboard()" style="font-size:0.36rem;padding:0.2rem 0.5rem;">⎘ PASTE</button></div>
+        <textarea id="import-list" placeholder="4 Charizard ex OBF 125&#10;2 Charmander OBF 26&#10;4 Arven SVI 166&#10;..."></textarea>
+        <div class="modal-hint">Paste your full 60-card list. Format: quantity name set number</div>
+        <div class="parse-preview" id="parse-preview"></div>
+      </div>
+      <div class="mb" style="margin-top:0.8rem;">
+        <label>FORMAT</label>
+        <div class="fmt-toggle-row">
+          <div class="fmt-opt standard active" id="fmt-standard" onclick="setImportFormat('standard')">STANDARD</div>
+          <div class="fmt-opt expanded" id="fmt-expanded" onclick="setImportFormat('expanded')">EXPANDED</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeImportModal()">CANCEL</button>
+        <button class="btn btn-sm btn-primary" onclick="importDeck()">IMPORT &amp; SAVE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle sound">🔊</button>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">LOADING...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Global error guard — surface silent crashes on iOS
+  window.addEventListener('error', function(e) {
+    console.error('PT error:', e.message, e.filename, e.lineno);
+  });
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('PT unhandled promise:', e.reason);
+    e.preventDefault(); // don't crash on IndexedDB failures etc
+  });// ═══════════ STATE ═══════════
+const STORAGE_KEY = 'ptcg_prize_trainer_v2';
+function safeLocalGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+function safeLocalSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+
+let state = {
+  decks: [],       // { id, name, cards: [{name, set, num, count, imageUrl}], history: [{score,time,date}] }
+  activeDeckId: null,
+};
+
+let game = {
+  deckCards: [],
+  prizes: [],
+  visible: [],
+  currentIdx: 0,
+  guesses: [],
+  timerStart: null,
+  timerEl: null,
+  timerInterval: null,
+  elapsed: 0,
+  // mode settings
+  prizeCount: 6,
+  timeLimit: 0,      // seconds, 0 = off
+  timeLimitInterval: null,
+};
+
+let modeSettings = { prizes: 6, timelimit: 0 };
+let modeDeckId = null;
+let importFormat = 'standard';
+
+// ═══════════ STORAGE ═══════════
+// iOS Safari blocks IndexedDB on file:// — localStorage is primary, IDB is secondary
+
+function idbOpen() {
+  return new Promise((res) => {
+    try {
+      const req = indexedDB.open('ptcg_db', 1);
+      req.onupgradeneeded = e => { try { e.target.result.createObjectStore('kv'); } catch(_){} };
+      req.onsuccess = e => res(e.target.result);
+      req.onerror   = () => res(null);
+      req.onblocked = () => res(null);
+      setTimeout(() => res(null), 1000); // iOS file:// may never fire
+    } catch(_) { res(null); }
+  });
+}
+async function idbSet(key, val) {
+  try {
+    const db = await idbOpen();
+    if (!db) return;
+    await new Promise((res) => {
+      try {
+        const tx = db.transaction('kv', 'readwrite');
+        tx.objectStore('kv').put(val, key);
+        tx.oncomplete = res;
+        tx.onerror = res;
+      } catch(_) { res(); }
+    });
+  } catch(_) {}
+}
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    if (!db) return null;
+    return await new Promise((res) => {
+      try {
+        const tx = db.transaction('kv', 'readonly');
+        const req = tx.objectStore('kv').get(key);
+        req.onsuccess = e => res(e.target.result || null);
+        req.onerror   = () => res(null);
+      } catch(_) { res(null); }
+    });
+  } catch(_) { return null; }
+}
+
+async function saveState() {
+  const data = JSON.stringify(state);
+  // Artifact storage (Claude env)
+  if (typeof window.storage !== 'undefined' && window.storage) {
+    try { await window.storage.set('ptcg_state', data); } catch(_) {}
+  }
+  // localStorage — works everywhere including iOS file://
+  safeLocalSet(STORAGE_KEY, data);
+  // IndexedDB — bonus persistence, fire and forget
+  idbSet(STORAGE_KEY, data);
+}
+
+async function loadState() {
+  let parsed = null;
+
+  // 1. Artifact storage (Claude env)
+  if (typeof window.storage !== 'undefined' && window.storage) {
+    try {
+      const result = await window.storage.get('ptcg_state');
+      if (result && result.value) {
+        const p = JSON.parse(result.value);
+        if (p && p.decks) { state = p; renderHome(); return; }
+      }
+    } catch(_) {}
+  }
+
+  // 2. localStorage — primary for iOS Safari file://
+  try {
+    const raw = safeLocalGet(STORAGE_KEY);
+    if (raw) parsed = JSON.parse(raw);
+  } catch(_) {}
+
+  // 3. IndexedDB fallback (may time out on iOS file://)
+  if (!parsed || !parsed.decks) {
+    try {
+      const raw = await idbGet(STORAGE_KEY);
+      if (raw) parsed = JSON.parse(raw);
+    } catch(_) {}
+  }
+
+  if (parsed && parsed.decks) state = parsed;
+  renderHome();
+}
+
+
+async function clearAllStorage() {
+  if (typeof window.storage !== 'undefined' && window.storage) {
+    try { await window.storage.delete('ptcg_state'); } catch(e) {}
+  }
+  try { await idbSet(STORAGE_KEY, null); } catch(e) {}
+  safeLocalSet(STORAGE_KEY, null);
+  state = { decks: [], activeDeckId: null };
+  renderHome();
+  showToast('All data cleared.');
+}
+
+
+// Review screen image fallback (avoids escaped quotes in onerror attribute)
+function reviewImgError(img) {
+  var fbs = JSON.parse(img.dataset.fallbacks || '[]');
+  var idx = parseInt(img.dataset.fallbackIdx) || 0;
+  if (idx < fbs.length) {
+    img.dataset.fallbackIdx = idx + 1;
+    img.src = fbs[idx];
+  } else {
+    img.parentElement.innerHTML = '<div class="review-placeholder">🃏</div>';
+  }
+}
+
+// ═══════════ DECK REVIEW ═══════════
+function openReview(deckId) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  state.activeDeckId = deckId;
+  renderReview(deck);
+  showScreen('review');
+}
+
+function startGameFromReview() {
+  startGame(state.activeDeckId);
+}
+
+function renderReview(deck) {
+  document.getElementById('review-deck-name').textContent = deck.name;
+
+  // Classify each unique card entry
+  const pokemon = [], trainers = [], energies = [];
+  deck.cards.forEach(card => {
+    const n = (card.name || '').toLowerCase();
+    if (n.includes('energy')) {
+      energies.push(card);
+    } else {
+      // Heuristic: Pokémon cards usually have a set number and are not trainers
+      // Check common trainer keywords
+      const trainerKeywords = [
+        'ball','pad','candy','stamp','potion','rod','urn','tower','stretcher',
+        'determination','orders','poffin','belt','catcher','switch','nest',
+        'research','professor','boss','iono','arven','judge','crispin','dawn',
+        'lillie','hilda','supporter','item','tool','ruins','energy search',
+        'computer','communication','evolution','rotom','trekking','vessel',
+        'map','cape','charm','whistle','helmet','telescope','band','ribbon',
+        'lesson','box','sack','bag','scope','mirror','hook','rope','chain',
+        'collar','leash','stone','leaf','coat','shirt','gloves','shoes',
+        'glasses','hat','mask','cloak','badge','coin','token','ticket',
+        'pass','card','book','scroll','key','lock','door','window','gate',
+        'bridge','path','trail','road','way','zone','area','terrain',
+        'stadium','arena','gym','lab','tower','ruins','forest','cave',
+        'mountain','beach','island','city','town','village','camp',
+        'jamming','unfair','risky','ultra','rare','buddy','night','boss',
+        'dawn','crispin','poké pad','lillie'
+      ];
+      const isTrainer = trainerKeywords.some(kw => n.includes(kw));
+      if (isTrainer) trainers.push(card);
+      else pokemon.push(card);
+    }
+  });
+
+  // Sort each group so cards with the same base name are adjacent
+  function sortByName(arr) {
+    return [...arr].sort((a, b) => {
+      const na = (a.name || '').toLowerCase();
+      const nb = (b.name || '').toLowerCase();
+      return na < nb ? -1 : na > nb ? 1 : 0;
+    });
+  }
+
+  const groups = [
+    { label: 'Pokémon', cards: sortByName(pokemon) },
+    { label: 'Trainers', cards: sortByName(trainers) },
+    { label: 'Energy', cards: sortByName(energies) },
+  ].filter(g => g.cards.length > 0);
+
+  const total = deck.cards.reduce((a,c) => a + c.count, 0);
+  const pkmnCount = pokemon.reduce((a,c) => a + c.count, 0);
+  const trainerCount = trainers.reduce((a,c) => a + c.count, 0);
+  const energyCount = energies.reduce((a,c) => a + c.count, 0);
+
+  // Stats bar
+  document.getElementById('review-stats').innerHTML = [
+    { num: pkmnCount, label: 'Pokémon' },
+    { num: trainerCount, label: 'Trainers' },
+    { num: energyCount, label: 'Energy' },
+  ].map(s => `
+    <div class="review-stat">
+      <div class="review-stat-num">${s.num}</div>
+      <div class="review-stat-label">${s.label}</div>
+    </div>`).join('');
+
+  // Card grid grouped by type
+  document.getElementById('review-body').innerHTML = groups.map(group => `
+    <div class="review-group">
+      <div class="review-group-title">${group.label} · ${group.cards.reduce((a,c)=>a+c.count,0)}</div>
+      <div class="review-cards">
+        ${group.cards.map(card => {
+          const rawName = card.apiName || card.name;
+          const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g,'').trim());
+          const fallbacks = JSON.stringify(card.fallbackUrls || []);
+          const imgHtml = card.imageUrl
+            ? `<img src="${card.imageUrl}" alt="${esc(rawName)}"
+                data-fallbacks='${fallbacks}' data-fallback-idx="0"
+                onerror="reviewImgError(this)">`
+            : `<div class="review-placeholder">🃏</div>`;
+          return `
+            <div class="review-card">
+              <div class="review-card-img">
+                ${imgHtml}
+                <div class="review-card-qty">×${card.count}</div>
+              </div>
+              <div class="review-card-name">${displayName}</div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════ INIT ═══════════
+document.addEventListener('DOMContentLoaded', () => {
+  initImportListener();
+  initGuessInput();
+  loadState();
+  loadSoundPref();
+});
+
+// Re-render carousel on resize so slot count updates
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => {
+    const gameScreen = document.getElementById('screen-game');
+    if (gameScreen && gameScreen.classList.contains('active')) renderCard();
+  }, 120);
+});
+
+
+// ═══════════════════════════════════════════════
+// SOUND ENGINE — Web Audio API, no CDN needed
+// ═══════════════════════════════════════════════
+let _audioCtx = null;
+let soundEnabled = true;
+
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+function playTone(freq, type, duration, vol = 0.18, delay = 0) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + delay + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration + 0.05);
+  } catch(e) {}
+}
+
+function sfxNav()     { playTone(440, 'sine',   0.07, 0.10); }
+function sfxGuess()   { playTone(520, 'sine',   0.10, 0.14); }
+function sfxRemove()  { playTone(280, 'sine',   0.09, 0.10); }
+function sfxReveal()  { playTone(660, 'sine',   0.20, 0.20); }
+function sfxCorrect() {
+  // ascending ding
+  [523, 659, 784].forEach((f, i) => playTone(f, 'sine', 0.18, 0.18, i * 0.09));
+}
+function sfxWrong() {
+  playTone(220, 'sawtooth', 0.15, 0.12);
+  playTone(180, 'sawtooth', 0.15, 0.10, 0.12);
+}
+function sfxCountdown() { playTone(660, 'sine', 0.12, 0.22); }
+function sfxGo()        {
+  [523, 659, 784, 1047].forEach((f, i) => playTone(f, 'sine', 0.14, 0.20, i * 0.07));
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('sound-toggle');
+  btn.textContent = soundEnabled ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !soundEnabled);
+  try { localStorage.setItem('ptcg_sound', soundEnabled ? '1' : '0'); } catch(e) {}
+}
+
+function loadSoundPref() {
+  try {
+    const v = localStorage.getItem('ptcg_sound');
+    if (v === '0') { soundEnabled = false; document.getElementById('sound-toggle').textContent = '🔇'; document.getElementById('sound-toggle').classList.add('muted'); }
+  } catch(e) {}
+}
+function sfxClick()    { playTone(600, 'triangle', 0.06, 0.09); }
+function sfxTick()     { playTone(880, 'square',   0.04, 0.06); }
+function sfxWarn()     { playTone(330, 'sawtooth', 0.12, 0.14); }
+function sfxPerfect()  { [0,2,4,5,7,9,12].forEach((s,i) => playTone(440*Math.pow(2,s/12),'sine',0.3,0.12,i*0.08)); }
+function sfxGameStart(){ playTone(330,'square',0.06,0.08); playTone(440,'square',0.06,0.08,0.10); playTone(550,'square',0.06,0.08,0.20); }
+
+// Big countdown timer display inside card viewer
+function updateBigTimer(remaining) {
+  const el = document.getElementById('big-timer');
+  if (!el) return;
+  if (game.timeLimit > 0) {
+    el.classList.add('active');
+    el.textContent = formatTime(Math.max(0, remaining));
+    el.classList.toggle('warning', remaining <= 10);
+  } else {
+    el.classList.remove('active');
+  }
+}
+
+
+// ═══════════════════════════════════════════════
+// COUNTDOWN  3 → 2 → 1 → GO!
+// ═══════════════════════════════════════════════
+function runCountdown(cb) {
+  const overlay = document.getElementById('countdown-overlay');
+  const numEl   = document.getElementById('countdown-num');
+  const steps   = ['3','2','1','GO!'];
+  let i = 0;
+  // countdown disabled
+  cb(); return;
+  overlay.classList.add('active');
+
+  function step() {
+    if (i >= steps.length) { overlay.classList.remove('active'); cb(); return; }
+    numEl.textContent = steps[i];
+    // Re-trigger animation by cloning
+    const clone = numEl.cloneNode(true);
+    numEl.parentNode.replaceChild(clone, numEl.parentNode.querySelector('.countdown-num'));
+    if (steps[i] === 'GO!') { sfxGo(); } else { sfxCountdown(); }
+    i++;
+    setTimeout(step, 850);
+  }
+  step();
+}
+
+// ═══════════════════════════════════════════════
+// PRIZE BROWSER
+// ═══════════════════════════════════════════════
+let _pbIdx = 0;
+let _pbResults = []; // [{card, correct}]
+
+function openPrizeBrowser() {
+  // Build from last game state
+  const pc = game.prizeCount || 6;
+  const prizePool = game.prizes.map(p => p.name.toLowerCase().trim());
+  const usedIdx = new Set();
+  const guessCorrect = (game.guesses || []).map(g => {
+    const gn = g.toLowerCase().trim();
+    const mi = prizePool.findIndex((p,i) => !usedIdx.has(i) && (p === gn || p.startsWith(gn+' ') || gn.startsWith(p+' ')));
+    if (mi !== -1) { usedIdx.add(mi); return true; }
+    return false;
+  });
+  _pbResults = game.prizes.map((card, i) => ({ card, correct: usedIdx.has(i) }));
+  _pbIdx = 0;
+  renderPrizeBrowser();
+  document.getElementById('prize-browser-overlay').classList.add('active');
+}
+
+function closePrizeBrowser() {
+  document.getElementById('prize-browser-overlay').classList.remove('active');
+}
+
+function browsePrize(dir) {
+  _pbIdx = Math.max(0, Math.min(_pbResults.length - 1, _pbIdx + dir));
+  sfxNav();
+  renderPrizeBrowser();
+}
+
+function renderPrizeBrowser() {
+  const total = _pbResults.length;
+  const { card, correct } = _pbResults[_pbIdx];
+  document.getElementById('pb-count').textContent = `${_pbIdx + 1} / ${total}`;
+  document.getElementById('pb-name').textContent = card.apiName || card.name;
+  const badge = document.getElementById('pb-badge');
+  badge.textContent = correct ? '✓ GUESSED' : '✗ MISSED';
+  badge.className = 'prize-browser-badge ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('pb-prev').disabled = _pbIdx === 0;
+  document.getElementById('pb-next').disabled = _pbIdx === total - 1;
+
+  const body = document.getElementById('pb-body');
+  if (card.imageUrl) {
+    const fallbacks = JSON.stringify(card.fallbackUrls || []);
+    body.innerHTML = `<img class="prize-browser-card" src="${card.imageUrl}"
+      alt="${esc(card.apiName || card.name)}"
+      data-fallbacks='${fallbacks}' data-fallback-idx="0"
+      onerror="var fbs=JSON.parse(this.dataset.fallbacks||'[]');var idx=parseInt(this.dataset.fallbackIdx)||0;if(idx<fbs.length){this.dataset.fallbackIdx=idx+1;this.src=fbs[idx];}else{this.outerHTML='<div class=\'prize-browser-placeholder\'><span>🃏</span><span>${esc(card.name)}</span></div>';}">`;
+  } else {
+    body.innerHTML = `<div class="prize-browser-placeholder"><span>🃏</span><span>${esc(card.apiName || card.name)}</span></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  // Prize browser open
+  if (document.getElementById('prize-browser-overlay').classList.contains('active')) {
+    if (e.key === 'ArrowLeft')  { browsePrize(-1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { browsePrize(1);  e.preventDefault(); }
+    if (e.key === 'Escape')     { closePrizeBrowser(); }
+    return;
+  }
+
+  const gameScreen = document.getElementById('screen-game');
+  if (!gameScreen || !gameScreen.classList.contains('active')) return;
+
+  const input = document.getElementById('guess-input');
+  const inputFocused = document.activeElement === input;
+
+  // Arrow keys — navigate carousel (only when input not focused)
+  if (!inputFocused) {
+    if (e.key === 'ArrowLeft')  { navigate(-1); sfxNav(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { navigate(1);  sfxNav(); e.preventDefault(); }
+  }
+
+  // Tab — focus guess input
+  if (e.key === 'Tab' && !inputFocused) { e.preventDefault(); input.focus(); }
+
+  // R — reveal (only when not typing)
+  if (e.key === 'r' && !inputFocused) { revealPrizes(); e.preventDefault(); }
+
+  // Escape — quit confirm / close autocomplete
+  if (e.key === 'Escape') {
+    if (document.getElementById('autocomplete-list').style.display !== 'none') {
+      hideAutocomplete();
+    } else {
+      confirmQuit();
+    }
+    e.preventDefault();
+  }
+});
+
+// Prize browser swipe support
+(function() {
+  let tx = 0;
+  document.getElementById('prize-browser-overlay')?.addEventListener('touchstart', e => {
+    tx = e.touches[0].clientX;
+  }, {passive:true});
+  document.getElementById('prize-browser-overlay')?.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) browsePrize(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
+
+// ═══════════ HEADER STATS ═══════════
+function updateHeaderStats() {
+  const el = document.getElementById('header-stats');
+  if (!el) return;
+  const totalSessions = state.decks.reduce((a, d) => a + (d.history?.length || 0), 0);
+  // Streak: consecutive sessions (any deck) ending in non-zero score, newest first
+  const allSessions = state.decks.flatMap(d => (d.history || []).map(h => h))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  let streak = 0;
+  for (const h of allSessions) {
+    if (h.score > 0) streak++;
+    else break;
+  }
+  const parts = [];
+  if (totalSessions > 0) parts.push('<span class="header-stat">SESSIONS <b>' + totalSessions + '</b></span>');
+  if (streak >= 2) parts.push('<span class="header-stat">🔥 STREAK <b>' + streak + '</b></span>');
+  el.innerHTML = parts.join('');
+}
+
+// ═══════════ HOME ═══════════
+let showHiddenDecks = false;
+
+function buildDeckCard(deck) {
+  const sessions = deck.history?.length || 0;
+  const best = deck.history?.length ? Math.max(...deck.history.map(h => h.score)) : null;
+  const thumbSrc = deck.thumbUrl || deck.cards?.find(c => c.imageUrl)?.imageUrl || '';
+  const thumb = thumbSrc
+    ? `<img src="${thumbSrc}" alt="" onerror="this.parentElement.innerHTML='🃏'">`
+    : '🃏';
+  const missingArt = deck.cards.filter(c => !c.imageUrl).length;
+  const total = deck.cards.reduce((a,c)=>a+c.count,0);
+  const avgScore = sessions > 0
+    ? (deck.history.reduce((a,h)=>a+h.score,0) / sessions).toFixed(1)
+    : null;
+  const recent5 = (deck.history || []).slice(0,5).reverse();
+  const histPips = recent5.length ? '<div class="deck-history-row">' + recent5.map(h => {
+    const cls = h.score === 6 ? 'perfect' : h.score >= 4 ? 'good' : h.score >= 2 ? 'mid' : 'bad';
+    return '<div class="deck-hist-pip ' + cls + '">' + h.score + '/6</div>';
+  }).join('') + '</div>' : '';
+  const fmtBadge = deck.format === 'expanded'
+    ? '<span class="fmt-badge fmt-expanded">EXPANDED</span>'
+    : '<span class="fmt-badge fmt-standard">STANDARD</span>';
+  const hiddenClass = deck.hidden ? ' deck-hidden' : '';
+  return `
+    <div class="deck-card${hiddenClass}" onclick="startGame('${deck.id}')">
+      <div class="deck-thumb-wrap">
+        <div class="deck-thumb">${thumb}</div>
+        <button class="btn-thumb-edit" onclick="event.stopPropagation();openThumbPicker('${deck.id}')" title="Choose thumbnail">🎨</button>
+      </div>
+      <div class="deck-info">
+        <div class="deck-name">${esc(deck.name)}${fmtBadge}</div>
+        <div class="deck-meta">${total} cards · ${sessions} session${sessions!==1?'s':''}</div>
+        ${avgScore !== null ? `<div class="deck-avg">Avg <b>${avgScore}/6</b>${best !== null ? ` · Best <b>${best}/6</b>` : ''}</div>` : ''}
+        ${missingArt > 0 ? `<div class="deck-warn">⚠ ${missingArt} missing art</div>` : ''}
+        ${histPips}
+        ${sessions >= 3 ? `<button class="btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')">◆ WEAK SPOTS</button>` : ''}
+      </div>
+      <div class="deck-actions-col">
+        <button class="btn-icon-tall" onclick="event.stopPropagation();openReview('${deck.id}')" title="View deck list">📋</button>
+        <div class="small-btns">
+          <button class="btn btn-icon" onclick="event.stopPropagation();openModeModal('${deck.id}')" title="Mode / delete">⚙</button>
+          <button class="btn btn-icon" onclick="event.stopPropagation();openEditModal('${deck.id}')" title="Edit deck">✎</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderHome() {
+  const list = document.getElementById('deck-list');
+  if (state.decks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span class="icon">🃏</span>No decks yet.<br>Import your first deck below.</div>`;
+    updateHeaderStats();
+    return;
+  }
+  const visible = state.decks.filter(d => !d.hidden);
+  const hidden  = state.decks.filter(d => d.hidden);
+
+  let html = visible.map(buildDeckCard).join('');
+
+  if (hidden.length > 0) {
+    const toggleLabel = showHiddenDecks
+      ? '▲ HIDE ' + hidden.length + ' HIDDEN DECK' + (hidden.length !== 1 ? 'S' : '')
+      : '▼ SHOW ' + hidden.length + ' HIDDEN DECK' + (hidden.length !== 1 ? 'S' : '');
+    html += '<div class="hidden-toggle-row" onclick="toggleShowHidden()">' + toggleLabel + '</div>';
+    if (showHiddenDecks) {
+      html += hidden.map(buildDeckCard).join('');
+    }
+  }
+
+  list.innerHTML = html;
+  updateHeaderStats();
+}
+
+async function toggleHideDeckFromModal() {
+  closeModeModal();
+  if (modeDeckId) await toggleHideDeck(modeDeckId);
+}
+
+async function toggleHideDeck(deckId) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  deck.hidden = !deck.hidden;
+  if (deck.hidden) showHiddenDecks = false; // collapse hidden section when hiding
+  await saveState();
+  renderHome();
+  showToast(deck.hidden ? '"' + deck.name + '" hidden.' : '"' + deck.name + '" visible again.');
+}
+
+function toggleShowHidden() {
+  showHiddenDecks = !showHiddenDecks;
+  renderHome();
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ═══════════ IMPORT ═══════════
+function openImportModal() {
+  document.getElementById('import-modal').classList.add('active');
+  document.getElementById('import-name').value = '';
+  document.getElementById('import-list').value = '';
+  document.getElementById('parse-preview').textContent = '';
+  setImportFormat('standard');
+}
+function closeImportModal() { document.getElementById('import-modal').classList.remove('active'); }
+
+// ═══════════ PASTE FROM CLIPBOARD ═══════════
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    const ta = document.getElementById('import-list');
+    ta.value = text;
+    ta.dispatchEvent(new Event('input')); // trigger preview
+    showToast('Pasted from clipboard!');
+  } catch(e) {
+    showToast('Tap inside the text box and long-press to paste.');
+  }
+}
+
+// ═══════════ EDIT / RENAME / DUPLICATE ═══════════
+let editDeckId = null;
+let editFormat = 'standard';
+
+function openEditModal(deckId) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  editDeckId = deckId;
+  editFormat = deck.format || 'standard';
+  document.getElementById('edit-name').value = deck.name;
+  // Reconstruct deck list text from cards
+  const listText = deck.cards.map(c => {
+    const parts = [c.count, c.name];
+    if (c.set) parts.push(c.set);
+    if (c.num) parts.push(c.num);
+    return parts.join(' ');
+  }).join('\n');
+  document.getElementById('edit-list').value = listText;
+  document.getElementById('edit-preview').textContent = '';
+  setEditFormat(editFormat);
+  // Init preview listener
+  const el = document.getElementById('edit-list');
+  el.oninput = function() {
+    const lines = this.value.trim().split('\n').filter(l => l.trim());
+    const parsed = lines.map(parseLine).filter(Boolean);
+    const total = parsed.reduce((a,c) => a+c.count, 0);
+    const prev = document.getElementById('edit-preview');
+    if (!parsed.length) { prev.textContent = ''; return; }
+    prev.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ' ⚠ Expected 60.' : ' ✓ 60 cards.'}`;
+  };
+  document.getElementById('edit-modal').classList.add('active');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+  editDeckId = null;
+}
+
+function setEditFormat(fmt) {
+  editFormat = fmt;
+  document.getElementById('edit-fmt-standard').classList.toggle('active', fmt === 'standard');
+  document.getElementById('edit-fmt-expanded').classList.toggle('active', fmt === 'expanded');
+}
+
+async function saveEditDeck() {
+  const deck = state.decks.find(d => d.id === editDeckId);
+  if (!deck) return;
+  const name = document.getElementById('edit-name').value.trim();
+  const raw  = document.getElementById('edit-list').value.trim();
+  if (!name) { showToast('Please enter a deck name.'); return; }
+  if (!raw)  { showToast('Deck list is empty.'); return; }
+  const cards = raw.split('\n').map(parseLine).filter(Boolean);
+  if (!cards.length) { showToast('No cards could be parsed.'); return; }
+  deck.name   = name;
+  deck.format = editFormat;
+  closeEditModal();
+  showLoading('Updating deck…');
+  deck.cards = await Promise.all(cards.map(c => fetchCardImage(c)));
+  hideLoading();
+  await saveState();
+  renderHome();
+  showToast(`"${name}" updated!`);
+}
+
+async function duplicateDeckFromEdit() {
+  const orig = state.decks.find(d => d.id === editDeckId);
+  if (!orig) return;
+  const name = (document.getElementById('edit-name').value.trim() || orig.name) + ' (copy)';
+  closeEditModal();
+  showLoading('Duplicating…');
+  const newCards = await Promise.all(orig.cards.map(c => fetchCardImage(c)));
+  hideLoading();
+  const newDeck = {
+    id: Date.now().toString(),
+    name,
+    cards: newCards,
+    history: [],
+    format: orig.format || 'standard',
+  };
+  state.decks.push(newDeck);
+  await saveState();
+  renderHome();
+  showToast(`"${name}" created!`);
+}
+
+function initImportListener() {
+  const el = document.getElementById('import-list');
+  if (!el) return;
+  el.addEventListener('input', function() {
+    const lines = this.value.trim().split('\n').filter(l => l.trim());
+    const parsed = lines.map(parseLine).filter(Boolean);
+    const total = parsed.reduce((a, c) => a + c.count, 0);
+    const preview = document.getElementById('parse-preview');
+    if (!preview) return;
+    if (parsed.length === 0) { preview.textContent = ''; return; }
+    preview.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ` ⚠ Expected 60.` : ' ✓ 60 cards.'}`;
+  });
+}
+
+function parseLine(line) {
+  line = line.trim();
+  if (!line || line.startsWith('//') || line.startsWith('#')) return null;
+
+  // Format 1: "4 Charizard ex OBF 125" (standard with set + number)
+  const m = line.match(/^(\d+)\s+(.+?)\s+([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)$/);
+  if (m) return { count: parseInt(m[1]), name: m[2].trim(), set: m[3].toUpperCase(), num: m[4] };
+
+  // Format 2: "3 Basic {P} Energy" or "3 Basic {D} Energy" (no set/number)
+  const e = line.match(/^(\d+)\s+(.+Energy.*)$/i);
+  if (e) return { count: parseInt(e[1]), name: e[2].trim(), set: '', num: '' };
+
+  // Format 3: just "4 Cardname" with no set info
+  const bare = line.match(/^(\d+)\s+(.+)$/);
+  if (bare) return { count: parseInt(bare[1]), name: bare[2].trim(), set: '', num: '' };
+
+  return null;
+}
+
+async function importDeck() {
+  const name = document.getElementById('import-name').value.trim();
+  const raw = document.getElementById('import-list').value.trim();
+  if (!name) { showToast('Please enter a deck name.'); return; }
+  if (!raw) { showToast('Please paste your deck list.'); return; }
+  const lines = raw.split('\n').filter(l => l.trim());
+  const cards = lines.map(parseLine).filter(Boolean);
+  if (cards.length === 0) { showToast('No cards could be parsed. Check the format.'); return; }
+  const total = cards.reduce((a, c) => a + c.count, 0);
+  if (total < 10) { showToast(`Only ${total} cards found. Check your list format.`); return; }
+
+  closeImportModal();
+  showLoading('Preparing deck…');
+
+  // fetchCardImage just computes URL candidates now — no network calls needed
+  const fetched = await Promise.all(cards.map(c => fetchCardImage(c)));
+  hideLoading();
+
+  const deck = {
+    id: Date.now().toString(),
+    name,
+    cards: fetched,
+    history: [],
+    format: importFormat,
+  };
+  state.decks.push(deck);
+  await saveState();
+  renderHome();
+  showToast(`"${name}" imported! ${total} cards.`);
+}
+
+// Known Limitless code -> pokemontcg.io set ID
+// Energy card images (hosted on pokemontcg.io, always available)
+function getEnergyImageUrl(name) {
+  const n = name.toLowerCase();
+  if (!n.includes('energy')) return null;
+
+  // SVE = Scarlet & Violet Energy set on pokemontcg.io (svenergie / SVE)
+  // Cards 1-8: Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal
+  // Use Limitless CDN for SVE energies — exact set code "SVE"
+  const bySymbol = {g:1,r:2,w:3,l:4,p:5,f:6,d:7,m:8};
+  const byName = {
+    grass:1, fire:2, water:3, lightning:4,
+    psychic:5, fighting:6, darkness:7, metal:8
+  };
+
+  let num = null;
+
+  // Format: "Basic {P} Energy" or "{R} Energy"
+  const sym = n.match(/\{([a-z])\}/);
+  if (sym) num = bySymbol[sym[1]] || null;
+
+  // Format: "Basic Psychic Energy" / "Basic Fire Energy" / "Darkness Energy"
+  if (!num) {
+    for (const [word, n2] of Object.entries(byName)) {
+      if (n.includes(word)) { num = n2; break; }
+    }
+  }
+
+  if (!num) return null;
+  // Use Limitless CDN SVE set (always available, correct card images)
+  return `https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SVE/SVE_00${num}_R_EN_XS.png`;
+}
+
+function getImageCandidates(card) {
+  const set = (card.set || '').toUpperCase();
+  const numRaw = card.num || '';
+  const numClean = numRaw.replace(/^0+(\d)/, '$1');
+  const numPadded = numClean.padStart(3, '0');
+  const urls = [];
+
+  if (!set || !numRaw) return urls;
+
+  // 1. Limitless CDN — exact set codes, includes newest sets (ASC, MEG, PRE, etc.)
+  const lbase = `https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${set}/${set}`;
+  urls.push(`${lbase}_${numPadded}_R_EN_XS.png`);
+  urls.push(`${lbase}_${numPadded}_R_EN.png`);
+  urls.push(`${lbase}_${numClean}_R_EN_XS.png`);
+  urls.push(`${lbase}_${numClean}_R_EN.png`);
+
+  // 2. pokemontcg.io — ONLY when set+number are known, never by name (avoids wrong card art)
+  const PKMN = {
+    'SVI':'sv1','PAL':'sv2','OBF':'sv3','MEW':'sv3pt5','PAR':'sv4','PRF':'sv4pt5','PAF':'sv4pt5',
+    'TEF':'sv5','TWM':'sv6','SFA':'sv6pt5','SCR':'sv7','SSP':'sv8','PRE':'sv8pt5','JTG':'sv9',
+    'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh4pt5','BST':'swsh5',
+    'CRE':'swsh6','EVS':'swsh7','FST':'swsh8','BRS':'swsh9','ASR':'swsh10','LOR':'swsh11',
+    'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5',
+    'SUM':'sm1','GRI':'sm2','BUS':'sm3','UPR':'sm5','FLI':'sm6','CES':'sm7',
+    'LOT':'sm8','TEU':'sm9','UNB':'sm10','UNM':'sm11','COS':'sm12',
+    'XY':'xy1','FLF':'xy2','FFI':'xy3','PHF':'xy4','PRC':'xy5','ROS':'xy6',
+    'AOR':'xy7','BKT':'xy8','BKP':'xy9','FCO':'xy10','STS':'xy11','EVO':'xy12',
+    'PFL':'sv4pt5',
+  };
+  const pid = PKMN[set];
+  if (pid) {
+    urls.push(`https://images.pokemontcg.io/${pid}/${numClean}.png`);
+    urls.push(`https://images.pokemontcg.io/${pid}/${numPadded}.png`);
+  }
+
+  return urls;
+}
+
+// No HEAD checks — CORS on file:// blocks them.
+// Instead store all candidate URLs and let <img> onerror cascade through them.
+async function fetchCardImage(card) {
+  const energyUrl = getEnergyImageUrl(card.name);
+  if (energyUrl) return { ...card, imageUrl: energyUrl, fallbackUrls: [], apiName: card.name };
+  if (!card.set || !card.num) return { ...card, imageUrl: '', fallbackUrls: [], apiName: card.name };
+  const candidates = getImageCandidates(card);
+  // Primary = first candidate, rest = fallbacks tried by onerror chain in DOM
+  return { ...card, imageUrl: candidates[0] || '', fallbackUrls: candidates.slice(1), apiName: card.name };
+}
+
+function clearAllData() {
+  if (!confirm('Delete ALL decks and history? This cannot be undone.')) return;
+  clearAllStorage();
+}
+
+async function deleteDeck(id) {
+  if (!confirm('Delete this deck and all its history?')) return;
+  state.decks = state.decks.filter(d => d.id !== id);
+  await saveState();
+  renderHome();
+}
+
+async function refetchDeck(id) {
+  const deck = state.decks.find(d => d.id === id);
+  if (!deck) return;
+  showLoading('Rebuilding image URLs…');
+  deck.cards = await Promise.all(deck.cards.map(c => fetchCardImage(c)));
+  await saveState();
+  hideLoading();
+  renderHome();
+  showToast('URLs refreshed — images will load as you browse cards.');
+}
+
+// ═══════════ GAME ═══════════
+async function startGame(deckId) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  state.activeDeckId = deckId;
+  // If called directly (not from mode modal), use defaults
+  if (!game.prizeCount) game.prizeCount = 6;
+
+  // Expand deck to 60 individual cards
+  const expanded = [];
+  deck.cards.forEach(card => {
+    for (let i = 0; i < card.count; i++) expanded.push({ ...card });
+  });
+
+  // Shuffle
+  shuffle(expanded);
+
+  const pc = game.prizeCount || 6;
+  game.prizes = expanded.slice(0, pc);
+  game.visible = expanded.slice(pc);
+  game.currentIdx = 0;
+  game.guesses = [];
+  game.elapsed = 0;
+
+  // Mode badges
+  const badgeWrap = document.getElementById('mode-badge-wrap');
+  const badges = [];
+  if (game.prizeCount !== 6) badges.push(`${game.prizeCount} PRIZES`);
+  if (game.timeLimit) badges.push(game.timeLimit + 'S');
+  badgeWrap.innerHTML = badges.map(b => `<span class="mode-badge">${b}</span>`).join('');
+
+  // Render game screen
+  document.getElementById('game-deck-name').textContent = deck.name;
+  document.getElementById('guess-label').textContent = `◆ YOUR ${game.prizeCount || 6} PRIZE GUESSES`;
+  renderCard();
+  renderProgressDots();
+  renderPrizeSlots();
+  document.getElementById('guess-feedback').textContent = '';
+  document.getElementById('guess-input').value = '';
+  document.getElementById('autocomplete-list').style.display = 'none';
+
+  // Timer bar
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = '100%';
+  bar.className = 'timer-bar-fill';
+  if (!game.timeLimit) bar.parentElement.style.display = 'none';
+  else bar.parentElement.style.display = 'block';
+
+  showScreen('game');
+  // Show large countdown timer display in timed mode
+  const bigTimer = document.getElementById('game-countdown-big');
+  if (game.timeLimit > 0) { bigTimer.classList.remove('hidden'); }
+  else { bigTimer.classList.add('hidden'); }
+  // 3-2-1 countdown then start
+  startTimer();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// Build the inner HTML for one card slot
+function buildCardHTML(card) {
+  if (!card) return '<div class="card-placeholder"><span>🃏</span></div>';
+  const rawName = card.apiName || card.name;
+  const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g, '').trim());
+  if (card.imageUrl) {
+    const fallbacks = JSON.stringify(card.fallbackUrls || []);
+    return `<img src="${card.imageUrl}" alt="${esc(rawName)}"
+        data-fallbacks='${fallbacks}' data-fallback-idx="0"
+        onerror="var fbs=JSON.parse(this.dataset.fallbacks||'[]');var idx=parseInt(this.dataset.fallbackIdx)||0;if(idx<fbs.length){this.dataset.fallbackIdx=idx+1;this.src=fbs[idx];}else{this.style.display='none';this.nextElementSibling.style.display='flex';this.nextElementSibling.nextElementSibling.style.display='block';}">
+      <div class="card-placeholder" style="display:none"><span>🃏</span><span>${displayName}</span></div>
+      <div class="card-name-label" style="display:none">${displayName}</div>`;
+  }
+  return `<div class="card-placeholder"><span>🃏</span><span>${displayName}</span></div>
+      <div class="card-name-label">${displayName}</div>`;
+}
+
+function getCarouselMetrics() {
+  const stage = document.getElementById('card-stage');
+  const stageW = stage ? stage.offsetWidth : 320;
+  // Center card width matches CSS: 190px mobile, or overridden by breakpoints
+  const testEl = stage ? stage.querySelector('.is-center') : null;
+  const centerW = testEl ? testEl.offsetWidth : (stageW < 500 ? 190 : stageW < 900 ? 210 : 235);
+  return { stageW, centerW };
+}
+
+function renderCard(direction = 0) {
+  const idx = game.currentIdx;
+  const cards = game.visible;
+  const track = document.getElementById('carousel-track');
+  document.getElementById('card-counter').textContent =
+    `Card ${idx + 1} of ${cards.length}`;
+
+  const { stageW, centerW } = getCarouselMetrics();
+
+  // Side card display width (before scale) used for spacing calc
+  const sideW = centerW * 0.72;
+  // Gap between card centres — tighter on narrow, looser on wide
+  const spacing = Math.round(sideW * 0.75);
+  // How many side slots fit before clipping
+  const maxRadius = stageW / 2 - sideW * 0.25;
+  const sideCount = Math.min(6, Math.max(2, Math.floor(maxRadius / spacing)));
+
+  // Build slots: center first, then pairs outward
+  const slots = [{ offset: 0, x: 0, ry: 0, scale: 1.0, opacity: 1.0 }];
+  for (let i = 1; i <= sideCount; i++) {
+    const t = i / sideCount;                    // 0→1 as we go outward
+    const scale   = Math.max(0.35, 1.0 - t * 0.55);
+    const opacity = Math.max(0.12, 1.0 - t * 0.82);
+    const ry      = Math.min(55, t * 55);
+    const x       = spacing * i;
+    slots.push({ offset:  i, x:  x, ry: -ry, scale, opacity });
+    slots.push({ offset: -i, x: -x, ry:  ry, scale, opacity });
+  }
+  // Render back-to-front (highest abs offset first)
+  slots.sort((a, b) => Math.abs(b.offset) - Math.abs(a.offset));
+
+  track.innerHTML = '';
+  slots.forEach(({ offset, x, ry, scale, opacity }) => {
+    const cardIdx = idx + offset;
+    const card = cards[cardIdx];
+    if (!card && offset !== 0) return; // skip missing edge slots
+
+    const div = document.createElement('div');
+    div.className = 'card-display' + (offset === 0 ? ' is-center' : '');
+    div.style.transform = `translateX(${x}px) rotateY(${ry}deg) scale(${scale})`;
+    div.style.opacity = card ? opacity : 0;
+    div.style.zIndex = 10 - Math.abs(offset);
+
+    if (card) {
+      div.innerHTML = buildCardHTML(card);
+      if (offset !== 0) {
+        div.addEventListener('click', () => navigate(offset));
+        div.style.cursor = 'pointer';
+      }
+    }
+    track.appendChild(div);
+  });
+
+  updateProgressDots();
+}
+
+function navigate(dir) {
+  const next = game.currentIdx + dir;
+  if (next < 0 || next >= game.visible.length) return;
+  game.currentIdx = next;
+  renderCard(dir);
+  sfxNav();
+}
+
+function renderProgressDots() {
+  const container = document.getElementById('progress-dots');
+  const count = game.visible.length;
+  // Show max 54 dots, grouped
+  const showCount = Math.min(count, 54);
+  container.innerHTML = Array.from({length: showCount}, (_, i) =>
+    `<div class="progress-dot" id="dot-${i}"></div>`
+  ).join('');
+  updateProgressDots();
+}
+
+function updateProgressDots() {
+  const dots = document.querySelectorAll('.progress-dot');
+  dots.forEach((d, i) => {
+    d.classList.remove('seen', 'current');
+    if (i === game.currentIdx) d.classList.add('current');
+    else if (i < game.currentIdx) d.classList.add('seen');
+  });
+}
+
+// Touch swipe support
+let touchStartX = 0;
+// Touch swipe — safe to attach to document
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+document.addEventListener('touchend', e => {
+  const gameScreen = document.getElementById('screen-game');
+  if (!gameScreen || !gameScreen.classList.contains('active')) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
+}, {passive: true});
+
+// ═══════════ GUESSING ═══════════
+function renderPrizeSlots() {
+  const container = document.getElementById('prize-slots');
+  const pc = game.prizeCount || 6;
+  container.innerHTML = Array.from({length: pc}, (_, i) => {
+    const guess = game.guesses[i];
+    return guess
+      ? `<div class="prize-slot filled" data-slot="${i}">${esc(guess)}<span class="remove-btn" onclick="removeGuess(${i})">✕</span></div>`
+      : `<div class="prize-slot" data-slot="${i}">Prize ${i+1}</div>`;
+  }).join('');
+}
+
+function removeGuess(idx) {
+  game.guesses.splice(idx, 1);
+  renderPrizeSlots();
+}
+
+function initGuessInput() {
+  const gi = document.getElementById('guess-input');
+  if (!gi) return;
+  gi.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const list = document.getElementById('autocomplete-list');
+    const highlighted = list.querySelector('.highlighted');
+    const first = list.querySelector('.autocomplete-item');
+    const pick = highlighted || first;
+    if (pick && list.style.display !== 'none') {
+      // Always prefer autocomplete over raw typed text
+      document.getElementById('guess-input').value = pick.dataset.val;
+      hideAutocomplete();
+      submitGuess();
+    } else {
+      submitGuess();
+    }
+    e.preventDefault();
+  } else if (e.key === 'ArrowDown') {
+    cycleAutocomplete(1); e.preventDefault();
+  } else if (e.key === 'ArrowUp') {
+    cycleAutocomplete(-1); e.preventDefault();
+  }
+});
+
+  gi.addEventListener('input', function() {
+  const val = this.value.trim().toLowerCase();
+  if (!val || val.length < 1) { hideAutocomplete(); return; }
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  // Unique base names in deck
+  // Use only the display name — strip set codes, numbers, energy symbols
+  const names = [...new Set(deck.cards.map(c => {
+    // Prefer the parsed name field (no set/number) over apiName which may contain set info
+    return (c.name || '').replace(/\{[a-zA-Z]\}/g,'').trim();
+  }).filter(Boolean))].filter(n => {
+    const nl = n.toLowerCase();
+    // Match if any word in the name starts with the typed value
+    return nl.startsWith(val) || nl.split(' ').some(w => w.startsWith(val));
+  }).sort((a, b) => {
+    // Prioritise names that start with the typed value
+    const al = a.toLowerCase(), bl = b.toLowerCase();
+    if (al.startsWith(val) && !bl.startsWith(val)) return -1;
+    if (!al.startsWith(val) && bl.startsWith(val)) return 1;
+    return a.localeCompare(b);
+  });
+  const list = document.getElementById('autocomplete-list');
+  if (!names.length) { hideAutocomplete(); return; }
+  list.innerHTML = names.slice(0,6).map(n =>
+    `<div class="autocomplete-item" data-val="${esc(n)}">${esc(n)}</div>`
+  ).join('');
+  list.style.display = 'block';
+});
+
+  gi.addEventListener('blur', () => {
+    setTimeout(hideAutocomplete, 150);
+  });
+
+  // Use event delegation — avoids broken onclick with apostrophes in card names
+  document.getElementById('autocomplete-list').addEventListener('mousedown', e => {
+    const item = e.target.closest('.autocomplete-item');
+    if (item) { e.preventDefault(); pickAutocomplete(item.dataset.val); }
+  });
+  document.getElementById('autocomplete-list').addEventListener('touchend', e => {
+    const item = e.target.closest('.autocomplete-item');
+    if (item) { e.preventDefault(); pickAutocomplete(item.dataset.val); }
+  });
+} // end initGuessInput
+
+function hideAutocomplete() {
+  document.getElementById('autocomplete-list').style.display = 'none';
+}
+
+function pickAutocomplete(val) {
+  document.getElementById('guess-input').value = val;
+  hideAutocomplete();
+  submitGuess();
+}
+
+function cycleAutocomplete(dir) {
+  const list = document.getElementById('autocomplete-list');
+  const items = [...list.querySelectorAll('.autocomplete-item')];
+  if (!items.length) return;
+  const cur = list.querySelector('.highlighted');
+  let idx = cur ? items.indexOf(cur) + dir : (dir > 0 ? 0 : items.length - 1);
+  idx = (idx + items.length) % items.length;
+  items.forEach(i => i.classList.remove('highlighted'));
+  items[idx].classList.add('highlighted');
+  document.getElementById('guess-input').value = items[idx].dataset.val;
+}
+
+function submitGuess() {
+  const input = document.getElementById('guess-input');
+  const fb = document.getElementById('guess-feedback');
+  const val = input.value.trim();
+  if (!val) return;
+
+  const prizeCount = game.prizeCount || 6;
+  if (game.guesses.length >= prizeCount) {
+    fb.textContent = `All ${prizeCount} slots filled. Remove one to change.`;
+    fb.className = 'guess-feedback bad';
+    return;
+  }
+
+  // Energies unlimited in a deck (cap at 6), other cards max 4
+  const normalized = val.toLowerCase();
+  const isEnergy = normalized.includes('energy');
+  const maxCopies = isEnergy ? 6 : 4;
+  const existingCount = game.guesses.filter(g => g.toLowerCase() === normalized).length;
+  if (existingCount >= maxCopies) {
+    fb.textContent = `Already guessed that ${isEnergy ? 'energy' : 'card'} ${maxCopies} times (max).`;
+    fb.className = 'guess-feedback bad';
+    return;
+  }
+
+  game.guesses.push(val);
+  sfxGuess();
+  renderPrizeSlots();
+  input.value = '';
+  fb.textContent = `Guess ${game.guesses.length}/6 recorded.`;
+  fb.className = 'guess-feedback good';
+
+  if (game.guesses.length === prizeCount) {
+    fb.textContent = `All ${prizeCount} guesses in! Hit "Reveal Prizes" when ready.`;
+  }
+}
+
+// ═══════════ TIMER ═══════════
+function startTimer() {
+  game.timerStart = Date.now();
+  clearInterval(game.timerInterval);
+  clearInterval(game.timeLimitInterval);
+  game.timerInterval = setInterval(updateTimer, 500);
+  updateTimer();
+  if (game.timeLimit > 0) {
+    game.timeLimitInterval = setInterval(updateTimerBar, 200);
+  }
+}
+
+function stopTimer() {
+  clearInterval(game.timerInterval);
+  clearInterval(game.timeLimitInterval);
+  game.elapsed = Math.floor((Date.now() - game.timerStart) / 1000);
+}
+
+function updateTimer() {
+  const secs = Math.floor((Date.now() - game.timerStart) / 1000);
+  const el = document.getElementById('game-timer');
+  const big = document.getElementById('game-countdown-big');
+  if (game.timeLimit > 0) {
+    const remaining = Math.max(0, game.timeLimit - secs);
+    const fmt = formatTime(remaining);
+    el.textContent = fmt;
+    if (big) { big.textContent = fmt; big.className = 'game-countdown-big' + (remaining <= 10 ? ' warning' : ''); }
+    if (remaining <= 10) { el.classList.add('warning'); if (remaining > 0) sfxCountdown(); }
+    else el.classList.remove('warning');
+    if (remaining === 0) { stopTimer(); revealPrizes(); }
+  } else {
+    const fmt = formatTime(secs);
+    el.textContent = fmt;
+    if (big) big.textContent = fmt;
+  }
+}
+
+function updateTimerBar() {
+  if (!game.timeLimit) return;
+  const secs = (Date.now() - game.timerStart) / 1000;
+  const pct = Math.max(0, ((game.timeLimit - secs) / game.timeLimit) * 100);
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'timer-bar-fill' + (pct < 20 ? ' crit' : pct < 40 ? ' warn' : '');
+}
+
+function formatTime(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// ═══════════ REVEAL ═══════════
+async function revealPrizes() {
+  const pc = game.prizeCount || 6;
+  if (game.guesses.length < pc) {
+    const remaining = pc - game.guesses.length;
+    if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
+  }
+  sfxReveal();
+  stopTimer();
+  const elapsed = game.elapsed;
+
+  // Score — strict: guess must match the FULL card name (case-insensitive), count-aware
+  // e.g. guessing "Quilava" does NOT match "Ethan's Quilava"
+  // Guessing "Ethan's Adventure" twice only scores if two copies are prized
+  const prizePool = game.prizes.map(p => (p.name).toLowerCase().trim());
+  const usedPrizeIdxs = new Set();
+  let score = 0;
+  game._usedPrizeIdxs = usedPrizeIdxs;
+  const guessResults = game.guesses.map(g => {
+    const gn = g.toLowerCase().trim();
+    // Exact full-name match first, then allow guess being a full prefix of prize name
+    const matchIdx = prizePool.findIndex((p, i) => {
+      if (usedPrizeIdxs.has(i)) return false;
+      return p === gn || p.startsWith(gn + ' ') || gn.startsWith(p + ' ') || p === gn;
+    });
+    const correct = matchIdx !== -1;
+    if (correct) { usedPrizeIdxs.add(matchIdx); score++; }
+    return { guess: g, correct };
+  });
+
+  // Save history — store prize card names + which were guessed for weak spot analysis
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (deck) {
+    if (!deck.history) deck.history = [];
+    // Build per-card outcome count-aware — uses same usedPrizeIdxs from scoring above
+    const prizeOutcomes = game.prizes.map((card, pi) => {
+      return { name: card.name, missed: !usedPrizeIdxs.has(pi) };
+    });
+    deck.history.unshift({ score, time: elapsed, date: new Date().toLocaleDateString(), prizes: prizeOutcomes });
+    if (deck.history.length > 50) deck.history = deck.history.slice(0, 50);
+    await saveState();
+  }
+
+  // Results screen
+  document.getElementById('results-score').textContent = `${score}/6`;
+  document.getElementById('results-time').textContent = `Time: ${formatTime(elapsed)}`;
+
+  // Prize grid
+  const grid = document.getElementById('prize-reveal-grid');
+  grid.innerHTML = game.prizes.map((card, i) => {
+    const wasGuessed = usedPrizeIdxs.has(i);
+    return `
+      <div class="prize-reveal-card" style="border-color:${wasGuessed ? '#16a34a' : 'var(--red)'}">
+        ${card.imageUrl
+          ? `<img src="${card.imageUrl}" alt="${esc(card.name)}">`
+          : `<div class="card-placeholder" style="height:100%;display:flex;align-items:center;justify-content:center;">🃏</div>`
+        }
+        <div class="badge ${wasGuessed ? 'correct' : 'wrong'}">${wasGuessed ? '✓' : '✗'}</div>
+        <div class="prize-card-name">${esc(card.apiName || card.name)}</div>
+      </div>`;
+  }).join('');
+
+  // Session rating (score + time combined)
+  const ratingEl = document.getElementById('session-rating');
+  const rating = calcRating(score, elapsed, game.prizeCount || 6);
+  ratingEl.textContent = rating.grade;
+  ratingEl.className = 'session-rating rating-' + rating.grade.toLowerCase();
+
+  // Personal bests
+  const pbDiv = document.getElementById('pb-display');
+  const newPBs = updatePersonalBests(deck, score, elapsed, game.prizeCount || 6);
+  renderPersonalBests(deck, pbDiv, newPBs);
+
+  // History table
+  renderHistoryTable();
+
+  // Guess comparison grid
+  buildGuessComparison(guessResults, game.prizes, game.prizeCount || 6);
+
+  // Update streak on home header (will refresh when back)
+  updateHeaderStats();
+
+  // Sound feedback
+  if (score === (game.prizeCount || 6)) { sfxCorrect(); sfxCorrect(); }
+  else if (score > 0) sfxCorrect();
+  else sfxWrong();
+  sfxReveal();
+
+  // Confetti on perfect score
+  if (score === (game.prizeCount || 6)) { launchConfetti(); sfxPerfect(); }
+
+  showScreen('results');
+}
+
+function buildGuessComparison(guessResults, prizes, pc) {
+  const grid = document.getElementById('guess-compare-grid');
+  if (!grid) return;
+  const rows = [];
+  // Show each guess with what it matched
+  const usedPrize = new Set();
+  guessResults.forEach(gr => {
+    const matchedPrize = gr.correct
+      ? prizes.find((p, i) => !usedPrize.has(i) && (p.apiName||p.name).toLowerCase().includes(gr.guess.toLowerCase()) || gr.guess.toLowerCase().includes((p.apiName||p.name).toLowerCase().split(' ')[0]))
+      : null;
+    if (gr.correct && matchedPrize) {
+      const idx = prizes.indexOf(matchedPrize);
+      usedPrize.add(idx);
+    }
+    rows.push('<div class="guess-compare-row ' + (gr.correct ? 'hit' : 'miss') + '">' +
+      '<div class="gcr-guess">' + esc(gr.guess) + '</div>' +
+      '<div class="gcr-arrow">' + (gr.correct ? '✓' : '✗') + '</div>' +
+      '<div class="gcr-prize ' + (gr.correct ? 'matched' : 'missed') + '">' + (gr.correct ? esc(gr.guess) : '—') + '</div>' +
+    '</div>');
+  });
+  // Show unguessed prizes
+  prizes.forEach((p, i) => {
+    const name = p.apiName || p.name;
+    const wasGuessed = guessResults.some(gr => gr.correct && (name.toLowerCase().includes(gr.guess.toLowerCase()) || gr.guess.toLowerCase().includes(name.toLowerCase().split(' ')[0])));
+    if (!wasGuessed) {
+      rows.push('<div class="guess-compare-row miss">' +
+        '<div class="gcr-guess" style="color:#2a3444">—</div>' +
+        '<div class="gcr-arrow">✗</div>' +
+        '<div class="gcr-prize unguessed">' + esc(name) + ' (missed)</div>' +
+      '</div>');
+    }
+  });
+  grid.innerHTML = rows.join('');
+}
+
+function calcRating(score, elapsed, prizeCount) {
+  const pct = score / prizeCount;
+  // time par: ~8s per card visible
+  const par = (60 - prizeCount) * 8;
+  const fast = elapsed < par * 0.7;
+  if (pct === 1 && fast)   return { grade: 'S' };
+  if (pct === 1)            return { grade: 'A' };
+  if (pct >= 0.67 && fast) return { grade: 'A' };
+  if (pct >= 0.67)          return { grade: 'B' };
+  if (pct >= 0.33)          return { grade: 'C' };
+  return { grade: 'D' };
+}
+
+function updatePersonalBests(deck, score, elapsed, prizeCount) {
+  if (!deck.personalBests) deck.personalBests = {};
+  const newPBs = [];
+  // Fastest per score tier (only for default 6-prize mode)
+  if (prizeCount === 6) {
+    const key = 'fastest_' + score;
+    if (!deck.personalBests[key] || elapsed < deck.personalBests[key]) {
+      deck.personalBests[key] = elapsed;
+      newPBs.push(key);
+    }
+  }
+  return newPBs;
+}
+
+function renderPersonalBests(deck, container, newPBs) {
+  if (!deck || !deck.personalBests) { container.innerHTML = ''; return; }
+  const pb = deck.personalBests;
+  const tiers = [6,5,4,3];
+  const cells = tiers.filter(t => pb['fastest_' + t] !== undefined).map(t => {
+    const isNew = newPBs.includes('fastest_' + t);
+    return `<div class="pb-cell">
+      <div class="pb-val ${isNew ? 'pb-new' : ''}">${formatTime(pb['fastest_' + t])}</div>
+      <div class="pb-lbl">FASTEST<br>${t}/6${isNew ? ' ★NEW' : ''}</div>
+    </div>`;
+  });
+  if (!cells.length) { container.innerHTML = ''; return; }
+  container.innerHTML = `<div class="pb-box">
+    <div class="pb-title">◆ PERSONAL BESTS</div>
+    <div class="pb-grid">${cells.join('')}</div>
+  </div>`;
+}
+
+function renderHistoryTable() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  const tbody = document.getElementById('history-tbody');
+  if (!deck || !deck.history?.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-dim);font-style:italic;">No history yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = deck.history.slice(0, 10).map((h, i) =>
+    `<tr>
+      <td>${i + 1}</td>
+      <td class="${h.score === 6 ? 'score-perfect' : ''}">${h.score}/6</td>
+      <td>${formatTime(h.time)}</td>
+      <td>${h.date}</td>
+    </tr>`
+  ).join('');
+}
+
+function playAgain() { startGame(state.activeDeckId); }
+function goHome() { showScreen('home'); renderHome(); }
+function confirmQuit() { if (confirm('Quit this session?')) { stopTimer(); goHome(); } }
+
+// ═══════════ THUMBNAIL PICKER ═══════════
+let pickerDeckId = null;
+
+function openThumbPicker(deckId) {
+  pickerDeckId = deckId;
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+
+  // Get current thumb url
+  const currentThumb = deck.thumbUrl || (deck.cards?.find(c => c.imageUrl)?.imageUrl || '');
+
+  // Build grid of all unique cards that have images (deduplicated by imageUrl)
+  const seen = new Set();
+  const uniqueCards = deck.cards.filter(c => {
+    if (!c.imageUrl || seen.has(c.imageUrl)) return false;
+    seen.add(c.imageUrl);
+    return true;
+  });
+
+  const grid = document.getElementById('picker-grid');
+  grid.innerHTML = uniqueCards.map(card => {
+    const rawName = card.apiName || card.name;
+    const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g,'').trim());
+    const isSelected = card.imageUrl === currentThumb;
+    const fallbacks = JSON.stringify(card.fallbackUrls || []);
+    return `
+      <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectThumb('${deckId}', '${card.imageUrl}')">
+        <div class="picker-card-img">
+          <img src="${card.imageUrl}" alt="${displayName}"
+            data-fallbacks='${fallbacks}' data-fallback-idx="0"
+            onerror="reviewImgError(this)">
+        </div>
+        <div class="picker-card-name">${displayName}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('thumb-picker-modal').classList.add('active');
+}
+
+function closeThumbPicker() {
+  document.getElementById('thumb-picker-modal').classList.remove('active');
+  pickerDeckId = null;
+}
+
+async function selectThumb(deckId, imageUrl) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  deck.thumbUrl = imageUrl;
+  await saveState();
+  closeThumbPicker();
+  renderHome();
+  showToast('Thumbnail updated!');
+}
+
+// ═══════════ WEAK SPOTS ═══════════
+function openWeakSpots(deckId) {
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck || !deck.history?.length) return;
+
+  document.getElementById('ws-title').textContent = deck.name.toUpperCase() + ' · WEAK SPOTS';
+
+  const sessions = deck.history.filter(h => h.prizes); // only sessions with card data
+  const totalSessions = deck.history.length;
+  const avgScore = (deck.history.reduce((a,h) => a + h.score, 0) / totalSessions).toFixed(1);
+  const perfectCount = deck.history.filter(h => h.score === 6).length;
+
+  // Tally miss rates per card name (base name — strip set/variant)
+  const cardStats = {}; // { baseName: { missed, prized, imageUrl } }
+
+  sessions.forEach(h => {
+    (h.prizes || []).forEach(p => {
+      const base = baseName(p.name);
+      if (!cardStats[base]) {
+        // find image from deck cards
+        const match = deck.cards.find(c => baseName(c.apiName || c.name) === base);
+        cardStats[base] = { missed: 0, prized: 0, imageUrl: match?.imageUrl || '' };
+      }
+      cardStats[base].prized++;
+      if (p.missed) cardStats[base].missed++;
+    });
+  });
+
+  // Sort by miss rate descending, then by times prized
+  const sorted = Object.entries(cardStats)
+    .map(([name, s]) => ({ name, ...s, rate: s.prized > 0 ? s.missed / s.prized : 0 }))
+    .filter(c => c.prized >= 2) // need at least 2 appearances for meaningful data
+    .sort((a, b) => b.rate - a.rate || b.prized - a.prized);
+
+  // Trend bars (last 10 sessions newest-first → display oldest-first)
+  const recentSessions = deck.history.slice(0, 10).reverse();
+
+  // Build insights
+  const worstCard = sorted[0];
+  const mostPrized = [...sorted].sort((a,b) => b.prized - a.prized)[0];
+  const insights = [];
+  if (worstCard && worstCard.rate >= 0.5) {
+    insights.push(`You miss <b>${worstCard.name}</b> when it's prized ${Math.round(worstCard.rate*100)}% of the time — your biggest blind spot.`);
+  }
+  if (mostPrized && mostPrized.prized >= 3) {
+    insights.push(`<b>${mostPrized.name}</b> has been a prize card ${mostPrized.prized} times across ${sessions.length} tracked sessions — high variance card.`);
+  }
+  const improving = recentSessions.length >= 4 &&
+    recentSessions.slice(-2).reduce((a,h)=>a+h.score,0) / 2 >
+    recentSessions.slice(0,2).reduce((a,h)=>a+h.score,0) / 2;
+  if (improving) insights.push(`Your recent scores are trending upward — keep going!`);
+
+  const body = document.getElementById('ws-body');
+  body.innerHTML = `<div class="ws-body-inner">
+
+    <div class="ws-summary">
+      <div class="ws-summary-grid">
+        <div>
+          <div class="ws-stat-val">${totalSessions}</div>
+          <div class="ws-stat-lbl">SESSIONS<br>PLAYED</div>
+        </div>
+        <div>
+          <div class="ws-stat-val">${avgScore}</div>
+          <div class="ws-stat-lbl">AVG<br>SCORE</div>
+        </div>
+        <div>
+          <div class="ws-stat-val">${perfectCount}</div>
+          <div class="ws-stat-lbl">PERFECT<br>6/6</div>
+        </div>
+      </div>
+    </div>
+
+    ${insights.length ? `
+    <div class="ws-insight">
+      <div class="ws-insight-title">◆ INSIGHTS</div>
+      ${insights.map(i => `<div class="ws-insight-text">· ${i}</div>`).join('')}
+    </div>` : ''}
+
+    <div class="ws-trend-wrap">
+      <div class="section-title">Score Trend</div>
+      <div class="ws-trend-bars">
+        ${recentSessions.map(h => {
+          const pct = Math.round((h.score / 6) * 100);
+          const cls = h.score === 6 ? 'perfect' : h.score >= 4 ? 'good' : h.score >= 2 ? 'mid' : 'bad';
+          return `<div class="ws-trend-bar-col">
+            <div class="ws-trend-bar ${cls}" style="height:${Math.max(pct*0.46,4)}px"></div>
+            <div class="ws-trend-label">${h.score}/6</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section-title">Miss Rate by Card</div>
+    ${sorted.length === 0
+      ? `<div style="font-size:0.78rem;font-weight:700;color:#506080;padding:1rem 0;">Play more sessions to build miss rate data.</div>`
+      : sorted.map(c => {
+          const pct = Math.round(c.rate * 100);
+          const cls = pct >= 60 ? 'danger' : pct >= 30 ? 'warning' : 'good';
+          return `
+          <div class="ws-card-row ${cls}">
+            <div class="ws-card-thumb">
+              ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${esc(c.name)}">` : '🃏'}
+            </div>
+            <div class="ws-card-info">
+              <div class="ws-card-name">${esc(c.name)}</div>
+              <div class="ws-card-sub">Prized ${c.prized}× · Missed ${c.missed}×</div>
+            </div>
+            <div class="ws-bar-wrap">
+              <div class="ws-bar-track">
+                <div class="ws-bar-fill ${cls}" style="width:${pct}%"></div>
+              </div>
+              <div class="ws-bar-pct">${pct}% missed</div>
+            </div>
+          </div>`;
+        }).join('')
+    }
+  </div>`;
+
+  showScreen('weakspots');
+}
+
+function baseName(name) {
+  // Normalise card name for grouping: lowercase, strip set suffix, strip {X} energy symbols
+  return (name || '').toLowerCase().replace(/\{[a-z]\}/g, '').replace(/\s+/g,' ').trim();
+}
+
+// ═══════════ MODE MODAL ═══════════
+function openModeModal(deckId) {
+  modeDeckId = deckId;
+  // reset toggles to current modeSettings
+  setModeOpt('prizes', modeSettings.prizes, true);
+  setModeOpt('timelimit', modeSettings.timelimit, true);
+  document.getElementById('mode-modal').classList.add('active');
+  const _hDeck = state.decks.find(d => d.id === modeDeckId);
+  const _hBtn = document.getElementById('mode-hide-btn');
+  if (_hBtn && _hDeck) { _hBtn.textContent = _hDeck.hidden ? '👁 SHOW DECK' : '🙈 HIDE DECK'; }
+}
+
+function closeModeModal() {
+  document.getElementById('mode-modal').classList.remove('active');
+}
+
+async function deleteDeckFromModal() {
+  if (!confirm('Delete this deck and all its history?')) return;
+  closeModeModal();
+  state.decks = state.decks.filter(d => d.id !== modeDeckId);
+  await saveState();
+  renderHome();
+}
+
+function setModeOpt(group, val, silent) {
+  if (!silent) modeSettings[group] = val;
+  const container = document.getElementById('mode-' + group);
+  if (!container) return;
+  container.querySelectorAll('.mode-opt').forEach(el => {
+    el.classList.toggle('active', String(el.dataset.val) === String(val));
+  });
+}
+
+function startGameFromMode() {
+  game.prizeCount  = modeSettings.prizes;
+  game.timeLimit   = parseInt(modeSettings.timelimit) || 0;
+  closeModeModal();
+  startGame(modeDeckId);
+}
+
+
+
+
+// ═══════════ FORMAT ═══════════
+function setImportFormat(fmt) {
+  importFormat = fmt;
+  document.getElementById('fmt-standard').classList.toggle('active', fmt === 'standard');
+  document.getElementById('fmt-expanded').classList.toggle('active', fmt === 'expanded');
+}
+
+// ═══════════ EXPORT CSV ═══════════
+function exportHistory() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck || !deck.history?.length) { showToast('No history to export.'); return; }
+  const rows = [['#','Score','Time (s)','Date','Prizes','Missed']];
+  deck.history.forEach((h, i) => {
+    const prizes = (h.prizes || []).map(p => p.name).join('; ');
+    const missed = (h.prizes || []).filter(p => p.missed).map(p => p.name).join('; ');
+    rows.push([i+1, h.score+'/6', h.time, h.date, prizes, missed]);
+  });
+  const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = (deck.name || 'deck') + '_history.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported!');
+}
+
+// ═══════════ CONFETTI ═══════════
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = Array.from({length: 120}, () => ({
+    x: Math.random() * canvas.width,
+    y: -20 - Math.random() * 100,
+    r: 5 + Math.random() * 6,
+    d: 2 + Math.random() * 3,
+    color: ['#f0c040','#60d060','#4090e0','#e04040','#c040c0','#40c0c0'][Math.floor(Math.random()*6)],
+    tilt: Math.random() * 10 - 5,
+    tiltAngle: 0,
+    tiltSpeed: 0.1 + Math.random() * 0.1,
+  }));
+  let frame = 0;
+  const maxFrames = 160;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r / 2;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+      ctx.stroke();
+      p.y += p.d;
+      p.tiltAngle += p.tiltSpeed;
+      p.tilt = Math.sin(p.tiltAngle) * 12;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+    });
+    frame++;
+    if (frame < maxFrames) requestAnimationFrame(draw);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  draw();
+}
+
+
+// ═══════════ HOW TO PLAY ═══════════
+function openHowToPlay() { document.getElementById('how-to-modal').classList.add('active'); }
+function closeHowToPlay() { document.getElementById('how-to-modal').classList.remove('active'); }
+
+// ═══════════ BACKUP / RESTORE ═══════════
+function openBackupModal() {
+  const data = JSON.stringify(state, null, 2);
+  document.getElementById('backup-textarea').value = data;
+  document.getElementById('backup-modal').classList.add('active');
+}
+
+function closeBackupModal() {
+  document.getElementById('backup-modal').classList.remove('active');
+}
+
+async function copyBackup() {
+  const text = document.getElementById('backup-textarea').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Backup copied to clipboard!');
+  } catch(e) {
+    showToast('Long-press the text box and select all, then copy.');
+  }
+}
+
+async function restoreBackup() {
+  const text = document.getElementById('backup-textarea').value.trim();
+  if (!text) { showToast('Nothing to restore.'); return; }
+  try {
+    const parsed = JSON.parse(text);
+    if (!parsed.decks) { showToast('Invalid backup data.'); return; }
+    if (!confirm('This will replace ALL your current data. Continue?')) return;
+    state = parsed;
+    await saveState();
+    closeBackupModal();
+    renderHome();
+    showToast('Restored ' + state.decks.length + ' deck(s)!');
+  } catch(e) {
+    showToast('Could not parse backup. Make sure you pasted the full text.');
+  }
+}
+
+// ═══════════ SCREENS ═══════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const map = { home: 'screen-home', review: 'screen-review', game: 'screen-game', results: 'screen-results', weakspots: 'screen-weakspots' };
+  document.getElementById(map[name]).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ═══════════ LOADING ═══════════
+function showLoading(msg = 'Loading…') {
+  document.getElementById('loading-text').textContent = msg;
+  document.getElementById('loading-overlay').classList.add('active');
+}
+function hideLoading() { document.getElementById('loading-overlay').classList.remove('active'); }
+
+// ═══════════ TOAST ═══════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+
+// ── SHARE APP ──
+async function shareApp() {
+  document.getElementById('share-modal-overlay').classList.add('active');
+
+  // Detect capability
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const canNativeShare = !!(navigator.share);
+
+  if (canNativeShare) {
+    document.getElementById('share-native-wrap').style.display = 'block';
+    document.getElementById('share-download-wrap').style.display = 'none';
+  } else {
+    document.getElementById('share-native-wrap').style.display = 'none';
+    document.getElementById('share-download-wrap').style.display = 'block';
+  }
+
+  // Auto-select best tab based on platform
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua)) showShareTab('ios');
+  else if (/Android/.test(ua)) showShareTab('android');
+  else showShareTab('desktop');
+}
+
+async function doNativeShare() {
+  try {
+    const res = await fetch(location.href);
+    const blob = await res.blob();
+    const file = new File([blob], 'PrizeTrainer.html', { type: 'text/html' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: 'Prize Trainer', text: 'Open in a browser to play!', files: [file] });
+    } else {
+      await navigator.share({ title: 'Prize Trainer', text: 'Pokémon TCG Prize Card Memory Game — save PrizeTrainer.html and open it in a browser!' });
+    }
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      document.getElementById('share-native-wrap').style.display = 'none';
+      document.getElementById('share-download-wrap').style.display = 'block';
+    }
+  }
+}
+
+function downloadAppFile() {
+  try {
+    const a = document.createElement('a');
+    a.href = location.href;
+    a.download = 'PrizeTrainer.html';
+    a.click();
+  } catch(e) {
+    showToast('Right-click the page and choose "Save As" to download.');
+  }
+}
+
+function showShareTab(tab) {
+  document.querySelectorAll('.share-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.share-tab-content').forEach(d => d.style.display = 'none');
+  document.getElementById('share-tab-' + tab).style.display = 'block';
+  const btn = document.querySelector(`.share-tab[onclick="showShareTab('${tab}')"]`);
+  if (btn) btn.classList.add('active');
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal-overlay').classList.remove('active');
+}
+
+
+
+// ═══════════ PWA SERVICE WORKER + INSTALL ═══════════
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => console.log('SW registered:', reg.scope))
+    .catch(err => console.warn('SW registration failed:', err));
+}
+
+// Capture the install prompt for use later
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallButton();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallButton();
+  showToast('✓ App installed!');
+});
+
+function showInstallButton() {
+  let btn = document.getElementById('pwa-install-btn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'pwa-install-btn';
+    btn.className = 'btn btn-primary btn-block';
+    btn.style.cssText = 'margin-bottom:0.55rem;';
+    btn.innerHTML = '📲 INSTALL APP';
+    btn.onclick = triggerInstall;
+    // Insert before the import button
+    const importBtn = document.querySelector('#screen-home .home-content .btn-block');
+    if (importBtn) importBtn.parentNode.insertBefore(btn, importBtn);
+  }
+  btn.style.display = '';
+}
+
+function hideInstallButton() {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'none';
+}
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const result = await deferredInstallPrompt.userChoice;
+  if (result.outcome === 'accepted') {
+    showToast('✓ Installing...');
+  }
+  deferredInstallPrompt = null;
+  hideInstallButton();
+}
+
+// Check if already installed (standalone mode)
+if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+  // Already installed — hide share/install related stuff
+  console.log('Running as installed PWA');
+}
+
+</script>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="share-modal-overlay">
+  <div class="modal" style="--c:var(--water);">
+    <div class="modal-inner">
+      <div class="modal-title">📤 SHARE WITH A FRIEND</div>
+
+      <!-- Native share (mobile browsers with Web Share API) -->
+      <div id="share-native-wrap" style="display:none;">
+        <p style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;line-height:1.6;">
+          Tap below to send <strong style="color:var(--gold)">PrizeTrainer.html</strong> directly to a friend via any app.
+        </p>
+        <button class="btn btn-primary btn-block" onclick="doNativeShare()" style="margin-bottom:0.5rem;">
+          📤 Share File Now
+        </button>
+      </div>
+
+      <!-- Download (desktop / browsers without file share) -->
+      <div id="share-download-wrap" style="display:none;">
+        <p style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;line-height:1.6;">
+          Download the file, then send it to your friend however you like.
+        </p>
+        <button class="btn btn-primary btn-block" onclick="downloadAppFile()" style="margin-bottom:0.5rem;">
+          ⬇ Download PrizeTrainer.html
+        </button>
+      </div>
+
+      <!-- Per-platform instructions, shown after download or on fallback -->
+      <div id="share-instructions">
+        <div style="font-size:0.62rem;font-weight:800;color:var(--gold-dim);letter-spacing:0.08em;margin:0.8rem 0 0.4rem;">HOW YOUR FRIEND OPENS IT</div>
+        <div id="share-platform-tabs" style="display:flex;gap:0.35rem;margin-bottom:0.7rem;flex-wrap:wrap;">
+          <button class="share-tab active" onclick="showShareTab('ios')">🍎 iPhone</button>
+          <button class="share-tab" onclick="showShareTab('android')">🤖 Android</button>
+          <button class="share-tab" onclick="showShareTab('desktop')">💻 Desktop</button>
+        </div>
+
+        <div id="share-tab-ios" class="share-tab-content">
+          <ol style="font-size:0.72rem;font-weight:700;color:var(--text);line-height:2.1;padding-left:1.2rem;">
+            <li>Receive the file (iMessage, email, AirDrop, etc.)</li>
+            <li>Tap it to open a preview</li>
+            <li>Tap the <strong style="color:var(--gold)">Share icon</strong> (box with arrow)</li>
+            <li>Choose <strong style="color:var(--grass)">Open in Safari</strong></li>
+          </ol>
+          <div style="background:var(--bg);border:2px solid var(--red);padding:0.55rem 0.7rem;margin-top:0.4rem;font-size:0.68rem;font-weight:700;color:#f08080;line-height:1.6;">
+            ⚠ Don't open from Discord, Gmail, or Files preview — it won't work. Must be Safari.
+          </div>
+        </div>
+
+        <div id="share-tab-android" class="share-tab-content" style="display:none;">
+          <ol style="font-size:0.72rem;font-weight:700;color:var(--text);line-height:2.1;padding-left:1.2rem;">
+            <li>Receive the file via any app</li>
+            <li>Tap <strong style="color:var(--gold)">Open with</strong> → choose <strong style="color:var(--grass)">Chrome</strong> or <strong style="color:var(--grass)">Firefox</strong></li>
+            <li>If it opens in a file viewer, tap the <strong style="color:var(--gold)">⋮ menu</strong> → Open in browser</li>
+            <li>Works in Chrome, Firefox, Edge, or Samsung Internet</li>
+          </ol>
+          <div style="background:var(--bg);border:2px solid var(--red);padding:0.55rem 0.7rem;margin-top:0.4rem;font-size:0.68rem;font-weight:700;color:#f08080;line-height:1.6;">
+            ⚠ Don't open from Discord or Gmail's built-in viewer — choose a real browser.
+          </div>
+        </div>
+
+        <div id="share-tab-desktop" class="share-tab-content" style="display:none;">
+          <ol style="font-size:0.72rem;font-weight:700;color:var(--text);line-height:2.1;padding-left:1.2rem;">
+            <li>Save the file to your computer</li>
+            <li>Double-click <strong style="color:var(--gold)">PrizeTrainer.html</strong></li>
+            <li>It opens automatically in your default browser</li>
+            <li>Works in Chrome, Firefox, Edge, or Safari</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeShareModal()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
