@@ -2209,20 +2209,31 @@ let showHiddenDecks = false;
 
 function buildDeckCard(deck) {
   const sessions = deck.history?.length || 0;
-  const best = deck.history?.length ? Math.max(...deck.history.map(h => h.score)) : null;
+  // Best = highest score *percentage* across sessions; display as X/PC of that session
+  let bestEntry = null;
+  if (sessions) {
+    bestEntry = deck.history.reduce((a, h) => {
+      const apc = a ? (a.prizeCount || 6) : 0;
+      const hpc = h.prizeCount || 6;
+      return !a || (h.score / hpc) > (a.score / apc) ? h : a;
+    }, null);
+  }
   const thumbSrc = deck.thumbUrl || deck.cards?.find(c => c.imageUrl)?.imageUrl || '';
   const thumb = thumbSrc
     ? `<img src="${thumbSrc}" alt="" onerror="this.parentElement.innerHTML='🃏'">`
     : '🃏';
   const missingArt = deck.cards.filter(c => !c.imageUrl).length;
   const total = deck.cards.reduce((a,c)=>a+c.count,0);
-  const avgScore = sessions > 0
-    ? (deck.history.reduce((a,h)=>a+h.score,0) / sessions).toFixed(1)
+  // Average shown as a percentage to stay meaningful across mixed prize counts
+  const avgPct = sessions > 0
+    ? Math.round(deck.history.reduce((a,h) => a + (h.score / (h.prizeCount || 6)), 0) / sessions * 100)
     : null;
   const recent5 = (deck.history || []).slice(0,5).reverse();
   const histPips = recent5.length ? '<div class="deck-history-row">' + recent5.map(h => {
-    const cls = h.score === 6 ? 'perfect' : h.score >= 4 ? 'good' : h.score >= 2 ? 'mid' : 'bad';
-    return '<div class="deck-hist-pip ' + cls + '">' + h.score + '/6</div>';
+    const hpc = h.prizeCount || 6;
+    const pct = h.score / hpc;
+    const cls = h.score === hpc ? 'perfect' : pct >= 0.66 ? 'good' : pct >= 0.33 ? 'mid' : 'bad';
+    return '<div class="deck-hist-pip ' + cls + '">' + h.score + '/' + hpc + '</div>';
   }).join('') + '</div>' : '';
   const fmtBadge = deck.format === 'expanded'
     ? '<span class="fmt-badge fmt-expanded">EXPANDED</span>'
@@ -2237,7 +2248,7 @@ function buildDeckCard(deck) {
       <div class="deck-info">
         <div class="deck-name">${esc(deck.name)}${fmtBadge}</div>
         <div class="deck-meta">${total} cards · ${sessions} session${sessions!==1?'s':''}</div>
-        ${avgScore !== null ? `<div class="deck-avg">Avg <b>${avgScore}/6</b>${best !== null ? ` · Best <b>${best}/6</b>` : ''}</div>` : ''}
+        ${avgPct !== null ? `<div class="deck-avg">Avg <b>${avgPct}%</b>${bestEntry ? ` · Best <b>${bestEntry.score}/${bestEntry.prizeCount || 6}</b>` : ''}</div>` : ''}
         ${missingArt > 0 ? `<div class="deck-warn">⚠ ${missingArt} missing art</div>` : ''}
         ${histPips}
         ${sessions >= 3 ? `<button class="btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')">◆ WEAK SPOTS</button>` : ''}
@@ -2870,6 +2881,43 @@ function cycleAutocomplete(dir) {
   document.getElementById('guess-input').value = items[idx].dataset.val;
 }
 
+// ═══════════ NAME NORMALIZATION ═══════════
+// Canonical form for comparing a typed guess against a prize card name.
+// Handles:
+//   • Case / whitespace / punctuation differences
+//   • Energy symbol tokens like "{W}" → "water"
+//   • Optional "Basic" prefix on energies
+//     ("Water Energy" ≡ "Basic Water Energy" ≡ "Basic {W} Energy")
+//   • Curly quotes, em-dashes, trademark glyphs
+function normalizeCardName(raw) {
+  if (!raw) return '';
+  let s = String(raw).toLowerCase();
+
+  // Expand energy-symbol tokens: {g}=grass {r}=fire {w}=water {l}=lightning
+  // {p}=psychic {f}=fighting {d}=darkness {m}=metal {y}=fairy {n}=dragon {c}=colorless
+  const symMap = {
+    g:'grass', r:'fire', w:'water', l:'lightning',
+    p:'psychic', f:'fighting', d:'darkness', m:'metal',
+    y:'fairy', n:'dragon', c:'colorless'
+  };
+  s = s.replace(/\{([a-z])\}/g, (_, ch) => symMap[ch] || '');
+
+  // Normalize curly quotes and odd punctuation to their ASCII equivalents
+  s = s.replace(/[’‘`]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-');
+
+  // Drop common trademark / copyright glyphs
+  s = s.replace(/[®™©★◆♪]/g, ' ');
+
+  // Strip "basic" prefix on energy cards so "Water Energy" matches "Basic Water Energy"
+  if (/\benergy\b/.test(s)) {
+    s = s.replace(/\bbasic\b/g, ' ');
+  }
+
+  // Collapse all whitespace
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+}
+
 function submitGuess() {
   const input = document.getElementById('guess-input');
   const fb = document.getElementById('guess-feedback');
@@ -2883,11 +2931,11 @@ function submitGuess() {
     return;
   }
 
-  // Energies unlimited in a deck (cap at 6), other cards max 4
-  const normalized = val.toLowerCase();
-  const isEnergy = normalized.includes('energy');
-  const maxCopies = isEnergy ? 6 : 4;
-  const existingCount = game.guesses.filter(g => g.toLowerCase() === normalized).length;
+  // Energies unlimited in a deck (cap at prize count), other cards max 4
+  const normalized = normalizeCardName(val);
+  const isEnergy = /\benergy\b/.test(normalized);
+  const maxCopies = isEnergy ? prizeCount : 4;
+  const existingCount = game.guesses.filter(g => normalizeCardName(g) === normalized).length;
   if (existingCount >= maxCopies) {
     fb.textContent = `Already guessed that ${isEnergy ? 'energy' : 'card'} ${maxCopies} times (max).`;
     fb.className = 'guess-feedback bad';
@@ -2898,7 +2946,7 @@ function submitGuess() {
   sfxGuess();
   renderPrizeSlots();
   input.value = '';
-  fb.textContent = `Guess ${game.guesses.length}/6 recorded.`;
+  fb.textContent = `Guess ${game.guesses.length}/${prizeCount} recorded.`;
   fb.className = 'guess-feedback good';
 
   if (game.guesses.length === prizeCount) {
@@ -2969,19 +3017,20 @@ async function revealPrizes() {
   stopTimer();
   const elapsed = game.elapsed;
 
-  // Score — strict: guess must match the FULL card name (case-insensitive), count-aware
+  // Score — strict: guess must match the FULL card name after normalization, count-aware.
+  // Normalization handles: case, whitespace, energy-symbol tokens ({W}=water),
+  // the optional "Basic" prefix on energies, curly quotes, and punctuation.
   // e.g. guessing "Quilava" does NOT match "Ethan's Quilava"
-  // Guessing "Ethan's Adventure" twice only scores if two copies are prized
-  const prizePool = game.prizes.map(p => (p.name).toLowerCase().trim());
+  //      guessing "Water Energy" DOES match "Basic {W} Energy"
+  const prizePool = game.prizes.map(p => normalizeCardName(p.name));
   const usedPrizeIdxs = new Set();
   let score = 0;
   game._usedPrizeIdxs = usedPrizeIdxs;
   const guessResults = game.guesses.map(g => {
-    const gn = g.toLowerCase().trim();
-    // Exact full-name match first, then allow guess being a full prefix of prize name
+    const gn = normalizeCardName(g);
     const matchIdx = prizePool.findIndex((p, i) => {
       if (usedPrizeIdxs.has(i)) return false;
-      return p === gn || p.startsWith(gn + ' ') || gn.startsWith(p + ' ') || p === gn;
+      return p === gn;
     });
     const correct = matchIdx !== -1;
     if (correct) { usedPrizeIdxs.add(matchIdx); score++; }
@@ -2996,13 +3045,13 @@ async function revealPrizes() {
     const prizeOutcomes = game.prizes.map((card, pi) => {
       return { name: card.name, missed: !usedPrizeIdxs.has(pi) };
     });
-    deck.history.unshift({ score, time: elapsed, date: new Date().toLocaleDateString(), prizes: prizeOutcomes });
+    deck.history.unshift({ score, time: elapsed, prizeCount: pc, date: new Date().toLocaleDateString(), prizes: prizeOutcomes });
     if (deck.history.length > 50) deck.history = deck.history.slice(0, 50);
     await saveState();
   }
 
   // Results screen
-  document.getElementById('results-score').textContent = `${score}/6`;
+  document.getElementById('results-score').textContent = `${score}/${pc}`;
   document.getElementById('results-time').textContent = `Time: ${formatTime(elapsed)}`;
 
   // Prize grid
@@ -3139,14 +3188,15 @@ function renderHistoryTable() {
     tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-dim);font-style:italic;">No history yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = deck.history.slice(0, 10).map((h, i) =>
-    `<tr>
+  tbody.innerHTML = deck.history.slice(0, 10).map((h, i) => {
+    const hpc = h.prizeCount || 6;
+    return `<tr>
       <td>${i + 1}</td>
-      <td class="${h.score === 6 ? 'score-perfect' : ''}">${h.score}/6</td>
+      <td class="${h.score === hpc ? 'score-perfect' : ''}">${h.score}/${hpc}</td>
       <td>${formatTime(h.time)}</td>
       <td>${h.date}</td>
-    </tr>`
-  ).join('');
+    </tr>`;
+  }).join('');
 }
 
 function playAgain() { startGame(state.activeDeckId); }
@@ -3216,8 +3266,8 @@ function openWeakSpots(deckId) {
 
   const sessions = deck.history.filter(h => h.prizes); // only sessions with card data
   const totalSessions = deck.history.length;
-  const avgScore = (deck.history.reduce((a,h) => a + h.score, 0) / totalSessions).toFixed(1);
-  const perfectCount = deck.history.filter(h => h.score === 6).length;
+  const avgScore = (deck.history.reduce((a,h) => a + (h.score / (h.prizeCount || 6)), 0) / totalSessions * 100).toFixed(0);
+  const perfectCount = deck.history.filter(h => h.score === (h.prizeCount || 6)).length;
 
   // Tally miss rates per card name (base name — strip set/variant)
   const cardStats = {}; // { baseName: { missed, prized, imageUrl } }
@@ -3269,12 +3319,12 @@ function openWeakSpots(deckId) {
           <div class="ws-stat-lbl">SESSIONS<br>PLAYED</div>
         </div>
         <div>
-          <div class="ws-stat-val">${avgScore}</div>
+          <div class="ws-stat-val">${avgScore}%</div>
           <div class="ws-stat-lbl">AVG<br>SCORE</div>
         </div>
         <div>
           <div class="ws-stat-val">${perfectCount}</div>
-          <div class="ws-stat-lbl">PERFECT<br>6/6</div>
+          <div class="ws-stat-lbl">PERFECT<br>RUNS</div>
         </div>
       </div>
     </div>
@@ -3289,11 +3339,12 @@ function openWeakSpots(deckId) {
       <div class="section-title">Score Trend</div>
       <div class="ws-trend-bars">
         ${recentSessions.map(h => {
-          const pct = Math.round((h.score / 6) * 100);
-          const cls = h.score === 6 ? 'perfect' : h.score >= 4 ? 'good' : h.score >= 2 ? 'mid' : 'bad';
+          const hpc = h.prizeCount || 6;
+          const pct = Math.round((h.score / hpc) * 100);
+          const cls = h.score === hpc ? 'perfect' : pct >= 66 ? 'good' : pct >= 33 ? 'mid' : 'bad';
           return `<div class="ws-trend-bar-col">
             <div class="ws-trend-bar ${cls}" style="height:${Math.max(pct*0.46,4)}px"></div>
-            <div class="ws-trend-label">${h.score}/6</div>
+            <div class="ws-trend-label">${h.score}/${hpc}</div>
           </div>`;
         }).join('')}
       </div>
@@ -3391,7 +3442,7 @@ function exportHistory() {
   deck.history.forEach((h, i) => {
     const prizes = (h.prizes || []).map(p => p.name).join('; ');
     const missed = (h.prizes || []).filter(p => p.missed).map(p => p.name).join('; ');
-    rows.push([i+1, h.score+'/6', h.time, h.date, prizes, missed]);
+    rows.push([i+1, h.score+'/'+(h.prizeCount || 6), h.time, h.date, prizes, missed]);
   });
   const csv = rows.map(r => r.map(v => '"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
