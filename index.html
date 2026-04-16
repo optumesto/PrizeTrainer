@@ -1798,26 +1798,21 @@ function startGameFromReview() {
 function renderReview(deck) {
   document.getElementById('review-deck-name').textContent = deck.name;
 
-  // Classify each unique card entry into Pokémon / Trainers / Energy.
-  // Trainer items whose name contains "Energy" (Energy Search, Energy Retrieval, etc.)
-  // are checked FIRST so they don't get bucketed with basic energies.
+  // Classify each card. Use API-provided supertype when available,
+  // fall back to heuristic for offline imports or unmapped sets.
   const pokemon = [], trainers = [], energies = [];
 
-  // Trainer Items/Tools whose name contains "Energy"
+  // Heuristic fallback lists (only used when card.supertype is missing)
   const ENERGY_NAMED_TRAINERS = new Set([
     'energy search', 'energy search pro', 'energy retrieval', 'energy switch',
     'energy recycler', 'energy recycle system', 'energy sticker', 'energy lotto',
     'energy loto', 'superior energy retrieval', 'energy pick', 'energy spinner'
   ]);
-
-  // Bare Supporter/NPC names. Possessive forms ("Iono's Bellibolt") stay Pokémon.
   const BARE_TRAINER_NAMES = new Set([
     'iono','arven','penny','larry','geeta','nemona','drayton','crispin','carmine',
     'kieran','lacey','lillie','hilda','cynthia','jacq','marnie','dawn','barry',
     'roark','judge','hex maniac','team yell grunt'
   ]);
-
-  // Named trainer cards (Items / Tools / Stadiums / Supporters).
   const KNOWN_TRAINER_CARDS = [
     'ultra ball','nest ball','great ball','poké ball','quick ball','level ball',
     'heavy ball','friend ball','dive ball','master ball','premier ball','beast ball',
@@ -1842,27 +1837,27 @@ function renderReview(deck) {
   const trainerPhrases = KNOWN_TRAINER_CARDS.map(t => t.toLowerCase());
 
   deck.cards.forEach(card => {
+    // Prefer API supertype
+    if (card.supertype) {
+      const st = card.supertype.toLowerCase();
+      if (st === 'energy') { energies.push(card); return; }
+      if (st === 'trainer') { trainers.push(card); return; }
+      pokemon.push(card);
+      return;
+    }
+
+    // Heuristic fallback for cards without API data
     const n = (card.name || '').toLowerCase().trim();
     const baseKey = n.replace(/\{[a-z]\}/g, '').replace(/\s+/g, ' ').trim();
-
-    // Rule 1 (priority): Energy-named trainer items
     if (ENERGY_NAMED_TRAINERS.has(baseKey) ||
         [...ENERGY_NAMED_TRAINERS].some(t => baseKey.startsWith(t + ' '))) {
-      trainers.push(card);
-      return;
+      trainers.push(card); return;
     }
-    // Rule 2: basic + special energies
-    if (/\benergy\b/.test(n)) {
-      energies.push(card);
-      return;
-    }
-    // Rule 3: known trainer card
+    if (/\benergy\b/.test(n)) { energies.push(card); return; }
     if (trainerPhrases.some(t => n === t || n.startsWith(t + ' ')) ||
         BARE_TRAINER_NAMES.has(n)) {
-      trainers.push(card);
-      return;
+      trainers.push(card); return;
     }
-    // Rule 4: default to Pokémon
     pokemon.push(card);
   });
 
@@ -2259,6 +2254,7 @@ async function saveEditDeck() {
   closeEditModal();
   showLoading('Updating deck…');
   deck.cards = await Promise.all(cards.map(c => fetchCardImage(c)));
+  await fetchSupertypes(deck.cards);
   hideLoading();
   await saveState();
   renderHome();
@@ -2272,6 +2268,7 @@ async function duplicateDeckFromEdit() {
   closeEditModal();
   showLoading('Duplicating…');
   const newCards = await Promise.all(orig.cards.map(c => fetchCardImage(c)));
+  await fetchSupertypes(newCards);
   hideLoading();
   const newDeck = {
     id: Date.now().toString(),
@@ -2319,6 +2316,50 @@ function parseLine(line) {
   return null;
 }
 
+// Limitless set code → pokemontcg.io set ID mapping (module scope)
+const LIMITLESS_TO_PTCGIO = {
+  'SVI':'sv1','PAL':'sv2','OBF':'sv3','MEW':'sv3pt5','PAR':'sv4','PRF':'sv4pt5','PAF':'sv4pt5',
+  'TEF':'sv5','TWM':'sv6','SFA':'sv6pt5','SCR':'sv7','SSP':'sv8','PRE':'sv8pt5','JTG':'sv9',
+  'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh4pt5','BST':'swsh5',
+  'CRE':'swsh6','EVS':'swsh7','FST':'swsh8','BRS':'swsh9','ASR':'swsh10','LOR':'swsh11',
+  'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5',
+  'SUM':'sm1','GRI':'sm2','BUS':'sm3','UPR':'sm5','FLI':'sm6','CES':'sm7',
+  'LOT':'sm8','TEU':'sm9','UNB':'sm10','UNM':'sm11','COS':'sm12',
+  'XY':'xy1','FLF':'xy2','FFI':'xy3','PHF':'xy4','PRC':'xy5','ROS':'xy6',
+  'AOR':'xy7','BKT':'xy8','BKP':'xy9','FCO':'xy10','STS':'xy11','EVO':'xy12',
+  'PFL':'sv4pt5','ASC':'sv9a','MEG':'sv9b','SVE':'sve',
+};
+
+// Fetch supertypes (Pokémon / Trainer / Energy) from pokemontcg.io API.
+// One request per unique set. Writes card.supertype. No-ops if offline.
+async function fetchSupertypes(cards) {
+  const bySet = {};
+  cards.forEach(card => {
+    const set = (card.set || '').toUpperCase();
+    if (!set || !card.num) return;
+    if (!bySet[set]) bySet[set] = [];
+    bySet[set].push(card);
+  });
+  await Promise.all(Object.keys(bySet).map(async (setCode) => {
+    const pid = LIMITLESS_TO_PTCGIO[setCode];
+    if (!pid) return;
+    try {
+      const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${pid}&select=id,supertype,number&pageSize=250`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!resp.ok) return;
+      const json = await resp.json();
+      if (!json.data) return;
+      const lookup = {};
+      json.data.forEach(c => { if (c.number && c.supertype) lookup[c.number] = c.supertype; });
+      bySet[setCode].forEach(card => {
+        const numClean = (card.num || '').replace(/^0+(\d)/, '$1');
+        const st = lookup[numClean] || lookup[card.num];
+        if (st) card.supertype = st;
+      });
+    } catch (_) {}
+  }));
+}
+
 async function importDeck() {
   const name = document.getElementById('import-name').value.trim();
   const raw = document.getElementById('import-list').value.trim();
@@ -2333,8 +2374,9 @@ async function importDeck() {
   closeImportModal();
   showLoading('Preparing deck…');
 
-  // fetchCardImage just computes URL candidates now — no network calls needed
   const fetched = await Promise.all(cards.map(c => fetchCardImage(c)));
+  // Fetch supertypes from API (best-effort, falls back to heuristic in renderReview)
+  await fetchSupertypes(fetched);
   hideLoading();
 
   const deck = {
@@ -2400,19 +2442,7 @@ function getImageCandidates(card) {
   urls.push(`${lbase}_${numClean}_R_EN.png`);
 
   // 2. pokemontcg.io — ONLY when set+number are known, never by name (avoids wrong card art)
-  const PKMN = {
-    'SVI':'sv1','PAL':'sv2','OBF':'sv3','MEW':'sv3pt5','PAR':'sv4','PRF':'sv4pt5','PAF':'sv4pt5',
-    'TEF':'sv5','TWM':'sv6','SFA':'sv6pt5','SCR':'sv7','SSP':'sv8','PRE':'sv8pt5','JTG':'sv9',
-    'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh4pt5','BST':'swsh5',
-    'CRE':'swsh6','EVS':'swsh7','FST':'swsh8','BRS':'swsh9','ASR':'swsh10','LOR':'swsh11',
-    'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5',
-    'SUM':'sm1','GRI':'sm2','BUS':'sm3','UPR':'sm5','FLI':'sm6','CES':'sm7',
-    'LOT':'sm8','TEU':'sm9','UNB':'sm10','UNM':'sm11','COS':'sm12',
-    'XY':'xy1','FLF':'xy2','FFI':'xy3','PHF':'xy4','PRC':'xy5','ROS':'xy6',
-    'AOR':'xy7','BKT':'xy8','BKP':'xy9','FCO':'xy10','STS':'xy11','EVO':'xy12',
-    'PFL':'sv4pt5',
-  };
-  const pid = PKMN[set];
+  const pid = LIMITLESS_TO_PTCGIO[set];
   if (pid) {
     urls.push(`https://images.pokemontcg.io/${pid}/${numClean}.png`);
     urls.push(`https://images.pokemontcg.io/${pid}/${numPadded}.png`);
