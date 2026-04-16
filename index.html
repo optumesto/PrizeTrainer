@@ -1155,21 +1155,6 @@
     .review-body { max-width: 1500px; }
     .btn-block { font-size: 0.75rem; }
   }
-
-  /* ── COUNTDOWN OVERLAY ── */
-  .countdown-overlay {
-    display:none; position:fixed; inset:0; z-index:500;
-    align-items:center; justify-content:center;
-    background:rgba(0,0,0,0.75); backdrop-filter:blur(4px);
-  }
-  .countdown-overlay.active { display:flex; }
-  .countdown-num {
-    font-family:var(--px); font-size:clamp(5rem,20vw,12rem); font-weight:700;
-    color:var(--gold); text-shadow:0 0 60px rgba(216,168,32,0.7), 4px 4px 0 rgba(0,0,0,0.9);
-    animation:countPop 0.85s ease-out forwards;
-  }
-  @keyframes countPop {
-    0%   { transform:scale(1.4); opacity:0; }
     20%  { transform:scale(1.0); opacity:1; }
     75%  { transform:scale(1.0); opacity:1; }
     100% { transform:scale(0.6); opacity:0; }
@@ -1238,19 +1223,6 @@
     text-align:center; padding:0.3rem 0; flex-shrink:0;
   }
   .prize-browser-nav { display:flex; gap:0.5rem; flex-shrink:0; }
-
-  /* ── SOUND TOGGLE btn ── */
-  .sound-toggle {
-    position:fixed; bottom:1.1rem; right:1.1rem; z-index:50;
-    background:var(--bg-panel); border:2px solid var(--muted);
-    color:var(--text); font-size:1.1rem; width:2.4rem; height:2.4rem;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    box-shadow:2px 2px 0 rgba(0,0,0,0.5); transition:border-color 0.15s;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .sound-toggle:hover { border-color:var(--gold); }
-  .sound-toggle.muted { opacity:0.4; }
-
   /* ── KEYBOARD HINT bar (desktop only) ── */
   @media (min-width:768px) {
     .kb-hints {
@@ -1269,30 +1241,6 @@
   @media (max-width:767px) { .kb-hints { display:none; } }
 
   /* countdown overlay removed */
-
-  /* ── BIG TIMER (shows when time limit active, center of card viewer) ── */
-  .big-timer {
-    position:absolute; top:0.6rem; right:0.8rem; z-index:20;
-    font-family:var(--px); font-size:clamp(1.4rem,5vw,2.8rem); font-weight:700;
-    color:var(--gold); text-shadow:0 0 12px rgba(216,168,32,0.5), 2px 2px 0 rgba(0,0,0,0.9);
-    letter-spacing:0.04em; pointer-events:none; display:none;
-  }
-  .big-timer.active { display:block; }
-  .big-timer.warning { color:var(--red); animation:blink 0.7s step-end infinite; }
-
-  /* ── SOUND TOGGLE ── */
-  .sound-toggle {
-    position:fixed; bottom:1.2rem; right:1.2rem; z-index:150;
-    background:var(--bg-panel); border:2px solid var(--gold-dim);
-    color:var(--gold); font-size:1.1rem;
-    width:2.4rem; height:2.4rem;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; box-shadow:2px 2px 0 rgba(0,0,0,0.5);
-    -webkit-tap-highlight-color:transparent;
-    transition:opacity 0.15s;
-  }
-  .sound-toggle.muted { opacity:0.35; }
-
   /* ── POST-GAME CARD BROWSER ── */
   .prize-browser-overlay {
     display:none; position:fixed; inset:0; z-index:180;
@@ -1348,7 +1296,6 @@
   }
   @media (min-width:768px) {
     .kbd-hint { display:block; }
-    .big-timer { font-size:clamp(1.8rem,3vw,3.2rem); }
   }
 
   /* ── SHARE MODAL TABS ── */
@@ -1367,12 +1314,6 @@
 <body>
 
 <canvas id="confetti-canvas"></canvas>
-
-<!-- COUNTDOWN OVERLAY -->
-<div class="countdown-overlay" id="countdown-overlay" style="display:none!important">
-  <div class="countdown-num" id="countdown-num">3</div>
-</div>
-
 <!-- PRIZE BROWSER OVERLAY -->
 <div class="prize-browser-overlay" id="prize-browser-overlay">
   <div class="prize-browser-header">
@@ -1390,9 +1331,6 @@
     <div class="prize-browser-badge" id="pb-badge"></div>
   </div>
 </div>
-
-<!-- SOUND TOGGLE -->
-<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle sound">🔊</button>
 
 <!-- ═══════════════════════════ HOME SCREEN -->
 <div id="screen-home" class="screen active">
@@ -1448,7 +1386,6 @@
   </div>
   <div class="game-body-desktop">
   <div class="card-viewer" style="position:relative;">
-    <div class="big-timer" id="big-timer">0:00</div>
     <div class="card-counter" id="card-counter">CARD 1 OF 54</div>
     <div class="card-stage" id="card-stage">
       <div class="carousel-track" id="carousel-track"></div>
@@ -1486,7 +1423,7 @@
 <!-- ═══════════════════════════ RESULTS SCREEN -->
 <div id="screen-results" class="screen">
   <div class="results-header">
-    <div class="results-score" id="results-score">0/6</div>
+    <div class="results-score" id="results-score">0</div>
     <div class="session-rating" id="session-rating"></div>
     <div class="results-score-label">PRIZE CARDS FOUND</div>
     <div class="results-time" id="results-time">TIME: 0:00</div>
@@ -1686,8 +1623,6 @@
 </div>
 
 <!-- Loading -->
-<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle sound">🔊</button>
-
 <div class="loading-overlay" id="loading-overlay">
   <div class="spinner"></div>
   <div class="loading-text" id="loading-text">LOADING...</div>
@@ -1863,36 +1798,72 @@ function startGameFromReview() {
 function renderReview(deck) {
   document.getElementById('review-deck-name').textContent = deck.name;
 
-  // Classify each unique card entry
+  // Classify each unique card entry into Pokémon / Trainers / Energy.
+  // Trainer items whose name contains "Energy" (Energy Search, Energy Retrieval, etc.)
+  // are checked FIRST so they don't get bucketed with basic energies.
   const pokemon = [], trainers = [], energies = [];
+
+  // Trainer Items/Tools whose name contains "Energy"
+  const ENERGY_NAMED_TRAINERS = new Set([
+    'energy search', 'energy search pro', 'energy retrieval', 'energy switch',
+    'energy recycler', 'energy recycle system', 'energy sticker', 'energy lotto',
+    'energy loto', 'superior energy retrieval', 'energy pick', 'energy spinner'
+  ]);
+
+  // Bare Supporter/NPC names. Possessive forms ("Iono's Bellibolt") stay Pokémon.
+  const BARE_TRAINER_NAMES = new Set([
+    'iono','arven','penny','larry','geeta','nemona','drayton','crispin','carmine',
+    'kieran','lacey','lillie','hilda','cynthia','jacq','marnie','dawn','barry',
+    'roark','judge','hex maniac','team yell grunt'
+  ]);
+
+  // Named trainer cards (Items / Tools / Stadiums / Supporters).
+  const KNOWN_TRAINER_CARDS = [
+    'ultra ball','nest ball','great ball','poké ball','quick ball','level ball',
+    'heavy ball','friend ball','dive ball','master ball','premier ball','beast ball',
+    'rare candy','super rod','buddy-buddy poffin','earthen vessel','night stretcher',
+    'counter catcher','pokégear 3.0','poké kid','hyper potion','potion','switch',
+    'pal pad','lost vacuum','artazon','town store','forest seal stone',
+    'escape rope','switch cart','bravery charm','scoop up net','echoing horn',
+    'technical machine','air balloon','rescue board','defiance band','unfair stamp',
+    'brilliant blender',"boss's orders","professor's research",
+    "professor sada's vitality","professor turo's scenario",
+    "erika's invitation","giovanni's charisma","cyrus's manipulation",
+    "sabrina's suggestion","colress's tenacity","ethan's adventure","steven's resolve",
+    "janine's secret art","nemona's backpack","n's reshiram",
+    'rocky helmet','choice belt','tool scrapper','reboot pod',
+    'colbur berry','occa berry','ultra space','pokestop',
+    'pokemon league headquarters','levincia','area zero underdepths',
+    'path to the peak','collapsed stadium','training court','pokémon catcher',
+    'counter gain','jamming tower','beach court','risky gamble',
+    'electric generator','gravity mountain','rotom phone','secret box',
+    'cyrano','pokémon communication','evolution incense'
+  ];
+  const trainerPhrases = KNOWN_TRAINER_CARDS.map(t => t.toLowerCase());
+
   deck.cards.forEach(card => {
-    const n = (card.name || '').toLowerCase();
-    if (n.includes('energy')) {
-      energies.push(card);
-    } else {
-      // Heuristic: Pokémon cards usually have a set number and are not trainers
-      // Check common trainer keywords
-      const trainerKeywords = [
-        'ball','pad','candy','stamp','potion','rod','urn','tower','stretcher',
-        'determination','orders','poffin','belt','catcher','switch','nest',
-        'research','professor','boss','iono','arven','judge','crispin','dawn',
-        'lillie','hilda','supporter','item','tool','ruins','energy search',
-        'computer','communication','evolution','rotom','trekking','vessel',
-        'map','cape','charm','whistle','helmet','telescope','band','ribbon',
-        'lesson','box','sack','bag','scope','mirror','hook','rope','chain',
-        'collar','leash','stone','leaf','coat','shirt','gloves','shoes',
-        'glasses','hat','mask','cloak','badge','coin','token','ticket',
-        'pass','card','book','scroll','key','lock','door','window','gate',
-        'bridge','path','trail','road','way','zone','area','terrain',
-        'stadium','arena','gym','lab','tower','ruins','forest','cave',
-        'mountain','beach','island','city','town','village','camp',
-        'jamming','unfair','risky','ultra','rare','buddy','night','boss',
-        'dawn','crispin','poké pad','lillie'
-      ];
-      const isTrainer = trainerKeywords.some(kw => n.includes(kw));
-      if (isTrainer) trainers.push(card);
-      else pokemon.push(card);
+    const n = (card.name || '').toLowerCase().trim();
+    const baseKey = n.replace(/\{[a-z]\}/g, '').replace(/\s+/g, ' ').trim();
+
+    // Rule 1 (priority): Energy-named trainer items
+    if (ENERGY_NAMED_TRAINERS.has(baseKey) ||
+        [...ENERGY_NAMED_TRAINERS].some(t => baseKey.startsWith(t + ' '))) {
+      trainers.push(card);
+      return;
     }
+    // Rule 2: basic + special energies
+    if (/\benergy\b/.test(n)) {
+      energies.push(card);
+      return;
+    }
+    // Rule 3: known trainer card
+    if (trainerPhrases.some(t => n === t || n.startsWith(t + ' ')) ||
+        BARE_TRAINER_NAMES.has(n)) {
+      trainers.push(card);
+      return;
+    }
+    // Rule 4: default to Pokémon
+    pokemon.push(card);
   });
 
   // Sort each group so cards with the same base name are adjacent
@@ -1958,7 +1929,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initImportListener();
   initGuessInput();
   loadState();
-  loadSoundPref();
 });
 
 // Re-render carousel on resize so slot count updates
@@ -1972,109 +1942,7 @@ window.addEventListener('resize', () => {
 });
 
 
-// ═══════════════════════════════════════════════
-// SOUND ENGINE — Web Audio API, no CDN needed
-// ═══════════════════════════════════════════════
-let _audioCtx = null;
-let soundEnabled = true;
 
-function getAudioCtx() {
-  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return _audioCtx;
-}
-
-function playTone(freq, type, duration, vol = 0.18, delay = 0) {
-  if (!soundEnabled) return;
-  try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
-    gain.gain.setValueAtTime(0, ctx.currentTime + delay);
-    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + delay + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
-    osc.start(ctx.currentTime + delay);
-    osc.stop(ctx.currentTime + delay + duration + 0.05);
-  } catch(e) {}
-}
-
-function sfxNav()     { playTone(440, 'sine',   0.07, 0.10); }
-function sfxGuess()   { playTone(520, 'sine',   0.10, 0.14); }
-function sfxRemove()  { playTone(280, 'sine',   0.09, 0.10); }
-function sfxReveal()  { playTone(660, 'sine',   0.20, 0.20); }
-function sfxCorrect() {
-  // ascending ding
-  [523, 659, 784].forEach((f, i) => playTone(f, 'sine', 0.18, 0.18, i * 0.09));
-}
-function sfxWrong() {
-  playTone(220, 'sawtooth', 0.15, 0.12);
-  playTone(180, 'sawtooth', 0.15, 0.10, 0.12);
-}
-function sfxCountdown() { playTone(660, 'sine', 0.12, 0.22); }
-function sfxGo()        {
-  [523, 659, 784, 1047].forEach((f, i) => playTone(f, 'sine', 0.14, 0.20, i * 0.07));
-}
-
-function toggleSound() {
-  soundEnabled = !soundEnabled;
-  const btn = document.getElementById('sound-toggle');
-  btn.textContent = soundEnabled ? '🔊' : '🔇';
-  btn.classList.toggle('muted', !soundEnabled);
-  try { localStorage.setItem('ptcg_sound', soundEnabled ? '1' : '0'); } catch(e) {}
-}
-
-function loadSoundPref() {
-  try {
-    const v = localStorage.getItem('ptcg_sound');
-    if (v === '0') { soundEnabled = false; document.getElementById('sound-toggle').textContent = '🔇'; document.getElementById('sound-toggle').classList.add('muted'); }
-  } catch(e) {}
-}
-function sfxClick()    { playTone(600, 'triangle', 0.06, 0.09); }
-function sfxTick()     { playTone(880, 'square',   0.04, 0.06); }
-function sfxWarn()     { playTone(330, 'sawtooth', 0.12, 0.14); }
-function sfxPerfect()  { [0,2,4,5,7,9,12].forEach((s,i) => playTone(440*Math.pow(2,s/12),'sine',0.3,0.12,i*0.08)); }
-function sfxGameStart(){ playTone(330,'square',0.06,0.08); playTone(440,'square',0.06,0.08,0.10); playTone(550,'square',0.06,0.08,0.20); }
-
-// Big countdown timer display inside card viewer
-function updateBigTimer(remaining) {
-  const el = document.getElementById('big-timer');
-  if (!el) return;
-  if (game.timeLimit > 0) {
-    el.classList.add('active');
-    el.textContent = formatTime(Math.max(0, remaining));
-    el.classList.toggle('warning', remaining <= 10);
-  } else {
-    el.classList.remove('active');
-  }
-}
-
-
-// ═══════════════════════════════════════════════
-// COUNTDOWN  3 → 2 → 1 → GO!
-// ═══════════════════════════════════════════════
-function runCountdown(cb) {
-  const overlay = document.getElementById('countdown-overlay');
-  const numEl   = document.getElementById('countdown-num');
-  const steps   = ['3','2','1','GO!'];
-  let i = 0;
-  // countdown disabled
-  cb(); return;
-  overlay.classList.add('active');
-
-  function step() {
-    if (i >= steps.length) { overlay.classList.remove('active'); cb(); return; }
-    numEl.textContent = steps[i];
-    // Re-trigger animation by cloning
-    const clone = numEl.cloneNode(true);
-    numEl.parentNode.replaceChild(clone, numEl.parentNode.querySelector('.countdown-num'));
-    if (steps[i] === 'GO!') { sfxGo(); } else { sfxCountdown(); }
-    i++;
-    setTimeout(step, 850);
-  }
-  step();
-}
 
 // ═══════════════════════════════════════════════
 // PRIZE BROWSER
@@ -2105,7 +1973,6 @@ function closePrizeBrowser() {
 
 function browsePrize(dir) {
   _pbIdx = Math.max(0, Math.min(_pbResults.length - 1, _pbIdx + dir));
-  sfxNav();
   renderPrizeBrowser();
 }
 
@@ -2152,8 +2019,8 @@ document.addEventListener('keydown', e => {
 
   // Arrow keys — navigate carousel (only when input not focused)
   if (!inputFocused) {
-    if (e.key === 'ArrowLeft')  { navigate(-1); sfxNav(); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { navigate(1);  sfxNav(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft')  { navigate(-1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { navigate(1); e.preventDefault(); }
   }
 
   // Tab — focus guess input
@@ -2570,23 +2437,6 @@ function clearAllData() {
   clearAllStorage();
 }
 
-async function deleteDeck(id) {
-  if (!confirm('Delete this deck and all its history?')) return;
-  state.decks = state.decks.filter(d => d.id !== id);
-  await saveState();
-  renderHome();
-}
-
-async function refetchDeck(id) {
-  const deck = state.decks.find(d => d.id === id);
-  if (!deck) return;
-  showLoading('Rebuilding image URLs…');
-  deck.cards = await Promise.all(deck.cards.map(c => fetchCardImage(c)));
-  await saveState();
-  hideLoading();
-  renderHome();
-  showToast('URLs refreshed — images will load as you browse cards.');
-}
 
 // ═══════════ GAME ═══════════
 async function startGame(deckId) {
@@ -2739,7 +2589,6 @@ function navigate(dir) {
   if (next < 0 || next >= game.visible.length) return;
   game.currentIdx = next;
   renderCard(dir);
-  sfxNav();
 }
 
 function renderProgressDots() {
@@ -2881,6 +2730,7 @@ function cycleAutocomplete(dir) {
   document.getElementById('guess-input').value = items[idx].dataset.val;
 }
 
+
 // ═══════════ NAME NORMALIZATION ═══════════
 // Canonical form for comparing a typed guess against a prize card name.
 // Handles:
@@ -2892,30 +2742,16 @@ function cycleAutocomplete(dir) {
 function normalizeCardName(raw) {
   if (!raw) return '';
   let s = String(raw).toLowerCase();
-
-  // Expand energy-symbol tokens: {g}=grass {r}=fire {w}=water {l}=lightning
-  // {p}=psychic {f}=fighting {d}=darkness {m}=metal {y}=fairy {n}=dragon {c}=colorless
   const symMap = {
     g:'grass', r:'fire', w:'water', l:'lightning',
     p:'psychic', f:'fighting', d:'darkness', m:'metal',
     y:'fairy', n:'dragon', c:'colorless'
   };
   s = s.replace(/\{([a-z])\}/g, (_, ch) => symMap[ch] || '');
-
-  // Normalize curly quotes and odd punctuation to their ASCII equivalents
   s = s.replace(/[’‘`]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-');
-
-  // Drop common trademark / copyright glyphs
   s = s.replace(/[®™©★◆♪]/g, ' ');
-
-  // Strip "basic" prefix on energy cards so "Water Energy" matches "Basic Water Energy"
-  if (/\benergy\b/.test(s)) {
-    s = s.replace(/\bbasic\b/g, ' ');
-  }
-
-  // Collapse all whitespace
-  s = s.replace(/\s+/g, ' ').trim();
-  return s;
+  if (/\benergy\b/.test(s)) s = s.replace(/\bbasic\b/g, ' ');
+  return s.replace(/\s+/g, ' ').trim();
 }
 
 function submitGuess() {
@@ -2931,7 +2767,7 @@ function submitGuess() {
     return;
   }
 
-  // Energies unlimited in a deck (cap at prize count), other cards max 4
+  // Energies cap at prize count, other cards max 4 (deck building limit)
   const normalized = normalizeCardName(val);
   const isEnergy = /\benergy\b/.test(normalized);
   const maxCopies = isEnergy ? prizeCount : 4;
@@ -2943,7 +2779,6 @@ function submitGuess() {
   }
 
   game.guesses.push(val);
-  sfxGuess();
   renderPrizeSlots();
   input.value = '';
   fb.textContent = `Guess ${game.guesses.length}/${prizeCount} recorded.`;
@@ -2981,7 +2816,7 @@ function updateTimer() {
     const fmt = formatTime(remaining);
     el.textContent = fmt;
     if (big) { big.textContent = fmt; big.className = 'game-countdown-big' + (remaining <= 10 ? ' warning' : ''); }
-    if (remaining <= 10) { el.classList.add('warning'); if (remaining > 0) sfxCountdown(); }
+    if (remaining <= 10) el.classList.add('warning');
     else el.classList.remove('warning');
     if (remaining === 0) { stopTimer(); revealPrizes(); }
   } else {
@@ -3013,15 +2848,13 @@ async function revealPrizes() {
     const remaining = pc - game.guesses.length;
     if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
   }
-  sfxReveal();
   stopTimer();
   const elapsed = game.elapsed;
 
-  // Score — strict: guess must match the FULL card name after normalization, count-aware.
-  // Normalization handles: case, whitespace, energy-symbol tokens ({W}=water),
-  // the optional "Basic" prefix on energies, curly quotes, and punctuation.
-  // e.g. guessing "Quilava" does NOT match "Ethan's Quilava"
-  //      guessing "Water Energy" DOES match "Basic {W} Energy"
+  // Score — strict normalized equality (handles case, whitespace, {W}→water,
+  // optional "Basic" prefix on energies, curly quotes).
+  // Rejects substring matches: "Quilava" does NOT match "Ethan's Quilava",
+  // and "Charizard" does NOT match "Charizard ex".
   const prizePool = game.prizes.map(p => normalizeCardName(p.name));
   const usedPrizeIdxs = new Set();
   let score = 0;
@@ -3088,15 +2921,8 @@ async function revealPrizes() {
 
   // Update streak on home header (will refresh when back)
   updateHeaderStats();
-
-  // Sound feedback
-  if (score === (game.prizeCount || 6)) { sfxCorrect(); sfxCorrect(); }
-  else if (score > 0) sfxCorrect();
-  else sfxWrong();
-  sfxReveal();
-
   // Confetti on perfect score
-  if (score === (game.prizeCount || 6)) { launchConfetti(); sfxPerfect(); }
+  if (score === (game.prizeCount || 6)) { launchConfetti(); }
 
   showScreen('results');
 }
