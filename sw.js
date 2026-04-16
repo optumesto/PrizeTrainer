@@ -1,7 +1,7 @@
 // Prize Trainer — Service Worker
 // Provides offline caching + install-ability across all platforms
 
-const CACHE_NAME = 'prize-trainer-v2';
+const CACHE_NAME = 'prize-trainer-v3';
 
 // Core app files to cache immediately on install
 const CORE_ASSETS = [
