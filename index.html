@@ -1811,14 +1811,18 @@ function renderReview(deck) {
   const BARE_TRAINER_NAMES = new Set([
     'iono','arven','penny','larry','geeta','nemona','drayton','crispin','carmine',
     'kieran','lacey','lillie','hilda','cynthia','jacq','marnie','dawn','barry',
-    'roark','judge','hex maniac','team yell grunt'
+    'roark','judge','hex maniac','team yell grunt','n','guzma','acerola','gladion',
+    'colress','skyla','korrina','lysandre','brigette','mallow','lana',
+    'lusamine','zinnia','looker','faba','nanu','hapu','bea','leon',
+    'hop','peony','melony','raihan','mustard','avery','klara','volo',
+    'irida','sabi','ingo','bill','sonia','xerosic','wicke','kukui'
   ]);
   const KNOWN_TRAINER_CARDS = [
     'ultra ball','nest ball','great ball','poké ball','quick ball','level ball',
     'heavy ball','friend ball','dive ball','master ball','premier ball','beast ball',
     'rare candy','super rod','buddy-buddy poffin','earthen vessel','night stretcher',
     'counter catcher','pokégear 3.0','poké kid','hyper potion','potion','switch',
-    'pal pad','lost vacuum','artazon','town store','forest seal stone',
+    'pal pad','poké pad','lost vacuum','artazon','town store','forest seal stone',
     'escape rope','switch cart','bravery charm','scoop up net','echoing horn',
     'technical machine','air balloon','rescue board','defiance band','unfair stamp',
     'brilliant blender',"boss's orders","professor's research",
@@ -1826,13 +1830,21 @@ function renderReview(deck) {
     "erika's invitation","giovanni's charisma","cyrus's manipulation",
     "sabrina's suggestion","colress's tenacity","ethan's adventure","steven's resolve",
     "janine's secret art","nemona's backpack","n's reshiram",
+    "lillie's determination","team rocket's petrel","team rocket's watchtower",
     'rocky helmet','choice belt','tool scrapper','reboot pod',
     'colbur berry','occa berry','ultra space','pokestop',
     'pokemon league headquarters','levincia','area zero underdepths',
     'path to the peak','collapsed stadium','training court','pokémon catcher',
     'counter gain','jamming tower','beach court','risky gamble',
     'electric generator','gravity mountain','rotom phone','secret box',
-    'cyrano','pokémon communication','evolution incense'
+    'cyrano','pokémon communication','evolution incense',
+    'surfing beach','battle cage','precious trolley',
+    "xerosic's machinations","guzma's orders",
+    'vs seeker',"trainers' mail",'muscle band','float stone','fighting fury belt',
+    'computer search','dowsing machine','scramble switch','life dew',
+    'enhanced hammer','special charge','field blower','rescue stretcher',
+    'puzzle of time','max elixir','aqua patch','energy switch','energy search',
+    "professor juniper","professor sycamore","professor elm's lecture"
   ];
   const trainerPhrases = KNOWN_TRAINER_CARDS.map(t => t.toLowerCase());
 
@@ -2318,16 +2330,28 @@ function parseLine(line) {
 
 // Limitless set code → pokemontcg.io set ID mapping (module scope)
 const LIMITLESS_TO_PTCGIO = {
+  // Scarlet & Violet era
   'SVI':'sv1','PAL':'sv2','OBF':'sv3','MEW':'sv3pt5','PAR':'sv4','PRF':'sv4pt5','PAF':'sv4pt5',
   'TEF':'sv5','TWM':'sv6','SFA':'sv6pt5','SCR':'sv7','SSP':'sv8','PRE':'sv8pt5','JTG':'sv9',
-  'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh4pt5','BST':'swsh5',
+  'SVE':'sve','SVP':'svp','PFL':'sv4pt5','ASC':'sv9a','MEG':'sv9b',
+  // Sword & Shield era
+  'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh45','BST':'swsh5',
   'CRE':'swsh6','EVS':'swsh7','FST':'swsh8','BRS':'swsh9','ASR':'swsh10','LOR':'swsh11',
-  'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5',
-  'SUM':'sm1','GRI':'sm2','BUS':'sm3','UPR':'sm5','FLI':'sm6','CES':'sm7',
+  'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5','SWP':'swshp', 'CEL':'cel25',
+  // Sun & Moon era
+  'SUM':'sm1','GRI':'sm2','BUS':'sm3','CIN':'sm4','UPR':'sm5','FLI':'sm6','CES':'sm7',
   'LOT':'sm8','TEU':'sm9','UNB':'sm10','UNM':'sm11','COS':'sm12',
+  'SLG':'sm35','DRM':'sm75','HIF':'sm115','DET':'det1','SMP':'smp',
+  // XY era
   'XY':'xy1','FLF':'xy2','FFI':'xy3','PHF':'xy4','PRC':'xy5','ROS':'xy6',
   'AOR':'xy7','BKT':'xy8','BKP':'xy9','FCO':'xy10','STS':'xy11','EVO':'xy12',
-  'PFL':'sv4pt5','ASC':'sv9a','MEG':'sv9b','SVE':'sve',
+  'GEN':'g1','XYP':'xyp',
+  // Black & White era
+  'BLW':'bw1','EPO':'bw2','NVI':'bw3','NXD':'bw4','DEX':'bw5','DRX':'bw6',
+  'BCR':'bw7','PLS':'bw8','PLF':'bw9','PLB':'bw10','LTR':'bw11','BWP':'bwp',
+  // HeartGold/SoulSilver era
+  'HS':'hgss1','UL':'hgss2','UD':'hgss3','TM':'hgss4','CL':'hgss4',
+  'HSP':'hsp',
 };
 
 // Fetch supertypes (Pokémon / Trainer / Energy) from pokemontcg.io API.
@@ -2700,10 +2724,10 @@ function initGuessInput() {
   const deck = state.decks.find(d => d.id === state.activeDeckId);
   if (!deck) return;
   // Unique base names in deck
-  // Use only the display name — strip set codes, numbers, energy symbols
+  // Expand energy symbols to full names so the normalizer can match them
+  const energySymMap = {g:'Grass',r:'Fire',w:'Water',l:'Lightning',p:'Psychic',f:'Fighting',d:'Darkness',m:'Metal',y:'Fairy',n:'Dragon',c:'Colorless'};
   const names = [...new Set(deck.cards.map(c => {
-    // Prefer the parsed name field (no set/number) over apiName which may contain set info
-    return (c.name || '').replace(/\{[a-zA-Z]\}/g,'').trim();
+    return (c.name || '').replace(/\{([a-zA-Z])\}/g, (_, ch) => energySymMap[ch.toLowerCase()] || '').replace(/\s+/g,' ').trim();
   }).filter(Boolean))].filter(n => {
     const nl = n.toLowerCase();
     // Match if any word in the name starts with the typed value
