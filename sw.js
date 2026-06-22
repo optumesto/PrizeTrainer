@@ -1,56 +1,79 @@
-const CACHE = 'holomint-v40';        // app shell — replaced on every release
-const MEDIA = 'holomint-media';      // card images / cross-origin — persists across releases
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './leaf-splash.png'];
+// PrizeTrainer service worker
+// Bump CACHE_NAME on every deploy so clients pull fresh files.
+const CACHE_NAME = 'prize-trainer-v10';
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
-});
+const CORE_ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png',
+  './icons/icon.svg',
+];
 
-self.addEventListener('activate', e => {
-  // Drop old shell caches, but keep the current shell and the persistent media cache.
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE && k !== MEDIA).map(k => caches.delete(k)))
-  ).then(() => self.clients.claim()));
-});
-
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  const url = new URL(e.request.url);
-
-  // Same-origin data files (prices.json, products.json, etc.): network-first so daily
-  // updates land; fall back to cache when offline at a show.
-  if (url.pathname.endsWith('.json') && url.origin === location.origin) {
-    e.respondWith(
-      fetch(e.request).then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
-        return res;
-      }).catch(() => caches.match(e.request))
-    );
-    return;
-  }
-
-  // Cross-origin (card images, external metadata API): cache-first into a persistent
-  // media cache. This survives version bumps, so pushing a new release no longer wipes
-  // cached images and force-redownloads them as you browse. Browser handles eviction
-  // under storage pressure.
-  if (url.origin !== location.origin) {
-    e.respondWith(
-      caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
-        const copy = res.clone();
-        caches.open(MEDIA).then(c => c.put(e.request, copy)).catch(()=>{});
-        return res;
-      }).catch(() => hit))
-    );
-    return;
-  }
-
-  // Same-origin app shell: cache-first for instant offline loads (refreshed each release).
-  e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
-      return res;
-    }).catch(() => hit))
+// On install: pre-cache the core shell, then skip waiting so the new SW
+// activates immediately rather than waiting for all tabs to close.
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(CORE_ASSETS))
+      .then(() => self.skipWaiting())
   );
+});
+
+// On activate: delete any old caches whose name doesn't match this version,
+// then take control of all open clients so they get the new SW without reload.
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+// On fetch: network-first for the HTML shell (so deploys show up quickly),
+// cache-first for everything else (images, fonts, icons).
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  const url = new URL(req.url);
+  const isHTML = req.mode === 'navigate' ||
+                 (req.headers.get('accept') || '').includes('text/html');
+
+  if (isHTML) {
+    // Network-first for HTML — falls back to cache if offline
+    event.respondWith(
+      fetch(req)
+        .then(resp => {
+          const copy = resp.clone();
+          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+          return resp;
+        })
+        .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Cache-first for everything else
+  event.respondWith(
+    caches.match(req).then(cached => {
+      if (cached) return cached;
+      return fetch(req).then(resp => {
+        // Only cache successful, same-origin responses
+        if (resp && resp.status === 200 && url.origin === self.location.origin) {
+          const copy = resp.clone();
+          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+        }
+        return resp;
+      }).catch(() => cached);
+    })
+  );
+});
+
+// Allow the page to trigger an immediate activation via postMessage.
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
