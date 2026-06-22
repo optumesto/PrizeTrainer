@@ -1,97 +1,56 @@
-// Prize Trainer — Service Worker
-// Provides offline caching + install-ability across all platforms
+const CACHE = 'holomint-v40';        // app shell — replaced on every release
+const MEDIA = 'holomint-media';      // card images / cross-origin — persists across releases
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './leaf-splash.png'];
 
-const CACHE_NAME = 'prize-trainer-v3';
-
-// Core app files to cache immediately on install
-const CORE_ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icons/icon.svg',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=M+PLUS+1+Code:wght@400;500;700&family=Nunito:wght@600;700;800;900&display=swap'
-];
-
-// ── INSTALL: cache core assets ──
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(CORE_ASSETS).catch(err => {
-        console.warn('SW: Some core assets failed to cache (offline fonts may not work):', err);
-        // Still install even if fonts fail
-        return cache.addAll(['./','./index.html','./manifest.json']);
-      });
-    })
-  );
-  self.skipWaiting();
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 
-// ── ACTIVATE: clean old caches ──
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
+self.addEventListener('activate', e => {
+  // Drop old shell caches, but keep the current shell and the persistent media cache.
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE && k !== MEDIA).map(k => caches.delete(k)))
+  ).then(() => self.clients.claim()));
 });
 
-// ── FETCH: network-first for API/images, cache-first for app shell ──
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
 
-  // Pokémon card images — cache them after first fetch (network-first)
-  if (url.hostname === 'images.pokemontcg.io' || url.hostname === 'limitlesstcg.nyc3.digitaloceanspaces.com') {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(event.request))
+  // Same-origin data files (prices.json, products.json, etc.): network-first so daily
+  // updates land; fall back to cache when offline at a show.
+  if (url.pathname.endsWith('.json') && url.origin === location.origin) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+        return res;
+      }).catch(() => caches.match(e.request))
     );
     return;
   }
 
-  // Google Fonts — cache-first (they rarely change)
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    event.respondWith(
-      caches.match(event.request).then(cached => {
-        return cached || fetch(event.request).then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          return response;
-        });
-      })
+  // Cross-origin (card images, external metadata API): cache-first into a persistent
+  // media cache. This survives version bumps, so pushing a new release no longer wipes
+  // cached images and force-redownloads them as you browse. Browser handles eviction
+  // under storage pressure.
+  if (url.origin !== location.origin) {
+    e.respondWith(
+      caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(MEDIA).then(c => c.put(e.request, copy)).catch(()=>{});
+        return res;
+      }).catch(() => hit))
     );
     return;
   }
 
-  // App shell — cache-first, fallback to network
-  if (url.origin === location.origin) {
-    event.respondWith(
-      caches.match(event.request).then(cached => {
-        const fetchPromise = fetch(event.request).then(response => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          }
-          return response;
-        }).catch(() => cached);
-
-        return cached || fetchPromise;
-      })
-    );
-    return;
-  }
-
-  // Everything else — network with cache fallback
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+  // Same-origin app shell: cache-first for instant offline loads (refreshed each release).
+  e.respondWith(
+    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+      return res;
+    }).catch(() => hit))
   );
 });
