@@ -114,6 +114,16 @@
   body[data-theme="light"] .gcr-guess,
   body[data-theme="light"] .gcr-prize,
   body[data-theme="light"] .gtb-label,
+  body[data-theme="light"] .review-placeholder,
+  body[data-theme="light"] .results-score-label,
+  body[data-theme="light"] .loading-text,
+  body[data-theme="light"] .card-placeholder,
+  body[data-theme="light"] .mn-card,
+  body[data-theme="light"] .tb-stat,
+  body[data-theme="light"] .hm-tagline,
+  body[data-theme="light"] .archived-badge,
+  body[data-theme="light"] .guess-compare-title,
+  body[data-theme="light"] .deck-warn,
   body[data-theme="light"] label,
   body[data-theme="light"] .prize-slot { color:#000 !important; }
   body[data-theme="light"] .prize-slot { border-color:#a89c80; }
@@ -407,6 +417,59 @@
   }
   .review-header::before { left:0; }
   .review-header::after  { right:0; }
+  .review-tabs { display:flex; gap:0; border-bottom:2px solid var(--muted); flex-shrink:0; }
+  .rv-tab {
+    flex:1; font-family:var(--px); font-size:0.46rem; letter-spacing:0.06em;
+    padding:0.6rem 0.4rem; min-height:40px; cursor:pointer;
+    background:transparent; border:none; border-bottom:3px solid transparent;
+    color:var(--text-dim); -webkit-tap-highlight-color:transparent;
+  }
+  .rv-tab.active { color:var(--gold); border-bottom-color:var(--gold); background:var(--gold-bg); }
+
+  .g-hero { text-align:center; padding:1rem 0.9rem 0.6rem; }
+  .g-score { font-family:var(--px); font-size:3.2rem; line-height:1; }
+  .g-score small { font-size:0.3em; color:var(--text-dim); }
+  .g-band { font-family:var(--px); font-size:0.5rem; letter-spacing:0.08em; margin-top:0.4rem; }
+  .g-factors { display:flex; align-items:center; justify-content:center; gap:0.9rem; margin-top:0.9rem; }
+  .g-fac { text-align:center; }
+  .g-fac .fv { font-family:var(--px); font-size:1.1rem; }
+  .g-fac .fl { font-family:var(--px); font-size:0.36rem; color:var(--text-dim); letter-spacing:0.05em; margin-top:0.2rem; }
+  .g-fac .fs { font-size:0.66rem; color:var(--text-dim); font-weight:700; margin-top:0.1rem; }
+  .g-times { font-family:var(--px); font-size:0.9rem; color:var(--text-dim); }
+  .g-sec { padding:0 0.9rem 0.5rem; }
+  .g-sec-t {
+    font-family:var(--px); font-size:0.46rem; color:var(--gold);
+    letter-spacing:0.06em; margin:1rem 0 0.15rem;
+  }
+  .g-sec-i { font-size:0.72rem; color:var(--text-dim); font-weight:700; margin-bottom:0.55rem; line-height:1.45; }
+  .g-item {
+    padding:0.5rem 0.6rem; margin-bottom:0.45rem;
+    background:var(--bg-card); border-left:3px solid var(--muted);
+  }
+  .g-item.crit { border-left-color:var(--red); }
+  .g-item.warn { border-left-color:var(--electric); }
+  .g-item.ok   { border-left-color:var(--green); }
+  .g-item.syn  { border-left-color:var(--water); }
+  .g-item .gt { font-family:var(--px); font-size:0.4rem; letter-spacing:0.04em; margin-bottom:0.25rem; line-height:1.5; }
+  .g-item.crit .gt { color:var(--red); }
+  .g-item.warn .gt { color:var(--electric); }
+  .g-item.ok   .gt { color:var(--green); }
+  .g-item.syn  .gt { color:var(--water); }
+  .g-item p { font-size:0.75rem; font-weight:700; color:var(--text-dim); line-height:1.5; }
+  .g-wip {
+    margin:1rem 0.9rem 1.2rem; padding:0.65rem 0.75rem;
+    border:1px solid var(--electric); border-left:3px solid var(--electric);
+    background:rgba(216,184,0,0.07);
+    font-size:0.72rem; font-weight:700; color:var(--text-dim); line-height:1.55;
+  }
+  .g-wip b { color:var(--electric); }
+  .g-empty { padding:2rem 1rem; text-align:center; font-size:0.8rem; font-weight:700; color:var(--text-dim); line-height:1.6; }
+  .review-coverage {
+    font-family:var(--body); font-size:0.72rem; font-weight:700;
+    color:var(--electric); line-height:1.4;
+    margin-top:0.3rem; padding:0.35rem 0.5rem;
+    background:rgba(216,184,0,0.08); border-left:3px solid var(--electric);
+  }
   .review-deck-name {
     font-family:var(--px); font-size:0.58rem; font-weight:700; color:var(--psychic);
     flex:1; padding:0 0.5rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.6;
@@ -1079,6 +1142,16 @@
   }
   .shortcut-row span { flex:1; }
 
+  /* ── HOW TO PLAY numbered steps ── */
+  .instr-step { display:flex; gap:0.65rem; align-items:flex-start; }
+  .instr-num {
+    flex:0 0 1.5rem; height:1.5rem;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--px); font-size:0.5rem; font-weight:700;
+    background:var(--gold-bg); border:2px solid var(--gold-dim); color:var(--gold);
+    line-height:1;
+  }
+
   /* ── HOLOMINT promo card ── */
   .holomint-promo {
     display:flex; align-items:center; gap:0.7rem;
@@ -1098,7 +1171,11 @@
   .holomint-promo:hover { border-color:var(--gold); }
   .holomint-promo:active { transform:translate(2px,2px); box-shadow:none; }
 
-  .hm-emoji { font-size:1.6rem; line-height:1; flex-shrink:0; }
+  .hm-logo {
+    flex:0 0 34px; width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hm-logo img, .hm-leaf { width:34px; height:34px; display:block; }
   .hm-body { flex:1; min-width:0; }
   .hm-title {
     font-family:var(--px); font-size:0.5rem; font-weight:700;
@@ -1107,6 +1184,41 @@
   .hm-tagline {
     font-family:var(--body); font-size:0.78rem; font-weight:700;
     color:var(--text-dim); line-height:1.3;
+  }
+
+  /* Rotating tool names in Holomint's holographic gradient.
+     Fixed-height container so the cycling text never shifts layout. */
+  .hm-tools {
+    position:relative; height:1.15em; margin-top:0.22rem; overflow:hidden;
+  }
+  .hm-tools span {
+    position:absolute; inset:0; white-space:nowrap;
+    font-family:var(--px); font-size:0.4rem; letter-spacing:0.05em;
+    line-height:1.15em; opacity:0;
+    background:linear-gradient(100deg,#7df0c8,#8fd8ff,#c9a8ff,#ffb3d9,#ffe9a3,#7df0c8);
+    background-size:260% auto;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:hmHoloShift 6s linear infinite, hmToolCycle 18s ease-in-out infinite;
+  }
+  .hm-tools span:nth-child(1) { animation-delay:0s, 0s; }
+  .hm-tools span:nth-child(2) { animation-delay:0s, 3s; }
+  .hm-tools span:nth-child(3) { animation-delay:0s, 6s; }
+  .hm-tools span:nth-child(4) { animation-delay:0s, 9s; }
+  .hm-tools span:nth-child(5) { animation-delay:0s, 12s; }
+  .hm-tools span:nth-child(6) { animation-delay:0s, 15s; }
+  @keyframes hmHoloShift { to { background-position:260% center; } }
+  @keyframes hmToolCycle {
+    0%     { opacity:0; transform:translateY(5px); }
+    2%     { opacity:1; transform:translateY(0); }
+    14%    { opacity:1; transform:translateY(0); }
+    16.6%  { opacity:0; transform:translateY(-5px); }
+    100%   { opacity:0; transform:translateY(-5px); }
+  }
+  /* Respect reduced-motion: hold the first item, no cycling or shimmer */
+  @media (prefers-reduced-motion: reduce) {
+    .hm-tools span { animation:none; opacity:0; }
+    .hm-tools span:nth-child(1) { opacity:1; }
   }
   .hm-arrow {
     font-family:var(--px); font-size:1rem; color:var(--gold);
@@ -1624,10 +1736,32 @@
     <button class="btn btn-block" onclick="toggleTheme()" id="theme-toggle-btn" style="margin-top:0.35rem;font-size:0.5rem;opacity:0.75;">☾ DARK THEME</button>
 
     <a class="holomint-promo" href="https://holomint.app" target="_blank" rel="noopener" onclick="return true;">
-      <div class="hm-emoji">🪙</div>
+      <div class="hm-logo">
+        <img src="https://holomint.app/icon-192.png" alt="" loading="lazy" decoding="async"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <svg class="hm-leaf" viewBox="0 0 64 64" aria-hidden="true" focusable="false" style="display:none">
+          <defs><linearGradient id="hmHoloA" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7df0c8"/><stop offset="28%" stop-color="#8fd8ff"/>
+            <stop offset="54%" stop-color="#c9a8ff"/><stop offset="78%" stop-color="#ffb3d9"/>
+            <stop offset="100%" stop-color="#ffe9a3"/></linearGradient></defs>
+          <path fill="url(#hmHoloA)" d="M10 10q9-2 15 5 q9-1 13 8 q8 2 10 12 q4 6 6 19 q-13-2-19-6 q-10-2-12-10 q-8-3-9-13 q-5-7-4-15z"/>
+          <g stroke="#0c1020" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85">
+            <path d="M12 12 L50 50"/><path d="M20 20 L31 16"/><path d="M28 28 L39 25"/>
+            <path d="M36 36 L46 34"/><path d="M20 20 L16 31"/><path d="M28 28 L25 39"/><path d="M36 36 L34 46"/>
+          </g>
+        </svg>
+      </div>
       <div class="hm-body">
         <div class="hm-title">TRY HOLOMINT</div>
         <div class="hm-tagline">Your Pokémon TCG Selling Companion</div>
+        <div class="hm-tools" aria-label="Holomint tools">
+          <span>Restock alerts</span>
+          <span>Fee math by channel</span>
+          <span>Portfolio tracking</span>
+          <span>Slab Math</span>
+          <span>Card scanner</span>
+          <span>Condition pricing</span>
+        </div>
       </div>
       <div class="hm-arrow">→</div>
     </a>
@@ -1641,8 +1775,14 @@
   <div class="review-header">
     <button class="btn btn-sm" onclick="showScreen('home')">◀ BACK</button>
     <div class="review-deck-name" id="review-deck-name">Deck</div>
+    <div class="review-coverage" id="review-coverage" style="display:none;"></div>
+  </div>
+  <div class="review-tabs">
+    <button class="rv-tab active" id="rv-tab-cards" onclick="showReviewTab('cards')">CARDS</button>
+    <button class="rv-tab" id="rv-tab-grade" onclick="showReviewTab('grade')">◈ GRADE</button>
   </div>
   <div class="review-body" id="review-body"></div>
+  <div class="review-body" id="grade-body" style="display:none;"></div>
   <div class="review-footer">
     <div class="review-stats" id="review-stats"></div>
     <button class="play-btn" onclick="startGameFromReview()">▶  PLAY</button>
@@ -1674,7 +1814,6 @@
     <div class="swipe-nav">
       <div class="progress-dots" id="progress-dots"></div>
     </div>
-  </div>
   </div><!-- /card-viewer -->
   <div class="guess-section">
     <div class="guess-label" id="guess-label">◆ PRIZE GUESSES (0/6)</div>
@@ -1739,10 +1878,32 @@
     <div id="pb-display" style="padding:0 0.9rem;max-width:640px;margin:0 auto;width:100%;"></div>
 
     <a class="holomint-promo" href="https://holomint.app" target="_blank" rel="noopener" style="max-width:640px;margin:0 auto 1rem;">
-      <div class="hm-emoji">🪙</div>
+      <div class="hm-logo">
+        <img src="https://holomint.app/icon-192.png" alt="" loading="lazy" decoding="async"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <svg class="hm-leaf" viewBox="0 0 64 64" aria-hidden="true" focusable="false" style="display:none">
+          <defs><linearGradient id="hmHoloB" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7df0c8"/><stop offset="28%" stop-color="#8fd8ff"/>
+            <stop offset="54%" stop-color="#c9a8ff"/><stop offset="78%" stop-color="#ffb3d9"/>
+            <stop offset="100%" stop-color="#ffe9a3"/></linearGradient></defs>
+          <path fill="url(#hmHoloB)" d="M10 10q9-2 15 5 q9-1 13 8 q8 2 10 12 q4 6 6 19 q-13-2-19-6 q-10-2-12-10 q-8-3-9-13 q-5-7-4-15z"/>
+          <g stroke="#0c1020" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85">
+            <path d="M12 12 L50 50"/><path d="M20 20 L31 16"/><path d="M28 28 L39 25"/>
+            <path d="M36 36 L46 34"/><path d="M20 20 L16 31"/><path d="M28 28 L25 39"/><path d="M36 36 L34 46"/>
+          </g>
+        </svg>
+      </div>
       <div class="hm-body">
         <div class="hm-title">TRY HOLOMINT</div>
         <div class="hm-tagline">Your Pokémon TCG Selling Companion</div>
+        <div class="hm-tools" aria-label="Holomint tools">
+          <span>Restock alerts</span>
+          <span>Fee math by channel</span>
+          <span>Portfolio tracking</span>
+          <span>Slab Math</span>
+          <span>Card scanner</span>
+          <span>Condition pricing</span>
+        </div>
       </div>
       <div class="hm-arrow">→</div>
     </a>
@@ -1962,6 +2123,663 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- ============================================================
+     tcg-enrich.js, inlined.
+     Canonical source lives in the shared module repo. This is a
+     paste of it, kept inline on purpose: PrizeTrainer is shared as
+     a single downloadable HTML file (see downloadAppFile), so an
+     an external script src would 404 the moment a friend opens the
+     saved copy from their Downloads folder.
+     To update: replace everything between these two markers.
+     ============================================================ -->
+<script id="tcg-enrich-inline">
+/* ==== BEGIN tcg-enrich.js ==== */
+/* ============================================================
+   tcg-enrich.js
+   Shared card enrichment layer for PrizeTrainer and MetaForge.
+
+   Three jobs:
+     1. FETCH   targeted card lookup by id (not by set), with select
+     2. PARSE   turn the API's string fields into typed values
+     3. INFER   derive provides/requires tags from rules+ability+attack text
+
+   No DOM, no globals, no dependencies. Works in browser and node.
+
+   Design rule: every derived value carries a confidence marker.
+   A grader that silently guesses is worse than one that says
+   "I could not read this card."
+   ============================================================ */
+
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.TCGEnrich = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+'use strict';
+
+/* ============================================================
+   1. SET CODE MAPPING
+   Limitless deck lists use PTCGO codes ("OBF 125").
+   pokemontcg.io ids are "{setId}-{number}" ("sv3-125").
+   ============================================================ */
+
+const SET_MAP = {
+  // Scarlet & Violet
+  SVI:'sv1', PAL:'sv2', OBF:'sv3', MEW:'sv3pt5', PAR:'sv4', PAF:'sv4pt5', PRF:'sv4pt5',
+  TEF:'sv5', TWM:'sv6', SFA:'sv6pt5', SCR:'sv7', SSP:'sv8', PRE:'sv8pt5', JTG:'sv9',
+  SVE:'sve', SVP:'svp', PFL:'sv4pt5', ASC:'sv9a', MEG:'sv9b',
+  // Sword & Shield
+  SSH:'swsh1', RCL:'swsh2', DAA:'swsh3', VIV:'swsh4', SHF:'swsh45', BST:'swsh5',
+  CRE:'swsh6', EVS:'swsh7', FST:'swsh8', BRS:'swsh9', ASR:'swsh10', LOR:'swsh11',
+  PGO:'swsh10pt5', SIL:'swsh12', CRZ:'swsh12pt5', CPA:'swsh35', SWP:'swshp', CEL:'cel25',
+  // Sun & Moon
+  SUM:'sm1', GRI:'sm2', BUS:'sm3', CIN:'sm4', UPR:'sm5', FLI:'sm6', CES:'sm7',
+  LOT:'sm8', TEU:'sm9', UNB:'sm10', UNM:'sm11', CEC:'sm12', COS:'sm12',
+  SLG:'sm35', DRM:'sm75', HIF:'sm115', DET:'det1', SMP:'smp',
+  // XY
+  XY:'xy1', FLF:'xy2', FFI:'xy3', PHF:'xy4', PRC:'xy5', ROS:'xy6',
+  AOR:'xy7', BKT:'xy8', BKP:'xy9', FCO:'xy10', STS:'xy11', EVO:'xy12',
+  GEN:'g1', XYP:'xyp',
+  // Black & White
+  BLW:'bw1', EPO:'bw2', NVI:'bw3', NXD:'bw4', DEX:'bw5', DRX:'bw6',
+  BCR:'bw7', PLS:'bw8', PLF:'bw9', PLB:'bw10', LTR:'bw11', BWP:'bwp', DRV:'dv1',
+  // HeartGold / SoulSilver
+  HS:'hgss1', UL:'hgss2', UD:'hgss3', TM:'hgss4', CL:'col1', HSP:'hsp',
+};
+
+/** Build a pokemontcg.io card id from a Limitless set code + number. */
+function toCardId(setCode, num) {
+  const pid = SET_MAP[String(setCode || '').toUpperCase()];
+  if (!pid || !num) return null;
+  // Strip leading zeros but keep alphanumeric suffixes ("H1", "125a", "TG05")
+  const clean = String(num).replace(/^0+(?=\d)/, '');
+  return pid + '-' + clean;
+}
+
+/* ============================================================
+   2. FIELD PARSERS
+   The API returns strings where the engine expects numbers.
+   Naive comparison bugs here produce confident wrong grades:
+   in JS, "90" > "140" is true.
+   ============================================================ */
+
+/** HP arrives as a string ("140"). Returns a number, or 0 if unreadable. */
+function parseHP(hp) {
+  if (typeof hp === 'number') return hp;
+  const n = parseInt(String(hp || '').replace(/\D/g, ''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Damage arrives as a string with modifiers:
+ *   "150"  flat
+ *   ""     no damage (effect-only attack)
+ *   "30+"  base 30, conditional bonus described in text
+ *   "70-"  base 70, conditional reduction (70 is the ceiling)
+ *   "30x"  base 30 multiplied by a count (coins, energy, benched pokemon)
+ *
+ * Returns { raw, base, kind, bonus, cap, mult, min, typical, max, confidence }.
+ *
+ * `typical` is what a grader should score on. `max` is the ceiling for
+ * "can this one-shot" questions. `confidence` says how much to trust it.
+ */
+function parseDamage(raw, text) {
+  const s = String(raw == null ? '' : raw).trim();
+  const t = String(text || '');
+  const out = {
+    raw: s, base: 0, kind: 'none', bonus: 0, cap: null, mult: null,
+    min: 0, typical: 0, max: 0, confidence: 'high'
+  };
+  if (!s) return out; // effect-only attack
+
+  const m = s.match(/^(\d+)\s*([+\-x×*]?)$/i);
+  if (!m) {
+    // Unrecognised shape. Salvage leading digits, flag it.
+    const n = parseInt(s.replace(/\D/g, ''), 10);
+    out.base = Number.isFinite(n) ? n : 0;
+    out.min = out.typical = out.max = out.base;
+    out.confidence = 'low';
+    return out;
+  }
+
+  out.base = parseInt(m[1], 10);
+  let sym = m[2];
+
+  /* ---- Read the text first. The damage suffix is NOT reliable.
+     Live example (hgss4-1 Aggron): damage is "40" with no "+", but the
+     text reads "does 40 damage plus 40 more damage". Trusting the suffix
+     alone understates every attack printed that way. ---- */
+  const capM   = t.match(/can'?t\s+add\s+more\s+than\s+(\d+)\s+damage/i);
+  const fixedM = t.match(/(?:plus|does)\s+(\d+)\s+more\s+damage(?!\s+for\s+each)/i);
+  const eachM  = t.match(/(?:plus|does)\s+(\d+)\s+more\s+damage\s+for\s+each/i);
+  const minusM = t.match(/minus\s+(\d+)\s+damage\s+for\s+each/i);
+  const coinsM = t.match(/flip\s+(\d+)\s+coins?/i);
+  if (capM) out.cap = parseInt(capM[1], 10);
+
+  // Promote a bare number to "plus" or "minus" when the text says so.
+  if (!sym) {
+    if (fixedM || eachM) sym = '+';
+    else if (minusM) sym = '-';
+  }
+
+  if (!sym) {
+    out.kind = 'flat';
+    out.min = out.typical = out.max = out.base;
+    return out;
+  }
+
+  if (sym === '-') {
+    // Reduces under some condition, so base is the ceiling.
+    out.kind = 'minus';
+    out.max = out.base;
+    out.typical = out.base;
+    out.min = 0;
+    out.confidence = 'medium';
+    return out;
+  }
+
+  if (sym === 'x' || sym === '×' || sym === '*') {
+    out.kind = 'times';
+    if (coinsM) {
+      out.mult = parseInt(coinsM[1], 10);
+      out.max = out.base * out.mult;
+      out.typical = Math.round(out.base * out.mult / 2); // expected heads
+      out.min = 0;
+      out.confidence = 'medium';
+    } else {
+      // Multiplier depends on board state we cannot see (energy, bench count).
+      // Assume a modest 2x typical, 4x ceiling, and say the confidence is low.
+      out.mult = null;
+      out.typical = out.base * 2;
+      out.max = out.base * 4;
+      out.min = 0;
+      out.confidence = 'low';
+    }
+    return out;
+  }
+
+  // "+" : base plus a conditional bonus described in the text.
+  out.kind = 'plus';
+  out.min = out.base;
+
+  if (fixedM) {
+    out.bonus = parseInt(fixedM[1], 10);
+    out.max = out.base + out.bonus;
+    out.typical = out.base + out.bonus; // these conditions are usually achievable
+    out.confidence = 'high';
+  } else if (eachM) {
+    const per = parseInt(eachM[1], 10);
+    out.bonus = per;
+    if (out.cap != null) {
+      out.max = out.base + out.cap;
+      out.typical = out.base + Math.round(out.cap / 2);
+      out.confidence = 'medium';
+    } else {
+      // Unbounded scaling. Assume 3 stacks typical, 5 for the ceiling.
+      out.max = out.base + per * 5;
+      out.typical = out.base + per * 3;
+      out.confidence = 'low';
+    }
+  } else {
+    // "+" suffix with no readable bonus in the text.
+    out.max = out.cap != null ? out.base + out.cap : Math.round(out.base * 1.5);
+    out.typical = out.base;
+    out.confidence = 'low';
+  }
+  return out;
+}
+
+/** Energy cost array to lowercase type names. */
+function parseCost(cost) {
+  return (cost || []).map(c => String(c).toLowerCase());
+}
+
+/** Stage from subtypes. Returns 'basic' | 'stage1' | 'stage2' | null. */
+function parseStage(subtypes) {
+  const st = (subtypes || []).map(s => s.toLowerCase());
+  if (st.includes('stage 2')) return 'stage2';
+  if (st.includes('stage 1')) return 'stage1';
+  if (st.includes('basic')) return 'basic';
+  return null;
+}
+
+/**
+ * Prizes the opponent takes when this Pokemon is knocked out.
+ * Derived from subtypes, since the API has no prize field.
+ */
+function parsePrizeValue(subtypes, rules) {
+  const st = (subtypes || []).map(s => s.toLowerCase());
+  const ruleText = (rules || []).join(' ').toLowerCase();
+  // Rules text is authoritative when present ("your opponent takes 3 Prize cards")
+  const m = ruleText.match(/takes?\s+(\d+)\s+prize/);
+  if (m) return parseInt(m[1], 10);
+  if (st.some(s => s === 'mega' || s === 'vmax' || s === 'vstar' || s === 'tag team')) return 3;
+  if (st.some(s => s === 'ex' || s === 'v' || s === 'gx' || s === 'v-union')) return 2;
+  return 1;
+}
+
+/**
+ * Regulation mark handling.
+ * Many older cards have NO regulationMark field at all. That is not the
+ * same as "unknown" and not the same as "legal", so we distinguish:
+ *   { mark: 'H', status: 'marked' }     card carries a mark
+ *   { mark: null, status: 'premark' }   pre-dates the mark system, so rotated
+ *   { mark: null, status: 'unknown' }   we could not resolve the card at all
+ */
+function parseRegulation(card, resolved) {
+  if (!resolved) return { mark: null, status: 'unknown' };
+  if (card.regulationMark) return { mark: card.regulationMark, status: 'marked' };
+  return { mark: null, status: 'premark' };
+}
+
+/** True for basic energy cards, which are exempt from the 4-copy rule. */
+function isBasicEnergy(card) {
+  if (!card) return false;
+  const sup = String(card.supertype || '').toLowerCase();
+  const st = (card.subtypes || []).map(s => s.toLowerCase());
+  return sup === 'energy' && st.includes('basic');
+}
+
+/** True for ACE SPEC cards, which are limited to 1 per deck. */
+function isAceSpec(card) {
+  const st = (card.subtypes || []).map(s => s.toLowerCase());
+  if (st.includes('ace spec')) return true;
+  return (card.rules || []).some(r => /ace spec/i.test(r));
+}
+
+/* ============================================================
+   3. PROVIDES INFERENCE
+   Semantic tags derived from rules[], abilities[].text, attacks[].text.
+   Each rule is written to avoid the obvious false positive.
+   ============================================================ */
+
+/** Collect every piece of effect text on a card into one lowercase blob. */
+function effectText(card) {
+  const parts = [];
+  (card.rules || []).forEach(r => parts.push(r));
+  (card.abilities || []).forEach(a => parts.push(a.text || ''));
+  (card.attacks || []).forEach(a => parts.push(a.text || ''));
+  return parts.join(' \n ').toLowerCase();
+}
+
+/** Text from rules + abilities only (excludes attacks). */
+function staticText(card) {
+  const parts = [];
+  (card.rules || []).forEach(r => parts.push(r));
+  (card.abilities || []).forEach(a => parts.push(a.text || ''));
+  return parts.join(' \n ').toLowerCase();
+}
+
+const PROVIDES_RULES = [
+  {
+    tag: 'draw',
+    test: (all) =>
+      /\bdraw\s+\d+\s+cards?/.test(all) ||
+      /\bdraw\s+cards?\s+until/.test(all) ||
+      /\bdraws?\s+that\s+many\s+cards?/.test(all) ||
+      /\bdraw\s+a\s+card/.test(all),
+    // A one-off "Draw a card." attack is not a draw engine.
+    weak: (all, card) =>
+      !/\bdraw\s+\d+\s+cards?|\bdraw\s+cards?\s+until|\bdraws?\s+that\s+many/.test(staticText(card)) &&
+      /\bdraw\s+a\s+card\b/.test(all),
+  },
+  {
+    tag: 'search_basic',
+    test: (all) => /search\s+your\s+deck\s+for\s+a\s+basic\s+pok[eé]mon/.test(all),
+  },
+  {
+    tag: 'search_pokemon',
+    test: (all) => /search\s+your\s+deck\s+for[^.]{0,40}pok[eé]mon/.test(all),
+  },
+  {
+    tag: 'gust',
+    // Pulling the opponent's benched Pokemon into the active spot.
+    test: (all) =>
+      /switch(?:\s+in)?\s+(?:1|one)?\s*of\s+your\s+opponent'?s?\s+benched\s+pok[eé]mon/.test(all) ||
+      /switch\s+(?:1|one)\s+of\s+your\s+opponent'?s?\s+benched\s+pok[eé]mon\s+with\s+(?:their|his\s+or\s+her)\s+active/.test(all),
+  },
+  {
+    tag: 'hand_disruption',
+    test: (all) =>
+      /(?:your\s+)?opponent\s+shuffles?\s+(?:their|his\s+or\s+her)\s+hand/.test(all) ||
+      /each\s+player\s+shuffles?\s+(?:their|his\s+or\s+her)\s+hand/.test(all) ||
+      /discard\s+(?:a|\d+)\s+cards?\s+from\s+your\s+opponent'?s?\s+hand/.test(all) ||
+      /your\s+opponent\s+reveals?\s+(?:their|his\s+or\s+her)\s+hand/.test(all),
+  },
+  {
+    tag: 'energy_accel',
+    // Attaching energy from somewhere other than hand, or extra attachments.
+    // Excludes the normal once-per-turn attachment from hand.
+    test: (all) =>
+      /attach[^.]{0,60}energy[^.]{0,40}from\s+your\s+(?:deck|discard\s+pile)/.test(all) ||
+      /attach\s+as\s+many[^.]{0,40}energy/.test(all) ||
+      /doesn'?t\s+use\s+up\s+your\s+(?:1\s+)?energy\s+(?:card\s+)?attachment/.test(all) ||
+      /attach\s+\d+\s+basic\s+energy[^.]{0,40}from\s+your\s+deck/.test(all),
+  },
+  {
+    tag: 'spread_counters',
+    test: (all) =>
+      /damage\s+to\s+each\s+of\s+your\s+opponent'?s?\s+pok[eé]mon/.test(all) ||
+      /put\s+\d+\s+damage\s+counters?\s+on\s+each\s+of\s+your\s+opponent'?s?\s+pok[eé]mon/.test(all) ||
+      /damage\s+to\s+each\s+of\s+your\s+opponent'?s?\s+benched\s+pok[eé]mon/.test(all) ||
+      (/opponent'?s?\s+benched\s+pok[eé]mon/.test(all) && /damage\s+to\s+each\s+of/.test(all)),
+  },
+  {
+    tag: 'move_counters',
+    test: (all) =>
+      /move\s+\d*\s*damage\s+counters?/.test(all) ||
+      /move\s+(?:any\s+number\s+of\s+)?damage\s+counters?/.test(all),
+  },
+  {
+    tag: 'damage_boost',
+    // Tools and stadiums that add damage to attacks generally.
+    test: (all, card) => {
+      const st = staticText(card);
+      return /attacks?[^.]{0,50}do\s+\d+\s+more\s+damage/.test(st) ||
+             /does\s+\d+\s+more\s+damage[^.]{0,40}opponent'?s?\s+active/.test(st);
+    },
+  },
+  {
+    tag: 'evolution_access',
+    // Rare Candy and its equivalents: skip the Stage 1 step.
+    test: (all) =>
+      /evolve\s+it\s+into\s+a\s+stage\s+2/.test(all) ||
+      /choose\s+\d+\s+of\s+your\s+basic\s+pok[eé]mon[^.]{0,80}stage\s+2/.test(all),
+  },
+  {
+    tag: 'recovery',
+    test: (all) =>
+      /put\s+(?:a|\d+|up\s+to\s+\d+)[^.]{0,50}from\s+your\s+discard\s+pile\s+into\s+your\s+hand/.test(all) ||
+      /shuffle[^.]{0,60}from\s+your\s+discard\s+pile\s+into\s+your\s+deck/.test(all),
+  },
+  {
+    tag: 'switch_own',
+    test: (all) =>
+      /switch\s+(?:your|this)[^.]{0,40}active\s+pok[eé]mon\s+with\s+(?:1|one)\s+of\s+your\s+benched/.test(all) ||
+      /switch\s+this\s+pok[eé]mon\s+with\s+(?:1|one)\s+of\s+your\s+benched/.test(all),
+  },
+];
+
+/**
+ * Derive provides tags. Returns { tags: [...], weak: [...], confidence }.
+ * `weak` lists tags that matched only via a marginal signal, so a caller
+ * can choose to discount them rather than treat them as a real engine.
+ */
+function inferProvides(card) {
+  const all = effectText(card);
+  const tags = [];
+  const weak = [];
+  if (!all) return { tags, weak, confidence: 'none' };
+
+  PROVIDES_RULES.forEach(rule => {
+    let matched = false;
+    try { matched = !!rule.test(all, card); } catch (e) { matched = false; }
+    if (!matched) return;
+    tags.push(rule.tag);
+    if (rule.weak) {
+      let isWeak = false;
+      try { isWeak = !!rule.weak(all, card); } catch (e) { isWeak = false; }
+      if (isWeak) weak.push(rule.tag);
+    }
+  });
+
+  // search_basic implies search_pokemon; keep both but dedupe.
+  const uniq = [...new Set(tags)];
+  return { tags: uniq, weak, confidence: uniq.length ? 'inferred' : 'none' };
+}
+
+/**
+ * Derive requires tags. Two of the three kinds are structural, not semantic:
+ *   energy:<type>       from attack costs
+ *   evolution_access    from being a Stage 2
+ * The third kind (partner:<card>) cannot be inferred and must come from
+ * the override map.
+ */
+function inferRequires(card) {
+  const reqs = [];
+  const types = new Set();
+  (card.attacks || []).forEach(a => {
+    parseCost(a.cost).forEach(ty => {
+      if (ty && ty !== 'colorless') types.add(ty);
+    });
+  });
+  types.forEach(ty => reqs.push('energy:' + ty));
+  if (parseStage(card.subtypes) === 'stage2') reqs.push('evolution_access');
+  return reqs;
+}
+
+/* ============================================================
+   4. OVERRIDE MAP
+   Inference gets most cards right. This corrects the rest and
+   supplies partner links, which are not inferable from text.
+
+   Keys are lowercase card names. Any field present here wins over
+   the inferred value. `addProvides` appends instead of replacing.
+   ============================================================ */
+
+const OVERRIDES = {
+  // Partner relationships: card does nothing without X in play.
+  // (Add entries as you hit them; this is the one genuinely manual list.)
+  // "dusknoir":       { requires: ['partner:dusclops'] },
+
+  // Inference corrections.
+  'rare candy':       { provides: ['evolution_access'] },
+  "professor's research": { provides: ['draw'] },
+  "boss's orders":    { provides: ['gust'] },
+  'iono':             { provides: ['draw', 'hand_disruption'] },
+  'arven':            { provides: ['search_pokemon', 'recovery'] },
+  'ultra ball':       { provides: ['search_pokemon'] },
+  'nest ball':        { provides: ['search_basic', 'search_pokemon'] },
+  'buddy-buddy poffin': { provides: ['search_basic', 'search_pokemon'] },
+  'earthen vessel':   { provides: ['energy_accel'] },
+  'night stretcher':  { provides: ['recovery'] },
+  'super rod':        { provides: ['recovery'] },
+  'counter catcher':  { provides: ['gust'] },
+  'switch':           { provides: ['switch_own'] },
+  'energy switch':    { provides: [] },   // moves energy, does not accelerate
+  'energy search':    { provides: [] },   // fetches basic energy, not accel
+};
+
+/** Look up an override by card name, case and punctuation tolerant. */
+function findOverride(name) {
+  if (!name) return null;
+  const k = String(name).toLowerCase()
+    .replace(/[\u2019\u2018]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  return OVERRIDES[k] || null;
+}
+
+/* ============================================================
+   5. ENRICHMENT
+   Turn one raw API card into the shape the grader consumes.
+   ============================================================ */
+
+function enrichCard(apiCard, opts) {
+  const o = opts || {};
+  const card = apiCard || {};
+  const resolved = !!apiCard;
+  const name = card.name || o.fallbackName || '';
+
+  const inferred = inferProvides(card);
+  const override = findOverride(name);
+
+  let provides = inferred.tags;
+  if (override && Array.isArray(override.provides)) provides = override.provides.slice();
+  if (override && Array.isArray(override.addProvides)) {
+    provides = [...new Set(provides.concat(override.addProvides))];
+  }
+
+  let requires = inferRequires(card);
+  if (override && Array.isArray(override.requires)) {
+    requires = [...new Set(requires.concat(override.requires))];
+  }
+
+  const attacks = (card.attacks || []).map(a => {
+    const dmg = parseDamage(a.damage, a.text);
+    return {
+      name: a.name || '',
+      cost: parseCost(a.cost),
+      text: a.text || '',
+      damage: dmg,
+      // Convenience scalars for callers that just want a number.
+      dmg: dmg.typical,
+      dmgMax: dmg.max,
+    };
+  });
+
+  const supertype = String(card.supertype || '').toLowerCase();
+  const t = supertype === 'pokémon' || supertype === 'pokemon' ? 'pkmn'
+          : supertype === 'trainer' ? 'trainer'
+          : supertype === 'energy'  ? 'energy' : null;
+
+  return {
+    key: name.toLowerCase(),
+    name,
+    id: card.id || null,
+    resolved,
+    t,
+    supertype: card.supertype || null,
+    subtypes: card.subtypes || [],
+    hp: parseHP(card.hp),
+    types: (card.types || []).map(s => s.toLowerCase()),
+    weak: (card.weaknesses || []).map(w => String(w.type).toLowerCase())[0] || null,
+    stage: parseStage(card.subtypes),
+    from: card.evolvesFrom || null,
+    p: t === 'pkmn' ? parsePrizeValue(card.subtypes, card.rules) : 0,
+    basic: isBasicEnergy(card),
+    ace: isAceSpec(card),
+    reg: parseRegulation(card, resolved),
+    attacks,
+    provides,
+    requires,
+    // Provenance, so a grader can report how much of its input it trusted.
+    source: override ? 'override' : (inferred.tags.length ? 'inferred' : 'structural'),
+    weakTags: inferred.weak,
+  };
+}
+
+/* ============================================================
+   6. TARGETED FETCH
+   Fetch only the cards in the deck, not whole sets.
+   Measured: ~667 bytes per card with select, vs ~2166 unfiltered.
+   A 25-unique-card deck is ~16 KB instead of ~800 KB.
+   ============================================================ */
+
+const SELECT_FIELDS = [
+  'id','name','supertype','subtypes','hp','types','attacks','abilities',
+  'rules','weaknesses','regulationMark','evolvesFrom','number'
+].join(',');
+
+const API_BASE = 'https://api.pokemontcg.io/v2/cards';
+
+/**
+ * Fetch enriched card data for a parsed deck list.
+ *
+ * `entries` is [{ name, set, num }, ...]. Returns a Map keyed by
+ * lowercase name. Unresolvable cards get a stub with resolved=false
+ * so the caller can report coverage rather than silently guessing.
+ *
+ * opts: { fetchImpl, batchSize, timeoutMs, apiKey }
+ */
+async function fetchDeckCards(entries, opts) {
+  const o = opts || {};
+  const doFetch = o.fetchImpl || (typeof fetch !== 'undefined' ? fetch : null);
+  const batchSize = o.batchSize || 12;
+  const timeoutMs = o.timeoutMs || 10000;
+  const out = new Map();
+
+  // Deduplicate by card id, remembering which names map to it.
+  const byId = new Map();
+  (entries || []).forEach(e => {
+    const id = toCardId(e.set, e.num);
+    if (!id) {
+      // No set/number (basic energies in some formats) or unmapped set.
+      if (!out.has((e.name || '').toLowerCase())) {
+        out.set((e.name || '').toLowerCase(), enrichCard(null, { fallbackName: e.name }));
+      }
+      return;
+    }
+    if (!byId.has(id)) byId.set(id, []);
+    byId.get(id).push(e.name);
+  });
+
+  if (!doFetch || byId.size === 0) return out;
+
+  const ids = [...byId.keys()];
+  const batches = [];
+  for (let i = 0; i < ids.length; i += batchSize) {
+    batches.push(ids.slice(i, i + batchSize));
+  }
+
+  await Promise.all(batches.map(async (batch) => {
+    const q = batch.map(id => 'id:' + id).join(' OR ');
+    const url = API_BASE + '?q=' + encodeURIComponent(q) +
+                '&select=' + SELECT_FIELDS + '&pageSize=' + batch.length;
+    try {
+      // Guard the identifier itself, not just the method. On browsers where
+      // AbortSignal is undefined (Safari < 16, older Chrome), reading
+      // AbortSignal.timeout throws a ReferenceError that the catch below
+      // would swallow, silently disabling enrichment with no error anywhere.
+      const init = {};
+      if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+        init.signal = AbortSignal.timeout(timeoutMs);
+      }
+      if (o.apiKey) init.headers = { 'X-Api-Key': o.apiKey };
+      const resp = await doFetch(url, init);
+      if (!resp.ok) return;
+      const json = await resp.json();
+      (json.data || []).forEach(apiCard => {
+        const names = byId.get(apiCard.id) || [apiCard.name];
+        const enriched = enrichCard(apiCard);
+        names.forEach(n => out.set(String(n).toLowerCase(), enriched));
+      });
+    } catch (e) {
+      // Offline or rate limited. Leave those cards unresolved; the caller
+      // reports coverage rather than grading against a partial picture.
+    }
+  }));
+
+  // Stub anything the API did not return, so coverage is visible.
+  byId.forEach((names) => {
+    names.forEach(n => {
+      const k = String(n).toLowerCase();
+      if (!out.has(k)) out.set(k, enrichCard(null, { fallbackName: n }));
+    });
+  });
+
+  return out;
+}
+
+/** How much of the deck the engine could actually read. */
+function coverage(cardMap) {
+  let total = 0, resolved = 0, overridden = 0, inferred = 0;
+  cardMap.forEach(c => {
+    total++;
+    if (c.resolved) resolved++;
+    if (c.source === 'override') overridden++;
+    else if (c.source === 'inferred') inferred++;
+  });
+  return {
+    total, resolved, overridden, inferred,
+    unresolved: total - resolved,
+    pct: total ? Math.round(resolved / total * 100) : 0,
+  };
+}
+
+return {
+  SET_MAP, OVERRIDES, SELECT_FIELDS,
+  toCardId,
+  parseHP, parseDamage, parseCost, parseStage, parsePrizeValue,
+  parseRegulation, isBasicEnergy, isAceSpec,
+  effectText, staticText, inferProvides, inferRequires,
+  findOverride, enrichCard, fetchDeckCards, coverage,
+};
+});
+
+/* ==== END tcg-enrich.js ==== */
+</script>
+
 <script>
   // Global error guard — surface silent crashes on iOS
   window.addEventListener('error', function(e) {
@@ -2134,14 +2952,285 @@ function openReview(deckId) {
   showScreen('review');
 }
 
+
+/* ============================================================
+   DECK GRADER (ported from MetaForge v0.5)
+   Coherence x Viability only. The matchup verdicts and win-rate
+   simulation are deliberately NOT ported: they score against a
+   researched snapshot of the metagame, and without a live
+   tournament feed that number goes stale silently. Both halves
+   below run entirely on the user's own 60 cards.
+   ============================================================ */
+
+const FMT = { threatHP:[280,340], ohkoTarget:320, fastSetup:2 };
+
+const gClamp = (x,a,b) => Math.max(a, Math.min(b,x));
+const gCap   = s => String(s||'').replace(/\b\w/g, m => m.toUpperCase());
+const gR1    = x => Math.round(x*10)/10;
+
+function gHuman(req) {
+  const m = { spread_counters:'spread damage', move_counters:'a way to move damage counters',
+              energy_accel:'energy acceleration', search_pokemon:'a way to find Pokemon',
+              hand_disruption:'hand disruption', damage_boost:'a damage booster',
+              recovery:'a way to recycle resources', switch_own:'a way to switch out' };
+  return m[req] || String(req).replace(/_/g,' ');
+}
+function gSynText(req,a,b) {
+  if (req==='spread_counters') return `${gCap(a)} sprinkles damage across the board, then ${gCap(b)} slides those counters where they finish off the most Pokemon.`;
+  if (req==='move_counters')   return `${gCap(a)} and ${gCap(b)} reposition damage together for precise knockouts.`;
+  if (req==='evolution_access')return `${gCap(a)} skips the middle stage to get ${gCap(b)} into play fast.`;
+  return `${gCap(a)} provides what ${gCap(b)} needs to work.`;
+}
+
+/** Basic energy type, from API types or the card name. */
+function gEnergyType(c) {
+  if (c.types && c.types.length) return String(c.types[0]).toLowerCase();
+  const m = String(c.name||'').toLowerCase()
+    .match(/\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy|dragon)\b/);
+  return m ? m[1] : null;
+}
+
+/**
+ * Adapt a PrizeTrainer deck into the entry shape the grader expects.
+ * Cards with no supertype (never enriched, or API unreachable) come
+ * through with card:null and are reported as unread rather than guessed at.
+ */
+function toGradeDeck(deck) {
+  return (deck.cards||[]).map(c => {
+    const sup = String(c.supertype||'').toLowerCase();
+    const t = sup.startsWith('pok') ? 'pkmn'
+            : sup === 'trainer'     ? 'trainer'
+            : sup === 'energy'      ? 'energy' : null;
+    if (!t) return { qty:c.count, name:c.name, card:null };
+    // Note: attacks must be null (not []) when absent. The engine tests
+    // truthiness of .attacks to decide whether a deck has an attacker,
+    // and an empty array is truthy.
+    const atks = (c.attacks && c.attacks.length)
+      ? c.attacks.map(a => ({ cost:a.cost||[], dmg:a.dmg||0 }))
+      : null;
+    return { qty:c.count, name:c.name, card:{
+      key: String(c.name||'').toLowerCase(),
+      t, stage: c.stage||null,
+      from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
+      p: c.prizeValue||1, hp: c.hp||0,
+      etype: t==='energy' ? gEnergyType(c) : null,
+      attacks: atks, provides: c.provides||[], requires: c.requires||[]
+    }};
+  });
+}
+
+function gCoherence(deck) {
+  const provided={}, energyTypes={}, present={};
+  deck.forEach(e => { const c=e.card; if(!c) return;
+    (c.provides||[]).forEach(p => provided[p]=(provided[p]||0)+e.qty);
+    if (c.t==='energy' && c.etype) energyTypes[c.etype]=(energyTypes[c.etype]||0)+e.qty;
+    present[c.key]=(present[c.key]||0)+e.qty; });
+  const synergies=[], flaws=[]; let reqTotal=0, reqMet=0;
+  deck.forEach(e => { const c=e.card; if(!c||!c.requires) return;
+    c.requires.forEach(req => { reqTotal++;
+      if (req.startsWith('energy:')) {
+        const ty=req.split(':')[1];
+        if (energyTypes[ty]) reqMet++;
+        else flaws.push({sev:'crit', t:`${gCap(e.name)} has no ${gCap(ty)} Energy`,
+          d:`Its attack needs ${gCap(ty)} Energy, but there is none in the deck. As built it cannot actually fire.`});
+      } else if (req.startsWith('partner:')) {
+        const who=req.split(':')[1];
+        if (present[who]) { reqMet++; synergies.push({link:gCap(who)+' > '+gCap(e.name),
+          p:gCap(who)+' is what turns '+gCap(e.name)+' on. Without it that engine does nothing.'}); }
+        else flaws.push({sev:'warn', t:`${gCap(e.name)} needs ${gCap(who)} to work`,
+          d:`${gCap(e.name)} only does its job when ${gCap(who)} is in play, and there is no ${gCap(who)} in the deck. The engine is half-built.`});
+      } else if (req==='evolution_access') {
+        const candy=provided['evolution_access']>0, pre=c.from&&present[c.from]>0;
+        if (candy||pre) { reqMet++;
+          if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
+        else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
+          d:`It is a Stage 2 with no Rare Candy and no ${gCap(c.from||'pre-evolution')} in the deck, so there is no realistic way to evolve into it.`});
+      } else {
+        if (provided[req]) { reqMet++;
+          const prov=deck.find(x=>x.card&&(x.card.provides||[]).includes(req));
+          if (prov) synergies.push({link:gCap(prov.name)+' > '+gCap(e.name), p:gSynText(req,prov.name,e.name)});
+        } else flaws.push({sev:'warn', t:`${gCap(e.name)} wants ${gHuman(req)} that is not here`,
+          d:`${gCap(e.name)} needs ${gHuman(req)} to do its job, and nothing in the deck provides it. A missing piece, or maybe intentional.`});
+      }});});
+  const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
+  if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
+    d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
+  if (!hasAtk) flaws.push({sev:'crit', t:'No clear attacker',
+    d:'No Pokemon here is set up to deal meaningful damage, so there is no win condition to build toward.'});
+  let base = reqTotal ? reqMet/reqTotal : 0.6;
+  if (!draw) base*=0.4;
+  if (!hasAtk) base*=0.3;
+  base -= 0.12*flaws.filter(f=>f.sev==='crit').length;
+  return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present };
+}
+
+function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks&&e.card.hp>h)h=e.card.hp; }); return h||200; }
+
+function gViability(deck, coh) {
+  const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
+  let best=0, bestName='';
+  attackers.forEach(e => e.card.attacks.forEach(a => {
+    const ok=(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]);
+    if (ok && a.dmg>best) { best=a.dmg; bestName=e.name; }}));
+  const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
+  const boost = coh.provided['damage_boost']>0 ? 50 : 0;
+  let eff=best+boost, closeScore, strat;
+  if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
+    d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
+  else if (spreadEngine) { strat='spread'; eff=Math.round(best*1.5)+boost; closeScore=0.9;
+    findings.push({sev:'ok', t:'Closes through spread, not one big hit',
+    d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP threats.`}); }
+  else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=1;
+    findings.push({sev:'ok', t:'Hits hard enough to trade up',
+    d:`${gCap(bestName)}${boost?' with its damage booster':''} reaches ${eff}, enough to one-shot the format's ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP threats.`}); }
+  else if (eff>=230) { strat='2hko'; closeScore=0.72;
+    findings.push({sev:'warn', t:'Solid damage, but not a one-shot',
+    d:`${gCap(bestName)} tops out near ${eff}. Format threats sit at ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP, so you will be two-shotting the big ones. Fine if you can take the return hit.`}); }
+  else { strat='weak'; closeScore=0.32;
+    findings.push({sev:'crit', t:'Damage ceiling is too low',
+    d:`Your best line caps around ${eff}, but format threats have ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP. You cannot trade up, which usually loses the prize race.`}); }
+  const bigLiabs=deck.filter(e=>e.card&&e.card.p>=3);
+  let prizeScore=0.82;
+  if (bigLiabs.length) { const list=bigLiabs.map(e=>gCap(e.name)).join(', ');
+    if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
+      findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
+      d:`${list} give up 3 prizes when they fall, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
+    else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
+      d:`${list} are risky at 3 prizes each, yet you hit hard enough to justify the trade.`}); }
+  else findings.push({sev:'ok', t:'Efficient prize trade',
+    d:'Mostly one and two prize attackers, so you are not handing over easy multi-prize turns.'});
+  const stage2=deck.filter(e=>e.card&&e.card.stage==='stage2').reduce((a,e)=>a+e.qty,0);
+  const candy=coh.provided['evolution_access']||0;
+  let clockScore=0.82;
+  if (stage2>0 && candy<2) { clockScore=0.5;
+    findings.push({sev:'warn', t:'Might be slow off the line',
+    d:`You lean on Stage 2 attackers with only ${candy} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
+  else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
+    d:'Enough Rare Candy to land your Stage 2 attackers before the game runs away.'});
+  const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
+  return { score, findings, best, eff, bestName };
+}
+
+function gradeDeck(deck) {
+  const entries=toGradeDeck(deck);
+  const coh=gCoherence(entries);
+  const via=gViability(entries, coh);
+  const cohF=Math.max(coh.score,0.06), viaF=Math.max(via.score,0.12);
+  const overall=gR1(cohF*viaF*10);
+  const unread=entries.filter(e=>!e.card).reduce((a,e)=>a+e.qty,0);
+  return { overall, coh, via, unread, entries };
+}
+
+function gBand(v) {
+  if (v>=8.5) return ['Tournament-ready','var(--green)'];
+  if (v>=7)   return ['Strong','var(--water)'];
+  if (v>=5)   return ['Fixable','var(--electric)'];
+  if (v>=3)   return ['Needs work','var(--fire)'];
+  return ['Does not function','var(--red)'];
+}
+
+function showReviewTab(which) {
+  const cards=document.getElementById('review-body');
+  const grade=document.getElementById('grade-body');
+  document.getElementById('rv-tab-cards').classList.toggle('active', which==='cards');
+  document.getElementById('rv-tab-grade').classList.toggle('active', which==='grade');
+  cards.style.display = which==='cards' ? '' : 'none';
+  grade.style.display = which==='grade' ? '' : 'none';
+  if (which==='grade') renderGrade();
+}
+
+function renderGrade() {
+  const el=document.getElementById('grade-body');
+  const deck=state.decks.find(d=>d.id===state.activeDeckId);
+  if (!el||!deck) return;
+
+  const anyData=(deck.cards||[]).some(c=>c.supertype);
+  if (!anyData) {
+    el.innerHTML = `<div class="g-empty">No card data for this deck yet.<br><br>
+      Card roles are read when a deck is imported. Open <b>Edit deck</b> and save it
+      to fetch them, then come back.</div>`;
+    return;
+  }
+
+  const R=gradeDeck(deck);
+  const [band,col]=gBand(R.overall);
+  const cohV=gR1(R.coh.score*10), viaV=gR1(R.via.score*10);
+
+  let h=`<div class="g-hero">
+    <div class="g-score" style="color:${col}">${R.overall.toFixed(1)}<small>/10</small></div>
+    <div class="g-band" style="color:${col}">${band}</div>
+    <div class="g-factors">
+      <div class="g-fac"><div class="fv" style="color:${gBand(cohV)[1]}">${cohV.toFixed(1)}</div>
+        <div class="fl">COHERENCE</div><div class="fs">does it do its thing</div></div>
+      <div class="g-times">x</div>
+      <div class="g-fac"><div class="fv" style="color:${gBand(viaV)[1]}">${viaV.toFixed(1)}</div>
+        <div class="fl">VIABILITY</div><div class="fs">can it win a game</div></div>
+    </div>
+  </div>`;
+
+  if (R.unread>0) h+=`<div class="g-sec"><div class="g-item warn">
+    <div class="gt">${R.unread} CARD${R.unread>1?'S':''} NOT READ</div>
+    <p>Card roles could not be resolved for these, so they contributed nothing to the grade.
+    Re-saving the deck retries the lookup.</p></div></div>`;
+
+  if (R.coh.synergies.length) {
+    h+=`<div class="g-sec"><div class="g-sec-t">HOW IT PLAYS</div>
+      <div class="g-sec-i">Interactions the engine found between your own cards. This is what the deck is trying to do.</div>`;
+    R.coh.synergies.forEach(s=>h+=`<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`);
+    h+=`</div>`;
+  }
+
+  const problems=R.coh.flaws.concat(R.via.findings.filter(f=>f.sev!=='ok'));
+  if (problems.length) {
+    h+=`<div class="g-sec"><div class="g-sec-t">WHAT TO FIX</div>
+      <div class="g-sec-i">Sorted by how badly it hurts. Critical items stop the deck from functioning.</div>`;
+    problems.sort((a,b)=>(a.sev==='crit'?0:1)-(b.sev==='crit'?0:1))
+      .forEach(f=>h+=`<div class="g-item ${f.sev}"><div class="gt">${esc(f.t)}</div><p>${esc(f.d)}</p></div>`);
+    h+=`</div>`;
+  }
+
+  const good=R.via.findings.filter(f=>f.sev==='ok');
+  if (good.length) {
+    h+=`<div class="g-sec"><div class="g-sec-t">WORKING WELL</div>`;
+    good.forEach(f=>h+=`<div class="g-item ok"><div class="gt">${esc(f.t)}</div><p>${esc(f.d)}</p></div>`);
+    h+=`</div>`;
+  }
+
+  h+=`<div class="g-wip"><b>Work in progress.</b> This grade runs entirely on your own list:
+    whether the cards support each other, and whether the plan can close a game. It does not
+    compare you to the current metagame, because that needs live tournament data this does not
+    have yet. Card roles are inferred from card text, which is usually right and occasionally
+    not. Read the findings, ignore the decimal places.</div>`;
+
+  el.innerHTML=h;
+}
+
 function startGameFromReview() {
   game.prizeCount = 6;
   game.timeLimit = 0;
+  tournament.active = false;
   startGame(state.activeDeckId);
+}
+
+/**
+ * Show how much of the deck the card lookup could actually read.
+ * Silence here would be worse than a warning: a partial read still
+ * groups every card somewhere, so the screen looks complete either way.
+ */
+function renderCoverageNote(deck) {
+  const el = document.getElementById('review-coverage');
+  if (!el) return;
+  const cov = deck.coverage;
+  if (!cov || !cov.total || cov.unresolved === 0) { el.style.display = 'none'; return; }
+  el.textContent = `\u26A0 Card data read for ${cov.resolved}/${cov.total} entries. `
+    + `Grouping for the rest is based on card names.`;
+  el.style.display = 'block';
 }
 
 function renderReview(deck) {
   document.getElementById('review-deck-name').textContent = deck.name;
+  renderCoverageNote(deck);
+  showReviewTab('cards');
 
   // Classify each card. Use API-provided supertype when available,
   // fall back to heuristic for offline imports or unmapped sets.
@@ -2631,7 +3720,7 @@ async function saveEditDeck() {
   closeEditModal();
   showLoading('Updating deck…');
   deck.cards = await Promise.all(cards.map(c => fetchCardImage(c)));
-  await fetchSupertypes(deck.cards);
+  deck.coverage = await enrichDeckCards(deck.cards);
   hideLoading();
   await saveState();
   renderHome();
@@ -2645,7 +3734,7 @@ async function duplicateDeckFromEdit() {
   closeEditModal();
   showLoading('Duplicating…');
   const newCards = await Promise.all(orig.cards.map(c => fetchCardImage(c)));
-  await fetchSupertypes(newCards);
+  await enrichDeckCards(newCards);
   hideLoading();
   const newDeck = {
     id: Date.now().toString(),
@@ -2693,60 +3782,64 @@ function parseLine(line) {
   return null;
 }
 
-// Limitless set code → pokemontcg.io set ID mapping (module scope)
-const LIMITLESS_TO_PTCGIO = {
-  // Scarlet & Violet era
-  'SVI':'sv1','PAL':'sv2','OBF':'sv3','MEW':'sv3pt5','PAR':'sv4','PRF':'sv4pt5','PAF':'sv4pt5',
-  'TEF':'sv5','TWM':'sv6','SFA':'sv6pt5','SCR':'sv7','SSP':'sv8','PRE':'sv8pt5','JTG':'sv9',
-  'SVE':'sve','SVP':'svp','PFL':'sv4pt5','ASC':'sv9a','MEG':'sv9b',
-  // Sword & Shield era
-  'SSH':'swsh1','RCL':'swsh2','DAA':'swsh3','VIV':'swsh4','SHF':'swsh45','BST':'swsh5',
-  'CRE':'swsh6','EVS':'swsh7','FST':'swsh8','BRS':'swsh9','ASR':'swsh10','LOR':'swsh11',
-  'PGO':'swsh10pt5','SIL':'swsh12','CRZ':'swsh12pt5','SWP':'swshp', 'CEL':'cel25',
-  // Sun & Moon era
-  'SUM':'sm1','GRI':'sm2','BUS':'sm3','CIN':'sm4','UPR':'sm5','FLI':'sm6','CES':'sm7',
-  'LOT':'sm8','TEU':'sm9','UNB':'sm10','UNM':'sm11','COS':'sm12',
-  'SLG':'sm35','DRM':'sm75','HIF':'sm115','DET':'det1','SMP':'smp',
-  // XY era
-  'XY':'xy1','FLF':'xy2','FFI':'xy3','PHF':'xy4','PRC':'xy5','ROS':'xy6',
-  'AOR':'xy7','BKT':'xy8','BKP':'xy9','FCO':'xy10','STS':'xy11','EVO':'xy12',
-  'GEN':'g1','XYP':'xyp',
-  // Black & White era
-  'BLW':'bw1','EPO':'bw2','NVI':'bw3','NXD':'bw4','DEX':'bw5','DRX':'bw6',
-  'BCR':'bw7','PLS':'bw8','PLF':'bw9','PLB':'bw10','LTR':'bw11','BWP':'bwp',
-  // HeartGold/SoulSilver era
-  'HS':'hgss1','UL':'hgss2','UD':'hgss3','TM':'hgss4','CL':'hgss4',
-  'HSP':'hsp',
-};
+// Limitless set code to pokemontcg.io set ID mapping.
+// Kept as an alias so existing image-URL code keeps working; the
+// authoritative copy now lives in the inlined tcg-enrich module.
+const LIMITLESS_TO_PTCGIO = TCGEnrich.SET_MAP;
 
-// Fetch supertypes (Pokémon / Trainer / Energy) from pokemontcg.io API.
-// One request per unique set. Writes card.supertype. No-ops if offline.
-async function fetchSupertypes(cards) {
-  const bySet = {};
-  cards.forEach(card => {
-    const set = (card.set || '').toUpperCase();
-    if (!set || !card.num) return;
-    if (!bySet[set]) bySet[set] = [];
-    bySet[set].push(card);
+/**
+ * Pull enriched card data for a deck and merge it onto each card object.
+ *
+ * Replaces the old fetchSupertypes, which pulled an entire set (up to 250
+ * cards) per set just to read a supertype off a handful of them. This
+ * queries by card id instead, so a 60 card deck costs roughly 16 KB across
+ * two or three requests rather than several hundred KB.
+ *
+ * Best effort by design. If the API is unreachable the cards simply keep
+ * whatever they already had, and renderReview falls back to its heuristic.
+ * Returns a coverage report so the UI can say how much it actually read.
+ */
+async function enrichDeckCards(cards) {
+  const blank = { total: (cards || []).length, resolved: 0, unresolved: (cards || []).length, pct: 0 };
+  if (typeof TCGEnrich === 'undefined' || !cards || !cards.length) return blank;
+
+  let map;
+  try {
+    map = await TCGEnrich.fetchDeckCards(
+      cards.map(c => ({ name: c.name, set: c.set, num: c.num }))
+    );
+  } catch (_) {
+    return blank;
+  }
+
+  cards.forEach(c => {
+    const e = map.get(String(c.name || '').toLowerCase());
+    if (!e) return;
+    c.resolved = e.resolved;
+    if (!e.resolved) return;
+    c.supertype   = e.supertype;
+    c.hp          = e.hp;
+    c.stage       = e.stage;
+    c.evolvesFrom = e.from;
+    c.prizeValue  = e.p;
+    c.types       = e.types;
+    c.weak        = e.weak;
+    c.provides    = e.provides;
+    c.requires    = e.requires;
+    c.reg         = e.reg;
+    c.ace         = e.ace;
+    c.dataSource  = e.source;
+    // Store parsed damage numbers only. The raw attack text is what makes
+    // the payload big, and inference already ran, so it is dead weight in
+    // IndexedDB once parsed.
+    c.attacks = (e.attacks || []).map(a => ({
+      name: a.name, cost: a.cost,
+      dmg: a.dmg, dmgMax: a.dmgMax,
+      conf: a.damage ? a.damage.confidence : 'low'
+    }));
   });
-  await Promise.all(Object.keys(bySet).map(async (setCode) => {
-    const pid = LIMITLESS_TO_PTCGIO[setCode];
-    if (!pid) return;
-    try {
-      const url = `https://api.pokemontcg.io/v2/cards?q=set.id:${pid}&select=id,supertype,number&pageSize=250`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
-      if (!resp.ok) return;
-      const json = await resp.json();
-      if (!json.data) return;
-      const lookup = {};
-      json.data.forEach(c => { if (c.number && c.supertype) lookup[c.number] = c.supertype; });
-      bySet[setCode].forEach(card => {
-        const numClean = (card.num || '').replace(/^0+(\d)/, '$1');
-        const st = lookup[numClean] || lookup[card.num];
-        if (st) card.supertype = st;
-      });
-    } catch (_) {}
-  }));
+
+  return TCGEnrich.coverage(map);
 }
 
 async function importDeck() {
@@ -2764,8 +3857,8 @@ async function importDeck() {
   showLoading('Preparing deck…');
 
   const fetched = await Promise.all(cards.map(c => fetchCardImage(c)));
-  // Fetch supertypes from API (best-effort, falls back to heuristic in renderReview)
-  await fetchSupertypes(fetched);
+  showLoading('Reading card data\u2026');
+  const cov = await enrichDeckCards(fetched);
   hideLoading();
 
   const deck = {
@@ -2774,11 +3867,15 @@ async function importDeck() {
     cards: fetched,
     history: [],
     format: importFormat,
+    coverage: cov,
   };
   state.decks.push(deck);
   await saveState();
   renderHome();
-  showToast(`"${name}" imported! ${total} cards.`);
+  // Say plainly when card data is incomplete rather than looking fully loaded.
+  showToast(cov.unresolved > 0
+    ? `"${name}" imported (${total} cards). Card data read for ${cov.resolved}/${cov.total} entries.`
+    : `"${name}" imported! ${total} cards.`);
 }
 
 // Known Limitless code -> pokemontcg.io set ID
@@ -3041,6 +4138,17 @@ function navigate(dir) {
   renderCard(dir);
 }
 
+// Delegated click handler for progress dots — attached ONCE at module level,
+// not per render, so repeated games don't stack duplicate listeners.
+function handleProgressDotClick(e) {
+  const d = e.target.closest('.progress-dot');
+  if (!d) return;
+  const idx = parseInt(d.dataset.idx);
+  if (isNaN(idx) || idx === game.currentIdx) return;
+  game.currentIdx = idx;
+  renderCard();
+}
+
 function renderProgressDots() {
   const container = document.getElementById('progress-dots');
   const count = game.visible.length;
@@ -3048,15 +4156,9 @@ function renderProgressDots() {
   container.innerHTML = Array.from({length: showCount}, (_, i) =>
     `<div class="progress-dot" id="dot-${i}" data-idx="${i}" title="Jump to card ${i+1}"></div>`
   ).join('');
-  // Click a dot to jump to that card
-  container.addEventListener('click', e => {
-    const d = e.target.closest('.progress-dot');
-    if (!d) return;
-    const idx = parseInt(d.dataset.idx);
-    if (isNaN(idx) || idx === game.currentIdx) return;
-    game.currentIdx = idx;
-    renderCard();
-  }, { once: false });
+  // Remove-then-add guarantees exactly one listener regardless of call count
+  container.removeEventListener('click', handleProgressDotClick);
+  container.addEventListener('click', handleProgressDotClick);
   updateProgressDots();
 }
 
@@ -3557,9 +4659,13 @@ function renderMissedNotes(prizes, usedPrizeIdxs, deck) {
     </div>`;
   }).join('');
 
-  // Debounced save on input. Writes to deck.history[0].prizes[i].note.
+  // Replace the node to drop any listener from a previous reveal, then attach once.
+  // (This function runs after every game, so a plain addEventListener would stack.)
+  const fresh = list.cloneNode(true);
+  list.parentNode.replaceChild(fresh, list);
+
   let saveTimer = null;
-  list.addEventListener('input', e => {
+  fresh.addEventListener('input', e => {
     const ta = e.target.closest('.mn-input');
     if (!ta) return;
     const idx = parseInt(ta.dataset.prizeIdx);
@@ -3684,8 +4790,16 @@ function renderHistoryTable() {
   }).join('');
 }
 
-function playAgain() { startGame(state.activeDeckId); }
-function goHome() { showScreen('home'); renderHome(); }
+function playAgain() {
+  // Leaving the tournament flow via Play Again ends the block
+  tournament.active = false;
+  startGame(state.activeDeckId);
+}
+function goHome() {
+  tournament.active = false;
+  showScreen('home');
+  renderHome();
+}
 function confirmQuit() { if (confirm('Quit this session?')) { stopTimer(); goHome(); } }
 
 // ═══════════ THUMBNAIL PICKER ═══════════
@@ -3928,6 +5042,7 @@ function startGameDefault(deckId) {
   game.prizeCount = 6;
   game.timeLimit = 0;
   game._drillMissWeights = null;
+  tournament.active = false;
   startGame(deckId);
 }
 

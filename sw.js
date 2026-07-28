@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v10';
+const CACHE_NAME = 'prize-trainer-v14';
 
 const CORE_ASSETS = [
   './',
@@ -13,10 +13,22 @@ const CORE_ASSETS = [
 
 // On install: pre-cache the core shell, then skip waiting so the new SW
 // activates immediately rather than waiting for all tabs to close.
+//
+// Each asset is cached individually rather than via cache.addAll, because
+// addAll rejects the ENTIRE install if any single file 404s. That would
+// silently leave the app with no service worker and no offline support
+// just because one icon path did not match this repo's layout.
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CORE_ASSETS))
+      .then(cache => Promise.all(
+        CORE_ASSETS.map(url =>
+          cache.add(url).catch(() => {
+            // Missing or misnamed asset: skip it, keep the rest of the install.
+            console.warn('[sw] could not cache', url);
+          })
+        )
+      ))
       .then(() => self.skipWaiting())
   );
 });
