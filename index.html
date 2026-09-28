@@ -120,7 +120,6 @@
   body[data-theme="light"] .card-placeholder,
   body[data-theme="light"] .mn-card,
   body[data-theme="light"] .tb-stat,
-  body[data-theme="light"] .hm-tagline,
   body[data-theme="light"] .archived-badge,
   body[data-theme="light"] .guess-compare-title,
   body[data-theme="light"] .deck-warn,
@@ -1152,83 +1151,6 @@
     line-height:1;
   }
 
-  /* ── HOLOMINT promo card ── */
-  .holomint-promo {
-    display:flex; align-items:center; gap:0.7rem;
-    margin-top:0.7rem; padding:0.7rem 0.85rem;
-    background:linear-gradient(135deg, rgba(216,168,32,0.10) 0%, rgba(216,168,32,0.04) 100%);
-    border:2px solid var(--gold-dim);
-    box-shadow:2px 2px 0 rgba(0,0,0,0.4);
-    text-decoration:none; color:var(--text);
-    transition:transform 0.08s, box-shadow 0.08s, border-color 0.15s;
-    position:relative;
-  }
-  .holomint-promo::before, .holomint-promo::after {
-    content:''; position:absolute; width:5px; height:5px; background:var(--gold);
-  }
-  .holomint-promo::before { top:-2px; left:-2px; }
-  .holomint-promo::after  { bottom:-2px; right:-2px; }
-  .holomint-promo:hover { border-color:var(--gold); }
-  .holomint-promo:active { transform:translate(2px,2px); box-shadow:none; }
-
-  .hm-logo {
-    flex:0 0 34px; width:34px; height:34px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .hm-logo img, .hm-leaf { width:34px; height:34px; display:block; }
-  .hm-body { flex:1; min-width:0; }
-  .hm-title {
-    font-family:var(--px); font-size:0.5rem; font-weight:700;
-    color:var(--gold); letter-spacing:0.06em; margin-bottom:0.18rem;
-  }
-  .hm-tagline {
-    font-family:var(--body); font-size:0.78rem; font-weight:700;
-    color:var(--text-dim); line-height:1.3;
-  }
-
-  /* Rotating tool names in Holomint's holographic gradient.
-     Fixed-height container so the cycling text never shifts layout. */
-  .hm-tools {
-    position:relative; height:1.15em; margin-top:0.22rem; overflow:hidden;
-  }
-  .hm-tools span {
-    position:absolute; inset:0; white-space:nowrap;
-    font-family:var(--px); font-size:0.4rem; letter-spacing:0.05em;
-    line-height:1.15em; opacity:0;
-    background:linear-gradient(100deg,#7df0c8,#8fd8ff,#c9a8ff,#ffb3d9,#ffe9a3,#7df0c8);
-    background-size:260% auto;
-    -webkit-background-clip:text; background-clip:text;
-    color:transparent; -webkit-text-fill-color:transparent;
-    animation:hmHoloShift 6s linear infinite, hmToolCycle 18s ease-in-out infinite;
-  }
-  .hm-tools span:nth-child(1) { animation-delay:0s, 0s; }
-  .hm-tools span:nth-child(2) { animation-delay:0s, 3s; }
-  .hm-tools span:nth-child(3) { animation-delay:0s, 6s; }
-  .hm-tools span:nth-child(4) { animation-delay:0s, 9s; }
-  .hm-tools span:nth-child(5) { animation-delay:0s, 12s; }
-  .hm-tools span:nth-child(6) { animation-delay:0s, 15s; }
-  @keyframes hmHoloShift { to { background-position:260% center; } }
-  @keyframes hmToolCycle {
-    0%     { opacity:0; transform:translateY(5px); }
-    2%     { opacity:1; transform:translateY(0); }
-    14%    { opacity:1; transform:translateY(0); }
-    16.6%  { opacity:0; transform:translateY(-5px); }
-    100%   { opacity:0; transform:translateY(-5px); }
-  }
-  /* Respect reduced-motion: hold the first item, no cycling or shimmer */
-  @media (prefers-reduced-motion: reduce) {
-    .hm-tools span { animation:none; opacity:0; }
-    .hm-tools span:nth-child(1) { opacity:1; }
-  }
-  .hm-arrow {
-    font-family:var(--px); font-size:1rem; color:var(--gold);
-    flex-shrink:0; transition:transform 0.2s;
-  }
-  .holomint-promo:hover .hm-arrow { transform:translateX(3px); }
-
-  /* Light theme override for promo */
-  body[data-theme="light"] .holomint-promo { background:linear-gradient(135deg, rgba(216,168,32,0.18) 0%, rgba(216,168,32,0.08) 100%); }
-  body[data-theme="light"] .hm-tagline { color:#3a3020; }
 
   /* ── TOURNAMENT banner on results ── */
   .tournament-banner {
@@ -1735,36 +1657,6 @@
     <button class="btn btn-block" onclick="openShortcuts()" style="margin-top:0.35rem;font-size:0.5rem;opacity:0.75;">⌨ KEYBOARD SHORTCUTS</button>
     <button class="btn btn-block" onclick="toggleTheme()" id="theme-toggle-btn" style="margin-top:0.35rem;font-size:0.5rem;opacity:0.75;">☾ DARK THEME</button>
 
-    <a class="holomint-promo" href="https://holomint.app" target="_blank" rel="noopener" onclick="return true;">
-      <div class="hm-logo">
-        <img src="https://holomint.app/icon-192.png" alt="" loading="lazy" decoding="async"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-        <svg class="hm-leaf" viewBox="0 0 64 64" aria-hidden="true" focusable="false" style="display:none">
-          <defs><linearGradient id="hmHoloA" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#7df0c8"/><stop offset="28%" stop-color="#8fd8ff"/>
-            <stop offset="54%" stop-color="#c9a8ff"/><stop offset="78%" stop-color="#ffb3d9"/>
-            <stop offset="100%" stop-color="#ffe9a3"/></linearGradient></defs>
-          <path fill="url(#hmHoloA)" d="M10 10q9-2 15 5 q9-1 13 8 q8 2 10 12 q4 6 6 19 q-13-2-19-6 q-10-2-12-10 q-8-3-9-13 q-5-7-4-15z"/>
-          <g stroke="#0c1020" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85">
-            <path d="M12 12 L50 50"/><path d="M20 20 L31 16"/><path d="M28 28 L39 25"/>
-            <path d="M36 36 L46 34"/><path d="M20 20 L16 31"/><path d="M28 28 L25 39"/><path d="M36 36 L34 46"/>
-          </g>
-        </svg>
-      </div>
-      <div class="hm-body">
-        <div class="hm-title">TRY HOLOMINT</div>
-        <div class="hm-tagline">Your Pokémon TCG Selling Companion</div>
-        <div class="hm-tools" aria-label="Holomint tools">
-          <span>Restock alerts</span>
-          <span>Fee math by channel</span>
-          <span>Portfolio tracking</span>
-          <span>Slab Math</span>
-          <span>Card scanner</span>
-          <span>Condition pricing</span>
-        </div>
-      </div>
-      <div class="hm-arrow">→</div>
-    </a>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;"><button class="btn btn-sm" onclick="openBackupModal()" style="font-size:0.38rem;padding:0.3rem 0.6rem;">⬆⬇ MANUAL BACKUP</button><button class="btn btn-danger btn-sm" onclick="clearAllData()" style="font-size:0.38rem;opacity:0.55;padding:0.3rem 0.6rem;">⚠ clear data</button></div>
   </div>
@@ -1877,36 +1769,6 @@
     </div>
     <div id="pb-display" style="padding:0 0.9rem;max-width:640px;margin:0 auto;width:100%;"></div>
 
-    <a class="holomint-promo" href="https://holomint.app" target="_blank" rel="noopener" style="max-width:640px;margin:0 auto 1rem;">
-      <div class="hm-logo">
-        <img src="https://holomint.app/icon-192.png" alt="" loading="lazy" decoding="async"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-        <svg class="hm-leaf" viewBox="0 0 64 64" aria-hidden="true" focusable="false" style="display:none">
-          <defs><linearGradient id="hmHoloB" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#7df0c8"/><stop offset="28%" stop-color="#8fd8ff"/>
-            <stop offset="54%" stop-color="#c9a8ff"/><stop offset="78%" stop-color="#ffb3d9"/>
-            <stop offset="100%" stop-color="#ffe9a3"/></linearGradient></defs>
-          <path fill="url(#hmHoloB)" d="M10 10q9-2 15 5 q9-1 13 8 q8 2 10 12 q4 6 6 19 q-13-2-19-6 q-10-2-12-10 q-8-3-9-13 q-5-7-4-15z"/>
-          <g stroke="#0c1020" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85">
-            <path d="M12 12 L50 50"/><path d="M20 20 L31 16"/><path d="M28 28 L39 25"/>
-            <path d="M36 36 L46 34"/><path d="M20 20 L16 31"/><path d="M28 28 L25 39"/><path d="M36 36 L34 46"/>
-          </g>
-        </svg>
-      </div>
-      <div class="hm-body">
-        <div class="hm-title">TRY HOLOMINT</div>
-        <div class="hm-tagline">Your Pokémon TCG Selling Companion</div>
-        <div class="hm-tools" aria-label="Holomint tools">
-          <span>Restock alerts</span>
-          <span>Fee math by channel</span>
-          <span>Portfolio tracking</span>
-          <span>Slab Math</span>
-          <span>Card scanner</span>
-          <span>Condition pricing</span>
-        </div>
-      </div>
-      <div class="hm-arrow">→</div>
-    </a>
 
     </div><!-- /results-scrollable-desktop -->
     <div class="results-actions">
