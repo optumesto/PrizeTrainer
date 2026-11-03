@@ -1,0 +1,28 @@
+# PrizeTrainer: MetaForge Odds tab (cache prize-trainer-v16)
+
+Files to replace in optumesto/PrizeTrainer: index.html, sw.js. Nothing else changed.
+
+## What was already there
+The Coherence x Viability grader from MetaForge v0.5 was folded in on Jul 28 as the GRADE tab on the deck review screen. It already reads the same imported decklist as the trainer.
+
+## What this adds
+- A third review tab, % ODDS: the Monte Carlo half of MetaForge, rebuilt to run on the user's own list only. 20,000 seeded shuffles per deck (about 130 ms), so the same list always shows the same numbers.
+  - Mulligan rate (checks out against exact math: 29.7% simulated vs 30.0% exact on the test list).
+  - Chance of a draw card in your first 8 cards.
+  - Main attacker ready by turn 2, shown as a range: raw draws (floor) to every search card fetching one missing piece (ceiling). Main attacker is the most damage summed over copies, so a 3-of Dragapult ex beats a 1-of tech.
+  - Chance the attacker line is locked in the prizes.
+  - Prize risk table: every card that can be fully prized at least 0.5% of games, with the attacker line tagged. Works even when card data could not be fetched, since it only needs names.
+- Tab switching now handles three panes; reopening a deck still lands on CARDS.
+- Removed every en and em dash from index.html and sw.js (comments and a few lines of copy). The input normalizer still strips pasted dashes; it now names them by Unicode escape instead of literal characters.
+- sw.js: CACHE_NAME bumped v15 to v16.
+
+## Not done, on purpose
+- No matchup win rates. MetaForge's meta simulation needs live tournament data, which there still is not. The tab says so.
+
+## Known limits
+- Setup odds do not play out draw Supporters, abilities, discard costs or the one Supporter per turn rule. That is why it shows a range.
+- Card roles come from the existing enrichment. Its override list tags Arven as search_pokemon, but Arven fetches an Item and a Tool. Left unchanged since it also feeds the grade.
+- Found, not changed: --text-dim is set to #6070880 (seven digits), so dim text falls back to the normal text color across the app. One character fixes it, but it changes the look everywhere.
+
+## Tested (headless Chromium over localhost, 26 of 26 passing)
+Import through the real UI with a mocked card API, all three tabs, Monte Carlo against exact math, phone width with no sideways scroll, light theme, standard game to results, tournament mode, drill missed cards, reload persistence, service worker registers and controls the page with cache v16, no page or console errors.
