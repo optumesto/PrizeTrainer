@@ -1,28 +1,25 @@
-# PrizeTrainer: MetaForge Odds tab (cache prize-trainer-v16)
+# PrizeTrainer v17 (cache prize-trainer-v17)
 
-Files to replace in optumesto/PrizeTrainer: index.html, sw.js. Nothing else changed.
+Replace index.html and sw.js in optumesto/PrizeTrainer. Nothing else changed.
 
-## What was already there
-The Coherence x Viability grader from MetaForge v0.5 was folded in on Jul 28 as the GRADE tab on the deck review screen. It already reads the same imported decklist as the trainer.
+## Fix the last upload first
+The Nov 3 commit added index.txt, sw.txt and CHANGES.txt instead of replacing index.html and sw.js, so the live site is still on v15 with no Odds tab. Delete those three .txt files. When you upload, make sure the files are named exactly index.html and sw.js (prizetrainer-v17.zip keeps the names if your download renames them).
 
-## What this adds
-- A third review tab, % ODDS: the Monte Carlo half of MetaForge, rebuilt to run on the user's own list only. 20,000 seeded shuffles per deck (about 130 ms), so the same list always shows the same numbers.
-  - Mulligan rate (checks out against exact math: 29.7% simulated vs 30.0% exact on the test list).
-  - Chance of a draw card in your first 8 cards.
-  - Main attacker ready by turn 2, shown as a range: raw draws (floor) to every search card fetching one missing piece (ceiling). Main attacker is the most damage summed over copies, so a 3-of Dragapult ex beats a 1-of tech.
-  - Chance the attacker line is locked in the prizes.
-  - Prize risk table: every card that can be fully prized at least 0.5% of games, with the attacker line tagged. Works even when card data could not be fetched, since it only needs names.
-- Tab switching now handles three panes; reopening a deck still lands on CARDS.
-- Removed every en and em dash from index.html and sw.js (comments and a few lines of copy). The input normalizer still strips pasted dashes; it now names them by Unicode escape instead of literal characters.
-- sw.js: CACHE_NAME bumped v15 to v16.
+## Fixes (each one reproduced on v16, then checked fixed on v17)
+1. Dim text: --text-dim was a seven digit hex (#6070880), which browsers reject, so every "dim" caption showed at full brightness. Now #8090a8. The obvious intent, #607088, only reaches 3.3:1 contrast on the card panels, which is hard to read in the small pixel font; #8090a8 is about 5:1. See before-after-dim-text.png. Light theme unchanged.
+2. Arven: tagged as Pokemon search and recovery; it searches an Item and a Tool. Now tagged Item search. No card requires either old tag, so grades do not change (test deck: 7.7 before and after). In Odds it now counts as fetching Rare Candy, not a Pokemon, so the with-search ceiling on the test deck went from 72% to 57%.
+3. Prize browser badges disagreed with the score. It used its own looser matcher, so "Charizard" showed GUESSED on a Charizard ex that scored as a miss, and curly quote or energy button guesses that scored as hits showed MISSED. It now uses the score's own matches.
+4. Prize browser image fallback broke on any card name with an apostrophe (Boss's Orders) and could run script from a crafted name. Replaced the inline handler with a safe function.
+5. Timed mode: when the clock hit 0:00 with empty slots, cancelling the "Reveal anyway?" prompt froze the timer and play went on untimed. The time-up reveal now skips the prompt.
+6. The red blinking timer carried over from a timed game into the next untimed game.
+7. A leftover fragment of keyframe CSS swallowed the rule for the big timed-mode countdown, so it showed as small plain text in the corner. It is now the large gold centered clock it was styled as. See before-after-timed-countdown.png.
+8. Weak Spots put card names into the page unescaped, so a pasted list could inject markup or script.
+9. "Trending upward" compared raw scores across 4, 6 and 8 prize games (2/2 then 3/6 counted as up). Now compares percentages.
+10. Header streak sorted games by day only, so same-day games across decks came out in deck order, not play order (en-GB dates also misparsed). New games now store a timestamp; older ones fall back to the date.
+11. Progress dots stopped at 54, so in 4 prize mode the last two cards had no dot.
+12. Thumbnail picker saved the primary image URL even when that 404ed and a fallback was showing, so the home card fell back to a blank. The results grid also never tried fallback art.
+13. Duplicated decks lost their card data coverage report.
+14. Grade read energy written as "Basic {R} Energy" as no type, flagging every attacker as having no energy. It now reads the symbol.
 
-## Not done, on purpose
-- No matchup win rates. MetaForge's meta simulation needs live tournament data, which there still is not. The tab says so.
-
-## Known limits
-- Setup odds do not play out draw Supporters, abilities, discard costs or the one Supporter per turn rule. That is why it shows a range.
-- Card roles come from the existing enrichment. Its override list tags Arven as search_pokemon, but Arven fetches an Item and a Tool. Left unchanged since it also feeds the grade.
-- Found, not changed: --text-dim is set to #6070880 (seven digits), so dim text falls back to the normal text color across the app. One character fixes it, but it changes the look everywhere.
-
-## Tested (headless Chromium over localhost, 26 of 26 passing)
-Import through the real UI with a mocked card API, all three tabs, Monte Carlo against exact math, phone width with no sideways scroll, light theme, standard game to results, tournament mode, drill missed cards, reload persistence, service worker registers and controls the page with cache v16, no page or console errors.
+## Tests (headless Chromium over localhost)
+Regression checks for every fix: 15 of 15 pass on v17, 0 of 15 on v16. The full suite from v16 (import, all three tabs, Monte Carlo against exact math, standard, tournament and drill modes, reload, service worker on v17, no console errors): 26 of 26 pass.

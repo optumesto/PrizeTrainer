@@ -17,7 +17,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Global tap/touch behavior — kill 300ms delay, no callout/highlight on long-press */
+  /* Global tap/touch behavior: kill 300ms delay, no callout/highlight on long-press */
   html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
   * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
   button, .btn, [onclick], [role="button"] { touch-action: manipulation; user-select: none; -webkit-user-select: none; }
@@ -54,7 +54,7 @@
 
     /* UI */
     --text:     #e4dcc8;
-    --text-dim: #6070880;
+    --text-dim: #8090a8;
     --muted:    #2a3444;
     --red:      #d03028;
     --green:    #38a030;
@@ -64,7 +64,7 @@
     --body: 'Nunito', sans-serif;
   }
 
-  /* Light theme — overrides dark defaults. Keeps TCG type colors and gold accents. */
+  /* Light theme: overrides dark defaults. Keeps TCG type colors and gold accents. */
   body[data-theme="light"] {
     --bg:       #f2ede0;
     --bg-mid:   #e8dfc8;
@@ -166,7 +166,7 @@
   .scrollable { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
 
   /* ══════════════════════════════
-     TCG PANEL  — sprite box motif
+     TCG PANEL: sprite box motif
      Thick border + corner squares + inset shadow
   ══════════════════════════════ */
   .tcg-box {
@@ -182,7 +182,7 @@
   .tcg-box::before { top:-2px; left:-2px; }
   .tcg-box::after  { bottom:-2px; right:-2px; }
 
-  /* ── TCG BANNER  — colored end-caps + center text like HGSS textboxes ── */
+  /* ── TCG BANNER: colored end-caps + center text like HGSS textboxes ── */
   .tcg-banner {
     --c: var(--gold);
     position:relative;
@@ -340,7 +340,7 @@
   .btn-sm { padding:0.45rem 0.7rem; font-size:0.44rem; min-height:36px; }
   .btn-block { width:100%; padding:0.85rem 1rem; font-size:0.55rem; min-height:48px; }
 
-  /* Play button — big solid green like FIGHT button */
+  /* Play button: big solid green like FIGHT button */
   .play-btn {
     width:100%; padding:0.8rem;
     font-family:var(--px); font-size:0.68rem; font-weight:700;
@@ -462,6 +462,20 @@
     font-size:0.72rem; font-weight:700; color:var(--text-dim); line-height:1.55;
   }
   .g-wip b { color:var(--electric); }
+  .o-tiles { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; padding:1rem 0.9rem 0.4rem; }
+  .o-tile { flex:1 1 90px; max-width:150px; text-align:center; padding:0.6rem 0.4rem; background:var(--bg-card); border-bottom:3px solid var(--muted); }
+  .o-tile .ov { font-family:var(--px); font-size:1.15rem; line-height:1.1; }
+  .o-tile .ol { font-family:var(--px); font-size:0.34rem; color:var(--text-dim); letter-spacing:0.05em; margin-top:0.35rem; line-height:1.5; }
+  .o-tile .os { font-size:0.64rem; color:var(--text-dim); font-weight:700; margin-top:0.15rem; line-height:1.35; }
+  .o-meta { text-align:center; font-size:0.66rem; color:var(--text-dim); font-weight:700; padding:0 0.9rem; }
+  .o-table { width:100%; border-collapse:collapse; font-size:0.76rem; font-weight:700; }
+  .o-table th { font-family:var(--px); font-size:0.34rem; color:var(--text-dim); letter-spacing:0.05em; text-align:right; padding:0.35rem 0.4rem; border-bottom:1px solid var(--muted); }
+  .o-table th:first-child, .o-table td:first-child { text-align:left; }
+  .o-table td { padding:0.4rem; text-align:right; color:var(--text); border-bottom:1px solid rgba(255,255,255,0.04); }
+  .o-table td.hi { color:var(--fire); }
+  .o-tag { font-family:var(--px); font-size:0.3rem; color:var(--gold); border:1px solid var(--gold-dim); padding:0.05rem 0.25rem; margin-left:0.3rem; vertical-align:middle; }
+  .result-ph { height:100%; display:flex; align-items:center; justify-content:center; }
+  .result-ph span + span { display:none; }
   .g-empty { padding:2rem 1rem; text-align:center; font-size:0.8rem; font-weight:700; color:var(--text-dim); line-height:1.6; }
   .review-coverage {
     font-family:var(--body); font-size:0.72rem; font-weight:700;
@@ -647,7 +661,7 @@
   .guess-input-row { display:flex;gap:0.45rem; }
   .guess-input-row input { flex:1; }
 
-  /* Quick-guess energy buttons — types actually in the deck */
+  /* Quick-guess energy buttons: types actually in the deck */
   .energy-quick-row {
     display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.55rem;
   }
@@ -966,7 +980,7 @@
   .btn-icon:active { transform:translate(2px,2px); box-shadow:none; }
   .btn-icon.btn-danger { --bc:var(--red); --bct:#f08080; background:rgba(208,48,40,0.07); }
 
-  /* Deck list button — tall square, spans both small buttons */
+  /* Deck list button: tall square, spans both small buttons */
   .btn-icon-tall {
     --bc:var(--gold-dim);
     --bct:var(--gold);
@@ -1290,7 +1304,7 @@
     padding:0.5rem; resize:none;
   }
 
-  /* ── BETTER RESULTS — guess comparison ── */
+  /* ── BETTER RESULTS: guess comparison ── */
   .guess-comparison { padding:0 0.9rem 0; max-width:640px; margin:0 auto; width:100%; }
 
   /* Per-guess timing bars */
@@ -1381,7 +1395,7 @@
     .review-cards { grid-template-columns: repeat(7, 1fr); }
     .review-footer { padding: 1rem 2rem 1.2rem; }
 
-    /* ── GAME — side by side ── */
+    /* ── GAME: side by side ── */
     .game-body-desktop { display: flex; flex: 1; overflow: hidden; min-height: 0; }
     .game-body-desktop .card-viewer {
       flex: 1; border-right: 2px solid var(--muted); overflow-y: auto; padding: 1.4rem 1.8rem;
@@ -1457,10 +1471,6 @@
     .modal { max-width: 700px; }
     .review-body { max-width: 1500px; }
     .btn-block { font-size: 0.75rem; }
-  }
-    20%  { transform:scale(1.0); opacity:1; }
-    75%  { transform:scale(1.0); opacity:1; }
-    100% { transform:scale(0.6); opacity:0; }
   }
 
   /* ── LARGE TIMER DISPLAY during timed mode ── */
@@ -1672,9 +1682,11 @@
   <div class="review-tabs">
     <button class="rv-tab active" id="rv-tab-cards" onclick="showReviewTab('cards')">CARDS</button>
     <button class="rv-tab" id="rv-tab-grade" onclick="showReviewTab('grade')">◈ GRADE</button>
+    <button class="rv-tab" id="rv-tab-odds" onclick="showReviewTab('odds')">% ODDS</button>
   </div>
   <div class="review-body" id="review-body"></div>
   <div class="review-body" id="grade-body" style="display:none;"></div>
+  <div class="review-body" id="odds-body" style="display:none;"></div>
   <div class="review-footer">
     <div class="review-stats" id="review-stats"></div>
     <button class="play-btn" onclick="startGameFromReview()">▶  PLAY</button>
@@ -2429,7 +2441,7 @@ const OVERRIDES = {
   "professor's research": { provides: ['draw'] },
   "boss's orders":    { provides: ['gust'] },
   'iono':             { provides: ['draw', 'hand_disruption'] },
-  'arven':            { provides: ['search_pokemon', 'recovery'] },
+  'arven':            { provides: ['search_item'] },
   'ultra ball':       { provides: ['search_pokemon'] },
   'nest ball':        { provides: ['search_basic', 'search_pokemon'] },
   'buddy-buddy poffin': { provides: ['search_basic', 'search_pokemon'] },
@@ -2643,7 +2655,7 @@ return {
 </script>
 
 <script>
-  // Global error guard — surface silent crashes on iOS
+  // Global error guard: surface silent crashes on iOS
   window.addEventListener('error', function(e) {
     console.error('PT error:', e.message, e.filename, e.lineno);
   });
@@ -2678,7 +2690,7 @@ let game = {
 
 let modeSettings = { prizes: 6, timelimit: 0, tournament: 0, tournamentN: 5 };
 
-// Tournament block — N back-to-back games with aggregated stats.
+// Tournament block: N back-to-back games with aggregated stats.
 let tournament = { active: false, total: 0, current: 0, scores: [], deckId: null };
 
 function setTournamentN(v) {
@@ -2693,7 +2705,7 @@ let modeDeckId = null;
 let importFormat = 'standard';
 
 // ═══════════ STORAGE ═══════════
-// iOS Safari blocks IndexedDB on file:// — localStorage is primary, IDB is secondary
+// iOS Safari blocks IndexedDB on file://: localStorage is primary, IDB is secondary
 
 function idbOpen() {
   return new Promise((res) => {
@@ -2742,9 +2754,9 @@ async function saveState() {
   if (typeof window.storage !== 'undefined' && window.storage) {
     try { await window.storage.set('ptcg_state', data); } catch(_) {}
   }
-  // localStorage — works everywhere including iOS file://
+  // localStorage: works everywhere including iOS file://
   safeLocalSet(STORAGE_KEY, data);
-  // IndexedDB — bonus persistence, fire and forget
+  // IndexedDB: bonus persistence, fire and forget
   idbSet(STORAGE_KEY, data);
 }
 
@@ -2762,7 +2774,7 @@ async function loadState() {
     } catch(_) {}
   }
 
-  // 2. localStorage — primary for iOS Safari file://
+  // 2. localStorage: primary for iOS Safari file://
   try {
     const raw = safeLocalGet(STORAGE_KEY);
     if (raw) parsed = JSON.parse(raw);
@@ -2847,7 +2859,7 @@ function gSynText(req,a,b) {
 /** Basic energy type, from API types or the card name. */
 function gEnergyType(c) {
   if (c.types && c.types.length) return String(c.types[0]).toLowerCase();
-  const m = String(c.name||'').toLowerCase()
+  const m = normalizeCardName(c.name)
     .match(/\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy|dragon)\b/);
   return m ? m[1] : null;
 }
@@ -2992,13 +3004,15 @@ function gBand(v) {
 }
 
 function showReviewTab(which) {
-  const cards=document.getElementById('review-body');
-  const grade=document.getElementById('grade-body');
-  document.getElementById('rv-tab-cards').classList.toggle('active', which==='cards');
-  document.getElementById('rv-tab-grade').classList.toggle('active', which==='grade');
-  cards.style.display = which==='cards' ? '' : 'none';
-  grade.style.display = which==='grade' ? '' : 'none';
+  const panes = { cards:'review-body', grade:'grade-body', odds:'odds-body' };
+  Object.keys(panes).forEach(k => {
+    const btn=document.getElementById('rv-tab-'+k);
+    const pane=document.getElementById(panes[k]);
+    if (btn)  btn.classList.toggle('active', k===which);
+    if (pane) pane.style.display = k===which ? '' : 'none';
+  });
   if (which==='grade') renderGrade();
+  if (which==='odds')  renderOdds();
 }
 
 function renderGrade() {
@@ -3065,6 +3079,342 @@ function renderGrade() {
     not. Read the findings, ignore the decimal places.</div>`;
 
   el.innerHTML=h;
+}
+
+/* ============================================================
+   OPENING ODDS (the Monte Carlo half of MetaForge)
+   Shuffles the user's own list thousands of times and counts what
+   happens: mulligans, which cards land in the prizes, and how often
+   the main attacker is on the board by your second turn.
+   No metagame data is involved, so none of this goes stale.
+   Raw draws only: search cards, draw Supporters and abilities are
+   not played out, so the setup odds are floors, not forecasts.
+   The shuffle is seeded from the list itself, so the same list
+   always shows the same numbers.
+   ============================================================ */
+
+const SIM_TRIALS = 20000;
+const SIM_SEEN_T1 = 8;   // opening 7 plus the first draw
+const SIM_SEEN_T2 = 9;   // opening 7 plus two draws (both players draw on turn 1)
+
+/** mulberry32: small, fast, seedable PRNG. */
+function simRng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let x = a;
+    x = Math.imul(x ^ (x >>> 15), x | 1);
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** FNV-1a over the list, so a given list always simulates identically. */
+function simSeed(cards) {
+  const s = cards.map(c => c.count + 'x' + String(c.name||'').toLowerCase()).join('|');
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+
+/**
+ * Collapse printings that share a name (two different Dreepy cards are
+ * still "Dreepy" for prize and evolution purposes) into one group.
+ */
+function simGroups(cards) {
+  const groups = [], byKey = {};
+  cards.forEach(c => {
+    const key = String(c.name||'').toLowerCase();
+    const sup = String(c.supertype||'').toLowerCase();
+    let g = byKey[key];
+    if (!g) {
+      g = byKey[key] = { key, name:c.name, qty:0, read:false, basic:false,
+                         draw:false, candy:false, sBasic:false, sAny:false, sItem:false,
+                         stage:null, from:null };
+      groups.push(g);
+    }
+    g.qty += c.count;
+    if (sup) g.read = true;
+    if (sup.startsWith('pok') && c.stage === 'basic') g.basic = true;
+    if ((c.provides||[]).includes('draw')) g.draw = true;
+    if ((c.provides||[]).includes('evolution_access')) g.candy = true;
+    // Search cards. A card tagged search_basic (Nest Ball, Poffin) only
+    // finds Basics, even when it also carries search_pokemon.
+    if ((c.provides||[]).includes('search_basic')) g.sBasic = true;
+    else if ((c.provides||[]).includes('search_pokemon')) g.sAny = true;
+    if ((c.provides||[]).includes('search_item')) g.sItem = true;
+    if (c.stage && !g.stage) g.stage = c.stage;
+    if (c.evolvesFrom && !g.from) g.from = String(c.evolvesFrom).toLowerCase();
+  });
+  return groups;
+}
+
+/**
+ * The evolution line behind the main attacker, as group indexes.
+ * Main attacker = the most damage summed over its copies, using only
+ * attacks the deck's energy can pay for. That picks a 3-of Dragapult ex
+ * over a 1-of tech that hits a little harder, which is what you will
+ * actually be setting up most games.
+ * Returns null when there is no attacker, or a line with missing:true when
+ * a piece the attacker needs is not in the list at all.
+ */
+function simAttackerLine(deck, groups) {
+  let R;
+  try { R = gradeDeck(deck); } catch (_) { return null; }
+  if (!R) return null;
+  const et = (R.coh && R.coh.energyTypes) || {};
+  const payDmg = {};
+  R.entries.forEach(e => {
+    if (!e.card || !e.card.attacks) return;
+    let best = 0;
+    e.card.attacks.forEach(a => {
+      const ok = (a.cost||[]).every(ty => ty==='colorless' || et[ty]);
+      if (ok && a.dmg > best) best = a.dmg;
+    });
+    const k = e.card.key;
+    payDmg[k] = Math.max(payDmg[k]||0, best);
+  });
+  const idx = k => groups.findIndex(g => g.key === k);
+  let top = -1, bestScore = 0;
+  groups.forEach((g,i) => {
+    const s = (payDmg[g.key]||0) * g.qty;
+    if (s > bestScore) { bestScore = s; top = i; }
+  });
+  if (top < 0) return null;
+  const g = groups[top];
+  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false };
+  if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
+  if (g.stage === 'stage1') {
+    line.basic = g.from ? idx(g.from) : -1;
+    line.missing = line.basic < 0;
+    return line;
+  }
+  // stage2
+  line.s1 = g.from ? idx(g.from) : -1;
+  const s1g = line.s1 >= 0 ? groups[line.s1] : null;
+  line.basic = s1g && s1g.from ? idx(s1g.from) : -1;
+  line.missing = line.basic < 0;
+  return line;
+}
+
+/**
+ * Run the simulation. Every trial: shuffle, draw 7, mulligan while the
+ * hand has no Basic, set 6 prizes, then draw for two turns.
+ * Only the first 15 positions matter, so each shuffle is a partial
+ * Fisher-Yates (uniform for the prefix whatever order the array is in).
+ */
+function simulateOdds(deck, trials) {
+  const cards = (deck.cards||[]).filter(c => c.count > 0);
+  const groups = simGroups(cards);
+  const G = groups.length;
+  const gid = {}; groups.forEach((g,i) => gid[g.key] = i);
+  const pool = [];
+  cards.forEach(c => { const i = gid[String(c.name||'').toLowerCase()]; for (let k=0;k<c.count;k++) pool.push(i); });
+  const N = pool.length;
+  const DEPTH = 7 + 6 + (SIM_SEEN_T2 - 7);
+  if (N < DEPTH) return null;
+
+  const isBasic = groups.map(g => g.basic);
+  const isDraw  = groups.map(g => g.draw);
+  const candyIdx = groups.map((g,i) => g.candy ? i : -1).filter(i => i >= 0);
+  const anyBasic = isBasic.some(Boolean);
+  const anyRead  = groups.some(g => g.read);
+  const line = simAttackerLine(deck, groups);
+  const lineOk = line && !line.missing;
+
+  const rng = simRng(simSeed(cards));
+  const arr = Int32Array.from(pool);
+  const prized = new Int32Array(G), seen = new Int32Array(G);
+  const anyPrized = new Float64Array(G), allPrized = new Float64Array(G);
+  const isSB = groups.map(g => g.sBasic), isSA = groups.map(g => g.sAny), isSI = groups.map(g => g.sItem);
+  let mullGames = 0, mullTotal = 0, drawT1 = 0, online = 0, onlineS = 0, locked = 0, capped = 0;
+
+  for (let t = 0; t < trials; t++) {
+    let mulls = 0;
+    for (;;) {
+      for (let i = 0; i < DEPTH; i++) {
+        const j = i + Math.floor(rng() * (N - i));
+        const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      if (!anyBasic) break;
+      let ok = false;
+      for (let i = 0; i < 7; i++) if (isBasic[arr[i]]) { ok = true; break; }
+      if (ok) break;
+      if (++mulls >= 50) { capped++; break; }
+    }
+    if (mulls) mullGames++;
+    mullTotal += mulls;
+
+    prized.fill(0); seen.fill(0);
+    for (let i = 7; i < 13; i++) prized[arr[i]]++;
+    for (let i = 0; i < 7; i++) seen[arr[i]]++;
+    let d1 = false;
+    for (let i = 0; i < 7; i++) if (isDraw[arr[i]]) { d1 = true; break; }
+    if (!d1 && isDraw[arr[13]]) d1 = true;
+    if (d1) drawT1++;
+    for (let i = 13; i < 13 + (SIM_SEEN_T2 - 7); i++) seen[arr[i]]++;
+
+    for (let g = 0; g < G; g++) {
+      if (prized[g] > 0) anyPrized[g]++;
+      if (prized[g] === groups[g].qty) allPrized[g]++;
+    }
+
+    if (lineOk) {
+      const has = k => k >= 0 && seen[k] > 0;
+      const gone = k => k >= 0 && prized[k] === groups[k].qty;
+      let up = has(line.basic);
+      if (line.stage === 'stage1') up = up && has(line.top);
+      if (line.stage === 'stage2') up = up && has(line.top) && (has(line.s1) || candyIdx.some(has));
+      if (up) online++;
+      // Same check, letting each search card seen fetch one missing piece:
+      // Basic search finds the Basic, Pokemon search finds any Pokemon, and
+      // Item search (Arven) finds Rare Candy. Costs and the one Supporter
+      // per turn rule are ignored, which is why this is the ceiling.
+      let sb = 0, sa = 0, si = 0;
+      for (let g = 0; g < G; g++) if (seen[g]) {
+        if (isSB[g]) sb += seen[g]; else if (isSA[g]) sa += seen[g];
+        if (isSI[g]) si += seen[g];
+      }
+      let needAny = 0;
+      if (!has(line.basic)) { if (sb > 0) sb--; else needAny++; }
+      if ((line.stage === 'stage1' || line.stage === 'stage2') && !has(line.top)) needAny++;
+      if (line.stage === 'stage2' && !(has(line.s1) || candyIdx.some(has))) {
+        if (si > 0 && candyIdx.length) si--;
+        else needAny += line.s1 >= 0 ? 1 : 99;
+      }
+      if (needAny <= sa) onlineS++;
+      let lock = gone(line.basic) || gone(line.top);
+      if (line.stage === 'stage2') {
+        const s1Gone = line.s1 < 0 || gone(line.s1);
+        const candyGone = candyIdx.every(gone);
+        if (s1Gone && candyGone) lock = true;
+      }
+      if (lock) locked++;
+    }
+  }
+
+  return {
+    trials, N, groups, line, anyBasic, anyRead,
+    anyDraw: isDraw.some(Boolean),
+    mulligan: mullGames / trials,
+    mullAvg: mullTotal / trials,
+    capped: capped / trials,
+    drawT1: drawT1 / trials,
+    online: lineOk ? online / trials : null,
+    onlineS: lineOk ? onlineS / trials : null,
+    anySearch: isSB.some(Boolean) || isSA.some(Boolean),
+    locked: lineOk ? locked / trials : null,
+    prize: groups.map((g,i) => ({ name:g.name, qty:g.qty,
+      any: anyPrized[i] / trials, all: allPrized[i] / trials, idx:i }))
+  };
+}
+
+function oPct(x) {
+  if (x == null) return '?';
+  const p = x * 100;
+  if (p > 0 && p < 0.1) return '<0.1%';
+  return (p < 10 ? p.toFixed(1) : Math.round(p)) + '%';
+}
+
+function renderOdds() {
+  const el=document.getElementById('odds-body');
+  const deck=state.decks.find(d=>d.id===state.activeDeckId);
+  if (!el||!deck) return;
+
+  const S = simulateOdds(deck, SIM_TRIALS);
+  if (!S) {
+    el.innerHTML = `<div class="g-empty">This list is too short to simulate.<br><br>
+      Odds need at least 15 cards: an opening hand, six prizes and two draws.</div>`;
+    return;
+  }
+
+  // Colour: green when the odds favour you, fire when they do not.
+  const good = (x, hi, lo) => x == null ? 'var(--text-dim)'
+    : x >= hi ? 'var(--green)' : x >= lo ? 'var(--electric)' : 'var(--fire)';
+  const bad = (x, lo, hi) => x == null ? 'var(--text-dim)'
+    : x <= lo ? 'var(--green)' : x <= hi ? 'var(--electric)' : 'var(--fire)';
+
+  const line = S.line;
+  const lineOk = line && !line.missing;
+  const onl = lineOk ? (S.anySearch ? S.onlineS : S.online) : null;
+  const stageTxt = s => s==='stage2' ? 'Stage 2' : s==='stage1' ? 'Stage 1' : 'Basic';
+
+  let h = `<div class="o-tiles">
+    <div class="o-tile" style="border-bottom-color:${S.anyBasic?bad(S.mulligan,0.15,0.25):'var(--muted)'}">
+      <div class="ov" style="color:${S.anyBasic?bad(S.mulligan,0.15,0.25):'var(--text-dim)'}">${S.anyBasic?oPct(S.mulligan):'?'}</div>
+      <div class="ol">MULLIGAN</div><div class="os">opening 7 with no Basic</div></div>
+    <div class="o-tile" style="border-bottom-color:${S.anyDraw?good(S.drawT1,0.85,0.7):'var(--muted)'}">
+      <div class="ov" style="color:${S.anyDraw?good(S.drawT1,0.85,0.7):'var(--text-dim)'}">${S.anyDraw?oPct(S.drawT1):'?'}</div>
+      <div class="ol">DRAW CARD T1</div><div class="os">a draw card in your first ${SIM_SEEN_T1}</div></div>
+    <div class="o-tile" style="border-bottom-color:${lineOk?good(onl,0.6,0.4):'var(--muted)'}">
+      <div class="ov" style="color:${lineOk?good(onl,0.6,0.4):'var(--text-dim)'}">${!lineOk?'?':S.anySearch?oPct(S.online).replace('%','')+'-'+oPct(S.onlineS):oPct(S.online)}</div>
+      <div class="ol">ATTACKER BY T2</div><div class="os">${lineOk?esc(line.name)+(S.anySearch?', raw draws to with search':', raw draws'):'no attacker line read'}</div></div>
+  </div>
+  <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
+
+  // Notes the user should see before trusting the tiles.
+  const notes = [];
+  if (!S.anyRead) notes.push(['warn','NO CARD DATA YET',
+    'Prize odds below only need card names, so they are exact. Mulligan, draw and attacker odds need card roles. Open Edit deck and save it to fetch them.']);
+  else {
+    if (!S.anyBasic) notes.push(['crit','NO BASIC POKEMON READ',
+      'No card in this list was read as a Basic Pokemon, so mulligan odds cannot be counted. If the list has Basics, re-saving the deck retries the lookup.']);
+    if (!S.anyDraw) notes.push(['warn','NO DRAW CARD READ',
+      'Nothing in the list was read as a draw card, so the turn 1 draw odds are blank. The Grade tab flags the same thing.']);
+    if (line && line.missing) notes.push(['crit','ATTACKER LINE INCOMPLETE',
+      `${esc(line.name)} is a ${stageTxt(line.stage)}, but a Pokemon it evolves from is not in the list, so it can only reach the board through other cards.`]);
+  }
+  if (S.N !== 60) notes.push(['warn',`${S.N} CARD LIST`,
+    'Standard decks are 60 cards. These odds are for the list exactly as entered.']);
+  if (S.capped > 0) notes.push(['crit','ALMOST NO BASICS',
+    `In ${oPct(S.capped)} of games the deck still had no Basic after 50 mulligans.`]);
+  if (notes.length) {
+    h += `<div class="g-sec">`;
+    notes.forEach(n => h += `<div class="g-item ${n[0]}"><div class="gt">${n[1]}</div><p>${n[2]}</p></div>`);
+    h += `</div>`;
+  }
+
+  if (lineOk) {
+    const parts = [];
+    if (line.stage === 'stage2') {
+      parts.push(`${esc(S.groups[line.basic].name)} plus ${esc(line.name)}, with either ${line.s1>=0?esc(S.groups[line.s1].name):'its Stage 1'} or Rare Candy`);
+    } else if (line.stage === 'stage1') {
+      parts.push(`${esc(S.groups[line.basic].name)} plus ${esc(line.name)}`);
+    } else parts.push(esc(line.name));
+    h += `<div class="g-sec"><div class="g-sec-t">MAIN ATTACKER</div>
+      <div class="g-sec-i">The attacker with the most damage across all its copies, and how often you can have it ready by your second turn.</div>
+      <div class="g-item ${(S.anySearch?S.onlineS:S.online)>=0.6?'ok':(S.anySearch?S.onlineS:S.online)>=0.4?'warn':'crit'}">
+        <div class="gt">${esc(line.name).toUpperCase()} READY BY TURN 2: ${oPct(S.online)}${S.anySearch?' TO '+oPct(S.onlineS):''}</div>
+        <p>Needs ${parts[0]} among your first ${SIM_SEEN_T2} cards. ${oPct(S.online)} is raw draws alone, the floor.${S.anySearch?` ${oPct(S.onlineS)} lets every search card you see fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.</p></div>
+      <div class="g-item ${S.locked<=0.02?'ok':S.locked<=0.06?'warn':'crit'}">
+        <div class="gt">LINE LOCKED IN PRIZES: ${oPct(S.locked)}</div>
+        <p>Games where every copy of a piece the attacker needs is prized, so it cannot come online until you take that prize.</p></div>
+    </div>`;
+  }
+
+  // Prize risk: every card group that can be fully prized often enough to matter.
+  const linePieces = lineOk ? [line.basic, line.s1, line.top].filter(i => i >= 0) : [];
+  const risky = S.prize.filter(p => p.all >= 0.005).sort((a,b) => b.all-a.all || b.any-a.any);
+  h += `<div class="g-sec"><div class="g-sec-t">PRIZE RISK</div>
+    <div class="g-sec-i">Chance a card lands in your six prizes. ALL PRIZED means every copy is stuck there, which is the case PrizeTrainer drills you to spot.</div>`;
+  if (risky.length) {
+    h += `<table class="o-table"><thead><tr><th>CARD</th><th>COPIES</th><th>ANY PRIZED</th><th>ALL PRIZED</th></tr></thead><tbody>`;
+    risky.forEach(p => {
+      const tag = linePieces.includes(p.idx) ? '<span class="o-tag">ATTACKER</span>' : '';
+      h += `<tr><td>${esc(p.name)}${tag}</td><td>${p.qty}</td><td>${oPct(p.any)}</td><td class="${p.all>=0.05?'hi':''}">${oPct(p.all)}</td></tr>`;
+    });
+    h += `</tbody></table>`;
+  } else {
+    h += `<div class="g-item ok"><div class="gt">NO CARD IS LIKELY TO BE FULLY PRIZED</div>
+      <p>Every card runs enough copies that losing all of them to the prizes almost never happens.</p></div>`;
+  }
+  h += `</div>`;
+
+  h += `<div class="g-wip"><b>What this does not do.</b> MetaForge's matchup win rates are not here.
+    They need live tournament data this does not have yet, and a stale snapshot would give
+    confident wrong numbers. Everything on this tab comes from shuffling your own list.</div>`;
+
+  el.innerHTML = h;
 }
 
 function startGameFromReview() {
@@ -3151,7 +3501,7 @@ function renderReview(deck) {
     if (st === 'trainer') { trainers.push(card); return; }
     if (st === 'pokémon' || st === 'pokemon') { pokemon.push(card); return; }
 
-    // Heuristic fallback — used when API didn't return data OR returned an unexpected value
+    // Heuristic fallback: used when API didn't return data OR returned an unexpected value
     const n = (card.name || '').toLowerCase().trim();
     const baseKey = n.replace(/\{[a-z]\}/g, '').replace(/\s+/g, ' ').trim();
     if (ENERGY_NAMED_TRAINERS.has(baseKey) ||
@@ -3259,6 +3609,25 @@ window.addEventListener('resize', () => {
 
 
 
+/**
+ * Image error handler for spots where the placeholder must replace only the
+ * image (not its parent): tries each data-fallbacks URL in turn, then swaps
+ * in a placeholder showing data-name. Built with textContent, so card names
+ * are never parsed as markup or script.
+ */
+function swapImgOrPlaceholder(img, cls) {
+  let fbs = [];
+  try { fbs = JSON.parse(img.dataset.fallbacks || '[]'); } catch (_) {}
+  const idx = parseInt(img.dataset.fallbackIdx) || 0;
+  if (idx < fbs.length) { img.dataset.fallbackIdx = idx + 1; img.src = fbs[idx]; return; }
+  const ph = document.createElement('div');
+  ph.className = cls;
+  const a = document.createElement('span'); a.textContent = '\u{1F0CF}';
+  ph.appendChild(a);
+  if (img.dataset.name) { const b = document.createElement('span'); b.textContent = img.dataset.name; ph.appendChild(b); }
+  img.replaceWith(ph);
+}
+
 // ═══════════════════════════════════════════════
 // PRIZE BROWSER
 // ═══════════════════════════════════════════════
@@ -3267,15 +3636,8 @@ let _pbResults = []; // [{card, correct}]
 
 function openPrizeBrowser() {
   // Build from last game state
-  const pc = game.prizeCount || 6;
-  const prizePool = game.prizes.map(p => p.name.toLowerCase().trim());
-  const usedIdx = new Set();
-  const guessCorrect = (game.guesses || []).map(g => {
-    const gn = g.toLowerCase().trim();
-    const mi = prizePool.findIndex((p,i) => !usedIdx.has(i) && (p === gn || p.startsWith(gn+' ') || gn.startsWith(p+' ')));
-    if (mi !== -1) { usedIdx.add(mi); return true; }
-    return false;
-  });
+  // Same matches the score used, so the badges never disagree with it.
+  const usedIdx = game._usedPrizeIdxs || new Set();
   _pbResults = game.prizes.map((card, i) => ({ card, correct: usedIdx.has(i) }));
   _pbIdx = 0;
   renderPrizeBrowser();
@@ -3308,7 +3670,7 @@ function renderPrizeBrowser() {
     body.innerHTML = `<img class="prize-browser-card" src="${card.imageUrl}"
       alt="${esc(card.apiName || card.name)}"
       data-fallbacks='${fallbacks}' data-fallback-idx="0"
-      onerror="var fbs=JSON.parse(this.dataset.fallbacks||'[]');var idx=parseInt(this.dataset.fallbackIdx)||0;if(idx<fbs.length){this.dataset.fallbackIdx=idx+1;this.src=fbs[idx];}else{this.outerHTML='<div class=\'prize-browser-placeholder\'><span>🃏</span><span>${esc(card.name)}</span></div>';}">`;
+      data-name="${esc(card.name)}" onerror="swapImgOrPlaceholder(this,'prize-browser-placeholder')">`;
   } else {
     body.innerHTML = `<div class="prize-browser-placeholder"><span>🃏</span><span>${esc(card.apiName || card.name)}</span></div>`;
   }
@@ -3332,25 +3694,25 @@ document.addEventListener('keydown', e => {
   const input = document.getElementById('guess-input');
   const inputFocused = document.activeElement === input;
 
-  // Arrow keys — navigate carousel (only when input not focused)
+  // Arrow keys: navigate carousel (only when input not focused)
   if (!inputFocused) {
     if (e.key === 'ArrowLeft')  { navigate(-1); e.preventDefault(); }
     if (e.key === 'ArrowRight') { navigate(1); e.preventDefault(); }
   }
 
-  // Tab — focus guess input
+  // Tab: focus guess input
   if (e.key === 'Tab' && !inputFocused) { e.preventDefault(); input.focus(); }
 
-  // R — reveal (only when not typing)
+  // R: reveal (only when not typing)
   if (e.key === 'r' && !inputFocused) { revealPrizes(); e.preventDefault(); }
 
-  // U — undo last guess (only when not typing)
+  // U: undo last guess (only when not typing)
   if (e.key === 'u' && !inputFocused) { undoLastGuess(); e.preventDefault(); }
 
-  // ? — show shortcuts (works anywhere)
+  // ?: show shortcuts (works anywhere)
   if (e.key === '?') { openShortcuts(); e.preventDefault(); }
 
-  // Escape — quit confirm / close autocomplete
+  // Escape: quit confirm / close autocomplete
   if (e.key === 'Escape') {
     const shortcutsOpen = document.getElementById('shortcuts-modal').classList.contains('active');
     if (shortcutsOpen) { closeShortcuts(); e.preventDefault(); return; }
@@ -3381,8 +3743,12 @@ function updateHeaderStats() {
   if (!el) return;
   const totalSessions = state.decks.reduce((a, d) => a + (d.history?.length || 0), 0);
   // Streak: consecutive sessions (any deck) ending in non-zero score, newest first
-  const allSessions = state.decks.flatMap(d => (d.history || []).map(h => h))
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Newest first. Older entries have no ts; within a deck history is
+  // already newest first, so keep that order as the tie breaker.
+  const when = h => h.ts || new Date(h.date).getTime() || 0;
+  const allSessions = state.decks.flatMap(d => (d.history || []).map((h, i) => ({ h, i })))
+    .sort((a, b) => (when(b.h) - when(a.h)) || (a.i - b.i))
+    .map(x => x.h);
   let streak = 0;
   for (const h of allSessions) {
     if (h.score > 0) streak++;
@@ -3596,7 +3962,7 @@ async function duplicateDeckFromEdit() {
   closeEditModal();
   showLoading('Duplicating…');
   const newCards = await Promise.all(orig.cards.map(c => fetchCardImage(c)));
-  await enrichDeckCards(newCards);
+  const cov = await enrichDeckCards(newCards);
   hideLoading();
   const newDeck = {
     id: Date.now().toString(),
@@ -3604,6 +3970,7 @@ async function duplicateDeckFromEdit() {
     cards: newCards,
     history: [],
     format: orig.format || 'standard',
+    coverage: cov,
   };
   state.decks.push(newDeck);
   await saveState();
@@ -3748,7 +4115,7 @@ function getEnergyImageUrl(name) {
 
   // SVE = Scarlet & Violet Energy set on pokemontcg.io (svenergie / SVE)
   // Cards 1-8: Grass, Fire, Water, Lightning, Psychic, Fighting, Darkness, Metal
-  // Use Limitless CDN for SVE energies — exact set code "SVE"
+  // Use Limitless CDN for SVE energies: exact set code "SVE"
   const bySymbol = {g:1,r:2,w:3,l:4,p:5,f:6,d:7,m:8};
   const byName = {
     grass:1, fire:2, water:3, lightning:4,
@@ -3782,14 +4149,14 @@ function getImageCandidates(card) {
 
   if (!set || !numRaw) return urls;
 
-  // 1. Limitless CDN — exact set codes, includes newest sets (ASC, MEG, PRE, etc.)
+  // 1. Limitless CDN: exact set codes, includes newest sets (ASC, MEG, PRE, etc.)
   const lbase = `https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${set}/${set}`;
   urls.push(`${lbase}_${numPadded}_R_EN_XS.png`);
   urls.push(`${lbase}_${numPadded}_R_EN.png`);
   urls.push(`${lbase}_${numClean}_R_EN_XS.png`);
   urls.push(`${lbase}_${numClean}_R_EN.png`);
 
-  // 2. pokemontcg.io — ONLY when set+number are known, never by name (avoids wrong card art)
+  // 2. pokemontcg.io: ONLY when set+number are known, never by name (avoids wrong card art)
   const pid = LIMITLESS_TO_PTCGIO[set];
   if (pid) {
     urls.push(`https://images.pokemontcg.io/${pid}/${numClean}.png`);
@@ -3799,7 +4166,7 @@ function getImageCandidates(card) {
   return urls;
 }
 
-// No HEAD checks — CORS on file:// blocks them.
+// No HEAD checks: CORS on file:// blocks them.
 // Instead store all candidate URLs and let <img> onerror cascade through them.
 async function fetchCardImage(card) {
   const energyUrl = getEnergyImageUrl(card.name);
@@ -3839,7 +4206,7 @@ async function startGame(deckId) {
     const prizeSet = new Set(game.prizes);
     game.visible = expanded.filter(c => !prizeSet.has(c));
     shuffle(game.visible);
-    game._drillMissWeights = null; // consume — next replay uses normal shuffle
+    game._drillMissWeights = null; // consume: next replay uses normal shuffle
   } else {
     shuffle(expanded);
     game.prizes = expanded.slice(0, pc);
@@ -3948,7 +4315,7 @@ function renderCard(direction = 0) {
 
   // Side card display width (before scale) used for spacing calc
   const sideW = centerW * 0.72;
-  // Gap between card centres — tighter on narrow, looser on wide
+  // Gap between card centres: tighter on narrow, looser on wide
   const spacing = Math.round(sideW * 0.75);
   // How many side slots fit before clipping
   const maxRadius = stageW / 2 - sideW * 0.25;
@@ -4000,7 +4367,7 @@ function navigate(dir) {
   renderCard(dir);
 }
 
-// Delegated click handler for progress dots — attached ONCE at module level,
+// Delegated click handler for progress dots: attached ONCE at module level,
 // not per render, so repeated games don't stack duplicate listeners.
 function handleProgressDotClick(e) {
   const d = e.target.closest('.progress-dot');
@@ -4014,7 +4381,7 @@ function handleProgressDotClick(e) {
 function renderProgressDots() {
   const container = document.getElementById('progress-dots');
   const count = game.visible.length;
-  const showCount = Math.min(count, 54);
+  const showCount = count;
   container.innerHTML = Array.from({length: showCount}, (_, i) =>
     `<div class="progress-dot" id="dot-${i}" data-idx="${i}" title="Jump to card ${i+1}"></div>`
   ).join('');
@@ -4035,7 +4402,7 @@ function updateProgressDots() {
 
 // Touch swipe support
 let touchStartX = 0;
-// Touch swipe — safe to attach to document
+// Touch swipe: safe to attach to document
 document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
 document.addEventListener('touchend', e => {
   const gameScreen = document.getElementById('screen-game');
@@ -4089,7 +4456,7 @@ function renderEnergyQuickButtons(deck) {
     if (!/\benergy\b/.test(n)) return;
     // Ignore trainer items that have "energy" in the name
     if (/\b(search|retrieval|switch|recycler|sticker|lotto|loto|pick|spinner|recycle)\b/.test(n)) return;
-    // Ignore special energies — they don't get quick buttons (too many, less common)
+    // Ignore special energies: they don't get quick buttons (too many, less common)
     // Detection: basic energies are named "Basic X Energy" or contain an energy symbol
     const sym = n.match(/\{([a-z])\}/);
     if (sym && symToFull[sym[1]]) { found.add(symToFull[sym[1]]); return; }
@@ -4121,7 +4488,7 @@ function initGuessInput() {
     const list = document.getElementById('autocomplete-list');
     const highlighted = list.querySelector('.highlighted');
     // Only auto-pick if they've highlighted one via arrow keys.
-    // Otherwise submit exactly what they typed — let the normalizer match it.
+    // Otherwise submit exactly what they typed: let the normalizer match it.
     if (highlighted && list.style.display !== 'none') {
       document.getElementById('guess-input').value = highlighted.dataset.val;
     }
@@ -4168,7 +4535,7 @@ function initGuessInput() {
     setTimeout(hideAutocomplete, 150);
   });
 
-  // Use event delegation — avoids broken onclick with apostrophes in card names
+  // Use event delegation: avoids broken onclick with apostrophes in card names
   document.getElementById('autocomplete-list').addEventListener('mousedown', e => {
     const item = e.target.closest('.autocomplete-item');
     if (item) { e.preventDefault(); pickAutocomplete(item.dataset.val); }
@@ -4219,7 +4586,7 @@ function normalizeCardName(raw) {
     y:'fairy', n:'dragon', c:'colorless'
   };
   s = s.replace(/\{([a-z])\}/g, (_, ch) => symMap[ch] || '');
-  s = s.replace(/[’‘`]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-');
+  s = s.replace(/[’‘`]/g, "'").replace(/[“”]/g, '"').replace(/[\u2013\u2014]/g, '-');
   s = s.replace(/[®™©★◆♪]/g, ' ');
   if (/\benergy\b/.test(s)) s = s.replace(/\bbasic\b/g, ' ');
   return s.replace(/\s+/g, ' ').trim();
@@ -4291,11 +4658,12 @@ function updateTimer() {
     if (big) { big.textContent = fmt; big.className = 'game-countdown-big' + (remaining <= 10 ? ' warning' : ''); }
     if (remaining <= 10) el.classList.add('warning');
     else el.classList.remove('warning');
-    if (remaining <= 0) { stopTimer(); revealPrizes(); }
+    if (remaining <= 0) { stopTimer(); revealPrizes(true); }
   } else {
     const fmt = formatTime(secs);
     el.textContent = fmt;
-    if (big) big.textContent = fmt;
+    el.classList.remove('warning');
+    if (big) { big.textContent = fmt; big.className = 'game-countdown-big'; }
   }
 }
 
@@ -4315,16 +4683,16 @@ function formatTime(secs) {
 }
 
 // ═══════════ REVEAL ═══════════
-async function revealPrizes() {
+async function revealPrizes(force) {
   const pc = game.prizeCount || 6;
-  if (game.guesses.length < pc) {
+  if (force !== true && game.guesses.length < pc) {
     const remaining = pc - game.guesses.length;
     if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
   }
   stopTimer();
   const elapsed = game.elapsed;
 
-  // Score — strict normalized equality (handles case, whitespace, {W}→water,
+  // Score: strict normalized equality (handles case, whitespace, {W}→water,
   // optional "Basic" prefix on energies, curly quotes).
   // Rejects substring matches: "Quilava" does NOT match "Ethan's Quilava",
   // and "Charizard" does NOT match "Charizard ex".
@@ -4343,20 +4711,20 @@ async function revealPrizes() {
     return { guess: g, correct, matchedPrizeIdx: correct ? matchIdx : -1 };
   });
 
-  // Save history — store prize card names + which were guessed for weak spot analysis
+  // Save history: store prize card names + which were guessed for weak spot analysis
   const deck = state.decks.find(d => d.id === state.activeDeckId);
   if (deck) {
     if (!deck.history) deck.history = [];
-    // Build per-card outcome count-aware — uses same usedPrizeIdxs from scoring above
+    // Build per-card outcome count-aware: uses same usedPrizeIdxs from scoring above
     const prizeOutcomes = game.prizes.map((card, pi) => {
       return { name: card.name, missed: !usedPrizeIdxs.has(pi) };
     });
-    deck.history.unshift({ score, time: elapsed, prizeCount: pc, date: new Date().toLocaleDateString(), prizes: prizeOutcomes });
+    deck.history.unshift({ score, time: elapsed, prizeCount: pc, date: new Date().toLocaleDateString(), ts: Date.now(), prizes: prizeOutcomes });
     if (deck.history.length > 50) deck.history = deck.history.slice(0, 50);
     await saveState();
   }
 
-  // Tournament tracking — record this game's score
+  // Tournament tracking: record this game's score
   if (tournament.active) {
     tournament.current++;
     tournament.scores.push({ score, prizeCount: pc, time: elapsed });
@@ -4373,7 +4741,7 @@ async function revealPrizes() {
     return `
       <div class="prize-reveal-card" style="border-color:${wasGuessed ? '#16a34a' : 'var(--red)'}">
         ${card.imageUrl
-          ? `<img src="${card.imageUrl}" alt="${esc(card.name)}">`
+          ? `<img src="${card.imageUrl}" alt="${esc(card.name)}" data-fallbacks='${JSON.stringify(card.fallbackUrls || [])}' data-fallback-idx="0" onerror="swapImgOrPlaceholder(this,'card-placeholder result-ph')">`
           : `<div class="card-placeholder" style="height:100%;display:flex;align-items:center;justify-content:center;">🃏</div>`
         }
         <div class="badge ${wasGuessed ? 'correct' : 'wrong'}">${wasGuessed ? '✓' : '✗'}</div>
@@ -4381,7 +4749,7 @@ async function revealPrizes() {
       </div>`;
   }).join('');
 
-  // Notes on missed prizes — only if any were missed
+  // Notes on missed prizes: only if any were missed
   renderMissedNotes(game.prizes, usedPrizeIdxs, deck);
 
   // Session rating (score + time combined)
@@ -4563,7 +4931,7 @@ function buildGuessComparison(guessResults, prizes, pc) {
 
   // Each guess paired with the exact prize it matched (from the scorer)
   guessResults.forEach(gr => {
-    let prizeName = '—';
+    let prizeName = '-';
     if (gr.correct && gr.matchedPrizeIdx >= 0) {
       const p = prizes[gr.matchedPrizeIdx];
       prizeName = p.apiName || p.name;
@@ -4581,7 +4949,7 @@ function buildGuessComparison(guessResults, prizes, pc) {
     if (matchedPrizes.has(i)) return;
     const name = p.apiName || p.name;
     rows.push('<div class="guess-compare-row miss">' +
-      '<div class="gcr-guess" style="color:#2a3444">—</div>' +
+      '<div class="gcr-guess" style="color:#2a3444">-</div>' +
       '<div class="gcr-arrow">✗</div>' +
       '<div class="gcr-prize unguessed">' + esc(name) + ' (missed)</div>' +
     '</div>');
@@ -4687,10 +5055,10 @@ function openThumbPicker(deckId) {
   grid.innerHTML = uniqueCards.map(card => {
     const rawName = card.apiName || card.name;
     const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g,'').trim());
-    const isSelected = card.imageUrl === currentThumb;
+    const isSelected = card.imageUrl === currentThumb || (card.fallbackUrls || []).includes(currentThumb);
     const fallbacks = JSON.stringify(card.fallbackUrls || []);
     return `
-      <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectThumb('${deckId}', '${card.imageUrl}')">
+      <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectThumb('${deckId}', this.querySelector('img') ? this.querySelector('img').src : '${card.imageUrl}')">
         <div class="picker-card-img">
           <img src="${card.imageUrl}" alt="${displayName}"
             data-fallbacks='${fallbacks}' data-fallback-idx="0"
@@ -4730,7 +5098,7 @@ function openWeakSpots(deckId) {
   const avgScore = (deck.history.reduce((a,h) => a + (h.score / (h.prizeCount || 6)), 0) / totalSessions * 100).toFixed(0);
   const perfectCount = deck.history.filter(h => h.score === (h.prizeCount || 6)).length;
 
-  // Tally miss rates per card name (base name — strip set/variant)
+  // Tally miss rates per card name (base name: strip set/variant)
   const cardStats = {}; // { baseName: { missed, prized, imageUrl } }
 
   sessions.forEach(h => {
@@ -4760,15 +5128,15 @@ function openWeakSpots(deckId) {
   const mostPrized = [...sorted].sort((a,b) => b.prized - a.prized)[0];
   const insights = [];
   if (worstCard && worstCard.rate >= 0.5) {
-    insights.push(`You miss <b>${worstCard.name}</b> when it's prized ${Math.round(worstCard.rate*100)}% of the time — your biggest blind spot.`);
+    insights.push(`You miss <b>${esc(worstCard.name)}</b> when it's prized ${Math.round(worstCard.rate*100)}% of the time. That is your biggest blind spot.`);
   }
   if (mostPrized && mostPrized.prized >= 3) {
-    insights.push(`<b>${mostPrized.name}</b> has been a prize card ${mostPrized.prized} times across ${sessions.length} tracked sessions — high variance card.`);
+    insights.push(`<b>${esc(mostPrized.name)}</b> has been a prize card ${mostPrized.prized} times across ${sessions.length} tracked sessions. High variance card.`);
   }
   const improving = recentSessions.length >= 4 &&
-    recentSessions.slice(-2).reduce((a,h)=>a+h.score,0) / 2 >
-    recentSessions.slice(0,2).reduce((a,h)=>a+h.score,0) / 2;
-  if (improving) insights.push(`Your recent scores are trending upward — keep going!`);
+    recentSessions.slice(-2).reduce((a,h)=>a+h.score/(h.prizeCount||6),0) / 2 >
+    recentSessions.slice(0,2).reduce((a,h)=>a+h.score/(h.prizeCount||6),0) / 2;
+  if (improving) insights.push(`Your recent scores are trending upward, keep going!`);
 
   const body = document.getElementById('ws-body');
   body.innerHTML = `<div class="ws-body-inner">
@@ -4899,7 +5267,7 @@ function startGameFromMode() {
   startGame(modeDeckId);
 }
 
-// Called when tapping a deck card directly — always uses default 6 prizes, no time limit.
+// Called when tapping a deck card directly: always uses default 6 prizes, no time limit.
 function startGameDefault(deckId) {
   game.prizeCount = 6;
   game.timeLimit = 0;
@@ -4908,7 +5276,7 @@ function startGameDefault(deckId) {
   startGame(deckId);
 }
 
-// Drill mode — weights prize selection toward cards you've missed historically.
+// Drill mode: weights prize selection toward cards you've missed historically.
 // Weight formula: 1 + (missed * 3) + (prized > 0 ? missRate * 2 : 0)
 // So never-missed cards get weight 1, frequently-missed cards get much higher weight.
 function startDrillMissed(deckId) {
@@ -5130,7 +5498,7 @@ async function doNativeShare() {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ title: 'Prize Trainer', text: 'Open in a browser to play!', files: [file] });
     } else {
-      await navigator.share({ title: 'Prize Trainer', text: 'Pokémon TCG Prize Card Memory Game — save PrizeTrainer.html and open it in a browser!' });
+      await navigator.share({ title: 'Prize Trainer', text: 'Pokémon TCG Prize Card Memory Game: save PrizeTrainer.html and open it in a browser!' });
     }
   } catch(e) {
     if (e.name !== 'AbortError') {
@@ -5221,7 +5589,7 @@ async function triggerInstall() {
 
 // Check if already installed (standalone mode)
 if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
-  // Already installed — hide share/install related stuff
+  // Already installed: hide share/install related stuff
   console.log('Running as installed PWA');
 }
 
@@ -5270,7 +5638,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
             <li>Choose <strong style="color:var(--grass)">Open in Safari</strong></li>
           </ol>
           <div style="background:var(--bg);border:2px solid var(--red);padding:0.55rem 0.7rem;margin-top:0.4rem;font-size:0.68rem;font-weight:700;color:#f08080;line-height:1.6;">
-            ⚠ Don't open from Discord, Gmail, or Files preview — it won't work. Must be Safari.
+            ⚠ Don't open from Discord, Gmail, or Files preview. It won't work. Must be Safari.
           </div>
         </div>
 
@@ -5282,7 +5650,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
             <li>Works in Chrome, Firefox, Edge, or Samsung Internet</li>
           </ol>
           <div style="background:var(--bg);border:2px solid var(--red);padding:0.55rem 0.7rem;margin-top:0.4rem;font-size:0.68rem;font-weight:700;color:#f08080;line-height:1.6;">
-            ⚠ Don't open from Discord or Gmail's built-in viewer — choose a real browser.
+            ⚠ Don't open from Discord or Gmail's built-in viewer. Choose a real browser.
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v15';
+const CACHE_NAME = 'prize-trainer-v17';
 
 const CORE_ASSETS = [
   './',
@@ -56,7 +56,7 @@ self.addEventListener('fetch', event => {
                  (req.headers.get('accept') || '').includes('text/html');
 
   if (isHTML) {
-    // Network-first for HTML — falls back to cache if offline
+    // Network-first for HTML: falls back to cache if offline
     event.respondWith(
       fetch(req)
         .then(resp => {
