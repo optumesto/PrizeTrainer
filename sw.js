@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v23';
+const CACHE_NAME = 'prize-trainer-v24';
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page

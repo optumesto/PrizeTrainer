@@ -15,7 +15,8 @@
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&family=M+PLUS+1+Code:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&family=M+PLUS+1+Code:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&family=M+PLUS+1+Code:wght@500;700&display=swap" rel="stylesheet"></noscript>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -1555,6 +1556,96 @@
     .tl-two { grid-template-columns:1fr; }
     .gf-board { grid-template-columns:repeat(2, minmax(0,1fr)); }
   }
+
+  /* ══════════════════════════════
+     v24: tour, Practice tab, starter decks, help, tap targets
+  ══════════════════════════════ */
+  /* Four review tabs again, so labels sit beside icons like v22 */
+  .review-tabs { max-width:480px; }
+  @media (max-width:520px) {
+    .review-tabs { gap:4px; padding:4px; }
+    .rv-tab { flex-direction:row; gap:0.35rem; min-height:44px; font-size:var(--fs-sm); padding:0 4px; }
+    .rv-tab .ic { width:16px; height:16px; }
+  }
+  .rv-tab { min-height:44px; }
+  @media (max-width:360px) {
+    .review-tabs { gap:2px; padding:3px; }
+    .rv-tab { gap:0.2rem; padding:0 2px; }
+    .rv-tab .ic { width:14px; height:14px; }
+  }
+  .rv-sub {
+    display:flex; gap:4px; padding:4px;
+    width:calc(100% - 2 * var(--pad-x)); max-width:480px; margin:0.6rem auto 0;
+  }
+  .rv-sub .mode-opt { gap:0.35rem; font-size:var(--fs-sm); }
+  .rv-sub .mode-opt .ic { width:15px; height:15px; }
+  .rv-sub .mode-opt.active .ic { color:var(--accent); }
+  body[data-theme="light"] .rv-sub .mode-opt.active .ic { color:var(--accent-2); }
+
+  /* Home order: decks first, then add a deck, then daily */
+  .home-cta-row { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+  .home-cta-row .btn { width:100%; }
+  #daily-card { margin-top:1.25rem; }
+  #daily-card:empty { display:none; }
+  .st-empty { display:flex; flex-direction:column; align-items:center; gap:0.35rem; padding:1.5rem 1rem; }
+  .st-empty b { font-family:var(--display); font-size:var(--fs-lg); color:var(--text); }
+  .st-empty span { font-size:var(--fs-sm); color:var(--text-2); max-width:280px; line-height:1.45; }
+  .st-empty .tour-ic { width:52px; height:52px; margin:0 0 0.4rem; }
+
+  /* Starter decks */
+  .st-list { display:flex; flex-direction:column; gap:0.5rem; }
+  .st-row { display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.8rem; border-radius:var(--r-sm, 12px); background:var(--surface-2); border:1px solid var(--line); }
+  .st-tx { flex:1; min-width:0; }
+  .st-t { font-family:var(--display); font-weight:800; font-size:var(--fs-md); color:var(--text); line-height:1.25; }
+  .st-s { font-size:var(--fs-xs); color:var(--text-2); line-height:1.4; margin-top:2px; }
+  .st-row .btn { flex-shrink:0; }
+
+  /* Help sheet */
+  .hs-list { display:flex; flex-direction:column; gap:0.5rem; }
+  .hs-row { display:flex; align-items:center; gap:0.75rem; width:100%; min-height:56px; padding:0.6rem 0.75rem; text-align:left; border-radius:12px; background:var(--surface-2); border:1px solid var(--line); color:var(--text); cursor:pointer; }
+  .hs-row:hover { background:var(--surface-3); }
+  .hs-row .ha-ic { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--surface-3); color:var(--accent); flex-shrink:0; }
+  body[data-theme="light"] .hs-row .ha-ic { background:var(--accent-soft); color:var(--accent-2); }
+  .hs-tx { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .hs-tx b { font-weight:700; font-size:var(--fs-md); }
+  .hs-tx span { font-size:var(--fs-xs); color:var(--text-2); }
+  .hs-go { width:16px; height:16px; color:var(--text-3); }
+  .fb-seg { margin-top:0.35rem; }
+  .fb-check { display:flex; align-items:center; gap:0.6rem; min-height:44px; font-size:var(--fs-sm); color:var(--text-2); cursor:pointer; }
+  .fb-check input { width:20px; height:20px; accent-color:var(--accent); }
+  #fb-text { min-height:110px; }
+
+  /* Tour */
+  #tour-modal { z-index:400; }
+  #tour-modal .modal { max-width:420px; }
+  .tour-top { display:flex; align-items:center; justify-content:space-between; margin:-0.25rem 0 0.5rem; }
+  .tour-count { font-size:var(--fs-xs); font-weight:600; color:var(--text-3); }
+  .tour-ic { width:64px; height:64px; margin:0.5rem auto 1rem; border-radius:20px; display:flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); }
+  .tour-ic .ic { width:30px; height:30px; }
+  .st-empty .tour-ic .ic { width:24px; height:24px; }
+  body[data-theme="light"] .tour-ic { color:var(--accent-2); }
+  .tour-t { font-family:var(--display); font-weight:900; font-size:var(--fs-xl); color:var(--text); text-align:center; line-height:1.2; }
+  .tour-s { font-size:var(--fs-md); color:var(--text-2); text-align:center; line-height:1.55; margin:0.6rem auto 0; max-width:340px; min-height:4.7em; }
+  .tour-dots { display:flex; justify-content:center; gap:6px; margin:1.1rem 0 0.2rem; }
+  .tour-dot { width:7px; height:7px; border-radius:50%; background:var(--line-2); transition:width 0.2s, background-color 0.2s; }
+  .tour-dot.on { width:20px; border-radius:4px; background:var(--accent); }
+  .tour-acts { display:flex; gap:0.6rem; margin-top:1rem; }
+  .tour-acts .btn { flex:1; }
+
+  /* Tap targets: 44px minimum on phones and touch screens */
+  @media (pointer:coarse), (max-width:520px) {
+    .icon-btn { width:44px; height:44px; }
+    .icon-btn.sm { width:44px; height:44px; }
+    .btn-sm { min-height:44px; }
+    .fmt-opt, .mode-opt { min-height:44px; }
+    #mode-tournament #mode-tournament-n { min-height:44px; height:44px; }
+    .energy-quick-btn { min-height:44px; }
+    .link-danger { min-height:44px; }
+    .btn-thumb-edit { width:44px; height:44px; right:-16px; bottom:-16px; background:transparent; border:0; opacity:1; }
+    .btn-thumb-edit::before { content:''; position:absolute; width:26px; height:26px; border-radius:50%; background:var(--surface-3); border:2px solid var(--surface); box-sizing:border-box; }
+    .btn-thumb-edit .ic { position:relative; }
+  }
+  .st-from-import { margin-top:0.6rem; }
 </style>
 </head>
 <body>
@@ -1639,7 +1730,6 @@
     <div class="header-stats" id="header-stats"></div>
   </header>
   <div class="home-content scrollable">
-    <div id="daily-card"></div>
     <div class="section-head"><h2 class="section-title">Your decks</h2></div>
     <div class="deck-list" id="deck-list">
       <div class="empty-state">
@@ -1647,17 +1737,18 @@
         No decks yet.<br>Import your first deck below.
       </div>
     </div>
-    <div class="home-cta">
-      <button class="btn btn-primary btn-block" onclick="openImportModal()"><svg class="ic"><use href="#i-plus"/></svg>Import a deck</button>
+    <div class="home-cta home-cta-row">
+      <button class="btn btn-primary" onclick="openImportModal()"><svg class="ic"><use href="#i-plus"/></svg>Import a deck</button>
+      <button class="btn" onclick="openStarterPicker()"><svg class="ic"><use href="#i-cards"/></svg>Starter decks</button>
     </div>
+    <div id="daily-card"></div>
 
     <section class="home-more">
       <h2 class="section-title">More</h2>
       <div class="home-actions">
         <button class="home-action" onclick="openTlog()"><span class="ha-ic"><svg class="ic"><use href="#i-trophy"/></svg></span>Tournament log</button>
         <button class="home-action" onclick="shareApp()"><span class="ha-ic"><svg class="ic"><use href="#i-share"/></svg></span>Share with a friend</button>
-        <button class="home-action" onclick="openHowToPlay()"><span class="ha-ic"><svg class="ic"><use href="#i-help"/></svg></span>How to play</button>
-        <button class="home-action" onclick="openShortcuts()"><span class="ha-ic"><svg class="ic"><use href="#i-keyboard"/></svg></span>Keyboard shortcuts</button>
+        <button class="home-action" onclick="openHelpSheet()"><span class="ha-ic"><svg class="ic"><use href="#i-help"/></svg></span>Help and feedback</button>
         <button class="home-action" onclick="openBackupModal()"><span class="ha-ic"><svg class="ic"><use href="#i-save"/></svg></span>Backup and restore</button>
       </div>
       <div class="home-footer">
@@ -1682,9 +1773,12 @@
     <button class="rv-tab active" id="rv-tab-cards" onclick="showReviewTab('cards')"><svg class="ic"><use href="#i-cards"/></svg>Cards</button>
     <button class="rv-tab" id="rv-tab-grade" onclick="showReviewTab('grade')"><svg class="ic"><use href="#i-award"/></svg>Grade</button>
     <button class="rv-tab" id="rv-tab-odds" onclick="showReviewTab('odds')"><svg class="ic"><use href="#i-chart"/></svg>Odds</button>
-    <button class="rv-tab" id="rv-tab-hand" onclick="showReviewTab('hand')"><svg class="ic"><use href="#i-hand"/></svg>Hand</button>
-    <button class="rv-tab" id="rv-tab-drills" onclick="showReviewTab('drills')"><svg class="ic"><use href="#i-drill"/></svg>Drills</button>
-    <button class="rv-tab" id="rv-tab-notes" onclick="showReviewTab('notes')"><svg class="ic"><use href="#i-note"/></svg>Notes</button>
+    <button class="rv-tab" id="rv-tab-practice" onclick="showReviewTab('practice')"><svg class="ic"><use href="#i-target"/></svg>Practice</button>
+  </div>
+  <div class="seg rv-sub" id="rv-sub" role="group" aria-label="Practice" style="display:none;">
+    <button class="mode-opt" id="rv-tab-hand" onclick="showReviewTab('hand')"><svg class="ic"><use href="#i-hand"/></svg>Hand</button>
+    <button class="mode-opt" id="rv-tab-drills" onclick="showReviewTab('drills')"><svg class="ic"><use href="#i-drill"/></svg>Drills</button>
+    <button class="mode-opt" id="rv-tab-notes" onclick="showReviewTab('notes')"><svg class="ic"><use href="#i-note"/></svg>Notes</button>
   </div>
   <div class="review-body" id="review-body"></div>
   <div class="review-body" id="grade-body" style="display:none;"></div>
@@ -1947,14 +2041,15 @@
         </div>
         <div class="instr-step">
           <div class="instr-num">6</div>
-          <div class="instr-body"><b>Practice openings and share lists</b>Open a deck and use the Hand tab to drill turn 1 lines. The link button at the top gives you a link that opens the list in Prize Trainer.</div>
+          <div class="instr-body"><b>Practice openings and share lists</b>Open a deck and use Practice, then Hand, to drill turn 1 lines. The link button at the top gives you a link that opens the list in Prize Trainer.</div>
         </div>
         <div class="instr-step">
           <div class="instr-num">7</div>
-          <div class="instr-body"><b>Goldfish, drills and notes</b>The Hand tab can goldfish your first three turns. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.</div>
+          <div class="instr-body"><b>Goldfish, drills and notes</b>All three live under the Practice tab of a deck. Hand can goldfish your first three turns. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.</div>
         </div>
       </div>
       <div class="modal-actions">
+        <button class="btn" onclick="closeHowToPlay();startTour(true)">Take the tour</button>
         <button class="btn btn-primary" onclick="closeHowToPlay()">Got it</button>
       </div>
     </div>
@@ -2049,6 +2144,12 @@
 </div>
 
 <!-- ═══════════════════════════ IMPORT MODAL -->
+<div class="modal-overlay" id="tour-modal" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+  <div class="modal">
+    <div class="modal-inner" id="tour-inner"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="import-modal">
   <div class="modal">
     <div class="modal-inner">
@@ -2062,6 +2163,7 @@
         <div class="field-row"><label for="import-list">Deck list</label><button class="btn btn-sm" onclick="pasteFromClipboard()"><svg class="ic ic-sm"><use href="#i-clipboard"/></svg>Paste</button></div>
         <textarea id="import-list" placeholder="4 Charizard ex OBF 125&#10;2 Charmander OBF 26&#10;4 Arven SVI 166&#10;..."></textarea>
         <div class="modal-hint">Paste the export from Limitless or Pokémon TCG Live, section headers included. One card per line: quantity, name, set, number.</div>
+        <button class="btn btn-sm st-from-import" onclick="openStarterPicker()"><svg class="ic ic-sm"><use href="#i-cards"/></svg>No list handy? Load a starter deck</button>
         <div class="parse-preview" id="parse-preview"></div>
       </div>
       <div>
@@ -8096,6 +8198,404 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
   console.log('Running as installed PWA');
 }
 
+
+// ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
+const PT_VERSION = 'v24';
+const TOUR_KEY = 'pt_tour_v24';
+const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
+// Captured before the share and daily handlers clear the address.
+const _v24StartHash = String(location.hash || '');
+
+// Text from people: drop control and direction marks, cap the length.
+function v24Clean(s, max) {
+  return String(s == null ? '' : s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F​-‏‪-‮⁠-⁩﻿]/g, '')
+    .slice(0, max || 2000);
+}
+
+// ── Practice tab: Hand, Drills and Notes grouped under one tab ──
+const PRACTICE_TABS = ['hand', 'drills', 'notes'];
+let lastPracticeTab = 'hand';
+const _v23ShowReviewTab = showReviewTab;
+showReviewTab = function (which) {
+  if (which === 'practice') which = lastPracticeTab;
+  _v23ShowReviewTab(which);
+  const inP = PRACTICE_TABS.includes(which);
+  if (inP) { lastPracticeTab = which; safeLocalSet('pt_practice_tab', which); }
+  const pb = document.getElementById('rv-tab-practice');
+  if (pb) { pb.classList.toggle('active', inP); pb.setAttribute('aria-selected', inP ? 'true' : 'false'); }
+  document.querySelectorAll('.review-tabs .rv-tab').forEach(b => { if (b.id !== 'rv-tab-practice') b.setAttribute('aria-selected', b.classList.contains('active') ? 'true' : 'false'); });
+  const sub = document.getElementById('rv-sub');
+  if (sub) sub.style.display = inP ? '' : 'none';
+  PRACTICE_TABS.forEach(k => { const b = document.getElementById('rv-tab-' + k); if (b) b.setAttribute('aria-pressed', k === which ? 'true' : 'false'); });
+};
+(function () { const t = safeLocalGet('pt_practice_tab'); if (PRACTICE_TABS.includes(t)) lastPracticeTab = t; })();
+
+// ── Starter decks: real tournament lists, loaded through the normal import ──
+const STARTER_AS_OF = '31 Oct 2026';
+const STARTER_DECKS = [
+  { id: 'dragapult', name: 'Dragapult ex', by: 'Andrew Hedrick', place: '1st', event: 'Regional Puebla', date: '24 Oct 2026', src: 'https://limitlesstcg.com/decks/list/29678', list:
+`Pokémon: 19
+4 Dreepy TWM 128
+4 Drakloak TWM 129
+3 Dragapult ex TWM 130
+2 Munkidori TWM 95
+2 Budew ASC 16
+1 Dunsparce TEF 128
+1 Dudunsparce TEF 129
+1 Meowth ex POR 62
+1 Fezandipiti ex ASC 142
+
+Trainer: 32
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Crispin SCR 133
+1 Rosa's Encouragement POR 84
+1 Judge POR 76
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+4 Crushing Hammer POR 71
+3 Ultra Ball MEG 131
+3 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+2 Risky Ruins MEG 127
+
+Energy: 9
+3 Fire Energy MEE 10
+3 Psychic Energy MEE 13
+3 Darkness Energy MEE 15` },
+  { id: 'slowking', name: 'Slowking', by: 'Aarni Karjala', place: '1st', event: 'Regional Gdańsk', date: '31 Oct 2026', src: 'https://limitlesstcg.com/decks/list/30165', list:
+`Pokémon: 22
+4 Slowpoke SCR 57
+3 Slowking SCR 58
+4 Mega Kangaskhan ex MEG 104
+2 Latias ex SSP 76
+2 Metagross CRI 61
+2 Kyurem SFA 47
+1 Fezandipiti ex ASC 142
+1 Zeraora DRI 78
+1 Lillie's Clefairy ex JTG 56
+1 Meowth ex POR 62
+1 Mew ex 30C 66
+
+Trainer: 28
+4 Ciphermaniac's Codebreaking TEF 145
+4 Lillie's Determination MEG 119
+4 Ultra Ball MEG 131
+4 Poké Pad POR 81
+3 Wondrous Patch PFL 94
+2 Night Stretcher ASC 196
+1 Switch MEG 130
+1 Secret Box TWM 163
+1 Lucky Helmet TWM 158
+4 Academy at Night SFA 54
+
+Energy: 10
+4 Psychic Energy MEE 13
+4 Telepathic Psychic Energy POR 88
+2 Boomerang Energy TWM 166` },
+  { id: 'honchkrow', name: "Team Rocket's Honchkrow", by: 'Finn Lasse Fries', place: '2nd', event: 'Regional Gdańsk', date: '31 Oct 2026', src: 'https://limitlesstcg.com/decks/list/28372', list:
+`Pokémon: 13
+4 Team Rocket's Murkrow DRI 127
+3 Team Rocket's Honchkrow ASC 127
+2 Team Rocket's Porygon DRI 153
+1 Team Rocket's Porygon2 DRI 154
+2 Team Rocket's Articuno DRI 51
+1 Team Rocket's Mimikyu DRI 87
+
+Trainer: 39
+4 Team Rocket's Archer DRI 170
+4 Team Rocket's Ariana DRI 171
+4 Team Rocket's Petrel DRI 176
+4 Team Rocket's Proton DRI 177
+4 Team Rocket's Giovanni DRI 174
+4 Team Rocket's Transceiver DRI 178
+4 Poké Pad POR 81
+4 Roto-Stick PRE 127
+2 Night Stretcher ASC 196
+1 Pokégear 3.0 SVI 186
+1 Miracle Headset SSP 183
+3 Team Rocket's Factory DRI 173
+
+Energy: 8
+4 Ignition Energy WHT 86
+4 Team Rocket's Energy DRI 182` },
+  { id: 'alakazam', name: 'Alakazam Dudunsparce', by: 'Nathan Ginsburg', place: '3rd', event: 'Regional Puebla', date: '24 Oct 2026', src: 'https://limitlesstcg.com/decks/list/30794', list:
+`Pokémon: 21
+4 Abra MEG 54
+4 Kadabra MEG 55
+3 Alakazam MEG 56
+3 Dunsparce JTG 120
+2 Dudunsparce TEF 129
+2 Lillie's Clefairy ex JTG 56
+1 Fezandipiti ex ASC 142
+1 Genesect SFA 40
+1 Flutter Mane TEF 78
+
+Trainer: 31
+4 Dawn PFL 87
+4 Hilda WHT 84
+2 Boss's Orders MEG 114
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+3 Wondrous Patch PFL 94
+2 Rare Candy MEG 125
+1 Sacred Ash DRI 168
+1 Special Red Card CRI 82
+3 Lillie's Pearl JTG 151
+3 Battle Cage PFL 85
+
+Energy: 8
+4 Telepathic Psychic Energy POR 88
+2 Psychic Energy MEE 13
+1 Mist Energy TEF 161
+1 Enriching Energy SSP 191` },
+  { id: 'crustle', name: 'Crustle Kangaskhan', by: 'Miloslav Posledni', place: '4th', event: 'Regional Gdańsk', date: '31 Oct 2026', src: 'https://limitlesstcg.com/decks/list/31082', list:
+`Pokémon: 10
+4 Mega Kangaskhan ex MEG 104
+3 Dwebble DRI 11
+3 Crustle DRI 12
+
+Trainer: 35
+4 Boss's Orders MEG 114
+4 Team Rocket's Petrel DRI 176
+3 Lillie's Determination MEG 119
+3 Crispin SCR 133
+2 Eri TEF 146
+2 Hilda WHT 84
+1 Xerosic's Machinations SFA 64
+1 Pokémon Center Lady MEG 123
+4 Jumbo Ice Cream PFL 91
+3 Pokégear 3.0 SVI 186
+2 Buddy-Buddy Poffin TEF 144
+1 Switch MEG 130
+1 Ultra Ball MEG 131
+1 Hero's Cape TEF 152
+1 Lumiose City POR 77
+1 Festival Grounds TWM 149
+1 Prism Tower CRI 80
+
+Energy: 15
+4 Mist Energy TEF 161
+4 Growing Grass Energy POR 86
+2 Spiky Energy JTG 159
+1 Psychic Energy MEE 13
+1 Darkness Energy MEE 15
+1 Fighting Energy MEE 14
+1 Fire Energy MEE 10
+1 Grass Energy MEE 9` },
+];
+
+function starterLoaded(id) { return state.decks.some(d => d.starter === id); }
+function openStarterPicker() {
+  closeImportModal();
+  const rows = STARTER_DECKS.map(s => {
+    const n = parseDeckList(s.list).reduce((a, c) => a + c.count, 0);
+    const done = starterLoaded(s.id);
+    return `<div class="st-row">
+      <div class="st-tx"><div class="st-t">${esc(s.name)}</div>
+        <div class="st-s">${esc(s.place)}, ${esc(s.event)}, ${esc(s.date)} · ${esc(s.by)} · ${n} cards</div></div>
+      <button class="btn btn-sm ${done ? '' : 'btn-primary'}" onclick="loadStarterDeck('${s.id}')">${done ? 'Load again' : 'Load'}</button>
+    </div>`;
+  }).join('');
+  openSheet(`<div class="modal-title">Starter decks</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">Real Standard lists that placed at recent Regionals. List as of ${STARTER_AS_OF}. Load one to start practicing right away, then edit it to match your own build.</div>
+    <div class="st-list">${rows}</div>
+    <div class="modal-hint" style="margin-top:0.9rem">Lists as posted on Limitless (limitlesstcg.com). The format changes with every new set, so check a list before an event.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Close</button><button class="btn" onclick="closeSheet();openImportModal()">${ic23('clipboard')}Paste my own</button></div>`);
+}
+async function loadStarterDeck(id) {
+  const s = STARTER_DECKS.find(x => x.id === id);
+  if (!s) return;
+  closeSheet();
+  openImportModal();
+  document.getElementById('import-name').value = s.name;
+  const t = document.getElementById('import-list');
+  t.value = s.list;
+  t.dispatchEvent(new Event('input'));
+  setImportFormat('standard');
+  const before = state.decks.length;
+  await importDeck();
+  if (state.decks.length > before) {
+    const d = state.decks[state.decks.length - 1];
+    d.starter = s.id;
+    d.starterAsOf = s.date;
+    await saveState();
+    renderHome();
+  }
+}
+
+// ── Help and feedback ──
+function openHelpSheet() {
+  const row = (fn, icon, t, s) => `<button class="hs-row" onclick="${fn}"><span class="ha-ic">${ic23(icon)}</span><span class="hs-tx"><b>${t}</b><span>${s}</span></span><svg class="ic hs-go"><use href="#i-next"/></svg></button>`;
+  openSheet(`<div class="modal-title">Help and feedback</div>
+    <div class="hs-list">
+      ${row("closeSheet();startTour(true)", 'play', 'Take the tour', 'A one minute walk through the app')}
+      ${row("closeSheet();openHowToPlay()", 'help', 'How to play', 'Every step of a prize game')}
+      ${row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card')}
+      ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard shortcuts', 'For playing on a computer')}
+    </div>
+    <div class="modal-hint" style="margin-top:0.9rem">Prize Trainer ${PT_VERSION}</div>
+    <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
+
+let fbKind = 'Bug';
+function openFeedback() {
+  fbKind = 'Bug';
+  const deck = state.decks.find(d => d.id === state.activeDeckId) || state.decks[0];
+  openSheet(`<div class="modal-title">Send feedback</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">This opens a new issue on the Prize Trainer GitHub page with the details filled in. You need a free GitHub account to post it, and nothing is sent until you press Submit there.</div>
+    <div class="field-label">What is it about?</div>
+    <div class="seg fb-seg" role="group" aria-label="Feedback type">
+      ${['Bug', 'Missing card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
+    </div>
+    <div class="mb" style="margin-top:0.9rem">
+      <label for="fb-text">Tell us what happened</label>
+      <textarea id="fb-text" maxlength="1500" placeholder="For a missing card, include its name, set code and number."></textarea>
+    </div>
+    ${deck ? `<label class="fb-check"><input type="checkbox" id="fb-deck"> <span>Include my list for <b>${esc(deck.name)}</b></span></label>` : ''}
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="sendFeedback()">${ic23('share')}Open on GitHub</button></div>`);
+}
+function setFbKind(btn) {
+  fbKind = btn.dataset.k;
+  document.querySelectorAll('.fb-seg .mode-opt').forEach(b => b.classList.toggle('active', b === btn));
+}
+function feedbackUrl(kind, text, deck) {
+  kind = ['Bug', 'Missing card', 'Idea'].includes(kind) ? kind : 'Bug';
+  const body = v24Clean(text, 1500).trim();
+  const first = (body.split('\n')[0] || '').trim().slice(0, 70);
+  const title = `[${kind}] ${first || (kind === 'Idea' ? 'Idea for Prize Trainer' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
+  const scr = (document.querySelector('.screen.active') || {}).id || '';
+  const ua = navigator.userAgent;
+  const device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone or iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
+  const lines = [
+    kind === 'Missing card' ? '**Which card is missing or wrong?** (name, set code, number)' : kind === 'Idea' ? '**What would you like?**' : '**What happened?**',
+    body || '',
+    '',
+    kind === 'Bug' ? '**What did you expect?**\n\n' : '',
+    '---',
+    `App version: ${PT_VERSION}`,
+    `Screen: ${scr.replace('screen-', '')}`,
+    `Device: ${device}, ${innerWidth} px wide`,
+  ];
+  if (deck) {
+    let list = deckListText(deck.cards || []);
+    if (list.length > 3000) list = list.slice(0, 3000) + '\n(cut short)';
+    lines.push('', `Deck: ${v24Clean(deck.name, 80)}`, '```', v24Clean(list, 3200), '```');
+  }
+  return `${FEEDBACK_REPO}/issues/new?title=${encodeURIComponent(v24Clean(title, 120))}&body=${encodeURIComponent(lines.filter(l => l !== '').join('\n'))}`;
+}
+function sendFeedback() {
+  const t = document.getElementById('fb-text');
+  const inc = document.getElementById('fb-deck');
+  const deck = inc && inc.checked ? (state.decks.find(d => d.id === state.activeDeckId) || state.decks[0]) : null;
+  const url = feedbackUrl(fbKind, t ? t.value : '', deck);
+  const w = window.open(url, '_blank', 'noopener');
+  closeSheet();
+  showToast(w ? 'Opened GitHub in a new tab.' : 'Could not open a new tab. Allow pop ups and try again.');
+}
+
+// ── First run tour ──
+const TOUR_STEPS = [
+  { ic: 'cards', t: 'Welcome to Prize Trainer', s: 'Before each game, six cards from your deck go face down as prizes. Flip through the rest and name what is missing. It builds the memory you need at the table.' },
+  { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
+  { ic: 'play', t: 'Play a prize game', s: 'Tap the play button on a deck to start. Modes changes the prize count, adds a timer, or runs a tournament block of games.' },
+  { ic: 'grid', t: 'Study your deck', s: 'Open a deck to see Cards, Grade and Odds. Practice holds opening hands, goldfish turns, drills and your matchup notes.' },
+  { ic: 'calendar', t: 'Come back daily', s: 'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour and sends feedback.' },
+];
+let tourStep = 0;
+function tourOpen() { const m = document.getElementById('tour-modal'); return !!(m && m.classList.contains('active')); }
+function startTour(force) {
+  if (!force && safeLocalGet(TOUR_KEY)) return;
+  tourStep = 0;
+  renderTour();
+  document.getElementById('tour-modal').classList.add('active');
+  setTimeout(() => { const b = document.getElementById('tour-next'); if (b) b.focus(); }, 50);
+}
+function closeTour() {
+  const m = document.getElementById('tour-modal');
+  if (m) m.classList.remove('active');
+  safeLocalSet(TOUR_KEY, 'done');
+}
+function tourGo(d) {
+  tourStep = Math.max(0, Math.min(TOUR_STEPS.length - 1, tourStep + d));
+  renderTour();
+}
+function renderTour() {
+  const el = document.getElementById('tour-inner');
+  if (!el) return;
+  const st = TOUR_STEPS[tourStep], last = tourStep === TOUR_STEPS.length - 1;
+  const noDecks = state.decks.length === 0;
+  const dots = TOUR_STEPS.map((_, i) => `<span class="tour-dot${i === tourStep ? ' on' : ''}"></span>`).join('');
+  const acts = last
+    ? (noDecks
+      ? `<button class="btn" onclick="closeTour();openStarterPicker()">${ic23('cards')}Starter decks</button><button class="btn btn-primary" id="tour-next" onclick="closeTour();openImportModal()">${ic23('plus')}Import a deck</button>`
+      : `<button class="btn btn-primary" id="tour-next" onclick="closeTour()">Done</button>`)
+    : `${tourStep ? `<button class="btn" onclick="tourGo(-1)">${ic23('back')}Back</button>` : ''}<button class="btn btn-primary" id="tour-next" onclick="tourGo(1)">Next${ic23('next')}</button>`;
+  el.innerHTML = `<div class="tour-top"><span class="tour-count">${tourStep + 1} of ${TOUR_STEPS.length}</span><button class="btn btn-ghost btn-sm tour-skip" onclick="closeTour()">${last ? 'Close' : 'Skip'}</button></div>
+    <div class="tour-ic">${ic23(st.ic)}</div>
+    <div class="tour-t" id="tour-title">${st.t}</div>
+    <div class="tour-s">${st.s}</div>
+    <div class="tour-dots" aria-hidden="true">${dots}</div>
+    <div class="tour-acts">${acts}</div>`;
+}
+document.addEventListener('keydown', e => {
+  if (!tourOpen()) return;
+  if (e.key === 'Escape') { closeTour(); e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { tourGo(1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { tourGo(-1); e.preventDefault(); }
+  else return;
+  e.stopImmediatePropagation();
+}, true);
+
+// Anything else that takes over the screen closes the tour.
+const _v24Wrap = (name, test) => {
+  const f = window[name];
+  if (typeof f !== 'function') return;
+  window[name] = function () { if (tourOpen() && (!test || test.apply(null, arguments))) closeTour(); return f.apply(this, arguments); };
+};
+_v24Wrap('showScreen', n => n !== 'home');
+['openImportModal', 'openModeModal', 'openSheet', 'openHowToPlay', 'openShortcuts', 'openBackupModal', 'openEditModal', 'shareApp'].forEach(n => _v24Wrap(n));
+
+function v24AfterLoad() {
+  renderHome();
+  if (/^#(deck|daily)/.test(_v24StartHash)) return;
+  if (safeLocalGet(TOUR_KEY)) return;
+  if (!document.getElementById('screen-home').classList.contains('active') || document.querySelector('.modal-overlay.active')) return;
+  if (state.decks.length === 0) { startTour(); return; }
+  // People updating from v23 already know the app: point out the moved tabs once.
+  safeLocalSet(TOUR_KEY, 'done');
+  showToast('Hand, Drills and Notes now live under Practice. Help has a short tour.');
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(v24AfterLoad, 900));
+
+// ── Home: empty state and the starter deck button ──
+const _v23RenderHome = renderHome;
+renderHome = function () {
+  _v23RenderHome();
+  if (state.decks.length === 0) {
+    document.getElementById('deck-list').innerHTML = `<div class="empty-state st-empty">
+      <div class="tour-ic">${ic23('cards')}</div>
+      <b>Start with a prize game</b>
+      <span>Add a deck, then tap play. Six cards go face down and you name them.</span></div>`;
+  }
+};
+
+// Card pictures load as they scroll into view, which saves data on phones.
+const _v24ImgObs = new MutationObserver(muts => {
+  muts.forEach(m => m.addedNodes.forEach(n => {
+    if (n.nodeType !== 1) return;
+    (n.tagName === 'IMG' ? [n] : n.querySelectorAll('img')).forEach(img => {
+      if (!img.closest('#review-body')) return;
+      if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+      img.setAttribute('decoding', 'async');
+    });
+  }));
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const rb = document.getElementById('review-body');
+  if (rb) _v24ImgObs.observe(rb, { childList: true, subtree: true });
+});
 </script>
 
 <!-- SHARE MODAL -->

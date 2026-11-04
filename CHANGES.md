@@ -1,57 +1,48 @@
-# PrizeTrainer v23: goldfish, drills, daily challenge, notes, edit log, tournament log
+# PrizeTrainer v24: tour, Practice tab, starter decks, feedback, phone pass
 
-Before: the app trained prize memory, opening hands and odds, but you could not play out the first turns, practice counting resources or reading an opponent's prizes, keep matchup plans or match results, see how a list changed over time, compare two lists, or run a shared daily challenge. Card art needed a connection every time.
+Before: a new player landed on Home with the daily challenge above their decks, six deck tabs, and no guide. Several buttons were under 44px tall on phones, there was no way to report a bug, and you had to paste a list before you could play.
 
-After: the Hand tab has a Goldfish switch, a new Drills tab holds resource count and opponent prize read, a new Notes tab holds matchup notes, an edit log and list compare, Home has a daily challenge and a tournament log, Modes has a Reach check, and card art you have seen stays available offline. Grading, odds and card grouping logic are untouched, and the look matches v20 to v22.
+After: a short skippable tour on the first visit, decks first on Home, four deck tabs with Hand, Drills and Notes grouped under Practice, every control at least 44px on phones, a feedback button that opens a GitHub issue, and five current tournament lists you can load in one tap. Grading, odds and card grouping logic are untouched, and the look matches v20 to v23.
 
-## Deck review tabs
-- Six tabs now: Cards, Grade, Odds, Hand, Drills, Notes. On a phone the label sits under each icon so all six fit at 320px.
+## First run tour
+- Five short steps: what the prize drill is, adding a deck, playing, the deck tabs, the daily challenge and log. Back, Next, Skip, arrow keys and Escape all work.
+- Shows once, on the first visit with no decks. Stored on the device (pt_tour_v24). It does not show when the app opens from a shared deck or daily challenge link.
+- The last step offers Import a deck and Starter decks.
+- People updating from v23 with decks already saved get a one time note that Hand, Drills and Notes moved to Practice, instead of the tour.
+- Replay it any time from Help and feedback, or from How to play.
 
-## Goldfish (Hand tab)
-- Extends the Hand tab instead of adding a screen: a switch picks Turn 1 line (unchanged) or Goldfish 3 turns.
-- Uses the same deal as the Hand tab: a legal 7, six prizes, going first or second. Then you play three turns alone with the real rules for setting up: draw each turn, one Energy and one Supporter a turn, no Supporter on turn 1 going first, no evolving on your first turn or onto a Pokémon that came in that turn, Rare Candy from Basic to Stage 2.
-- Common cards have a one tap effect (Research, Iono, Arven, Nest Ball, Ultra Ball, Buddy-Buddy Poffin, Rare Candy, Switch, tools, stadiums, and abilities like Bibarel and Pidgeot ex). Anything else uses Draw, Search deck and Discard.
-- A log shows every play. The summary shows the turn each line was ready, next to the Hand tab odds from that same opening hand. The card counts always add up to the list.
+## Simpler navigation
+- Deck tabs are now Cards, Grade, Odds and Practice. Practice has a switch for Hand, Drills and Notes and remembers the last one you used. Nothing was removed.
+- Home now leads with your decks, then Import a deck and Starter decks side by side, then the daily challenge.
+- More has four tiles: Tournament log, Share with a friend, Help and feedback, Backup and restore. Help and feedback holds the tour, How to play, Send feedback and Keyboard shortcuts.
+- With no decks, Home says "Start with a prize game" so the core drill comes first.
 
-## Drills tab
-- Resource count: the list is hidden and a game state is shown (cards in discard and in play). You say how many of each key card are left in deck and prizes, then Check shows the right counts.
-- Opponent prize read: pick an opponent list (one of your decks, or paste a list). A late game or mid game board is dealt, and you guess which cards are prized. Pasted lists are cleaned before use.
-- Both drills keep a running score per deck, which also shows on Progress.
+## Phone pass
+- Every button, toggle and field is at least 44px on touch screens and at widths up to 520px: header buttons, small buttons, the Modes options, the format toggle, the games count, energy chips, Clear all data, and the cover card button (its picture stays the same size, the tap area grew).
+- Checked at 320, 360, 390 and 430px with no sideways scrolling.
+- The Google Fonts stylesheet no longer blocks the first paint. The same fonts show once loaded.
+- Card pictures in the Cards tab load as they scroll into view, which saves data on a phone.
+- Speed with the phone CPU slowed 4x: the page was ready in about 0.22 to 0.36 seconds, opening a deck took about 12 ms, and switching tabs or starting a game took under 10 ms. The file is 437 KB, about 119 KB once GitHub Pages compresses it. I did not minify it, so it stays easy for you to edit.
 
-## Daily challenge (Home)
-- One prize game a day, the same for everyone: the shuffle is seeded from the date, with no server. It uses one built-in list (Charizard ex and Pidgeot ex).
-- Your first try counts toward the daily score and streak. Replays are marked Practice replay.
-- Share score gives a short text with the date, your score, time and a row of filled and empty squares, plus a link that opens today's challenge. Your streak shows on the Home card.
+## Feedback button
+- Help and feedback, then Send feedback. Pick Bug, Missing card or Idea, type a note, and optionally tick "Include my list". It opens a new issue on github.com/optumesto/PrizeTrainer with the app version, screen and device filled in.
+- No email address is in the app. Nothing is sent until the person presses Submit on GitHub, and they need a free GitHub account. This is the default; the address lives in one line (FEEDBACK_REPO) if you want it to point somewhere else, such as a form. If issues are turned off on the repo, turn them on in the repo settings.
+- Typed text is cleaned (control and direction marks removed, length capped) and only ever goes into the link.
 
-## Reach check (Modes)
-- Covers "Can I still get X?". A new Reach check toggle in Modes. After you name the prizes and before the reveal, three questions ask whether a card can still come from your deck. The timer stops while you answer. The results show what you got right and why.
-
-## Notes tab
-- Matchup notes: a prize plan per opponent deck, with your win, loss and tie record against it from the tournament log.
-- Edit log: every save from Edit deck records which cards were added, cut or changed in count, dated, with the games played on each version and a total since import. It keeps the last 40 versions. Decks from before v23 start their log at the first open. Duplicated decks note what they came from.
-- Compare lists: this list against any earlier version or another deck. It shows the card differences and how the odds move (mulligan, draw a card on turn 1, attacker by turn 2, line locked in prizes, and all copies of a changed card prized), counted the same way as the Odds tab.
-
-## Tournament log (Home)
-- Log each match: event, deck, opponent, result, prizes taken and given, and notes. When you pick an opponent you have a matchup note for, its prize plan shows in the form.
-- Each match records which version of the list you played, so Progress can split results by list change.
-- Overall record, win rate and average prizes, a record by opponent, matches grouped by event and day, a deck filter, and Export to CSV (cells that would run as formulas are made safe).
-
-## Progress
-- Extends the existing Progress screen with a new Matches, list and drills section: your match record from the tournament log, the number of list changes with accuracy since the last change against before it, and your drill scores. Buttons open the tournament log and the edit log.
-
-## Offline card art
-- The service worker now keeps every card image you have seen in a separate art cache. It is kept across app updates and capped at 600 images. When you are offline, images are served from it.
-
-## Safety
-- All typed, pasted and linked text (notes, opponent names, pasted lists, daily links) is cleaned and shown as text, never run. Everything stays on this device and is included in Backup and restore.
+## Starter decks
+- Five Standard lists, loaded through the normal import, so they behave like any pasted list and can be edited. The picker says "List as of 31 Oct 2026" and shows each finish.
+- Dragapult ex: Andrew Hedrick, 1st, Regional Puebla, 24 Oct 2026. https://limitlesstcg.com/decks/list/29678
+- Slowking: Aarni Karjala, 1st, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/30165
+- Team Rocket's Honchkrow: Finn Lasse Fries, 2nd, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/28372 (Limitless shows one page per identical list; its header credits an earlier pilot)
+- Alakazam Dudunsparce: Nathan Ginsburg, 3rd, Regional Puebla, 24 Oct 2026. https://limitlesstcg.com/decks/list/30794
+- Crustle Kangaskhan: Miloslav Posledni, 4th, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/31082
+- Set codes are as Limitless shows them (for example 30C for Mew ex). Whether every card in these newer sets gets art and card data depends on the card database, the same as for any pasted list.
 
 ## Tested
-- New feature run (v23): 92 of 92, three runs in a row. Covers all six tabs fitting at 320px and 390px, goldfish rules and that every card adds up to 60, resource count and opponent read including script injection strings, matchup notes, the edit log from Edit, Duplicate and older decks, compare odds matching the Odds tab, the tournament log with CSV and filter, the reach check with the timer stopped, Progress extras, the daily challenge (same deal on the same day, a different one the next day, first try against replay, streak, link), reload and backup, light theme, no console errors, the cache name, and art served while offline.
-- Existing feature run (38 checks) on v22 and v23: 38 of 38 on both, at 390px and 320px.
-- The v22 feature run on v23: 59 of 61. The two misses are expected: the cache name is now prize-trainer-v23, and there are six tabs instead of four.
-- Grade and Odds tabs render byte for byte the same as v22.
-- No en or em dashes in either file.
-- The card database and card art cannot be reached from my test machine, so both were simulated (screenshots use stand-in art). Not checked on a real phone.
+- New feature run (v24): 132 of 132, three runs in a row. Covers the tour (first visit, steps, keys, Skip, not after reload, not from links, the update note, replay from Help and How to play), the Practice tab and switch at 320 to 430px, Home order, Help, feedback links (version, no email, deck only when ticked, script strings never run), all five starter lists parsing to 60 and loading, 44px controls on 17 screens and sheets at 360 and 430px with touch on, light theme, cache name, no dashes, and Grade and Odds rendering the same as v23.
+- Existing feature run (38 checks): 38 of 38 at 390, 360 and 320px.
+- The v23 feature run on v24: 90 of 92. The two misses are expected: the deck now has four tabs instead of six, and the cache name is prize-trainer-v24.
+- The card database and card art cannot be reached from my test machine, so both were simulated (screenshots use stand-in art and fallback fonts). Not checked on a real phone.
 
 ## To install
-Upload index.html and sw.js from this folder over the current ones (cache is prize-trainer-v23). Includes all v22 changes.
+Upload index.html and sw.js from this folder over the current ones (cache is prize-trainer-v24). Includes all v23 changes.
