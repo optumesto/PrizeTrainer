@@ -1,25 +1,30 @@
-# PrizeTrainer v17 (cache prize-trainer-v17)
+# PrizeTrainer v18: cleaner look
 
-Replace index.html and sw.js in optumesto/PrizeTrainer. Nothing else changed.
+Before: thick 3px borders, square corners, little corner squares, colored end cap bars on every header, hard offset shadows, a graph paper background and tiny pixel font labels made the app feel blocky.
 
-## Fix the last upload first
-The Nov 3 commit added index.txt, sw.txt and CHANGES.txt instead of replacing index.html and sw.js, so the live site is still on v15 with no Odds tab. Delete those three .txt files. When you upload, make sure the files are named exactly index.html and sw.js (prizetrainer-v17.zip keeps the names if your download renames them).
+After: the same layout, colors and features with a softer, cleaner finish.
 
-## Fixes (each one reproduced on v16, then checked fixed on v17)
-1. Dim text: --text-dim was a seven digit hex (#6070880), which browsers reject, so every "dim" caption showed at full brightness. Now #8090a8. The obvious intent, #607088, only reaches 3.3:1 contrast on the card panels, which is hard to read in the small pixel font; #8090a8 is about 5:1. See before-after-dim-text.png. Light theme unchanged.
-2. Arven: tagged as Pokemon search and recovery; it searches an Item and a Tool. Now tagged Item search. No card requires either old tag, so grades do not change (test deck: 7.7 before and after). In Odds it now counts as fetching Rare Candy, not a Pokemon, so the with-search ceiling on the test deck went from 72% to 57%.
-3. Prize browser badges disagreed with the score. It used its own looser matcher, so "Charizard" showed GUESSED on a Charizard ex that scored as a miss, and curly quote or energy button guesses that scored as hits showed MISSED. It now uses the score's own matches.
-4. Prize browser image fallback broke on any card name with an apostrophe (Boss's Orders) and could run script from a crafted name. Replaced the inline handler with a safe function.
-5. Timed mode: when the clock hit 0:00 with empty slots, cancelling the "Reveal anyway?" prompt froze the timer and play went on untimed. The time-up reveal now skips the prompt.
-6. The red blinking timer carried over from a timed game into the next untimed game.
-7. A leftover fragment of keyframe CSS swallowed the rule for the big timed-mode countdown, so it showed as small plain text in the corner. It is now the large gold centered clock it was styled as. See before-after-timed-countdown.png.
-8. Weak Spots put card names into the page unescaped, so a pasted list could inject markup or script.
-9. "Trending upward" compared raw scores across 4, 6 and 8 prize games (2/2 then 3/6 counted as up). Now compares percentages.
-10. Header streak sorted games by day only, so same-day games across decks came out in deck order, not play order (en-GB dates also misparsed). New games now store a timestamp; older ones fall back to the date.
-11. Progress dots stopped at 54, so in 4 prize mode the last two cards had no dot.
-12. Thumbnail picker saved the primary image URL even when that 404ed and a fallback was showing, so the home card fell back to a blank. The results grid also never tried fallback art.
-13. Duplicated decks lost their card data coverage report.
-14. Grade read energy written as "Basic {R} Energy" as no type, flagging every attacker as having no energy. It now reads the symbol.
+## What changed
+- Rounded corners on cards, panels, modals, buttons, inputs and prize slots.
+- Borders thinned to 1px and tinted, so color still marks each section without boxing it in.
+- Corner squares and header end cap bars removed.
+- Hard offset shadows replaced with soft ones. Buttons now shrink slightly when pressed instead of jumping sideways.
+- Graph paper grid removed from the background. The soft blue glow at the top stays.
+- Buttons, tabs, small labels and card names now use Nunito at readable sizes. The pixel font stays for the title, deck names, scores, the timer and other numbers.
+- Badges, pips, energy buttons and the card counter are pills.
+- Prize slots are solid and rounded instead of dashed.
+- Weak Spots thumbnails no longer spill broken image text.
+- Light theme: the Import and Guess buttons are readable now.
 
-## Tests (headless Chromium over localhost)
-Regression checks for every fix: 15 of 15 pass on v17, 0 of 15 on v16. The full suite from v16 (import, all three tabs, Monte Carlo against exact math, standard, tournament and drill modes, reload, service worker on v17, no console errors): 26 of 26 pass.
+## Under the hood
+- All of it is one CSS layer added at the end of the style block, so nothing in the layout or scripts moved.
+- Cache bumped to prize-trainer-v18 so phones pick up the new look.
+- Includes every v17 fix.
+
+## Tested
+- Full suite: 26 of 26 pass (import, Cards, Grade and Odds tabs, odds math, standard, tournament and drill games, reload, offline cache, no console errors).
+- v17 regression checks: 15 of 15 pass.
+- No horizontal overflow at phone width. No en or em dashes in the files.
+
+## To install
+Upload index.html and sw.js from this folder over the current ones, keeping those exact names. The repo already has v17 live, and this is built on that exact file. index.txt and sw.txt in the repo are leftovers from the v16 upload and can be deleted.

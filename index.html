@@ -1622,6 +1622,256 @@
     border-color:var(--water); color:var(--water); background:rgba(46,142,200,0.08);
   }
   .share-tab:active { transform:translate(1px,1px); }
+  /* ══════════════════════════════════════════════════════════════
+     v18 CLEAN LOOK
+     One override layer on top of the original retro styles, so the
+     layout and every feature stay exactly as they were. It rounds
+     corners, thins borders to 1px, swaps hard offset shadows for soft
+     ones, drops the corner squares and end cap bars, and moves small
+     labels and buttons from the pixel font to Nunito. The pixel font
+     stays for titles, scores, timers and other numbers.
+  ══════════════════════════════════════════════════════════════ */
+  :root {
+    --r-lg: 16px;
+    --r: 12px;
+    --r-sm: 9px;
+    --r-xs: 6px;
+    --line: rgba(255,255,255,0.07);
+    --line-strong: rgba(255,255,255,0.12);
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.22), 0 4px 14px rgba(0,0,0,0.16);
+    --shadow-2: 0 18px 48px rgba(0,0,0,0.5);
+  }
+  body[data-theme="light"] {
+    --line: rgba(60,40,0,0.12);
+    --line-strong: rgba(60,40,0,0.2);
+    --shadow-1: 0 1px 2px rgba(60,40,0,0.08), 0 4px 14px rgba(60,40,0,0.08);
+    --shadow-2: 0 18px 48px rgba(60,40,0,0.22);
+  }
+
+  /* Background: keep the soft glow, drop the graph paper grid. */
+  body { background-image: radial-gradient(ellipse 100% 35% at 50% 0%, rgba(46,142,200,0.08) 0%, transparent 65%); }
+  body[data-theme="light"] { background-image: radial-gradient(ellipse 100% 35% at 50% 0%, rgba(46,142,200,0.12) 0%, transparent 65%); }
+
+  /* No corner squares or end cap bars anywhere. */
+  .tcg-box::before, .tcg-box::after,
+  .tcg-banner::before, .tcg-banner::after,
+  .deck-card::before, .deck-card::after,
+  .modal::before, .modal::after,
+  .app-header::before, .app-header::after,
+  .review-header::before, .review-header::after,
+  .game-header::before, .game-header::after,
+  .guess-section::before, .guess-section::after,
+  .results-header::before, .results-header::after,
+  .ws-header::before, .ws-header::after,
+  .ws-summary::before, .ws-summary::after,
+  .ws-insight::before, .ws-insight::after,
+  .picker-modal::before, .picker-modal::after,
+  .picker-header::before, .picker-header::after,
+  .mode-modal::before, .mode-modal::after,
+  .mode-header::before, .mode-header::after,
+  .pb-box::before, .pb-box::after,
+  .tournament-banner::before, .tournament-banner::after { content:none; display:none; }
+
+  /* ── Bars: headers, footers, guess panel ── */
+  .tcg-banner { border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .tcg-banner-text { text-shadow:none; }
+  .app-header,
+  .review-header, .game-header, .results-header, .ws-header,
+  .picker-header, .mode-header {
+    border-bottom:1px solid var(--line);
+    box-shadow:inset 0 -2px 0 -1px color-mix(in srgb, var(--c) 55%, transparent);
+  }
+  .app-title { text-shadow:0 0 18px rgba(216,168,32,0.28); }
+  .review-footer, .guess-section {
+    border-top:1px solid var(--line);
+    box-shadow:0 -6px 18px rgba(0,0,0,0.18);
+  }
+  body[data-theme="light"] .review-footer,
+  body[data-theme="light"] .guess-section { box-shadow:0 -6px 18px rgba(60,40,0,0.06); }
+  .prize-browser-header { border-bottom:1px solid var(--line-strong); }
+  .prize-browser-footer { border-top:1px solid var(--line-strong); }
+
+  .section-title::before, .section-title::after { height:1px; opacity:0.6; }
+  .review-group-title::after { height:1px; opacity:0.18; }
+
+  /* ── Surfaces ── */
+  .tcg-box, .ws-summary, .tournament-banner {
+    border:1px solid color-mix(in srgb, var(--c) 40%, transparent);
+    border-radius:var(--r);
+    box-shadow:var(--shadow-1);
+  }
+  .deck-card {
+    border:1px solid color-mix(in srgb, var(--c) 45%, transparent);
+    border-radius:var(--r);
+    box-shadow:var(--shadow-1);
+    padding:0.8rem 0.85rem;
+    transition:transform 0.12s ease, border-color 0.12s ease;
+  }
+  .deck-card:active { transform:scale(0.985); box-shadow:var(--shadow-1); }
+  .deck-thumb { border:1px solid var(--line-strong); border-radius:6px; box-shadow:none; }
+  .deck-list { gap:0.7rem; }
+
+  .modal, .picker-modal, .mode-modal {
+    border:1px solid color-mix(in srgb, var(--c) 35%, transparent);
+    border-radius:var(--r-lg);
+    box-shadow:var(--shadow-2);
+  }
+  .modal-overlay { background:rgba(0,0,0,0.72); }
+  .mode-header, .picker-header { border-radius:15px 15px 0 0; }
+  .ws-insight, .pb-box {
+    border:1px solid color-mix(in srgb, var(--c) 35%, transparent);
+    border-radius:var(--r);
+  }
+  .g-item, .mn-row, .guess-compare-row, .ws-card-row {
+    border-radius:var(--r-sm);
+    border-left-width:3px;
+  }
+  .g-wip { border-radius:var(--r-sm); border-width:1px; border-left-width:3px; }
+  .o-tile {
+    border-radius:var(--r);
+    border-bottom:none;
+    box-shadow:inset 0 -2px 0 var(--muted);
+    border:1px solid var(--line);
+  }
+  .review-card-img { border:1px solid var(--line); border-radius:7px; }
+  .review-card-qty { border-radius:0 0 0 6px; top:0; right:0; }
+  .picker-card-img { border:1px solid var(--line); border-radius:7px; }
+  .picker-card.selected .picker-card-img { border:2px solid var(--gold); }
+  .card-display { border:1px solid var(--line-strong); border-radius:12px; }
+  .card-display.is-center {
+    border:2px solid var(--gold); border-radius:12px;
+    box-shadow:0 12px 36px rgba(0,0,0,0.6), 0 0 22px rgba(216,168,32,0.18);
+  }
+  .card-name-label { font-family:var(--body); font-weight:800; font-size:0.62rem; }
+  .prize-reveal-card { border:1px solid var(--line-strong); border-radius:10px; box-shadow:var(--shadow-1); }
+  .prize-browser-card, .prize-browser-placeholder { border-width:2px; border-radius:14px; }
+  .history-table th { border-bottom:1px solid var(--line-strong); }
+
+  /* ── Buttons ── */
+  .btn, .btn-icon, .btn-icon-tall {
+    font-family:var(--body); font-weight:800; font-size:0.66rem; letter-spacing:0.05em;
+    border:1px solid color-mix(in srgb, var(--bc) 70%, transparent);
+    border-radius:var(--r-sm);
+    box-shadow:none;
+    transition:transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-icon, .btn-icon-tall { font-size:0.8rem; }
+  .btn:active, .btn-icon:active, .btn-icon-tall:active { transform:scale(0.97); box-shadow:none; }
+  .btn-sm { font-size:0.58rem; }
+  .btn-block { font-size:0.7rem; }
+  .btn[style*="font-size"] { font-size:0.66rem !important; }
+  .btn-sm[style*="font-size"] { font-size:0.56rem !important; }
+  .play-btn, .mode-play-btn {
+    font-family:var(--body); font-weight:900; font-size:0.78rem; letter-spacing:0.06em;
+    border-width:1px; border-radius:var(--r);
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  }
+  .play-btn:active, .mode-play-btn:active { transform:scale(0.98); box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+  .mode-delete-btn {
+    font-family:var(--body); font-weight:800; font-size:0.64rem; letter-spacing:0.05em;
+    border-width:1px; border-radius:var(--r-sm); box-shadow:none;
+  }
+  .mode-delete-btn:active { transform:scale(0.98); box-shadow:none; }
+  .mode-opt, .fmt-opt {
+    font-family:var(--body); font-weight:800; font-size:0.64rem; letter-spacing:0.04em;
+    border-width:1px; border-radius:var(--r-sm); box-shadow:none;
+  }
+  .mode-opt.active { box-shadow:0 0 0 1px var(--dragon); }
+  .mode-opt:active, .fmt-opt:active { transform:scale(0.97); box-shadow:none; }
+  .energy-quick-btn {
+    font-family:var(--body); font-weight:800; font-size:0.62rem;
+    border-width:1px; border-radius:999px; box-shadow:none;
+  }
+  .energy-quick-btn:active { transform:scale(0.96); box-shadow:none; }
+  .rv-tab, .share-tab { font-family:var(--body); font-weight:800; font-size:0.66rem; letter-spacing:0.05em; }
+  .review-tabs { border-bottom:1px solid var(--line); }
+  .rv-tab { border-bottom-width:2px; }
+  .rv-tab.active { background:transparent; }
+
+  /* ── Inputs ── */
+  input[type="text"], input[type="number"], textarea, .mn-input, .backup-textarea {
+    border:1px solid var(--line-strong);
+    border-radius:var(--r-sm);
+    box-shadow:none;
+  }
+  input:focus, textarea:focus {
+    border-color:var(--electric);
+    box-shadow:0 0 0 3px rgba(216,184,0,0.14);
+  }
+  .autocomplete-list { border:1px solid var(--line-strong); border-radius:var(--r-sm); overflow:hidden; box-shadow:var(--shadow-2); }
+  .autocomplete-item { font-family:var(--body); font-weight:700; font-size:0.74rem; }
+
+  /* ── Game ── */
+  .card-counter {
+    border:1px solid var(--line); border-radius:999px; box-shadow:none;
+    padding:0.3rem 0.8rem;
+  }
+  .progress-dot { border-radius:50%; }
+  .prize-slot {
+    font-family:var(--body); font-weight:800; font-size:0.62rem;
+    border:1px solid var(--line-strong); border-radius:var(--r-sm);
+    color:var(--text-dim);
+  }
+  .prize-slot.filled, .prize-slot.correct, .prize-slot.wrong { border-width:1px; }
+  .prize-slot .remove-btn { border-radius:0 var(--r-sm) 0 6px; border:none; background:rgba(0,0,0,0.25); top:0; right:0; }
+  body[data-theme="light"] .prize-slot .remove-btn { background:rgba(0,0,0,0.06); }
+  .guess-label, .guess-feedback { font-family:var(--body); font-weight:800; font-size:0.6rem; letter-spacing:0.06em; }
+  .guess-feedback { letter-spacing:0.02em; }
+
+  /* ── Small labels: Nunito instead of the pixel font ── */
+  .section-title, .g-sec-t, .g-item .gt, .g-fac .fl, .o-tile .ol, .o-table th,
+  .review-group-title, .results-score-label, .history-table th, .ws-stat-lbl,
+  .ws-insight-title, .ws-trend-label, .mode-section-label, .pb-title, .pb-lbl,
+  .tb-stat, .guess-compare-title, .hidden-toggle-row, .kbd-hint, .loading-text,
+  .header-stat, .streak-badge, .deck-avg, .btn-weakspot-link {
+    font-family:var(--body); font-weight:800; letter-spacing:0.06em;
+  }
+  .section-title { font-size:0.62rem; }
+  .g-sec-t { font-size:0.64rem; }
+  .g-item .gt { font-size:0.58rem; }
+  .g-fac .fl, .o-tile .ol, .o-table th, .ws-stat-lbl, .ws-trend-label, .pb-lbl { font-size:0.54rem; }
+  .review-group-title, .results-score-label, .history-table th, .mode-section-label,
+  .guess-compare-title, .ws-insight-title, .pb-title, .tb-stat { font-size:0.6rem; }
+  .hidden-toggle-row, .kbd-hint, .header-stat, .streak-badge, .deck-avg, .btn-weakspot-link { font-size:0.58rem; }
+  .loading-text { font-size:0.7rem; }
+
+  /* Card names read better in Nunito. */
+  .review-card-name, .prize-card-name, .picker-card-name, .gcr-guess, .gcr-prize, .mn-card, .gtb-row {
+    font-family:var(--body); font-weight:700; letter-spacing:0;
+  }
+  .review-card-name, .prize-card-name, .picker-card-name { font-size:0.54rem; }
+  .gcr-guess, .gcr-prize, .mn-card, .gtb-row { font-size:0.64rem; }
+  .ws-card-name { font-family:var(--body); font-weight:800; font-size:0.7rem; }
+
+  /* ── Pills and badges ── */
+  .o-tag, .fmt-badge, .mode-badge, .archived-badge, .deck-hist-pip, .streak-badge, .prize-reveal-card .badge {
+    font-family:var(--body); font-weight:800; border-radius:999px;
+  }
+  .o-tag, .fmt-badge, .mode-badge, .archived-badge { font-size:0.5rem; padding:0.08rem 0.45rem; }
+  .deck-hist-pip { font-size:0.52rem; }
+  .prize-reveal-card .badge { font-size:0.54rem; }
+  .review-stat { border:1px solid var(--line-strong); border-radius:999px; box-shadow:none; padding:0.28rem 0.75rem; }
+  .shortcut-row kbd, .kb-hints kbd { border-radius:5px; border-bottom-width:2px; }
+  .instr-num { border-width:1px; border-radius:50%; }
+
+  /* ── Bars and tracks ── */
+  .ws-bar-track, .gtb-bar-track, .gtb-bar-fill { border-radius:999px; overflow:hidden; }
+  .ws-trend-bar { border-radius:3px 3px 0 0; }
+
+  /* ── Weak Spots: thumbnails clip, alt text never spills out ── */
+  .ws-card-thumb { border-radius:5px; }
+  .ws-card-thumb img { font-size:0; color:transparent; }
+
+  .btn-sm { white-space:nowrap; }
+  .prize-slot:not(.filled):not(.correct):not(.wrong) { color:color-mix(in srgb, var(--text-dim) 70%, transparent); }
+  body[data-theme="light"] .btn-primary { --bct:var(--gold-dim); }
+
+  /* ── Toast ── */
+  .toast {
+    font-family:var(--body); font-weight:800; font-size:0.66rem; letter-spacing:0.03em;
+    border:1px solid var(--line-strong); border-radius:999px;
+    box-shadow:var(--shadow-2);
+  }
 </style>
 </head>
 <body>
