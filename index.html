@@ -467,6 +467,7 @@
   .o-tile .ov { font-family:var(--px); font-size:1.15rem; line-height:1.1; }
   .o-tile .ol { font-family:var(--px); font-size:0.34rem; color:var(--text-dim); letter-spacing:0.05em; margin-top:0.35rem; line-height:1.5; }
   .o-tile .os { font-size:0.64rem; color:var(--text-dim); font-weight:700; margin-top:0.15rem; line-height:1.35; }
+  .o-more summary { cursor:pointer; font-size:0.66rem; font-weight:800; color:var(--gold); padding:0.5rem 0.4rem; }
   .o-meta { text-align:center; font-size:0.66rem; color:var(--text-dim); font-weight:700; padding:0 0.9rem; }
   .o-table { width:100%; border-collapse:collapse; font-size:0.76rem; font-weight:700; }
   .o-table th { font-family:var(--px); font-size:0.34rem; color:var(--text-dim); letter-spacing:0.05em; text-align:right; padding:0.35rem 0.4rem; border-bottom:1px solid var(--muted); }
@@ -2291,7 +2292,9 @@ const SET_MAP = {
   // Scarlet & Violet
   SVI:'sv1', PAL:'sv2', OBF:'sv3', MEW:'sv3pt5', PAR:'sv4', PAF:'sv4pt5', PRF:'sv4pt5',
   TEF:'sv5', TWM:'sv6', SFA:'sv6pt5', SCR:'sv7', SSP:'sv8', PRE:'sv8pt5', JTG:'sv9',
-  SVE:'sve', SVP:'svp', PFL:'sv4pt5', ASC:'sv9a', MEG:'sv9b',
+  SVE:'sve', SVP:'svp', DRI:'sv10', BLK:'zsv10pt5', WHT:'rsv10pt5',
+  // Mega Evolution (codes the map does not know yet are asked of the API)
+  MEG:'me1', PFL:'me2', ASC:'me2pt5', POR:'me3', CRI:'me4', PBL:'me5', '30C':'me55',
   // Sword & Shield
   SSH:'swsh1', RCL:'swsh2', DAA:'swsh3', VIV:'swsh4', SHF:'swsh45', BST:'swsh5',
   CRE:'swsh6', EVS:'swsh7', FST:'swsh8', BRS:'swsh9', ASR:'swsh10', LOR:'swsh11',
@@ -2311,9 +2314,18 @@ const SET_MAP = {
   HS:'hgss1', UL:'hgss2', UD:'hgss3', TM:'hgss4', CL:'col1', HSP:'hsp',
 };
 
+/** Set codes learned from the API at run time (codes newer than SET_MAP). */
+const LEARNED_SETS = {};
+try {
+  if (typeof localStorage !== 'undefined') {
+    Object.assign(LEARNED_SETS, JSON.parse(localStorage.getItem('ptcgSetCodes') || '{}'));
+  }
+} catch (_) {}
+
 /** Build a pokemontcg.io card id from a Limitless set code + number. */
 function toCardId(setCode, num) {
-  const pid = SET_MAP[String(setCode || '').toUpperCase()];
+  const code = String(setCode || '').toUpperCase();
+  const pid = SET_MAP[code] || LEARNED_SETS[code];
   if (!pid || !num) return null;
   // Strip leading zeros but keep alphanumeric suffixes ("H1", "125a", "TG05")
   const clean = String(num).replace(/^0+(?=\d)/, '');
@@ -2702,12 +2714,27 @@ const OVERRIDES = {
   'switch':           { provides: ['switch_own'] },
   'energy switch':    { provides: [] },   // moves energy, does not accelerate
   'energy search':    { provides: [] },   // fetches basic energy, not accel
+  "lillie's determination": { provides: ['draw'] },
+  'carmine':          { provides: ['draw'] },
+  'judge':            { provides: ['draw', 'hand_disruption'] },
+  'dawn':             { provides: ['search_pokemon'] },
+  'hilda':            { provides: ['search_pokemon'] },
+  'poke pad':         { provides: ['search_pokemon'] },
+  'precious trolley': { provides: ['search_basic', 'search_pokemon'] },
+  "brock's scouting": { provides: ['search_basic', 'search_pokemon'] },
+  "team rocket's petrel": { provides: ['search_item'] },
+  'crispin':          { provides: ['energy_accel'] },
+  'energy retrieval': { provides: ['recovery'] },
+  "lana's aid":       { provides: ['recovery'] },
+  'pokemon catcher':  { provides: ['gust'] },
+  'prime catcher':    { provides: ['gust', 'switch_own'] },
 };
 
 /** Look up an override by card name, case and punctuation tolerant. */
 function findOverride(name) {
   if (!name) return null;
   const k = String(name).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[\u2019\u2018]/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
@@ -2806,70 +2833,164 @@ const API_BASE = 'https://api.pokemontcg.io/v2/cards';
  *
  * opts: { fetchImpl, batchSize, timeoutMs, apiKey }
  */
+const SET_API = 'https://api.pokemontcg.io/v2/sets';
+const ENERGY_SYMBOLS = { g:'Grass', r:'Fire', w:'Water', l:'Lightning', p:'Psychic',
+  f:'Fighting', d:'Darkness', m:'Metal', y:'Fairy', n:'Dragon', c:'Colorless' };
+
+/** A deck list name as the card database spells it ("Basic {W} Energy" to "Basic Water Energy"). */
+function apiName(name) {
+  return String(name || '')
+    .replace(/\{([a-z])\}/gi, (_, ch) => ENERGY_SYMBOLS[ch.toLowerCase()] || ch)
+    .replace(/[’‘]/g, "'")
+    .replace(/\s+/g, ' ').trim();
+}
+
+/** Loose name key: case, accents, apostrophes and spacing ignored. */
+function nameKey(name) {
+  return apiName(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+/** Names to try for a card. Basic energy is "Water Energy" in older sets. */
+function nameVariants(name) {
+  const a = apiName(name);
+  const out = [a];
+  const m = a.match(/^basic (\w+) energy$/i);
+  if (m) out.push(m[1] + ' Energy');
+  return out;
+}
+
+/** True when an API card is the card the list names. */
+function sameCard(listName, apiCardName) {
+  const k = nameKey(apiCardName);
+  return nameVariants(listName).some(v => nameKey(v) === k);
+}
+
+/**
+ * Fetch enriched card data for a parsed deck list.
+ *
+ * `entries` is [{ name, set, num }, ...]. Returns a Map keyed by
+ * lowercase name. Three passes:
+ *   1. set codes the map does not know are looked up on the API's set list
+ *   2. cards by set and number, kept only when the name matches the list
+ *      (a wrong set code otherwise reads a different card silently)
+ *   3. anything still missing by exact name, newest printing first
+ * Unresolvable cards get a stub with resolved=false so the caller can
+ * report coverage rather than silently guessing.
+ *
+ * opts: { fetchImpl, batchSize, timeoutMs, apiKey }
+ */
 async function fetchDeckCards(entries, opts) {
   const o = opts || {};
   const doFetch = o.fetchImpl || (typeof fetch !== 'undefined' ? fetch : null);
   const batchSize = o.batchSize || 12;
   const timeoutMs = o.timeoutMs || 10000;
   const out = new Map();
+  const list = (entries || []).filter(e => e && e.name);
 
-  // Deduplicate by card id, remembering which names map to it.
-  const byId = new Map();
-  (entries || []).forEach(e => {
-    const id = toCardId(e.set, e.num);
-    if (!id) {
-      // No set/number (basic energies in some formats) or unmapped set.
-      if (!out.has((e.name || '').toLowerCase())) {
-        out.set((e.name || '').toLowerCase(), enrichCard(null, { fallbackName: e.name }));
-      }
-      return;
+  const makeInit = () => {
+    // Guard the identifier itself, not just the method. On browsers where
+    // AbortSignal is undefined (Safari < 16, older Chrome), reading
+    // AbortSignal.timeout throws a ReferenceError.
+    const init = {};
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+      init.signal = AbortSignal.timeout(timeoutMs);
     }
-    if (!byId.has(id)) byId.set(id, []);
-    byId.get(id).push(e.name);
-  });
+    if (o.apiKey) init.headers = { 'X-Api-Key': o.apiKey };
+    return init;
+  };
+  // One retry: the card API often answers 429 or 5xx under load.
+  const getJSON = async (url) => {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const resp = await doFetch(url, makeInit());
+        if (resp.ok) return await resp.json();
+        if (resp.status !== 429 && resp.status < 500) return null;
+      } catch (_) {}
+      if (attempt === 0) await new Promise(r => setTimeout(r, 1200));
+    }
+    return null;
+  };
 
-  if (!doFetch || byId.size === 0) return out;
+  if (doFetch) {
+    // Pass 1: set codes newer than SET_MAP.
+    const unknown = [...new Set(list.map(e => String(e.set || '').toUpperCase()))]
+      .filter(c => c && !SET_MAP[c] && !LEARNED_SETS[c]);
+    if (unknown.length) {
+      const q = unknown.map(c => 'ptcgoCode:"' + c.replace(/"/g, '') + '"').join(' OR ');
+      const json = await getJSON(SET_API + '?q=' + encodeURIComponent(q) +
+                                 '&select=id,ptcgoCode&orderBy=releaseDate');
+      let learned = false;
+      ((json && json.data) || []).forEach(s => {
+        const k = String(s.ptcgoCode || '').toUpperCase();
+        if (k && !LEARNED_SETS[k]) { LEARNED_SETS[k] = s.id; learned = true; }
+      });
+      if (learned) {
+        try { localStorage.setItem('ptcgSetCodes', JSON.stringify(LEARNED_SETS)); } catch (_) {}
+      }
+    }
 
-  const ids = [...byId.keys()];
-  const batches = [];
-  for (let i = 0; i < ids.length; i += batchSize) {
-    batches.push(ids.slice(i, i + batchSize));
+    // Pass 2: by card id.
+    const byId = new Map();
+    list.forEach(e => {
+      const id = toCardId(e.set, e.num);
+      if (!id) return;
+      if (!byId.has(id)) byId.set(id, []);
+      byId.get(id).push(e.name);
+    });
+    const ids = [...byId.keys()];
+    const idBatches = [];
+    for (let i = 0; i < ids.length; i += batchSize) idBatches.push(ids.slice(i, i + batchSize));
+    await Promise.all(idBatches.map(async (batch) => {
+      const q = batch.map(id => 'id:' + id).join(' OR ');
+      const json = await getJSON(API_BASE + '?q=' + encodeURIComponent(q) +
+                                 '&select=' + SELECT_FIELDS + '&pageSize=' + batch.length);
+      ((json && json.data) || []).forEach(apiCard => {
+        const names = byId.get(apiCard.id) || [];
+        names.forEach(n => {
+          if (!sameCard(n, apiCard.name)) return;
+          out.set(String(n).toLowerCase(), enrichCard(apiCard));
+        });
+      });
+    }));
+
+    // Pass 3: by name, for anything the id pass did not settle.
+    const seen = new Set();
+    const missing = list.filter(e => {
+      const k = String(e.name).toLowerCase();
+      if (out.has(k) || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    }).map(e => e.name);
+    const NB = 6;
+    const nameBatches = [];
+    for (let i = 0; i < missing.length; i += NB) nameBatches.push(missing.slice(i, i + NB));
+    await Promise.all(nameBatches.map(async (batch) => {
+      const terms = [];
+      batch.forEach(n => nameVariants(n).forEach(v => terms.push('name:"' + v.replace(/"/g, '') + '"')));
+      const json = await getJSON(API_BASE + '?q=' + encodeURIComponent('(' + terms.join(' OR ') + ')') +
+                                 '&select=' + SELECT_FIELDS + ',set&orderBy=-set.releaseDate&pageSize=250');
+      const found = (json && json.data) || [];
+      batch.forEach(n => {
+        // Newest printing first. Prefer a "Basic X Energy" over plain "X Energy".
+        let hit = null;
+        for (const v of nameVariants(n)) {
+          hit = found.find(c => nameKey(c.name) === nameKey(v));
+          if (hit) break;
+        }
+        if (hit) {
+          const e = enrichCard(hit);
+          e.matchedBy = 'name';
+          out.set(String(n).toLowerCase(), e);
+        }
+      });
+    }));
   }
 
-  await Promise.all(batches.map(async (batch) => {
-    const q = batch.map(id => 'id:' + id).join(' OR ');
-    const url = API_BASE + '?q=' + encodeURIComponent(q) +
-                '&select=' + SELECT_FIELDS + '&pageSize=' + batch.length;
-    try {
-      // Guard the identifier itself, not just the method. On browsers where
-      // AbortSignal is undefined (Safari < 16, older Chrome), reading
-      // AbortSignal.timeout throws a ReferenceError that the catch below
-      // would swallow, silently disabling enrichment with no error anywhere.
-      const init = {};
-      if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
-        init.signal = AbortSignal.timeout(timeoutMs);
-      }
-      if (o.apiKey) init.headers = { 'X-Api-Key': o.apiKey };
-      const resp = await doFetch(url, init);
-      if (!resp.ok) return;
-      const json = await resp.json();
-      (json.data || []).forEach(apiCard => {
-        const names = byId.get(apiCard.id) || [apiCard.name];
-        const enriched = enrichCard(apiCard);
-        names.forEach(n => out.set(String(n).toLowerCase(), enriched));
-      });
-    } catch (e) {
-      // Offline or rate limited. Leave those cards unresolved; the caller
-      // reports coverage rather than grading against a partial picture.
-    }
-  }));
-
-  // Stub anything the API did not return, so coverage is visible.
-  byId.forEach((names) => {
-    names.forEach(n => {
-      const k = String(n).toLowerCase();
-      if (!out.has(k)) out.set(k, enrichCard(null, { fallbackName: n }));
-    });
+  // Stub anything still missing, so coverage is visible.
+  list.forEach(e => {
+    const k = String(e.name).toLowerCase();
+    if (!out.has(k)) out.set(k, enrichCard(null, { fallbackName: e.name }));
   });
 
   return out;
@@ -2892,8 +3013,8 @@ function coverage(cardMap) {
 }
 
 return {
-  SET_MAP, OVERRIDES, SELECT_FIELDS,
-  toCardId,
+  SET_MAP, LEARNED_SETS, OVERRIDES, SELECT_FIELDS,
+  toCardId, apiName, nameKey, sameCard,
   parseHP, parseDamage, parseCost, parseStage, parsePrizeValue,
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
@@ -3074,6 +3195,47 @@ function openReview(deckId) {
   state.activeDeckId = deckId;
   renderReview(deck);
   showScreen('review');
+  if (deckNeedsData(deck)) refreshDeckData(deck);
+}
+
+// Bump when the card lookup changes in a way that makes old reads wrong.
+const ENRICH_VER = 2;
+const _dataTried = new Set();
+const _dataBusy = new Set();
+
+function deckNeedsData(deck) {
+  if ((deck.enrichVer || 0) < ENRICH_VER) return true;
+  const cov = deck.coverage;
+  return !!(cov && cov.unresolved > 0 && !_dataTried.has(deck.id));
+}
+
+/** Read card data again in the background, then redraw whatever tab is open. */
+async function refreshDeckData(deck) {
+  if (_dataBusy.has(deck.id)) return;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  _dataBusy.add(deck.id);
+  _dataTried.add(deck.id);
+  const note = document.getElementById('review-coverage');
+  if (note && state.activeDeckId === deck.id) {
+    note.textContent = 'Reading card data for this deck\u2026';
+    note.style.display = 'block';
+  }
+  let cov = null;
+  try { cov = await enrichDeckCards(deck.cards); } catch (_) {}
+  _dataBusy.delete(deck.id);
+  if (cov && cov.total) {
+    deck.coverage = cov;
+    deck.enrichVer = ENRICH_VER;
+    try { await saveState(); } catch (_) {}
+  }
+  const screen = document.getElementById('screen-review');
+  if (state.activeDeckId !== deck.id || !screen || !screen.classList.contains('active')) return;
+  const active = ['grade', 'odds'].find(k => {
+    const b = document.getElementById('rv-tab-' + k);
+    return b && b.classList.contains('active');
+  }) || 'cards';
+  renderReview(deck);
+  if (active !== 'cards') showReviewTab(active);
 }
 
 
@@ -3297,7 +3459,7 @@ function renderGrade() {
   if (R.unread>0) h+=`<div class="g-sec"><div class="g-item warn">
     <div class="gt">${R.unread} CARD${R.unread>1?'S':''} NOT READ</div>
     <p>Card roles could not be resolved for these, so they contributed nothing to the grade.
-    Re-saving the deck retries the lookup.</p></div></div>`;
+    Opening the deck again while online retries the lookup.</p></div></div>`;
 
   if (R.coh.synergies.length) {
     h+=`<div class="g-sec"><div class="g-sec-t">HOW IT PLAYS</div>
@@ -3543,10 +3705,12 @@ function simulateOdds(deck, trials) {
     }
   }
 
+  const B = groups.reduce((a, g) => a + (g.basic ? g.qty : 0), 0);
   return {
     trials, N, groups, line, anyBasic, anyRead,
     anyDraw: isDraw.some(Boolean),
-    mulligan: mullGames / trials,
+    // Exact: chance an opening 7 holds no Basic.
+    mulligan: B ? oChoose(N - B, 7) / oChoose(N, 7) : mullGames / trials,
     mullAvg: mullTotal / trials,
     capped: capped / trials,
     drawT1: drawT1 / trials,
@@ -3554,9 +3718,53 @@ function simulateOdds(deck, trials) {
     onlineS: lineOk ? onlineS / trials : null,
     anySearch: isSB.some(Boolean) || isSA.some(Boolean),
     locked: lineOk ? locked / trials : null,
-    prize: groups.map((g,i) => ({ name:g.name, qty:g.qty,
-      any: anyPrized[i] / trials, all: allPrized[i] / trials, idx:i }))
+    prize: groups.map((g,i) => ({ name:g.name, qty:g.qty, idx:i,
+      ...exactPrizeOdds(N, g.qty, B, g.basic) }))
   };
+}
+
+/** n choose k, as a float (fine for a 60 card deck). */
+function oChoose(n, k) {
+  if (k < 0 || k > n) return 0;
+  k = Math.min(k, n - k);
+  let r = 1;
+  for (let i = 1; i <= k; i++) r = r * (n - k + i) / i;
+  return r;
+}
+
+/**
+ * Exact prize odds for one card, dealt the way a real game deals: a hand
+ * with no Basic is reshuffled, so only hands holding a Basic count. Then
+ * six prizes come off the remaining cards.
+ * N cards, k copies of this card, B Basics in the deck (this card included
+ * when it is a Basic). With B = 0 no hand is thrown back.
+ */
+function exactPrizeOdds(N, k, B, isBasic) {
+  const other = isBasic ? B - k : B;
+  const rest = N - k - other;
+  const total = oChoose(N - 7, 6);
+  let legal = 0, any = 0, all = 0;
+  for (let h = 0; h <= Math.min(k, 7); h++) {
+    for (let j = 0; j <= Math.min(other, 7 - h); j++) {
+      const r = 7 - h - j;
+      if (r > rest) continue;
+      if (B > 0 && !(j > 0 || (isBasic && h > 0))) continue;
+      const p = oChoose(k, h) * oChoose(other, j) * oChoose(rest, r);
+      legal += p;
+      const left = k - h;
+      any += p * (1 - oChoose(N - 7 - left, 6) / total);
+      if (h === 0 && k <= 6) all += p * oChoose(N - 7 - k, 6 - k) / total;
+    }
+  }
+  return legal ? { any: any / legal, all: all / legal } : { any: 0, all: 0 };
+}
+
+/** Percent with one decimal, for tables where rows are compared. */
+function oPct1(x) {
+  if (x == null) return '?';
+  const p = x * 100;
+  if (p > 0 && p < 0.1) return '<0.1%';
+  return p.toFixed(1) + '%';
 }
 
 function oPct(x) {
@@ -3644,19 +3852,21 @@ function renderOdds() {
 
   // Prize risk: every card group that can be fully prized often enough to matter.
   const linePieces = lineOk ? [line.basic, line.s1, line.top].filter(i => i >= 0) : [];
-  const risky = S.prize.filter(p => p.all >= 0.005).sort((a,b) => b.all-a.all || b.any-a.any);
+  // Attacker pieces first, then the cards most likely to be prized.
+  const rows = S.prize.slice().sort((a,b) =>
+    (linePieces.includes(b.idx) - linePieces.includes(a.idx)) || b.any - a.any || a.name.localeCompare(b.name));
+  const SHOW = 10;
+  const rowHtml = p => {
+    const tag = linePieces.includes(p.idx) ? '<span class="o-tag">ATTACKER</span>' : '';
+    return `<tr><td>${esc(p.name)}${tag}</td><td>${p.qty}</td><td>${oPct1(p.any)}</td><td class="${p.all>=0.05?'hi':''}">${oPct1(p.all)}</td></tr>`;
+  };
+  const head = `<table class="o-table"><thead><tr><th>CARD</th><th>COPIES</th><th>ANY PRIZED</th><th>ALL PRIZED</th></tr></thead><tbody>`;
   h += `<div class="g-sec"><div class="g-sec-t">PRIZE RISK</div>
-    <div class="g-sec-i">Chance a card lands in your six prizes. ALL PRIZED means every copy is stuck there, which is the case PrizeTrainer drills you to spot.</div>`;
-  if (risky.length) {
-    h += `<table class="o-table"><thead><tr><th>CARD</th><th>COPIES</th><th>ANY PRIZED</th><th>ALL PRIZED</th></tr></thead><tbody>`;
-    risky.forEach(p => {
-      const tag = linePieces.includes(p.idx) ? '<span class="o-tag">ATTACKER</span>' : '';
-      h += `<tr><td>${esc(p.name)}${tag}</td><td>${p.qty}</td><td>${oPct(p.any)}</td><td class="${p.all>=0.05?'hi':''}">${oPct(p.all)}</td></tr>`;
-    });
-    h += `</tbody></table>`;
-  } else {
-    h += `<div class="g-item ok"><div class="gt">NO CARD IS LIKELY TO BE FULLY PRIZED</div>
-      <p>Every card runs enough copies that losing all of them to the prizes almost never happens.</p></div>`;
+    <div class="g-sec-i">Exact chance a card lands in your six prizes, counting only opening hands you keep. ALL PRIZED means every copy is stuck there, which is the case PrizeTrainer drills you to spot.</div>`;
+  h += head + rows.slice(0, SHOW).map(rowHtml).join('') + `</tbody></table>`;
+  if (rows.length > SHOW) {
+    h += `<details class="o-more"><summary>Show all ${rows.length} cards</summary>` +
+         head + rows.slice(SHOW).map(rowHtml).join('') + `</tbody></table></details>`;
   }
   h += `</div>`;
 
@@ -4199,6 +4409,7 @@ async function saveEditDeck() {
   showLoading('Updating deck…');
   deck.cards = await Promise.all(cards.map(c => fetchCardImage(c)));
   deck.coverage = await enrichDeckCards(deck.cards);
+  deck.enrichVer = ENRICH_VER;
   hideLoading();
   await saveState();
   renderHome();
@@ -4221,6 +4432,7 @@ async function duplicateDeckFromEdit() {
     history: [],
     format: orig.format || 'standard',
     coverage: cov,
+    enrichVer: ENRICH_VER,
   };
   state.decks.push(newDeck);
   await saveState();
@@ -4295,7 +4507,24 @@ async function enrichDeckCards(cards) {
     const e = map.get(String(c.name || '').toLowerCase());
     if (!e) return;
     c.resolved = e.resolved;
-    if (!e.resolved) return;
+    if (!e.resolved) {
+      // Drop anything an older lookup stored; it may describe another card.
+      ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
+       'requires','reg','ace','dataSource','attacks'].forEach(f => { delete c[f]; });
+      const nm = normalizeCardName(c.name);
+      if (e.provides && e.provides.length) {
+        // Every override is a Trainer, and its role is known without the API.
+        c.supertype = 'Trainer';
+        c.provides = e.provides.slice();
+        c.dataSource = 'name';
+      } else if (/\benergy\b/.test(nm) && !TCGEnrich.findOverride(c.name)
+                 && /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy|dragon) energy$/.test(nm)) {
+        c.supertype = 'Energy';
+        c.types = [nm.split(' ')[0]];
+        c.dataSource = 'name';
+      }
+      return;
+    }
     c.supertype   = e.supertype;
     c.hp          = e.hp;
     c.stage       = e.stage;
@@ -4347,6 +4576,7 @@ async function importDeck() {
     history: [],
     format: importFormat,
     coverage: cov,
+    enrichVer: ENRICH_VER,
   };
   state.decks.push(deck);
   await saveState();

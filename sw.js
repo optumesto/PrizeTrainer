@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v18';
+const CACHE_NAME = 'prize-trainer-v19';
 
 const CORE_ASSETS = [
   './',
