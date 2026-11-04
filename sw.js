@@ -1,6 +1,13 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v21';
+const CACHE_NAME = 'prize-trainer-v23';
+
+// Card art from other sites lives in its own cache, kept across deploys, so
+// a deck you have opened still shows its pictures with no signal. The page
+// tells us when a picture loaded; we keep a copy of that one only, so broken
+// fallback addresses never fill the cache.
+const ART_CACHE = 'prize-trainer-art';
+const ART_MAX = 600;
 
 const CORE_ASSETS = [
   './',
@@ -39,7 +46,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_NAME && k !== ART_CACHE).map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
@@ -52,6 +59,17 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
+  // Card art from another site: saved copy first, then the network.
+  if (req.destination === 'image' && url.origin !== self.location.origin) {
+    event.respondWith(
+      caches.open(ART_CACHE)
+        .then(c => c.match(req.url))
+        .then(hit => hit || fetch(req))
+        .catch(() => fetch(req))
+    );
+    return;
+  }
+
   const isHTML = req.mode === 'navigate' ||
                  (req.headers.get('accept') || '').includes('text/html');
 
@@ -88,4 +106,25 @@ self.addEventListener('fetch', event => {
 // Allow the page to trigger an immediate activation via postMessage.
 self.addEventListener('message', event => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
+  const d = event.data;
+  if (d && d.type === 'art-ok' && typeof d.url === 'string') event.waitUntil(cacheArt(d.url));
 });
+
+async function cacheArt(url) {
+  let u;
+  try { u = new URL(url); } catch (_) { return; }
+  if (!/^https?:$/.test(u.protocol) || u.origin === self.location.origin) return;
+  const cache = await caches.open(ART_CACHE);
+  if (await cache.match(u.href)) return;
+  let resp = null;
+  // A readable copy when the site allows it, an opaque one otherwise.
+  try { const r = await fetch(u.href, { mode: 'cors', credentials: 'omit' }); if (r.ok) resp = r; } catch (_) {}
+  if (!resp) {
+    try { resp = await fetch(u.href, { mode: 'no-cors', credentials: 'omit' }); } catch (_) { return; }
+  }
+  try { await cache.put(u.href, resp); } catch (_) { return; }
+  const keys = await cache.keys();
+  if (keys.length > ART_MAX) {
+    for (const k of keys.slice(0, keys.length - ART_MAX)) await cache.delete(k);
+  }
+}

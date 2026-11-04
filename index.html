@@ -1251,6 +1251,310 @@
   @media (prefers-reduced-motion:reduce) {
     *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
   }
+
+  /* ══════════════════════════════
+     v22: hand practice, deck links, progress, table check
+  ══════════════════════════════ */
+  .hp-wrap { max-width:720px; margin:0 auto; }
+  .hp-meta { display:flex; flex-wrap:wrap; gap:0.4rem; margin:0 0 0.75rem; }
+  .hp-pill {
+    display:inline-flex; align-items:center; gap:0.35rem;
+    font-size:var(--fs-xs); font-weight:700; padding:0.25rem 0.6rem; border-radius:999px;
+    background:var(--surface-2); color:var(--text-2); border:1px solid var(--line);
+  }
+  .hp-pill.warn { color:var(--electric); border-color:color-mix(in srgb, var(--electric) 35%, transparent); }
+  .hp-hand { display:grid; grid-template-columns:repeat(4,1fr); gap:0.7rem 0.5rem; margin-bottom:1.4rem; }
+  .hp-hand .review-card-name { font-size:var(--fs-xs); }
+  .hp-opts { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem; }
+  .hp-opt {
+    display:grid; grid-template-columns:22px 1fr; column-gap:0.7rem; align-items:start; text-align:left;
+    padding:0.8rem 0.9rem; border-radius:var(--r);
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    transition:border-color 0.15s, background-color 0.15s;
+  }
+  .hp-opt:hover { border-color:var(--line-2); }
+  .hp-opt .hp-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--line-2); margin-top:1px; }
+  .hp-opt.active { border-color:var(--accent-line); background:color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+  .hp-opt.active .hp-radio { border-color:var(--accent); box-shadow:inset 0 0 0 4px var(--surface), inset 0 0 0 10px var(--accent); }
+  .hp-opt .hp-n { font-size:var(--fs-md); font-weight:700; line-height:1.35; }
+  .hp-opt .hp-s { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; margin-top:0.15rem; }
+  .hp-opt .hp-s b { color:var(--text); font-weight:600; }
+  .hp-actions { display:flex; gap:0.6rem; margin-bottom:1.5rem; }
+  .hp-actions .btn { flex:1; min-height:50px; }
+  .hp-row-pick td:first-child { color:var(--accent-2); }
+  body[data-theme="light"] .hp-row-pick td:first-child { color:var(--accent-2); }
+  .hp-chips { display:flex; flex-wrap:wrap; gap:0.35rem; margin:0.35rem 0 0.2rem; }
+  .hp-chip {
+    font-size:var(--fs-sm); font-weight:600; padding:0.25rem 0.6rem; border-radius:999px;
+    background:var(--surface-2); color:var(--text); border:1px solid var(--line);
+  }
+  .hp-chip.key { border-color:var(--accent-line); background:var(--accent-soft); }
+  .hp-lbl { font-size:var(--fs-xs); font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-3); margin-top:0.6rem; }
+
+  /* Deck link sheet */
+  .dl-name { font-family:var(--display); font-weight:800; font-size:var(--fs-lg); color:var(--text); margin-bottom:0.25rem; }
+  .dl-sub { font-size:var(--fs-sm); color:var(--text-3); margin-bottom:0.9rem; }
+  .dl-link {
+    width:100%; min-height:46px; padding:0.6rem 0.75rem; border-radius:12px;
+    font-family:var(--font); font-size:var(--fs-sm); color:var(--text);
+    background:var(--surface-2); border:1px solid var(--line-2); text-overflow:ellipsis;
+  }
+  .share-note {
+    margin:0 0 1rem; padding:0.65rem 0.85rem; border-radius:var(--r-sm);
+    font-size:var(--fs-sm); line-height:1.45; color:var(--text);
+    background:var(--accent-soft); border:1px solid var(--accent-line);
+  }
+
+  /* Progress */
+  .pg-wrap { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:1.1rem 1rem; box-shadow:var(--sh-1); }
+  .pg-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem; margin-bottom:1rem; }
+  .pg-tile { padding:0.7rem 0.6rem; border-radius:var(--r-sm); background:var(--surface-2); }
+  .pg-tile .pl { font-size:0.6875rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-3); }
+  .pg-tile .pv { font-family:var(--display); font-weight:900; font-size:1.45rem; line-height:1.15; margin-top:0.2rem; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .pg-tile .ps { font-size:var(--fs-xs); color:var(--text-2); line-height:1.35; margin-top:0.15rem; }
+  .pg-tile .ps.up { color:var(--success); }
+  .pg-tile .ps.down { color:var(--danger); }
+  .pg-chart { margin-top:0.25rem; }
+  .pg-chart + .pg-chart { margin-top:1rem; }
+  .pg-ct { font-size:var(--fs-sm); font-weight:700; color:var(--text); margin-bottom:0.35rem; }
+  .pg-chart svg { display:block; width:100%; height:auto; overflow:visible; }
+  .pg-grid { stroke:var(--line); stroke-width:1; }
+  .pg-ax { fill:var(--text-3); font-family:var(--font); font-size:11px; }
+  .pg-line { fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .pg-acc .pg-line { stroke:var(--accent); }
+  .pg-acc .pg-dot { fill:var(--accent); }
+  .pg-spd .pg-line { stroke:var(--water); }
+  .pg-spd .pg-dot { fill:var(--water); }
+  .pg-dot { stroke:var(--surface); stroke-width:2; }
+  .pg-hit { fill:transparent; cursor:default; }
+  .pg-tip {
+    position:fixed; z-index:200; pointer-events:none; display:none;
+    padding:0.4rem 0.6rem; border-radius:8px; font-size:var(--fs-xs); line-height:1.4;
+    background:var(--surface-3); color:var(--text); border:1px solid var(--line-2); box-shadow:var(--sh-1);
+  }
+  .pg-table { margin-top:1rem; }
+  .progress-line {
+    margin:0 0 1rem; padding:0.75rem 0.9rem; border-radius:var(--r);
+    background:var(--surface); border:1px solid var(--line);
+    font-size:var(--fs-sm); color:var(--text-2); line-height:1.5;
+  }
+  .progress-line b { color:var(--text); }
+  .progress-line:empty { display:none; }
+
+  /* Table check: the hand held out of the deck */
+  .hand-strip { width:100%; max-width:440px; margin:-0.25rem auto 0.5rem; }
+  .hand-strip.hidden { display:none; }
+  .hand-strip-label { font-size:var(--fs-xs); font-weight:700; color:var(--text-3); margin-bottom:0.25rem; text-align:center; }
+  .hand-row { display:grid; grid-template-columns:repeat(7,minmax(0,36px)); justify-content:center; gap:4px; }
+  .card-viewer.has-hand { padding-top:0.6rem; }
+  .card-viewer.has-hand .card-counter { margin-bottom:0.4rem; }
+  .card-viewer.has-hand .card-stage { min-height:200px; }
+  .hand-mini {
+    aspect-ratio:2.5/3.5; border-radius:5px; overflow:hidden; position:relative;
+    background:var(--surface-2); border:1px solid var(--line-2);
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .hand-mini img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hand-mini .hm-n { font-size:0.5625rem; font-weight:600; color:var(--text-2); line-height:1.15; padding:2px; text-align:center; overflow:hidden; word-break:break-word; }
+
+  @media (min-width:560px) {
+    .hp-hand { grid-template-columns:repeat(7,1fr); }
+  }
+  @media (max-width:360px) {
+    .rv-tab { gap:0.25rem; font-size:var(--fs-sm); }
+    .rv-tab .ic { width:15px; height:15px; }
+    .pg-tile .pv { font-size:1.2rem; }
+  }
+
+  /* ══════════════════════════════
+     v23: goldfish, drills, notes, edit log, compare, daily, tournament log
+  ══════════════════════════════ */
+  .review-tabs { max-width:560px; }
+  @media (max-width:520px) {
+    .review-tabs { gap:2px; padding:3px; }
+    .rv-tab { flex-direction:column; gap:1px; min-height:46px; font-size:0.6875rem; padding:0 2px; min-width:0; }
+    .rv-tab .ic { width:16px; height:16px; }
+  }
+  .hm-seg { margin:0 0 1rem; }
+  .hp-pill.done { color:var(--success); border-color:color-mix(in srgb, var(--success) 35%, transparent); }
+  .hp-actions .btn, .gf-acts .btn, .gf-tools .btn, .modal-actions .btn { white-space:normal; text-align:center; }
+  .nt-empty { padding:0.9rem 1rem; border-radius:var(--r); background:var(--surface); border:1px dashed var(--line-2); font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; }
+  .nt-muted { color:var(--text-3); font-size:var(--fs-sm); }
+  .nt-area { height:120px; font-family:var(--font); font-size:var(--fs-md); line-height:1.5; }
+  .nt-area.sm { height:72px; }
+  .x-select {
+    width:100%; min-height:44px; padding:0 0.75rem; border-radius:12px; margin-bottom:0.5rem;
+    font-family:var(--font); font-size:var(--fs-md); color:var(--text);
+    background:var(--surface-2); border:1px solid var(--line-2);
+  }
+  .x-date {
+    width:100%; min-height:44px; padding:0 0.75rem; border-radius:12px;
+    font-family:var(--font); font-size:var(--fs-md); color:var(--text);
+    background:var(--surface-2); border:1px solid var(--line-2); color-scheme:dark;
+  }
+  body[data-theme="light"] .x-date { color-scheme:light; }
+  .icon-btn.sm { width:36px; height:36px; min-height:36px; flex-shrink:0; }
+  .icon-btn.sm .ic { width:16px; height:16px; }
+  .danger-txt { color:var(--danger); }
+  .modal.x-wide { max-width:640px; }
+
+  /* Edit log */
+  .el-chip {
+    display:inline-flex; align-items:baseline; gap:0.3rem; flex-wrap:wrap;
+    font-size:var(--fs-sm); font-weight:600; padding:0.25rem 0.6rem; border-radius:999px;
+    background:var(--surface-2); color:var(--text); border:1px solid var(--line);
+  }
+  .el-chip small { font-weight:500; color:var(--text-3); font-size:var(--fs-xs); }
+  .el-chip.add { border-color:color-mix(in srgb, var(--success) 45%, transparent); background:color-mix(in srgb, var(--success) 10%, var(--surface-2)); }
+  .el-chip.cut { border-color:color-mix(in srgb, var(--danger) 45%, transparent); background:color-mix(in srgb, var(--danger) 9%, var(--surface-2)); }
+  .el-net { padding:0.75rem 0.9rem; border-radius:var(--r); background:var(--surface); border:1px solid var(--line); margin-bottom:0.75rem; }
+  .el-net .hp-lbl { margin-top:0; }
+  .el-row { padding:0.7rem 0; border-top:1px solid var(--line); }
+  .el-row:first-child { border-top:none; }
+  .el-when { display:flex; justify-content:space-between; gap:0.5rem; font-size:var(--fs-sm); color:var(--text-2); }
+  .el-when b { color:var(--text); }
+
+  /* Matchup notes */
+  .mu-card { padding:0.8rem 0.9rem; border-radius:var(--r); background:var(--surface); border:1px solid var(--line); margin-bottom:0.5rem; }
+  .mu-top { display:flex; align-items:center; gap:0.5rem; }
+  .mu-opp { flex:1; min-width:0; font-weight:700; font-size:var(--fs-md); color:var(--text); overflow-wrap:anywhere; }
+  .mu-plan { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin-top:0.3rem; overflow-wrap:anywhere; }
+  .mu-date { font-size:var(--fs-xs); color:var(--text-3); margin-top:0.35rem; }
+
+  /* Compare */
+  .cmp-head { display:flex; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; font-size:var(--fs-sm); color:var(--text-2); margin:0.4rem 0 0.6rem; }
+  .cmp-head b { color:var(--text); }
+  .cmp-t td small { font-size:var(--fs-xs); }
+  .cmp-d { font-weight:700; white-space:nowrap; }
+  .cmp-d.up { color:var(--success); }
+  .cmp-d.down { color:var(--danger); }
+
+  /* Steppers */
+  .stp { display:inline-flex; align-items:center; gap:0.35rem; }
+  .stp b { min-width:1.4em; text-align:center; font-variant-numeric:tabular-nums; font-size:var(--fs-lg); }
+  .stp-b {
+    width:36px; height:36px; border-radius:10px; font-size:1.15rem; font-weight:700; line-height:1;
+    background:var(--surface-2); border:1px solid var(--line-2); color:var(--text);
+  }
+  .stp-b:disabled { opacity:0.35; cursor:default; }
+  .stp.sm .stp-b { width:30px; height:30px; border-radius:8px; }
+  .stp.sm b { font-size:var(--fs-md); }
+
+  /* Resource count */
+  .res-qs { display:flex; flex-direction:column; gap:0.5rem; margin:1rem 0; }
+  .res-q {
+    display:grid; grid-template-columns:1fr auto; align-items:center; gap:0.4rem 0.75rem;
+    padding:0.75rem 0.9rem; border-radius:var(--r); background:var(--surface); border:1px solid var(--line);
+  }
+  .res-q.ok { border-color:color-mix(in srgb, var(--success) 50%, transparent); }
+  .res-q.bad { border-color:color-mix(in srgb, var(--danger) 50%, transparent); }
+  .res-qt { font-size:var(--fs-md); color:var(--text-2); line-height:1.4; }
+  .res-qt b { color:var(--text); }
+  .res-fb { grid-column:1 / -1; font-size:var(--fs-sm); color:var(--text-2); }
+  .res-q.ok .res-fb { color:var(--success); }
+
+  /* Opponent prize read */
+  .rd-t td, .rd-t th { padding-left:0.5rem; padding-right:0.5rem; }
+  .rd-t td:first-child { overflow-wrap:anywhere; }
+  .rd-done td { color:var(--text-3); }
+  .rd-res { font-weight:700; white-space:nowrap; }
+  .rd-res small { font-weight:500; color:var(--text-3); }
+  .rd-res.ok { color:var(--success); }
+  .rd-res.bad { color:var(--danger); }
+
+  /* Goldfish */
+  .gf-board { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0.4rem; margin:0.35rem 0 0.75rem; }
+  .gf-mon {
+    display:flex; align-items:center; gap:0.45rem; min-width:0; text-align:left;
+    padding:0.4rem; border-radius:10px; background:var(--surface); border:1px solid var(--line);
+  }
+  .gf-mon.act { grid-column:1 / -1; border-color:var(--accent-line); }
+  .gf-mon.on { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+  .gf-mon.empty { border-style:dashed; justify-content:center; min-height:52px; }
+  .gf-mon.stad { border-style:dashed; }
+  .gf-mimg { width:30px; flex-shrink:0; aspect-ratio:2.5/3.5; border-radius:4px; overflow:hidden; background:var(--surface-2); }
+  .gf-mimg img { width:100%; height:100%; object-fit:cover; display:block; }
+  .gf-mtx { display:flex; flex-direction:column; min-width:0; }
+  .gf-mtx b { font-size:var(--fs-sm); color:var(--text); line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gf-mtx span { font-size:var(--fs-xs); color:var(--text-3); line-height:1.3; }
+  .gf-hand { margin-bottom:0.6rem; }
+  .gf-card { display:flex; flex-direction:column; gap:0.3rem; min-width:0; padding:0; text-align:center; border-radius:8px; }
+  .gf-card .review-card-img { transition:transform 0.12s, box-shadow 0.12s; }
+  .gf-card.on .review-card-img { transform:translateY(-4px); box-shadow:0 0 0 2px var(--accent); }
+  .gf-card .review-card-name { font-size:var(--fs-xs); }
+  .gf-acts { display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; margin:0 0 0.75rem; }
+  .gf-hand-acts { padding:0.7rem; border-radius:var(--r); background:var(--surface); border:1px solid var(--accent-line); }
+  .gf-ht { width:100%; font-weight:700; font-size:var(--fs-sm); color:var(--text); }
+  .gf-why { width:100%; }
+  .gf-helper { padding:0.7rem; border-radius:var(--r); margin-bottom:0.75rem; background:var(--accent-soft); border:1px solid var(--accent-line); }
+  .gf-helper .gf-acts { margin:0.4rem 0 0; }
+  .gf-tools { display:flex; flex-wrap:wrap; gap:0.4rem; margin:0 0 0.75rem; }
+  .gf-filt { margin-bottom:0.6rem; flex-wrap:wrap; }
+  .gf-filt .mode-opt { flex:1 1 auto; min-width:0; padding:0 0.4rem; font-size:var(--fs-sm); }
+  .gf-srch { max-height:46vh; overflow-y:auto; border:1px solid var(--line); border-radius:var(--r); }
+  .gf-srow { display:grid; grid-template-columns:1fr auto; grid-template-rows:auto auto; align-items:center; column-gap:0.6rem; padding:0.5rem 0.7rem; border-top:1px solid var(--line); }
+  .gf-srow:first-child { border-top:none; }
+  .gf-srow.on { background:var(--accent-soft); }
+  .gf-sn { font-weight:600; font-size:var(--fs-md); color:var(--text); min-width:0; overflow-wrap:anywhere; }
+  .gf-sc { grid-row:2; font-size:var(--fs-xs); color:var(--text-3); }
+  .gf-srow .stp { grid-row:1 / 3; grid-column:2; }
+  .gf-log { list-style:none; margin:0; padding:0; font-size:var(--fs-sm); color:var(--text-2); }
+  .gf-log li { display:flex; gap:0.6rem; padding:0.3rem 0; border-top:1px solid var(--line); line-height:1.4; }
+  .gf-log li:first-child { border-top:none; }
+  .gf-log li span { flex-shrink:0; width:3.2em; font-weight:700; color:var(--text-3); }
+
+  /* Daily challenge */
+  .dc-card {
+    display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap;
+    padding:0.8rem 0.9rem; margin:0 0 1rem; border-radius:var(--r-lg);
+    background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface));
+    border:1px solid var(--accent-line); box-shadow:var(--sh-1);
+  }
+  .dc-ic { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); flex-shrink:0; }
+  .dc-tx { flex:1 1 140px; min-width:0; }
+  .dc-t { font-family:var(--display); font-weight:800; font-size:var(--fs-lg); color:var(--text); }
+  .dc-s { font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .dc-s b { color:var(--text); }
+  .dc-banner {
+    display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;
+    margin:0 0 1rem; padding:0.8rem 0.9rem; border-radius:var(--r);
+    background:var(--accent-soft); border:1px solid var(--accent-line);
+  }
+  .dc-banner > div { flex:1 1 180px; display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); }
+  .dc-banner b { color:var(--text); font-size:var(--fs-md); }
+
+  /* Reach check */
+  .rc-q { font-size:var(--fs-lg); color:var(--text); line-height:1.45; margin:0.25rem 0 1rem; }
+  .rc-fb { font-size:var(--fs-sm); color:var(--text-2); padding:0.5rem 0.7rem; border-radius:10px; margin-bottom:0.4rem; background:var(--surface-2); border:1px solid var(--line); }
+  .rc-fb.ok b { color:var(--success); }
+  .rc-fb.bad b { color:var(--danger); }
+
+  /* Progress extras */
+  .pg-extra { margin-top:1rem; }
+
+  /* Tournament log */
+  .tl-wrap { max-width:720px; margin:0 auto; padding:1rem var(--pad-x) 2rem; }
+  .tl-group { overflow-wrap:anywhere; display:flex; justify-content:space-between; gap:0.5rem; margin:1.25rem 0 0.4rem; font-weight:700; font-size:var(--fs-md); color:var(--text); }
+  .tl-group span { flex-shrink:0; font-weight:500; font-size:var(--fs-sm); color:var(--text-3); }
+  .tl-row { display:flex; align-items:flex-start; gap:0.7rem; padding:0.7rem 0.8rem; border-radius:var(--r); background:var(--surface); border:1px solid var(--line); margin-bottom:0.4rem; }
+  .tl-res { width:34px; height:34px; flex-shrink:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-family:var(--display); }
+  .tl-res.W { background:color-mix(in srgb, var(--success) 18%, transparent); color:var(--success); }
+  .tl-res.L { background:color-mix(in srgb, var(--danger) 16%, transparent); color:var(--danger); }
+  .tl-res.T { background:var(--surface-2); color:var(--text-2); }
+  .tl-mid { flex:1; min-width:0; }
+  .tl-opp { font-weight:700; color:var(--text); overflow-wrap:anywhere; }
+  .tl-sub { font-size:var(--fs-sm); color:var(--text-2); overflow-wrap:anywhere; }
+  .tl-notes { font-size:var(--fs-sm); color:var(--text-2); margin-top:0.25rem; overflow-wrap:anywhere; }
+  .tl-plan { margin-top:0.35rem; font-size:var(--fs-sm); font-weight:600; color:var(--accent); padding:0; }
+  body[data-theme="light"] .tl-plan { color:var(--accent-2); }
+  .tl-seg .mode-opt { flex:1; min-width:0; padding:0; }
+  .tl-two { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+  .tl-hint { margin-top:0.5rem; padding:0.55rem 0.75rem; border-radius:10px; font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; background:var(--accent-soft); border:1px solid var(--accent-line); overflow-wrap:anywhere; }
+  .tl-hint b { color:var(--text); }
+  @media (max-width:360px) {
+    .tl-two { grid-template-columns:1fr; }
+    .gf-board { grid-template-columns:repeat(2, minmax(0,1fr)); }
+  }
 </style>
 </head>
 <body>
@@ -1286,6 +1590,14 @@
     <symbol id="i-cards" viewBox="0 0 24 24"><rect x="2" y="6" width="13" height="16" rx="2"/><path d="M7 2h11a2 2 0 012 2v14"/></symbol>
     <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.2 13.9L7 22l5-3 5 3-1.2-8.1"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M8 16v-5M13 16V8M18 16v-9"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="9" height="13" rx="1.5" transform="rotate(-12 8 13)"/><rect x="11" y="4.5" width="9" height="13" rx="1.5" transform="rotate(10 15.5 11)"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.7-1.7"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 01-8 0z"/><path d="M8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8.5 20h7M10 17h4"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="16" rx="1.5"/><rect x="13.5" y="4" width="7" height="16" rx="1.5"/></symbol>
+    <symbol id="i-drill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h9l4 4V20a.5.5 0 01-.5.5h-12A.5.5 0 016 20z"/><path d="M14.5 3.5V8h4.5M9 12h6M9 16h6"/></symbol>
     <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></symbol>
   </defs>
 </svg>
@@ -1327,6 +1639,7 @@
     <div class="header-stats" id="header-stats"></div>
   </header>
   <div class="home-content scrollable">
+    <div id="daily-card"></div>
     <div class="section-head"><h2 class="section-title">Your decks</h2></div>
     <div class="deck-list" id="deck-list">
       <div class="empty-state">
@@ -1341,6 +1654,7 @@
     <section class="home-more">
       <h2 class="section-title">More</h2>
       <div class="home-actions">
+        <button class="home-action" onclick="openTlog()"><span class="ha-ic"><svg class="ic"><use href="#i-trophy"/></svg></span>Tournament log</button>
         <button class="home-action" onclick="shareApp()"><span class="ha-ic"><svg class="ic"><use href="#i-share"/></svg></span>Share with a friend</button>
         <button class="home-action" onclick="openHowToPlay()"><span class="ha-ic"><svg class="ic"><use href="#i-help"/></svg></span>How to play</button>
         <button class="home-action" onclick="openShortcuts()"><span class="ha-ic"><svg class="ic"><use href="#i-keyboard"/></svg></span>Keyboard shortcuts</button>
@@ -1361,16 +1675,23 @@
       <div class="bar-eyebrow">Deck</div>
       <div class="review-deck-name" id="review-deck-name">Deck</div>
     </div>
+    <button class="icon-btn" onclick="openDeckShare()" aria-label="Share deck link" title="Share deck link"><svg class="ic"><use href="#i-link"/></svg></button>
   </div>
   <div class="review-coverage" id="review-coverage" style="display:none;"></div>
   <div class="review-tabs" role="tablist">
     <button class="rv-tab active" id="rv-tab-cards" onclick="showReviewTab('cards')"><svg class="ic"><use href="#i-cards"/></svg>Cards</button>
     <button class="rv-tab" id="rv-tab-grade" onclick="showReviewTab('grade')"><svg class="ic"><use href="#i-award"/></svg>Grade</button>
     <button class="rv-tab" id="rv-tab-odds" onclick="showReviewTab('odds')"><svg class="ic"><use href="#i-chart"/></svg>Odds</button>
+    <button class="rv-tab" id="rv-tab-hand" onclick="showReviewTab('hand')"><svg class="ic"><use href="#i-hand"/></svg>Hand</button>
+    <button class="rv-tab" id="rv-tab-drills" onclick="showReviewTab('drills')"><svg class="ic"><use href="#i-drill"/></svg>Drills</button>
+    <button class="rv-tab" id="rv-tab-notes" onclick="showReviewTab('notes')"><svg class="ic"><use href="#i-note"/></svg>Notes</button>
   </div>
   <div class="review-body" id="review-body"></div>
   <div class="review-body" id="grade-body" style="display:none;"></div>
   <div class="review-body" id="odds-body" style="display:none;"></div>
+  <div class="review-body" id="hand-body" style="display:none;"></div>
+  <div class="review-body" id="drills-body" style="display:none;"></div>
+  <div class="review-body" id="notes-body" style="display:none;"></div>
   <div class="review-footer">
     <div class="review-stats" id="review-stats"></div>
     <button class="play-btn" onclick="startGameFromReview()"><svg class="ic"><use href="#i-play"/></svg>Play</button>
@@ -1397,6 +1718,7 @@
   </div>
   <div class="game-body-desktop">
   <div class="card-viewer">
+    <div class="hand-strip hidden" id="hand-strip"></div>
     <div class="card-counter" id="card-counter">Card 1 of 54</div>
     <div class="card-stage" id="card-stage">
       <div class="carousel-track" id="carousel-track"></div>
@@ -1466,6 +1788,8 @@
       <div class="guess-compare-title">Time per guess</div>
       <div class="guess-timing-bars" id="guess-timing-bars"></div>
     </div>
+    <div class="progress-line" id="reach-line"></div>
+    <div class="progress-line" id="progress-line"></div>
     <div id="pb-display"></div>
     <div class="history-section">
       <h2 class="section-title">Session history</h2>
@@ -1490,11 +1814,23 @@
   <div class="ws-header">
     <button class="icon-btn" onclick="showScreen('home');renderHome()" aria-label="Back to decks" title="Back"><svg class="ic"><use href="#i-back"/></svg></button>
     <div class="bar-titles">
-      <div class="bar-eyebrow">Weak spots</div>
+      <div class="bar-eyebrow">Progress and weak spots</div>
       <div class="ws-title" id="ws-title">Weak spots</div>
     </div>
   </div>
   <div class="scrollable" id="ws-body"></div>
+</div>
+
+<!-- ═══════════════════════════ TOURNAMENT LOG SCREEN -->
+<div id="screen-tlog" class="screen">
+  <div class="ws-header">
+    <button class="icon-btn" onclick="showScreen('home');renderHome()" aria-label="Back to decks" title="Back"><svg class="ic"><use href="#i-back"/></svg></button>
+    <div class="bar-titles">
+      <div class="bar-eyebrow">Tournament log</div>
+      <div class="ws-title" id="tlog-title">All decks</div>
+    </div>
+  </div>
+  <div class="scrollable" id="tlog-body"></div>
 </div>
 
 <!-- ═══════════════════════════ MODE PICKER MODAL -->
@@ -1523,6 +1859,22 @@
           <div class="mode-opt" data-val="60" onclick="setModeOpt('timelimit',60)">1 min</div>
           <div class="mode-opt" data-val="90" onclick="setModeOpt('timelimit',90)">90 sec</div>
           <div class="mode-opt" data-val="120" onclick="setModeOpt('timelimit',120)">2 min</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="mode-section-label">Deck view <span class="hint">table check holds out a hand of 7</span></div>
+        <div class="mode-toggle-group seg" id="mode-view">
+          <div class="mode-opt active" data-val="full" onclick="setModeOpt('view','full')">Full deck</div>
+          <div class="mode-opt" data-val="table" onclick="setModeOpt('view','table')">Table check</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="mode-section-label">Reach check <span class="hint">can you still get it? before the reveal</span></div>
+        <div class="mode-toggle-group seg" id="mode-reach">
+          <div class="mode-opt active" data-val="off" onclick="setModeOpt('reach','off')">Off</div>
+          <div class="mode-opt" data-val="on" onclick="setModeOpt('reach','on')">On</div>
         </div>
       </div>
 
@@ -1593,6 +1945,14 @@
           <div class="instr-num">5</div>
           <div class="instr-body"><b>Track weak spots</b>After 3 sessions the app shows which cards you miss most often, so you know what to focus on.</div>
         </div>
+        <div class="instr-step">
+          <div class="instr-num">6</div>
+          <div class="instr-body"><b>Practice openings and share lists</b>Open a deck and use the Hand tab to drill turn 1 lines. The link button at the top gives you a link that opens the list in Prize Trainer.</div>
+        </div>
+        <div class="instr-step">
+          <div class="instr-num">7</div>
+          <div class="instr-body"><b>Goldfish, drills and notes</b>The Hand tab can goldfish your first three turns. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.</div>
+        </div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-primary" onclick="closeHowToPlay()">Got it</button>
@@ -1662,11 +2022,38 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════ DECK LINK MODAL -->
+<div class="modal-overlay" id="deck-share-modal">
+  <div class="modal">
+    <div class="modal-inner">
+      <div class="modal-title">Share this deck</div>
+      <div class="dl-name" id="dl-name"></div>
+      <div class="dl-sub" id="dl-sub"></div>
+      <label for="dl-link">Deck link</label>
+      <input type="text" class="dl-link" id="dl-link" readonly onclick="this.select()">
+      <div class="modal-hint">Put it in a video description or send it to a friend. Opening it fills Import with this list, and nothing saves until they tap Import. The list lives in the link itself, not on a server.</div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeDeckShare()">Close</button>
+        <button class="btn" id="dl-native" onclick="nativeShareDeckLink()"><svg class="ic ic-sm"><use href="#i-share"/></svg>Share</button>
+        <button class="btn btn-primary" onclick="copyDeckLink()"><svg class="ic ic-sm"><use href="#i-copy"/></svg>Copy link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SHEET (v23) -->
+<div class="modal-overlay" id="x-modal">
+  <div class="modal">
+    <div class="modal-inner" id="x-modal-inner"></div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════ IMPORT MODAL -->
 <div class="modal-overlay" id="import-modal">
   <div class="modal">
     <div class="modal-inner">
       <div class="modal-title">Import a deck</div>
+      <div class="share-note" id="import-share-note" style="display:none;"></div>
       <div class="mb">
         <label for="import-name">Deck name</label>
         <input type="text" id="import-name" placeholder="e.g. Dragapult ex">
@@ -2511,7 +2898,7 @@ let game = {
   timeLimitInterval: null,
 };
 
-let modeSettings = { prizes: 6, timelimit: 0, tournament: 0, tournamentN: 5 };
+let modeSettings = { prizes: 6, timelimit: 0, tournament: 0, tournamentN: 5, view: 'full', reach: 'off' };
 
 // Tournament block: N back-to-back games with aggregated stats.
 let tournament = { active: false, total: 0, current: 0, scores: [], deckId: null };
@@ -3081,7 +3468,7 @@ function gBand(v) {
 }
 
 function showReviewTab(which) {
-  const panes = { cards:'review-body', grade:'grade-body', odds:'odds-body' };
+  const panes = { cards:'review-body', grade:'grade-body', odds:'odds-body', hand:'hand-body', drills:'drills-body', notes:'notes-body' };
   Object.keys(panes).forEach(k => {
     const btn=document.getElementById('rv-tab-'+k);
     const pane=document.getElementById(panes[k]);
@@ -3090,6 +3477,9 @@ function showReviewTab(which) {
   });
   if (which==='grade') renderGrade();
   if (which==='odds')  renderOdds();
+  if (which==='hand')  renderHand();
+  if (which==='drills') renderDrills();
+  if (which==='notes') renderNotes();
 }
 
 function renderGrade() {
@@ -3556,6 +3946,8 @@ function renderOdds() {
 function startGameFromReview() {
   game.prizeCount = 6;
   game.timeLimit = 0;
+  game.tableCheck = false;
+  game.reachCheck = false;
   tournament.active = false;
   startGame(state.activeDeckId);
 }
@@ -3666,13 +4058,1968 @@ function renderReview(deck) {
     </div>`).join('');
 }
 
+
+// ═══════════ OPENING HAND PRACTICE (v22) ═══════════
+// Deal a legal opening 7, let the player pick which Pokemon line to build
+// on turn 1, then shuffle the other 53 cards a few thousand times to show
+// how often each line comes together. Reuses the Odds tab building blocks
+// (simGroups, simRng, simSeed) and leaves simulateOdds itself untouched.
+const HAND_TRIALS = 6000;
+let handState = null;
+
+/** One buildable line: the Pokemon on top plus the pieces under it, as group indexes. */
+function handLineFor(groups, i) {
+  const g = groups[i];
+  const idx = k => groups.findIndex(x => x.key === k);
+  const line = { name:g.name, stage:g.stage || 'basic', top:i, s1:-1, basic:-1, missing:false };
+  if (line.stage === 'basic') { line.basic = i; line.top = -1; return line; }
+  if (line.stage === 'stage1') {
+    line.basic = g.from ? idx(g.from) : -1;
+    line.missing = line.basic < 0;
+    return line;
+  }
+  line.s1 = g.from ? idx(g.from) : -1;
+  const s1g = line.s1 >= 0 ? groups[line.s1] : null;
+  line.basic = s1g && s1g.from ? idx(s1g.from) : -1;
+  if (line.s1 < 0 && line.basic < 0) {
+    // No Stage 1 in the list (Pidgeot ex with Rare Candy only), so card data
+    // cannot say which Basic it grows from. Take the one Basic whose name
+    // shares the longest start with it, at least four letters.
+    const stem = n => String(n || '').toLowerCase().replace(/^mega\s+/, '').replace(/\s+(ex|v|vmax|vstar|gx)$/, '');
+    const t = stem(g.name);
+    let best = -1, bestLen = 3, tie = false;
+    groups.forEach((x, j) => {
+      if (!x.basic) return;
+      const b = stem(x.name);
+      let k = 0; while (k < b.length && k < t.length && b[k] === t[k]) k++;
+      if (k > bestLen) { best = j; bestLen = k; tie = false; } else if (k === bestLen && best >= 0) tie = true;
+    });
+    if (best >= 0 && !tie) { line.basic = best; line.guessed = true; }
+  }
+  line.missing = line.basic < 0;
+  return line;
+}
+
+/**
+ * The lines worth offering: the deck's main attacker first (same pick as the
+ * Odds tab), then every other evolution line that is complete in the list,
+ * Stage 2 before Stage 1, most copies first. At most four.
+ */
+function handLineOptions(deck, groups) {
+  const out = [], tops = new Set();
+  const main = simAttackerLine(deck, groups);
+  const add = (i, isMain) => {
+    if (i < 0 || tops.has(i)) return;
+    const l = handLineFor(groups, i);
+    if (l.missing || l.basic < 0) return;
+    l.main = !!isMain;
+    tops.add(i);
+    out.push(l);
+  };
+  if (main && !main.missing) add(main.top >= 0 ? main.top : main.basic, true);
+  const evo = groups.map((g, i) => ({ g, i }))
+    .filter(x => x.g.read && (x.g.stage === 'stage1' || x.g.stage === 'stage2'))
+    .sort((a, b) => (b.g.stage === 'stage2') - (a.g.stage === 'stage2') || b.g.qty - a.g.qty);
+  // A Stage 1 that another Stage 2 here grows from is part of that line, not its own.
+  const bridges = new Set(evo.filter(x => x.g.stage === 'stage2').map(x => handLineFor(groups, x.i).s1).filter(i => i >= 0));
+  evo.forEach(x => { if (out.length < 4 && !bridges.has(x.i)) add(x.i, false); });
+  return out;
+}
+
+/**
+ * Odds for one line given the known hand. Each trial shuffles the 53 other
+ * cards, takes six prizes, then the draws for turns 1, 2 and 3 (you draw on
+ * turn 1 whether you go first or second). "With search" lets each search
+ * card seen fetch one missing piece, but only while a copy is still in the
+ * deck, so a fully prized piece cannot be searched out.
+ */
+function handLineOdds(S, line, trials, seed, fixed) {
+  const { groups, handCount, rest } = S;
+  const G = groups.length;
+  const candy = groups.map((g, i) => g.candy ? i : -1).filter(i => i >= 0);
+  const isSB = groups.map(g => g.sBasic), isSA = groups.map(g => g.sAny), isSI = groups.map(g => g.sItem);
+  const rng = simRng(seed);
+  const arr = Int32Array.from(rest);
+  const N = arr.length;
+  const prized = new Int32Array(G), drawn = new Int32Array(G);
+  let r2 = 0, s2 = 0, s3 = 0, lock = 0;
+
+  const ready = (seen, left, useSearch) => {
+    const has = k => k >= 0 && seen(k) > 0;
+    const inDeck = k => k >= 0 && left(k) > 0;
+    const bridge = () => has(line.s1) || candy.some(has);
+    let up = has(line.basic);
+    if (line.stage !== 'basic') up = up && has(line.top);
+    if (line.stage === 'stage2') up = up && bridge();
+    if (up || !useSearch) return up;
+    let sb = 0, sa = 0, si = 0;
+    for (let g = 0; g < G; g++) {
+      const n = seen(g);
+      if (!n) continue;
+      if (isSB[g]) sb += n; else if (isSA[g]) sa += n;
+      if (isSI[g]) si += n;
+    }
+    let need = 0;
+    if (!has(line.basic)) {
+      if (!inDeck(line.basic)) return false;
+      if (sb > 0) sb--; else need++;
+    }
+    if (line.stage !== 'basic' && !has(line.top)) {
+      if (!inDeck(line.top)) return false;
+      need++;
+    }
+    if (line.stage === 'stage2' && !bridge()) {
+      if (si > 0 && candy.some(inDeck)) si--;
+      else if (inDeck(line.s1)) need++;
+      else return false;
+    }
+    return need <= sa;
+  };
+
+  for (let t = 0; t < trials; t++) {
+    if (!fixed) for (let i = 0; i < 9; i++) {
+      const j = i + Math.floor(rng() * (N - i));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    prized.fill(0); drawn.fill(0);
+    for (let i = 0; i < 6; i++) prized[arr[i]]++;
+    drawn[arr[6]]++; drawn[arr[7]]++;
+    const seen2 = k => handCount[k] + drawn[k];
+    const left2 = k => groups[k].qty - handCount[k] - prized[k] - drawn[k];
+    if (ready(seen2, left2, false)) r2++;
+    if (ready(seen2, left2, true)) s2++;
+    drawn[arr[8]]++;
+    if (ready(seen2, left2, true)) s3++;
+    const gone = k => k >= 0 && handCount[k] === 0 && prized[k] === groups[k].qty;
+    let lk = gone(line.basic) || (line.stage !== 'basic' && gone(line.top));
+    if (line.stage === 'stage2' && (line.s1 < 0 || gone(line.s1)) && candy.every(gone)) lk = true;
+    if (lk) lock++;
+  }
+  return { r2: r2 / trials, s2: s2 / trials, s3: s3 / trials, lock: lock / trials };
+}
+
+function handIsBasic(groups, g) { return groups[g] && groups[g].basic; }
+
+/** Deal a fresh opening hand, redealing hands with no Basic like a real game. */
+function dealHand() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  const cards = (deck.cards || []).filter(c => c.count > 0);
+  const groups = simGroups(cards);
+  const gid = {}; groups.forEach((g, i) => gid[g.key] = i);
+  const pool = [];
+  cards.forEach(c => { const i = gid[String(c.name || '').toLowerCase()]; for (let k = 0; k < c.count; k++) pool.push({ card:c, g:i }); });
+  const anyBasic = groups.some(g => g.basic);
+  let mulls = 0;
+  for (;;) {
+    shuffle(pool);
+    if (!anyBasic || pool.slice(0, 7).some(x => handIsBasic(groups, x.g)) || mulls >= 30) break;
+    mulls++;
+  }
+  const hand = pool.slice(0, 7);
+  const after = pool.slice(7);
+  handState = {
+    deckId: deck.id, groups, hand, mulls, anyBasic,
+    restOrder: after,        // this deal as it actually fell: 6 prizes, then draws
+    pick: null, locked: false,
+  };
+  renderHand();
+}
+
+function pickHandLine(i) {
+  if (!handState || handState.locked) return;
+  handState.pick = i;
+  renderHand();
+}
+
+function lockHandLine() {
+  if (!handState || handState.pick == null) return;
+  handState.locked = true;
+  renderHand();
+}
+
+function handCardHTML(card) {
+  const rawName = card.apiName || card.name;
+  const displayName = esc(String(rawName).replace(/\{[a-zA-Z]\}/g, '').trim());
+  const fallbacks = esc(JSON.stringify(card.fallbackUrls || []));
+  const img = card.imageUrl
+    ? `<img src="${esc(card.imageUrl)}" alt="${esc(rawName)}" data-fallbacks="${fallbacks}" data-fallback-idx="0" onerror="reviewImgError(this)">`
+    : `<div class="review-placeholder">🃏</div>`;
+  return `<div class="review-card"><div class="review-card-img">${img}</div><div class="review-card-name">${displayName}</div></div>`;
+}
+
+function renderHand() {
+  const el = document.getElementById('hand-body');
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!el || !deck) return;
+  const total = deck.cards.reduce((a, c) => a + c.count, 0);
+  if (total < 16) {
+    el.innerHTML = `<div class="g-empty">This list is too short for hand practice.<br><br>It needs an opening hand, six prizes and three draws.</div>`;
+    return;
+  }
+  if (!handState || handState.deckId !== deck.id) { dealHand(); return; }
+
+  const H = handState, groups = H.groups;
+  const handCount = new Int32Array(groups.length);
+  H.hand.forEach(x => handCount[x.g]++);
+  const rest = H.restOrder.map(x => x.g);
+  const opts = handLineOptions(deck, groups);
+  const anyRead = groups.some(g => g.read);
+  const nm = i => i >= 0 ? esc(groups[i].name) : '';
+
+  let h = `<div class="hp-wrap"><div class="g-sec">
+    <div class="g-sec-t">Opening hand</div>
+    <div class="g-sec-i">A random 7 from this list. Pick the line you would build on turn 1, lock it in, then see how often it comes together.</div>
+    <div class="hp-meta">
+      ${H.mulls ? `<span class="hp-pill warn">${H.mulls} mulligan${H.mulls !== 1 ? 's' : ''} before this hand</span>` : '<span class="hp-pill">Kept the first 7</span>'}
+      ${!H.anyBasic ? '<span class="hp-pill warn">No Basic read, mulligan rule off</span>' : ''}
+    </div>
+    <div class="hp-hand">${H.hand.map(x => handCardHTML(x.card)).join('')}</div>`;
+
+  if (!anyRead || !opts.length) {
+    h += `<div class="g-item warn"><div class="gt">${!anyRead ? 'No card data yet' : 'No Pokémon line read'}</div>
+      <p>${!anyRead ? 'Lines need each card\'s stage and role. Open Edit deck and save it to fetch them.' : 'No complete evolution line or attacker was read in this list, so there is nothing to compare. Re-saving the deck retries the lookup.'}</p></div>
+      <div class="hp-actions"><button class="btn btn-primary" onclick="dealHand()"><svg class="ic"><use href="#i-hand"/></svg>New hand</button></div></div></div>`;
+    el.innerHTML = h;
+    return;
+  }
+
+  const stageTxt = s => s === 'stage2' ? 'Stage 2' : s === 'stage1' ? 'Stage 1' : 'Basic';
+  const pieceList = l => [l.basic, l.s1, l.top].filter(i => i >= 0);
+  const candyIdx = groups.map((g, i) => g.candy ? i : -1).filter(i => i >= 0);
+  const describe = l => {
+    const pieces = pieceList(l);
+    const inHand = pieces.filter(i => handCount[i] > 0).map(nm);
+    const need = [];
+    if (!handCount[l.basic]) need.push(nm(l.basic));
+    if (l.stage === 'stage2') {
+      const bridgeIn = (l.s1 >= 0 && handCount[l.s1]) || candyIdx.some(i => handCount[i]);
+      if (!bridgeIn) need.push((l.s1 >= 0 ? nm(l.s1) + ' or ' : '') + 'Rare Candy');
+      else candyIdx.filter(i => handCount[i]).forEach(i => inHand.push(nm(i)));
+    }
+    if (l.top >= 0 && !handCount[l.top]) need.push(nm(l.top));
+    return `${stageTxt(l.stage)}${l.main ? ', main attacker' : ''}${l.guessed ? ', from ' + nm(l.basic) + ' with Rare Candy' : ''}. ` +
+      (inHand.length ? `In hand: <b>${inHand.join(', ')}</b>. ` : '') +
+      (need.length ? `Still need: ${need.join(', ')}.` : 'Every piece is in your hand.');
+  };
+
+  h += `<div class="g-sec-t">Your turn 1 line</div>
+    <div class="g-sec-i">Which Pokémon would you set up first with this hand?</div>
+    <div class="hp-opts" role="radiogroup">`;
+  opts.forEach((l, i) => {
+    const active = H.pick === i;
+    h += `<button class="hp-opt${active ? ' active' : ''}" role="radio" aria-checked="${active}" ${H.locked ? 'disabled' : ''} onclick="pickHandLine(${i})">
+      <span class="hp-radio"></span>
+      <span><span class="hp-n" style="display:block">${esc(l.name)}</span><span class="hp-s" style="display:block">${describe(l)}</span></span>
+    </button>`;
+  });
+  h += `</div>`;
+
+  if (!H.locked) {
+    h += `<div class="hp-actions">
+      <button class="btn" onclick="dealHand()"><svg class="ic"><use href="#i-hand"/></svg>New hand</button>
+      <button class="btn btn-primary" id="hp-lock" onclick="lockHandLine()" ${H.pick == null ? 'disabled' : ''}>Lock in line</button>
+    </div></div></div>`;
+    el.innerHTML = h;
+    return;
+  }
+
+  // Locked in: odds for every line from this exact hand.
+  const S = { groups, handCount, rest };
+  const handSeed = simSeed(deck.cards) ^ H.hand.reduce((a, x) => Math.imul(a ^ (x.g + 1), 16777619), 2166136261);
+  const res = opts.map((l, i) => ({ l, i, o: handLineOdds(S, l, HAND_TRIALS, (handSeed + i * 7919) >>> 0) }));
+  const pick = res[H.pick];
+  const best = res.reduce((a, b) => b.o.s2 > a.o.s2 ? b : a, res[0]);
+  const tone = (x, hi, lo) => x >= hi ? 'var(--green)' : x >= lo ? 'var(--electric)' : 'var(--fire)';
+  const toneBad = (x, lo, hi) => x <= lo ? 'var(--green)' : x <= hi ? 'var(--electric)' : 'var(--fire)';
+
+  h += `<div class="o-tiles">
+    <div class="o-tile" style="--tone:${tone(pick.o.s2, 0.6, 0.4)}"><div class="ol">Ready by T2</div><div class="ov">${oPct(pick.o.s2)}</div><div class="os">${oPct(pick.o.r2)} on raw draws</div></div>
+    <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">Ready by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">With search, one more draw</div></div>
+    <div class="o-tile" style="--tone:${toneBad(pick.o.lock, 0.02, 0.06)}"><div class="ol">Locked in prizes</div><div class="ov">${oPct(pick.o.lock)}</div><div class="os">A piece fully prized</div></div>
+  </div>
+  <div class="o-meta">${HAND_TRIALS.toLocaleString()} shuffles of the other ${rest.length} cards for each line. Same hand, same numbers.</div>`;
+
+  const gap = best.o.s2 - pick.o.s2;
+  if (best.i === pick.i || gap < 0.02) {
+    h += `<div class="g-item ok"><div class="gt">Good read: ${best.i === pick.i ? esc(pick.l.name) + ' is the best line from this hand' : esc(pick.l.name) + ' is level with the best line from this hand'}</div>
+      <p>${oPct(pick.o.s2)} to be ready by your second turn.${best.i !== pick.i ? ` ${esc(best.l.name)} edges it at ${oPct(best.o.s2)}.` : ''}</p></div>`;
+  } else {
+    h += `<div class="g-item ${gap >= 0.15 ? 'crit' : 'warn'}"><div class="gt">${esc(best.l.name)} had better odds from this hand</div>
+      <p>${oPct(best.o.s2)} by turn 2 against ${oPct(pick.o.s2)} for ${esc(pick.l.name)}. Look at which pieces are already in your hand and which search cards can reach the rest.</p></div>`;
+  }
+
+  h += `<div class="g-sec" style="margin-top:1rem"><div class="g-sec-t">Every line from this hand</div>
+    <div class="o-table-wrap"><table class="o-table"><thead><tr><th>Line</th><th>T2 raw</th><th>T2 search</th><th>T3</th></tr></thead><tbody>`;
+  res.forEach(r => {
+    const tags = (r.i === H.pick ? '<span class="o-tag">Your pick</span>' : '') + (r.i === best.i && r.i !== H.pick ? '<span class="o-tag">Best</span>' : '');
+    h += `<tr class="${r.i === H.pick ? 'hp-row-pick' : ''}"><td>${esc(r.l.name)}${tags}</td><td>${oPct1(r.o.r2)}</td><td>${oPct1(r.o.s2)}</td><td>${oPct1(r.o.s3)}</td></tr>`;
+  });
+  h += `</tbody></table></div></div>`;
+
+  // This deal as it actually fell.
+  const pz = H.restOrder.slice(0, 6), dr = H.restOrder.slice(6, 8);
+  const keyPieces = new Set(pieceList(pick.l).concat(pick.l.stage === 'stage2' ? candyIdx : []));
+  const chip = x => `<span class="hp-chip${keyPieces.has(x.g) ? ' key' : ''}">${esc(String(x.card.apiName || x.card.name).replace(/\{[a-zA-Z]\}/g, '').trim())}</span>`;
+  const prz = new Int32Array(groups.length), drw = new Int32Array(groups.length);
+  pz.forEach(x => prz[x.g]++); dr.forEach(x => drw[x.g]++);
+  const dealt = handLineOdds({ groups, handCount, rest: H.restOrder.map(x => x.g) }, pick.l, 1, 0, true);
+  const dealMsg = dealt.r2 ? esc(pick.l.name) + ' was ready by turn 2 on draws alone'
+    : dealt.s2 ? esc(pick.l.name) + ' was ready by turn 2 using your search cards'
+    : esc(pick.l.name) + ' was not ready by turn 2 this time';
+  h += `<div class="g-sec"><div class="g-sec-t">How this deal fell</div>
+    <div class="g-sec-i">The prizes and draws this shuffle actually gave you. Highlighted cards are pieces of your line.</div>
+    <div class="hp-lbl">Prizes</div><div class="hp-chips">${pz.map(chip).join('')}</div>
+    <div class="hp-lbl">Turn 1 and 2 draws</div><div class="hp-chips">${dr.map(chip).join('')}</div>
+    <div class="g-item ${dealt.s2 ? 'ok' : 'warn'}" style="margin-top:0.75rem"><div class="gt">${dealMsg}</div>
+      <p>${[...keyPieces].filter(k => prz[k] > 0).length ? 'Prized: ' + [...keyPieces].filter(k => prz[k] > 0).map(nm).join(', ') + '.' : 'None of its pieces were prized.'}</p></div>
+  </div>`;
+
+  h += `<div class="hp-actions"><button class="btn btn-primary" onclick="dealHand()"><svg class="ic"><use href="#i-hand"/></svg>New hand</button></div>
+    <div class="g-wip"><b>What this counts.</b> Search cards each fetch one missing piece if a copy is still in the deck. Draw Supporters, abilities, discard costs and the one Supporter per turn rule are not played out, the same as the Odds tab.</div>
+  </div></div>`;
+  el.innerHTML = h;
+}
+
+// ═══════════ DECK LINKS (v22) ═══════════
+// A deck rides in the link's hash (#deck=...), so it never reaches a server.
+// Opening the link fills the normal Import sheet; nothing saves until the
+// player taps Import, and the text goes through the same parser as a paste.
+const SHARE_HOME = 'https://optumesto.github.io/PrizeTrainer/';
+const SHARE_MAX_TEXT = 6000;
+
+function shareBaseUrl() {
+  if (/^https?:$/.test(location.protocol)) return location.origin + location.pathname;
+  return SHARE_HOME;
+}
+
+function b64urlFromBytes(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function bytesFromB64url(str) {
+  const s = String(str).replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(s + '==='.slice((s.length + 3) % 4));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function streamBytes(bytes, stream) {
+  const res = new Response(new Blob([bytes]).stream().pipeThrough(stream));
+  return new Uint8Array(await res.arrayBuffer());
+}
+
+/** Strip control, bidi and markup characters, and cap the length. */
+function cleanSharedText(s, max) {
+  return String(s || '').normalize('NFC')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0008\u000B-\u001F\u007F-\u009F\u200B-\u200F\u2028-\u202E\u2060-\u2069\uFEFF<>]/g, '')
+    .slice(0, max);
+}
+
+function deckShareText(deck) {
+  return 'n:' + cleanSharedText(deck.name, 60).replace(/\n/g, ' ') + '\n'
+    + (deck.format === 'expanded' ? 'f:expanded\n' : '')
+    + deckListText(deck.cards);
+}
+
+/** Code for the link: '2' + deflated text when the browser can, else '1' + plain text. */
+async function encodeDeckShare(deck) {
+  const bytes = new TextEncoder().encode(deckShareText(deck));
+  if (typeof CompressionStream !== 'undefined') {
+    try { return '2' + b64urlFromBytes(await streamBytes(bytes, new CompressionStream('deflate-raw'))); } catch (_) {}
+  }
+  return '1' + b64urlFromBytes(bytes);
+}
+
+/** Returns { name, format, list } or null. Never throws. */
+async function decodeDeckShare(code) {
+  try {
+    code = String(code || '').trim();
+    if (code.length > 12000 || !/^[12][A-Za-z0-9_-]+$/.test(code)) return null;
+    let bytes = bytesFromB64url(code.slice(1));
+    if (code[0] === '2') {
+      if (typeof DecompressionStream === 'undefined') return { unsupported: true };
+      bytes = await streamBytes(bytes, new DecompressionStream('deflate-raw'));
+    }
+    if (bytes.length > SHARE_MAX_TEXT * 4) return null;
+    const text = cleanSharedText(new TextDecoder().decode(bytes), SHARE_MAX_TEXT);
+    let name = '', format = 'standard';
+    const lines = [];
+    text.split('\n').slice(0, 120).forEach(line => {
+      if (line.startsWith('n:') && !name) { name = line.slice(2).trim().slice(0, 60); return; }
+      if (line.startsWith('f:')) { format = line.slice(2).trim() === 'expanded' ? 'expanded' : 'standard'; return; }
+      lines.push(line.slice(0, 120));
+    });
+    const list = lines.join('\n').trim();
+    if (!parseDeckList(list).length) return null;
+    return { name, format, list };
+  } catch (_) { return null; }
+}
+
+let _deckShareUrl = '';
+async function openDeckShare() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  const code = await encodeDeckShare(deck);
+  _deckShareUrl = shareBaseUrl() + '#deck=' + code;
+  document.getElementById('dl-name').textContent = deck.name;
+  const total = deck.cards.reduce((a, c) => a + c.count, 0);
+  document.getElementById('dl-sub').textContent = `${total} cards, ${deck.format === 'expanded' ? 'Expanded' : 'Standard'}`;
+  document.getElementById('dl-link').value = _deckShareUrl;
+  document.getElementById('dl-native').style.display = navigator.share ? '' : 'none';
+  document.getElementById('deck-share-modal').classList.add('active');
+}
+function closeDeckShare() { document.getElementById('deck-share-modal').classList.remove('active'); }
+
+async function copyDeckLink() {
+  const input = document.getElementById('dl-link');
+  try { await navigator.clipboard.writeText(_deckShareUrl); showToast('Deck link copied.'); return; } catch (_) {}
+  try { input.focus(); input.select(); document.execCommand('copy'); showToast('Deck link copied.'); }
+  catch (_) { showToast('Select the link and copy it.'); }
+}
+async function nativeShareDeckLink() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  try { await navigator.share({ title: (deck ? deck.name + ' in ' : '') + 'Prize Trainer', url: _deckShareUrl }); } catch (_) {}
+}
+
+/** Open a #deck= link: decode it and fill the Import sheet for the player to check. */
+async function handleShareHash() {
+  const m = /^#deck=([^&]*)/.exec(location.hash || '');
+  if (!m) return;
+  const shared = await decodeDeckShare(decodeURIComponent(m[1]));
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  if (!shared) { showToast('That deck link could not be read.'); return; }
+  if (shared.unsupported) { showToast('This browser cannot open compressed deck links. Try an up to date browser.'); return; }
+  showScreen('home');
+  openImportModal();
+  document.getElementById('import-name').value = shared.name || 'Shared deck';
+  const ta = document.getElementById('import-list');
+  ta.value = shared.list;
+  ta.dispatchEvent(new Event('input'));
+  setImportFormat(shared.format);
+  const note = document.getElementById('import-share-note');
+  const same = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
+  note.textContent = same
+    ? `Shared deck from a link. You already have this list as "${same.name}". Import it again only if you want a second copy.`
+    : 'Shared deck from a link. Check the list, then tap Import and save.';
+  note.style.display = 'block';
+}
+
+// ═══════════ PROGRESS OVER TIME (v22) ═══════════
+// History keeps the last 50 games per deck. Progress also keeps a small
+// rollup per day, so the long view survives past that cap.
+function pgDayKey(ts) {
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function pgAdd(deck, h, ts) {
+  const k = pgDayKey(ts);
+  const d = deck.daily[k] || (deck.daily[k] = { g: 0, s: 0, p: 0, t: 0 });
+  d.g++; d.s += h.score || 0; d.p += h.prizeCount || 6; d.t += h.time || 0;
+}
+/** Build the daily rollup once from the history a deck already has. */
+function ensureDaily(deck) {
+  if (!deck || deck.dailyVer) return;
+  deck.daily = {};
+  (deck.history || []).forEach(h => {
+    const ts = h.ts || Date.parse(h.date);
+    if (ts && !isNaN(ts)) pgAdd(deck, h, ts);
+  });
+  deck.dailyVer = 1;
+}
+
+function pgShortDate(k) {
+  const [y, m, d] = k.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+/** One single series line chart, 0 based, with hover targets. */
+function pgChart(cls, title, pts, fmt, yMax) {
+  const W = 320, Hh = 120, L = 34, R = 10, T = 8, B = 22;
+  const iw = W - L - R, ih = Hh - T - B;
+  const n = pts.length;
+  const x = i => L + (n === 1 ? iw / 2 : i * iw / (n - 1));
+  const y = v => T + ih - (yMax ? Math.min(v, yMax) / yMax : 0) * ih;
+  const ticks = [0, yMax / 2, yMax];
+  let s = `<div class="pg-chart ${cls}"><div class="pg-ct">${title}</div>
+    <svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(title)}">`;
+  ticks.forEach(tv => { s += `<line class="pg-grid" x1="${L}" x2="${W - R}" y1="${y(tv)}" y2="${y(tv)}"/><text class="pg-ax" x="${L - 6}" y="${y(tv) + 4}" text-anchor="end">${fmt(tv)}</text>`; });
+  s += `<text class="pg-ax" x="${x(0)}" y="${Hh - 4}" text-anchor="${n === 1 ? 'middle' : 'start'}">${esc(pts[0].label)}</text>`;
+  if (n > 1) s += `<text class="pg-ax" x="${x(n - 1)}" y="${Hh - 4}" text-anchor="end">${esc(pts[n - 1].label)}</text>`;
+  if (n > 1) s += `<polyline class="pg-line" points="${pts.map((p, i) => x(i).toFixed(1) + ',' + y(p.v).toFixed(1)).join(' ')}"/>`;
+  pts.forEach((p, i) => {
+    s += `<circle class="pg-dot" cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="4"/>`;
+    s += `<rect class="pg-hit" x="${(x(i) - Math.max(10, iw / Math.max(1, n) / 2)).toFixed(1)}" y="${T}" width="${Math.max(20, iw / Math.max(1, n)).toFixed(1)}" height="${ih}" data-tip="${esc(p.tip)}" onmousemove="pgTip(event,this)" onmouseleave="pgTip(null)" ontouchstart="pgTip(event,this)"/>`;
+  });
+  return s + `</svg></div>`;
+}
+function pgTip(e, el) {
+  let tip = document.getElementById('pg-tip');
+  if (!tip) { tip = document.createElement('div'); tip.id = 'pg-tip'; tip.className = 'pg-tip'; document.body.appendChild(tip); }
+  if (!e || !el) { tip.style.display = 'none'; return; }
+  const pt = e.touches ? e.touches[0] : e;
+  tip.textContent = el.dataset.tip;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 8, pt.clientX + 12) + 'px';
+  tip.style.top = (pt.clientY - tip.offsetHeight - 10) + 'px';
+}
+
+/** Last 10 games against the 10 before them. */
+function pgWindows(deck) {
+  const hist = deck.history || [];
+  const win = arr => arr.length ? {
+    n: arr.length,
+    acc: arr.reduce((a, h) => a + h.score, 0) / arr.reduce((a, h) => a + (h.prizeCount || 6), 0),
+    time: arr.reduce((a, h) => a + (h.time || 0), 0) / arr.length,
+  } : null;
+  return { now: win(hist.slice(0, 10)), prev: win(hist.slice(10, 20)) };
+}
+
+function renderProgressSection(deck) {
+  ensureDaily(deck);
+  const days = Object.keys(deck.daily || {}).sort();
+  const W = pgWindows(deck);
+  if (!W.now) return '';
+  const accTxt = Math.round(W.now.acc * 100) + '%';
+  let accSub = `Last ${W.now.n} game${W.now.n !== 1 ? 's' : ''}`, accCls = '';
+  let spdSub = 'Per game, last ' + W.now.n, spdCls = '';
+  if (W.prev) {
+    const dA = Math.round((W.now.acc - W.prev.acc) * 100);
+    accSub = dA === 0 ? 'Same as the 10 before' : `${dA > 0 ? 'Up' : 'Down'} ${Math.abs(dA)} pts on the ${W.prev.n} before`;
+    accCls = dA > 0 ? 'up' : dA < 0 ? 'down' : '';
+    const dT = Math.round(W.now.time - W.prev.time);
+    spdSub = dT === 0 ? 'Same as the 10 before' : `${Math.abs(dT)}s ${dT < 0 ? 'faster' : 'slower'} than before`;
+    spdCls = dT < 0 ? 'up' : dT > 0 ? 'down' : '';
+  }
+  const totalGames = days.reduce((a, k) => a + deck.daily[k].g, 0);
+  let h = `<div class="pg-wrap">
+    <div class="section-title">Progress over time</div>
+    <div class="pg-tiles">
+      <div class="pg-tile"><div class="pl">Accuracy</div><div class="pv">${accTxt}</div><div class="ps ${accCls}">${accSub}</div></div>
+      <div class="pg-tile"><div class="pl">Avg time</div><div class="pv">${formatTime(Math.round(W.now.time))}</div><div class="ps ${spdCls}">${spdSub}</div></div>
+      <div class="pg-tile"><div class="pl">Days</div><div class="pv">${days.length}</div><div class="ps">${totalGames} game${totalGames !== 1 ? 's' : ''} tracked</div></div>
+    </div>`;
+  const recent = days.slice(-14);
+  if (recent.length >= 2) {
+    const accPts = recent.map(k => { const d = deck.daily[k]; const v = d.s / d.p; return { v, label: pgShortDate(k), tip: `${pgShortDate(k)}: ${Math.round(v * 100)}% over ${d.g} game${d.g !== 1 ? 's' : ''}` }; });
+    const spdPts = recent.map(k => { const d = deck.daily[k]; const v = d.t / d.g; return { v, label: pgShortDate(k), tip: `${pgShortDate(k)}: ${formatTime(Math.round(v))} per game` }; });
+    const maxT = Math.max(60, Math.ceil(Math.max(...spdPts.map(p => p.v)) / 60) * 60);
+    h += pgChart('pg-acc', 'Accuracy by day', accPts, v => Math.round(v * 100) + '%', 1);
+    h += pgChart('pg-spd', 'Time per game by day', spdPts, v => formatTime(Math.round(v)), maxT);
+  } else {
+    h += `<div class="ws-card-sub">Play on another day to see a trend line.</div>`;
+  }
+  const rowsHtml = ks => ks.map(k => { const d = deck.daily[k]; return `<tr><td>${pgShortDate(k)}</td><td>${d.g}</td><td>${Math.round(d.s / d.p * 100)}%</td><td>${formatTime(Math.round(d.t / d.g))}</td></tr>`; }).join('');
+  const head = `<div class="o-table-wrap"><table class="o-table"><thead><tr><th>Day</th><th>Games</th><th>Accuracy</th><th>Avg time</th></tr></thead><tbody>`;
+  const newest = days.slice().reverse();
+  h += `<div class="pg-table">${head}${rowsHtml(newest.slice(0, 7))}</tbody></table></div></div>`;
+  if (newest.length > 7) h += `<details class="o-more"><summary>Show all ${newest.length} days</summary>${head}${rowsHtml(newest.slice(7))}</tbody></table></div></details>`;
+  return h + `</div>`;
+}
+
+/** One line on the results screen: how the last 10 games compare. */
+function renderProgressLine(deck) {
+  const el = document.getElementById('progress-line');
+  if (!el) return;
+  if (!deck || (deck.history || []).length < 2) { el.innerHTML = ''; return; }
+  const W = pgWindows(deck);
+  let s = `Last ${W.now.n} games: <b>${Math.round(W.now.acc * 100)}%</b> accuracy, <b>${formatTime(Math.round(W.now.time))}</b> a game.`;
+  if (W.prev) {
+    const dA = Math.round((W.now.acc - W.prev.acc) * 100);
+    const dT = Math.round(W.now.time - W.prev.time);
+    s += ` ${dA === 0 ? 'Accuracy level' : (dA > 0 ? 'Up ' : 'Down ') + Math.abs(dA) + ' pts'} and ${dT === 0 ? 'same pace' : Math.abs(dT) + 's ' + (dT < 0 ? 'faster' : 'slower')} than the ${W.prev.n} before.`;
+  }
+  el.innerHTML = s;
+}
+
+// ═══════════ TABLE CHECK (v22) ═══════════
+// Prize check the way it happens at a table: a legal opening 7 sits in your
+// hand, six prizes come off, and you flip through the other 47.
+function dealTableCheck(expanded, pc) {
+  const isB = c => cardCategory(c) === 'pokemon' && c.stage === 'basic';
+  const anyB = expanded.some(isB);
+  let tries = 0;
+  do { shuffle(expanded); tries++; } while (anyB && !expanded.slice(0, 7).some(isB) && tries < 50);
+  game.hand = expanded.slice(0, 7);
+  game.prizes = expanded.slice(7, 7 + pc);
+  game.visible = expanded.slice(7 + pc);
+  shuffle(game.visible);
+}
+
+function renderHandStrip() {
+  const el = document.getElementById('hand-strip');
+  if (!el) return;
+  const hand = game.hand || [];
+  const viewer = el.parentElement;
+  if (viewer) viewer.classList.toggle('has-hand', hand.length > 0);
+  if (!hand.length) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+  el.classList.remove('hidden');
+  el.innerHTML = `<div class="hand-strip-label">Your hand (${hand.length}), not in the deck below</div><div class="hand-row">` +
+    hand.map((c, i) => {
+      const nm = esc(String(c.apiName || c.name).replace(/\{[a-zA-Z]\}/g, '').trim());
+      const fb = esc(JSON.stringify(c.fallbackUrls || []));
+      return `<button class="hand-mini" onclick="showToast(this.title)" title="${nm}" aria-label="${nm}">` +
+        (c.imageUrl ? `<img src="${esc(c.imageUrl)}" alt="${nm}" data-name="${nm}" data-fallbacks="${fb}" data-fallback-idx="0" onerror="swapImgOrPlaceholder(this,'hm-n')">` : `<span class="hm-n">${nm}</span>`) +
+        `</button>`;
+    }).join('') + `</div>`;
+}
+
+
+// ═══════════ v23: shared helpers ═══════════
+const DAILY_ID = '__daily';
+const ic23 = id => `<svg class="ic"><use href="#i-${id}"/></svg>`;
+const EN23 = { g: 'Grass', r: 'Fire', w: 'Water', l: 'Lightning', p: 'Psychic', f: 'Fighting', d: 'Darkness', m: 'Metal', y: 'Fairy', n: 'Dragon', c: 'Colorless' };
+const cn23 = n => String(n || '').replace(/\{([a-zA-Z])\}/g, (m, l) => EN23[l.toLowerCase()] || '').replace(/\s+/g, ' ').trim();
+const lbl23 = c => cn23(c.apiName || c.name);
+const clean23 = (s, max) => String(s == null ? '' : s)
+  .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F​-‏‪-‮⁦-⁩﻿]/g, '')
+  .replace(/[<>]/g, '')
+  .slice(0, max || 200);
+const one23 = (s, max) => clean23(s, max).replace(/[\r\n\t]+/g, ' ').trim();
+
+function findDeck(id) {
+  return state.decks.find(d => d.id === id) || (id === DAILY_ID ? dailyDeck() : null);
+}
+function shortDate23(ts) {
+  try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (_) { return pgDayKey(ts); }
+}
+const shuf = a => shuffleWith(a, Math.random);
+function shuffleWith(arr, rnd) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function strHash(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+
+// One sheet for the new pop ups. Its inner HTML is set per use.
+function openSheet(html, wide) {
+  const m = document.getElementById('x-modal');
+  document.getElementById('x-modal-inner').innerHTML = html;
+  m.querySelector('.modal').classList.toggle('x-wide', !!wide);
+  m.classList.add('active');
+}
+function closeSheet() { document.getElementById('x-modal').classList.remove('active'); }
+
+function drillStat(deck, key, correct, total) {
+  const box = deck ? (deck.drills = deck.drills || {}) : (state.drillStats = state.drillStats || {});
+  const s = box[key] = box[key] || { g: 0, c: 0, n: 0, last: 0 };
+  s.g++; s.c += correct; s.n += total; s.last = Date.now();
+  saveState();
+}
+
+// ═══════════ EDIT LOG (v23) ═══════════
+// Every saved version of a list is kept as a small snapshot, so the log can
+// show each change and the compare view can pick any earlier version.
+const VER_MAX = 40;
+function snapCards(cards) {
+  return (cards || []).map(c => ({ name: c.name, set: c.set || '', num: c.num || '', count: c.count, section: c.section || undefined }));
+}
+function ensureVersions(deck) {
+  if (!deck || deck.id === DAILY_ID) return [];
+  if (!Array.isArray(deck.versions) || !deck.versions.length) {
+    deck.versions = [{ ts: Date.now(), kind: 'start', cards: snapCards(deck.cards) }];
+  }
+  return deck.versions;
+}
+function startVersions(deck, kind, from) {
+  deck.versions = [{ ts: Date.now(), kind: kind || 'import', from: from ? one23(from, 80) : undefined, cards: snapCards(deck.cards) }];
+}
+function cardTotals(cards) {
+  const m = new Map();
+  (cards || []).forEach(c => {
+    const k = normalizeCardName(c.name);
+    const e = m.get(k) || { name: cn23(c.name), n: 0, prints: [] };
+    e.n += c.count;
+    e.prints.push(((c.set || '') + ' ' + (c.num || '')).trim().toUpperCase());
+    m.set(k, e);
+  });
+  return m;
+}
+/** Totals for a pile of single cards (one entry per copy). */
+function pileTotals(arr) {
+  const m = new Map();
+  (arr || []).forEach(c => {
+    const k = normalizeCardName(c.name);
+    const e = m.get(k) || { name: cn23(c.name), n: 0 };
+    e.n++;
+    m.set(k, e);
+  });
+  return m;
+}
+function diffCards(a, b) {
+  const A = cardTotals(a), B = cardTotals(b), out = [];
+  new Set([...A.keys(), ...B.keys()]).forEach(k => {
+    const x = A.get(k), y = B.get(k);
+    const from = x ? x.n : 0, to = y ? y.n : 0;
+    if (from !== to) out.push({ name: (y || x).name, from, to });
+    else if (x && y && x.prints.slice().sort().join('|') !== y.prints.slice().sort().join('|')) out.push({ name: y.name, from, to, print: true });
+  });
+  return out.sort((p, q) => (q.to - q.from) - (p.to - p.from) || p.name.localeCompare(q.name));
+}
+function recordVersion(deck) {
+  const v = ensureVersions(deck);
+  const last = v[v.length - 1];
+  if (!diffCards(last.cards, deck.cards).length) return false;
+  v.push({ ts: Date.now(), kind: 'edit', cards: snapCards(deck.cards) });
+  if (v.length > VER_MAX) deck.versions = [v[0]].concat(v.slice(v.length - VER_MAX + 1));
+  return true;
+}
+function changeChip(c) {
+  if (c.print) return `<span class="el-chip print">${esc(c.name)} <small>new printing</small></span>`;
+  const d = c.to - c.from;
+  const sub = c.from === 0 ? 'new' : c.to === 0 ? 'cut' : `${c.from} to ${c.to}`;
+  return `<span class="el-chip ${d > 0 ? 'add' : 'cut'}">${d > 0 ? '+' : '−'}${Math.abs(d)} ${esc(c.name)} <small>${sub}</small></span>`;
+}
+function verLabel(deck, i) {
+  const v = deck.versions[i];
+  if (i === 0) return (v.kind === 'start' ? 'When the log started' : v.kind === 'copy' ? 'When duplicated' : 'As imported') + ', ' + shortDate23(v.ts);
+  return 'Version ' + (i + 1) + ', ' + shortDate23(v.ts);
+}
+
+function renderEditLog(deck) {
+  const v = ensureVersions(deck);
+  const first = v[0];
+  const net = diffCards(first.cards, deck.cards);
+  const startTxt = first.kind === 'start'
+    ? `The log started ${shortDate23(first.ts)}. Changes made before then were not recorded.`
+    : first.kind === 'copy' ? `Duplicated${first.from ? ' from ' + esc(first.from) : ''} ${shortDate23(first.ts)}.`
+    : `Imported ${shortDate23(first.ts)}.`;
+  let h = `<div class="g-sec" id="el-sec"><div class="g-sec-t">Edit log</div>
+    <div class="g-sec-i">Every card change saved from Edit deck, so you can see how the list grew. ${startTxt}</div>`;
+  if (v.length === 1) {
+    h += `<div class="nt-empty">No changes yet. Save a change in Edit deck and it shows here with the date.</div></div>`;
+    return h;
+  }
+  h += `<div class="el-net"><div class="hp-lbl">Since ${first.kind === 'start' ? 'the log started' : first.kind === 'copy' ? 'duplicating' : 'import'}</div>
+    <div class="hp-chips">${net.length ? net.map(changeChip).join('') : '<span class="nt-muted">Back to the starting list.</span>'}</div></div>
+    <div class="el-list">`;
+  for (let i = v.length - 1; i >= 1; i--) {
+    const ch = diffCards(v[i - 1].cards, v[i].cards);
+    const games = (deck.history || []).filter(g => g.ts >= v[i].ts && (i === v.length - 1 || g.ts < v[i + 1].ts)).length;
+    h += `<div class="el-row"><div class="el-when"><b>Version ${i + 1}</b><span>${shortDate23(v[i].ts)}${games ? ' · ' + games + ' game' + (games !== 1 ? 's' : '') : ''}</span></div>
+      <div class="hp-chips">${ch.map(changeChip).join('')}</div></div>`;
+  }
+  h += `</div><div class="hp-actions" style="margin:0.75rem 0 0"><button class="btn" onclick="openCompare('v:0')">${ic23('compare')}Compare with ${first.kind === 'start' ? 'the start' : 'the original'}</button></div></div>`;
+  return h;
+}
+
+// ═══════════ MATCHUP NOTES (v23) ═══════════
+function matchupFor(deck, opp) {
+  const k = String(opp || '').trim().toLowerCase();
+  if (!deck || !k) return null;
+  return (deck.matchups || []).find(m => m.opp.toLowerCase() === k) || null;
+}
+function renderMatchups(deck) {
+  const list = (deck.matchups || []).slice().sort((a, b) => a.opp.localeCompare(b.opp));
+  let h = `<div class="g-sec"><div class="g-sec-t">Matchup notes</div>
+    <div class="g-sec-i">Your prize plan against each deck you expect to face. Saved on this device only.</div>`;
+  if (!list.length) h += `<div class="nt-empty">No notes yet. Add one for the decks you see most at your locals.</div>`;
+  list.forEach(m => {
+    const rec = tlogRecord(state.tlog || [], x => x.deckId === deck.id && x.opp.toLowerCase() === m.opp.toLowerCase());
+    h += `<div class="mu-card"><div class="mu-top"><div class="mu-opp">${esc(m.opp)}</div>
+      ${rec.n ? `<span class="hp-pill">${rec.w}-${rec.l}-${rec.t}</span>` : ''}
+      <button class="icon-btn sm" onclick="openMatchupForm('${m.id}')" aria-label="Edit note" title="Edit note">${ic23('edit')}</button></div>
+      <div class="mu-plan">${esc(m.plan).replace(/\n/g, '<br>') || '<span class="nt-muted">No plan written yet.</span>'}</div>
+      <div class="mu-date">Updated ${shortDate23(m.ts)}</div></div>`;
+  });
+  h += `<div class="hp-actions" style="margin:0.75rem 0 0"><button class="btn" onclick="openMatchupForm()">${ic23('plus')}Add matchup note</button></div></div>`;
+  return h;
+}
+function openMatchupForm(id, presetOpp) {
+  const deck = findDeck(state.activeDeckId);
+  if (!deck) return;
+  const m = id ? (deck.matchups || []).find(x => x.id === id) : null;
+  const opps = [...new Set((state.tlog || []).map(x => x.opp).filter(Boolean))].slice(0, 30);
+  openSheet(`<div class="modal-title">${m ? 'Edit matchup note' : 'New matchup note'}</div>
+    <div class="mb"><label for="mu-opp">Opposing deck</label>
+      <input type="text" id="mu-opp" maxlength="60" placeholder="Gardevoir ex" list="mu-opp-list" value="${esc(m ? m.opp : presetOpp || '')}">
+      <datalist id="mu-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist></div>
+    <div class="mb"><label for="mu-plan">Prize plan</label>
+      <textarea id="mu-plan" class="nt-area" maxlength="2000" placeholder="Take a 2 then a 2 then a 2. Bench only two Basics. Save Boss's Orders for the Kirlia.">${esc(m ? m.plan : '')}</textarea></div>
+    <div class="modal-actions">
+      ${m ? `<button class="btn btn-ghost danger-txt" onclick="deleteMatchup('${m.id}')">Delete</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>`}
+      <button class="btn btn-primary" onclick="saveMatchup('${m ? m.id : ''}')">Save</button>
+    </div>`);
+}
+async function saveMatchup(id) {
+  const deck = findDeck(state.activeDeckId);
+  if (!deck) return;
+  const opp = one23(document.getElementById('mu-opp').value, 60);
+  const plan = clean23(document.getElementById('mu-plan').value, 2000).trim();
+  if (!opp) { showToast('Name the opposing deck.'); return; }
+  deck.matchups = deck.matchups || [];
+  let m = id ? deck.matchups.find(x => x.id === id) : matchupFor(deck, opp);
+  if (!m) { m = { id: 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1e4), opp, plan: '', ts: 0 }; deck.matchups.push(m); }
+  m.opp = opp; m.plan = plan; m.ts = Date.now();
+  await saveState();
+  closeSheet();
+  renderNotes();
+  showToast('Matchup note saved.');
+}
+async function deleteMatchup(id) {
+  const deck = findDeck(state.activeDeckId);
+  if (!deck || !confirm('Delete this matchup note?')) return;
+  deck.matchups = (deck.matchups || []).filter(x => x.id !== id);
+  await saveState();
+  closeSheet();
+  renderNotes();
+}
+
+// ═══════════ LIST COMPARE (v23) ═══════════
+// Fill a bare snapshot with the card data this device already has, so the
+// odds can be counted the same way the Odds tab counts them.
+function enrichSnap(cards) {
+  const known = new Map();
+  state.decks.forEach(d => (d.cards || []).forEach(c => { const k = normalizeCardName(c.name); if (!known.has(k) || (c.supertype && !known.get(k).supertype)) known.set(k, c); }));
+  return (cards || []).map(s => {
+    const k = known.get(normalizeCardName(s.name));
+    return Object.assign({}, k || {}, { name: s.name, set: s.set, num: s.num, count: s.count, section: s.section });
+  });
+}
+let _cmpSel = '';
+function compareOptions(deck) {
+  const opts = [];
+  const v = ensureVersions(deck);
+  for (let i = v.length - 2; i >= 0; i--) opts.push({ val: 'v:' + i, label: verLabel(deck, i) });
+  state.decks.filter(d => d.id !== deck.id).forEach(d => opts.push({ val: 'd:' + d.id, label: 'Deck: ' + d.name }));
+  return opts;
+}
+function compareTarget(deck, val) {
+  if (!val) return null;
+  if (val.startsWith('v:')) {
+    const i = +val.slice(2), v = deck.versions && deck.versions[i];
+    return v ? { name: verLabel(deck, i), cards: enrichSnap(v.cards), format: deck.format } : null;
+  }
+  const d = state.decks.find(x => x.id === val.slice(2));
+  return d ? { name: d.name, cards: d.cards, format: d.format } : null;
+}
+function renderCompare(deck) {
+  const opts = compareOptions(deck);
+  let h = `<div class="g-sec" id="cmp-sec"><div class="g-sec-t">Compare lists</div>
+    <div class="g-sec-i">This list against an earlier version or another deck: card changes and how the odds move.</div>`;
+  if (!opts.length) return h + `<div class="nt-empty">Nothing to compare yet. Save a change in Edit deck, or import a second deck.</div></div>`;
+  if (!opts.some(o => o.val === _cmpSel)) _cmpSel = opts[0].val;
+  h += `<label for="cmp-sel">Compare with</label><select id="cmp-sel" class="x-select" onchange="_cmpSel=this.value;renderCompareBody()">
+    ${opts.map(o => `<option value="${esc(o.val)}"${o.val === _cmpSel ? ' selected' : ''}>${esc(o.label)}</option>`).join('')}</select>
+    <div id="cmp-body"></div></div>`;
+  return h;
+}
+function openCompare(val) {
+  _cmpSel = val;
+  renderNotes();
+  const s = document.getElementById('cmp-sec');
+  if (s && s.scrollIntoView) s.scrollIntoView({ block: 'start' });
+}
+function compareOddsRow(label, a, b, higherIsGood) {
+  const f = x => x == null ? '?' : oPct1(x);
+  let cls = '';
+  if (a != null && b != null) {
+    const d = a - b;
+    if (Math.abs(d) >= 0.01) cls = (d > 0) === higherIsGood ? 'up' : 'down';
+  }
+  const dTxt = a != null && b != null ? (Math.abs(a - b) < 0.0005 ? 'same' : (a > b ? '+' : '−') + (Math.abs(a - b) * 100).toFixed(1) + ' pts') : '';
+  return `<tr><td>${label}</td><td>${f(a)}</td><td>${f(b)}</td><td class="cmp-d ${cls}">${dTxt}</td></tr>`;
+}
+function renderCompareBody() {
+  const el = document.getElementById('cmp-body');
+  const deck = findDeck(state.activeDeckId);
+  if (!el || !deck) return;
+  const other = compareTarget(deck, _cmpSel);
+  if (!other) { el.innerHTML = ''; return; }
+  const ch = diffCards(other.cards, deck.cards);
+  const total = cs => cs.reduce((a, c) => a + c.count, 0);
+  let h = `<div class="cmp-head"><span><b>This list</b> ${total(deck.cards)} cards</span><span><b>${esc(other.name)}</b> ${total(other.cards)} cards</span></div>`;
+  if (!ch.length) h += `<div class="nt-empty">Same cards and counts as this list.</div>`;
+  else {
+    h += `<div class="o-table-wrap"><table class="o-table cmp-t"><thead><tr><th>Card</th><th>This</th><th>Other</th><th></th></tr></thead><tbody>`;
+    ch.forEach(c => {
+      const d = c.to - c.from;
+      h += `<tr><td>${esc(c.name)}${c.print ? ' <small class="nt-muted">printing</small>' : ''}</td><td>${c.to}</td><td>${c.from}</td><td class="cmp-d ${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d ? (d > 0 ? '+' : '−') + Math.abs(d) : ''}</td></tr>`;
+    });
+    h += `</tbody></table></div>`;
+  }
+  const A = simulateOdds({ cards: deck.cards, format: deck.format }, SIM_TRIALS);
+  const B = simulateOdds({ cards: other.cards, format: other.format }, SIM_TRIALS);
+  if (A && B) {
+    const atk = S => S.line && !S.line.missing ? (S.anySearch ? S.onlineS : S.online) : null;
+    const sameLine = A.line && B.line && A.line.name === B.line.name;
+    h += `<div class="hp-lbl" style="margin-top:1rem">Odds, counted like the Odds tab</div>
+      <div class="o-table-wrap"><table class="o-table cmp-t"><thead><tr><th></th><th>This</th><th>Other</th><th></th></tr></thead><tbody>
+      ${compareOddsRow('Mulligan', A.anyBasic ? A.mulligan : null, B.anyBasic ? B.mulligan : null, false)}
+      ${compareOddsRow('Draw card T1', A.anyDraw ? A.drawT1 : null, B.anyDraw ? B.drawT1 : null, true)}
+      ${compareOddsRow('Attacker by T2' + (A.line ? ' <small class="nt-muted">' + esc(A.line.name) + (sameLine || !B.line ? '' : ' vs ' + esc(B.line.name)) + '</small>' : ''), atk(A), atk(B), true)}
+      ${compareOddsRow('Line locked in prizes', A.locked, B.locked, false)}
+      </tbody></table></div>`;
+    const lockRows = ch.filter(c => !c.print && c.from > 0 && c.to > 0).map(c => {
+      const pa = A.prize.find(p => normalizeCardName(p.name) === normalizeCardName(c.name));
+      const pb = B.prize.find(p => normalizeCardName(p.name) === normalizeCardName(c.name));
+      return pa && pb && pa.all != null && pb.all != null ? compareOddsRow('All ' + esc(c.name) + ' prized', pa.all, pb.all, false) : '';
+    }).join('');
+    if (lockRows) h += `<div class="o-table-wrap" style="margin-top:0.5rem"><table class="o-table cmp-t"><tbody>${lockRows}</tbody></table></div>`;
+    if (!A.anyRead || !B.anyRead) h += `<div class="g-wip">Some cards in ${!A.anyRead ? 'this list' : 'the other list'} have no card data on this device yet, so those odds may show a question mark.</div>`;
+  }
+  el.innerHTML = h;
+}
+
+function renderNotes() {
+  const el = document.getElementById('notes-body');
+  const deck = findDeck(state.activeDeckId);
+  if (!el || !deck) return;
+  el.innerHTML = `<div class="hp-wrap">${renderMatchups(deck)}${renderEditLog(deck)}${renderCompare(deck)}</div>`;
+  renderCompareBody();
+}
+
+// ═══════════ GOLDFISH (v23, inside the Hand tab) ═══════════
+// Play your first three turns alone with real draws. It deals the same way
+// the Hand tab does (redeal hands with no Basic, six prizes), and the
+// summary scores what you built against the Hand tab's odds count.
+let handMode = 'line';
+let gf = null;
+const GF_TURNS = 3;
+const GF_SUPPORTERS = /^(arven|iono|professor's research|boss's orders|judge|irida|penny|carmine|crispin|lillie's determination|briar|eri|professor turo's scenario|professor sada's vitality|raihan|kieran|cyrano|jacq|clive|hilda|lacey|ciphermaniac's codebreaking|black belt's training|explorer's guidance|grand tree|thorton|giacomo|atticus|ortega|eri|perrin|caretaker|salvatore|colress's tenacity|marnie|cynthia|n|guzma|melony|roxanne|serena|marnie's pride|lana's aid|janine's secret art|morty's conviction|ryme|dawn|larry's skill|jasmine's gaze|surfer|ethan's adventure|team rocket's petrel|team rocket's ariana|team rocket's proton|brock's scouting|lucian|emcee's hype|rosa|tarragon|binding mochi)\b/;
+const GF_TOOLS = /\b(seal stone|belt|charm|band|board|cape|vest|helmet|glasses|gloves|hammer|amulet|patch|bandana|sachet|charm|stone|cushion|legacy|claw|spoon|scarf|tool)\b/;
+const GF_STADIUMS = /\b(artazon|area zero underdepths|jamming tower|lost city|path to the peak|collapsed stadium|temple of sinnoh|town store|beach court|mesagoza|levincia|full metal lab|pok[eé]mon league headquarters|training court|pok[eé]stop|magma basin|gapejaw bog|prism tower|festival grounds|neutralization zone|team rocket's watchtower|postwick|perilous jungle|lively stadium|battle cage|nighttime mine|calamitous wasteland|mystery garden|grand tree)\b/;
+const GF_ABILITIES = {
+  'bibarel': { name: 'Industrious Incisors', act: 'drawTo', n: 5 },
+  'rotom v': { name: 'Instant Charge', act: 'draw', n: 3, note: 'Your turn ends after this.' },
+  'pidgeot ex': { name: 'Quick Search', act: 'search', filter: 'all', dest: 'hand', max: 1 },
+  'kirlia': { name: 'Refinement', act: 'draw', n: 2, note: 'Discard a card from your hand first.' },
+  'dudunsparce': { name: 'Run Away Draw', act: 'draw', n: 3, note: 'Shuffle Dudunsparce and its cards into the deck after.' },
+  'fezandipiti ex': { name: 'Flip the Script', act: 'draw', n: 3 },
+  'lumineon v': { name: 'Luminous Sign', act: 'search', filter: 'trainer', dest: 'hand', max: 1, note: 'Only a Supporter.' },
+  'radiant greninja': { name: 'Concealed Cards', act: 'draw', n: 2, note: 'Discard an Energy from your hand first.' },
+  'pidgeotto': null,
+};
+const GF_TRAINERS = {
+  "professor's research": { lbl: 'Discard hand, draw 7', act: 'discardDraw', n: 7 },
+  'carmine': { lbl: 'Discard hand, draw 5', act: 'discardDraw', n: 5 },
+  'iono': { lbl: 'Hand to the bottom, draw 6', act: 'bottomDraw', n: 6 },
+  'judge': { lbl: 'Shuffle hand in, draw 4', act: 'shuffleDraw', n: 4 },
+  "lillie's determination": { lbl: 'Shuffle hand in, draw 8', act: 'shuffleDraw', n: 8 },
+  'nest ball': { lbl: 'Search a Basic to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 1 },
+  'buddy-buddy poffin': { lbl: 'Search up to 2 Basics to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2 },
+  'ultra ball': { lbl: 'Search a Pokémon', act: 'search', filter: 'pokemon', dest: 'hand', max: 1, note: 'Discard 2 other cards from your hand too.' },
+  'level ball': { lbl: 'Search a Pokémon', act: 'search', filter: 'pokemon', dest: 'hand', max: 1 },
+  'arven': { lbl: 'Search an Item and a Tool', act: 'search', filter: 'trainer', dest: 'hand', max: 2 },
+  'battle vip pass': { lbl: 'Search up to 2 Basics to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2 },
+  'earthen vessel': { lbl: 'Search up to 2 Basic Energy', act: 'search', filter: 'energy', dest: 'hand', max: 2, note: 'Discard a card from your hand too.' },
+};
+
+function setHandMode(m) { handMode = m === 'gold' ? 'gold' : 'line'; renderHand(); }
+function handModeBar() {
+  return `<div class="seg hm-seg" role="tablist">
+    <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 line</div>
+    <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish 3 turns</div>
+  </div>`;
+}
+function gfIsBasic(x) { const c = x.card; return cardCategory(c) === 'pokemon' && (c.stage === 'basic' || (!c.stage && !c.evolvesFrom)); }
+function gfIsEvo(x) { const c = x.card; return cardCategory(c) === 'pokemon' && (c.stage === 'stage1' || c.stage === 'stage2'); }
+function gfKey(x) { return String(x.card.name || '').toLowerCase(); }
+function gfNm(x) { return esc(lbl23(x.card)); }
+function gfMons() { return gf ? [gf.active].concat(gf.bench).filter(Boolean) : []; }
+function gfTop(m) { return m.stack[m.stack.length - 1]; }
+function gfLog(s) { gf.log.push({ t: gf.turn, s }); }
+
+function gfDeal(first) {
+  const deck = findDeck(state.activeDeckId);
+  if (!deck) return;
+  const cards = (deck.cards || []).filter(c => c.count > 0);
+  const groups = simGroups(cards);
+  const gid = {}; groups.forEach((g, i) => gid[g.key] = i);
+  const pool = []; let uid = 0;
+  cards.forEach(c => { const i = gid[String(c.name || '').toLowerCase()]; for (let k = 0; k < c.count; k++) pool.push({ uid: ++uid, card: c, g: i }); });
+  const anyBasic = groups.some(g => g.basic);
+  let mulls = 0;
+  for (;;) {
+    shuffle(pool);
+    if (!anyBasic || pool.slice(0, 7).some(gfIsBasic) || mulls >= 30) break;
+    mulls++;
+  }
+  gf = {
+    deckId: deck.id, groups, first: first !== false, turn: 0, mulls, anyBasic,
+    hand: pool.slice(0, 7), prizes: pool.slice(7, 13), deck: pool.slice(13),
+    startHand: pool.slice(0, 7), startRest: pool.slice(7).map(x => x.g),
+    active: null, bench: [], discard: [], stadium: null,
+    used: { energy: false, supporter: false }, log: [], sel: null, selMon: null,
+    helper: null, ready: {}, done: false, monId: 0,
+  };
+  renderHand();
+}
+function gfDraw(n, quiet) {
+  const got = [];
+  for (let i = 0; i < n && gf.deck.length; i++) { const x = gf.deck.shift(); gf.hand.push(x); got.push(x); }
+  if (!quiet) gfLog(got.length ? 'Drew ' + got.map(gfNm).join(', ') : 'Deck is empty, no draw');
+  return got;
+}
+function gfTake(uid) {
+  const i = gf.hand.findIndex(x => x.uid === uid);
+  return i < 0 ? null : gf.hand.splice(i, 1)[0];
+}
+function gfNewMon(x) { return { id: ++gf.monId, stack: [x], energy: [], tool: null, turnIn: gf.turn, evoTurn: -1 }; }
+function gfCanEvolveOnto(m) { return gf.turn >= 2 && m.turnIn < gf.turn && m.evoTurn !== gf.turn; }
+
+/** What a hand card can do right now: a list of { label, fn, off, why }. */
+function gfActions(x) {
+  const out = [], mons = gfMons(), t = gf.turn;
+  const room = gf.bench.length < 5;
+  const nm = gfKey(x);
+  const cat = cardCategory(x.card);
+  if (gfIsBasic(x)) {
+    if (!gf.active) out.push({ label: 'Make Active', fn: `gfPlayBasic(${x.uid},'active')` });
+    else out.push({ label: 'Put on Bench', fn: `gfPlayBasic(${x.uid},'bench')`, off: !room, why: 'Your Bench is full.' });
+  }
+  if (t === 0) return out;
+  if (gfIsEvo(x)) {
+    const from = String(x.card.evolvesFrom || '').toLowerCase();
+    const targets = mons.filter(m => gfKey(gfTop(m)) === from);
+    if (!targets.length) out.push({ label: 'Evolve', off: true, why: from ? `Needs ${esc(cn23(x.card.evolvesFrom))} in play.` : 'Its card data is missing, so the app cannot tell what it evolves from.' });
+    targets.forEach(m => out.push({ label: 'Evolve ' + gfNm(gfTop(m)), fn: `gfEvolve(${x.uid},${m.id})`, off: !gfCanEvolveOnto(m),
+      why: t < 2 ? 'No one can evolve on their first turn.' : m.turnIn >= t ? 'It came into play this turn.' : 'It already evolved this turn.' }));
+  }
+  if (cat === 'energy') {
+    if (!mons.length) out.push({ label: 'Attach', off: true, why: 'Nothing in play to attach to.' });
+    mons.forEach(m => out.push({ label: 'Attach to ' + gfNm(gfTop(m)), fn: `gfAttach(${x.uid},${m.id})`, off: gf.used.energy, why: 'You already attached an Energy this turn.' }));
+  }
+  if (cat === 'trainer') {
+    const g = gf.groups[x.g];
+    if (g && g.candy) {
+      const opts = [];
+      gf.hand.filter(y => y.card.stage === 'stage2').forEach(s2 => {
+        const line = handLineFor(gf.groups, s2.g);
+        mons.filter(m => m.stack.length === 1 && gfTop(m).g === line.basic).forEach(m => opts.push({ s2, m }));
+      });
+      if (!opts.length) out.push({ label: 'Play Rare Candy', off: true, why: 'Needs a Stage 2 in hand and its Basic in play.' });
+      opts.forEach(o => out.push({ label: `Candy: ${gfNm(o.s2)} onto ${gfNm(gfTop(o.m))}`, fn: `gfCandy(${x.uid},${o.s2.uid},${o.m.id})`, off: !gfCanEvolveOnto(o.m),
+        why: t < 2 ? 'No one can evolve on their first turn.' : 'That Pokémon came into play this turn.' }));
+    } else if (GF_STADIUMS.test(nm)) {
+      out.push({ label: 'Put Stadium in play', fn: `gfStadium(${x.uid})` });
+    } else if (GF_TOOLS.test(nm) && !GF_SUPPORTERS.test(nm)) {
+      if (!mons.length) out.push({ label: 'Attach Tool', off: true, why: 'Nothing in play to attach to.' });
+      mons.forEach(m => out.push({ label: 'Attach to ' + gfNm(gfTop(m)), fn: `gfTool(${x.uid},${m.id})`, off: !!m.tool, why: 'It already has a Tool.' }));
+    } else {
+      const sup = GF_SUPPORTERS.test(nm);
+      out.push({ label: sup ? 'Play Supporter' : 'Play', fn: `gfTrainer(${x.uid})`,
+        off: sup && (gf.used.supporter || (gf.first && t === 1)),
+        why: gf.used.supporter ? 'One Supporter a turn.' : 'The player going first cannot play a Supporter on turn 1.' });
+    }
+  }
+  out.push({ label: 'Discard', fn: `gfDiscard(${x.uid})`, ghost: true });
+  return out;
+}
+
+function gfSelect(uid) { if (!gf.done) { gf.sel = gf.sel === uid ? null : uid; gf.selMon = null; renderHand(); } }
+function gfSelectMon(id) { if (!gf.done) { gf.selMon = gf.selMon === id ? null : id; gf.sel = null; renderHand(); } }
+function gfPlayBasic(uid, where) {
+  const x = gfTake(uid); if (!x) return;
+  const m = gfNewMon(x);
+  if (where === 'active' && !gf.active) gf.active = m; else if (gf.bench.length < 5) gf.bench.push(m); else { gf.hand.push(x); return; }
+  gfLog((gf.turn === 0 ? 'Set up ' : 'Played ') + gfNm(x) + (gf.active === m ? ' as your Active' : ' on the Bench'));
+  gf.sel = null; renderHand();
+}
+function gfEvolve(uid, id) {
+  const m = gfMons().find(z => z.id === id); if (!m || !gfCanEvolveOnto(m)) return;
+  const x = gfTake(uid); if (!x) return;
+  const under = gfTop(m);
+  m.stack.push(x); m.evoTurn = gf.turn;
+  gfLog('Evolved ' + gfNm(under) + ' into ' + gfNm(x));
+  gf.sel = null; renderHand();
+}
+function gfCandy(candyUid, s2Uid, id) {
+  const m = gfMons().find(z => z.id === id); if (!m || !gfCanEvolveOnto(m)) return;
+  const c = gfTake(candyUid); if (!c) return;
+  const s2 = gfTake(s2Uid); if (!s2) { gf.hand.push(c); return; }
+  const under = gfTop(m);
+  m.stack.push(s2); m.evoTurn = gf.turn; gf.discard.push(c);
+  gfLog('Rare Candy: ' + gfNm(under) + ' straight into ' + gfNm(s2));
+  gf.sel = null; renderHand();
+}
+function gfAttach(uid, id) {
+  if (gf.used.energy) return;
+  const m = gfMons().find(z => z.id === id); const x = gfTake(uid); if (!m || !x) return;
+  m.energy.push(x); gf.used.energy = true;
+  gfLog('Attached ' + gfNm(x) + ' to ' + gfNm(gfTop(m)));
+  gf.sel = null; renderHand();
+}
+function gfTool(uid, id) {
+  const m = gfMons().find(z => z.id === id); if (!m || m.tool) return;
+  const x = gfTake(uid); if (!x) return;
+  m.tool = x; gfLog('Attached ' + gfNm(x) + ' to ' + gfNm(gfTop(m)));
+  gf.sel = null; renderHand();
+}
+function gfStadium(uid) {
+  const x = gfTake(uid); if (!x) return;
+  if (gf.stadium) gf.discard.push(gf.stadium);
+  gf.stadium = x; gfLog('Put ' + gfNm(x) + ' in play');
+  gf.sel = null; gf.helper = { name: lbl23(x.card), presets: [{ lbl: 'Search a Basic to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 1, note: 'Only Basics with no Rule Box.' }] };
+  if (!/artazon/.test(gfKey(x))) gf.helper = null;
+  renderHand();
+}
+function gfTrainer(uid) {
+  const x = gfTake(uid); if (!x) return;
+  const nm = gfKey(x);
+  const sup = GF_SUPPORTERS.test(nm);
+  if (sup) gf.used.supporter = true;
+  gf.discard.push(x);
+  gfLog('Played ' + gfNm(x));
+  const g = gf.groups[x.g] || {};
+  const presets = [];
+  const known = Object.keys(GF_TRAINERS).find(k => nm === k || nm.startsWith(k));
+  if (known) presets.push(GF_TRAINERS[known]);
+  else {
+    if (g.sBasic) presets.push({ lbl: 'Search a Basic', act: 'search', filter: 'basic', dest: 'hand', max: 2 });
+    if (g.sAny) presets.push({ lbl: 'Search a Pokémon', act: 'search', filter: 'pokemon', dest: 'hand', max: 1 });
+    if (g.sItem) presets.push({ lbl: 'Search a Trainer', act: 'search', filter: 'trainer', dest: 'hand', max: 2 });
+    if (g.draw) presets.push({ lbl: 'Draw 2', act: 'draw', n: 2 }, { lbl: 'Draw 3', act: 'draw', n: 3 });
+  }
+  gf.helper = { name: lbl23(x.card), presets };
+  gf.sel = null; renderHand();
+}
+function gfDiscard(uid) {
+  const x = gfTake(uid); if (!x) return;
+  gf.discard.push(x); gfLog('Discarded ' + gfNm(x));
+  gf.sel = null; renderHand();
+}
+function gfSwitch(id) {
+  const i = gf.bench.findIndex(z => z.id === id); if (i < 0 || !gf.active) return;
+  const m = gf.bench[i]; gf.bench[i] = gf.active; gf.active = m;
+  gfLog('Moved ' + gfNm(gfTop(m)) + ' into the Active Spot');
+  gf.selMon = null; renderHand();
+}
+function gfAbility(id) {
+  const m = gfMons().find(z => z.id === id); if (!m) return;
+  const a = GF_ABILITIES[gfKey(gfTop(m))]; if (!a) return;
+  if (m.abilityTurn === gf.turn) { showToast('Already used this turn.'); return; }
+  m.abilityTurn = gf.turn;
+  gfLog('Used ' + esc(a.name) + ' on ' + gfNm(gfTop(m)));
+  gf.helper = { name: a.name, presets: [Object.assign({ lbl: a.act === 'drawTo' ? 'Draw until you have ' + a.n : a.act === 'draw' ? 'Draw ' + a.n : 'Search your deck' }, a)] };
+  gf.selMon = null;
+  gfRunPreset(0);
+}
+function gfRunPreset(i) {
+  const p = gf.helper && gf.helper.presets[i]; if (!p) return;
+  if (p.act === 'draw') gfDraw(p.n);
+  else if (p.act === 'drawTo') gfDraw(Math.max(0, p.n - gf.hand.length));
+  else if (p.act === 'discardDraw') { gf.hand.forEach(y => gf.discard.push(y)); const n = gf.hand.length; gf.hand = []; gfLog('Discarded ' + n + ' card' + (n !== 1 ? 's' : '')); gfDraw(p.n); }
+  else if (p.act === 'bottomDraw') { const n = gf.hand.length; shuffle(gf.hand); gf.deck = gf.deck.concat(gf.hand); gf.hand = []; gfLog('Put ' + n + ' card' + (n !== 1 ? 's' : '') + ' on the bottom'); gfDraw(gf.prizes.length); }
+  else if (p.act === 'shuffleDraw') { const n = gf.hand.length; gf.deck = gf.deck.concat(gf.hand); gf.hand = []; shuffle(gf.deck); gfLog('Shuffled ' + n + ' card' + (n !== 1 ? 's' : '') + ' into the deck'); gfDraw(p.n); }
+  else if (p.act === 'search') { gfOpenSearch(p.filter, p.dest, p.max, p.note); return; }
+  if (p.note) showToast(p.note);
+  gf.helper = null;
+  renderHand();
+}
+function gfTool2(act) {
+  if (act === 'draw') gfDraw(1);
+  if (act === 'search') { gfOpenSearch('all', 'hand', 7); return; }
+  if (act === 'shuffle') { const n = gf.hand.length; gf.deck = gf.deck.concat(gf.hand); gf.hand = []; shuffle(gf.deck); gfLog('Shuffled ' + n + ' card' + (n !== 1 ? 's' : '') + ' from hand into the deck'); }
+  renderHand();
+}
+
+// Search sheet: the deck as it stands, grouped by name.
+let gfSearch = null;
+function gfMatches(x, f) {
+  const cat = cardCategory(x.card);
+  if (f === 'basic') return gfIsBasic(x);
+  if (f === 'pokemon') return cat === 'pokemon';
+  if (f === 'trainer') return cat === 'trainer';
+  if (f === 'energy') return cat === 'energy';
+  return true;
+}
+function gfOpenSearch(filter, dest, max, note) {
+  gfSearch = { filter: filter || 'all', dest: dest || 'hand', max: max || 1, pick: {}, note };
+  gfRenderSearch();
+}
+function gfRenderSearch() {
+  const S = gfSearch;
+  const byName = new Map();
+  gf.deck.forEach(x => { const k = gfKey(x); if (!byName.has(k)) byName.set(k, { x, n: 0 }); byName.get(k).n++; });
+  const rows = [...byName.entries()].filter(([, v]) => gfMatches(v.x, S.filter)).sort((a, b) => lbl23(a[1].x.card).localeCompare(lbl23(b[1].x.card)));
+  S.keys = rows.map(r => r[0]);
+  const picked = Object.values(S.pick).reduce((a, b) => a + b, 0);
+  const filt = ['all', 'pokemon', 'basic', 'trainer', 'energy'];
+  const fl = { all: 'All', pokemon: 'Pokémon', basic: 'Basic', trainer: 'Trainer', energy: 'Energy' };
+  const allBasic = Object.keys(S.pick).filter(k => S.pick[k]).every(k => gfIsBasic(byName.get(k).x));
+  const benchRoom = 5 - gf.bench.length;
+  openSheet(`<div class="modal-title">Search your deck</div>
+    <div class="modal-hint" style="margin:-0.4rem 0 0.75rem">${gf.deck.length} cards in the deck. ${S.note ? esc(S.note) + ' ' : ''}Pick up to ${S.max}, then choose where they go. The deck is shuffled after.</div>
+    <div class="seg gf-filt">${filt.map(f => `<div class="mode-opt${S.filter === f ? ' active' : ''}" onclick="gfSearch.filter='${f}';gfRenderSearch()">${fl[f]}</div>`).join('')}</div>
+    <div class="gf-srch">${rows.length ? rows.map(([k, v], ri) => {
+      const p = S.pick[k] || 0;
+      return `<div class="gf-srow${p ? ' on' : ''}"><span class="gf-sn">${esc(lbl23(v.x.card))}</span><span class="gf-sc">${v.n} in deck</span>
+        <span class="stp"><button class="stp-b" onclick="gfPick(${ri},-1)" ${p ? '' : 'disabled'} aria-label="Fewer">−</button><b>${p}</b><button class="stp-b" onclick="gfPick(${ri},1)" ${p < v.n && picked < S.max ? '' : 'disabled'} aria-label="More">+</button></span></div>`;
+    }).join('') : '<div class="nt-empty">Nothing in the deck matches.</div>'}</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="gfSearchDone(null)">${picked ? 'Cancel' : 'Find nothing'}</button>
+      <button class="btn" onclick="gfSearchDone('bench')" ${picked && allBasic && picked <= benchRoom ? '' : 'disabled'}>To Bench</button>
+      <button class="btn btn-primary" onclick="gfSearchDone('hand')" ${picked ? '' : 'disabled'}>To hand</button>
+    </div>`);
+}
+function gfPick(ri, d) {
+  const S = gfSearch; if (!S) return;
+  const k = S.keys[ri]; if (k == null) return;
+  S.pick[k] = Math.max(0, (S.pick[k] || 0) + d);
+  gfRenderSearch();
+}
+function gfSearchDone(dest) {
+  const S = gfSearch; gfSearch = null;
+  closeSheet();
+  if (!S) return;
+  const got = [];
+  if (dest) Object.keys(S.pick).forEach(k => {
+    for (let n = 0; n < S.pick[k]; n++) {
+      const i = gf.deck.findIndex(x => gfKey(x) === k);
+      if (i >= 0) got.push(gf.deck.splice(i, 1)[0]);
+    }
+  });
+  shuffle(gf.deck);
+  if (!got.length) gfLog('Searched and took nothing');
+  else if (dest === 'bench') { got.forEach(x => { const m = gfNewMon(x); if (!gf.active) gf.active = m; else gf.bench.push(m); }); gfLog('Searched ' + got.map(gfNm).join(', ') + ' onto the Bench'); }
+  else { got.forEach(x => gf.hand.push(x)); gfLog('Searched ' + got.map(gfNm).join(', ') + ' into hand'); }
+  gf.helper = null;
+  renderHand();
+}
+
+function gfLineReady(l) {
+  return gfMons().some(m => l.top >= 0 ? gfTop(m).g === l.top : m.stack.some(x => x.g === l.basic));
+}
+function gfEndTurn() {
+  const deck = findDeck(gf.deckId);
+  if (gf.turn === 0) {
+    if (!gf.active) { showToast('Put a Basic in the Active Spot first.'); return; }
+    gf.turn = 1;
+    gfLog('Turn 1' + (gf.first ? ', going first' : ', going second'));
+    gfDraw(1);
+    renderHand();
+    return;
+  }
+  const opts = handLineOptions(deck, gf.groups);
+  opts.forEach((l, i) => { if (gf.ready[i] == null && gfLineReady(l)) gf.ready[i] = gf.turn; });
+  if (gf.turn >= GF_TURNS) {
+    gf.done = true; gf.helper = null; gf.sel = null; gf.selMon = null;
+    drillStat(deck, 'gold', opts.length && gf.ready[0] != null && gf.ready[0] <= 2 ? 1 : 0, 1);
+    renderHand();
+    return;
+  }
+  gf.turn++;
+  gf.used = { energy: false, supporter: false };
+  gf.helper = null; gf.sel = null; gf.selMon = null;
+  gfLog('Turn ' + gf.turn);
+  gfDraw(1);
+  renderHand();
+}
+
+function gfCardHTML(x, on, extra) {
+  const c = x.card;
+  const img = c.imageUrl
+    ? `<img src="${esc(c.imageUrl)}" alt="${gfNm(x)}" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">`
+    : `<div class="review-placeholder">🃏</div>`;
+  return `<button class="gf-card${on ? ' on' : ''}" ${extra || ''}><div class="review-card-img">${img}</div><div class="review-card-name">${gfNm(x)}</div></button>`;
+}
+function gfMonHTML(m, isActive) {
+  const top = gfTop(m), on = gf.selMon === m.id;
+  const st = top.card.stage === 'stage2' ? 'Stage 2' : top.card.stage === 'stage1' ? 'Stage 1' : 'Basic';
+  const c = top.card;
+  const img = c.imageUrl ? `<img src="${esc(c.imageUrl)}" alt="" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">` : '';
+  return `<button class="gf-mon${isActive ? ' act' : ''}${on ? ' on' : ''}" onclick="gfSelectMon(${m.id})">
+    <span class="gf-mimg">${img}</span>
+    <span class="gf-mtx"><b>${gfNm(top)}</b><span>${st}${m.energy.length ? ' · ' + m.energy.length + ' Energy' : ''}${m.tool ? ' · Tool' : ''}</span></span></button>`;
+}
+
+function renderGoldfish() {
+  const el = document.getElementById('hand-body');
+  const deck = findDeck(state.activeDeckId);
+  if (!el || !deck) return;
+  const total = deck.cards.reduce((a, c) => a + c.count, 0);
+  if (total < 20) { el.innerHTML = `<div class="hp-wrap">${handModeBar()}<div class="g-empty">This list is too short to goldfish.</div></div>`; return; }
+  if (!gf || gf.deckId !== deck.id) { gfDeal(gf ? gf.first : true); return; }
+  const t = gf.turn;
+  let h = `<div class="hp-wrap">${handModeBar()}<div class="g-sec">
+    <div class="g-sec-t">${gf.done ? 'How your three turns went' : t === 0 ? 'Set up' : 'Turn ' + t + ' of ' + GF_TURNS}</div>
+    <div class="g-sec-i">${gf.done ? 'Your board after turn 3, what came together and when, and how that compares with the odds from this opening hand.'
+      : t === 0 ? 'Put a Basic in the Active Spot and any others on your Bench, then start turn 1. You draw at the start of every turn.'
+      : 'Tap a card in your hand to play it. Tap a Pokémon in play to switch it in or use its ability. No attacking here, this is about setting up.'}</div>
+    <div class="hp-meta">
+      <span class="hp-pill">${gf.first ? 'Going first' : 'Going second'}</span>
+      ${gf.mulls ? `<span class="hp-pill warn">${gf.mulls} mulligan${gf.mulls !== 1 ? 's' : ''}</span>` : ''}
+      <span class="hp-pill">Deck ${gf.deck.length}</span><span class="hp-pill">Discard ${gf.discard.length}</span>
+      ${t > 0 && !gf.done ? `<span class="hp-pill${gf.used.energy ? ' done' : ''}">Energy ${gf.used.energy ? 'attached' : 'not yet'}</span><span class="hp-pill${gf.used.supporter ? ' done' : ''}">Supporter ${gf.used.supporter ? 'played' : gf.first && t === 1 ? 'not allowed' : 'not yet'}</span>` : ''}
+    </div>`;
+
+  // Board
+  h += `<div class="hp-lbl">In play</div><div class="gf-board">
+    ${gf.active ? gfMonHTML(gf.active, true) : '<div class="gf-mon empty act"><span class="gf-mtx"><b>Active Spot</b><span>Empty</span></span></div>'}
+    ${gf.bench.map(m => gfMonHTML(m, false)).join('')}
+    ${gf.stadium ? `<div class="gf-mon stad"><span class="gf-mtx"><b>${gfNm(gf.stadium)}</b><span>Stadium</span></span></div>` : ''}
+  </div>`;
+  const selM = gfMons().find(m => m.id === gf.selMon);
+  if (selM && !gf.done) {
+    const a = GF_ABILITIES[gfKey(gfTop(selM))];
+    const isBench = gf.bench.includes(selM);
+    h += `<div class="gf-acts">${isBench && gf.active ? `<button class="btn btn-sm" onclick="gfSwitch(${selM.id})">Move to Active</button>` : ''}
+      ${a && t > 0 ? `<button class="btn btn-sm btn-primary" onclick="gfAbility(${selM.id})" ${selM.abilityTurn === t ? 'disabled' : ''}>Use ${esc(a.name)}</button>` : ''}
+      ${!isBench && !a ? '<span class="nt-muted">Nothing to do with this one yet.</span>' : ''}</div>`;
+  }
+
+  if (gf.helper && !gf.done) {
+    h += `<div class="gf-helper"><div class="gf-ht">${esc(gf.helper.name)}</div>
+      <div class="gf-acts">${gf.helper.presets.map((p, i) => `<button class="btn btn-sm btn-primary" onclick="gfRunPreset(${i})">${esc(p.lbl)}</button>`).join('')}
+      <button class="btn btn-sm" onclick="gf.helper=null;renderHand()">${gf.helper.presets.length ? 'Skip' : 'Done'}</button></div>
+      ${gf.helper.presets.length ? '' : '<div class="nt-muted" style="margin-top:0.35rem">Use the deck buttons below for what the card does.</div>'}</div>`;
+  }
+
+  // Hand
+  h += `<div class="hp-lbl">Hand (${gf.hand.length})</div><div class="hp-hand gf-hand">${gf.hand.map(x => gfCardHTML(x, gf.sel === x.uid, gf.done ? 'disabled' : `onclick="gfSelect(${x.uid})"`)).join('') || '<div class="nt-muted">Empty hand.</div>'}</div>`;
+  const sel = gf.hand.find(x => x.uid === gf.sel);
+  if (sel && !gf.done) {
+    const acts = gfActions(sel);
+    h += `<div class="gf-acts gf-hand-acts"><div class="gf-ht">${gfNm(sel)}</div>${acts.map(a => a.off
+      ? `<button class="btn btn-sm" disabled title="${a.why || ''}">${a.label}</button>`
+      : `<button class="btn btn-sm${a.ghost ? ' btn-ghost' : ' btn-primary'}" onclick="${a.fn}">${a.label}</button>`).join('')}
+      ${acts.filter(a => a.off && a.why).slice(0, 2).map(a => `<div class="nt-muted gf-why">${a.why}</div>`).join('')}</div>`;
+  }
+
+  if (!gf.done) {
+    h += `<div class="gf-tools">${t > 0 ? `<button class="btn btn-sm" onclick="gfTool2('draw')">Draw 1</button>
+        <button class="btn btn-sm" onclick="gfTool2('search')">${ic23('search')}Search deck</button>
+        <button class="btn btn-sm" onclick="gfTool2('shuffle')">Shuffle hand in</button>` : ''}</div>
+      <div class="hp-actions"><button class="btn" onclick="gfDeal(${!gf.first})">New deal ${gf.first ? 'going second' : 'going first'}</button>
+      <button class="btn btn-primary" id="gf-next" onclick="gfEndTurn()">${t === 0 ? 'Start turn 1' : t >= GF_TURNS ? 'Finish' : 'End turn ' + t}</button></div>`;
+  } else {
+    h += gfSummary(deck);
+  }
+
+  if (gf.log.length) {
+    h += `<div class="g-sec"><div class="g-sec-t" style="font-size:var(--fs-md)">${gf.done ? 'Every move' : 'This game so far'}</div><ol class="gf-log">${
+      (gf.done ? gf.log : gf.log.slice(-8)).map(l => `<li><span>${l.t ? 'T' + l.t : 'Setup'}</span>${l.s}</li>`).join('')}</ol></div>`;
+  }
+  h += `<div class="g-wip"><b>Goldfish rules.</b> You draw every turn, one Energy and one Supporter a turn, no Supporter on turn 1 going first, and no evolving on your first turn or onto a Pokémon that came in this turn. Card effects for common cards have a one tap button. For anything else, use Draw, Search and Discard.</div>`;
+  h += `</div></div>`;
+  el.innerHTML = h;
+}
+
+function gfSummary(deck) {
+  const opts = handLineOptions(deck, gf.groups);
+  let h = '';
+  if (opts.length) {
+    const handCount = new Int32Array(gf.groups.length);
+    gf.startHand.forEach(x => handCount[x.g]++);
+    const S = { groups: gf.groups, handCount, rest: gf.startRest };
+    const seed = (simSeed(deck.cards) ^ gf.startHand.reduce((a, x) => Math.imul(a ^ (x.g + 1), 16777619), 2166136261)) >>> 0;
+    const main = opts[0];
+    const o = handLineOdds(S, main, HAND_TRIALS, seed);
+    const when = gf.ready[0];
+    const good = when != null && when <= 2;
+    h += `<div class="o-tiles">
+      <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when : 'Not in play by turn 3'}</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">Odds by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">From this opening hand</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">Odds by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">With search</div></div>
+    </div>`;
+    const verdict = good ? `You had ${esc(main.name)} up by turn ${when}. From this opening hand, the odds count gets it there by turn 2 in ${oPct(o.s2)} of shuffles.`
+      : when ? `${esc(main.name)} came up on turn ${when}. The odds count has it ready by turn 2 in ${oPct(o.s2)} of shuffles from this hand, so look back at your first two turns.`
+      : `${esc(main.name)} was not in play by turn 3. From this opening hand it is ready by turn 3 in ${oPct(o.s3)} of shuffles, so check the moves below for a search you could have made.`;
+    h += `<div class="g-item ${good ? 'ok' : 'warn'}"><div class="gt">${good ? 'On schedule' : when ? 'A turn behind' : 'Line did not come together'}</div><p>${verdict}</p></div>`;
+    if (opts.length > 1) {
+      h += `<div class="hp-chips" style="margin:0.5rem 0 0.75rem">${opts.slice(1).map((l, i) => `<span class="hp-chip">${esc(l.name)}: ${gf.ready[i + 1] ? 'turn ' + gf.ready[i + 1] : 'not in play'}</span>`).join('')}</div>`;
+    }
+  }
+  const keys = new Set();
+  if (opts.length) { const l = opts[0]; [l.basic, l.s1, l.top].filter(i => i >= 0).forEach(i => keys.add(i)); if (l.stage === 'stage2') gf.groups.forEach((g, i) => { if (g.candy) keys.add(i); }); }
+  h += `<div class="hp-lbl">Your prizes were</div><div class="hp-chips">${gf.prizes.map(x => `<span class="hp-chip${keys.has(x.g) ? ' key' : ''}">${gfNm(x)}</span>`).join('')}</div>
+    <div class="hp-actions" style="margin-top:1rem"><button class="btn" onclick="gfDeal(${!gf.first})">Again going ${gf.first ? 'second' : 'first'}</button>
+    <button class="btn btn-primary" onclick="gfDeal(${gf.first})">New deal</button></div>`;
+  return h;
+}
+
+// ═══════════ DRILLS TAB (v23): resource count and opponent prize read ═══════════
+let resDrill = null, readDrill = null, _oppPaste = '', _oppSrc = '';
+
+function renderDrills() {
+  const el = document.getElementById('drills-body');
+  const deck = findDeck(state.activeDeckId);
+  if (!el || !deck) return;
+  el.innerHTML = `<div class="hp-wrap">${renderResDrill(deck)}${renderReadDrill(deck)}</div>`;
+}
+function statLine(s) {
+  if (!s || !s.g) return '';
+  return `<span class="hp-pill">${s.g} round${s.g !== 1 ? 's' : ''}, ${Math.round(s.c / Math.max(1, s.n) * 100)}% right</span>`;
+}
+
+// Resource count: a used pile from a real shuffle, the list hidden, and
+// three questions on how many of a card you have not used yet.
+function newResDrill() {
+  const deck = findDeck(state.activeDeckId);
+  if (!deck) return;
+  const pool = [];
+  deck.cards.filter(c => c.count > 0).forEach(c => { for (let k = 0; k < c.count; k++) pool.push(c); });
+  shuf(pool);
+  const prizes = pool.slice(0, 6), rest = pool.slice(6);
+  const used = rest.slice(0, 10 + Math.floor(Math.random() * 11));
+  const tot = cardTotals(deck.cards), usedT = pileTotals(used);
+  let keys = [...tot.keys()].filter(k => tot.get(k).n >= 2);
+  if (keys.length < 3) keys = [...tot.keys()];
+  const inUsed = shuf(keys.filter(k => usedT.has(k)).slice());
+  const notUsed = shuf(keys.filter(k => !usedT.has(k)).slice());
+  const qs = inUsed.slice(0, 2).concat(notUsed.slice(0, 1));
+  while (qs.length < 3 && inUsed.length > qs.length) qs.push(inUsed[qs.length]);
+  const fill = shuf(keys.filter(k => !qs.includes(k)));
+  while (qs.length < Math.min(3, keys.length)) qs.push(fill.shift());
+  shuf(qs);
+  resDrill = {
+    deckId: deck.id, used: shuf(used.slice()), prizes,
+    qs: qs.map(k => ({ k, name: tot.get(k).name, listed: tot.get(k).n, usedN: usedT.has(k) ? usedT.get(k).n : 0, ans: null })),
+    checked: false,
+  };
+  renderDrills();
+}
+function resAns(i, d) {
+  const q = resDrill && resDrill.qs[i]; if (!q || resDrill.checked) return;
+  q.ans = Math.max(0, Math.min(q.listed + 4, (q.ans == null ? 0 : q.ans) + d));
+  renderDrills();
+}
+function resCheck() {
+  if (!resDrill || resDrill.checked) return;
+  resDrill.qs.forEach(q => { if (q.ans == null) q.ans = 0; });
+  resDrill.checked = true;
+  const right = resDrill.qs.filter(q => q.ans === q.listed - q.usedN).length;
+  drillStat(findDeck(resDrill.deckId), 'res', right, resDrill.qs.length);
+  renderDrills();
+}
+function renderResDrill(deck) {
+  const st = deck.drills && deck.drills.res;
+  let h = `<div class="g-sec" id="res-sec"><div class="g-sec-t">Resource count</div>
+    <div class="g-sec-i">Your list stays hidden. Here is what you have used so far this game. Say how many of each card you have not used yet, the way you would before a big turn.</div>
+    <div class="hp-meta">${statLine(st)}</div>`;
+  if (!resDrill || resDrill.deckId !== deck.id) {
+    return h + `<div class="hp-actions"><button class="btn btn-primary" onclick="newResDrill()">${ic23('play')}Start a round</button></div></div>`;
+  }
+  const R = resDrill;
+  h += `<div class="hp-lbl">Used so far (${R.used.length} cards, in play or discarded)</div>
+    <div class="hp-chips">${R.used.map(c => `<span class="hp-chip">${esc(lbl23(c))}</span>`).join('')}</div>
+    <div class="res-qs">`;
+  R.qs.forEach((q, i) => {
+    const left = q.listed - q.usedN;
+    const ok = R.checked && q.ans === left;
+    h += `<div class="res-q${R.checked ? (ok ? ' ok' : ' bad') : ''}"><div class="res-qt">How many <b>${esc(q.name)}</b> have you not used yet?</div>
+      <span class="stp"><button class="stp-b" onclick="resAns(${i},-1)" ${R.checked ? 'disabled' : ''} aria-label="Fewer">−</button><b class="res-n">${q.ans == null ? '?' : q.ans}</b><button class="stp-b" onclick="resAns(${i},1)" ${R.checked ? 'disabled' : ''} aria-label="More">+</button></span>
+      ${R.checked ? `<div class="res-fb">${ok ? 'Right.' : 'It is ' + left + '.'} You run ${q.listed} and have used ${q.usedN}.</div>` : ''}</div>`;
+  });
+  h += `</div><div class="hp-actions">${R.checked
+    ? `<button class="btn btn-primary" onclick="newResDrill()">Next round</button>`
+    : `<button class="btn" onclick="newResDrill()">New pile</button><button class="btn btn-primary" id="res-check" onclick="resCheck()">Check</button>`}</div></div>`;
+  return h;
+}
+
+// Opponent prize read: their list, what they have shown, and six hidden prizes.
+function oppSources() {
+  return state.decks.map(d => ({ val: 'd:' + d.id, label: d.name, cards: d.cards })).concat([{ val: 'paste', label: 'Paste their list', cards: null }]);
+}
+function oppCards() {
+  if (_oppSrc === 'paste') return parseDeckList(clean23(_oppPaste, 8000));
+  const d = state.decks.find(x => 'd:' + x.id === _oppSrc);
+  return d ? d.cards : [];
+}
+function setOppSrc(v) { _oppSrc = v; readDrill = null; renderDrills(); }
+function newReadDrill() {
+  if (_oppSrc === 'paste') { const t = document.getElementById('opp-paste'); if (t) _oppPaste = clean23(t.value, 8000); }
+  const cards = oppCards().filter(c => c.count > 0);
+  const n = cards.reduce((a, c) => a + c.count, 0);
+  if (n < 30) { showToast(n ? `Only ${n} cards read from that list.` : 'No cards read from that list.'); return; }
+  const stage = (readDrill && readDrill.stage) || 'late';
+  const pool = [];
+  cards.forEach(c => { for (let k = 0; k < c.count; k++) pool.push(c); });
+  shuf(pool);
+  const hidden = stage === 'late' ? 8 : 18;
+  const prizes = pool.slice(0, 6), unseen = pool.slice(6, 6 + hidden), shown = pool.slice(6 + hidden);
+  const tot = cardTotals(cards), sh = pileTotals(shown), pz = pileTotals(prizes), un = pileTotals(unseen);
+  const rows = [...tot.keys()].map(k => ({ k, name: tot.get(k).name, listed: tot.get(k).n, shown: sh.has(k) ? sh.get(k).n : 0, prized: pz.has(k) ? pz.get(k).n : 0, unseen: un.has(k) ? un.get(k).n : 0, guess: 0 }))
+    .sort((a, b) => (b.listed - b.shown) - (a.listed - a.shown) || a.name.localeCompare(b.name));
+  readDrill = { src: _oppSrc, stage, hidden, rows, checked: false, total: n };
+  renderDrills();
+}
+function setReadStage(s) { if (readDrill && !readDrill.checked) { readDrill.stage = s; newReadDrill(); } else { readDrill = readDrill || {}; readDrill.stage = s; if (readDrill.rows) newReadDrill(); else renderDrills(); } }
+function readGuess(i, d) {
+  const R = readDrill; if (!R || R.checked) return;
+  const r = R.rows[i], used = R.rows.reduce((a, x) => a + x.guess, 0);
+  if (d > 0 && (used >= 6 || r.guess >= r.listed - r.shown)) return;
+  r.guess = Math.max(0, r.guess + d);
+  renderDrills();
+}
+function readCheck() {
+  const R = readDrill; if (!R || R.checked) return;
+  R.checked = true;
+  R.score = R.rows.reduce((a, r) => a + Math.min(r.guess, r.prized), 0);
+  drillStat(null, 'read', R.score, 6);
+  renderDrills();
+}
+function renderReadDrill(deck) {
+  const srcs = oppSources();
+  if (!srcs.some(s => s.val === _oppSrc)) _oppSrc = srcs.length > 1 ? srcs.find(s => s.val !== 'd:' + deck.id) ? srcs.find(s => s.val !== 'd:' + deck.id).val : srcs[0].val : 'paste';
+  const st = state.drillStats && state.drillStats.read;
+  const stage = (readDrill && readDrill.stage) || 'late';
+  let h = `<div class="g-sec" id="read-sec"><div class="g-sec-t">Opponent prize read</div>
+    <div class="g-sec-i">Load your opponent's list. You see everything they have shown. Six of the rest are prized and the others are still in their deck or hand. Name the six.</div>
+    <div class="hp-meta">${statLine(st)}</div>
+    <label for="opp-src">Their list</label>
+    <select id="opp-src" class="x-select" onchange="setOppSrc(this.value)">${srcs.map(s => `<option value="${esc(s.val)}"${s.val === _oppSrc ? ' selected' : ''}>${esc(s.label)}</option>`).join('')}</select>
+    ${_oppSrc === 'paste' ? `<textarea id="opp-paste" class="nt-area" maxlength="8000" placeholder="Paste their 60 card list. It stays on this device and is not saved as a deck.">${esc(_oppPaste)}</textarea>` : ''}
+    <div class="seg" style="margin:0.6rem 0">
+      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 unseen</small></div>
+      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 unseen</small></div>
+    </div>`;
+  const R = readDrill;
+  if (!R || !R.rows || R.src !== _oppSrc) {
+    return h + `<div class="hp-actions"><button class="btn btn-primary" id="read-start" onclick="newReadDrill()">${ic23('play')}Deal their game</button></div></div>`;
+  }
+  const used = R.rows.reduce((a, r) => a + r.guess, 0);
+  h += `<div class="hp-meta"><span class="hp-pill">${R.total - 6 - R.hidden} shown</span><span class="hp-pill">${R.hidden} in deck or hand</span><span class="hp-pill${used === 6 ? ' done' : ''}">${used} of 6 named</span></div>
+    <div class="o-table-wrap"><table class="o-table rd-t"><thead><tr><th>Card</th><th>List</th><th>Shown</th><th>${R.checked ? 'Prized' : 'Prized?'}</th></tr></thead><tbody>`;
+  R.rows.forEach((r, i) => {
+    const open = r.listed - r.shown;
+    let last;
+    if (R.checked) {
+      const cls = r.prized === r.guess ? (r.prized ? 'ok' : '') : 'bad';
+      last = `<span class="rd-res ${cls}">${r.prized}${r.guess !== r.prized ? ` <small>you said ${r.guess}</small>` : r.prized ? ' ✓' : ''}</span>`;
+    } else if (open > 0) {
+      last = `<span class="stp sm"><button class="stp-b" onclick="readGuess(${i},-1)" ${r.guess ? '' : 'disabled'} aria-label="Fewer">−</button><b>${r.guess}</b><button class="stp-b" onclick="readGuess(${i},1)" ${used < 6 && r.guess < open ? '' : 'disabled'} aria-label="More">+</button></span>`;
+    } else last = '<span class="nt-muted">all shown</span>';
+    h += `<tr class="${open ? '' : 'rd-done'}"><td>${esc(r.name)}</td><td>${r.listed}</td><td>${r.shown}</td><td>${last}</td></tr>`;
+  });
+  h += `</tbody></table></div>`;
+  if (R.checked) {
+    h += `<div class="g-item ${R.score >= 5 ? 'ok' : R.score >= 3 ? 'warn' : 'crit'}" style="margin-top:0.75rem"><div class="gt">${R.score} of 6 prizes read</div>
+      <p>The ${R.hidden} cards still in their deck or hand were ${R.rows.filter(r => r.unseen).map(r => esc(r.name) + (r.unseen > 1 ? ' x' + r.unseen : '')).join(', ')}.</p></div>
+      <div class="hp-actions"><button class="btn btn-primary" onclick="newReadDrill()">Deal again</button></div>`;
+  } else {
+    h += `<div class="hp-actions" style="margin-top:0.75rem"><button class="btn" onclick="newReadDrill()">New deal</button><button class="btn btn-primary" id="read-check" onclick="readCheck()" ${used === 6 ? '' : 'disabled'}>Check</button></div>`;
+  }
+  return h + `</div>`;
+}
+
+// ═══════════ DAILY CHALLENGE (v23) ═══════════
+// One built in list and a shuffle seeded from the date, so everyone on the
+// same day gets the same prizes. No server: your first try is your score.
+const DAILY_NAME = 'Charizard ex Pidgeot ex';
+const DAILY_LIST = `Pokémon: 18
+4 Charmander OBF 26
+2 Charmeleon OBF 27
+3 Charizard ex OBF 125
+2 Pidgey OBF 162
+2 Pidgeot ex OBF 164
+2 Bidoof CRZ 111
+1 Bibarel BRS 121
+1 Rotom V LOR 58
+1 Manaphy BRS 41
+
+Trainer: 34
+4 Rare Candy SVI 191
+4 Ultra Ball SVI 196
+3 Nest Ball SVI 181
+4 Buddy-Buddy Poffin TEF 144
+4 Arven SVI 166
+3 Iono PAL 185
+2 Professor's Research SVI 189
+2 Boss's Orders PAL 172
+2 Super Rod PAL 188
+1 Counter Catcher PAR 160
+2 Switch SVI 194
+1 Forest Seal Stone SIL 156
+2 Artazon PAL 171
+
+Energy: 8
+8 Basic {R} Energy SVE 2`;
+let _dailyDeck = null;
+function dailyKey(ts) { return pgDayKey(ts || Date.now()); }
+function dailyDeck() {
+  if (!_dailyDeck) _dailyDeck = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(DAILY_LIST), history: [], format: 'standard', daily: true };
+  return _dailyDeck;
+}
+function dailyShuffle(arr, key) {
+  return shuffleWith(arr, simRng(strHash('prizetrainer-daily|' + (key || dailyKey()))));
+}
+function dailyStore() { return (state.daily = state.daily || { results: {} }); }
+function dailyStreak() {
+  const R = dailyStore().results;
+  let n = 0, d = new Date();
+  if (!R[dailyKey(d.getTime())]) d.setDate(d.getDate() - 1);
+  while (R[dailyKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+async function startDaily() {
+  const d = dailyDeck();
+  if (!d._img) { d.cards = await Promise.all(d.cards.map(c => fetchCardImage(c))); d._img = true; }
+  closeSheet();
+  game.prizeCount = 6; game.timeLimit = 0; game.tableCheck = false; game.reachCheck = false; game._drillMissWeights = null;
+  tournament.active = false;
+  startGame(DAILY_ID);
+}
+function dailyShareText(r, key) {
+  const day = new Date(key + 'T12:00:00');
+  const dTxt = isNaN(day) ? key : day.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const bar = Array.from({ length: 6 }, (_, i) => i < r.score ? '■' : '□').join('');
+  return `Prize Trainer daily challenge, ${dTxt}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
+}
+async function shareDaily() {
+  const key = dailyKey(), r = dailyStore().results[key];
+  if (!r) { showToast('Play today\'s challenge first.'); return; }
+  const text = dailyShareText(r, key), url = shareBaseUrl() + '#daily';
+  if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
+  try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Score copied. Paste it anywhere.'); }
+  catch (_) { openSheet(`<div class="modal-title">Your daily score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+}
+function renderDailyCard() {
+  const el = document.getElementById('daily-card');
+  if (!el) return;
+  const key = dailyKey(), r = dailyStore().results[key], streak = dailyStreak();
+  el.innerHTML = `<div class="dc-card">
+    <div class="dc-ic">${ic23('calendar')}</div>
+    <div class="dc-tx"><div class="dc-t">Daily challenge</div>
+      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> in ${formatTime(r.time)}` : 'Same deck and shuffle for everyone today'}${streak > 1 ? ` · ${streak} day streak` : ''}</div></div>
+    ${r ? `<button class="btn btn-sm" onclick="shareDaily()">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
+  </div>`;
+}
+function dailyAfterReveal(score, elapsed) {
+  const area = document.getElementById('prize-reveal-area');
+  const old = document.getElementById('daily-banner'); if (old) old.remove();
+  if (state.activeDeckId !== DAILY_ID || !area) return;
+  const key = dailyKey(), store = dailyStore();
+  let first = false;
+  if (!store.results[key]) { store.results[key] = { score, time: elapsed, ts: Date.now() }; first = true; saveState(); }
+  const r = store.results[key];
+  const b = document.createElement('div');
+  b.id = 'daily-banner'; b.className = 'dc-banner';
+  b.innerHTML = `<div><b>${first ? 'Daily challenge scored' : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}${dailyStreak() > 1 ? ' ' + dailyStreak() + ' day streak.' : ''}</span></div>
+    <button class="btn btn-sm btn-primary" onclick="shareDaily()">${ic23('share')}Share score</button>`;
+  area.parentElement.insertBefore(b, area);
+}
+function handleDailyHash() {
+  if (!/^#daily\b/.test(location.hash || '')) return;
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  showScreen('home');
+  openSheet(`<div class="modal-title">Today's daily challenge</div>
+    <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(DAILY_NAME)} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
+}
+
+// ═══════════ "CAN I STILL GET X?" (v23 reach check) ═══════════
+// Turned on in Modes. Before the reveal, three yes or no questions on
+// whether a card is still in the deck, scored with the game.
+function buildReachQs() {
+  const pz = pileTotals(game.prizes), vis = pileTotals(game.visible || []), hd = pileTotals(game.hand || []);
+  const all = pileTotals(game.prizes.concat(game.visible || [], game.hand || []));
+  const keys = [...all.keys()];
+  const gone = shuf(keys.filter(k => !vis.has(k) && pz.has(k)));
+  const some = shuf(keys.filter(k => vis.has(k) && pz.has(k)));
+  const rest = shuf(keys.filter(k => vis.has(k) && !pz.has(k) && all.get(k).n >= 2));
+  const pick = [];
+  const add = arr => { for (const k of arr) if (!pick.includes(k)) { pick.push(k); return true; } return false; };
+  add(gone); add(some); add(rest);
+  const any = shuf(keys.slice());
+  while (pick.length < 3 && add(any)) {}
+  return shuf(pick.slice(0, 3)).map(k => ({ k, name: all.get(k).name, left: vis.has(k) ? vis.get(k).n : 0, prized: pz.has(k) ? pz.get(k).n : 0, inHand: hd.has(k) ? hd.get(k).n : 0, ans: null }));
+}
+function openReach() {
+  const R = game._reach;
+  const i = R.qs.findIndex(q => q.ans == null);
+  const done = i < 0;
+  const q = done ? null : R.qs[i];
+  const fb = R.qs.filter(x => x.ans != null).map(x => {
+    const ok = x.ans === (x.left > 0);
+    return `<div class="rc-fb ${ok ? 'ok' : 'bad'}"><b>${ok ? 'Right' : 'Not quite'}: ${esc(x.name)}</b> ${x.left > 0 ? `${x.left} still in the deck` : 'none left in the deck'}${x.prized ? `, ${x.prized} prized` : ''}${x.inHand ? `, ${x.inHand} in hand` : ''}.</div>`;
+  }).join('');
+  openSheet(`<div class="modal-title">Can you still get it?</div>
+    <div class="modal-hint" style="margin-bottom:0.75rem">From what you saw in the deck. Question ${done ? R.qs.length : i + 1} of ${R.qs.length}.</div>
+    ${fb}
+    ${done ? `<div class="modal-actions"><button class="btn btn-primary" id="rc-go" onclick="finishReach()">${ic23('eye')}Reveal prizes</button></div>`
+      : `<div class="rc-q">Can you still get <b>${esc(q.name)}</b> from your deck?</div>
+      <div class="modal-actions"><button class="btn" id="rc-no" onclick="answerReach(false)">No</button><button class="btn btn-primary" id="rc-yes" onclick="answerReach(true)">Yes</button></div>`}`);
+}
+function answerReach(v) {
+  const R = game._reach; if (!R) return;
+  const q = R.qs.find(x => x.ans == null); if (!q) return;
+  q.ans = v;
+  openReach();
+}
+function finishReach() {
+  const R = game._reach; if (!R) return;
+  R.done = true;
+  closeSheet();
+  revealPrizes(true);
+}
+
+// ═══════════ PROGRESS EXTRAS (v23) ═══════════
+function renderProgressExtras(deck) {
+  const parts = [];
+  const rec = tlogRecord(state.tlog || [], x => x.deckId === deck.id);
+  if (rec.n) parts.push(`<div class="pg-tile"><div class="pl">Match record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} logged, ${rec.avgTaken.toFixed(1)} prizes taken a game</div></div>`);
+  const v = ensureVersions(deck);
+  if (v.length > 1) {
+    const lastTs = v[v.length - 1].ts;
+    const since = (deck.history || []).filter(h => h.ts >= lastTs), before = (deck.history || []).filter(h => h.ts < lastTs).slice(0, 20);
+    const acc = a => a.length ? Math.round(a.reduce((s, h) => s + h.score, 0) / a.reduce((s, h) => s + (h.prizeCount || 6), 0) * 100) : null;
+    const a1 = acc(since), a0 = acc(before);
+    parts.push(`<div class="pg-tile"><div class="pl">List changes</div><div class="pv">${v.length - 1}</div><div class="ps">Last ${shortDate23(lastTs)}${a1 != null && a0 != null ? `, ${a1}% since vs ${a0}% before` : ''}</div></div>`);
+  }
+  const D = deck.drills || {};
+  const dr = [['res', 'Resource count'], ['gold', 'Goldfish on time'], ['reach', 'Reach check']].filter(([k]) => D[k] && D[k].g);
+  if (dr.length) parts.push(`<div class="pg-tile"><div class="pl">Drills</div><div class="pv">${dr.reduce((a, [k]) => a + D[k].g, 0)}</div><div class="ps">${dr.map(([k, n]) => `${n} ${Math.round(D[k].c / Math.max(1, D[k].n) * 100)}%`).join(', ')}</div></div>`);
+  if (!parts.length) return '';
+  return `<div class="pg-wrap pg-extra"><div class="section-title">Matches, list and drills</div><div class="pg-tiles">${parts.join('')}</div>
+    <div class="hp-actions" style="margin:0.25rem 0 0">${rec.n ? `<button class="btn btn-sm" onclick="openTlog('${deck.id}')">${ic23('trophy')}Tournament log</button>` : ''}${v.length > 1 ? `<button class="btn btn-sm" onclick="openReview('${deck.id}');showReviewTab('notes')">${ic23('edit')}Edit log</button>` : ''}</div></div>`;
+}
+
+// ═══════════ TOURNAMENT LOG (v23) ═══════════
+let _tlogDeck = '';
+function tlogRecord(list, f) {
+  const xs = (list || []).filter(f);
+  const r = { n: xs.length, w: 0, l: 0, t: 0, avgTaken: 0, avgGiven: 0 };
+  xs.forEach(x => { if (x.result === 'W') r.w++; else if (x.result === 'L') r.l++; else r.t++; r.avgTaken += x.taken || 0; r.avgGiven += x.given || 0; });
+  if (r.n) { r.avgTaken /= r.n; r.avgGiven /= r.n; }
+  return r;
+}
+function openTlog(deckId) {
+  _tlogDeck = deckId || '';
+  renderTlog();
+  showScreen('tlog');
+}
+function renderTlog() {
+  const el = document.getElementById('tlog-body');
+  if (!el) return;
+  const all = (state.tlog || []).slice().sort((a, b) => (b.day || '').localeCompare(a.day || '') || b.ts - a.ts);
+  if (_tlogDeck && !state.decks.some(d => d.id === _tlogDeck)) _tlogDeck = '';
+  const list = all.filter(x => !_tlogDeck || x.deckId === _tlogDeck);
+  const rec = tlogRecord(list, () => true);
+  const dk = _tlogDeck ? state.decks.find(d => d.id === _tlogDeck) : null;
+  document.getElementById('tlog-title').textContent = dk ? dk.name : 'All decks';
+  let h = `<div class="tl-wrap">
+    <label for="tl-filter">Deck</label>
+    <select id="tl-filter" class="x-select" onchange="_tlogDeck=this.value;renderTlog()"><option value="">All decks</option>${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === _tlogDeck ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select>
+    <div class="pg-tiles" style="margin-top:0.75rem">
+      <div class="pg-tile"><div class="pl">Record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} match${rec.n !== 1 ? 'es' : ''}</div></div>
+      <div class="pg-tile"><div class="pl">Win rate</div><div class="pv">${rec.n ? Math.round(rec.w / rec.n * 100) + '%' : '?'}</div><div class="ps">Ties count as not won</div></div>
+      <div class="pg-tile"><div class="pl">Prizes</div><div class="pv">${rec.n ? rec.avgTaken.toFixed(1) : '?'}</div><div class="ps">${rec.n ? 'Taken a game, ' + rec.avgGiven.toFixed(1) + ' given' : 'Taken a game'}</div></div>
+    </div>
+    <div class="hp-actions"><button class="btn btn-primary" id="tl-add" onclick="openTlogForm()">${ic23('plus')}Log a match</button>${list.length ? `<button class="btn" onclick="exportTlog()">${ic23('file')}Export CSV</button>` : ''}</div>`;
+  if (!list.length) h += `<div class="nt-empty">No matches logged${dk ? ' for this deck' : ''} yet. Log each round at your next event: who you played, the result and how many prizes each of you took.</div>`;
+  // Opponents faced, most often first
+  const byOpp = {};
+  list.forEach(x => { const k = x.opp.toLowerCase(); (byOpp[k] = byOpp[k] || { name: x.opp, xs: [] }).xs.push(x); });
+  const opps = Object.values(byOpp).sort((a, b) => b.xs.length - a.xs.length).slice(0, 8);
+  if (opps.length > 1) {
+    h += `<div class="hp-lbl">By opponent</div><div class="o-table-wrap"><table class="o-table"><thead><tr><th>Opponent</th><th>Record</th><th>Prizes</th></tr></thead><tbody>
+      ${opps.map(o => { const r = tlogRecord(o.xs, () => true); return `<tr><td>${esc(o.name)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.avgTaken.toFixed(1)}</td></tr>`; }).join('')}</tbody></table></div>`;
+  }
+  let lastGroup = '';
+  list.forEach(x => {
+    const grp = (x.day || '') + '|' + (x.event || '');
+    if (grp !== lastGroup) {
+      lastGroup = grp;
+      const d = new Date((x.day || pgDayKey(x.ts)) + 'T12:00:00');
+      h += `<div class="tl-group">${esc(x.event || 'Matches')}<span>${isNaN(d) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span></div>`;
+    }
+    const deck = state.decks.find(d => d.id === x.deckId);
+    const note = deck && matchupFor(deck, x.opp);
+    h += `<div class="tl-row"><span class="tl-res ${x.result}">${x.result}</span>
+      <div class="tl-mid"><div class="tl-opp">vs ${esc(x.opp || 'Unknown deck')}</div>
+        <div class="tl-sub">${esc(deck ? deck.name : x.deckName || 'Deleted deck')}${x.deckVer ? ' v' + x.deckVer : ''} · ${x.taken} taken, ${x.given} given</div>
+        ${x.notes ? `<div class="tl-notes">${esc(x.notes)}</div>` : ''}
+        ${note ? `<button class="tl-plan" onclick="openReview('${deck.id}');showReviewTab('notes')">Prize plan for this matchup</button>` : ''}</div>
+      <button class="icon-btn sm" onclick="openTlogForm('${x.id}')" aria-label="Edit match" title="Edit match">${ic23('edit')}</button></div>`;
+  });
+  el.innerHTML = h + `</div>`;
+}
+function tlSeg(name, vals, cur) {
+  return `<div class="seg tl-seg" id="tl-${name}">${vals.map(v => `<div class="mode-opt${String(v) === String(cur) ? ' active' : ''}" data-val="${v}" onclick="tlSet('${name}','${v}')">${v}</div>`).join('')}</div>`;
+}
+let _tlForm = null;
+function tlSet(name, v) {
+  _tlForm[name] = name === 'result' ? v : +v;
+  document.querySelectorAll('#tl-' + name + ' .mode-opt').forEach(e => e.classList.toggle('active', e.dataset.val === String(v)));
+}
+function tlPlanHint() {
+  const el = document.getElementById('tl-hint'); if (!el) return;
+  const deck = state.decks.find(d => d.id === document.getElementById('tl-deck').value);
+  const m = deck && matchupFor(deck, document.getElementById('tl-opp').value);
+  el.innerHTML = m && m.plan ? `<b>Your prize plan:</b> ${esc(m.plan).replace(/\n/g, '<br>')}` : '';
+  el.style.display = m && m.plan ? '' : 'none';
+}
+function openTlogForm(id) {
+  if (!state.decks.length) { showToast('Import a deck first.'); return; }
+  const x = id ? (state.tlog || []).find(e => e.id === id) : null;
+  const last = (state.tlog || []).slice().sort((a, b) => b.ts - a.ts)[0];
+  const today = pgDayKey(Date.now());
+  const sameDay = last && last.day === today;
+  _tlForm = x ? { result: x.result, taken: x.taken, given: x.given } : { result: 'W', taken: 6, given: 0 };
+  const deckId = x ? x.deckId : _tlogDeck || (sameDay ? last.deckId : state.decks[0].id);
+  const opps = [...new Set((state.tlog || []).map(e => e.opp).concat(...state.decks.map(d => (d.matchups || []).map(m => m.opp))).filter(Boolean))].slice(0, 40);
+  openSheet(`<div class="modal-title">${x ? 'Edit match' : 'Log a match'}</div>
+    <div class="tl-two"><div class="mb"><label for="tl-day">Date</label><input type="date" id="tl-day" class="x-date" value="${esc(x ? x.day : today)}"></div>
+    <div class="mb"><label for="tl-event">Event</label><input type="text" id="tl-event" maxlength="60" placeholder="League Challenge" value="${esc(x ? x.event : sameDay ? last.event : '')}"></div></div>
+    <div class="mb"><label for="tl-deck">Your deck</label><select id="tl-deck" class="x-select" onchange="tlPlanHint()">${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === deckId ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select></div>
+    <div class="mb"><label for="tl-opp">Opponent's deck</label><input type="text" id="tl-opp" maxlength="60" list="tl-opp-list" placeholder="Gardevoir ex" value="${esc(x ? x.opp : '')}" oninput="tlPlanHint()"><datalist id="tl-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist>
+      <div class="tl-hint" id="tl-hint" style="display:none"></div></div>
+    <div class="mb"><div class="field-label">Result</div>${tlSeg('result', ['W', 'L', 'T'], _tlForm.result)}</div>
+    <div class="mb"><div class="field-label">Prizes you took</div>${tlSeg('taken', [0, 1, 2, 3, 4, 5, 6], _tlForm.taken)}</div>
+    <div class="mb"><div class="field-label">Prizes they took</div>${tlSeg('given', [0, 1, 2, 3, 4, 5, 6], _tlForm.given)}</div>
+    <div class="mb"><label for="tl-notes">Notes</label><textarea id="tl-notes" class="nt-area sm" maxlength="500" placeholder="Prized both Rare Candy game 2">${esc(x ? x.notes : '')}</textarea></div>
+    <div class="modal-actions">${x ? `<button class="btn btn-ghost danger-txt" onclick="deleteTlog('${x.id}')">Delete</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>`}
+      <button class="btn btn-primary" id="tl-save" onclick="saveTlog('${x ? x.id : ''}')">Save</button></div>`);
+  tlPlanHint();
+}
+async function saveTlog(id) {
+  const deckId = document.getElementById('tl-deck').value;
+  const deck = state.decks.find(d => d.id === deckId);
+  if (!deck) return;
+  const dayRaw = String(document.getElementById('tl-day').value || '');
+  const day = /^\d{4}-\d{2}-\d{2}$/.test(dayRaw) ? dayRaw : pgDayKey(Date.now());
+  state.tlog = state.tlog || [];
+  let x = id ? state.tlog.find(e => e.id === id) : null;
+  if (!x) { x = { id: 't' + Date.now().toString(36) + Math.floor(Math.random() * 1e4), ts: Date.now() }; state.tlog.push(x); }
+  const verNow = ensureVersions(deck).length;
+  Object.assign(x, {
+    day, event: one23(document.getElementById('tl-event').value, 60),
+    deckId, deckName: deck.name, deckVer: x.deckId === deckId && x.deckVer ? x.deckVer : verNow,
+    opp: one23(document.getElementById('tl-opp').value, 60) || 'Unknown deck',
+    result: ['W', 'L', 'T'].includes(_tlForm.result) ? _tlForm.result : 'W',
+    taken: Math.max(0, Math.min(6, _tlForm.taken | 0)), given: Math.max(0, Math.min(6, _tlForm.given | 0)),
+    notes: clean23(document.getElementById('tl-notes').value, 500).trim(),
+  });
+  await saveState();
+  closeSheet();
+  renderTlog();
+  showToast('Match saved.');
+}
+async function deleteTlog(id) {
+  if (!confirm('Delete this match from the log?')) return;
+  state.tlog = (state.tlog || []).filter(e => e.id !== id);
+  await saveState();
+  closeSheet();
+  renderTlog();
+}
+function exportTlog() {
+  const list = (state.tlog || []).filter(x => !_tlogDeck || x.deckId === _tlogDeck);
+  const cell = v => { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
+  const rows = [['Date', 'Event', 'Deck', 'Version', 'Opponent', 'Result', 'Prizes taken', 'Prizes given', 'Notes']]
+    .concat(list.map(x => { const d = state.decks.find(z => z.id === x.deckId); return [x.day, x.event, d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.taken, x.given, x.notes]; }));
+  const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'prize-trainer-tournament-log.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+// ═══════════ OFFLINE CARD ART (v23) ═══════════
+// When a card picture loads from another site, tell the service worker so it
+// keeps a copy. A loaded deck then shows its art at locals with no signal.
+const _artSent = new Set();
+document.addEventListener('load', e => {
+  const t = e.target;
+  if (!t || t.tagName !== 'IMG') return;
+  const src = t.currentSrc || t.src || '';
+  if (!/^https?:\/\//.test(src) || src.startsWith(location.origin + '/') || _artSent.has(src)) return;
+  const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
+  if (!sw) return;
+  _artSent.add(src);
+  try { sw.postMessage({ type: 'art-ok', url: src }); } catch (_) {}
+}, true);
+
+// ═══════════ v23 HOOKS ═══════════
+// Small wrappers so the v22 functions stay as they were.
+(function () {
+  const _renderHand = renderHand;
+  renderHand = function () {
+    const el = document.getElementById('hand-body');
+    if (handMode === 'gold') { renderGoldfish(); return; }
+    _renderHand();
+    if (el && !el.querySelector('.hm-seg')) {
+      const w = el.querySelector('.hp-wrap');
+      if (w) w.insertAdjacentHTML('afterbegin', handModeBar());
+      else el.insertAdjacentHTML('afterbegin', `<div class="hp-wrap">${handModeBar()}</div>`);
+    }
+  };
+  const _renderHome = renderHome;
+  renderHome = function () { _renderHome.apply(this, arguments); renderDailyCard(); };
+  const _startGame = startGame;
+  startGame = function (deckId) { game._reach = null; if (deckId !== DAILY_ID) game.daily = false; return _startGame.apply(this, arguments); };
+  const _import = importDeck;
+  importDeck = async function () {
+    const before = new Set(state.decks.map(d => d.id));
+    await _import.apply(this, arguments);
+    const added = state.decks.filter(d => !before.has(d.id));
+    if (added.length) { added.forEach(d => startVersions(d, 'import')); await saveState(); }
+  };
+  const _dup = duplicateDeckFromEdit;
+  duplicateDeckFromEdit = async function () {
+    const orig = state.decks.find(d => d.id === editDeckId);
+    const before = new Set(state.decks.map(d => d.id));
+    await _dup.apply(this, arguments);
+    const added = state.decks.filter(d => !before.has(d.id));
+    if (added.length) { added.forEach(d => startVersions(d, 'copy', orig && orig.name)); await saveState(); }
+  };
+  const _saveEdit = saveEditDeck;
+  saveEditDeck = async function () {
+    const deck = state.decks.find(d => d.id === editDeckId);
+    if (deck) ensureVersions(deck);
+    await _saveEdit.apply(this, arguments);
+    if (deck && recordVersion(deck)) {
+      const v = deck.versions, ch = diffCards(v[v.length - 2].cards, v[v.length - 1].cards);
+      await saveState();
+      showToast(`"${deck.name}" updated. ${ch.length} card change${ch.length !== 1 ? 's' : ''} added to the edit log.`);
+    }
+  };
+  const _reveal = revealPrizes;
+  revealPrizes = async function (force) {
+    const onGame = document.getElementById('screen-game').classList.contains('active');
+    if (game.reachCheck && onGame) {
+      if (game._reach && !game._reach.done) { openReach(); return; }
+      if (!game._reach) {
+        const pc = game.prizeCount || 6;
+        if (force !== true && game.guesses.length < pc) {
+          const remaining = pc - game.guesses.length;
+          if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
+        }
+        stopTimer();
+        game._reach = { qs: buildReachQs(), done: false, elapsed: game.elapsed };
+        if (game._reach.qs.length) { openReach(); return; }
+        game._reach.done = true;
+      }
+      game.timerStart = Date.now() - game._reach.elapsed * 1000;
+      force = true;
+    }
+    await _reveal.call(this, force);
+    const deck = findDeck(state.activeDeckId);
+    const entry = deck && deck.history && deck.history[0];
+    const line = document.getElementById('reach-line');
+    if (line) line.innerHTML = '';
+    if (game._reach && game._reach.done && game._reach.qs.length) {
+      const R = game._reach, c = R.qs.filter(q => q.ans === (q.left > 0)).length;
+      if (entry && !entry.reach) entry.reach = { c, n: R.qs.length };
+      if (deck && deck.id !== DAILY_ID) drillStat(deck, 'reach', c, R.qs.length);
+      if (line) line.innerHTML = `Reach check: <b>${c} of ${R.qs.length}</b> right. ${R.qs.map(q => esc(q.name) + (q.left > 0 ? ' was still in the deck' : ' was out of reach')).join('; ')}.`;
+      game._reach = { done: true, qs: [], spent: true };
+    }
+    if (state.activeDeckId === DAILY_ID && entry) dailyAfterReveal(entry.score, entry.time);
+    else { const b = document.getElementById('daily-banner'); if (b) b.remove(); }
+  };
+})();
+
 // ═══════════ INIT ═══════════
 document.addEventListener('DOMContentLoaded', () => {
   loadThemePref();
   initImportListener();
   initGuessInput();
-  loadState();
+  const _hashes = () => { handleShareHash(); handleDailyHash(); };
+  loadState().then(_hashes, _hashes);
 });
+window.addEventListener('hashchange', handleShareHash);
+window.addEventListener('hashchange', handleDailyHash);
 
 // Re-render carousel on resize so slot count updates
 let _resizeTimer;
@@ -3894,7 +6241,7 @@ function buildDeckCard(deck) {
         <button class="deck-act" onclick="event.stopPropagation();openReview('${deck.id}')" title="Cards, grade and odds">${ic('grid')}<span>Deck</span></button>
         <button class="deck-act" onclick="event.stopPropagation();openModeModal('${deck.id}')" title="Game modes, hide or delete">${ic('sliders')}<span>Modes</span></button>
         <button class="deck-act" onclick="event.stopPropagation();openEditModal('${deck.id}')" title="Edit deck">${ic('edit')}<span>Edit</span></button>
-        ${sessions >= 3 ? `<button class="deck-act btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')" title="Weak spots">${ic('target')}<span>Weak spots</span></button>` : ''}
+        ${sessions >= 1 ? `<button class="deck-act btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')" title="Progress and weak spots">${ic('trend')}<span>Progress</span></button>` : ''}
       </div>
     </div>`;
 }
@@ -3953,6 +6300,8 @@ function openImportModal() {
   document.getElementById('import-name').value = '';
   document.getElementById('import-list').value = '';
   document.getElementById('parse-preview').textContent = '';
+  const _sn = document.getElementById('import-share-note');
+  if (_sn) { _sn.style.display = 'none'; _sn.textContent = ''; }
   setImportFormat('standard');
 }
 function closeImportModal() { document.getElementById('import-modal').classList.remove('active'); }
@@ -4295,7 +6644,7 @@ function clearAllData() {
 
 // ═══════════ GAME ═══════════
 async function startGame(deckId) {
-  const deck = state.decks.find(d => d.id === deckId);
+  const deck = findDeck(deckId);
   if (!deck) return;
   state.activeDeckId = deckId;
   // If called directly (not from mode modal), use defaults
@@ -4317,10 +6666,19 @@ async function startGame(deckId) {
     game.visible = expanded.filter(c => !prizeSet.has(c));
     shuffle(game.visible);
     game._drillMissWeights = null; // consume: next replay uses normal shuffle
+    game.hand = [];
+  } else if (deckId === DAILY_ID) {
+    dailyShuffle(expanded);
+    game.prizes = expanded.slice(0, pc);
+    game.visible = expanded.slice(pc);
+    game.hand = [];
+  } else if (game.tableCheck) {
+    dealTableCheck(expanded, pc);
   } else {
     shuffle(expanded);
     game.prizes = expanded.slice(0, pc);
     game.visible = expanded.slice(pc);
+    game.hand = [];
   }
   game.currentIdx = 0;
   game.guesses = [];
@@ -4332,10 +6690,14 @@ async function startGame(deckId) {
   const badges = [];
   if (game.prizeCount !== 6) badges.push(`${game.prizeCount} prizes`);
   if (game.timeLimit) badges.push(game.timeLimit + 's timer');
+  if (game.tableCheck && (game.hand || []).length) badges.push('Table check');
+  if (game.reachCheck) badges.push('Reach check');
+  if (deckId === DAILY_ID) badges.push('Daily ' + shortDate23(Date.now()));
   badgeWrap.innerHTML = badges.map(b => `<span class="mode-badge">${b}</span>`).join('');
 
   // Render game screen
   document.getElementById('game-deck-name').textContent = deck.name;
+  renderHandStrip();
   renderCard();
   renderProgressDots();
   renderPrizeSlots();
@@ -4615,7 +6977,7 @@ function initGuessInput() {
   gi.addEventListener('input', function() {
   const val = this.value.trim().toLowerCase();
   if (!val || val.length < 1) { hideAutocomplete(); return; }
-  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  const deck = findDeck(state.activeDeckId);
   if (!deck) return;
   // Unique base names in deck
   // Expand energy symbols to full names so the normalizer can match them
@@ -4822,14 +7184,18 @@ async function revealPrizes(force) {
   });
 
   // Save history: store prize card names + which were guessed for weak spot analysis
-  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  const deck = findDeck(state.activeDeckId);
   if (deck) {
     if (!deck.history) deck.history = [];
     // Build per-card outcome count-aware: uses same usedPrizeIdxs from scoring above
     const prizeOutcomes = game.prizes.map((card, pi) => {
       return { name: card.name, missed: !usedPrizeIdxs.has(pi) };
     });
-    deck.history.unshift({ score, time: elapsed, prizeCount: pc, date: new Date().toLocaleDateString(), ts: Date.now(), prizes: prizeOutcomes });
+    ensureDaily(deck);
+    const _entry = { score, time: elapsed, prizeCount: pc, date: new Date().toLocaleDateString(), ts: Date.now(), prizes: prizeOutcomes };
+    if (game.tableCheck && (game.hand || []).length) _entry.view = 'table';
+    deck.history.unshift(_entry);
+    pgAdd(deck, _entry, _entry.ts);
     if (deck.history.length > 50) deck.history = deck.history.slice(0, 50);
     await saveState();
   }
@@ -4875,6 +7241,7 @@ async function revealPrizes(force) {
 
   // History table
   renderHistoryTable();
+  renderProgressLine(deck);
 
   // Guess comparison grid
   buildGuessComparison(guessResults, game.prizes, game.prizeCount || 6);
@@ -5115,7 +7482,7 @@ function renderPersonalBests(deck, container, newPBs) {
 }
 
 function renderHistoryTable() {
-  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  const deck = findDeck(state.activeDeckId);
   const tbody = document.getElementById('history-tbody');
   if (!deck || !deck.history?.length) {
     tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-dim);font-style:italic;">No history yet.</td></tr>';
@@ -5274,6 +7641,9 @@ function openWeakSpots(deckId) {
     <button class="btn btn-primary btn-block" onclick="startDrillMissed('${deck.id}')"><svg class="ic"><use href="#i-target"/></svg>Drill your missed cards</button>
     ` : ''}
 
+    ${renderProgressSection(deck)}
+    ${renderProgressExtras(deck)}
+
     ${insights.length ? `
     <div class="ws-insight">
       <div class="ws-insight-title">Insights</div>
@@ -5337,6 +7707,8 @@ function openModeModal(deckId) {
   // reset toggles to current modeSettings
   setModeOpt('prizes', modeSettings.prizes, true);
   setModeOpt('timelimit', modeSettings.timelimit, true);
+  setModeOpt('view', modeSettings.view, true);
+  setModeOpt('reach', modeSettings.reach, true);
   document.getElementById('mode-modal').classList.add('active');
   const _hDeck = state.decks.find(d => d.id === modeDeckId);
   const _hBtn = document.getElementById('mode-hide-btn');
@@ -5373,6 +7745,8 @@ function setModeOpt(group, val, silent) {
 function startGameFromMode() {
   game.prizeCount  = modeSettings.prizes;
   game.timeLimit   = parseInt(modeSettings.timelimit) || 0;
+  game.tableCheck  = modeSettings.view === 'table';
+  game.reachCheck  = modeSettings.reach === 'on';
   // Tournament: if user selected 'n', start a block
   if (modeSettings.tournament === 'n') {
     tournament.active = true;
@@ -5391,6 +7765,8 @@ function startGameFromMode() {
 function startGameDefault(deckId) {
   game.prizeCount = 6;
   game.timeLimit = 0;
+  game.tableCheck = false;
+  game.reachCheck = false;
   game._drillMissWeights = null;
   tournament.active = false;
   startGame(deckId);
@@ -5420,6 +7796,8 @@ function startDrillMissed(deckId) {
   game._drillMissWeights = weights;
   game.prizeCount = 6;
   game.timeLimit = 0;
+  game.tableCheck = false;
+  game.reachCheck = false;
   showScreen('home'); // dismiss weak spots
   startGame(deckId);
   showToast('Drill mode: prizes biased toward your weak spots.');
@@ -5437,7 +7815,7 @@ function setImportFormat(fmt) {
 
 // ═══════════ EXPORT CSV ═══════════
 function exportHistory() {
-  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  const deck = findDeck(state.activeDeckId);
   if (!deck || !deck.history?.length) { showToast('No history to export.'); return; }
   const rows = [['#','Score','Time (s)','Date','Prizes','Missed']];
   deck.history.forEach((h, i) => {
@@ -5569,7 +7947,7 @@ async function restoreBackup() {
 // ═══════════ SCREENS ═══════════
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const map = { home: 'screen-home', review: 'screen-review', game: 'screen-game', results: 'screen-results', weakspots: 'screen-weakspots' };
+  const map = { home: 'screen-home', review: 'screen-review', game: 'screen-game', results: 'screen-results', weakspots: 'screen-weakspots', tlog: 'screen-tlog' };
   document.getElementById(map[name]).classList.add('active');
   window.scrollTo(0, 0);
 }
