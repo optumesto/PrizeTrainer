@@ -1,48 +1,57 @@
-# PrizeTrainer v24: tour, Practice tab, starter decks, feedback, phone pass
+# PrizeTrainer v26
 
-Before: a new player landed on Home with the daily challenge above their decks, six deck tabs, and no guide. Several buttons were under 44px tall on phones, there was no way to report a bug, and you had to paste a list before you could play.
+Bug fixes on top of v25. Upload index.html and sw.js in place of the v25 files. Nothing else changed.
 
-After: a short skippable tour on the first visit, decks first on Home, four deck tabs with Hand, Drills and Notes grouped under Practice, every control at least 44px on phones, a feedback button that opens a GitHub issue, and five current tournament lists you can load in one tap. Grading, odds and card grouping logic are untouched, and the look matches v20 to v23.
+## Grade and Odds fixes
 
-## First run tour
-- Five short steps: what the prize drill is, adding a deck, playing, the deck tabs, the daily challenge and log. Back, Next, Skip, arrow keys and Escape all work.
-- Shows once, on the first visit with no decks. Stored on the device (pt_tour_v24). It does not show when the app opens from a shared deck or daily challenge link.
-- The last step offers Import a deck and Starter decks.
-- People updating from v23 with decks already saved get a one time note that Hand, Drills and Notes moved to Practice, instead of the tour.
-- Replay it any time from Help and feedback, or from How to play.
+Tested on two Hide 'n' Sneak lists rebuilt from your screenshots (HnS Legacy and Reddy 4th Place). Before and after: HnS Legacy 3.6 to 7.9, Reddy 4th Place 5.7 to 8.1. The same list always gives the same numbers.
 
-## Simpler navigation
-- Deck tabs are now Cards, Grade, Odds and Practice. Practice has a switch for Hand, Drills and Notes and remembers the last one you used. Nothing was removed.
-- Home now leads with your decks, then Import a deck and Starter decks side by side, then the daily challenge.
-- More has four tiles: Tournament log, Share with a friend, Help and feedback, Backup and restore. Help and feedback holds the tour, How to play, Send feedback and Keyboard shortcuts.
-- With no decks, Home says "Start with a prize game" so the core drill comes first.
+1. A Pokemon played for its Ability was flagged critical for its attack cost. Shaymin got "has no Grass Energy". Now a Pokemon with an Ability is not flagged for an attack it never needs to use.
+2. A Pokemon was flagged for a missing Energy type even when another of its attacks could be paid. Now it is flagged only when no attack can be paid.
+3. When the card database did not have your printing, the app read another printing by name and trusted its attack costs. That printing's costs now give a "Check this card's attack cost" warning, not a critical.
+4. "Damage ceiling is too low" was critical for anything under 230. A hit of 170 or more knocks out a 340 HP threat in two hits, so it is now a warning ("Two hits for the biggest threats"). Viability now rises with damage instead of jumping between three fixed levels, so different builds get different scores.
+5. Conditional damage: a bonus that needs cards in the discard pile (Dhelmise's 140 more with 4 Hide 'n' Sneak Pokemon there) now counts only when your list holds enough of those cards. The grade says what it hits early and what it hits once the condition is met.
+6. Hide 'n' Sneak and other Abilities that stop effects or damage are now credited ("Hard to disrupt"). The prize trade now counts how many of your Pokemon give up two prizes, and one-prize attackers that two-shot are credited.
+7. Odds picked the main attacker by its best printed damage and called it "ready" by turn 2. It now uses realistic damage. When the full hit waits on the discard pile it says "in hand by turn 2" and explains that filling the discard pile is not counted.
+8. "Line locked in prizes" showed 0.0% on one list and <0.1% on the other. A lock that can happen now always shows <0.1% when it is that rare.
+9. Names ending in ex showed as "Ex" ("Latias Ex"). Fixed.
+10. Saved decks read their card data again once, the next time you open them online, so they pick up the new Ability and damage details.
+11. HnS Legacy's Energy section was there (7 Energy, 60 cards). Your screenshot was cut off above it.
 
-## Phone pass
-- Every button, toggle and field is at least 44px on touch screens and at widths up to 520px: header buttons, small buttons, the Modes options, the format toggle, the games count, energy chips, Clear all data, and the cover card button (its picture stays the same size, the tap area grew).
-- Checked at 320, 360, 390 and 430px with no sideways scrolling.
-- The Google Fonts stylesheet no longer blocks the first paint. The same fonts show once loaded.
-- Card pictures in the Cards tab load as they scroll into view, which saves data on a phone.
-- Speed with the phone CPU slowed 4x: the page was ready in about 0.22 to 0.36 seconds, opening a deck took about 12 ms, and switching tabs or starting a game took under 10 ms. The file is 437 KB, about 119 KB once GitHub Pages compresses it. I did not minify it, so it stays easy for you to edit.
+Note: other decks can score differently too. The Charizard test deck went from 3.7 to 6.0, because Rotom V is played for its Ability and is no longer flagged for having no Lightning Energy.
 
-## Feedback button
-- Help and feedback, then Send feedback. Pick Bug, Missing card or Idea, type a note, and optionally tick "Include my list". It opens a new issue on github.com/optumesto/PrizeTrainer with the app version, screen and device filled in.
-- No email address is in the app. Nothing is sent until the person presses Submit on GitHub, and they need a free GitHub account. This is the default; the address lives in one line (FEEDBACK_REPO) if you want it to point somewhere else, such as a form. If issues are turned off on the repo, turn them on in the repo settings.
-- Typed text is cleaned (control and direction marks removed, length capped) and only ever goes into the link.
+## App fixes
 
-## Starter decks
-- Five Standard lists, loaded through the normal import, so they behave like any pasted list and can be edited. The picker says "List as of 31 Oct 2026" and shows each finish.
-- Dragapult ex: Andrew Hedrick, 1st, Regional Puebla, 24 Oct 2026. https://limitlesstcg.com/decks/list/29678
-- Slowking: Aarni Karjala, 1st, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/30165
-- Team Rocket's Honchkrow: Finn Lasse Fries, 2nd, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/28372 (Limitless shows one page per identical list; its header credits an earlier pilot)
-- Alakazam Dudunsparce: Nathan Ginsburg, 3rd, Regional Puebla, 24 Oct 2026. https://limitlesstcg.com/decks/list/30794
-- Crustle Kangaskhan: Miloslav Posledni, 4th, Regional Gdańsk, 31 Oct 2026. https://limitlesstcg.com/decks/list/31082
-- Set codes are as Limitless shows them (for example 30C for Mew ex). Whether every card in these newer sets gets art and card data depends on the card database, the same as for any pasted list.
+Home, help and dialogs
+1. Send feedback said "Could not open a new tab" even when GitHub opened. Fixed.
+2. Escape did not close any dialog outside a game, and tapping the dim area never closed a sheet. Both close it now, unless you have typed something in it.
+3. Loading the same starter deck twice made a second copy. It now opens the one you have.
 
-## Tested
-- New feature run (v24): 132 of 132, three runs in a row. Covers the tour (first visit, steps, keys, Skip, not after reload, not from links, the update note, replay from Help and How to play), the Practice tab and switch at 320 to 430px, Home order, Help, feedback links (version, no email, deck only when ticked, script strings never run), all five starter lists parsing to 60 and loading, 44px controls on 17 screens and sheets at 360 and 430px with touch on, light theme, cache name, no dashes, and Grade and Odds rendering the same as v23.
-- Existing feature run (38 checks): 38 of 38 at 390, 360 and 320px.
-- The v23 feature run on v24: 90 of 92. The two misses are expected: the deck now has four tabs instead of six, and the cache name is prize-trainer-v24.
-- The card database and card art cannot be reached from my test machine, so both were simulated (screenshots use stand-in art and fallback fonts). Not checked on a real phone.
+Prize game, results and data
+4. A new personal best was lost on reload. It is saved now.
+5. Escape during the Reach check could leave its question open over Home, and answering it recorded the game you quit. Fixed.
+6. A timed game you left (by opening a deck or daily link) could end itself later and pop up Results. Leaving a game now stops its clock.
+7. In a tournament block, the big Play again button quietly ended the block. Mid block it now reads Next game and continues the block.
+8. Restoring a damaged backup wiped all decks. Now nothing changes and you get a message.
+9. Edit deck accepted a list under 10 cards. It now has the same check as Import.
+10. A deck link with broken encoding failed with no message. It now says the link could not be read.
+11. Prized energy showed as "Basic {R} Energy" after a game. It now shows "Basic Fire Energy".
+12. On a computer, Play again sat far below the results. It now stays in view at the bottom.
+13. Table check hand cards were 36px wide on phones. Now 44px.
+14. The card in view was cut off on shorter phones and in Table check. It now fits.
 
-## To install
-Upload index.html and sw.js from this folder over the current ones (cache is prize-trainer-v24). Includes all v23 changes.
+Practice, notes and logs
+15. After Edit deck saved a new list, Hand, Goldfish, Resource count and Opponent prize read kept dealing cards from the old list. They now start fresh.
+16. Compare with the original scrolled under the sticky tabs. It now lands right below them.
+17. Editing a logged match whose deck was deleted moved it to another deck. It now keeps the deleted deck.
+18. A matchup note for an opponent that already had one replaced it without asking. It now asks first.
+19. Several small buttons were under 44px on phones (Resource count and prize read steppers, Search deck filter, the prize plan link). All 44px now.
+20. Progress said "Same as the 10 before" when fewer than 10 games came before. It now says the real number.
+
+## Checked, not changed
+
+Duplicate in Edit ignores list changes in the same box. Importing a second deck with an existing name gives no warning. Android back leaves the app. The game screen does not show "game N of M" in a tournament. These have been this way for a while and need your call.
+
+## Not checked here
+
+Starter lists and real card data, because the card database is not reachable from where I build. Art caching from the real card image sites.

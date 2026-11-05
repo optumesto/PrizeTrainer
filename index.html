@@ -15,8 +15,8 @@
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&family=M+PLUS+1+Code:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@700;800;900&family=M+PLUS+1+Code:wght@500;700&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -1646,6 +1646,152 @@
     .btn-thumb-edit .ic { position:relative; }
   }
   .st-from-import { margin-top:0.6rem; }
+
+  /* ══════════════════════════════
+     v25: calmer look, smoother scrolling
+     One type family, one spacing scale, three corner sizes,
+     flat surfaces, color only where it means something.
+  ══════════════════════════════ */
+  :root, body[data-theme="light"] {
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+    --r-xs:6px; --r-sm:10px; --r:12px; --r-lg:16px;
+    --display:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --sh-1:none;
+    --sh-2:0 16px 40px rgba(0,0,0,0.35);
+  }
+  body { background-image:none; }
+  body[data-theme="light"] { background-image:none; }
+  html, body, .screen { scroll-behavior:auto; }
+  textarea#import-list, textarea#edit-list { font-family:ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+
+  /* Screens fade in, no slide, so sticky bars never jump */
+  .screen.active { animation:v25In 0.14s ease-out; }
+  @keyframes v25In { from { opacity:0; } to { opacity:1; } }
+  @media (prefers-reduced-motion:reduce) { .screen.active { animation:none; } }
+
+  /* Solid bars: no blur behind sticky headers, tabs and footers (smoother scrolling on phones) */
+  .app-bar, .review-header, .game-header, .ws-header, .review-footer, .review-tabs {
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+  }
+  .app-bar, .review-header, .game-header, .ws-header, .review-footer { background:var(--bg); }
+  .review-tabs { background:var(--surface-2); box-shadow:none; }
+  .modal-overlay, .loading-overlay { -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .modal-overlay .modal { overscroll-behavior:contain; }
+  .modal-inner, #x-modal-inner { overscroll-behavior:contain; }
+  html:has(.modal-overlay.active), html:has(.prize-browser-overlay.active) { overflow:hidden; }
+  .o-table-wrap, .carousel-track, .hp-chips, .gf-srch { overscroll-behavior-x:contain; }
+
+  /* Headings: one family, clear steps */
+  .app-title { font-weight:800; letter-spacing:-0.02em; }
+  .review-deck-name, .game-deck-name, .ws-title, .deck-name, .dc-t, .st-t, .tour-t { font-weight:700; letter-spacing:-0.01em; }
+  .section-title { font-size:var(--fs-lg); font-weight:700; letter-spacing:-0.01em; }
+  .tour-t { font-weight:800; }
+
+  /* Labels in sentence case, not shouting */
+  .overline, .fmt-badge, .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl {
+    text-transform:none; letter-spacing:0; font-weight:600;
+  }
+  .overline, .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl { font-size:var(--fs-xs); }
+
+  /* No glows: color is for state, not decoration */
+  .btn-primary, .deck-play, .play-btn { box-shadow:none; }
+  .btn:active, .play-btn:active, .deck-play:active, .home-action:active { transform:none; opacity:0.85; }
+  .icon-btn:active { transform:none; background:var(--surface-3); }
+  .dc-card { background:var(--surface); border-color:var(--line); box-shadow:none; }
+  .dc-ic { background:var(--surface-2); color:var(--accent); }
+  .g-hero { box-shadow:none; }
+  .pball { box-shadow:none; }
+  .pb-new { animation:none; }
+  [style*="text-shadow"], .celebrate-text, .perfect-text { text-shadow:none; }
+
+  /* Format badge: quiet outline instead of a colored pill */
+  .fmt-badge { padding:0.1rem 0.45rem; border-radius:var(--r-xs); border:1px solid var(--line-2); background:none; }
+  .fmt-standard, .fmt-expanded { background:none; color:var(--text-2); }
+
+  /* Recent scores: neutral, a perfect game keeps the gold */
+  .deck-hist-pip, .deck-hist-pip.good, .deck-hist-pip.mid, .deck-hist-pip.bad {
+    background:var(--surface-2); color:var(--text-2); border-radius:var(--r-xs); font-weight:600;
+  }
+  .deck-hist-pip.perfect { background:var(--surface-2); color:var(--accent); }
+  .deck-act.btn-weakspot-link { color:var(--text-2); }
+  .header-stat .ic { color:var(--text-3); }
+
+  /* Cards and lists share one surface style */
+  .deck-card, .home-action, .st-row, .hs-row, .g-hero { border-radius:var(--r-lg); }
+  .home-action .ha-ic, .hs-row .ha-ic { background:var(--surface-2); color:var(--text-2); }
+  body[data-theme="light"] .home-action .ha-ic, body[data-theme="light"] .hs-row .ha-ic { background:var(--surface-2); color:var(--text-2); }
+  .tour-ic { background:var(--surface-2); }
+
+  /* Spacing on one scale */
+  .home-content { padding-left:var(--sp-4); padding-right:var(--sp-4); }
+  .home-content > * + * { margin-top:var(--sp-4); }
+  .home-content > .section-head { margin-top:var(--sp-5); margin-bottom:0; }
+  .home-content > .section-head:first-child { margin-top:var(--sp-2); }
+  #daily-card { margin-top:var(--sp-4); }
+  .home-more { margin-top:var(--sp-6); }
+  .home-actions, .deck-list { gap:var(--sp-3); }
+  .home-cta-row { gap:var(--sp-3); }
+  .modal-actions { gap:var(--sp-3); }
+
+  /* Card placeholder in place of the playing card emoji */
+  .ph-card { display:inline-block; width:22px; height:30px; border:2px solid currentColor; border-radius:4px; opacity:0.4; vertical-align:middle; }
+  .empty-state .icon .ph-card { width:30px; height:40px; }
+
+  /* Card position: a thin track instead of a field of dots */
+  .progress-dots { flex-wrap:nowrap; gap:2px; width:100%; max-width:320px; padding:8px 0; }
+  .progress-dot { flex:1 1 0; width:auto; min-width:0; height:4px; border-radius:2px; }
+  .progress-dot.current { transform:none; background:var(--accent); }
+
+  /* Results: Play again stays in reach at the bottom */
+  #screen-results .results-main {
+    position:sticky; bottom:0; z-index:20; background:var(--bg);
+    border-top:1px solid var(--line); padding-top:var(--sp-3);
+    padding-bottom:calc(var(--sp-3) + env(safe-area-inset-bottom,0));
+  }
+
+  /* Practice switch fades between sections */
+  .review-body { animation:v25In 0.12s ease-out; }
+  @media (prefers-reduced-motion:reduce) { .review-body { animation:none; } }
+  #screen-results .results-more { padding-bottom:var(--sp-3); }
+  #screen-results .results-main { padding-top:var(--sp-3); }
+  @media (min-width:900px) { #screen-results .results-main { position:static; border-top:0; } }
+  .swipe-nav { width:100%; padding:0 var(--sp-4); box-sizing:border-box; }
+  .swipe-nav .progress-dots { width:min(320px, 100%); gap:1px; }
+  .progress-dot.seen { background:color-mix(in srgb, var(--accent) 35%, var(--surface-3)); }
+  /* One clock: when the big clock shows, the small one in the bar steps aside */
+  #screen-game:has(.game-countdown-big:not(.hidden)) .game-timer { visibility:hidden; }
+  #screen-results > .scrollable { overflow:visible; }
+  /* The page itself is the only thing that scrolls: body clips sideways
+     overflow without becoming its own scroll box, so sticky bars at the
+     bottom (deck Play, results Play again) really stick. */
+  body { overflow-x:hidden; overflow-x:clip; }
+
+  /* v26 fixes */
+
+  /* v26 area A: 44px tap targets in the Practice tab and tournament log */
+  @media (pointer:coarse), (max-width:520px) {
+    .stp-b, .stp.sm .stp-b { width:44px; height:44px; }
+    .stp.sm { gap:2px; }
+    .stp.sm b { min-width:1.1em; }
+    .gf-filt .mode-opt { min-width:44px; padding-left:2px; padding-right:2px; }
+    .tl-plan { display:inline-flex; align-items:center; min-height:44px; margin:-8px 0 -12px; }
+  }
+
+  /* v26: Play again stays in reach on wide screens too */
+  @media (min-width:900px) { #screen-results .results-main { position:sticky; border-top:1px solid var(--line); } }
+  /* v26: hand cards in Table check are 44px wide on phones */
+  @media (pointer:coarse), (max-width:520px) { .hand-row { grid-template-columns:repeat(7, minmax(0, 44px)); } }
+  /* v26: on phones the card in view fits its stage (Table check and short screens clipped its top and bottom) */
+  @media (max-width:767px) and (max-height:860px) {
+    .card-display { width:150px; }
+    .card-display.is-center { width:172px; }
+  }
+  @media (max-width:767px) and (max-height:940px) {
+    .card-viewer.has-hand .card-display { width:120px; }
+    .card-viewer.has-hand .card-display.is-center { width:134px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1733,7 +1879,7 @@
     <div class="section-head"><h2 class="section-title">Your decks</h2></div>
     <div class="deck-list" id="deck-list">
       <div class="empty-state">
-        <span class="icon">🃏</span>
+        <span class="icon"><i class=ph-card></i></span>
         No decks yet.<br>Import your first deck below.
       </div>
     </div>
@@ -1894,11 +2040,13 @@
     </div>
     </div>
     </div><!-- /results-scrollable-desktop -->
-    <div class="results-actions">
-      <button class="btn btn-primary" onclick="playAgain()"><svg class="ic"><use href="#i-play"/></svg>Play again</button>
+    <div class="results-actions results-more">
       <button class="btn" onclick="openPrizeBrowser()"><svg class="ic"><use href="#i-image"/></svg>View prize cards</button>
       <button class="btn" onclick="goHome()"><svg class="ic"><use href="#i-grid"/></svg>All decks</button>
       <button class="btn btn-ghost" onclick="exportHistory()"><svg class="ic"><use href="#i-file"/></svg>Export history (CSV)</button>
+    </div>
+    <div class="results-actions results-main">
+      <button class="btn btn-primary" onclick="playAgain()"><svg class="ic"><use href="#i-play"/></svg>Play again</button>
     </div>
   </div>
 </div>
@@ -2687,6 +2835,25 @@ function findOverride(name) {
    Turn one raw API card into the shape the grader consumes.
    ============================================================ */
 
+/**
+ * The condition on a damage bonus that needs cards in the discard pile,
+ * read from the attack text: "If you have 4 or more Pokemon that have the
+ * Hide 'n' Sneak Ability in your discard pile". Returns
+ * { n, what, ability, kind } or null when the bonus has no such condition.
+ */
+function damageCondition(text) {
+  const m = String(text || '').match(/if you have (\d+) or more ([^.,]+?) in your discard pile/i);
+  if (!m) return null;
+  const what = m[2].trim();
+  const ab = what.match(/that have (?:the )?(.+?) abilit(?:y|ies)/i);
+  return {
+    n: parseInt(m[1], 10),
+    what: what.replace(/\bAbility\b/g, 'ability'),
+    ability: ab ? ab[1].trim() : null,
+    kind: /energy/i.test(what) ? 'energy' : /pok[eé]mon/i.test(what) ? 'pokemon' : /supporter|item|trainer/i.test(what) ? 'trainer' : 'card',
+  };
+}
+
 function enrichCard(apiCard, opts) {
   const o = opts || {};
   const card = apiCard || {};
@@ -2709,6 +2876,7 @@ function enrichCard(apiCard, opts) {
 
   const attacks = (card.attacks || []).map(a => {
     const dmg = parseDamage(a.damage, a.text);
+    const cond = damageCondition(a.text || '');
     return {
       name: a.name || '',
       cost: parseCost(a.cost),
@@ -2717,8 +2885,16 @@ function enrichCard(apiCard, opts) {
       // Convenience scalars for callers that just want a number.
       dmg: dmg.typical,
       dmgMax: dmg.max,
+      // A bonus that waits on cards piling up in the discard pile is not
+      // there early, so early damage is the base until the condition is met.
+      cond: dmg.kind === 'plus' && cond ? cond : null,
+      early: dmg.kind === 'plus' && cond ? dmg.base : dmg.typical,
     };
   });
+  const abilities = (card.abilities || []).map(x => ({
+    name: x.name || '',
+    protect: /prevent all (?:damage|effects)/i.test(x.text || ''),
+  }));
 
   const supertype = String(card.supertype || '').toLowerCase();
   const t = supertype === 'pokémon' || supertype === 'pokemon' ? 'pkmn'
@@ -2743,6 +2919,7 @@ function enrichCard(apiCard, opts) {
     ace: isAceSpec(card),
     reg: parseRegulation(card, resolved),
     attacks,
+    abilities,
     provides,
     requires,
     // Provenance, so a grader can report how much of its input it trusted.
@@ -3125,7 +3302,7 @@ function reviewImgError(img) {
     img.dataset.fallbackIdx = idx + 1;
     img.src = fbs[idx];
   } else {
-    img.parentElement.innerHTML = '<div class="review-placeholder">🃏</div>';
+    img.parentElement.innerHTML = '<div class="review-placeholder"><i class=ph-card></i></div>';
   }
 }
 
@@ -3353,7 +3530,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 2;
+const ENRICH_VER = 3;
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -3405,7 +3582,8 @@ async function refreshDeckData(deck) {
 const FMT = { threatHP:[280,340], ohkoTarget:320, fastSetup:2 };
 
 const gClamp = (x,a,b) => Math.max(a, Math.min(b,x));
-const gCap   = s => String(s||'').replace(/\b\w/g, m => m.toUpperCase());
+// Capitalise words, but keep the lower case "ex" the cards print ("Latias ex").
+const gCap   = s => String(s||'').replace(/\b\w/g, m => m.toUpperCase()).replace(/\bEx\b/g, 'ex');
 const gR1    = x => Math.round(x*10)/10;
 
 function gHuman(req) {
@@ -3446,7 +3624,8 @@ function toGradeDeck(deck) {
     // truthiness of .attacks to decide whether a deck has an attacker,
     // and an empty array is truthy.
     const atks = (c.attacks && c.attacks.length)
-      ? c.attacks.map(a => ({ cost:a.cost||[], dmg:a.dmg||0 }))
+      ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
+          early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -3454,7 +3633,9 @@ function toGradeDeck(deck) {
       from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null,
-      attacks: atks, provides: c.provides||[], requires: c.requires||[]
+      attacks: atks, provides: c.provides||[], requires: c.requires||[],
+      abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
+      byName: !!c.byName
     }};
   });
 }
@@ -3470,8 +3651,15 @@ function gCoherence(deck) {
     c.requires.forEach(req => { reqTotal++;
       if (req.startsWith('energy:')) {
         const ty=req.split(':')[1];
-        if (energyTypes[ty]) reqMet++;
-        else flaws.push({sev:'crit', t:`${gCap(e.name)} has no ${gCap(ty)} Energy`,
+        const payable=(c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]));
+        if (energyTypes[ty] || payable) reqMet++;
+        else if (c.abil && c.abil.length) { reqMet++;
+          if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '),
+            p:`${gCap(e.name)} is here for its Ability, so its attack needing ${gCap(ty)} Energy does not matter.`, who:c.key}); }
+        else if (c.byName) { reqMet++;
+          flaws.push({sev:'warn', who:c.key, t:`Check ${gCap(e.name)}'s attack cost`,
+            d:`The card data for ${gCap(e.name)} came from another printing, which needs ${gCap(ty)} Energy. If your printing costs something else, ignore this.`}); }
+        else flaws.push({sev:'crit', who:c.key, t:`${gCap(e.name)} has no ${gCap(ty)} Energy`,
           d:`Its attack needs ${gCap(ty)} Energy, but there is none in the deck. As built it cannot actually fire.`});
       } else if (req.startsWith('partner:')) {
         const who=req.split(':')[1];
@@ -3506,31 +3694,74 @@ function gCoherence(deck) {
 
 function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks&&e.card.hp>h)h=e.card.hp; }); return h||200; }
 
+/**
+ * What one attack reaches. A bonus that waits on the discard pile counts
+ * only when the deck holds enough of those cards to ever meet it.
+ */
+function gAtkReach(a, deck) {
+  const now = a.early != null ? a.early : (a.dmg || 0);
+  if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
+  const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
+  let have = 0;
+  deck.forEach(e => { const c = e.card; if (!c) return;
+    if (ab) { if ((c.abil || []).some(x => x.toLowerCase() === ab)) have += e.qty; }
+    else if (a.cond.kind === 'pokemon') { if (c.t === 'pkmn') have += e.qty; }
+    else if (a.cond.kind === 'energy') { if (c.t === 'energy') have += e.qty; }
+    else if (a.cond.kind === 'trainer') { if (c.t === 'trainer') have += e.qty; }
+    else have += e.qty; });
+  const top = have >= a.cond.n ? Math.max(a.max || 0, now) : now;
+  return { now, top, cond: top > now ? a.cond : null, have };
+}
+
 function gViability(deck, coh) {
   const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
-  let best=0, bestName='';
-  attackers.forEach(e => e.card.attacks.forEach(a => {
-    const ok=(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]);
-    if (ok && a.dmg>best) { best=a.dmg; bestName=e.name; }}));
+  const pay=a=>(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]);
+  // Best payable hit per attacker: its ceiling, and what it does early.
+  const reach=[];
+  attackers.forEach(e => { let r0=null;
+    e.card.attacks.forEach(a => { if (!pay(a)) return; const r=gAtkReach(a, deck);
+      if (!r0 || r.top>r0.top || (r.top===r0.top && r.now>r0.now)) r0=r; });
+    if (r0 && r0.top>0) reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0 }); });
+  let bestR=null; reach.forEach(r => { if (!bestR || r.top>bestR.top) bestR=r; });
+  const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
   const boost = coh.provided['damage_boost']>0 ? 50 : 0;
+  const [lo, hi] = FMT.threatHP;
   let eff=best+boost, closeScore, strat;
+  const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
     d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
   else if (spreadEngine) { strat='spread'; eff=Math.round(best*1.5)+boost; closeScore=0.9;
     findings.push({sev:'ok', t:'Closes through spread, not one big hit',
-    d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP threats.`}); }
+    d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=1;
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${gCap(bestName)}${boost?' with its damage booster':''} reaches ${eff}, enough to one-shot the format's ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP threats.`}); }
-  else if (eff>=230) { strat='2hko'; closeScore=0.72;
-    findings.push({sev:'warn', t:'Solid damage, but not a one-shot',
-    d:`${gCap(bestName)} tops out near ${eff}. Format threats sit at ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP, so you will be two-shotting the big ones. Fine if you can take the return hit.`}); }
-  else { strat='weak'; closeScore=0.32;
+    d:`${gCap(bestName)}${boost?' with its damage booster':''} reaches ${eff}, enough to one-shot the format's ${lo} to ${hi} HP threats.`}); }
+  else if (eff*2>=hi) { strat='2hko';
+    // Linear between a bare two-hit knockout (170) and a one-shot (320).
+    closeScore=0.6+0.3*(eff-hi/2)/(FMT.ohkoTarget-hi/2);
+    const one=[...new Set(reach.filter(r=>r.p===1 && (r.top+boost)*2>=hi).map(r=>gCap(r.name)))];
+    if (one.length) closeScore+=0.06;
+    findings.push({sev:'warn', t:'Two hits for the biggest threats',
+    d:`${gCap(bestName)} tops out near ${eff}, so ${lo} to ${hi} HP threats take two hits.${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+  else { strat='weak'; closeScore=0.15+0.45*eff/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`Your best line caps around ${eff}, but format threats have ${FMT.threatHP[0]} to ${FMT.threatHP[1]} HP. You cannot trade up, which usually loses the prize race.`}); }
+    d:`Your best line caps around ${eff}, so even ${lo} HP threats take three or more hits. You cannot trade up, which usually loses the prize race.`}); }
+  if (bestR && bestR.cond) findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
+    d:`${gCap(bestName)} hits for ${bestR.now} early and ${bestR.top} once ${condTxt(bestR)}. Your list has ${bestR.have} of those cards, so the full hit is a mid game plan, not a turn 2 one.`});
+  // Abilities that stop attack effects or damage make the deck hard to disrupt.
+  const prot=deck.filter(e=>e.card&&e.card.protect);
+  const protN=prot.reduce((a,e)=>a+e.qty,0);
+  if (protN>=8) { closeScore+=0.05;
+    findings.push({sev:'ok', t:'Hard to disrupt',
+    d:`${protN} of your Pokemon have Abilities that stop effects or damage from your opponent's attacks (${prot.slice(0,3).map(e=>gCap(e.name)).join(', ')}). Opponents get fewer cheap knockouts and lock pieces against you.`}); }
+  closeScore=gClamp(closeScore,0,1);
+  const pk=deck.filter(e=>e.card&&e.card.t==='pkmn');
+  const pkN=pk.reduce((a,e)=>a+e.qty,0)||1;
+  const multiN=pk.filter(e=>(e.card.p||1)>=2).reduce((a,e)=>a+e.qty,0);
   const bigLiabs=deck.filter(e=>e.card&&e.card.p>=3);
-  let prizeScore=0.82;
+  // Fewer multi-prize Pokemon, fewer easy prizes for the opponent.
+  let prizeScore=0.9-0.25*multiN/pkN;
   if (bigLiabs.length) { const list=bigLiabs.map(e=>gCap(e.name)).join(', ');
     if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
       findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
@@ -3538,7 +3769,7 @@ function gViability(deck, coh) {
     else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
       d:`${list} are risky at 3 prizes each, yet you hit hard enough to justify the trade.`}); }
   else findings.push({sev:'ok', t:'Efficient prize trade',
-    d:'Mostly one and two prize attackers, so you are not handing over easy multi-prize turns.'});
+    d:multiN?`${multiN} of your ${pkN} Pokemon ${multiN>1?'give':'gives'} up two prizes and the rest give up one, so you are not handing over easy multi-prize turns.`:'Every Pokemon here gives up one prize, so the opponent has to take six knockouts.'});
   const stage2=deck.filter(e=>e.card&&e.card.stage==='stage2').reduce((a,e)=>a+e.qty,0);
   const candy=coh.provided['evolution_access']||0;
   let clockScore=0.82;
@@ -3548,7 +3779,7 @@ function gViability(deck, coh) {
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 attackers before the game runs away.'});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
-  return { score, findings, best, eff, bestName };
+  return { score, findings, best, eff, bestName, reach };
 }
 
 function gradeDeck(deck) {
@@ -3737,16 +3968,19 @@ function simAttackerLine(deck, groups) {
   try { R = gradeDeck(deck); } catch (_) { return null; }
   if (!R) return null;
   const et = (R.coh && R.coh.energyTypes) || {};
-  const payDmg = {};
+  // Realistic damage: a discard pile bonus counts only when the list can meet it.
+  const payDmg = {}, reachOf = {};
   R.entries.forEach(e => {
     if (!e.card || !e.card.attacks) return;
-    let best = 0;
+    let best = null;
     e.card.attacks.forEach(a => {
       const ok = (a.cost||[]).every(ty => ty==='colorless' || et[ty]);
-      if (ok && a.dmg > best) best = a.dmg;
+      if (!ok) return;
+      const r = gAtkReach(a, R.entries);
+      if (!best || r.top > best.top) best = r;
     });
     const k = e.card.key;
-    payDmg[k] = Math.max(payDmg[k]||0, best);
+    if (best && best.top > (payDmg[k]||0)) { payDmg[k] = best.top; reachOf[k] = best; }
   });
   const idx = k => groups.findIndex(g => g.key === k);
   let top = -1, bestScore = 0;
@@ -3756,7 +3990,9 @@ function simAttackerLine(deck, groups) {
   });
   if (top < 0) return null;
   const g = groups[top];
-  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false };
+  const r = reachOf[g.key];
+  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false,
+    cond: r && r.cond ? r.cond : null, now: r ? r.now : 0, full: r ? r.top : 0 };
   if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
   if (g.stage === 'stage1') {
     line.basic = g.from ? idx(g.from) : -1;
@@ -3974,7 +4210,7 @@ function renderOdds() {
     <div class="o-tile" style="--tone:${tAtk}">
       <div class="ol">Attacker by T2</div>
       <div class="ov">${!lineOk?'?':S.anySearch?oPct(S.online).replace('%','')+'-'+oPct(S.onlineS):oPct(S.online)}</div>
-      <div class="os">${lineOk?esc(line.name)+(S.anySearch?', raw draws to with search':', raw draws'):'No attacker line read'}</div></div>
+      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', raw draws to with search':', raw draws'):'No attacker line read'}</div></div>
   </div>
   <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
 
@@ -4008,12 +4244,12 @@ function renderOdds() {
       parts.push(`${esc(S.groups[line.basic].name)} plus ${esc(line.name)}`);
     } else parts.push(esc(line.name));
     h += `<div class="g-sec"><div class="g-sec-t">Main attacker</div>
-      <div class="g-sec-i">The attacker with the most damage across all its copies, and how often you can have it ready by your second turn.</div>
+      <div class="g-sec-i">The attacker with the most realistic damage across all its copies, and how often you can have it ready by your second turn.</div>
       <div class="g-item ${(S.anySearch?S.onlineS:S.online)>=0.6?'ok':(S.anySearch?S.onlineS:S.online)>=0.4?'warn':'crit'}">
-        <div class="gt">${esc(line.name)} ready by turn 2: ${oPct(S.online)}${S.anySearch?' to '+oPct(S.onlineS):''}</div>
-        <p>Needs ${parts[0]} among your first ${SIM_SEEN_T2} cards. ${oPct(S.online)} is raw draws alone, the floor.${S.anySearch?` ${oPct(S.onlineS)} lets every search card you see fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.</p></div>
+        <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn 2: ${oPct(S.online)}${S.anySearch?' to '+oPct(S.onlineS):''}</div>
+        <p>Needs ${parts[0]} among your first ${SIM_SEEN_T2} cards. ${oPct(S.online)} is raw draws alone, the floor.${S.anySearch?` ${oPct(S.onlineS)} lets every search card you see fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} until you have ${line.cond.n} ${esc(line.cond.what)} in your discard pile, then ${line.full}. Filling the discard pile is not counted here, so the full hit by turn 2 is much less likely than this.`:''}</p></div>
       <div class="g-item ${S.locked<=0.02?'ok':S.locked<=0.06?'warn':'crit'}">
-        <div class="gt">Line locked in prizes: ${oPct(S.locked)}</div>
+        <div class="gt">Line locked in prizes: ${S.locked===0 && [line.basic,line.s1,line.top].some(i=>i>=0&&S.groups[i].qty<=6) ? '<0.1%' : oPct(S.locked)}</div>
         <p>Games where every copy of a piece the attacker needs is prized, so it cannot come online until you take that prize.</p></div>
     </div>`;
   }
@@ -4146,7 +4382,7 @@ function renderReview(deck) {
             ? `<img src="${card.imageUrl}" alt="${esc(rawName)}"
                 data-fallbacks='${fallbacks}' data-fallback-idx="0"
                 onerror="reviewImgError(this)">`
-            : `<div class="review-placeholder">🃏</div>`;
+            : `<div class="review-placeholder"><i class=ph-card></i></div>`;
           return `
             <div class="review-card">
               <div class="review-card-img">
@@ -4346,7 +4582,7 @@ function handCardHTML(card) {
   const fallbacks = esc(JSON.stringify(card.fallbackUrls || []));
   const img = card.imageUrl
     ? `<img src="${esc(card.imageUrl)}" alt="${esc(rawName)}" data-fallbacks="${fallbacks}" data-fallback-idx="0" onerror="reviewImgError(this)">`
-    : `<div class="review-placeholder">🃏</div>`;
+    : `<div class="review-placeholder"><i class=ph-card></i></div>`;
   return `<div class="review-card"><div class="review-card-img">${img}</div><div class="review-card-name">${displayName}</div></div>`;
 }
 
@@ -4590,7 +4826,9 @@ async function nativeShareDeckLink() {
 async function handleShareHash() {
   const m = /^#deck=([^&]*)/.exec(location.hash || '');
   if (!m) return;
-  const shared = await decodeDeckShare(decodeURIComponent(m[1]));
+  let raw = '';
+  try { raw = decodeURIComponent(m[1]); } catch (_) {}
+  const shared = await decodeDeckShare(raw);
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   if (!shared) { showToast('That deck link could not be read.'); return; }
   if (shared.unsupported) { showToast('This browser cannot open compressed deck links. Try an up to date browser.'); return; }
@@ -4689,10 +4927,10 @@ function renderProgressSection(deck) {
   let spdSub = 'Per game, last ' + W.now.n, spdCls = '';
   if (W.prev) {
     const dA = Math.round((W.now.acc - W.prev.acc) * 100);
-    accSub = dA === 0 ? 'Same as the 10 before' : `${dA > 0 ? 'Up' : 'Down'} ${Math.abs(dA)} pts on the ${W.prev.n} before`;
+    accSub = dA === 0 ? `Same as the ${W.prev.n} before` : `${dA > 0 ? 'Up' : 'Down'} ${Math.abs(dA)} pts on the ${W.prev.n} before`;
     accCls = dA > 0 ? 'up' : dA < 0 ? 'down' : '';
     const dT = Math.round(W.now.time - W.prev.time);
-    spdSub = dT === 0 ? 'Same as the 10 before' : `${Math.abs(dT)}s ${dT < 0 ? 'faster' : 'slower'} than before`;
+    spdSub = dT === 0 ? `Same as the ${W.prev.n} before` : `${Math.abs(dT)}s ${dT < 0 ? 'faster' : 'slower'} than before`;
     spdCls = dT < 0 ? 'up' : dT > 0 ? 'down' : '';
   }
   const totalGames = days.reduce((a, k) => a + deck.daily[k].g, 0);
@@ -5421,7 +5659,7 @@ function gfCardHTML(x, on, extra) {
   const c = x.card;
   const img = c.imageUrl
     ? `<img src="${esc(c.imageUrl)}" alt="${gfNm(x)}" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">`
-    : `<div class="review-placeholder">🃏</div>`;
+    : `<div class="review-placeholder"><i class=ph-card></i></div>`;
   return `<button class="gf-card${on ? ' on' : ''}" ${extra || ''}><div class="review-card-img">${img}</div><div class="review-card-name">${gfNm(x)}</div></button>`;
 }
 function gfMonHTML(m, isActive) {
@@ -6184,7 +6422,7 @@ function renderPrizeBrowser() {
   const total = _pbResults.length;
   const { card, correct } = _pbResults[_pbIdx];
   document.getElementById('pb-count').textContent = `${_pbIdx + 1} / ${total}`;
-  document.getElementById('pb-name').textContent = card.apiName || card.name;
+  document.getElementById('pb-name').textContent = cn23(card.apiName || card.name);
   const badge = document.getElementById('pb-badge');
   badge.textContent = correct ? '✓ Guessed' : '✗ Missed';
   badge.className = 'prize-browser-badge ' + (correct ? 'correct' : 'wrong');
@@ -6199,7 +6437,7 @@ function renderPrizeBrowser() {
       data-fallbacks='${fallbacks}' data-fallback-idx="0"
       data-name="${esc(card.name)}" onerror="swapImgOrPlaceholder(this,'prize-browser-placeholder')">`;
   } else {
-    body.innerHTML = `<div class="prize-browser-placeholder"><span>🃏</span><span>${esc(card.apiName || card.name)}</span></div>`;
+    body.innerHTML = `<div class="prize-browser-placeholder"><span><i class=ph-card></i></span><span>${esc(cn23(card.apiName || card.name))}</span></div>`;
   }
 }
 
@@ -6303,8 +6541,8 @@ function buildDeckCard(deck) {
   }
   const thumbSrc = deck.thumbUrl || deck.cards?.find(c => c.imageUrl)?.imageUrl || '';
   const thumb = thumbSrc
-    ? `<img src="${thumbSrc}" alt="" onerror="this.parentElement.innerHTML='🃏'">`
-    : '🃏';
+    ? `<img src="${thumbSrc}" alt="" onerror="this.parentElement.innerHTML='<i class=ph-card></i>'">`
+    : '<i class=ph-card></i>';
   const missingArt = deck.cards.filter(c => !c.imageUrl).length;
   const total = deck.cards.reduce((a,c)=>a+c.count,0);
   // Average shown as a percentage to stay meaningful across mixed prize counts
@@ -6351,7 +6589,7 @@ function buildDeckCard(deck) {
 function renderHome() {
   const list = document.getElementById('deck-list');
   if (state.decks.length === 0) {
-    list.innerHTML = `<div class="empty-state"><span class="icon">🃏</span>No decks yet.<br>Import your first deck below.</div>`;
+    list.innerHTML = `<div class="empty-state"><span class="icon"><i class=ph-card></i></span>No decks yet.<br>Import your first deck below.</div>`;
     updateHeaderStats();
     return;
   }
@@ -6444,7 +6682,7 @@ function openEditModal(deckId) {
     const total = parsed.reduce((a,c) => a+c.count, 0);
     const prev = document.getElementById('edit-preview');
     if (!parsed.length) { prev.textContent = ''; return; }
-    prev.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ' ⚠ Expected 60.' : ' ✓ 60 cards.'}`;
+    prev.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ' Expected 60.' : ' 60 cards, ready.'}`;
   };
   document.getElementById('edit-modal').classList.add('active');
 }
@@ -6515,7 +6753,7 @@ function initImportListener() {
     const preview = document.getElementById('parse-preview');
     if (!preview) return;
     if (parsed.length === 0) { preview.textContent = ''; return; }
-    preview.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ` ⚠ Expected 60.` : ' ✓ 60 cards.'}`;
+    preview.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== 60 ? ` Expected 60.` : ' 60 cards, ready.'}`;
   });
 }
 
@@ -6555,6 +6793,11 @@ const LIMITLESS_TO_PTCGIO = TCGEnrich.SET_MAP;
  * whatever they already had, and renderReview falls back to its heuristic.
  * Returns a coverage report so the UI can say how much it actually read.
  */
+/** True when a card read by name is still the same printing as the list line. */
+function sameCardNumber(c, e) {
+  return !!(e.id && c.set && c.num && TCGEnrich.toCardId(c.set, c.num) === e.id);
+}
+
 async function enrichDeckCards(cards) {
   const blank = { total: (cards || []).length, resolved: 0, unresolved: (cards || []).length, pct: 0 };
   if (typeof TCGEnrich === 'undefined' || !cards || !cards.length) return blank;
@@ -6576,7 +6819,7 @@ async function enrichDeckCards(cards) {
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
       ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
         // Every override is a Trainer, and its role is known without the API.
@@ -6597,7 +6840,7 @@ async function enrichDeckCards(cards) {
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
       ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
     }
@@ -6613,12 +6856,16 @@ async function enrichDeckCards(cards) {
     c.reg         = e.reg;
     c.ace         = e.ace;
     c.dataSource  = e.source;
+    c.abilities   = e.abilities || [];
+    // Read by name from another printing: its costs may not match the card in the list.
+    c.byName      = e.matchedBy === 'name' && !sameCardNumber(c, e) ? true : undefined;
     // Store parsed damage numbers only. The raw attack text is what makes
     // the payload big, and inference already ran, so it is dead weight in
     // IndexedDB once parsed.
     c.attacks = (e.attacks || []).map(a => ({
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
+      early: a.early, cond: a.cond || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -6854,7 +7101,7 @@ function weightedPickPrizes(pool, n, weights) {
 
 // Build the inner HTML for one card slot
 function buildCardHTML(card) {
-  if (!card) return '<div class="card-placeholder"><span>🃏</span></div>';
+  if (!card) return '<div class="card-placeholder"><span><i class=ph-card></i></span></div>';
   const rawName = card.apiName || card.name;
   const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g, '').trim());
   if (card.imageUrl) {
@@ -6862,10 +7109,10 @@ function buildCardHTML(card) {
     return `<img src="${card.imageUrl}" alt="${esc(rawName)}" loading="lazy" decoding="async"
         data-fallbacks='${fallbacks}' data-fallback-idx="0"
         onerror="var fbs=JSON.parse(this.dataset.fallbacks||'[]');var idx=parseInt(this.dataset.fallbackIdx)||0;if(idx<fbs.length){this.dataset.fallbackIdx=idx+1;this.src=fbs[idx];}else{this.style.display='none';this.nextElementSibling.style.display='flex';this.nextElementSibling.nextElementSibling.style.display='block';}">
-      <div class="card-placeholder" style="display:none"><span>🃏</span><span>${displayName}</span></div>
+      <div class="card-placeholder" style="display:none"><span><i class=ph-card></i></span><span>${displayName}</span></div>
       <div class="card-name-label" style="display:none">${displayName}</div>`;
   }
-  return `<div class="card-placeholder"><span>🃏</span><span>${displayName}</span></div>
+  return `<div class="card-placeholder"><span><i class=ph-card></i></span><span>${displayName}</span></div>
       <div class="card-name-label">${displayName}</div>`;
 }
 
@@ -7320,10 +7567,10 @@ async function revealPrizes(force) {
       <div class="prize-reveal-card" style="border-color:${wasGuessed ? 'var(--success)' : 'var(--danger)'}">
         ${card.imageUrl
           ? `<img src="${card.imageUrl}" alt="${esc(card.name)}" data-fallbacks='${JSON.stringify(card.fallbackUrls || [])}' data-fallback-idx="0" onerror="swapImgOrPlaceholder(this,'card-placeholder result-ph')">`
-          : `<div class="card-placeholder" style="height:100%;display:flex;align-items:center;justify-content:center;">🃏</div>`
+          : `<div class="card-placeholder" style="height:100%;display:flex;align-items:center;justify-content:center;"><i class=ph-card></i></div>`
         }
         <div class="badge ${wasGuessed ? 'correct' : 'wrong'}">${wasGuessed ? '✓' : '✗'}</div>
-        <div class="prize-card-name">${esc(card.apiName || card.name)}</div>
+        <div class="prize-card-name">${esc(cn23(card.apiName || card.name))}</div>
       </div>`;
   }).join('');
 
@@ -7339,6 +7586,7 @@ async function revealPrizes(force) {
   // Personal bests
   const pbDiv = document.getElementById('pb-display');
   const newPBs = updatePersonalBests(deck, score, elapsed, game.prizeCount || 6);
+  if (newPBs.length) await saveState();
   renderPersonalBests(deck, pbDiv, newPBs);
 
   // History table
@@ -7465,7 +7713,7 @@ function renderMissedNotes(prizes, usedPrizeIdxs, deck) {
     const card = prizes[i];
     const existing = session.prizes && session.prizes[i] ? (session.prizes[i].note || '') : '';
     return `<div class="mn-row">
-      <div class="mn-card">${esc(card.apiName || card.name)}</div>
+      <div class="mn-card">${esc(cn23(card.apiName || card.name))}</div>
       <textarea class="mn-input" data-prize-idx="${i}" placeholder="Why did I miss this? (e.g. 'didn't expect the tech')">${esc(existing)}</textarea>
     </div>`;
   }).join('');
@@ -7515,7 +7763,7 @@ function buildGuessComparison(guessResults, prizes, pc) {
     let prizeName = '-';
     if (gr.correct && gr.matchedPrizeIdx >= 0) {
       const p = prizes[gr.matchedPrizeIdx];
-      prizeName = p.apiName || p.name;
+      prizeName = cn23(p.apiName || p.name);
       matchedPrizes.add(gr.matchedPrizeIdx);
     }
     rows.push('<div class="guess-compare-row ' + (gr.correct ? 'hit' : 'miss') + '">' +
@@ -7528,7 +7776,7 @@ function buildGuessComparison(guessResults, prizes, pc) {
   // Unguessed prizes
   prizes.forEach((p, i) => {
     if (matchedPrizes.has(i)) return;
-    const name = p.apiName || p.name;
+    const name = cn23(p.apiName || p.name);
     rows.push('<div class="guess-compare-row miss">' +
       '<div class="gcr-guess gcr-empty">No guess</div>' +
       '<div class="gcr-arrow">✗</div>' +
@@ -7573,7 +7821,7 @@ function renderPersonalBests(deck, container, newPBs) {
     const isNew = newPBs.includes('fastest_' + t);
     return `<div class="pb-cell">
       <div class="pb-val ${isNew ? 'pb-new' : ''}">${formatTime(pb['fastest_' + t])}</div>
-      <div class="pb-lbl">Fastest ${t}/6${isNew ? '<br>★ New best' : ''}</div>
+      <div class="pb-lbl">Fastest ${t}/6${isNew ? '<br>New best' : ''}</div>
     </div>`;
   });
   if (!cells.length) { container.innerHTML = ''; return; }
@@ -7777,7 +8025,7 @@ function openWeakSpots(deckId) {
           return `
           <div class="ws-card-row ${cls}">
             <div class="ws-card-thumb">
-              ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${esc(c.name)}">` : '🃏'}
+              ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${esc(c.name)}">` : '<i class=ph-card></i>'}
             </div>
             <div class="ws-card-info">
               <div class="ws-card-name">${esc(c.name)}</div>
@@ -8200,7 +8448,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v24';
+const PT_VERSION = 'v26';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -8490,7 +8738,8 @@ function sendFeedback() {
   const inc = document.getElementById('fb-deck');
   const deck = inc && inc.checked ? (state.decks.find(d => d.id === state.activeDeckId) || state.decks[0]) : null;
   const url = feedbackUrl(fbKind, t ? t.value : '', deck);
-  const w = window.open(url, '_blank', 'noopener');
+  const w = window.open(url, '_blank');
+  if (w) { try { w.opener = null; } catch (_) {} }
   closeSheet();
   showToast(w ? 'Opened GitHub in a new tab.' : 'Could not open a new tab. Allow pop ups and try again.');
 }
@@ -8596,6 +8845,104 @@ document.addEventListener('DOMContentLoaded', () => {
   const rb = document.getElementById('review-body');
   if (rb) _v24ImgObs.observe(rb, { childList: true, subtree: true });
 });
+
+// ═══════════ v25: keep your place when moving around ═══════════
+// Home and each deck tab remember how far down you were. Switching to a
+// tab you have not opened yet starts it right under the sticky tabs.
+const _v25Scroll = {};
+let _v25Tab = 'cards';
+const _v25Key = id => id === 'screen-review' ? `review:${state.activeDeckId}:${_v25Tab}` : id;
+const _v25Restore = y => requestAnimationFrame(() => window.scrollTo(0, y));
+
+const _v24ShowScreen = showScreen;
+showScreen = function (name) {
+  const cur = document.querySelector('.screen.active');
+  if (cur) _v25Scroll[_v25Key(cur.id)] = window.scrollY;
+  const r = _v24ShowScreen.apply(this, arguments);
+  const id = name === 'home' ? 'screen-home' : name === 'review' ? 'screen-review' : null;
+  if (id) _v25Restore(_v25Scroll[_v25Key(id)] || 0);
+  return r;
+};
+
+const _v24ShowReviewTab = showReviewTab;
+showReviewTab = function (which) {
+  const onReview = document.getElementById('screen-review').classList.contains('active');
+  if (onReview) _v25Scroll[_v25Key('screen-review')] = window.scrollY;
+  const r = _v24ShowReviewTab.apply(this, arguments);
+  _v25Tab = which === 'practice' ? lastPracticeTab : which;
+  if (!onReview) return r;
+  const saved = _v25Scroll[_v25Key('screen-review')];
+  if (saved != null) { _v25Restore(saved); return r; }
+  requestAnimationFrame(() => {
+    const tabs = document.querySelector('.review-tabs');
+    const sub = document.getElementById('rv-sub');
+    const panes = { cards: 'review-body', grade: 'grade-body', odds: 'odds-body', hand: 'hand-body', drills: 'drills-body', notes: 'notes-body' };
+    const el = sub && sub.style.display !== 'none' ? sub : document.getElementById(panes[_v25Tab]);
+    if (!tabs || !el) return;
+    const gap = el.getBoundingClientRect().top - tabs.getBoundingClientRect().bottom - 8;
+    if (gap < 0) window.scrollBy(0, gap);
+  });
+  return r;
+};
+
+// ═══════════ v26: dialogs close the way you expect ═══════════
+// Escape closes the top dialog on a computer, and tapping the dim area
+// around a sheet closes it on a phone. A dialog where you have typed
+// something stays open, so nothing you wrote is lost by a stray tap.
+const _v26Close = {
+  'x-modal': () => closeSheet(), 'import-modal': () => closeImportModal(), 'edit-modal': () => closeEditModal(),
+  'mode-modal': () => closeModeModal(), 'how-to-modal': () => closeHowToPlay(), 'shortcuts-modal': () => closeShortcuts(),
+  'backup-modal': () => closeBackupModal(), 'thumb-picker-modal': () => closeThumbPicker(),
+  'deck-share-modal': () => closeDeckShare(), 'share-modal-overlay': () => closeShareModal(),
+};
+// What each field held when its dialog opened, so only your own typing counts.
+const _v26Seen = new WeakMap();
+const _v26Fields = m => [...m.querySelectorAll('textarea, input:not([type]), input[type=text], input[type=number], input[type=search]')];
+function _v26Snap(m) { _v26Fields(m).forEach(el => _v26Seen.set(el, el.value)); }
+Object.keys(_v26Close).forEach(id => {
+  const m = document.getElementById(id);
+  if (m) new MutationObserver(() => { if (m.classList.contains('active')) _v26Snap(m); }).observe(m, { attributes: true, attributeFilter: ['class'] });
+});
+function _v26Dirty(m) {
+  return _v26Fields(m).some(el => {
+    if (el.readOnly || el.disabled || el.offsetParent === null) return false;
+    const was = _v26Seen.has(el) ? _v26Seen.get(el) : el.defaultValue;
+    return el.value !== was && el.value.trim() !== '';
+  });
+}
+function _v26Top() {
+  const open = [...document.querySelectorAll('.modal-overlay.active')].filter(m => _v26Close[m.id]);
+  if (!open.length) return null;
+  open.sort((a, b) => (+getComputedStyle(a).zIndex || 0) - (+getComputedStyle(b).zIndex || 0));
+  return open[open.length - 1];
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || (typeof tourOpen === 'function' && tourOpen())) return;
+  if (document.getElementById('prize-browser-overlay').classList.contains('active')) return;
+  const ac = document.getElementById('autocomplete-list');
+  if (ac && ac.style.display !== 'none' && ac.contains(document.activeElement)) return;
+  const m = _v26Top();
+  if (!m) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (!_v26Dirty(m)) _v26Close[m.id]();
+}, true);
+let _v26DownOn = null;
+document.addEventListener('pointerdown', e => { _v26DownOn = e.target; }, true);
+document.addEventListener('click', e => {
+  const m = e.target;
+  if (!m.classList || !m.classList.contains('modal-overlay') || !m.classList.contains('active')) return;
+  if (_v26DownOn !== m || !_v26Close[m.id] || _v26Dirty(m)) return;
+  _v26Close[m.id]();
+});
+
+// Loading a starter deck you already have opens that deck instead of a second copy.
+const _v25LoadStarter = loadStarterDeck;
+loadStarterDeck = async function (id) {
+  const s = STARTER_DECKS.find(x => x.id === id);
+  const same = s && state.decks.find(d => d.starter === id && deckListText(d.cards || []) === deckListText(parseDeckList(s.list)));
+  if (same) { closeSheet(); openReview(same.id); showToast(`You already have this list as "${same.name}".`); return; }
+  return _v25LoadStarter.apply(this, arguments);
+};
 </script>
 
 <!-- SHARE MODAL -->
@@ -8661,5 +9008,179 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </div>
+<script>
+
+// ═══════════ v26 fixes, area A: Practice tab, tournament log ═══════════
+
+// A1. Saving Edit deck left Hand, Goldfish and the drills dealing from the
+// old list (cards cut from the deck still showed up). Drop those deals when
+// the saved list differs, so the next look deals from the new list.
+(function () {
+  const sig = d => JSON.stringify((d && d.cards || []).map(c => [c.name, c.set, c.num, c.count]));
+  const _saveEdit = saveEditDeck;
+  saveEditDeck = async function () {
+    const id = editDeckId;
+    const before = sig(state.decks.find(d => d.id === id));
+    const r = await _saveEdit.apply(this, arguments);
+    const deck = state.decks.find(d => d.id === id);
+    if (deck && sig(deck) !== before) {
+      if (handState && handState.deckId === id) handState = null;
+      if (gf && gf.deckId === id) gf = null;
+      if (resDrill && resDrill.deckId === id) resDrill = null;
+      if (readDrill && readDrill.src === 'd:' + id) readDrill = null;
+    }
+    return r;
+  };
+})();
+
+// A2. "Compare with the original" scrolled the Compare section under the
+// sticky header and tabs, hiding its title and the Compare with menu.
+openCompare = function (val) {
+  _cmpSel = val;
+  renderNotes();
+  const s = document.getElementById('cmp-sec');
+  if (!s) return;
+  const bars = [...document.querySelectorAll('#screen-review .review-header, #screen-review .review-tabs')]
+    .map(e => e.getBoundingClientRect().bottom);
+  const top = bars.length ? Math.max(...bars) : 0;
+  window.scrollBy(0, s.getBoundingClientRect().top - top - 8);
+};
+
+// A3. Editing a logged match whose deck was deleted moved it to whichever
+// deck was first in the list. Keep it on the deleted deck instead.
+(function () {
+  const GONE = '__deleted__';
+  const _form = openTlogForm;
+  openTlogForm = function (id) {
+    const r = _form.apply(this, arguments);
+    const x = id ? (state.tlog || []).find(e => e.id === id) : null;
+    const sel = document.getElementById('tl-deck');
+    if (x && sel && !state.decks.some(d => d.id === x.deckId)) {
+      const o = document.createElement('option');
+      o.value = GONE;
+      o.textContent = (x.deckName || 'Deleted deck') + ' (deleted)';
+      sel.insertBefore(o, sel.firstChild);
+      sel.value = GONE;
+    }
+    return r;
+  };
+  const _save = saveTlog;
+  saveTlog = async function (id) {
+    const sel = document.getElementById('tl-deck');
+    const x = id ? (state.tlog || []).find(e => e.id === id) : null;
+    if (!sel || sel.value !== GONE || !x) return _save.apply(this, arguments);
+    const dayRaw = String(document.getElementById('tl-day').value || '');
+    Object.assign(x, {
+      day: /^\d{4}-\d{2}-\d{2}$/.test(dayRaw) ? dayRaw : x.day,
+      event: one23(document.getElementById('tl-event').value, 60),
+      opp: one23(document.getElementById('tl-opp').value, 60) || 'Unknown deck',
+      result: ['W', 'L', 'T'].includes(_tlForm.result) ? _tlForm.result : 'W',
+      taken: Math.max(0, Math.min(6, _tlForm.taken | 0)), given: Math.max(0, Math.min(6, _tlForm.given | 0)),
+      notes: clean23(document.getElementById('tl-notes').value, 500).trim(),
+    });
+    await saveState();
+    closeSheet();
+    renderTlog();
+    showToast('Match saved.');
+  };
+})();
+
+// A4. Adding a matchup note for an opponent that already had one, or
+// renaming a note to that opponent, silently threw the older plan away
+// (or left two notes for one deck). Ask before replacing it.
+(function () {
+  const _saveMu = saveMatchup;
+  saveMatchup = async function (id) {
+    const deck = findDeck(state.activeDeckId);
+    const inp = document.getElementById('mu-opp');
+    if (deck && inp) {
+      const opp = one23(inp.value, 60);
+      const k = opp.toLowerCase();
+      const other = k && (deck.matchups || []).find(m => m.id !== id && m.opp.toLowerCase() === k);
+      if (other) {
+        if (other.plan && !confirm(`You already have a note for ${opp}. Replace it with this one?`)) return;
+        deck.matchups = deck.matchups.filter(m => m !== other);
+      }
+    }
+    return _saveMu.apply(this, arguments);
+  };
+})();
+
+</script>
+<script>
+// ═══════════ v26 fixes (sweep B: game, results, decks, backup) ═══════════
+(function () {
+  // Escape (or any game shortcut) while a pop up sits over the game acts on
+  // the pop up, not the game: Escape closes it instead of quitting.
+  document.addEventListener('keydown', e => {
+    const g = document.getElementById('screen-game');
+    if (!g || !g.classList.contains('active')) return;
+    const sheet = document.getElementById('x-modal');
+    if (!sheet || !sheet.classList.contains('active')) return;
+    if (e.key === 'Escape') { closeSheet(); e.preventDefault(); }
+    e.stopImmediatePropagation();
+  }, true);
+
+  // Quitting closes any open question sheet, so it cannot reveal a game you left.
+  confirmQuit = function () {
+    if (!confirm('Quit this session?')) return;
+    stopTimer();
+    closeSheet();
+    game._reach = null;
+    goHome();
+  };
+
+  // Leaving the game screen for anything but the results stops the clock,
+  // so a timed game you left (a deck or daily link) never ends on its own later.
+  const _show = showScreen;
+  showScreen = function (name) {
+    const g = document.getElementById('screen-game');
+    if (g && g.classList.contains('active') && name !== 'game' && name !== 'results') stopTimer();
+    return _show.apply(this, arguments);
+  };
+
+  // During a tournament block the big button carries on with the block
+  // instead of quietly ending it.
+  const _again = playAgain;
+  playAgain = function () {
+    if (tournament.active && tournament.current < tournament.total) return nextTournamentGame();
+    return _again.apply(this, arguments);
+  };
+  const _banner = renderTournamentBanner;
+  renderTournamentBanner = function () {
+    const r = _banner.apply(this, arguments);
+    const b = document.querySelector('#screen-results .results-main .btn-primary');
+    if (b) b.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>' + (tournament.active && tournament.current < tournament.total ? 'Next game' : 'Play again');
+    return r;
+  };
+
+  // An edited list needs at least 10 cards, the same as an import.
+  const _saveEdit = saveEditDeck;
+  saveEditDeck = async function () {
+    const raw = (document.getElementById('edit-list').value || '').trim();
+    if (raw) {
+      const cards = parseDeckList(raw);
+      const total = cards.reduce((a, c) => a + c.count, 0);
+      if (cards.length && total < 10) { showToast(`Only ${total} cards found. Check your list format.`); return; }
+    }
+    return _saveEdit.apply(this, arguments);
+  };
+
+  // A backup has to look like one before it replaces your data.
+  const okBackup = p => p && typeof p === 'object' && Array.isArray(p.decks) && p.decks.every(d =>
+    d && typeof d === 'object' && d.id != null && typeof d.name === 'string' && Array.isArray(d.cards) &&
+    d.cards.every(c => c && typeof c === 'object' && typeof c.name === 'string' && Number.isFinite(c.count)) &&
+    (d.history == null || Array.isArray(d.history)));
+  const _restore = restoreBackup;
+  restoreBackup = async function () {
+    const text = document.getElementById('backup-textarea').value.trim();
+    let parsed = null;
+    try { parsed = JSON.parse(text); } catch (_) {}
+    if (text && parsed && parsed.decks && !okBackup(parsed)) { showToast('That backup is damaged or incomplete. Nothing was changed.'); return; }
+    return _restore.apply(this, arguments);
+  };
+})();
+
+</script>
 </body>
 </html>
