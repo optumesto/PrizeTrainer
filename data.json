@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "asOf": "2026-11-08",
+  "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it.",
+  "starters": [
+    {
+      "id": "dragapult",
+      "name": "Dragapult ex",
+      "by": "Andrew Hedrick",
+      "place": "1st",
+      "event": "Regional Puebla",
+      "date": "24 Oct 2026",
+      "src": "https://limitlesstcg.com/decks/list/29678",
+      "list": "Pokémon: 19\n4 Dreepy TWM 128\n4 Drakloak TWM 129\n3 Dragapult ex TWM 130\n2 Munkidori TWM 95\n2 Budew ASC 16\n1 Dunsparce TEF 128\n1 Dudunsparce TEF 129\n1 Meowth ex POR 62\n1 Fezandipiti ex ASC 142\n\nTrainer: 32\n4 Lillie's Determination MEG 119\n3 Boss's Orders MEG 114\n2 Crispin SCR 133\n1 Rosa's Encouragement POR 84\n1 Judge POR 76\n4 Buddy-Buddy Poffin TEF 144\n4 Poké Pad POR 81\n4 Crushing Hammer POR 71\n3 Ultra Ball MEG 131\n3 Night Stretcher ASC 196\n1 Unfair Stamp TWM 165\n2 Risky Ruins MEG 127\n\nEnergy: 9\n3 Fire Energy MEE 10\n3 Psychic Energy MEE 13\n3 Darkness Energy MEE 15"
+    },
+    {
+      "id": "slowking",
+      "name": "Slowking",
+      "by": "Aarni Karjala",
+      "place": "1st",
+      "event": "Regional Gdańsk",
+      "date": "31 Oct 2026",
+      "src": "https://limitlesstcg.com/decks/list/30165",
+      "list": "Pokémon: 22\n4 Slowpoke SCR 57\n3 Slowking SCR 58\n4 Mega Kangaskhan ex MEG 104\n2 Latias ex SSP 76\n2 Metagross CRI 61\n2 Kyurem SFA 47\n1 Fezandipiti ex ASC 142\n1 Zeraora DRI 78\n1 Lillie's Clefairy ex JTG 56\n1 Meowth ex POR 62\n1 Mew ex 30C 66\n\nTrainer: 28\n4 Ciphermaniac's Codebreaking TEF 145\n4 Lillie's Determination MEG 119\n4 Ultra Ball MEG 131\n4 Poké Pad POR 81\n3 Wondrous Patch PFL 94\n2 Night Stretcher ASC 196\n1 Switch MEG 130\n1 Secret Box TWM 163\n1 Lucky Helmet TWM 158\n4 Academy at Night SFA 54\n\nEnergy: 10\n4 Psychic Energy MEE 13\n4 Telepathic Psychic Energy POR 88\n2 Boomerang Energy TWM 166"
+    },
+    {
+      "id": "honchkrow",
+      "name": "Team Rocket's Honchkrow",
+      "by": "Finn Lasse Fries",
+      "place": "2nd",
+      "event": "Regional Gdańsk",
+      "date": "31 Oct 2026",
+      "src": "https://limitlesstcg.com/decks/list/28372",
+      "list": "Pokémon: 13\n4 Team Rocket's Murkrow DRI 127\n3 Team Rocket's Honchkrow ASC 127\n2 Team Rocket's Porygon DRI 153\n1 Team Rocket's Porygon2 DRI 154\n2 Team Rocket's Articuno DRI 51\n1 Team Rocket's Mimikyu DRI 87\n\nTrainer: 39\n4 Team Rocket's Archer DRI 170\n4 Team Rocket's Ariana DRI 171\n4 Team Rocket's Petrel DRI 176\n4 Team Rocket's Proton DRI 177\n4 Team Rocket's Giovanni DRI 174\n4 Team Rocket's Transceiver DRI 178\n4 Poké Pad POR 81\n4 Roto-Stick PRE 127\n2 Night Stretcher ASC 196\n1 Pokégear 3.0 SVI 186\n1 Miracle Headset SSP 183\n3 Team Rocket's Factory DRI 173\n\nEnergy: 8\n4 Ignition Energy WHT 86\n4 Team Rocket's Energy DRI 182"
+    },
+    {
+      "id": "alakazam",
+      "name": "Alakazam Dudunsparce",
+      "by": "Nathan Ginsburg",
+      "place": "3rd",
+      "event": "Regional Puebla",
+      "date": "24 Oct 2026",
+      "src": "https://limitlesstcg.com/decks/list/30794",
+      "list": "Pokémon: 21\n4 Abra MEG 54\n4 Kadabra MEG 55\n3 Alakazam MEG 56\n3 Dunsparce JTG 120\n2 Dudunsparce TEF 129\n2 Lillie's Clefairy ex JTG 56\n1 Fezandipiti ex ASC 142\n1 Genesect SFA 40\n1 Flutter Mane TEF 78\n\nTrainer: 31\n4 Dawn PFL 87\n4 Hilda WHT 84\n2 Boss's Orders MEG 114\n4 Buddy-Buddy Poffin TEF 144\n4 Poké Pad POR 81\n3 Wondrous Patch PFL 94\n2 Rare Candy MEG 125\n1 Sacred Ash DRI 168\n1 Special Red Card CRI 82\n3 Lillie's Pearl JTG 151\n3 Battle Cage PFL 85\n\nEnergy: 8\n4 Telepathic Psychic Energy POR 88\n2 Psychic Energy MEE 13\n1 Mist Energy TEF 161\n1 Enriching Energy SSP 191"
+    },
+    {
+      "id": "crustle",
+      "name": "Crustle Kangaskhan",
+      "by": "Miloslav Posledni",
+      "place": "4th",
+      "event": "Regional Gdańsk",
+      "date": "31 Oct 2026",
+      "src": "https://limitlesstcg.com/decks/list/31082",
+      "list": "Pokémon: 10\n4 Mega Kangaskhan ex MEG 104\n3 Dwebble DRI 11\n3 Crustle DRI 12\n\nTrainer: 35\n4 Boss's Orders MEG 114\n4 Team Rocket's Petrel DRI 176\n3 Lillie's Determination MEG 119\n3 Crispin SCR 133\n2 Eri TEF 146\n2 Hilda WHT 84\n1 Xerosic's Machinations SFA 64\n1 Pokémon Center Lady MEG 123\n4 Jumbo Ice Cream PFL 91\n3 Pokégear 3.0 SVI 186\n2 Buddy-Buddy Poffin TEF 144\n1 Switch MEG 130\n1 Ultra Ball MEG 131\n1 Hero's Cape TEF 152\n1 Lumiose City POR 77\n1 Festival Grounds TWM 149\n1 Prism Tower CRI 80\n\nEnergy: 15\n4 Mist Energy TEF 161\n4 Growing Grass Energy POR 86\n2 Spiky Energy JTG 159\n1 Psychic Energy MEE 13\n1 Darkness Energy MEE 15\n1 Fighting Energy MEE 14\n1 Fire Energy MEE 10\n1 Grass Energy MEE 9"
+    }
+  ],
+  "meta": {
+    "asOf": "2026-11-08",
+    "from": "Limitless online tournaments, current Standard format",
+    "src": "https://play.limitlesstcg.com/decks?game=PTCG",
+    "decks": [
+      {
+        "name": "Dragapult ex",
+        "share": 11.32
+      },
+      {
+        "name": "Basic Box",
+        "share": 5.46
+      },
+      {
+        "name": "N's Zoroark",
+        "share": 4.93
+      },
+      {
+        "name": "Dhelmise",
+        "share": 4.84
+      },
+      {
+        "name": "Slowking",
+        "share": 4.75
+      }
+    ]
+  },
+  "rotation": {
+    "firstLegal": "H",
+    "asOf": "8 Nov 2026",
+    "next": {
+      "marks": [
+        "H"
+      ],
+      "announced": false,
+      "when": "April 2027",
+      "live": "late March 2027",
+      "src": {
+        "name": "CardJinx, 25 Oct 2026",
+        "url": "https://cardjinx.com/guides/pokemon-tcg-rotation-2027/"
+      },
+      "pattern": "D left in 2023, E in 2024, F in 2025 and G in 2026, each announced in January and gone from events in April",
+      "checkBy": "2027-02-01"
+    },
+    "last": {
+      "marks": [
+        "G"
+      ],
+      "events": "10 April 2026",
+      "live": "26 March 2026",
+      "src": {
+        "name": "Pokémon TCG Live letter to the community, 19 Mar 2026",
+        "url": "https://community.pokemon.com/en-us/discussion/23170/letter-to-the-community-march-19-2026"
+      }
+    },
+    "rules": {
+      "name": "Play! Pokémon Rules and Formats",
+      "url": "https://play.pokemon.com/en-ca/resources/rules/"
+    }
+  },
+  "sets": {
+    "MEG": "me01",
+    "PFL": "me02",
+    "ASC": "me02.5",
+    "POR": "me03",
+    "CRI": "me04",
+    "PBL": "me05"
+  }
+}
