@@ -1,44 +1,46 @@
-# v37: RdyDeck
+# v38: more room, one type system, settings, SEO and legal drafts
 
-Changed files: index.html, sw.js (cache prize-trainer-v37), manifest.json, README.md, CHANGES.md, scripts/refresh-data.mjs, scripts/check-cards.mjs (new), .github/workflows/refresh-data.yml. data.json is unchanged; the weekly job adds card fixes to it.
+Changed files: index.html, sw.js (cache prize-trainer-v38), manifest.json, CHANGES.md.
+New files: fonts/ (9 font files), terms.html, privacy.html, robots.txt, sitemap.xml, og-image.png.
+Not changed: icons/, data.json, scripts/, .github/. The app icon stays as it is until a logo is picked.
 
-## New name
-- Prize Trainer is now RdyDeck everywhere you see a name: title, header, home screen name, share text, downloads, help and credits.
-- Kept as PrizeTrainer on purpose: the repo and web address, the saved deck storage, the offline cache names and the daily challenge seed. Changing any of them would wipe saved decks, break installed copies or change today's challenge.
-- The app icon shows no name, so it needed no change.
+## More room
+- Home deck rows show the name, grade, format, card and game count, and the rotation line. Play and a menu button sit on the right.
+- The Deck, Modes, Edit and Progress buttons, the average and best line, the recent score chips and the small cover card button moved into the menu (Grade, odds and cards; Prize game; Progress; Game modes; Edit the list; Cover card). Tapping a deck still opens its grade.
+- The games played line under the header is one quiet line instead of boxes.
+- On a computer: decks are one roomy column with Import, Starter decks, the daily challenge and More beside them. The page is capped at 1120 px wide (1280 px on very wide screens).
+- Deck pages on a computer: tabs no longer stretch across the screen, Grade, Odds and Practice read in one column that lines up with the tabs, and the Prize game button sits at the right of the bottom bar.
+- Checked on every tab (Grade, Odds, Cards, Hand, Drills, Notes and a prize game) at 320, 390, 900 and 1280 px, in dark and light.
 
-## New look
-- Built like a tournament decklist sheet: condensed headings, counts in a typewriter face, ink and paper with one red for marks. Dark mode is paper on a playmat.
-- Gone: the glow, the pill badges, the grade dial, the icon on every tab and button, the blurred bars.
-- Card art is the same size as before. Zoom still works. Every screen fits at 320 px.
-- Cards per row: the Cards tab and the daily deck list have a Per row control (3 to 6 on a phone, more on wider screens). The pick is kept on this device. Counts and rotation marks stay readable at 6 across. Pinch stays as page zoom so the two never fight.
-- The results screen and the ad spots now match the sheet: square corners, plain time line, ads between two hairlines with a small AD label.
+## Header
+- RDY is red and DECK is white on dark (dark ink on light).
+- The line under the name reads "Can Your Deck Win?".
+- The moon button is now a Settings gear.
 
-## Save and open decks (for the move to a new web address)
-- Saved decks belong to one web address, so decks on optumesto.github.io will not show up on rdydeck.com by themselves. Backup and restore is now Save and open decks.
-- Save: a file (rdydeck-decks-DATE.json), Share on phones that can share files, or Copy as text. It holds every deck, prize game, tournament log entry, daily result and drill stat, plus the theme, cards per row and tour settings. The age answer stays on the device.
-- Open: a file or pasted text. Decks are added to the ones already there; the same deck is not added twice, and its games are joined. Replace everything takes a second tap.
-- A backup is checked before anything changes. Plain text, broken files, unsafe values and bad settings are refused with a plain message. Old backup text still opens.
-- To move players: on the old address, tap Save and open decks, then Save a file. On rdydeck.com, tap Save and open decks, then Open a file.
+## One type system
+- Light and dark used different fonts and corner sizes because an old rule set Inter for light mode only. Both themes now use the same fonts, sizes, weights and corners; only colors change.
+- Three faces: Barlow for text, Barlow Condensed for headings and numbers, IBM Plex Mono for counts and labels.
+- The font files are now part of the app (fonts/), so they load the same on every device and work offline. Nothing loads from Google Fonts any more.
+- To try other fonts later: add the new font files to fonts/ and change the three font names in the "v38: one type system" block of index.html.
 
-## Card accuracy (checked against pokemon-tcg-data, TCGdex and Limitless)
-- Mega Pokémon ex give up 3 prizes. A card that prints both the ex rule and the Mega rule was read as 2 on the main card source.
-- 6 cards printed with a G mark (like Ancient Booster Energy Capsule) were listed as H by pokemontcg.io. Fixed, so they no longer read as expected to rotate in 2027.
-- A "Free" attack cost counted as one Energy. It now counts as none.
-- TCGdex marks some Special Energy as Normal (like Telepathic Psychic Energy). They were read as Basic Energy, so 5 copies passed the deck rules. Now they are Special.
-- Delta Reign on TCGdex had no regulation marks, called 12 Stage 1 and Stage 2 cards Basic (like Talonflame ex and Mega Golisopod ex) and left out what 30 cards evolve from. All fixed, and checked against pokemon-tcg-data.
-- Azurill's Bouncy-Bounce Charge is a 0 cost attack, not an Ability.
-- Coin flips: Mega Kangaskhan ex Rapid-Fire Combo averages 250, not 350. Flip attacks now use their average and say so.
-- Copy attacks: N's Zoroark ex Night Joker now counts N's Zekrom's Rampaging Thunder (250, 330 with Black Belt's Training and Binding Mochi). N's Reshiram no longer gets a false "no Fire Energy" flag. Slowking's Seek Inspiration copies a random card, so it is not counted as a set number.
-- Damage boosters now include Light Ball, Hop's Choice Band, Binding Mochi, Gladion's Final Battle, Premium Power Pro, Postwick and Voltaic Lightning Energy, each only where its text says it applies.
-- The grade says how many hits the format's 280 and 340 HP threats take, not a vague range.
-- Dhelmise's Hide 'n' Sneak style Abilities block effects, not damage. The grade now says damage still goes through.
-- Goldfish tables follow the cards: Buddy-Buddy Poffin finds 70 HP or less, Level Ball 90 HP or less, Battle VIP Pass only on your first turn, and Fezandipiti ex no longer draws in goldfish, since its Ability needs a knockout first.
+## Settings
+- Theme (Dark or Light), Cards per row, Save and open decks, the Age setting (when ads are on), Help and feedback, Terms of Service, Privacy Policy and Clear all data.
+- Clear all data is no longer on the home screen.
 
-## Weekly card check (new)
-- After the data refresh, the weekly job checks every starter deck card and every card in the two newest sets against both card databases: HP, stage, evolves from, regulation mark, attacks, damage, cost, Abilities, Special Energy and ACE SPEC.
-- Where TCGdex leaves something out and pokemon-tcg-data has it, the fix goes into data.json and the app uses it. Everything else that disagrees is listed in card-check.md for a person to check.
-- A test run on today's data found the Delta Reign stage and Azurill problems on its own, and flagged nothing that was right.
+## Search and sharing (SEO)
+- Page title: "RdyDeck: Pokémon TCG Deck Grader and Prize Trainer", with a description, canonical address https://rdydeck.com/, Open Graph and Twitter share cards (og-image.png, 1200 x 630) and WebApplication structured data (free, price 0, publisher Optume Ventures LLC).
+- robots.txt and sitemap.xml point search engines at rdydeck.com.
+- Home ends with a short About RdyDeck block in plain text, so search engines have words to read, with links to Terms, Privacy and Credits.
 
-## Checked, not changed
-- Your own saved decks live on your phone, so they were not checked here. Every deck re-reads its card data once when you open v37.
+### What you need to set for rdydeck.com
+1. Use a new GitHub repo for rdydeck.com (for example "rdydeck") with these files, and set its Pages custom domain to rdydeck.com. GitHub writes a CNAME file for you. Point the domain's DNS at GitHub Pages (four A records and a www CNAME, listed on GitHub's "Managing a custom domain" page) and turn on Enforce HTTPS.
+2. Do not set the custom domain on the PrizeTrainer repo. GitHub would then send optumesto.github.io/PrizeTrainer straight to rdydeck.com, and players would never get back to the old address to save their decks. Saved decks belong to one web address, so they do not move by themselves.
+3. Keep the old PrizeTrainer address running for a while so players can open Save and open decks there, save a file, and open it on rdydeck.com.
+4. rdydeck.app: forward it to https://rdydeck.com/ at your domain registrar (a permanent 301 forward).
+5. After the site is live: add rdydeck.com to Google Search Console, submit https://rdydeck.com/sitemap.xml, and check the share card with a link preview tool.
+
+## Terms and Privacy (drafts)
+- terms.html and privacy.html match the app's look and are marked "Draft for attorney review". Every fact that is not known yet is a [bracketed] blank: dates, contact email, mailing address, county, liability cap, consent tool, opt out link and hosting.
+- They cover: Optume Ventures LLC (Pennsylvania) as operator, no accounts, decks saved on the device, the services the app calls (card data, card pictures, ads, GitHub feedback), Google ads and cookies, the age question and how ads are tagged for children and teens, EEA and UK consent, US state opt out, the unofficial fan tool and trademark notice, and Google Play.
+- Linked from Settings, Credits and legal, and the bottom of home.
+- See rdydeck-v38-compliance-checklist.md for what has to happen before ads go live and before Google Play.

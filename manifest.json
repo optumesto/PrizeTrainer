@@ -1,7 +1,7 @@
 {
   "name": "RdyDeck",
   "short_name": "RdyDeck",
-  "description": "Grade your Pokémon TCG deck, then practice it: grade, odds, rotation, prize drills and more.",
+  "description": "Can Your Deck Win? Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, no account.",
   "start_url": "./index.html",
   "scope": ".",
   "display": "standalone",

@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>RdyDeck</title>
+<title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
+<meta name="description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<link rel="canonical" href="https://rdydeck.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RdyDeck">
+<meta property="og:title" content="RdyDeck: Can Your Deck Win?">
+<meta property="og:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<meta property="og:url" content="https://rdydeck.com/">
+<meta property="og:image" content="https://rdydeck.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RdyDeck: Can Your Deck Win?">
+<meta name="twitter:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<meta name="twitter:image" content="https://rdydeck.com/og-image.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"RdyDeck","url":"https://rdydeck.com/","description":"Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Optume Ventures LLC"}}
+</script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,10 +31,8 @@
 <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" href="fonts/barlow-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-condensed-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -2001,9 +2017,6 @@
   .ad32 { margin:1rem auto; max-width:100%; height:118px; overflow:hidden; text-align:center; contain:layout paint; }
   .ad32-lbl { font-size:var(--fs-xs); color:var(--text-3); line-height:18px; height:18px; }
   .ad32 ins { overflow:hidden; }
-  .buy32 { margin-top:1rem; text-align:center; }
-  .buy32 .btn { text-decoration:none; }
-  .buy32-st { display:inline-block; margin-top:4px; font-size:var(--fs-xs); color:var(--accent); }
   #ad32-grade { margin-bottom:2.5rem; }
   .age32-in { flex:0 0 6rem; max-width:6rem; }
   .dly33-hint { margin:-0.2rem 0 0.9rem; }
@@ -2343,6 +2356,158 @@
   .bk37-found .bk37-btns { grid-template-columns:1fr; }
   .bk37-btns[hidden] { display:none; }
   .bk37-btns .btn { white-space:normal; text-align:center; }
+  /* ══════════════════════════════════════════════════════════════
+     v38: one type system, more room, settings
+  ══════════════════════════════════════════════════════════════ */
+  /* Fonts are files in /fonts, so they load the same on every device and offline.
+     To try other fonts later, add their files and change the three names below. */
+  @font-face { font-family:'RD Body'; font-style:normal; font-weight:400; font-display:swap; src:url(fonts/barlow-400.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Body'; font-style:normal; font-weight:500; font-display:swap; src:url(fonts/barlow-500.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Body'; font-style:normal; font-weight:600; font-display:swap; src:url(fonts/barlow-600.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Body'; font-style:normal; font-weight:700 900; font-display:swap; src:url(fonts/barlow-700.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:100 600; font-display:swap; src:url(fonts/barlow-condensed-600.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/barlow-condensed-700.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:800 900; font-display:swap; src:url(fonts/barlow-condensed-800.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Mono'; font-style:normal; font-weight:100 500; font-display:swap; src:url(fonts/ibm-plex-mono-500.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Mono'; font-style:normal; font-weight:600 900; font-display:swap; src:url(fonts/ibm-plex-mono-600.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+  /* The one place fonts, corners and spacing are set. Both themes use it, so
+     light and dark differ only in color. */
+  html body, html body[data-theme] {
+    --font:'RD Body', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --display:'RD Display', 'Arial Narrow', 'RD Body', system-ui, sans-serif;
+    --mono:'RD Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --r-xs:2px; --r-sm:3px; --r:4px; --r-lg:6px;
+    --sh-1:none;
+    --page:1120px;
+  }
+  textarea#import-list, textarea#edit-list { font-family:var(--mono); }
+  @media (min-width:1600px) { html body, html body[data-theme] { --page:1280px; } }
+
+  /* Header: RDY in red, DECK in the text color (white on dark), the tagline as written */
+  .app-title, body[data-theme="light"] .app-title { color:var(--text); }
+  .app-title .rdy, body[data-theme="light"] .app-title .rdy { color:var(--mark); }
+  .app-title span:not(.rdy) { color:inherit; }
+  .app-subtitle { font-family:var(--font); font-size:0.9375rem; font-weight:500; text-transform:none; letter-spacing:0; color:var(--text-2); margin-top:0.35rem; }
+  .app-header { padding-top:1.25rem; }
+  .app-header-inner { padding-bottom:1rem; }
+  .header-stats { gap:0 1.1rem; margin-top:0.7rem; }
+  .header-stat, body[data-theme="light"] .header-stat {
+    background:none; border:0; padding:0; border-radius:0; min-height:0;
+    font-family:var(--mono); font-size:0.75rem; font-weight:500; color:var(--text-3); gap:0.3rem;
+  }
+  .header-stat b { font-family:var(--mono); font-weight:600; font-size:0.75rem; color:var(--text-2); }
+  .header-stat .ic { width:13px; height:13px; }
+
+  /* Home deck rows: name, grade, one line of facts, then play and a menu */
+  .deck-actions-col, .deck-avg, .deck-history-row, .btn-thumb-edit { display:none !important; }
+  .deck-main { gap:1rem; padding:1.05rem 0; align-items:center; }
+  .deck-info { gap:0.35rem; }
+  .deck-grade { margin:0; }
+  .deck-meta { display:flex; flex-wrap:wrap; align-items:center; gap:0.25rem 0.6rem; }
+  .deck-info .deck-rot { padding:0; margin:0; font-size:0.8125rem; color:var(--text-2); gap:0.35rem; line-height:1.3; }
+  .deck-info .deck-rot .ic { width:13px; height:13px; }
+  .deck-warn { margin:0 0 0.8rem; }
+  .deck-side { display:flex; flex-direction:column; align-items:center; gap:0.45rem; flex-shrink:0; }
+  .deck-more {
+    width:46px; height:36px; display:flex; align-items:center; justify-content:center;
+    border-radius:var(--r-sm); border:1px solid var(--line-2); background:transparent; color:var(--text-2); cursor:pointer;
+  }
+  .deck-more:hover { color:var(--text); background:var(--surface-2); }
+  .deck-more .ic { width:18px; height:18px; }
+
+  /* Home: more air between parts */
+  .home-content { padding-top:1.5rem; padding-bottom:2.5rem; }
+  .home-content > .section-head:first-child { margin-top:0; }
+  .home-cta { margin-top:1.5rem !important; gap:0.6rem; }
+  #daily-card:not(:empty) { margin-top:1.75rem !important; }
+  .home-more { margin-top:2.25rem !important; }
+  .home-more .section-title { margin-bottom:0.6rem; }
+  .home-footer { display:none; }
+
+  /* About text for search engines and new visitors, kept quiet at the bottom */
+  .about38 { margin-top:2.5rem !important; padding-top:1.25rem; border-top:1px solid var(--line-2); color:var(--text-3); font-size:0.875rem; line-height:1.55; }
+  .about38 h2 { font-family:var(--display); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-2); margin:0 0 0.4rem; }
+  .about38 p { margin:0 0 0.6rem; max-width:62ch; }
+  .about38-links { display:flex; flex-wrap:wrap; gap:0.4rem 1.2rem; margin-top:0.8rem; font-family:var(--mono); font-size:0.75rem; }
+  .home-content > .deck-list { margin-top:0.25rem !important; }
+  .about38-links a, .about38-links button { display:inline-flex; align-items:center; line-height:1; color:var(--text-2); text-decoration:underline; text-underline-offset:3px; background:none; border:0; padding:0; font:inherit; cursor:pointer; min-height:32px; }
+  .about38-links a:hover, .about38-links button:hover { color:var(--text); }
+
+  /* Settings and deck menu sheets */
+  .st38-sec { padding:0.9rem 0; border-top:1px solid var(--line-2); }
+  .st38-sec:first-of-type { border-top:2px solid var(--rule, var(--line)); margin-top:0.4rem; }
+  .st38-h { font-family:var(--display); font-weight:700; font-size:1rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 0.2rem; }
+  .st38-p { font-size:0.875rem; color:var(--text-2); margin:0 0 0.6rem; line-height:1.45; }
+  .st38-seg { display:flex; border:1px solid var(--rule, var(--line)); border-radius:2px; overflow:hidden; }
+  .st38-seg button { flex:1; min-height:44px; padding:0 0.6rem; font-family:var(--display); font-weight:600; font-size:1rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); background:transparent; border:0; border-left:1px solid var(--line); cursor:pointer; }
+  .st38-seg button:first-child { border-left:0; }
+  .st38-seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); }
+  .st38-rows { display:flex; flex-direction:column; }
+  .st38-row { display:flex; align-items:center; gap:0.75rem; min-height:48px; padding:0.35rem 0; border:0; border-bottom:1px solid var(--line); background:none; color:var(--text); text-align:left; width:100%; font:inherit; font-weight:600; cursor:pointer; text-decoration:none; }
+  .st38-row:last-child { border-bottom:0; }
+  .st38-row span { flex:1; }
+  .st38-row small { display:block; font-weight:400; font-size:0.8125rem; color:var(--text-3); margin-top:0.1rem; }
+  .st38-row .ic { width:16px; height:16px; color:var(--text-3); flex-shrink:0; }
+  .st38-row:hover { background:var(--accent-soft); }
+  .st38-danger { color:var(--danger); }
+  .st38-ver { font-family:var(--mono); font-size:0.75rem; color:var(--text-3); margin-top:0.8rem; }
+
+  /* Deck pages on a computer: a reading width for text tabs, tabs that do not stretch */
+  @media (min-width:768px) {
+    .review-header, .review-tabs, .review-footer {
+      padding-left:max(var(--pad-x), calc((100% - var(--page)) / 2));
+      padding-right:max(var(--pad-x), calc((100% - var(--page)) / 2));
+    }
+    .review-tabs { justify-content:flex-start; }
+    .rv-tab { flex:0 0 auto; padding:0 1.4rem; }
+    .rv-tab:first-child { padding-left:0; }
+    /* Text tabs read in a 760px column that starts where the tabs start */
+    #grade-body, #odds-body, #hand-body, #drills-body, #notes-body {
+      max-width:none; margin:0;
+      padding-left:max(var(--pad-x), calc((100% - var(--page)) / 2));
+      padding-right:max(var(--pad-x), calc(100% - 760px - max(var(--pad-x), calc((100% - var(--page)) / 2))));
+    }
+    .review-body .g-hero, .review-body .g-sec, .review-body .g-wip, #odds-body .o-tiles, #odds-body .o-meta, #hand-body .hp-wrap { max-width:none; }
+    .review-footer { justify-content:space-between; }
+    .review-stats { max-width:440px; }
+    .play-btn { margin-left:auto; }
+    .review-body { padding-top:1.75rem; padding-bottom:2.25rem; }
+  }
+
+  /* Home on a computer: decks in one roomy column, everything else beside them */
+  @media (min-width:768px) {
+    .deck-list { display:flex !important; flex-direction:column; }
+    .home-content { max-width:calc(760px + 2 * var(--pad-x)); padding-left:var(--pad-x); padding-right:var(--pad-x); }
+    .app-header { padding-left:var(--pad-x); padding-right:var(--pad-x); }
+    .app-header-inner, .header-stats { max-width:760px; margin-left:auto; margin-right:auto; }
+    .deck-thumb { width:70px; height:98px; }
+  }
+  @media (min-width:1100px) {
+    .app-header-inner, .header-stats { max-width:var(--page); }
+    .home-content {
+      max-width:calc(var(--page) + 2 * var(--pad-x));
+      display:grid; grid-template-columns:minmax(0,1fr) 340px; column-gap:64px;
+      grid-template-rows:auto auto auto auto 1fr; align-items:start;
+    }
+    .home-content > * { grid-column:1; margin-top:0 !important; }
+    .home-content > .section-head { grid-row:1; }
+    .home-content > .deck-list { grid-row:2 / span 4; }
+    .home-content > .home-cta { grid-column:2; grid-row:1 / span 2; flex-direction:column; align-self:start; }
+    .home-content > .home-cta .btn { width:100%; min-width:0; }
+    .home-content > #daily-card { grid-column:2; grid-row:3; margin-top:1.5rem !important; }
+    .home-content > .home-more { grid-column:2; grid-row:4; margin-top:1.75rem !important; }
+    .home-content > .about38 { grid-column:1 / -1; grid-row:6; margin-top:3rem !important; }
+    .home-more .home-actions { grid-template-columns:1fr; }
+    .home-more .home-action { flex-direction:row; align-items:center; padding:0.6rem 0.1rem; min-height:46px; }
+    .home-actions .home-action:nth-child(odd) { border-right:0; }
+    .home-actions .home-action:nth-child(even) { padding-left:0.1rem; }
+  }
+  @media (max-width:360px) {
+    .deck-main { gap:0.75rem; }
+    .deck-thumb { width:54px; height:75px; }
+    .deck-name { font-size:1.2rem; }
+  }
 </style>
 </head>
 <body>
@@ -2386,6 +2551,8 @@
     <symbol id="i-compare" viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="16" rx="1.5"/><rect x="13.5" y="4" width="7" height="16" rx="1.5"/></symbol>
     <symbol id="i-drill" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8" fill="currentColor"/></symbol>
     <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h9l4 4V20a.5.5 0 01-.5.5h-12A.5.5 0 016 20z"/><path d="M14.5 3.5V8h4.5M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></symbol>
     <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></symbol>
   </defs>
 </svg>
@@ -2416,12 +2583,12 @@
       <div class="brand">
         <div class="pball" aria-hidden="true"></div>
         <div>
-          <h1 class="app-title">Rdy<span>Deck</span></h1>
-          <div class="app-subtitle">Grade your deck. Drill your prizes.</div>
+          <h1 class="app-title"><span class="rdy">Rdy</span>Deck</h1>
+          <div class="app-subtitle">Can Your Deck Win?</div>
         </div>
       </div>
-      <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle-btn" aria-label="Switch to light theme" title="Switch to light theme">
-        <svg class="ic ic-moon"><use href="#i-moon"/></svg><svg class="ic ic-sun"><use href="#i-sun"/></svg>
+      <button class="icon-btn" onclick="openSettings()" id="settings-btn" aria-label="Settings" title="Settings">
+        <svg class="ic"><use href="#i-gear"/></svg>
       </button>
     </div>
     <div class="header-stats" id="header-stats"></div>
@@ -2448,9 +2615,13 @@
         <button class="home-action" onclick="openHelpSheet()"><span class="ha-ic"><svg class="ic"><use href="#i-help"/></svg></span>Help and feedback</button>
         <button class="home-action" onclick="openBackupModal()"><span class="ha-ic"><svg class="ic"><use href="#i-save"/></svg></span>Save and open decks</button>
       </div>
-      <div class="home-footer">
-        <button class="link-danger" onclick="clearAllData()"><svg class="ic ic-sm"><use href="#i-trash"/></svg>Clear all data</button>
-      </div>
+    </section>
+    <section class="about38" aria-labelledby="about38-h">
+      <h2 id="about38-h">About RdyDeck</h2>
+      <p>RdyDeck is a free Pokémon TCG deck grader and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.</p>
+      <p>Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.</p>
+      <p>Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company.</p>
+      <div class="about38-links"><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><button type="button" onclick="openCredits()">Credits</button></div>
     </section>
   </div>
 </div>
@@ -9355,7 +9526,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v37';
+const PT_VERSION = 'v38';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -11275,7 +11446,7 @@ buildDeckCard = function (deck) {
 // Home says what the app is for now.
 (function () {
   const sub = document.querySelector('#screen-home .app-subtitle');
-  if (sub) sub.textContent = 'Grade your deck. Drill your prizes.';
+  if (sub) sub.textContent = 'Can Your Deck Win?';
   // Tabs: Grade first.
   const tabs = document.querySelector('.review-tabs');
   const order = ['grade', 'odds', 'cards', 'practice'];
@@ -11283,7 +11454,7 @@ buildDeckCard = function (deck) {
   const play = document.querySelector('#screen-review .play-btn');
   if (play) { play.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Prize game'; play.setAttribute('aria-label', 'Start a prize game with this deck'); }
   const md = document.querySelector('meta[name="description"]');
-  if (md) md.setAttribute('content', 'Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, offline, no account.');
+  if (md) md.setAttribute('content', 'Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.');
 })();
 
 const _v28HomeEmpty = renderHome;
@@ -12025,14 +12196,12 @@ function openCredits() {
 
 </script>
 <script>
-// ═══════════ v32: ads, buy links and tips, by age ═══════════
+// ═══════════ v32: ads, by age ═══════════
 // Nothing in this part shows or loads until the fill-ins below are set.
-// CHANGES.md lists each one and where it comes from.
+// README.md says how to fill them in.
 const PT_ADS = {
   client: 'ca-pub-XXXXXXXXXXXXXXXX',  // AdSense publisher id, once AdSense approves the site
   slots: { results: '', grade: '' },  // ad unit id for each spot, made in AdSense as fixed size display units
-  buyUrl: '',                         // affiliate link; {deck} becomes the deck name, {list} the card list
-  tipUrl: '',                         // Ko-fi page
 };
 const AGE32_KEY = 'pt_age_v32';
 const AGE32_LABEL = { u13: 'Under 13', teen: '13 to 17', adult: '18 or over', skip: 'No answer' };
@@ -12040,12 +12209,10 @@ const AD32_GAP = 30000;  // at most one new ad per spot every 30 seconds
 
 function ads32Real() { return /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
 function ads32On(where) { return ads32Real() && !!(where ? PT_ADS.slots[where] : (PT_ADS.slots.results || PT_ADS.slots.grade)); }
-function age32Any() { return ads32On() || !!PT_ADS.buyUrl || !!PT_ADS.tipUrl; }
+function age32Any() { return ads32On(); }
 function age32Get() { const v = safeLocalGet(AGE32_KEY); return /^(u13|teen|adult|skip)$/.test(v || '') ? v : ''; }
 function age32Band(n) { return !(n >= 1 && n <= 130) ? 'skip' : n < 13 ? 'u13' : n < 18 ? 'teen' : 'adult'; }
 // No answer counts as under 13.
-function age32CanBuy() { const b = age32Get(); return b === 'teen' || b === 'adult'; }
-function age32CanTip() { return age32Get() === 'adult'; }
 function age32Tag() { const b = age32Get(); return b === 'adult' ? '' : b === 'teen' ? '2' : '1'; }
 function age32Online() { return !(typeof navigator !== 'undefined' && navigator.onLine === false); }
 
@@ -12086,7 +12253,7 @@ function age32Help() {
   const younger = { adult: ['teen', 'u13'], teen: ['u13'] }[b] || [];
   openSheet(`<div class="modal-title">Age setting</div>
     <p class="age32-now">Set to <b>${AGE32_LABEL[b]}</b>.</p>
-    <div class="modal-hint">It decides which ads and links you see, and stays on this device.</div>
+    <div class="modal-hint">It decides which ads you see, and stays on this device.</div>
     ${younger.length ? `<div class="age32-opts">${younger.map(k => `<button class="btn" onclick="age32Set('${k}')">Change to ${AGE32_LABEL[k].toLowerCase()}</button>`).join('')}</div>`
       : `<div class="modal-hint">To answer again, clear this app's site data in your browser settings.</div>`}
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet();openHelpSheet()">Back</button><button class="btn" onclick="closeSheet()">Close</button></div>`);
@@ -12108,64 +12275,12 @@ openHelpSheet = function () {
   if (!list) return;
   const credits = document.getElementById('cr31-row');
   const add = el => credits ? list.insertBefore(el, credits) : list.appendChild(el);
-  if (age32CanTip() && PT_ADS.tipUrl && !document.getElementById('tip32-row')) {
-    const a = document.createElement('a');
-    a.id = 'tip32-row'; a.className = 'hs-row'; a.href = PT_ADS.tipUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    a.innerHTML = `<span class="ha-ic">${ic23('award')}</span><span class="hs-tx"><b>Support RdyDeck</b><span>Leave a tip on Ko-fi</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
-    add(a);
-  }
   if (age32Any() && !document.getElementById('age32-row')) {
     const b = document.createElement('button');
     b.id = 'age32-row'; b.className = 'hs-row';
     b.onclick = () => { closeSheet(); age32Help(); };
-    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Age setting</b><span>${AGE32_LABEL[age32Get() || 'skip']}. Sets which ads and links you see.</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Age setting</b><span>${AGE32_LABEL[age32Get() || 'skip']}. Sets which ads you see.</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
     add(b);
-  }
-};
-
-// ── Buy links: 13 and over, "with a parent" for 13 to 17 ──
-function buy32Url(name, cards) {
-  const list = (cards || []).map(c => `${c.count || 1} ${c.name}`).join('||');
-  return PT_ADS.buyUrl.replace(/\{deck\}/g, encodeURIComponent(name || '')).replace(/\{list\}/g, encodeURIComponent(list));
-}
-function buy32Ok() { return !!PT_ADS.buyUrl && age32CanBuy() && /^https:\/\//.test(PT_ADS.buyUrl); }
-function buy32Label(what) { return age32Get() === 'teen' ? `${what} with a parent` : what; }
-const BUY32_NOTE = 'Affiliate link. RdyDeck may earn a small fee if you buy.';
-
-const _v31RenderGrade = renderGrade;
-renderGrade = function () {
-  const r = _v31RenderGrade.apply(this, arguments);
-  const body = document.getElementById('grade-body');
-  const deck = state.decks.find(d => d.id === state.activeDeckId);
-  if (body && deck && buy32Ok() && !document.getElementById('buy32-grade') && !body.querySelector('.g-empty')) {
-    const d = document.createElement('div');
-    d.id = 'buy32-grade'; d.className = 'buy32';
-    d.innerHTML = `<a class="btn" href="${esc(buy32Url(deck.name, deck.cards))}" target="_blank" rel="noopener noreferrer sponsored">${ic23('link')}${buy32Label('Buy this deck')}</a><div class="modal-hint">${BUY32_NOTE}</div>`;
-    body.appendChild(d);
-  }
-  return r;
-};
-
-const _v31Starters = openStarterPicker;
-openStarterPicker = function () {
-  _v31Starters.apply(this, arguments);
-  if (!buy32Ok()) return;
-  const rows = document.querySelectorAll('.st-list .st-row');
-  rows.forEach((row, i) => {
-    const s = STARTER_DECKS[i];
-    const tx = row.querySelector('.st-tx');
-    if (!s || !tx || tx.querySelector('.buy32-st')) return;
-    const a = document.createElement('a');
-    a.className = 'buy32-st'; a.target = '_blank'; a.rel = 'noopener noreferrer sponsored';
-    a.href = buy32Url(s.name, s.list ? parseDeckList(s.list) : []);
-    a.textContent = buy32Label('Buy this list');
-    tx.appendChild(a);
-  });
-  const list = document.querySelector('.st-list');
-  if (list && rows.length && !document.getElementById('buy32-st-note')) {
-    const n = document.createElement('div');
-    n.id = 'buy32-st-note'; n.className = 'modal-hint'; n.textContent = BUY32_NOTE;
-    list.after(n);
   }
 };
 
@@ -12740,6 +12855,121 @@ openBackupModal = function () {
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Done</button></div>`);
 };
+</script>
+<script>
+// ═══════════ v38: settings, a calmer home, the new header ═══════════
+// The theme switch, cards per row, the age setting, saved decks and clearing
+// data all live in one Settings sheet, opened from the gear on home.
+
+(function () {
+  const sub = document.querySelector('#screen-home .app-subtitle');
+  if (sub) sub.textContent = 'Can Your Deck Win?';
+})();
+
+function st38Theme(t) {
+  setTheme(t);
+  try { localStorage.setItem('ptcg_theme', t); } catch (_) {}
+  st38Paint();
+}
+function st38Cols(i) { cz37Set(i); st38Paint(); }
+function st38Paint() {
+  const dark = document.body.dataset.theme !== 'light';
+  document.querySelectorAll('#st38-theme button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.t === 'dark') === dark)));
+  const s = cz37Step();
+  document.querySelectorAll('#st38-cols button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.i === s)));
+}
+function openSettings() {
+  const base = cz37Base(false);
+  const go = '<svg class="ic"><use href="#i-next"/></svg>';
+  const row = (fn, t, s, cls) => `<button type="button" class="st38-row${cls ? ' ' + cls : ''}" onclick="${fn}"><span>${t}${s ? `<small>${s}</small>` : ''}</span>${go}</button>`;
+  const link = (href, t) => `<a class="st38-row" href="${href}"><span>${t}</span>${go}</a>`;
+  const age = (typeof age32Any === 'function' && age32Any())
+    ? row('closeSheet();age32Help()', 'Age setting', esc(AGE32_LABEL[age32Get() || 'skip']) + '. Sets which ads you see.') : '';
+  openSheet(`<div class="modal-title">Settings</div>
+    <div class="st38-sec">
+      <div class="st38-h">Theme</div>
+      <div class="st38-seg" id="st38-theme" role="group" aria-label="Theme">
+        <button type="button" data-t="dark" onclick="st38Theme('dark')">Dark</button>
+        <button type="button" data-t="light" onclick="st38Theme('light')">Light</button>
+      </div>
+    </div>
+    <div class="st38-sec">
+      <div class="st38-h">Cards per row</div>
+      <p class="st38-p">For the Cards tab and the daily list on this screen size.</p>
+      <div class="st38-seg" id="st38-cols" role="group" aria-label="Cards per row">
+        ${[0, 1, 2, 3].map(i => `<button type="button" data-i="${i}" onclick="st38Cols(${i})">${base + i}</button>`).join('')}
+      </div>
+    </div>
+    <div class="st38-sec st38-rows">
+      ${row('closeSheet();openBackupModal()', 'Save and open decks', 'Move your decks to a new phone or web address')}
+      ${age}
+      ${row('closeSheet();openHelpSheet()', 'Help and feedback', '')}
+      ${link('terms.html', 'Terms of Service')}
+      ${link('privacy.html', 'Privacy Policy')}
+    </div>
+    <div class="st38-sec st38-rows">
+      ${row('closeSheet();clearAllData()', 'Clear all data', 'Deletes every deck and score saved in this browser', 'st38-danger')}
+    </div>
+    <div class="st38-ver">RdyDeck ${PT_VERSION}</div>
+    <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
+  st38Paint();
+}
+
+// Credits and legal links to the Terms and Privacy pages too.
+(function () {
+  const _c = openCredits;
+  openCredits = function () {
+    _c.apply(this, arguments);
+    const list = document.querySelector('#x-modal-inner .cr31-list');
+    if (list && !document.getElementById('lg38')) {
+      const li = document.createElement('li');
+      li.id = 'lg38';
+      li.innerHTML = '<b>Terms and privacy</b><span><a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></span>';
+      list.appendChild(li);
+    }
+  };
+})();
+
+// ── Home deck rows: the four buttons move into one menu ──
+function dm38Open(id) {
+  const deck = state.decks.find(d => String(d.id) === String(id));
+  if (!deck) return;
+  const sid = esc(String(deck.id));
+  const go = '<svg class="ic"><use href="#i-next"/></svg>';
+  const row = (fn, t, s) => `<button type="button" class="st38-row" onclick="closeSheet();${fn}('${sid}')"><span>${t}${s ? `<small>${s}</small>` : ''}</span>${go}</button>`;
+  const played = (deck.history || []).length;
+  openSheet(`<div class="modal-title">${esc(deck.name)}</div>
+    <div class="st38-sec st38-rows">
+      ${row('openReview', 'Grade, odds and cards', '')}
+      ${row('startGameDefault', 'Prize game', '')}
+      ${played ? row('openWeakSpots', 'Progress', played + ' prize game' + (played !== 1 ? 's' : '') + ' played') : ''}
+      ${row('openModeModal', 'Game modes', 'Also hide or delete this deck')}
+      ${row('openEditModal', 'Edit the list', '')}
+      ${row('openThumbPicker', 'Cover card', '')}
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
+
+(function () {
+  const _b = buildDeckCard;
+  buildDeckCard = function (deck) {
+    let h = _b.apply(this, arguments);
+    const id = esc(String(deck.id));
+    // The rotation line sits with the other facts, under the format.
+    const rot = h.match(/<div class="deck-rot[^"]*">[\s\S]*?<\/div>/);
+    if (rot) {
+      h = h.replace(rot[0], '');
+      const metaEnd = h.indexOf('</div>', h.indexOf('class="deck-meta"'));
+      if (metaEnd > 0) h = h.slice(0, metaEnd + 6) + rot[0] + h.slice(metaEnd + 6);
+    }
+    // Play and a menu, stacked on the right.
+    h = h.replace(/(<button class="deck-play"[\s\S]*?<\/button>)/, (m) =>
+      `<div class="deck-side">${m}<button class="deck-more" onclick="event.stopPropagation();dm38Open('${id}')" title="More" aria-label="More for ${esc(deck.name)}"><svg class="ic"><use href="#i-more"/></svg></button></div>`);
+    // The old buttons row is no longer shown.
+    h = h.replace(/<div class="deck-actions-col">[\s\S]*?<\/div>\s*<\/div>\s*$/, '</div>');
+    return h;
+  };
+})();
 </script>
 </body>
 </html>
