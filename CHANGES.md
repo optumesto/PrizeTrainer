@@ -1,3 +1,26 @@
+# v47: home and guide ad spots, ads privacy policy (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v47), privacy.html, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, README.md, CHANGES.md.
+New file: ads.js.
+Not changed: everything else. Builds on v46.
+
+Ads stay off until the fill-ins are set (PT_ADS in index.html, the top of ads.js). With them blank, nothing shows and no ad code loads.
+
+## Ad spots
+- Home: one spot at the end of More. Under it on phones, in the side column on wide screens. Shows after the age question is answered or skipped.
+- Guide pages (deck grader, opening odds, prize trainer, rotation): one spot before the third heading, from ads.js. It uses the age group the app saved on this device; with none, the ad is requested as child-directed.
+- Same look as the results and grade spots: a small Ad label between two hairlines, 320 by 100 at most.
+- Every spot is off in the Play app (?src=play, or a visit that started there) and offline.
+- The ad script now loads with ?client= so Google's consent message for the EEA, UK and Switzerland can show. Keep Auto ads off in AdSense so only these spots ever show.
+
+## Privacy policy
+- Says the website shows ads from Google AdSense and the Play app shows none, with Google's required cookie wording and opt out links, how each age group is treated, the consent message, and buy links and tips.
+- The age group is listed with what is saved on your device.
+- Effective date is a blank: set it to the day this goes live.
+
+## Version
+- Version reads v47.
+
 # v46: Android note (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v46), CHANGES.md.
