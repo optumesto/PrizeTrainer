@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v30';
+const CACHE_NAME = 'prize-trainer-v33';
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page
@@ -8,6 +8,11 @@ const CACHE_NAME = 'prize-trainer-v30';
 // fallback addresses never fill the cache.
 const ART_CACHE = 'prize-trainer-art';
 const ART_MAX = 600;
+
+// Ad networks: always straight from the network, never saved, so no ad or
+// ad script is ever shown or kept offline.
+const AD_HOSTS = ['googlesyndication.com', 'doubleclick.net', 'googleadservices.com', 'googletagservices.com', 'adtrafficquality.google', 'fundingchoicesmessages.google.com'];
+const isAdHost = h => AD_HOSTS.some(a => h === a || h.endsWith('.' + a));
 
 const CORE_ASSETS = [
   './',
@@ -59,6 +64,7 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
+  if (isAdHost(url.hostname)) return;
   // Card art from another site: saved copy first, then the network.
   if (req.destination === 'image' && url.origin !== self.location.origin) {
     event.respondWith(

@@ -1983,6 +1983,35 @@
   .d30-mn { font-size:var(--fs-md); color:var(--text); overflow-wrap:anywhere; min-width:0; }
   .d30-ms { font-size:var(--fs-sm); font-weight:700; color:var(--text-2); font-variant-numeric:tabular-nums; }
   .td30-note { margin-top:0.9rem; }
+  .cr31-note { margin-top:0.3rem; }
+  .cr31-legal { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; margin:0 0 0.8rem; padding:0.7rem 0.8rem; border-radius:12px; background:var(--surface-2); border:1px solid var(--line); }
+  .cr31-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.55rem; }
+  .cr31-list li { display:flex; flex-direction:column; gap:0.1rem; font-size:var(--fs-sm); color:var(--text-2); }
+  .cr31-list b { color:var(--text); font-size:var(--fs-md); font-weight:600; }
+  .cr31-list a, .cr31-legal a { color:var(--accent-2); text-decoration:underline; text-underline-offset:2px; }
+  .cr31-mit pre { white-space:pre-wrap; word-break:break-word; font-size:0.72rem; line-height:1.4; color:var(--text-3); margin:0; padding:0.7rem; border-radius:10px; background:var(--surface-2); max-height:40vh; overflow:auto; }
+  /* v32: age question, ad spots, buy links */
+  .age32 { display:flex; align-items:center; justify-content:center; gap:0.6rem; margin:1rem 0 0.4rem; }
+  .age32-in { width:5.5rem; font-size:1.6rem; text-align:center; padding:0.5rem; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); }
+  .age32-unit { color:var(--text-2); }
+  .age32-hint { text-align:center; }
+  .age32-now { margin:0.4rem 0; }
+  .age32-opts { display:flex; flex-direction:column; gap:0.5rem; margin-top:0.9rem; }
+  a.hs-row { text-decoration:none; }
+  .ad32 { margin:1rem auto; max-width:100%; height:118px; overflow:hidden; text-align:center; contain:layout paint; }
+  .ad32-lbl { font-size:var(--fs-xs); color:var(--text-3); line-height:18px; height:18px; }
+  .ad32 ins { overflow:hidden; }
+  .buy32 { margin-top:1rem; text-align:center; }
+  .buy32 .btn { text-decoration:none; }
+  .buy32-st { display:inline-block; margin-top:4px; font-size:var(--fs-xs); color:var(--accent); }
+  #ad32-grade { margin-bottom:2.5rem; }
+  .age32-in { flex:0 0 6rem; max-width:6rem; }
+  .dly33-hint { margin:-0.2rem 0 0.9rem; }
+  .dly33-list .review-group { margin-bottom:1rem; }
+  .dly33-list .review-cards { grid-template-columns:repeat(4,1fr); gap:0.7rem 0.5rem; }
+  .dly33-list .review-card-name { font-size:var(--fs-xs); }
+  .dly33-actions { position:sticky; bottom:0; padding-top:0.6rem; background:linear-gradient(transparent, var(--surface) 30%); }
+  @media (max-width:340px) { .dly33-list .review-cards { grid-template-columns:repeat(3,1fr); } }
 </style>
 </head>
 <body>
@@ -8770,7 +8799,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v30';
+const PT_VERSION = 'v33';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -10902,15 +10931,17 @@ openStarterPicker = function () {
     </div>`;
   }).join('');
   const asOf = DATA30.startersLive ? d30Nice(DATA30.asOf) : STARTER_AS_OF;
+  // Lists the weekly job took from online tournaments say so.
+  const online = STARTER_DECKS.length > 0 && STARTER_DECKS.every(s => /\bonline\)$/.test(s.event || ''));
   const m = DATA30.meta;
   const meta = m ? `<div class="hp-lbl d30-lbl">Most played right now</div>
     <div class="d30-meta">${m.decks.slice(0, 8).map((x, i) => `<div class="d30-mrow"><span class="d30-mi">${i + 1}</span><span class="d30-mn">${esc(x.name)}</span>${x.share != null ? `<span class="d30-ms">${x.share}%</span>` : ''}</div>`).join('')}</div>
     <div class="modal-hint">${esc(m.from)}, as of ${d30Nice(m.asOf)}.</div>` : '';
   openSheet(`<div class="modal-title">Starter decks</div>
-    <div class="modal-hint" style="margin-bottom:0.9rem">Real Standard lists that placed at recent events. Lists as of ${asOf}. Load one to start practicing right away, then edit it to match your own build.</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">${online ? 'Top finishes for the most played decks at big online tournaments, not Regionals.' : 'Real Standard lists that placed at recent events.'} Lists as of ${asOf}. Load one to start practicing right away, then edit it to match your own build.</div>
     <div class="st-list">${rows}</div>
     ${meta}
-    <div class="modal-hint" style="margin-top:0.9rem">Lists as posted on Limitless (limitlesstcg.com). ${d30AsOfLine()} The format changes with every new set, so check a list before an event.</div>
+    <div class="modal-hint" style="margin-top:0.9rem">Lists as posted on Limitless (${online ? 'play.limitlesstcg.com' : 'limitlesstcg.com'}). ${d30AsOfLine()} The format changes with every new set, so check a list before an event.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Close</button><button class="btn" onclick="closeSheet();openImportModal()">${ic23('clipboard')}Paste my own</button></div>`);
 };
 
@@ -11149,6 +11180,506 @@ renderGrade = function () {
   return r;
 };
 
+</script>
+<script>
+// ═══════════ v31: TCGdex first, pokemontcg.io as the backup ═══════════
+// pokemontcg.io says its API is deprecated and will be shut down, and its
+// paid successor has no free plan. TCGdex is free and open (MIT license), so
+// it is now read first. Any card TCGdex cannot read is then read from
+// pokemontcg.io while it still answers. Card data is still saved with the
+// deck, so offline works as before.
+const TD31_MAX = 60;
+// Where each card came from in the last read, so the grade can name the backup.
+let _td31Src = { td: [], pt: [] };
+// When TCGdex cannot be reached at all, skip it for ten minutes so reads stay quick.
+let _td31DownUntil = 0;
+
+TCGEnrich.fetchDeckCards = async function (entries, opts) {
+  const list = (entries || []).filter(e => e && e.name);
+  const seen = new Set();
+  const uniq = list.filter(e => {
+    const k = String(e.name).toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  const map = new Map();
+  const tdRead = [], ptRead = [];
+  _td30Failed = false;
+  const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+
+  // 1. TCGdex, a few requests at a time.
+  if (!offline && Date.now() >= _td31DownUntil) {
+    const todo = uniq.slice(0, TD31_MAX);
+    for (let i = 0; i < todo.length; i += TD30_PAR) {
+      if (i && _td30Failed && !tdRead.length) { _td31DownUntil = Date.now() + 600000; break; }
+      await Promise.all(todo.slice(i, i + TD30_PAR).map(async e => {
+        let r = null;
+        try { r = await td30Read(e); } catch (_) {}
+        if (!r) return;
+        const en = TCGEnrich.enrichCard(r.card);
+        if (!r.exact) en.matchedBy = 'name';
+        const k = String(e.name).toLowerCase();
+        map.set(k, en);
+        tdRead.push(k);
+      }));
+    }
+  }
+  const tdFailed = offline || _td30Failed || Date.now() < _td31DownUntil;
+
+  // 2. pokemontcg.io for whatever TCGdex did not read.
+  let ptFailed = offline;
+  const rest = list.filter(e => !map.has(String(e.name).toLowerCase()));
+  if (rest.length && !offline) {
+    let pm = null;
+    try { pm = await _v29FetchDeck.call(TCGEnrich, rest, opts); } catch (_) { pm = null; }
+    ptFailed = !pm || !!pm.partial;
+    rest.forEach(e => {
+      const k = String(e.name).toLowerCase();
+      if (map.has(k)) return;
+      const got = pm && pm.get(k);
+      if (got && got.resolved) { map.set(k, got); ptRead.push(k); }
+    });
+  }
+
+  // Anything still missing gets the usual stub, so coverage stays honest.
+  list.forEach(e => {
+    const k = String(e.name).toLowerCase();
+    if (!map.has(k)) map.set(k, TCGEnrich.enrichCard(null, { fallbackName: e.name }));
+  });
+  // Old data is kept when a source failed and a card is still unread.
+  map.partial = (tdFailed || ptFailed) && [...map.values()].some(x => !x.resolved);
+  map.tcgdex = tdRead;
+  map.ptcg = ptRead;
+  _td31Src = { td: tdRead, pt: ptRead };
+  return map;
+};
+
+enrichDeckCards = async function (cards) {
+  _td31Src = { td: [], pt: [] };
+  const cov = await _v29EnrichDeck.apply(this, arguments);
+  const td = new Set(_td31Src.td), pt = new Set(_td31Src.pt);
+  (cards || []).forEach(c => {
+    const k = String(c.name || '').toLowerCase();
+    if (c.resolved && td.has(k)) c.via = 'tcgdex';
+    else if (c.resolved && pt.has(k)) c.via = 'ptcg';
+    else if (c.resolved === false) delete c.via;
+  });
+  if (cov) { cov.tcgdex = td.size; cov.ptcg = pt.size; }
+  return cov;
+};
+
+// The grade names the backup when it was needed.
+renderGrade = function () {
+  const r = _v29RenderGrade.apply(this, arguments);
+  const deck = typeof findDeck === 'function' ? findDeck(state.activeDeckId) : null;
+  const n = (deck && deck.cards || []).filter(c => c.via === 'ptcg').length;
+  const body = document.getElementById('grade-body');
+  if (body && n && !document.getElementById('td30-note')) {
+    const p = document.createElement('div');
+    p.id = 'td30-note';
+    p.className = 'r29-note td30-note';
+    p.textContent = `${n} ${n === 1 ? 'card was' : 'cards were'} read from pokemontcg.io, the backup card database, because TCGdex could not read ${n === 1 ? 'it' : 'them'}.`;
+    body.appendChild(p);
+  }
+  return r;
+};
+
+// Card art: TCGdex's picture is one more fallback after Limitless and pokemontcg.io.
+function td31Art(card) {
+  const id = td30CardId(card.set, card.num);
+  if (!id) return null;
+  const set = id.slice(0, id.lastIndexOf('-')), local = id.slice(id.lastIndexOf('-') + 1);
+  const m = set.match(/^(me|sv|swsh|sm)/);
+  if (!m) return null;
+  return `https://assets.tcgdex.net/en/${m[1]}/${set}/${local}/low.webp`;
+}
+const _v30Candidates = getImageCandidates;
+getImageCandidates = function (card) {
+  const urls = _v30Candidates.apply(this, arguments);
+  let u = null;
+  try { u = td31Art(card); } catch (_) {}
+  if (u && urls.length && !urls.includes(u)) urls.push(u);
+  return urls;
+};
+
+// Rotation reprint check: pokemontcg.io reads up to four names in one request,
+// so it is still asked first. When it fails, each name is read from TCGdex
+// (its newest three printings), so the check keeps working after the shutdown.
+async function r31TdReprints(rows) {
+  const found = {};
+  for (const r of rows) {
+    const list = await td30Get('/cards?name=' + encodeURIComponent('eq:' + TCGEnrich.apiName(r.name)));
+    if (!Array.isArray(list)) continue;
+    const hits = list.filter(b => b && typeof b.id === 'string' && r29Key(b.name || '') === r.key)
+      .sort((a, b) => td30Rank(b.id) - td30Rank(a.id)).slice(0, 3);
+    let best = null;
+    for (const b of hits) {
+      const c = td30Shape(await td30Get('/cards/' + encodeURIComponent(b.id)));
+      if (!c || !r29M(c.regulationMark)) continue;
+      if (r.pkmn) {
+        const atk = (c.attacks || []).map(a => r29Key(a.name)).filter(Boolean).sort();
+        const abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
+        if (atk.join('|') !== r.atk.join('|') || abil.join('|') !== r.abil.join('|')) continue;
+      }
+      if (!best || c.regulationMark > best) best = c.regulationMark;
+    }
+    found[r.key] = { best };
+  }
+  return found;
+}
+
+r29CheckReprints = async function (deck) {
+  if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  const todo = r29NeedsCheck(deck, r29Rows(deck));
+  if (!todo.length) return;
+  _r29Busy.add(deck.id); _r29Tried.add(deck.id);
+  const found = {};
+  const failed = [];
+  const batches = [];
+  for (let i = 0; i < todo.length; i += 4) batches.push(todo.slice(i, i + 4));
+  const get = async url => {
+    for (let a = 0; a < 2; a++) {
+      try {
+        const init = {};
+        if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
+        const r = await fetch(url, init);
+        if (r.ok) return await r.json();
+        if (r.status !== 429 && r.status < 500) return null;
+      } catch (_) {}
+      if (!a) await new Promise(res => setTimeout(res, 1200));
+    }
+    return null;
+  };
+  await Promise.all(batches.map(async b => {
+    const q = '(' + b.map(r => 'name:"' + TCGEnrich.apiName(r.name).replace(/"/g, '') + '"').join(' OR ') + ')';
+    const json = await get('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
+      '&select=id,name,supertype,regulationMark,attacks,abilities&pageSize=250');
+    if (!json || !Array.isArray(json.data)) { failed.push(...b); return; }
+    b.forEach(r => {
+      let best = null;
+      json.data.forEach(c => {
+        if (r29Key(c.name) !== r.key || !r29M(c.regulationMark)) return;
+        // A Pokemon only counts as a reprint with the same attacks and Abilities.
+        if (r.pkmn) {
+          const atk = (c.attacks || []).map(a => r29Key(a.name)).filter(Boolean).sort();
+          const abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
+          if (atk.join('|') !== r.atk.join('|') || abil.join('|') !== r.abil.join('|')) return;
+        }
+        if (!best || c.regulationMark > best) best = c.regulationMark;
+      });
+      found[r.key] = { best };
+    });
+  }));
+  if (failed.length) {
+    try { Object.assign(found, await r31TdReprints(failed)); } catch (_) {}
+  }
+  _r29Busy.delete(deck.id);
+  if (!Object.keys(found).length) return;
+  if (!deck.rot29 || deck.rot29.v !== ROT29.v) deck.rot29 = { v: ROT29.v, names: {} };
+  Object.assign(deck.rot29.names, found);
+  try { await saveState(); } catch (_) {}
+  if (document.getElementById('screen-home').classList.contains('active')) renderHome();
+  const pane = document.getElementById('grade-body');
+  if (state.activeDeckId === deck.id && pane && pane.style.display !== 'none' &&
+      document.getElementById('screen-review').classList.contains('active')) renderGrade();
+};
+
+// ═══════════ v31: credits and the unofficial note in Help ═══════════
+const PT31_UNOFFICIAL = 'Prize Trainer is an unofficial, fan-made app. It is not produced, endorsed, supported or affiliated with Nintendo, The Pokémon Company, Game Freak or Creatures. Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.';
+const PT31_MIT = `MIT License
+
+Copyright (c) 2021 TCGdex
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`;
+
+const _v30Help = openHelpSheet;
+openHelpSheet = function () {
+  _v30Help.apply(this, arguments);
+  const list = document.querySelector('.hs-list');
+  if (list && !document.getElementById('cr31-row')) {
+    const b = document.createElement('button');
+    b.id = 'cr31-row';
+    b.className = 'hs-row';
+    b.onclick = () => { closeSheet(); openCredits(); };
+    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Credits and legal</b><span>Where the cards and lists come from</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    list.appendChild(b);
+  }
+  const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^Prize Trainer v/.test(h.textContent));
+  if (hint && !document.getElementById('cr31-note')) {
+    const p = document.createElement('div');
+    p.id = 'cr31-note';
+    p.className = 'modal-hint cr31-note';
+    p.textContent = 'Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.';
+    hint.after(p);
+  }
+};
+
+function openCredits() {
+  const a = (href, t) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+  const row = (what, who) => `<li><b>${what}</b><span>${who}</span></li>`;
+  openSheet(`<div class="modal-title">Credits and legal</div>
+    <p class="cr31-legal" id="cr31-legal">${esc(PT31_UNOFFICIAL)}</p>
+    <ul class="cr31-list">
+      ${row('Card data', `${a('https://tcgdex.dev', 'TCGdex')}, free and open card database (MIT license)`)}
+      ${row('Backup card data', `${a('https://pokemontcg.io', 'Pokémon TCG API')} (pokemontcg.io)`)}
+      ${row('Decklists, meta and card images', a('https://limitlesstcg.com', 'Limitless TCG'))}
+      ${row('More card images', 'Pokémon TCG API and TCGdex')}
+      ${row('Font', `${a('https://rsms.me/inter/', 'Inter')} by Rasmus Andersson (SIL Open Font License 1.1)`)}
+    </ul>
+    <details class="o-more cr31-mit"><summary>TCGdex license</summary><pre>${esc(PT31_MIT)}</pre></details>
+    <div class="modal-hint" style="margin-top:0.9rem">Prize Trainer ${PT_VERSION}</div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet();openHelpSheet()">Back</button><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
+
+</script>
+<script>
+// ═══════════ v32: ads, buy links and tips, by age ═══════════
+// Nothing in this part shows or loads until the fill-ins below are set.
+// CHANGES.md lists each one and where it comes from.
+const PT_ADS = {
+  client: 'ca-pub-XXXXXXXXXXXXXXXX',  // AdSense publisher id, once AdSense approves the site
+  slots: { results: '', grade: '' },  // ad unit id for each spot, made in AdSense as fixed size display units
+  buyUrl: '',                         // affiliate link; {deck} becomes the deck name, {list} the card list
+  tipUrl: '',                         // Ko-fi page
+};
+const AGE32_KEY = 'pt_age_v32';
+const AGE32_LABEL = { u13: 'Under 13', teen: '13 to 17', adult: '18 or over', skip: 'No answer' };
+const AD32_GAP = 30000;  // at most one new ad per spot every 30 seconds
+
+function ads32Real() { return /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
+function ads32On(where) { return ads32Real() && !!(where ? PT_ADS.slots[where] : (PT_ADS.slots.results || PT_ADS.slots.grade)); }
+function age32Any() { return ads32On() || !!PT_ADS.buyUrl || !!PT_ADS.tipUrl; }
+function age32Get() { const v = safeLocalGet(AGE32_KEY); return /^(u13|teen|adult|skip)$/.test(v || '') ? v : ''; }
+function age32Band(n) { return !(n >= 1 && n <= 130) ? 'skip' : n < 13 ? 'u13' : n < 18 ? 'teen' : 'adult'; }
+// No answer counts as under 13.
+function age32CanBuy() { const b = age32Get(); return b === 'teen' || b === 'adult'; }
+function age32CanTip() { return age32Get() === 'adult'; }
+function age32Tag() { const b = age32Get(); return b === 'adult' ? '' : b === 'teen' ? '2' : '1'; }
+function age32Online() { return !(typeof navigator !== 'undefined' && navigator.onLine === false); }
+
+// ── The age question: neutral, no default, never blocks anyone ──
+// Only the age group is kept, on this device. Closing it without an answer
+// counts as no answer.
+function age32Ask() {
+  if (!age32Get()) safeLocalSet(AGE32_KEY, 'skip');
+  openSheet(`<div class="modal-title">How old are you?</div>
+    <div class="age32"><input id="age32-in" class="age32-in" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-label="Your age in years"><span class="age32-unit">years</span></div>
+    <div class="modal-hint age32-hint">Your answer stays on this device.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="age32-skip" onclick="age32Save('')">Skip</button><button class="btn btn-primary" id="age32-go" disabled onclick="age32Save(document.getElementById('age32-in').value)">Continue</button></div>`);
+  const i = document.getElementById('age32-in'), go = document.getElementById('age32-go');
+  i.addEventListener('input', () => {
+    i.value = i.value.replace(/\D/g, '').slice(0, 3);
+    go.disabled = !(+i.value >= 1 && +i.value <= 130);
+  });
+  i.addEventListener('keydown', e => { if (e.key === 'Enter' && !go.disabled) go.click(); });
+}
+function age32Save(v) {
+  safeLocalSet(AGE32_KEY, age32Band(parseInt(v, 10)));
+  closeSheet();
+  ads32Sync();
+}
+function age32Boot() {
+  if (!age32Any() || age32Get()) return;
+  if (/^#(deck|daily)/.test(location.hash)) return;
+  const home = document.getElementById('screen-home');
+  if (!home || !home.classList.contains('active') || document.querySelector('.modal-overlay.active')) return;
+  age32Ask();
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(age32Boot, 2200));
+
+// Help: the age setting can move to a younger group only, so a child who
+// answered cannot go back and give an older age.
+function age32Help() {
+  const b = age32Get() || 'skip';
+  const younger = { adult: ['teen', 'u13'], teen: ['u13'] }[b] || [];
+  openSheet(`<div class="modal-title">Age setting</div>
+    <p class="age32-now">Set to <b>${AGE32_LABEL[b]}</b>.</p>
+    <div class="modal-hint">It decides which ads and links you see, and stays on this device.</div>
+    ${younger.length ? `<div class="age32-opts">${younger.map(k => `<button class="btn" onclick="age32Set('${k}')">Change to ${AGE32_LABEL[k].toLowerCase()}</button>`).join('')}</div>`
+      : `<div class="modal-hint">To answer again, clear this app's site data in your browser settings.</div>`}
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet();openHelpSheet()">Back</button><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
+function age32Set(k) {
+  const order = ['u13', 'teen', 'adult'];
+  const now = age32Get();
+  if (order.indexOf(k) < 0 || order.indexOf(k) >= order.indexOf(now)) return;
+  safeLocalSet(AGE32_KEY, k);
+  closeSheet();
+  ads32Sync();
+  showToast('Age setting changed to ' + AGE32_LABEL[k].toLowerCase() + '.');
+}
+
+const _v31Help = openHelpSheet;
+openHelpSheet = function () {
+  _v31Help.apply(this, arguments);
+  const list = document.querySelector('.hs-list');
+  if (!list) return;
+  const credits = document.getElementById('cr31-row');
+  const add = el => credits ? list.insertBefore(el, credits) : list.appendChild(el);
+  if (age32CanTip() && PT_ADS.tipUrl && !document.getElementById('tip32-row')) {
+    const a = document.createElement('a');
+    a.id = 'tip32-row'; a.className = 'hs-row'; a.href = PT_ADS.tipUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.innerHTML = `<span class="ha-ic">${ic23('award')}</span><span class="hs-tx"><b>Support Prize Trainer</b><span>Leave a tip on Ko-fi</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    add(a);
+  }
+  if (age32Any() && !document.getElementById('age32-row')) {
+    const b = document.createElement('button');
+    b.id = 'age32-row'; b.className = 'hs-row';
+    b.onclick = () => { closeSheet(); age32Help(); };
+    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Age setting</b><span>${AGE32_LABEL[age32Get() || 'skip']}. Sets which ads and links you see.</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    add(b);
+  }
+};
+
+// ── Buy links: 13 and over, "with a parent" for 13 to 17 ──
+function buy32Url(name, cards) {
+  const list = (cards || []).map(c => `${c.count || 1} ${c.name}`).join('||');
+  return PT_ADS.buyUrl.replace(/\{deck\}/g, encodeURIComponent(name || '')).replace(/\{list\}/g, encodeURIComponent(list));
+}
+function buy32Ok() { return !!PT_ADS.buyUrl && age32CanBuy() && /^https:\/\//.test(PT_ADS.buyUrl); }
+function buy32Label(what) { return age32Get() === 'teen' ? `${what} with a parent` : what; }
+const BUY32_NOTE = 'Affiliate link. Prize Trainer may earn a small fee if you buy.';
+
+const _v31RenderGrade = renderGrade;
+renderGrade = function () {
+  const r = _v31RenderGrade.apply(this, arguments);
+  const body = document.getElementById('grade-body');
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (body && deck && buy32Ok() && !document.getElementById('buy32-grade') && !body.querySelector('.g-empty')) {
+    const d = document.createElement('div');
+    d.id = 'buy32-grade'; d.className = 'buy32';
+    d.innerHTML = `<a class="btn" href="${esc(buy32Url(deck.name, deck.cards))}" target="_blank" rel="noopener noreferrer sponsored">${ic23('link')}${buy32Label('Buy this deck')}</a><div class="modal-hint">${BUY32_NOTE}</div>`;
+    body.appendChild(d);
+  }
+  return r;
+};
+
+const _v31Starters = openStarterPicker;
+openStarterPicker = function () {
+  _v31Starters.apply(this, arguments);
+  if (!buy32Ok()) return;
+  const rows = document.querySelectorAll('.st-list .st-row');
+  rows.forEach((row, i) => {
+    const s = STARTER_DECKS[i];
+    const tx = row.querySelector('.st-tx');
+    if (!s || !tx || tx.querySelector('.buy32-st')) return;
+    const a = document.createElement('a');
+    a.className = 'buy32-st'; a.target = '_blank'; a.rel = 'noopener noreferrer sponsored';
+    a.href = buy32Url(s.name, s.list ? parseDeckList(s.list) : []);
+    a.textContent = buy32Label('Buy this list');
+    tx.appendChild(a);
+  });
+  const list = document.querySelector('.st-list');
+  if (list && rows.length && !document.getElementById('buy32-st-note')) {
+    const n = document.createElement('div');
+    n.id = 'buy32-st-note'; n.className = 'modal-hint'; n.textContent = BUY32_NOTE;
+    list.after(n);
+  }
+};
+
+// ── Banner spots: results screen and the bottom of the deck grade ──
+// Static, fixed size, one per screen, never in games or drills. A spot is
+// made when its screen opens and removed when it closes, so an ad is never
+// hidden on the page or refreshed on its own. Nothing loads before the age
+// question, when offline, or until the fill-ins are set.
+let ads32Script = false;
+const ads32Last = {};
+function ads32Load() {
+  if (ads32Script) return;
+  ads32Script = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.crossOrigin = 'anonymous';
+  // No ?client= on purpose: the page then cannot switch on Auto ads, anchor
+  // ads or full-screen ads by itself. Each spot names the publisher id.
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+  document.head.appendChild(s);
+}
+function ads32Make(where, place) {
+  if (document.getElementById('ad32-' + where)) return;
+  if (!ads32On(where) || !age32Get() || !age32Online() || !place) return;
+  const now = Date.now();
+  if (ads32Last[where] && now - ads32Last[where] < AD32_GAP) return;
+  const room = place.parent.clientWidth || 320;
+  const w = Math.min(320, Math.floor(room));
+  if (w < 234) return;
+  ads32Last[where] = now;
+  ads32Load();
+  const box = document.createElement('div');
+  box.id = 'ad32-' + where; box.className = 'ad32';
+  const tag = age32Tag();
+  box.innerHTML = `<div class="ad32-lbl">Ad</div><ins class="adsbygoogle" style="display:inline-block;width:${w}px;height:100px" data-ad-client="${esc(PT_ADS.client)}" data-ad-slot="${esc(PT_ADS.slots[where])}"${tag ? ` data-tag-for-age-treatment="${tag}"` : ''}></ins>`;
+  place.parent.insertBefore(box, place.before || null);
+  try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+}
+function ads32Drop(where) { const el = document.getElementById('ad32-' + where); if (el) el.remove(); }
+function ads32Sync() {
+  const res = document.getElementById('screen-results');
+  if (res && res.classList.contains('active')) {
+    const h = res.querySelector('.history-section');
+    ads32Make('results', h && { parent: h.parentNode, before: h });
+  } else ads32Drop('results');
+  const rev = document.getElementById('screen-review'), gb = document.getElementById('grade-body');
+  if (rev && gb && rev.classList.contains('active') && gb.style.display !== 'none') {
+    ads32Make('grade', { parent: gb.parentNode, before: gb.nextSibling });
+  } else ads32Drop('grade');
+}
+let _ads32T = 0;
+document.addEventListener('DOMContentLoaded', () => {
+  const mo = new MutationObserver(() => { clearTimeout(_ads32T); _ads32T = setTimeout(ads32Sync, 120); });
+  ['screen-results', 'screen-review', 'grade-body', 'screen-home'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) mo.observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
+  });
+  // Ask the age question after the first-run tour, on the next visit home.
+  const home = document.getElementById('screen-home');
+  if (home) new MutationObserver(() => { if (home.classList.contains('active')) setTimeout(age32Boot, 700); }).observe(home, { attributes: true, attributeFilter: ['class'] });
+});
+</script>
+<script>
+// ═══════════ v33: the Daily Challenge shows its full list before the game ═══════════
+// Players review all 60 cards first, with art, then tap Start. The clock
+// starts with the game, not while the list is open.
+const _v32StartDaily = startDaily;
+startDaily = async function () {
+  const d = dailyDeck();
+  if (!d._img) { d.cards = await Promise.all(d.cards.map(c => fetchCardImage(c))); d._img = true; }
+  openDailyList();
+};
+function dailyBegin() { return _v32StartDaily(); }
+function dly33Groups(cards) {
+  const g = { pokemon: [], trainer: [], energy: [] };
+  (cards || []).forEach(c => g[cardCategory(c)].push(c));
+  return [['pokemon', 'Pokémon'], ['trainer', 'Trainers'], ['energy', 'Energy']]
+    .map(([key, label]) => ({ key, label, cards: g[key], n: g[key].reduce((a, c) => a + c.count, 0) }))
+    .filter(x => x.cards.length);
+}
+function dly33Card(c) {
+  const nm = esc(cn23(c.apiName || c.name));
+  const img = c.imageUrl
+    ? `<img src="${esc(c.imageUrl)}" alt="${nm}" loading="lazy" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">`
+    : `<div class="review-placeholder"><i class=ph-card></i></div>`;
+  return `<div class="review-card"><div class="review-card-img">${img}<div class="review-card-qty${c.count > 1 ? ' multi' : ''}">×${c.count}</div></div><div class="review-card-name">${nm}</div></div>`;
+}
+function openDailyList() {
+  const d = dailyDeck();
+  const r = dailyStore().results[dailyKey()];
+  const groups = dly33Groups(d.cards);
+  const total = groups.reduce((a, g) => a + g.n, 0);
+  openSheet(`<div class="modal-title">Today's deck: ${esc(DAILY_NAME)}</div>
+    <div class="modal-hint dly33-hint">Review all ${total} cards, then tap Start. The clock starts with the game. ${r ? 'This is a practice replay, your score for today is already in.' : 'Your first try is your score.'}</div>
+    <div class="dly33-list" id="dly33-list">
+      ${groups.map(g => `<div class="review-group"><div class="review-group-title ${g.key}"><span class="rg-dot"></span>${g.label}<span class="rg-count">${g.n}</span></div>
+        <div class="review-cards">${g.cards.map(dly33Card).join('')}</div></div>`).join('')}
+    </div>
+    <div class="modal-actions dly33-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" id="dly33-start" onclick="dailyBegin()">${ic23('play')}Start</button></div>`, true);
+}
 </script>
 </body>
 </html>
