@@ -1,3 +1,21 @@
+# v42: feedback by email (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v42), privacy.html, terms.html, CHANGES.md.
+Not changed: everything else. Builds on v41.
+
+## Feedback address
+- support@rdydeck.com (Cloudflare Email Routing forwards it to the LLC inbox). It is set as `FEEDBACK_EMAIL` in index.html; if that is ever emptied, Send feedback hides itself.
+
+## Feedback
+- Send feedback no longer opens a public GitHub issue. It opens an email in the player's own email app, filled in with their message, the kind of feedback, the app version, the screen, device type and screen width, and the deck list only if they tick Include my list (kept short, since long mail links fail in some email apps).
+- The sheet says nothing is sent until they press Send, asks players under 13 to have a parent send it, and shows the address to write to if no email app opens.
+- No GitHub account is needed any more, and nothing is posted publicly.
+
+## Privacy and Terms
+- Privacy Policy: the GitHub row is gone; a new Feedback by email section says what the email holds, what we receive and how it is used; Children says under 13 should ask a parent, and that a child's email gets one reply at most and is then deleted.
+- Terms, section 8: feedback "by email through Send feedback" instead of "through a GitHub issue".
+- The effective date stays November 9, 2026; change it on both pages if this ships on a later day.
+
 # v41: RdyDeck moves to rdydeck.com (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v41), terms.html, privacy.html, robots.txt, sitemap.xml, README.md, CHANGES.md.

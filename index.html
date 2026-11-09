@@ -9661,9 +9661,11 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v41';
+const PT_VERSION = 'v42';
 const TOUR_KEY = 'pt_tour_v24';
-const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
+// v42: feedback goes by email from the player's own mail app; no public GitHub issues.
+// While this is empty, Send feedback is hidden.
+const FEEDBACK_EMAIL = 'support@rdydeck.com';
 // Captured before the share and daily handlers clear the address.
 const _v24StartHash = String(location.hash || '');
 
@@ -9893,7 +9895,7 @@ function openHelpSheet() {
     <div class="hs-list">
       ${row("closeSheet();startTour(true)", 'play', 'Take the tour', 'A one minute walk through the app')}
       ${row("closeSheet();openHowToPlay()", 'help', 'How to play', 'Every step of a prize game')}
-      ${row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card')}
+      ${FEEDBACK_EMAIL ? row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card') : ''}
       ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard shortcuts', 'For playing on a computer')}
     </div>
     <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}</div>
@@ -9905,7 +9907,7 @@ function openFeedback() {
   fbKind = 'Bug';
   const deck = state.decks.find(d => d.id === state.activeDeckId) || state.decks[0];
   openSheet(`<div class="modal-title">Send feedback</div>
-    <div class="modal-hint" style="margin-bottom:0.9rem">This opens a new issue on the RdyDeck GitHub page with the details filled in. You need a free GitHub account to post it, and nothing is sent until you press Submit there.</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">This opens an email to us in your own email app, with the details filled in. Nothing is sent until you press Send there. Under 13? Ask a parent to send it.</div>
     <div class="field-label">What is it about?</div>
     <div class="seg fb-seg" role="group" aria-label="Feedback type">
       ${['Bug', 'Missing card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
@@ -9915,7 +9917,8 @@ function openFeedback() {
       <textarea id="fb-text" maxlength="1500" placeholder="For a missing card, include its name, set code and number."></textarea>
     </div>
     ${deck ? `<label class="fb-check"><input type="checkbox" id="fb-deck"> <span>Include my list for <b>${esc(deck.name)}</b></span></label>` : ''}
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="sendFeedback()">${ic23('share')}Open on GitHub</button></div>`);
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="sendFeedback()">${ic23('share')}Open email</button></div>
+    <div class="modal-hint" style="margin-top:0.6rem">Or write to ${esc(FEEDBACK_EMAIL)}</div>`);
 }
 function setFbKind(btn) {
   fbKind = btn.dataset.k;
@@ -9924,37 +9927,42 @@ function setFbKind(btn) {
 function feedbackUrl(kind, text, deck) {
   kind = ['Bug', 'Missing card', 'Idea'].includes(kind) ? kind : 'Bug';
   const body = v24Clean(text, 1500).trim();
-  const first = (body.split('\n')[0] || '').trim().slice(0, 70);
-  const title = `[${kind}] ${first || (kind === 'Idea' ? 'Idea for RdyDeck' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
+  const first = (body.split('\n')[0] || '').trim().slice(0, 60);
+  const subject = `RdyDeck ${kind}: ${first || (kind === 'Idea' ? 'Idea' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
   const scr = (document.querySelector('.screen.active') || {}).id || '';
   const ua = navigator.userAgent;
   const device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone or iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
   const lines = [
-    kind === 'Missing card' ? '**Which card is missing or wrong?** (name, set code, number)' : kind === 'Idea' ? '**What would you like?**' : '**What happened?**',
+    kind === 'Missing card' ? 'Which card is missing or wrong? (name, set code, number)' : kind === 'Idea' ? 'What would you like?' : 'What happened?',
     body || '',
     '',
-    kind === 'Bug' ? '**What did you expect?**\n\n' : '',
-    '---',
+    kind === 'Bug' ? 'What did you expect?\n\n' : '',
+    '----',
     `App version: ${PT_VERSION}`,
     `Screen: ${scr.replace('screen-', '')}`,
     `Device: ${device}, ${innerWidth} px wide`,
   ];
   if (deck) {
+    // Long mail links fail in some email apps, so the list is kept short.
     let list = deckListText(deck.cards || []);
-    if (list.length > 3000) list = list.slice(0, 3000) + '\n(cut short)';
-    lines.push('', `Deck: ${v24Clean(deck.name, 80)}`, '```', v24Clean(list, 3200), '```');
+    if (list.length > 900) list = list.slice(0, 900) + '\n(cut short)';
+    lines.push('', `Deck: ${v24Clean(deck.name, 80)}`, v24Clean(list, 1000));
   }
-  return `${FEEDBACK_REPO}/issues/new?title=${encodeURIComponent(v24Clean(title, 120))}&body=${encodeURIComponent(lines.filter(l => l !== '').join('\n'))}`;
+  return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(v24Clean(subject, 100))}&body=${encodeURIComponent(lines.filter(l => l !== '').join('\n'))}`;
 }
 function sendFeedback() {
+  if (!FEEDBACK_EMAIL) { closeSheet(); return; }
   const t = document.getElementById('fb-text');
   const inc = document.getElementById('fb-deck');
   const deck = inc && inc.checked ? (state.decks.find(d => d.id === state.activeDeckId) || state.decks[0]) : null;
-  const url = feedbackUrl(fbKind, t ? t.value : '', deck);
-  const w = window.open(url, '_blank');
-  if (w) { try { w.opener = null; } catch (_) {} }
+  const a = document.createElement('a');
+  a.href = feedbackUrl(fbKind, t ? t.value : '', deck);
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   closeSheet();
-  showToast(w ? 'Opened GitHub in a new tab.' : 'Could not open a new tab. Allow pop ups and try again.');
+  showToast(`Opening your email app. If nothing opens, write to ${FEEDBACK_EMAIL}.`);
 }
 
 // ── First run tour ──
