@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "asOf": "2026-11-09",
-  "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it. Edit prerelease by hand for each new set: dates, kit, and cards (names and numbers checked against the printed English cards) until TCGdex has the set.",
+  "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it. The prerelease block is kept by .github/workflows/watch-sets.yml twice a day: it moves to the next set once pokemon-tcg-data or TCGdex has the whole card list, and only when both agree on every name they share. No hand edits needed.",
   "starters": [
     {
       "id": "mega-rayquaza-ex",

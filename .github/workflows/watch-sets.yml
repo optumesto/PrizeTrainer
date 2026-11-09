@@ -1,0 +1,44 @@
+# Twice a day: looks for the next Pokemon TCG set in two free card databases and, once one
+# of them has the whole English card list, moves the app's Prerelease section to that set.
+# A partial list is never used. If the two databases name a card differently, nothing changes
+# and set-watch.md says which card. The site reads data.json live, so no release is needed.
+name: Watch for new sets
+
+on:
+  schedule:
+    - cron: '41 10,22 * * *'   # 10:41 and 22:41 UTC, about 5:41 AM and PM Eastern
+  workflow_dispatch:           # adds a "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write              # lets the job commit data.json back to this repo
+
+concurrency:
+  group: refresh-data          # same group as the weekly refresh, so the two never write at once
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Look for the next set
+        run: node watch-sets.mjs data.json set-watch.md
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- data.json set-watch.md && [ -z "$(git ls-files --others --exclude-standard set-watch.md)" ]; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json set-watch.md
+          git commit -m "Set watch: $(sed -n 's/^Prerelease section: //p' set-watch.md)"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

@@ -14,6 +14,9 @@ PrizeTrainer/
   .github/workflows/refresh-data.yml   weekly job that refreshes data.json
   refresh-data.mjs                     the script that job runs first
   check-cards.mjs                      then this one: checks card facts in both card databases
+  .github/workflows/watch-sets.yml     twice a day: moves the Prerelease section to the next set
+  watch-sets.mjs                       the script it runs (whole card lists only, both databases must agree)
+  set-watch.md                         what the set watch found last (the job writes it)
   index.html                           the app
   sw.js                                offline support (cache name shows the version)
   manifest.json                        name and icons for Install app

@@ -9707,7 +9707,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v49';
+const PT_VERSION = 'v50';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -13863,11 +13863,11 @@ function gs45Save() {
 // event dates, what the kit holds, the rules, and every card in the set with
 // its art, so players can learn it and build a practice 40.
 //
-// Where the cards come from: the set list on TCGdex, read in the browser. A
-// brand new set can reach TCGdex days after its prerelease, so data.json may
-// carry a checked list of the set's names and numbers (prerelease.cards) to
-// use until TCGdex has it. Art always comes from the set code and number,
-// never from a name.
+// Where the cards come from: data.json's prerelease block, which the set watch
+// (watch-sets.mjs, twice a day) fills on its own once a card database has the
+// whole list, and the set list on TCGdex, read in the browser. Only a whole
+// list is ever shown: every printed number and as many cards as the set has.
+// Art always comes from the set code and number, never from a name.
 const PRE47_BUILT = {
   set: 'Delta Reign', code: 'DLR', tcgdex: 'me06', official: 103, total: 141,
   start: '2026-10-24', end: '2026-11-01', release: '2026-11-06',
@@ -13957,7 +13957,7 @@ function pre47Phase(p) {
 function pre47When(p) {
   const ev = p.start && p.end ? `Prerelease events ${pre47Nice(p.start)} to ${pre47Nice(p.end)}` : '';
   const out = `in stores ${pre47Nice(p.release)}`;
-  return ev ? `${ev}, ${out}.` : `In stores ${pre47Nice(p.release)}.`;
+  return ev ? `${ev}, ${out}.` : pre47Today() >= p.release ? `In stores since ${pre47Nice(p.release)}.` : `In stores ${pre47Nice(p.release)}.`;
 }
 
 // ── Home card ──
@@ -13987,7 +13987,15 @@ function pre47RenderHome() {
 }
 
 // ── The set's cards ──
-let _pre47Cards = null, _pre47From = '', _pre47Busy = false;
+let _pre47Cards = null, _pre47From = '', _pre47Busy = false, _pre47Tried = '', _pre47Failed = false;
+/** v50: a list counts only when it has every printed number and the set's total. */
+function pre47Whole(cards, official, total) {
+  if (!Array.isArray(cards) || !cards.length || !official) return false;
+  const nums = new Set(cards.map(c => c.num));
+  if (nums.size !== cards.length) return false;
+  for (let i = 1; i <= official; i++) if (!nums.has(String(i))) return false;
+  return cards.length >= (total || official);
+}
 function pre47Cache() { try { return JSON.parse(localStorage.getItem(PRE47_KEY) || 'null') || {}; } catch (_) { return {}; } }
 function pre47SaveCache(c) { try { localStorage.setItem(PRE47_KEY, JSON.stringify(c)); } catch (_) {} }
 
@@ -13995,34 +14003,36 @@ async function pre47LoadCards() {
   const p = PRE47, store = pre47Cache();
   if (_pre47Cards && _pre47Cards.code === p.code) return;
   const hit = store.sets && store.sets[p.code];
-  if (hit && Array.isArray(hit.cards) && hit.cards.length) { _pre47Cards = hit; _pre47From = 'tcgdex'; }
-  else if (p.cards) { _pre47Cards = { code: p.code, cards: p.cards }; _pre47From = 'checked'; }
-  if (!p.tcgdex || _pre47Busy || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
-  // A full TCGdex list read in the last day is fresh enough.
-  if (hit && hit.full && Date.now() - (hit.at || 0) < 86400000) return;
-  _pre47Busy = true;
+  if (p.cards) { _pre47Cards = { code: p.code, cards: p.cards }; _pre47From = 'checked'; }
+  else if (hit && hit.full && Array.isArray(hit.cards) && hit.cards.length) { _pre47Cards = hit; _pre47From = 'tcgdex'; }
+  // A list from data.json is whole already. A whole TCGdex list read in the last day is fresh enough.
+  if (p.cards || !p.tcgdex || _pre47Busy || (typeof navigator !== 'undefined' && navigator.onLine === false)) { _pre47Tried = p.code; return; }
+  if (hit && hit.full && Date.now() - (hit.at || 0) < 86400000) { _pre47Tried = p.code; return; }
+  _pre47Busy = true; _pre47Failed = false;
   try {
     const init = {};
     if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
     const r = await fetch(TD30_API + '/sets/' + encodeURIComponent(p.tcgdex), init);
     const j = r.ok ? await r.json() : null;
+    if (!j) _pre47Failed = true;
     const code = j && j.abbreviation && String(j.abbreviation.official || '').toUpperCase();
     // Only use the list when TCGdex says it is this set.
     if (j && Array.isArray(j.cards) && (!code || code === p.code)) {
       const cards = j.cards.map(c => c && /^[A-Za-z0-9]{1,6}$/.test(String(c.localId || '')) && typeof c.name === 'string'
         ? { num: String(c.localId).replace(/^0+(\d)/, '$1'), name: pre47Str(c.name, 60) } : null).filter(Boolean);
-      const want = (j.cardCount && j.cardCount.total) || p.total || 0;
-      if (cards.length && (!p.cards || cards.length >= p.cards.length)) {
-        const official = (j.cardCount && j.cardCount.official) || p.official || 0;
-        _pre47Cards = { code: p.code, cards, official, full: !want || cards.length >= want, at: Date.now() };
+      const want = p.total || (j.cardCount && j.cardCount.total) || 0;
+      const official = p.official || (j.cardCount && j.cardCount.official) || 0;
+      // A partial list is never shown: the set waits until TCGdex has all of it.
+      if (pre47Whole(cards, official, want)) {
+        _pre47Cards = { code: p.code, cards, official, full: true, at: Date.now() };
         _pre47From = 'tcgdex';
         store.sets = store.sets || {};
         store.sets[p.code] = _pre47Cards;
         pre47SaveCache(store);
       }
     }
-  } catch (_) {}
-  _pre47Busy = false;
+  } catch (_) { _pre47Failed = true; }
+  _pre47Busy = false; _pre47Tried = p.code;
 }
 
 // ── The 40 card build ──
@@ -14072,10 +14082,12 @@ function openPre47() {
       <button class="btn btn-sm btn-primary" onclick="pre47SaveDeck()">${ic23('save')}Save deck</button>
     </div>
   </div>`, true);
+  // Start the load first: a list from data.json is ready at once, and a TCGdex read shows as loading.
+  const load = pre47LoadCards();
   pre47RenderEnergy();
   pre47RenderCount();
   pre47RenderGrid();
-  pre47LoadCards().then(pre47RenderGrid);
+  load.then(pre47RenderGrid);
 }
 
 function pre47Search(q) { _pre47Q = String(q || '').slice(0, 40); pre47RenderGrid(); }
@@ -14096,7 +14108,9 @@ function pre47RenderGrid() {
   const el = document.getElementById('pre47-grid');
   if (!el) return;
   if (!_pre47Cards) {
-    el.innerHTML = `<div class="pre47-p">${_pre47Busy ? 'Loading the set…' : 'The card list for this set is not out yet. It shows here as soon as it is.'}</div>`;
+    el.innerHTML = `<div class="pre47-p">${_pre47Busy || _pre47Tried !== PRE47.code ? 'Loading the set…'
+      : _pre47Failed || (typeof navigator !== 'undefined' && navigator.onLine === false) ? 'The card list could not load. Check your connection and open this again.'
+      : 'The full card list for this set is not out yet. It shows here as soon as it is.'}</div>`;
     return;
   }
   const b = pre47BuildState(), list = pre47Visible();

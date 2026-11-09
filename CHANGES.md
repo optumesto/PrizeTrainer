@@ -1,3 +1,17 @@
+# v50: new sets reach the Prerelease section on their own (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v50), data.json (note only), README.md, CHANGES.md.
+New files: watch-sets.mjs, .github/workflows/watch-sets.yml.
+Not changed: everything else, including ads.txt and the ad code.
+
+- A new GitHub Action runs twice a day. It looks for the next set (the next number in the series, or the first set of a new series) in pokemon-tcg-data and on TCGdex.
+- Once either one has the whole English card list (every printed number and the set's total), it moves data.json's prerelease block to that set with its card names and numbers. A partial list is never used. If the two databases name any card differently, nothing changes and set-watch.md lists the cards.
+- Event dates are in neither database, so none are guessed: the sheet shows the store date instead. The kit reads 4 booster packs, a 40 card deck and a foil promo card.
+- It also fills in the current set's card list, so the Prerelease section works even when TCGdex is down.
+- The site reads data.json live, so this needs no release when a set comes out.
+- The app never shows a partial TCGdex list. The sheet says Loading while the list loads, and says when it could not load, instead of saying the list is not out yet.
+- Version reads v50.
+
 # v49: Prerelease section (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v49), data.json, CHANGES.md.
