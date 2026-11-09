@@ -144,7 +144,8 @@ async function tcgdexSets() {
   const list = await getJSON(`${TCGDEX}/sets`);
   if (!Array.isArray(list)) return null;
   // Newest first: Mega Evolution sets, then Scarlet and Violet, by set number.
-  const rank = id => { const m = String(id).match(/^(me|sv)(\d+)(?:\.(\d))?$/); return m ? (m[1] === 'me' ? 1000 : 0) + parseInt(m[2], 10) * 10 + (m[3] ? 5 : 0) : -1; };
+  // Ids like sv03.5 and me02.5a (a letter after the number) both count.
+  const rank = id => { const m = String(id).match(/^(me|sv)(\d+)(?:\.(\d)([a-z])?|([a-z]))?$/); return m ? (m[1] === 'me' ? 1000 : 0) + parseInt(m[2], 10) * 10 + (m[3] ? 5 : 0) + (m[4] || m[5] ? 1 : 0) : -1; };
   const recent = list.filter(s => s && rank(s.id) >= 0).sort((a, b) => rank(b.id) - rank(a.id)).slice(0, 10);
   const sets = {};
   for (const s of recent) {

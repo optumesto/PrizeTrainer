@@ -46,6 +46,7 @@ const species = n => String(n || '').replace(/^Mega /, '').replace(/ ex$/, '').t
 /** The hand-written fixes in index.html, read as text (never run): ids, stage, evolves from, set marks. */
 async function appFixes() {
   const fx = new Map(), sets = {};
+  let problem = '';
   try {
     const html = await readFile(APP, 'utf8');
     const block = html.slice(html.indexOf('const FIX37 = {'), html.indexOf('const FIX37_SET_MARKS'));
@@ -56,8 +57,12 @@ async function appFixes() {
     }
     const sm = html.slice(html.indexOf('const FIX37_SET_MARKS'), html.indexOf('const FIX37_SET_MARKS') + 300).match(/\{([^}]*)\}/);
     if (sm) for (const kv of sm[1].matchAll(/'([a-z0-9.]{2,12})'\s*:\s*'([A-Z])'/g)) sets[kv[1]] = kv[2];
-  } catch {}
-  return { fx, sets };
+    if (html.indexOf('const FIX37 = {') < 0 || html.indexOf('const FIX37_SET_MARKS') < 0) problem = 'the FIX37 block was not found in index.html';
+    else if (!fx.size) problem = 'no card fixes could be read from the FIX37 block';
+  } catch (e) { problem = 'index.html could not be read: ' + e.message; }
+  // Say so loudly: a silent empty list would make every fixed card look wrong.
+  if (problem) { console.error('App fixes: ' + problem); process.exitCode = 1; }
+  return { fx, sets, problem };
 }
 
 /** Card lines from a deck list: count, name, set code, number. */
@@ -134,6 +139,7 @@ function listRules(cards, info) {
 async function run(data, hand) {
   const fixedByHand = hand.fx;
   const report = { handOk: 0, handDiff: [], fixedDiffs: [], seen: {}, checked: 0, agree: 0, diffs: [], gaps: [], fills: {}, setMarks: {}, rules: [], notes: [] };
+  if (hand.problem) report.notes.push('App fixes not read: ' + hand.problem + '. Cards fixed by hand may show as disagreeing.');
 
   // Set codes to ids in both sources.
   const ptSets = await getJSON(`${PTCG}/sets/en.json`);

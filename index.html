@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
-<meta name="description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
-<link rel="canonical" href="https://rdydeck.com/">
+<meta name="description" content="Free Pokémon TCG deck grader and prize card trainer. Grade your deck, check its opening odds and Standard rotation, then practice naming your prizes. Works offline, no account.">
+<link rel="canonical" href="https://optumesto.github.io/PrizeTrainer/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RdyDeck">
 <meta property="og:title" content="RdyDeck: Can Your Deck Win?">
 <meta property="og:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
-<meta property="og:url" content="https://rdydeck.com/">
-<meta property="og:image" content="https://rdydeck.com/og-image.png">
+<meta property="og:url" content="https://optumesto.github.io/PrizeTrainer/">
+<meta property="og:image" content="https://optumesto.github.io/PrizeTrainer/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RdyDeck: Can Your Deck Win?">
 <meta name="twitter:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
-<meta name="twitter:image" content="https://rdydeck.com/og-image.png">
+<meta name="twitter:image" content="https://optumesto.github.io/PrizeTrainer/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"RdyDeck","url":"https://rdydeck.com/","description":"Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Optume Ventures LLC"}}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://optumesto.github.io/PrizeTrainer/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://optumesto.github.io/PrizeTrainer/","image":"https://optumesto.github.io/PrizeTrainer/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://optumesto.github.io/PrizeTrainer/#org"}},{"@type":"Organization","@id":"https://optumesto.github.io/PrizeTrainer/#org","name":"Optume Ventures LLC","email":"mmmilliard@optumeventures.com"}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -28,11 +28,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RdyDeck">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
-<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-<link rel="preload" href="fonts/saira.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/saira-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="preload" href="saira.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="saira-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -2359,12 +2359,12 @@
   /* ══════════════════════════════════════════════════════════════
      v38: one type system, more room, settings
   ══════════════════════════════════════════════════════════════ */
-  /* Fonts are files in /fonts, so they load the same on every device and offline.
+  /* Fonts are files next to this page, so they load the same on every device and offline.
      To try other fonts later, add their files and change the three names below. */
-@font-face { font-family:'RD Body'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/saira.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-  @font-face { font-family:'RD Display'; font-style:normal; font-weight:100 600; font-display:swap; src:url(fonts/saira-condensed-600.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-  @font-face { font-family:'RD Display'; font-style:normal; font-weight:700; font-display:swap; src:url(fonts/saira-condensed-700.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
-  @font-face { font-family:'RD Display'; font-style:normal; font-weight:800 900; font-display:swap; src:url(fonts/saira-condensed-800.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:'RD Body'; font-style:normal; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:100 600; font-display:swap; src:url(saira-condensed-600.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:700; font-display:swap; src:url(saira-condensed-700.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:'RD Display'; font-style:normal; font-weight:800 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 
   /* The one place fonts, corners and spacing are set. Both themes use it, so
      light and dark differ only in color. */
@@ -2493,6 +2493,7 @@
     .home-content > #daily-card { grid-column:2; grid-row:3; margin-top:1.5rem !important; }
     .home-content > .home-more { grid-column:2; grid-row:4; margin-top:1.75rem !important; }
     .home-content > .about38 { grid-column:1 / -1; grid-row:6; margin-top:3rem !important; }
+    .home-content > #pwa-install-btn { grid-column:2; grid-row:5; width:100%; margin-top:1.5rem !important; }
     .home-more .home-actions { grid-template-columns:1fr; }
     .home-more .home-action { flex-direction:row; align-items:center; padding:0.6rem 0.1rem; min-height:46px; }
     .home-actions .home-action:nth-child(odd) { border-right:0; }
@@ -2582,6 +2583,47 @@
   html:not(#z) body .r38-wrong b { color:var(--danger); font-weight:600; }
   html:not(#z) body .r38-note-btn { width:100%; margin-top:0.9rem; }
   html:not(#z) body #missed-notes-section.r38-closed { display:none !important; }
+
+  /* ═══ v40 ═══ */
+  /* Rotation tiles: three or four, always one row */
+  html:not(#z) body .r29-sum { grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); }
+  .r29-c.unk b { color:var(--electric); } body[data-theme="light"] .r29-c.unk b { color:var(--gold-dim, var(--text)); }
+  .r29-tot { font-size:var(--fs-sm); color:var(--text-2); margin:-0.2rem 0 0.7rem; }
+  /* Sheets: dimmer backdrop, no see-through start, close at the top, actions at the bottom */
+  :root { --scrim:rgba(4,7,12,0.82); }
+  body[data-theme="light"] { --scrim:rgba(20,22,28,0.6); }
+  html:not(#z) body .modal-overlay { background:var(--scrim); }
+  @keyframes sheetUp { from { transform:translateY(40px); opacity:1; } to { transform:none; opacity:1; } }
+  #x-modal .modal-title.x40-head { position:sticky; top:0; z-index:4; background:var(--surface); display:flex; align-items:center; gap:0.75rem; justify-content:space-between;
+    margin:-1rem -1.25rem 1rem; padding:1rem 1.25rem 0.75rem; border-bottom:1px solid var(--line); }
+  #x-modal .x40-close { flex-shrink:0; width:44px; height:44px; }
+  #x-modal .modal-inner > .modal-actions:last-child { position:sticky; bottom:0; z-index:4; background:var(--surface);
+    margin:1.25rem -1.25rem -1.25rem; padding:0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom,0)); border-top:1px solid var(--line); }
+  /* Prize guesses: the name has its own space, the remove button a full tap area */
+  .prize-slot.filled { padding:0.35rem 30px 0.35rem 0.45rem; word-break:normal; overflow-wrap:break-word; -webkit-hyphens:auto; hyphens:auto; }
+  .prize-slot .ps40-t { min-width:0; }
+  html:not(#z) body .prize-slot .remove-btn { width:24px; height:24px; right:3px; border:0; padding:0; }
+  .prize-slot .remove-btn::after { content:''; position:absolute; inset:-10px -3px -10px -10px; }
+  /* Card position track: one wide tap target */
+  html:not(#z) body .progress-dots { padding:14px 0; cursor:pointer; }
+  .progress-dot { pointer-events:none; }
+  /* iPhone zooms into any field under 16px */
+  @media (pointer:coarse), (max-width:820px) {
+    html:not(#z) body :is(textarea#import-list, textarea#edit-list, .mn-input, textarea.bk37-text, textarea.backup-textarea, input[type=text], input[type=search]) { font-size:16px; }
+  }
+  .f40-bad { border-color:var(--danger) !important; box-shadow:0 0 0 2px color-mix(in srgb, var(--danger) 30%, transparent); }
+  .f40-saved { font-size:var(--fs-sm); color:var(--text-2); min-height:1.2em; margin-top:0.4rem; }
+  .mode-note40 { font-size:var(--fs-sm); color:var(--text-2); margin:-0.25rem 0 0.75rem; }
+  body[data-theme="light"] .badge.wrong { background:#a3241a; color:#fff; }
+  /* About: questions, folded so Home looks the same */
+  .about40-faq { margin:0.4rem 0 0.9rem; max-width:62ch; }
+  .about40-faq h3 { font-family:var(--display); font-weight:700; font-size:0.875rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-2); margin:0 0 0.2rem; }
+  .about40-faq details { border-bottom:1px solid var(--line); }
+  .about40-faq summary { cursor:pointer; min-height:40px; display:flex; align-items:center; color:var(--text-2); list-style:none; }
+  .about40-faq summary::-webkit-details-marker { display:none; }
+  .about40-faq summary::after { content:'+'; margin-left:auto; padding-left:0.8rem; color:var(--text-3); }
+  .about40-faq details[open] summary::after { content:'\2212'; }
+  .about40-faq details p { margin:0 0 0.7rem; }
 </style>
 </head>
 <body>
@@ -2694,6 +2736,15 @@
       <h2 id="about38-h">About RdyDeck</h2>
       <p>RdyDeck is a free Pokémon TCG deck grader and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.</p>
       <p>Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.</p>
+      <div class="about40-faq">
+        <h3>Questions about RdyDeck</h3>
+        <details><summary>What is RdyDeck?</summary><p>RdyDeck is a free web app for Pokémon Trading Card Game players. It grades a 60 card deck, shows its opening odds and which cards rotate out of Standard, and trains you to work out your prize cards.</p></details>
+        <details><summary>How does prize card training work?</summary><p>RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.</p></details>
+        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, and it comes with a short list of what to fix first.</p></details>
+        <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most.</p></details>
+        <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
+        <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
+      </div>
       <p>Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company.</p>
       <div class="about38-links"><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><button type="button" onclick="openCredits()">Credits</button></div>
     </section>
@@ -2879,6 +2930,7 @@
       <button class="icon-btn" onclick="closeModeModal()" aria-label="Close" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
     </div>
     <div class="mode-deck" id="mode-deck-name"></div>
+    <div class="mode-note40">These settings carry over to every deck.</div>
     <div class="mode-inner">
 
       <div>
@@ -3030,7 +3082,7 @@
       </div>
       <div class="mb">
         <label for="edit-list">Deck list</label>
-        <textarea id="edit-list" placeholder="4 Charizard ex OBF 125&#10;..."></textarea>
+        <textarea id="edit-list" placeholder="4 Dreepy TWM 128&#10;..."></textarea>
         <div class="modal-hint">Edit your full 60 card list, then save.</div>
         <div class="parse-preview" id="edit-preview"></div>
       </div>
@@ -3105,7 +3157,7 @@
       </div>
       <div class="mb">
         <div class="field-row"><label for="import-list">Deck list</label><button class="btn btn-sm" onclick="pasteFromClipboard()"><svg class="ic ic-sm"><use href="#i-clipboard"/></svg>Paste</button></div>
-        <textarea id="import-list" placeholder="4 Charizard ex OBF 125&#10;2 Charmander OBF 26&#10;4 Arven SVI 166&#10;..."></textarea>
+        <textarea id="import-list" placeholder="4 Dreepy TWM 128&#10;4 Drakloak TWM 129&#10;3 Dragapult ex TWM 130&#10;4 Lillie&#39;s Determination MEG 119&#10;..."></textarea>
         <div class="modal-hint">Paste the export from Limitless or Pokémon TCG Live, section headers included. One card per line: quantity, name, set, number.</div>
         <button class="btn btn-sm st-from-import" onclick="openStarterPicker()"><svg class="ic ic-sm"><use href="#i-cards"/></svg>No list handy? Load a starter deck</button>
         <div class="parse-preview" id="parse-preview"></div>
@@ -5519,8 +5571,8 @@ function renderReview(deck) {
           const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g,'').trim());
           const fallbacks = JSON.stringify(card.fallbackUrls || []);
           const imgHtml = card.imageUrl
-            ? `<img src="${card.imageUrl}" alt="${esc(rawName)}"
-                data-fallbacks='${fallbacks}' data-fallback-idx="0"
+            ? `<img src="${esc(card.imageUrl)}" alt="${esc(rawName)}"
+                data-fallbacks="${esc(fallbacks)}" data-fallback-idx="0"
                 onerror="reviewImgError(this)">`
             : `<div class="review-placeholder"><i class=ph-card></i></div>`;
           return `
@@ -5744,7 +5796,8 @@ function renderHand() {
     if (!handCount[l.basic]) need.push(nm(l.basic));
     if (l.stage === 'stage2') {
       const bridgeIn = (l.s1 >= 0 && handCount[l.s1]) || candyIdx.some(i => handCount[i]);
-      if (!bridgeIn) need.push((l.s1 >= 0 ? nm(l.s1) + ' or ' : '') + 'Rare Candy');
+      const br = [l.s1 >= 0 ? nm(l.s1) : '', candyIdx.length ? 'Rare Candy' : ''].filter(Boolean);
+      if (!bridgeIn && br.length) need.push(br.join(' or '));
       else candyIdx.filter(i => handCount[i]).forEach(i => inHand.push(nm(i)));
     }
     if (l.top >= 0 && !handCount[l.top]) need.push(nm(l.top));
@@ -5787,8 +5840,8 @@ function renderHand() {
   const toneBad = (x, lo, hi) => x <= lo ? 'var(--green)' : x <= hi ? 'var(--electric)' : 'var(--fire)';
 
   h += `<div class="o-tiles">
-    <div class="o-tile" style="--tone:${tone(pick.o.s2, 0.6, 0.4)}"><div class="ol">Ready by T2</div><div class="ov">${oPct(pick.o.s2)}</div><div class="os">${oPct(pick.o.r2)} on raw draws</div></div>
-    <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">Ready by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">With search, one more draw</div></div>
+    <div class="o-tile" style="--tone:${tone(pick.o.s2, 0.6, 0.4)}"><div class="ol">This hand by T2</div><div class="ov">${oPct(pick.o.s2)}</div><div class="os">${oPct(pick.o.r2)} on raw draws</div></div>
+    <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">This hand by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">With search, one more draw</div></div>
     <div class="o-tile" style="--tone:${toneBad(pick.o.lock, 0.02, 0.06)}"><div class="ol">Locked in prizes</div><div class="ov">${oPct(pick.o.lock)}</div><div class="os">A piece fully prized</div></div>
   </div>
   <div class="o-meta">${HAND_TRIALS.toLocaleString()} shuffles of the other ${rest.length} cards for each line. Same hand, same numbers.</div>`;
@@ -6297,7 +6350,7 @@ function openMatchupForm(id, presetOpp) {
   const opps = [...new Set((state.tlog || []).map(x => x.opp).filter(Boolean))].slice(0, 30);
   openSheet(`<div class="modal-title">${m ? 'Edit matchup note' : 'New matchup note'}</div>
     <div class="mb"><label for="mu-opp">Opposing deck</label>
-      <input type="text" id="mu-opp" maxlength="60" placeholder="Gardevoir ex" list="mu-opp-list" value="${esc(m ? m.opp : presetOpp || '')}">
+      <input type="text" id="mu-opp" maxlength="60" placeholder="e.g. Gardevoir ex" list="mu-opp-list" value="${esc(m ? m.opp : presetOpp || '')}">
       <datalist id="mu-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist></div>
     <div class="mb"><label for="mu-plan">Prize plan</label>
       <textarea id="mu-plan" class="nt-area" maxlength="2000" placeholder="Take a 2 then a 2 then a 2. Bench only two Basics. Save Boss's Orders for the Kirlia.">${esc(m ? m.plan : '')}</textarea></div>
@@ -6311,7 +6364,7 @@ async function saveMatchup(id) {
   if (!deck) return;
   const opp = one23(document.getElementById('mu-opp').value, 60);
   const plan = clean23(document.getElementById('mu-plan').value, 2000).trim();
-  if (!opp) { showToast('Name the opposing deck.'); return; }
+  if (!opp || !plan) { f40Invalid(!opp ? 'mu-opp' : 'mu-plan', !opp ? 'Name the opposing deck.' : 'Write a prize plan first.'); return; }
   deck.matchups = deck.matchups || [];
   let m = id ? deck.matchups.find(x => x.id === id) : matchupFor(deck, opp);
   if (!m) { m = { id: 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1e4), opp, plan: '', ts: 0 }; deck.matchups.push(m); }
@@ -6399,7 +6452,7 @@ function renderCompareBody() {
     h += `<div class="o-table-wrap"><table class="o-table cmp-t"><thead><tr><th>Card</th><th>This</th><th>Other</th><th></th></tr></thead><tbody>`;
     ch.forEach(c => {
       const d = c.to - c.from;
-      h += `<tr><td>${esc(c.name)}${c.print ? ' <small class="nt-muted">printing</small>' : ''}</td><td>${c.to}</td><td>${c.from}</td><td class="cmp-d ${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d ? (d > 0 ? '+' : '−') + Math.abs(d) : ''}</td></tr>`;
+      h += `<tr><td>${esc(c.name)}${c.print ? ' <small class="nt-muted">printing</small>' : ''}</td><td>${c.to}</td><td>${c.from}</td><td class="cmp-d ${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d ? (d > 0 ? '+' : '−') + Math.abs(d) : '0'}</td></tr>`;
     });
     h += `</tbody></table></div>`;
   }
@@ -6414,7 +6467,7 @@ function renderCompareBody() {
       <div class="o-table-wrap"><table class="o-table cmp-t"><thead><tr><th></th><th>This</th><th>Other</th><th></th></tr></thead><tbody>
       ${compareOddsRow('Mulligan', A.anyBasic ? A.mulligan : null, B.anyBasic ? B.mulligan : null, false)}
       ${compareOddsRow('Draw card T1', A.anyDrawT1 ? A.drawT1 : null, B.anyDrawT1 ? B.drawT1 : null, true)}
-      ${compareOddsRow('Attacker by T' + turnN + (A.line ? ' <small class="nt-muted">' + esc(A.line.name) + (sameLine || !B.line ? '' : ' vs ' + esc(B.line.name)) + '</small>' : ''), atk(A), atk(B), true)}
+      ${compareOddsRow('Attacker by T' + turnN + ' <small class="nt-muted">any opening hand</small>' + (A.line ? ' <small class="nt-muted">' + esc(A.line.name) + (sameLine || !B.line ? '' : ' vs ' + esc(B.line.name)) + '</small>' : ''), atk(A), atk(B), true)}
       ${compareOddsRow('Line locked in prizes', A.locked, B.locked, false)}
       </tbody></table></div>`;
     const lockRows = ch.filter(c => !c.print && c.from > 0 && c.to > 0).map(c => {
@@ -6893,8 +6946,8 @@ function gfSummary(deck) {
     const good = when != null && when <= tG;
     h += `<div class="o-tiles">
       <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when : 'Not in play by turn 3'}</div></div>
-      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">Odds by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">From this opening hand</div></div>
-      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">Odds by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">With search</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">Share of shuffles, not this game</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">Share of shuffles, with search</div></div>
     </div>`;
     const verdict = good ? `You had ${esc(main.name)} up by turn ${when}. From this opening hand, the odds count gets it there by turn ${tG} in ${oPct(tG === 3 ? o.s3 : o.s2)} of shuffles.${tG === 3 ? ' With no Rare Candy in the list, turn 3 is the earliest it can be in play.' : ''}`
       : when ? `${esc(main.name)} came up on turn ${when}. The odds count has it ready by turn 2 in ${oPct(o.s2)} of shuffles from this hand, so look back at your first two turns.`
@@ -7233,7 +7286,7 @@ function finishReach() {
 function renderProgressExtras(deck) {
   const parts = [];
   const rec = tlogRecord(state.tlog || [], x => x.deckId === deck.id);
-  if (rec.n) parts.push(`<div class="pg-tile"><div class="pl">Match record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} logged, ${rec.avgTaken.toFixed(1)} prizes taken a game</div></div>`);
+  if (rec.n) parts.push(`<div class="pg-tile"><div class="pl">Match record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} logged, ${rec.avgTaken.toFixed(1)} prizes taken a match</div></div>`);
   const v = ensureVersions(deck);
   if (v.length > 1) {
     const lastTs = v[v.length - 1].ts;
@@ -7279,7 +7332,7 @@ function renderTlog() {
     <div class="pg-tiles" style="margin-top:0.75rem">
       <div class="pg-tile"><div class="pl">Record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} match${rec.n !== 1 ? 'es' : ''}</div></div>
       <div class="pg-tile"><div class="pl">Win rate</div><div class="pv">${rec.n ? Math.round(rec.w / rec.n * 100) + '%' : '?'}</div><div class="ps">Ties count as not won</div></div>
-      <div class="pg-tile"><div class="pl">Prizes</div><div class="pv">${rec.n ? rec.avgTaken.toFixed(1) : '?'}</div><div class="ps">${rec.n ? 'Taken a game, ' + rec.avgGiven.toFixed(1) + ' given' : 'Taken a game'}</div></div>
+      <div class="pg-tile"><div class="pl">Prizes</div><div class="pv">${rec.n ? rec.avgTaken.toFixed(1) : '?'}</div><div class="ps">${rec.n ? 'Taken a match, ' + rec.avgGiven.toFixed(1) + ' given' : 'Taken a match'}</div></div>
     </div>
     <div class="hp-actions"><button class="btn btn-primary" id="tl-add" onclick="openTlogForm()">${ic23('plus')}Log a match</button>${list.length ? `<button class="btn" onclick="exportTlog()">${ic23('file')}Export CSV</button>` : ''}</div>`;
   if (!list.length) h += `<div class="nt-empty">No matches logged${dk ? ' for this deck' : ''} yet. Log each round at your next event: who you played, the result and how many prizes each of you took.</div>`;
@@ -7288,7 +7341,7 @@ function renderTlog() {
   list.forEach(x => { const k = x.opp.toLowerCase(); (byOpp[k] = byOpp[k] || { name: x.opp, xs: [] }).xs.push(x); });
   const opps = Object.values(byOpp).sort((a, b) => b.xs.length - a.xs.length).slice(0, 8);
   if (opps.length > 1) {
-    h += `<div class="hp-lbl">By opponent</div><div class="o-table-wrap"><table class="o-table"><thead><tr><th>Opponent</th><th>Record</th><th>Prizes</th></tr></thead><tbody>
+    h += `<div class="hp-lbl">By opponent</div><div class="o-table-wrap"><table class="o-table"><thead><tr><th>Opponent</th><th>Record</th><th>Prizes a match</th></tr></thead><tbody>
       ${opps.map(o => { const r = tlogRecord(o.xs, () => true); return `<tr><td>${esc(o.name)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.avgTaken.toFixed(1)}</td></tr>`; }).join('')}</tbody></table></div>`;
   }
   let lastGroup = '';
@@ -7338,7 +7391,7 @@ function openTlogForm(id) {
     <div class="tl-two"><div class="mb"><label for="tl-day">Date</label><input type="date" id="tl-day" class="x-date" value="${esc(x ? x.day : today)}"></div>
     <div class="mb"><label for="tl-event">Event</label><input type="text" id="tl-event" maxlength="60" placeholder="League Challenge" value="${esc(x ? x.event : sameDay ? last.event : '')}"></div></div>
     <div class="mb"><label for="tl-deck">Your deck</label><select id="tl-deck" class="x-select" onchange="tlPlanHint()">${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === deckId ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select></div>
-    <div class="mb"><label for="tl-opp">Opponent's deck</label><input type="text" id="tl-opp" maxlength="60" list="tl-opp-list" placeholder="Gardevoir ex" value="${esc(x ? x.opp : '')}" oninput="tlPlanHint()"><datalist id="tl-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist>
+    <div class="mb"><label for="tl-opp">Opponent's deck</label><input type="text" id="tl-opp" maxlength="60" list="tl-opp-list" placeholder="e.g. Gardevoir ex" value="${esc(x ? x.opp : '')}" oninput="tlPlanHint()"><datalist id="tl-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist>
       <div class="tl-hint" id="tl-hint" style="display:none"></div></div>
     <div class="mb"><div class="field-label">Result</div>${tlSeg('result', ['W', 'L', 'T'], _tlForm.result)}</div>
     <div class="mb"><div class="field-label">Prizes you took</div>${tlSeg('taken', [0, 1, 2, 3, 4, 5, 6], _tlForm.taken)}</div>
@@ -7569,9 +7622,9 @@ function renderPrizeBrowser() {
   const body = document.getElementById('pb-body');
   if (card.imageUrl) {
     const fallbacks = JSON.stringify(card.fallbackUrls || []);
-    body.innerHTML = `<img class="prize-browser-card" src="${card.imageUrl}"
+    body.innerHTML = `<img class="prize-browser-card" src="${esc(card.imageUrl)}"
       alt="${esc(card.apiName || card.name)}"
-      data-fallbacks='${fallbacks}' data-fallback-idx="0"
+      data-fallbacks="${esc(fallbacks)}" data-fallback-idx="0"
       data-name="${esc(card.name)}" onerror="swapImgOrPlaceholder(this,'prize-browser-placeholder')">`;
   } else {
     body.innerHTML = `<div class="prize-browser-placeholder"><span><i class=ph-card></i></span><span>${esc(cn23(card.apiName || card.name))}</span></div>`;
@@ -7658,7 +7711,7 @@ function updateHeaderStats() {
   }
   const parts = [];
   if (totalSessions > 0) parts.push('<span class="header-stat"><b>' + totalSessions + '</b> session' + (totalSessions !== 1 ? 's' : '') + ' played</span>');
-  if (streak >= 2) parts.push('<span class="header-stat"><svg class="ic ic-sm"><use href="#i-flame"/></svg><b>' + streak + '</b> game streak</span>');
+  if (streak >= 2) parts.push('<span class="header-stat"><svg class="ic ic-sm"><use href="#i-flame"/></svg><b>' + streak + '</b> scoring games in a row</span>');
   el.innerHTML = parts.join('');
 }
 
@@ -7678,7 +7731,7 @@ function buildDeckCard(deck) {
   }
   const thumbSrc = deck.thumbUrl || deck.cards?.find(c => c.imageUrl)?.imageUrl || '';
   const thumb = thumbSrc
-    ? `<img src="${thumbSrc}" alt="" onerror="this.parentElement.innerHTML='<i class=ph-card></i>'">`
+    ? `<img src="${esc(thumbSrc)}" alt="" onerror="this.parentElement.innerHTML='<i class=ph-card></i>'">`
     : '<i class=ph-card></i>';
   const missingArt = deck.cards.filter(c => !c.imageUrl).length;
   const total = deck.cards.reduce((a,c)=>a+c.count,0);
@@ -8257,8 +8310,8 @@ function buildCardHTML(card) {
   const displayName = esc(rawName.replace(/\{[a-zA-Z]\}/g, '').trim());
   if (card.imageUrl) {
     const fallbacks = JSON.stringify(card.fallbackUrls || []);
-    return `<img src="${card.imageUrl}" alt="${esc(rawName)}" loading="lazy" decoding="async"
-        data-fallbacks='${fallbacks}' data-fallback-idx="0"
+    return `<img src="${esc(card.imageUrl)}" alt="${esc(rawName)}" loading="lazy" decoding="async"
+        data-fallbacks="${esc(fallbacks)}" data-fallback-idx="0"
         onerror="var fbs=JSON.parse(this.dataset.fallbacks||'[]');var idx=parseInt(this.dataset.fallbackIdx)||0;if(idx<fbs.length){this.dataset.fallbackIdx=idx+1;this.src=fbs[idx];}else{this.style.display='none';this.nextElementSibling.style.display='flex';this.nextElementSibling.nextElementSibling.style.display='block';}">
       <div class="card-placeholder" style="display:none"><span><i class=ph-card></i></span><span>${displayName}</span></div>
       <div class="card-name-label" style="display:none">${displayName}</div>`;
@@ -8315,7 +8368,7 @@ function renderCard(direction = 0) {
 
     const div = document.createElement('div');
     div.className = 'card-display' + (offset === 0 ? ' is-center' : '');
-    div.style.transform = `translateX(${x}px) rotateY(${ry}deg) scale(${scale})`;
+    div.style.transform = `translateX(${x}px) translateZ(${offset ? -80 : 0}px) rotateY(${ry}deg) scale(${scale})`;
     div.style.opacity = card ? opacity : 0;
     div.style.zIndex = 10 - Math.abs(offset);
 
@@ -8342,9 +8395,12 @@ function navigate(dir) {
 // Delegated click handler for progress dots: attached ONCE at module level,
 // not per render, so repeated games don't stack duplicate listeners.
 function handleProgressDotClick(e) {
-  const d = e.target.closest('.progress-dot');
-  if (!d) return;
-  const idx = parseInt(d.dataset.idx);
+  // The dots are thin, so the whole track is the target: the card under the tap.
+  const box = document.getElementById('progress-dots');
+  const n = (game.visible || []).length;
+  if (!box || !n) return;
+  const rc = box.getBoundingClientRect();
+  const idx = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - rc.left) / Math.max(1, rc.width) * n)));
   if (isNaN(idx) || idx === game.currentIdx) return;
   game.currentIdx = idx;
   renderCard();
@@ -8394,7 +8450,7 @@ function renderPrizeSlots() {
   container.innerHTML = Array.from({length: pc}, (_, i) => {
     const guess = game.guesses[i];
     return guess
-      ? `<div class="prize-slot filled" data-slot="${i}">${esc(guess)}<span class="remove-btn" onclick="removeGuess(${i})">✕</span></div>`
+      ? `<div class="prize-slot filled" data-slot="${i}"><span class="ps40-t">${esc(guess)}</span><button type="button" class="remove-btn" aria-label="Remove ${esc(guess)}" onclick="removeGuess(${i})">✕</button></div>`
       : `<div class="prize-slot" data-slot="${i}">Prize ${i+1}</div>`;
   }).join('');
 }
@@ -8717,7 +8773,7 @@ async function revealPrizes(force) {
     return `
       <div class="prize-reveal-card" style="border-color:${wasGuessed ? 'var(--success)' : 'var(--danger)'}">
         ${card.imageUrl
-          ? `<img src="${card.imageUrl}" alt="${esc(card.name)}" data-fallbacks='${JSON.stringify(card.fallbackUrls || [])}' data-fallback-idx="0" onerror="swapImgOrPlaceholder(this,'card-placeholder result-ph')">`
+          ? `<img src="${esc(card.imageUrl)}" alt="${esc(card.name)}" data-fallbacks="${esc(JSON.stringify(card.fallbackUrls || []))}" data-fallback-idx="0" onerror="swapImgOrPlaceholder(this,'card-placeholder result-ph')">`
           : `<div class="card-placeholder" style="height:100%;display:flex;align-items:center;justify-content:center;"><i class=ph-card></i></div>`
         }
         <div class="badge ${wasGuessed ? 'correct' : 'wrong'}">${wasGuessed ? '✓' : '✗'}</div>
@@ -8882,7 +8938,7 @@ function renderMissedNotes(prizes, usedPrizeIdxs, deck) {
     if (isNaN(idx) || !session.prizes || !session.prizes[idx]) return;
     session.prizes[idx].note = ta.value;
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { saveState(); }, 600);
+    saveTimer = setTimeout(() => { Promise.resolve(saveState()).then(() => f40Saved(fresh)); }, 600);
   });
 
   section.style.display = 'block';
@@ -8992,7 +9048,7 @@ function renderHistoryTable() {
   tbody.innerHTML = deck.history.slice(0, 10).map((h, i) => {
     const hpc = h.prizeCount || 6;
     return `<tr>
-      <td>${i + 1}</td>
+      <td>${deck.history.length - i}</td>
       <td class="${h.score === hpc ? 'score-perfect' : ''}">${h.score}/${hpc}</td>
       <td>${formatTime(h.time)}</td>
       <td>${h.date}</td>
@@ -9040,8 +9096,8 @@ function openThumbPicker(deckId) {
     return `
       <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectThumb('${deckId}', this.querySelector('img') ? this.querySelector('img').src : '${card.imageUrl}')">
         <div class="picker-card-img">
-          <img src="${card.imageUrl}" alt="${displayName}"
-            data-fallbacks='${fallbacks}' data-fallback-idx="0"
+          <img src="${esc(card.imageUrl)}" alt="${displayName}"
+            data-fallbacks="${esc(fallbacks)}" data-fallback-idx="0"
             onerror="reviewImgError(this)">
         </div>
         <div class="picker-card-name">${displayName}</div>
@@ -9176,7 +9232,7 @@ function openWeakSpots(deckId) {
           return `
           <div class="ws-card-row ${cls}">
             <div class="ws-card-thumb">
-              ${c.imageUrl ? `<img src="${c.imageUrl}" alt="${esc(c.name)}">` : '<i class=ph-card></i>'}
+              ${c.imageUrl ? `<img src="${esc(c.imageUrl)}" alt="${esc(c.name)}">` : '<i class=ph-card></i>'}
             </div>
             <div class="ws-card-info">
               <div class="ws-card-name">${esc(c.label)}</div>
@@ -9468,7 +9524,7 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); toastTimer = setTimeout(() => { if (!t.classList.contains('show')) t.textContent = ''; }, 400); }, 2800);
 }
 
 
@@ -9600,7 +9656,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v38';
+const PT_VERSION = 'v40';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -10678,7 +10734,7 @@ function olSectionHTML(deck) {
         <div class="seg ol-k" role="group" aria-label="How many">${[1, 2, 3, 4].map(k => `<div class="mode-opt${r.k === k ? ' active' : ''}${k > tot ? ' ol-dis' : ''}" data-k="${k}" onclick="olSetK(${i},${k})">${k}</div>`).join('')}</div>
         <span class="ol-of">of</span></div>
       <div class="ol-line"><button class="ol-names" onclick="olOpenPick(${i})" aria-label="Change cards">${names.length ? names.map(n => `<span class="ol-chip">${esc(n)}</span>`).join(names.length > 1 ? '<span class="ol-or">or</span>' : '') : '<span class="ol-ph">Pick cards</span>'}<span class="ol-tot">${tot} in list</span></button>
-        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove this card" title="Remove">${ic23('x')}</button></div>
+        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove ${esc(names.length ? names.join(' or ') : 'this row')}" title="Remove">${ic23('x')}</button></div>
     </div>`;
   });
   h += `</div>`;
@@ -11160,12 +11216,12 @@ function r29Rows(deck) {
     r.reprint = rb && rb > (r.mark || '') ? rb : null;
     r.checked = !!rep;
     const best = r.reprint || r.mark;
-    // v35: a missing mark, a mark read from another printing, or a reprint check
-    // that has not run yet is not proof, so those cards count as legal.
-    if (r29Safe(best)) r.st = 'safe';
+    // v40: only a confirmed mark counts as safe. A missing mark, a Pokemon mark read
+    // from another printing, or a reprint check that has not run yet is unknown.
+    if (r29Safe(best) && !(r.other && r.pkmn && !r.reprint)) r.st = 'safe';
     else if (r29Rotates(best)) r.st = 'risk';
     else if (best && r.checked && !r.other) r.st = 'out';
-    else { r.st = 'safe'; r.assumed = true; }
+    else r.st = 'unconf';
     rows.push(r);
   });
   return rows;
@@ -11173,14 +11229,14 @@ function r29Rows(deck) {
 
 function r29Counts(rows) {
   const n = st => rows.filter(r => r.st === st).reduce((a, r) => a + r.qty, 0);
-  return { out: n('out') + n('nomark'), risk: n('risk'), safe: n('safe'), unread: n('unread'), energy: n('energy'),
+  return { out: n('out') + n('nomark'), risk: n('risk'), safe: n('safe'), unread: n('unread'), energy: n('energy'), unconf: n('unconf') + n('unread'),
     outNames: rows.filter(r => r.st === 'out' || r.st === 'nomark').length, riskNames: rows.filter(r => r.st === 'risk').length };
 }
 
 // ── Reprint check: a rotating card stays if a printing with a later mark exists ──
 const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || (r.assumed && r.mark && !r.other)) && !r.checked);
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || (r.st === 'unconf' && !r.other)) && !r.checked);
 }
 async function r29CheckReprints(deck) {
   if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
@@ -11258,8 +11314,9 @@ function r29Summary(deck) {
   if (!ann && N.checkBy && Date.now() > Date.parse(N.checkBy)) h += `<div class="g-item warn"><div class="gt">This may be out of date</div>
     <p>Pokémon usually announces rotation in January. If it has, update the app to see the official date.</p></div>`;
 
-  const tile = (cls, v, t) => `<div class="r29-c ${cls}"><b>${v}</b><span>${t}</span></div>`;
-  h += `<div class="r29-sum">${tile(k.out ? 'bad' : '', k.out, 'not legal now')}${tile(k.risk ? 'risk' : '', k.risk, ann ? 'rotate next' : 'may rotate')}${tile('ok', k.safe, 'safe')}</div>`;
+  const tile = (cls, v, t, key) => `<div class="r29-c ${cls}" data-k="${key}"><b>${v}</b><span>${t}</span></div>`;
+  h += `<div class="r29-sum">${tile(k.out ? 'bad' : '', k.out, 'not legal now', 'out')}${tile(k.risk ? 'risk' : '', k.risk, ann ? 'rotate next' : 'may rotate', 'risk')}${k.unconf ? tile('unk', k.unconf, 'not confirmed', 'unconf') : ''}${tile('ok', k.safe, 'safe', 'safe')}</div>`;
+  if (k.energy) h += `<div class="r29-tot">Plus ${k.energy} Basic Energy, which never rotate${k.energy === 1 ? 's' : ''}. ${k.out + k.risk + k.unconf + k.safe + k.energy} cards in all.</div>`;
 
   const name = r => `<div class="r29-n">${esc(r.name)}${r.sub ? `<small>${r.sub}</small>` : ''}</div>`;
   const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m">${r.reprint || r.mark || '?'}</span></div>`;
@@ -11279,8 +11336,16 @@ function r29Summary(deck) {
   const list = (title, rs) => `<div class="r29-list"><div class="r29-lh">${title}</div>${rs.slice(0, 6).map(row).join('')}${rs.length > 6
     ? `<details class="g29-more r29-rest"><summary>${rs.length - 6} more</summary>${rs.slice(6).map(row).join('')}</details>` : ''}</div>`;
   if (out.length) h += list('Not Standard legal now', out);
-  if (risk.length) h += list(`${ann ? 'Rotate' : 'Expected to rotate'} in ${N.when}`, risk);
-  if (!out.length && !risk.length && k.safe) h += `<div class="g-item ok"><div class="gt">Nothing here rotates next</div>
+  if (risk.length) h += list(`${ann ? 'Rotate' : 'May rotate'} in ${N.when}`, risk);
+  const unk = rows.filter(r => r.st === 'unconf' || r.st === 'unread');
+  unk.forEach(r => {
+    r.sub = r.st === 'unread' ? 'Could not be read from the card database'
+      : r.other && r.pkmn ? 'Mark read from another printing, so not confirmed'
+      : !r.checked ? (busy ? 'Checking for reprints' : 'Reprints not checked yet')
+      : 'No mark found in the card database';
+  });
+  if (unk.length) h += list('Not confirmed yet', unk);
+  if (!out.length && !risk.length && !unk.length && k.safe) h += `<div class="g-item ok"><div class="gt">Nothing here rotates next</div>
     <p>Every card the database could read has a mark that stays legal after the ${marks} rotation.</p></div>`;
   const safeRows = rows.filter(r => r.st === 'safe');
   if (safeRows.length) {
@@ -11290,14 +11355,14 @@ function r29Summary(deck) {
   }
   if (!busy && pending && _r29Tried.has(deck.id)) h += `<button class="btn btn-sm r29-btn" onclick="r29Retry('${deck.id}')">${ic23('search')}Check reprints again</button>`;
   const notes = [];
-  if (k.energy) notes.push('Basic Energy is left out: it has no mark.');
-  if (k.unread) notes.push(`${k.unread} card${k.unread > 1 ? 's' : ''} could not be read, so ${k.unread > 1 ? 'their marks are' : 'its mark is'} unknown.`);
+  if (k.unconf) notes.push(`A card counts as safe only when its mark is confirmed, so check the ${k.unconf} not confirmed before an event.`);
   notes.push(`A card with an older mark stays legal while a reprint with a legal mark exists (${link(ROT29.rules)}). For a Pokémon, the reprint needs the same name, attacks and Abilities. The marks come from the card database, so check a card you are unsure of before an event.`);
   h += `<div class="r29-note">${notes.join(' ')}</div></div>`;
 
   let chip = '', chipTone = 'ok';
   if (k.out) { chip = `<b>${k.out}</b> not legal now`; chipTone = 'crit'; }
   else if (k.risk) { chip = `<b>${k.risk}</b> ${ann ? 'rotate next' : 'may rotate'}`; chipTone = 'warn'; }
+  else if (k.unconf) { chip = `<b>${k.unconf}</b> not confirmed`; chipTone = 'warn'; }
   else if (k.safe) chip = 'Rotation safe';
   return { chip, chipTone, html: h, counts: k };
 }
@@ -11320,6 +11385,7 @@ function r29HomeLine(deck) {
   const upTo = open && rows.some(r => (r.st === 'out' || r.st === 'nomark') && !r.checked) ? 'Up to ' : '';
   if (k.out) return `<div class="deck-rot crit"><svg class="ic"><use href="#i-alert"/></svg>${upTo}${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now</div>`;
   if (k.risk) return `<div class="deck-rot"><svg class="ic"><use href="#i-calendar"/></svg>${k.risk} card${k.risk > 1 ? 's' : ''} ${ROT29.next.announced ? 'rotate' : 'expected to rotate'} in ${ROT29.next.when}</div>`;
+  if (k.unconf && !open) return `<div class="deck-rot"><svg class="ic"><use href="#i-alert"/></svg>${k.unconf} card${k.unconf > 1 ? 's' : ''} not confirmed Standard legal</div>`;
   return '';
 }
 
@@ -11432,7 +11498,7 @@ renderGrade = function () {
       ${part('Synergy', synV, 'Do the cards work together')}
       ${part('Power', powV, 'Can it win a game')}
     </div>
-    <div class="g29-how">The grade is Synergy times Power, so the weaker one pulls the whole grade down.${weak}</div>
+    <div class="g29-how">The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down.${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
   </div>`;
 
   if (R.unread > 0) h += `<div class="g-sec"><div class="g-item warn">
@@ -12559,7 +12625,7 @@ function rot35Mark(deck) {
     shown.set(rot35Key(c.apiName || c.name), k); shown.set(rot35Key(c.name), k);
   });
   const N = ROT29.next, when = N.when;
-  const label = `${N.announced ? 'Rotates' : 'Expected to rotate'} in ${when}`;
+  const label = `${N.announced ? 'Rotates' : 'May rotate'} in ${when}`;
   let n = 0;
   body.querySelectorAll('.review-card').forEach(el => {
     const nm = el.querySelector('.review-card-name'), img = el.querySelector('.review-card-img');
@@ -12575,7 +12641,7 @@ function rot35Mark(deck) {
   const key = document.createElement('div');
   key.id = 'rot35-key'; key.className = 'rot35-key';
   key.innerHTML = `<span class="rot35 rot35-in" aria-hidden="true"><svg class="ic"><use href="#i-alert"/></svg></span>
-    <span>${n} card${n > 1 ? 's' : ''} ${N.announced ? 'rotate' : 'expected to rotate'} in ${esc(when)}${N.announced ? '' : ' (not announced yet)'}.</span>`;
+    <span>${n} card${n > 1 ? 's' : ''} ${N.announced ? 'rotate' : 'may rotate'} in ${esc(when)}${N.announced ? '' : ' (not announced yet)'}.</span>`;
   body.insertBefore(key, body.firstChild);
 }
 
@@ -12674,7 +12740,7 @@ function cz37Bar(host, daily) {
   const bar = document.createElement('div');
   bar.className = 'cz-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Cards per row');
   if (daily) bar.dataset.daily = '1';
-  bar.innerHTML = '<span class="cz-label">Per row</span><div class="cz-opts"></div>';
+  bar.innerHTML = '<span class="cz-label">Cards per row</span><div class="cz-opts"></div>';
   first.parentNode.insertBefore(bar, first);
   cz37Fill(bar);
 }
@@ -13110,15 +13176,18 @@ function dm38Open(id) {
     t.innerHTML = out.html;
     const sec = t.content.querySelector('#r29-sec');
     if (!sec) return out;
-    const tiles = [...sec.querySelectorAll('.r29-sum .r29-c')].map(c => +((c.querySelector('b') || {}).textContent || 0));
-    const [gone, risk, safe] = [tiles[0] || 0, tiles[1] || 0, tiles[2] || 0];
+    const tv = key => { const c = sec.querySelector(`.r29-sum .r29-c[data-k="${key}"] b`); return c ? (+c.textContent || 0) : 0; };
+    const [gone, risk, safe, unk] = [tv('out'), tv('risk'), tv('safe'), tv('unconf')];
+    const en = (out.counts && out.counts.energy) || 0;
     const ann = !!sec.querySelector('.r29-tag.ann');
     const wm = (sec.querySelector('.r29-head') || sec).textContent.match(/in ([A-Z][a-z]+ \d{4})/);
     const when = wm ? wm[1] : '';
     const parts = [];
     if (gone) parts.push(`${gone} card${gone !== 1 ? 's' : ''} not legal now`);
     if (risk) parts.push(`${risk} card${risk !== 1 ? 's' : ''} ${ann ? 'rotate' : 'may rotate'}${when ? ' in ' + when : ''}`);
-    parts.push(risk || gone ? `${safe} ${safe !== 1 ? 'are' : 'is'} safe` : `Nothing here rotates next. All ${safe} cards are safe`);
+    if (unk) parts.push(`${unk} not confirmed`);
+    parts.push(risk || gone || unk ? `${safe} ${safe !== 1 ? 'are' : 'is'} safe` : `Nothing here rotates next. All ${safe} cards with a mark are safe`);
+    if (en) parts.push(`Plus ${en} Basic Energy`);
     const d = document.createElement('details');
     d.className = 'g-sec g29-fold';
     d.id = 'r29-sec';
@@ -13260,6 +13329,97 @@ openCompare = function (val) {
   const s = document.getElementById('cmp-sec');
   if (s) window.scrollBy(0, s.getBoundingClientRect().top - rd38TabsEnd() - 8);
 };
+</script>
+<script>
+// ═══════════ v40: fixes from the 9 Nov 2026 audit ═══════════
+
+// 1. A deck with cards that are not Standard legal now cannot grade above 4.9.
+// The grade still runs on the list as it is, but the cap and a first "fix" say why.
+const G40_CAP = 4.9;
+(function () {
+  const _grade = gradeDeck;
+  gradeDeck = function (deck) {
+    const R = _grade.apply(this, arguments);
+    try {
+      if (!R || !deck || deck.daily || deck.format === 'expanded') return R;
+      if (!(deck.cards || []).some(c => c.supertype) || typeof r29Rows !== 'function') return R;
+      const rows = r29Rows(deck), k = r29Counts(rows);
+      R.rot = k;
+      if (k.out > 0) {
+        const names = rows.filter(r => r.st === 'out' || r.st === 'nomark').map(r => r.name);
+        const list = names.slice(0, 3).join(', ') + (names.length > 3 ? ` and ${names.length - 3} more` : '');
+        R.rawOverall = R.overall;
+        R.overall = Math.min(R.overall, G40_CAP);
+        R.coh.flaws.unshift({ sev: 'crit', t: `${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now`,
+          d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade is held at ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
+            (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') });
+      }
+    } catch (_) {}
+    return R;
+  };
+  // The cached grade has to change when the rotation data does.
+  const _sig = g29Sig;
+  g29Sig = function (deck) {
+    const rot = (deck && deck.rot29 && deck.rot29.names) || {};
+    return _sig.apply(this, arguments) + '|' + ((deck && deck.format) || '') + '|' +
+      (deck.cards || []).map(c => (c.reg && c.reg.mark) || '').join('') + '|' +
+      Object.keys(rot).sort().map(k => k + ':' + ((rot[k] && rot[k].best) || '')).join(',');
+  };
+})();
+
+// 2. A field that stops a save is marked and focused, not only named in a toast.
+function f40Invalid(id, msg) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.setAttribute('aria-invalid', 'true');
+    el.classList.add('f40-bad');
+    el.addEventListener('input', () => { el.removeAttribute('aria-invalid'); el.classList.remove('f40-bad'); }, { once: true });
+    try { el.focus(); } catch (_) {}
+  }
+  showToast(msg);
+}
+
+// 3. Missed prize notes: a quiet "Saved" after each autosave.
+function f40Saved(root) {
+  if (!root) return;
+  let s = root.querySelector('.f40-saved');
+  if (!s) { s = document.createElement('div'); s.className = 'f40-saved'; s.setAttribute('role', 'status'); root.appendChild(s); }
+  s.textContent = 'Notes saved';
+  clearTimeout(s._t);
+  s._t = setTimeout(() => { s.textContent = ''; }, 2000);
+}
+
+// 4. Sheets: a close button that stays at the top, and the buttons stay at the bottom.
+(function () {
+  const _open = openSheet;
+  openSheet = function () {
+    const r = _open.apply(this, arguments);
+    try {
+      const inner = document.getElementById('x-modal-inner');
+      const t = inner && inner.firstElementChild;
+      if (t && t.classList.contains('modal-title') && !t.querySelector('.x40-close')) {
+        t.classList.add('x40-head');
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'icon-btn x40-close'; b.setAttribute('aria-label', 'Close'); b.title = 'Close';
+        b.innerHTML = '<svg class="ic"><use href="#i-x"/></svg>';
+        b.onclick = () => { if (typeof _v26Close === 'object' && _v26Close['x-modal']) _v26Close['x-modal'](); else closeSheet(); };
+        t.appendChild(b);
+      }
+    } catch (_) {}
+    return r;
+  };
+})();
+
+// 5. Share the app on a phone: iPhone Safari ignores downloads, so copy the link instead.
+(function () {
+  const _dl = downloadAppFile;
+  downloadAppFile = function () {
+    if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) return _dl.apply(this, arguments);
+    const url = location.origin + location.pathname.replace(/index\.html$/, '');
+    const done = () => showToast('Link copied. Send it to your friend.');
+    try { navigator.clipboard.writeText(url).then(done, () => showToast(url)); } catch (_) { showToast(url); }
+  };
+})();
 </script>
 </body>
 </html>

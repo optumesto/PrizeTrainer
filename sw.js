@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v38';
+const CACHE_NAME = 'prize-trainer-v40';
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page
@@ -19,15 +19,15 @@ const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  './icons/icon.svg',
+  './icon-192x192.png',
+  './icon-512x512.png',
+  './icon.svg',
   './terms.html',
   './privacy.html',
-  './fonts/saira.woff2',
-  './fonts/saira-condensed-600.woff2',
-  './fonts/saira-condensed-700.woff2',
-  './fonts/saira-condensed-800.woff2',
+  './saira.woff2',
+  './saira-condensed-600.woff2',
+  './saira-condensed-700.woff2',
+  './saira-condensed-800.woff2',
 ];
 
 // On install: pre-cache the core shell, then skip waiting so the new SW

@@ -28,12 +28,12 @@ jobs:
           node-version: '22'
 
       - name: Refresh data.json
-        run: node scripts/refresh-data.mjs data.json
+        run: node refresh-data.mjs data.json
 
       - name: Check card facts
         # A failed check never blocks the refresh; card-check.md says what happened.
         continue-on-error: true
-        run: node scripts/check-cards.mjs data.json card-check.md index.html
+        run: node check-cards.mjs data.json card-check.md index.html
 
       - name: Commit if it changed
         run: |

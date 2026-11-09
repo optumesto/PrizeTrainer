@@ -12,17 +12,19 @@ Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
 ```
 PrizeTrainer/
   .github/workflows/refresh-data.yml   weekly job that refreshes data.json
-  scripts/refresh-data.mjs             the script that job runs first
-  scripts/check-cards.mjs              then this one: checks card facts in both card databases
-  icons/                               app icons (9 files)
-  .nojekyll                            tells GitHub Pages to serve files as they are
+  refresh-data.mjs                     the script that job runs first
+  check-cards.mjs                      then this one: checks card facts in both card databases
   index.html                           the app
   sw.js                                offline support (cache name shows the version)
+  manifest.json                        name and icons for Install app
   data.json                            meta, starter decks, rotation, set codes, card fixes
   card-check.md                        the weekly card check report (the job writes it)
-  manifest.json                        name and icons for Install app
-  CHANGES.md                           what changed in this version
-  README.md                            this file
+  terms.html, privacy.html             Terms of Service and Privacy Policy
+  robots.txt, sitemap.xml              for search engines
+  saira*.woff2                         the app's fonts (4 files)
+  icon*.png, icon.svg, apple-touch-icon.png, og-image.png   icons and the share image
+  .nojekyll                            tells GitHub Pages to serve files as they are
+  CHANGES.md, README.md, LICENSE
 ```
 
 Nothing else. In particular no `.txt` copies of these files: GitHub Pages ignores them.
@@ -88,4 +90,6 @@ When Pokémon announces the 2027 rotation (expected around January, H mark), edi
 
 ## Credits
 
-Card data from TCGdex (MIT license) with pokemontcg.io as a backup. Decklists, meta and card images from Limitless TCG. Fonts: Barlow, Barlow Condensed and IBM Plex Mono (SIL Open Font License 1.1). Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.
+Card data from TCGdex (MIT license) with pokemontcg.io as a backup. Decklists, meta and card images from Limitless TCG. Fonts: Saira and Saira Condensed by Omnibus-Type (SIL Open Font License 1.1). Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.
+
+Copyright 2026 Optume Ventures LLC. All rights reserved. See LICENSE.
