@@ -1,3 +1,13 @@
+# v51: Prerelease section hidden for now (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v51), CHANGES.md.
+Not changed: everything else, including ads.txt, the ad code, data.json and the set watch.
+
+- The home prerelease card, the prerelease sheet and the Prerelease format choice (import and edit) are hidden.
+- A deck already saved as a prerelease deck keeps working, and its editor still shows its format.
+- The code stays. Setting PRE47_ON to true in index.html brings it all back. The set watch keeps running, so the card list is current when it returns.
+- Version reads v51.
+
 # v50: new sets reach the Prerelease section on their own (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v50), data.json (note only), README.md, CHANGES.md.

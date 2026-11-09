@@ -7904,6 +7904,7 @@ function openEditModal(deckId) {
   if (!deck) return;
   editDeckId = deckId;
   editFormat = deck.format || 'standard';
+  pre47FormatChoices(editFormat === 'prerelease');
   document.getElementById('edit-name').value = deck.name;
   // Reconstruct deck list text from cards, under section headers so a
   // save keeps each card in the group it is shown in.
@@ -9707,7 +9708,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v50';
+const PT_VERSION = 'v51';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -13875,6 +13876,10 @@ const PRE47_BUILT = {
   cards: null,
 };
 let PRE47 = PRE47_BUILT;
+// v51: the Prerelease section is hidden for now (Mason, 9 Nov 2026). Set this to
+// true to bring back the home card, the sheet and the Prerelease format choice.
+// The set watch keeps data.json's prerelease block current either way.
+const PRE47_ON = false;
 const PRE47_KEY = 'pt_pre47_v1';
 const PRE47_TYPES = ['Grass', 'Fire', 'Water', 'Lightning', 'Psychic', 'Fighting', 'Darkness', 'Metal'];
 
@@ -13960,8 +13965,18 @@ function pre47When(p) {
   return ev ? `${ev}, ${out}.` : pre47Today() >= p.release ? `In stores since ${pre47Nice(p.release)}.` : `In stores ${pre47Nice(p.release)}.`;
 }
 
+// Hides the Prerelease format choice while the section is off. A deck that is
+// already a prerelease deck still shows it in its editor, so a save keeps its format.
+function pre47FormatChoices(keepEdit) {
+  const a = document.getElementById('fmt-prerelease'), b = document.getElementById('edit-fmt-prerelease');
+  if (a) a.style.display = PRE47_ON ? '' : 'none';
+  if (b) b.style.display = PRE47_ON || keepEdit ? '' : 'none';
+}
+document.addEventListener('DOMContentLoaded', () => { try { pre47FormatChoices(false); } catch (_) {} });
+
 // ── Home card ──
 function pre47RenderHome() {
+  if (!PRE47_ON) { const old = document.getElementById('pre47-card'); if (old) old.innerHTML = ''; return; }
   let el = document.getElementById('pre47-card');
   if (!el) {
     const daily = document.getElementById('daily-card');
@@ -14052,6 +14067,7 @@ function pre47Count() {
 let _pre47Q = '', _pre47Secret = false;
 
 function openPre47() {
+  if (!PRE47_ON) return;
   const p = PRE47;
   openSheet(`<div class="pre47">
     <div class="modal-title">${esc(p.set)} prerelease</div>
