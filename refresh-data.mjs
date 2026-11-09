@@ -1,4 +1,4 @@
-// Refreshes data.json for Prize Trainer. Run weekly by .github/workflows/refresh-data.yml.
+// Refreshes data.json for RdyDeck (the repo and site keep the PrizeTrainer name so installs keep working). Run weekly by .github/workflows/refresh-data.yml.
 //
 // What it reads, and how politely:
 // - Limitless play API (play.limitlesstcg.com/api), no key needed. One tournament list,
@@ -18,7 +18,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
 const FILE = process.argv[2] || 'data.json';
-const UA = 'PrizeTrainer-data-refresh/1.0 (+https://optumesto.github.io/PrizeTrainer/)';
+const UA = 'RdyDeck-data-refresh/1.0 (+https://optumesto.github.io/PrizeTrainer/)';
 const LIMITLESS = 'https://play.limitlesstcg.com/api';
 const TCGDEX = 'https://api.tcgdex.net/v2/en';
 const DAY = 86400000;

@@ -1,5 +1,7 @@
 # Refreshes data.json once a week: current meta and starter decks from Limitless,
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
+# Then checks every starter card and the two newest sets against both card databases,
+# writes gap fixes into data.json and a plain report to card-check.md.
 name: Refresh data.json
 
 on:
@@ -17,7 +19,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
 
@@ -28,14 +30,19 @@ jobs:
       - name: Refresh data.json
         run: node scripts/refresh-data.mjs data.json
 
+      - name: Check card facts
+        # A failed check never blocks the refresh; card-check.md says what happened.
+        continue-on-error: true
+        run: node scripts/check-cards.mjs data.json card-check.md index.html
+
       - name: Commit if it changed
         run: |
-          if git diff --quiet -- data.json; then
+          if git diff --quiet -- data.json card-check.md && [ -z "$(git ls-files --others --exclude-standard card-check.md)" ]; then
             echo "No change this week."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          git commit -m "Weekly data refresh"
+          git add data.json card-check.md
+          git commit -m "Weekly data refresh and card check"
           git push

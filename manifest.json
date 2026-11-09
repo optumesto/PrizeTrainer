@@ -1,12 +1,12 @@
 {
-  "name": "Prize Trainer",
-  "short_name": "Prize Trainer",
+  "name": "RdyDeck",
+  "short_name": "RdyDeck",
   "description": "Grade your Pokémon TCG deck, then practice it: grade, odds, rotation, prize drills and more.",
   "start_url": "./index.html",
   "scope": ".",
   "display": "standalone",
-  "background_color": "#0c1018",
-  "theme_color": "#d8a820",
+  "background_color": "#131210",
+  "theme_color": "#131210",
   "orientation": "portrait",
   "categories": [
     "games",

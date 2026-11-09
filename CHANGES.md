@@ -1,67 +1,44 @@
-# Prize Trainer v35 (9 Nov 2026)
+# v37: RdyDeck
 
-Built on v34. This repo setup already includes it.
+Changed files: index.html, sw.js (cache prize-trainer-v37), manifest.json, README.md, CHANGES.md, scripts/refresh-data.mjs, scripts/check-cards.mjs (new), .github/workflows/refresh-data.yml. data.json is unchanged; the weekly job adds card fixes to it.
 
-## What changed
+## New name
+- Prize Trainer is now RdyDeck everywhere you see a name: title, header, home screen name, share text, downloads, help and credits.
+- Kept as PrizeTrainer on purpose: the repo and web address, the saved deck storage, the offline cache names and the daily challenge seed. Changing any of them would wipe saved decks, break installed copies or change today's challenge.
+- The app icon shows no name, so it needed no change.
 
-1. **Rotation caution mark.** In a deck's Cards tab, every card expected to rotate (H mark) gets a small caution mark in its top left corner, and a line above the grid counts them ("6 cards expected to rotate in April 2027 (not announced yet)"). The mark has a spoken label for screen readers. Nothing shows in Expanded. The marks redraw when a reprint check finishes, since a reprint can keep a card legal.
-2. **Damage numbers come from the card text.** The grade used to add a flat 50 for any "damage booster" it guessed at, which is how Dhelmise read as "near 220". Now each booster adds only what its card prints, only where it applies:
-   - Brave Bangle +30 against a Pokémon ex, not on a Pokémon ex attacker
-   - Maximum Belt +50 against a Pokémon ex
-   - Black Belt's Training +40 against a Pokémon ex
-   - Kieran +30 against a Pokémon ex
-   - Defiance Band +30 while behind on prizes, Vitality Band +10
-   One Tool per attacker plus one Supporter a turn. A booster not on this list adds nothing. The critique now reads "Dhelmise hits for at most 200 with Brave Bangle against a Pokemon ex (170 without), before Weakness". No "near" or "around" figures remain. An attack whose damage scales with the board says its number is the app's assumption.
-3. **No more false "not legal".** A card is called not legal only when its own printing carries an old mark and the reprint check found no legal reprint. A missing mark, a mark read from another printing, or a reprint check that has not run counts as legal, with a note in the safe list. The cause in your lists: Mega promos (MEP, like Dhelmise MEP 84) had no card database code, so they were read by name from an old Dhelmise with no mark. MEP, SVP, Black Bolt and White Flare now map to TCGdex (ids mep, svp, sv10.5b, sv10.5w are inferred; the weekly refresh replaces them with TCGdex's own if they differ).
+## New look
+- Built like a tournament decklist sheet: condensed headings, counts in a typewriter face, ink and paper with one red for marks. Dark mode is paper on a playmat.
+- Gone: the glow, the pill badges, the grade dial, the icon on every tab and button, the blurred bars.
+- Card art is the same size as before. Zoom still works. Every screen fits at 320 px.
+- Cards per row: the Cards tab and the daily deck list have a Per row control (3 to 6 on a phone, more on wider screens). The pick is kept on this device. Counts and rotation marks stay readable at 6 across. Pinch stays as page zoom so the two never fight.
+- The results screen and the ad spots now match the sheet: square corners, plain time line, ads between two hairlines with a small AD label.
 
-## Tests
+## Save and open decks (for the move to a new web address)
+- Saved decks belong to one web address, so decks on optumesto.github.io will not show up on rdydeck.com by themselves. Backup and restore is now Save and open decks.
+- Save: a file (rdydeck-decks-DATE.json), Share on phones that can share files, or Copy as text. It holds every deck, prize game, tournament log entry, daily result and drill stat, plus the theme, cards per row and tour settings. The age answer stays on the device.
+- Open: a file or pasted text. Decks are added to the ones already there; the same deck is not added twice, and its games are joined. Replace everything takes a second tap.
+- A backup is checked before anything changes. Plain text, broken files, unsafe values and bad settings are refused with a plain message. Old backup text still opens.
+- To move players: on the old address, tap Save and open decks, then Save a file. On rdydeck.com, tap Save and open decks, then Open a file.
 
-- New v35 checks: 26 of 26 pass at 390 and 320 px, including your Dhelmise example (200 with Brave Bangle, 170 without, 230 with Bangle plus Kieran, Bangle ignored on an ex).
-- Older suites pass, except checks that pin the old version string, and v29 checks that expected unconfirmed marks to count as not legal (changed on purpose).
-- Screen walk: no page errors. Offline start: works.
+## Card accuracy (checked against pokemon-tcg-data, TCGdex and Limitless)
+- Mega Pokémon ex give up 3 prizes. A card that prints both the ex rule and the Mega rule was read as 2 on the main card source.
+- 6 cards printed with a G mark (like Ancient Booster Energy Capsule) were listed as H by pokemontcg.io. Fixed, so they no longer read as expected to rotate in 2027.
+- A "Free" attack cost counted as one Energy. It now counts as none.
+- TCGdex marks some Special Energy as Normal (like Telepathic Psychic Energy). They were read as Basic Energy, so 5 copies passed the deck rules. Now they are Special.
+- Delta Reign on TCGdex had no regulation marks, called 12 Stage 1 and Stage 2 cards Basic (like Talonflame ex and Mega Golisopod ex) and left out what 30 cards evolve from. All fixed, and checked against pokemon-tcg-data.
+- Azurill's Bouncy-Bounce Charge is a 0 cost attack, not an Ability.
+- Coin flips: Mega Kangaskhan ex Rapid-Fire Combo averages 250, not 350. Flip attacks now use their average and say so.
+- Copy attacks: N's Zoroark ex Night Joker now counts N's Zekrom's Rampaging Thunder (250, 330 with Black Belt's Training and Binding Mochi). N's Reshiram no longer gets a false "no Fire Energy" flag. Slowking's Seek Inspiration copies a random card, so it is not counted as a set number.
+- Damage boosters now include Light Ball, Hop's Choice Band, Binding Mochi, Gladion's Final Battle, Premium Power Pro, Postwick and Voltaic Lightning Energy, each only where its text says it applies.
+- The grade says how many hits the format's 280 and 340 HP threats take, not a vague range.
+- Dhelmise's Hide 'n' Sneak style Abilities block effects, not damage. The grade now says damage still goes through.
+- Goldfish tables follow the cards: Buddy-Buddy Poffin finds 70 HP or less, Level Ball 90 HP or less, Battle VIP Pass only on your first turn, and Fezandipiti ex no longer draws in goldfish, since its Ability needs a knockout first.
 
----
+## Weekly card check (new)
+- After the data refresh, the weekly job checks every starter deck card and every card in the two newest sets against both card databases: HP, stage, evolves from, regulation mark, attacks, damage, cost, Abilities, Special Energy and ACE SPEC.
+- Where TCGdex leaves something out and pokemon-tcg-data has it, the fix goes into data.json and the app uses it. Everything else that disagrees is listed in card-check.md for a person to check.
+- A test run on today's data found the Delta Reign stage and Azurill problems on its own, and flagged nothing that was right.
 
-# PrizeTrainer v34: audit of v33, full repo setup
-
-## How to upload
-
-See README.md, Set it up. v33 went up as `index.txt` and `sw.txt`, so the live site stayed on v26 until this upload.
-
-## What v34 fixes
-
-1. **Deck rules check in the grade.** The grade never checked the deck building rules, so a list with 5 Arven, 2 ACE SPEC cards or 61 cards graded like a legal one. A box at the top of Grade now names each rule the list breaks: exactly 60 cards, at most 4 with the same name (Basic Energy excepted), at most 1 ACE SPEC, at most 1 Radiant, at least 1 Basic Pokémon. The score is unchanged. All five starters and the daily deck pass.
-2. **Home buttons cut off at 320 px.** "Starter decks" ran off the right edge on small phones. The two buttons now stack below 360 px wide.
-3. **Ads could reach the art cache.** The page told the service worker to save any outside picture that loaded, and the worker saved it. An ad picture or tracking pixel would have been kept offline. Now only card art hosts (Limitless, pokemontcg.io, TCGdex) are saved, on both sides. Ads stay network only, as before.
-4. **An error page could replace the saved app.** The worker saved the page even when the server answered with an error. It now keeps only a good answer.
-5. **Delta Reign (DLR), out 6 Nov 2026,** added to the set codes (TCGdex id `me06`, inferred from me01 to me05; TCGdex refuses reads from here). Until then DLR cards were read by name only, so the exact printing could be wrong.
-6. Weekly job moved to `.github/workflows/refresh-data.yml` and `scripts/refresh-data.mjs`, now on Node 22 and the current checkout and setup-node actions (Node 20 is past end of life).
-7. `manifest.json`: description now says what the app does (grade, then practice).
-8. `data.json`: date moved to 9 Nov 2026 and DLR added to `sets`. Starters and meta unchanged.
-
-Cache is `prize-trainer-v34`. Card art stays on.
-
-## Checked and current (9 Nov 2026)
-
-- **Legal marks:** H, I and J. G left on 26 Mar 2026 (Live) and 10 Apr 2026 (events). The app matches.
-- **2027 rotation:** not announced (CardJinx, 25 Oct 2026). The app's "H expected April 2027, not announced" stays right.
-- **Newest set:** Delta Reign (DLR), 6 Nov 2026, J mark, tournament legal 20 Nov 2026 (one secondary site for the mark and the legal date). Next: Flowing Fists, reported for 5 Feb 2027, not official.
-- **Bans:** none in Standard (secondary source). Diancie (SCR) had an errata before Worlds; the grade reads card text from TCGdex, so it may show the old wording.
-- **Rules:** the Feb 2026 rulebook changes (0 allowed for "up to" in attacks, 6 prize tiebreaker games, end of round changes) do not touch anything the app models.
-- **Meta:** data.json (online events, 8 Nov) leads with Dragapult ex, which matches the Regionals (Dragapult won Louisville and Puebla, Slowking won Gdańsk on 31 Oct). Basic Box and N's Zoroark are big at Regionals but not in the starters; the weekly job will refresh these once it runs.
-- **APIs:** Limitless play API answered (8 Nov events). pokemontcg.io returned a server error once (it is deprecated). TCGdex refuses automated reads from here, so its answers are untested, as before.
-
-## Tested
-
-- New checks (18), all passing at 390, 360 and 320 px: version and cache, art cache keeps card art only (the real worker code run with stand-ins), error pages not saved, ads network only, home buttons fit, rules box shown once, right wording, no false flag on Basic Energy or a legal list, no Basic Pokémon flagged, DLR code, no dashes.
-- Walk of every screen and sheet at 320 and 390: no page errors, no overflow apart from the game carousel (clipped on purpose).
-- Offline: installs, reloads with no network, data.json from the saved copy.
-- Old suites: A 16/16, B 19/19, C 17/17, v28 45/45, D 18/19 (known). v29, v31, v32, v33: every miss is only the version or cache name.
-- Not tested: a real phone, live TCGdex, real AdSense.
-
-Screenshots in `shots/`.
-
-## Pinch zoom (your call, 9 Nov)
-- Pinch zoom is on: the viewport tag no longer has maximum-scale or user-scalable=no.
-- Text fields on phones (up to 820 px wide) are now at least 16 px, so iPhones do not zoom in by themselves when you tap a field. The deck list, feedback and backup boxes grow from 12 or 14 px to 16 px; nothing else changes.
-- Checked at 390 and 320 px: every field is 16 px or more, and all v34 checks still pass.
+## Checked, not changed
+- Your own saved decks live on your phone, so they were not checked here. Every deck re-reads its card data once when you open v37.

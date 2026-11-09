@@ -1,7 +1,9 @@
-# Prize Trainer
+# RdyDeck
 
-Grade your Pokémon TCG deck, then practice it. Free, offline, no account.
+Grade your Pokémon TCG deck, then drill it. Free, offline, no account.
 Live at https://optumesto.github.io/PrizeTrainer/
+
+The app was called Prize Trainer before v37. The repo name, the web address, the saved deck storage and the offline cache names keep the old name on purpose: changing any of them would wipe saved decks or break installed copies.
 
 Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
 
@@ -10,12 +12,14 @@ Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
 ```
 PrizeTrainer/
   .github/workflows/refresh-data.yml   weekly job that refreshes data.json
-  scripts/refresh-data.mjs             the script that job runs
+  scripts/refresh-data.mjs             the script that job runs first
+  scripts/check-cards.mjs              then this one: checks card facts in both card databases
   icons/                               app icons (9 files)
   .nojekyll                            tells GitHub Pages to serve files as they are
   index.html                           the app
   sw.js                                offline support (cache name shows the version)
-  data.json                            meta, starter decks, rotation, set codes
+  data.json                            meta, starter decks, rotation, set codes, card fixes
+  card-check.md                        the weekly card check report (the job writes it)
   manifest.json                        name and icons for Install app
   CHANGES.md                           what changed in this version
   README.md                            this file
@@ -56,7 +60,8 @@ The repo's front page should match the layout above. Any file ending in `.txt` i
 2. Under Actions permissions choose **Allow all actions and reusable workflows**.
 3. Under Workflow permissions choose **Read and write permissions**, then **Save**.
 4. Open the **Actions** tab. If it asks, tap the button to enable workflows.
-5. Pick **Refresh data.json**, then **Run workflow**. It should finish with a green tick in about a minute. It commits a new `data.json` only when the meta, starters or set codes changed.
+5. Pick **Refresh data.json**, then **Run workflow**. It should finish with a green tick in about 3 to 5 minutes. It commits `data.json` and `card-check.md`.
+6. Open `card-check.md` in the repo. Anything under "Needs a person to check the printed card" is a place where the two card databases disagree and the app could show something wrong. Check it against the card on Limitless and tell Claude what you find.
 
 After that it runs every Monday at 09:17 UTC (4:17 AM New York time in winter). GitHub switches scheduled jobs off after 60 days with no activity in the repo. Since the job only commits when something changed, check the Actions tab now and then and tap **Enable workflow** if it shows as disabled.
 
@@ -68,8 +73,8 @@ After that it runs every Monday at 09:17 UTC (4:17 AM New York time in winter). 
 
 Wait 1 to 3 minutes after the commit, then:
 
-- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v35`.
-- Open the app, then **Help**. It should say **Prize Trainer v35**.
+- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v37`.
+- Open the app, then **Help**. It should say **RdyDeck v37**.
 - On a phone where the app is installed, close it fully and open it twice. The first open fetches the new version; the second shows it.
 
 ## Rotation
@@ -83,4 +88,4 @@ When Pokémon announces the 2027 rotation (expected around January, H mark), edi
 
 ## Credits
 
-Card data from TCGdex (MIT license) with pokemontcg.io as a backup. Decklists, meta and card images from Limitless TCG. Font: Inter (SIL Open Font License 1.1). Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.
+Card data from TCGdex (MIT license) with pokemontcg.io as a backup. Decklists, meta and card images from Limitless TCG. Fonts: Barlow, Barlow Condensed and IBM Plex Mono (SIL Open Font License 1.1). Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.

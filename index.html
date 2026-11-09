@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Prize Trainer</title>
+<title>RdyDeck</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0a0e15">
+<meta name="theme-color" content="#131210">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Prize Trainer">
+<meta name="apple-mobile-web-app-title" content="RdyDeck">
 <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -2029,6 +2029,320 @@
   .rot35 .ic { width:15px; height:15px; }
   .rot35-key { display:flex; align-items:center; gap:0.5rem; font-size:var(--fs-sm); color:var(--text-2); margin:0 0 0.75rem; line-height:1.4; }
   .rot35.rot35-in { position:static; flex-shrink:0; }
+
+  /* ══════════════════════════════════════════════════════════════
+     v37 RdyDeck look. Built like a tournament decklist sheet:
+     ink on paper (or paper on a playmat in dark), hard rules
+     between sections, condensed headings, counts in a typewriter
+     face, and one red for marks. Card art stays the loudest thing.
+  ══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg:#131210; --surface:#1a1917; --surface-2:#22201d; --surface-3:#2d2a26;
+    --line:rgba(237,232,222,0.11); --line-2:rgba(237,232,222,0.22); --rule:#ede8de;
+    --scrim:rgba(8,7,6,0.7); --bar-bg:#131210;
+    --text:#ede8de; --text-2:#bdb6a9; --text-3:#8f887c;
+    --accent:#ede8de; --accent-2:#ede8de; --accent-ink:#131210;
+    --accent-soft:rgba(237,232,222,0.1); --accent-line:rgba(237,232,222,0.4);
+    --mark:#e5483a;
+    --success:#6cba8a; --danger:#ef5a4b; --info:#7aa6d1;
+    --fire:#e07a4a; --water:#6f9fd0; --grass:#6aae6a; --electric:#d9b24a; --psychic:#b77ac4;
+    --fighting:#c48a58; --dark:#8a8f9e; --metal:#a3a8ad; --dragon:#9286d6; --fairy:#d888b6;
+    --gold-dim:#d9b24a;
+    --font:'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --display:'Barlow Condensed', 'Arial Narrow', 'Barlow', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --r-xs:2px; --r-sm:3px; --r:4px; --r-lg:6px;
+    --sh-1:none; --sh-2:0 18px 40px rgba(0,0,0,0.45);
+  }
+  body[data-theme="light"] {
+    --bg:#f2eee5; --surface:#faf8f3; --surface-2:#e9e4d8; --surface-3:#ddd6c7;
+    --line:rgba(26,24,20,0.12); --line-2:rgba(26,24,20,0.24); --rule:#1a1814;
+    --scrim:rgba(26,24,20,0.45); --bar-bg:#f2eee5;
+    --text:#1a1814; --text-2:#4a453d; --text-3:#6b645a;
+    --accent:#1a1814; --accent-2:#1a1814; --accent-ink:#f2eee5;
+    --accent-soft:rgba(26,24,20,0.08); --accent-line:rgba(26,24,20,0.4);
+    --mark:#c42b1f;
+    --success:#2f7a4c; --danger:#c42b1f; --info:#2d5f8f;
+    --fire:#b4532a; --water:#2d5f8f; --grass:#3d7a3d; --electric:#8a6a10; --psychic:#7d3f8c;
+    --fighting:#8a5428; --dark:#4b5060; --metal:#5a6068; --dragon:#4f44a0; --fairy:#9c3f74;
+    --gold-dim:#8a6a10;
+    --sh-1:none; --sh-2:0 18px 40px rgba(26,24,20,0.18);
+  }
+  body, body[data-theme="light"] { background-image:none; font-feature-settings:'tnum' 1; }
+  .screen.active { animation:none; }
+  ::selection { background:var(--mark); color:#fff; }
+  :focus-visible { outline-color:var(--mark); }
+
+  /* Bars: flat, ruled, no blur */
+  .app-bar, .review-header, .game-header, .ws-header, .review-footer {
+    -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--bar-bg);
+  }
+  .app-bar, .review-header, .game-header, .ws-header { border-bottom:2px solid var(--rule); }
+  .review-footer { border-top:2px solid var(--rule); }
+  .bar-eyebrow { font-family:var(--mono); font-size:0.6875rem; font-weight:500; text-transform:uppercase; letter-spacing:0.08em; }
+  .review-deck-name, .game-deck-name, .ws-title {
+    font-family:var(--display); font-weight:700; font-size:1.375rem; text-transform:uppercase; letter-spacing:0.02em; line-height:1.1;
+  }
+  .icon-btn { border-radius:var(--r-sm); background:transparent; border:1px solid var(--line-2); }
+  .icon-btn:hover { background:var(--surface-2); }
+
+  /* Header: a deck box mark and the name set like a tournament header */
+  .app-header { padding-top:1.1rem; }
+  .app-header-inner { border-bottom:2px solid var(--rule); padding-bottom:0.8rem; }
+  .pball, body[data-theme="light"] .pball {
+    width:26px; height:36px; border-radius:2px; background:transparent; box-shadow:none;
+    border:2px solid var(--text); position:relative; overflow:hidden;
+  }
+  .pball::after { left:0; right:0; top:0; width:auto; height:9px; transform:none; border-radius:0; background:var(--mark); box-shadow:none; }
+  .app-title { font-family:var(--display); font-weight:800; font-size:2rem; line-height:0.95; text-transform:uppercase; letter-spacing:0.01em; }
+  .app-title span, body[data-theme="light"] .app-title span { color:var(--mark); }
+  .app-subtitle { font-family:var(--mono); font-size:0.6875rem; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-3); margin-top:0.3rem; }
+  .header-stat b { font-family:var(--display); font-weight:700; }
+
+  /* Section headings read like the headers on a decklist */
+  .section-title, .g-sec-t, .review-group-title, .mode-section-label, .modal-title {
+    font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .section-title { font-size:1.125rem; display:flex; align-items:center; gap:0.6rem; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--line-2); }
+  .overline { font-family:var(--mono); font-weight:500; letter-spacing:0.06em; text-transform:uppercase; }
+
+  /* Buttons: square, solid, no glow */
+  .btn { border-radius:var(--r-sm); font-weight:600; }
+  .btn-sm { border-radius:var(--r-sm); }
+  .btn-primary, .play-btn, .mode-play-btn {
+    background:var(--accent); color:var(--accent-ink); border:2px solid var(--accent); border-radius:var(--r-sm);
+    font-family:var(--display); font-weight:700; font-size:1.125rem; text-transform:uppercase; letter-spacing:0.05em; box-shadow:none;
+  }
+  .btn-primary:hover { background:var(--accent); opacity:0.9; }
+  .btn-grass { border-radius:var(--r-sm); }
+  .btn-water { background:transparent; }
+
+  /* Decks on home: entries on a sheet, not floating cards */
+  .deck-list { gap:0 !important; }
+  .deck-card {
+    background:transparent; border:0; border-bottom:1px solid var(--line-2); border-radius:0; box-shadow:none; overflow:visible;
+  }
+  .deck-card:hover { border-color:var(--line-2); background:var(--accent-soft); }
+  .deck-card:active { transform:none; }
+  .deck-main { padding:0.95rem 0 0.75rem; }
+  .deck-thumb { width:64px; height:89px; border-radius:3px; box-shadow:none; }
+  .btn-thumb-edit { border-radius:2px; background:var(--bg); border:1px solid var(--line-2); }
+  .deck-name { font-family:var(--display); font-weight:700; font-size:1.375rem; text-transform:uppercase; letter-spacing:0.01em; line-height:1.05; }
+  .deck-meta { font-family:var(--mono); font-size:0.75rem; color:var(--text-3); }
+  .deck-grade, .deck-grade.none { background:none; padding:0; border-radius:0; gap:0.5rem; margin:0.1rem 0 0.15rem; }
+  .deck-grade b { font-family:var(--display); font-weight:700; font-size:1.625rem; line-height:1; }
+  .deck-grade span { font-family:var(--display); font-weight:600; font-size:0.9375rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-2); }
+  .deck-play {
+    width:46px; height:46px; border-radius:var(--r-sm); background:var(--accent); color:var(--accent-ink); box-shadow:none;
+  }
+  .deck-rot { padding:0 0 0.5rem; font-size:0.8125rem; }
+  .deck-rot .ic { color:var(--mark); }
+  .deck-actions-col { border-top:1px dashed var(--line-2); }
+  .deck-act { flex-direction:row; min-height:44px; font-family:var(--mono); font-size:0.75rem; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; }
+  .deck-act .ic { display:none; }
+  .deck-act + .deck-act { border-left:1px dashed var(--line-2); }
+  .deck-act:hover { background:transparent; color:var(--text); text-decoration:underline; text-underline-offset:3px; }
+  .fmt-badge, .fmt-standard, .fmt-expanded {
+    font-family:var(--mono); font-size:0.6875rem; font-weight:500; text-transform:uppercase; letter-spacing:0.06em;
+    border-radius:2px; border:1px solid var(--line-2); background:none; color:var(--text-2); padding:0.05rem 0.4rem;
+  }
+  .deck-hist-pip, .deck-hist-pip.good, .deck-hist-pip.mid, .deck-hist-pip.bad, .deck-hist-pip.perfect {
+    font-family:var(--mono); font-weight:500; border-radius:2px; background:none; border:1px solid var(--line-2);
+  }
+  .home-cta .btn:not(.btn-primary) { border:2px solid var(--accent); background:transparent; color:var(--text);
+    font-family:var(--display); font-weight:700; font-size:1.125rem; text-transform:uppercase; letter-spacing:0.05em; }
+  .home-actions { gap:0; border-top:1px solid var(--line-2); }
+  .home-action { border:0; border-bottom:1px solid var(--line-2); border-radius:0; background:transparent; min-height:52px; padding:0.6rem 0.25rem; }
+  .home-actions .home-action:nth-child(odd) { border-right:1px solid var(--line-2); }
+  .home-action:hover { background:var(--accent-soft); }
+  .home-action .ha-ic, body[data-theme="light"] .home-action .ha-ic { background:none; width:22px; height:22px; color:var(--text-3); border-radius:0; }
+  .dc-card { border-radius:var(--r-sm); background:transparent; border:1px solid var(--line-2); }
+  .dc-ic { background:none; color:var(--mark); border-radius:0; }
+  .empty-state { border-radius:var(--r-sm); background:transparent; }
+
+  /* Deck tabs: text tabs on a ruled line, red underline for the open one */
+  .review-tabs {
+    max-width:none; width:100%; margin:0; padding:0 var(--bar-x); gap:0; top:60px;
+    background:var(--bar-bg); -webkit-backdrop-filter:none; backdrop-filter:none;
+    border:0; border-bottom:1px solid var(--line-2); border-radius:0; box-shadow:none;
+  }
+  .rv-tab {
+    border-radius:0; min-height:46px; gap:0;
+    font-family:var(--display); font-weight:600; font-size:1.0625rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-3);
+  }
+  .rv-tab .ic { display:none; }
+  .rv-tab.active, body[data-theme="light"] .rv-tab.active { background:none; color:var(--text); box-shadow:inset 0 -3px 0 var(--mark); }
+
+  /* Cards tab: decklist headers, counts like a typed list, art up front */
+  .review-group-title { font-size:1.25rem; gap:0.5rem; padding-bottom:0.3rem; border-bottom:2px solid var(--rule); margin-bottom:0.9rem; }
+  .rg-dot { display:none; }
+  .rg-count { font-family:var(--mono); font-weight:500; font-size:0.9375rem; letter-spacing:0; padding:0; background:none; color:var(--text-3); }
+  .rg-count::before { content:'('; } .rg-count::after { content:')'; }
+  .review-card-img { border-radius:4px; box-shadow:none; }
+  .review-card-qty, .review-card-qty.multi {
+    top:5px; right:5px; padding:0.22rem 0.35rem; border-radius:2px;
+    font-family:var(--mono); font-weight:600; font-size:0.8125rem; letter-spacing:0;
+    background:#131210; color:#ede8de; box-shadow:none;
+  }
+  .review-card-name { font-size:0.875rem; font-weight:500; color:var(--text); }
+  .comp-bar { height:4px; border-radius:0; }
+  .rs-dot { border-radius:0; }
+  .review-stat-num { font-family:var(--mono); font-weight:600; font-size:0.9375rem; }
+  .review-stat-label { font-family:var(--display); font-size:0.9375rem; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* Grade: a score line on the sheet, not a dial */
+  .g-hero, .g29-hero {
+    display:grid; grid-template-columns:auto 1fr; column-gap:1rem; align-items:end;
+    text-align:left; padding:0.25rem 0 1.25rem; background:none; border:0; border-bottom:2px solid var(--rule); border-radius:0; box-shadow:none;
+  }
+  .g-hero > * { grid-column:1 / -1; }
+  .g-hero > .g-ring { grid-column:1; }
+  .g-hero > .g-band { grid-column:2; }
+  .g-ring { width:auto; height:auto; margin:0; border-radius:0; background:none; display:block; }
+  .g-ring::before { display:none; }
+  .g-score { font-family:var(--display); font-weight:700; font-size:5.5rem; line-height:0.85; letter-spacing:-0.01em; }
+  .g-score small { font-family:var(--mono); font-weight:500; font-size:0.18em; color:var(--text-3); margin-left:0.25em; letter-spacing:0; }
+  .g-band {
+    display:block; margin:0 0 0.35rem; padding:0; border-radius:0; background:none !important;
+    font-family:var(--display); font-weight:700; font-size:1.375rem; text-transform:uppercase; letter-spacing:0.04em; line-height:1.05;
+  }
+  .g29-verdict { max-width:none; margin:0.9rem 0 0; text-align:left; font-size:1rem; }
+  .g29-jump { justify-content:flex-start; gap:0.4rem; margin-top:0.8rem; }
+  .g29-jump-b, .g29-jump-b.crit, .g29-jump-b.warn, .g29-jump-b.ok, .g29-jump-b.syn {
+    min-height:44px; padding:0.3rem 0.7rem; border-radius:2px; background:transparent;
+    border:1px solid var(--line-2); font-family:var(--display); font-weight:600; font-size:1rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text);
+  }
+  .g29-jump-b b { font-family:var(--mono); font-weight:600; font-size:0.9375rem; }
+  .g29-jump-b.crit b { color:var(--danger); } .g29-jump-b.warn b { color:var(--electric); }
+  .g29-jump-b.ok b { color:var(--success); } .g29-jump-b.syn b { color:var(--water); }
+  .g29-parts { max-width:none; margin:1rem 0 0; gap:0; border-top:1px solid var(--line-2); }
+  .g29-part { background:none; border-radius:0; padding:0.7rem 0.9rem 0.2rem 0; }
+  .g29-part + .g29-part { border-left:1px solid var(--line-2); padding-left:0.9rem; }
+  .g29-pl { font-family:var(--display); font-weight:600; font-size:1rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-2); }
+  .g29-pv { font-family:var(--display); font-weight:700; font-size:2.25rem; line-height:1; }
+  .g-meter, .g-meter span { border-radius:0; height:3px; }
+  .g29-how { max-width:none; margin:0.7rem 0 0; }
+  .g-sec { margin-bottom:1.75rem; }
+  .g-sec-t { font-size:1.25rem; }
+  .g-sec-i { font-size:0.9375rem; color:var(--text-3); }
+  .g-item, .g-item.crit, .g-item.warn, .g-item.ok, .g-item.syn {
+    display:block; padding:0.1rem 0 0.1rem 0.85rem; margin-bottom:1.05rem;
+    background:none; border:0; border-left:3px solid var(--sev); border-radius:0;
+  }
+  .g-item::before { display:none; }
+  .g-item .gt { font-weight:700; font-size:1rem; }
+  .g-item p { font-size:0.9375rem; margin-top:0.15rem; }
+  .g29-tag, .g29-tag.crit, .g29-tag.warn { border-radius:2px; font-family:var(--mono); font-weight:500; text-transform:uppercase; letter-spacing:0.05em; background:none; border:1px solid currentColor; }
+  .g29-n { border-radius:2px; font-family:var(--mono); font-weight:500; background:none; border:1px solid var(--line-2); }
+  .g29-fold { border-top:1px solid var(--line-2); }
+  .g29-more > summary, body[data-theme="light"] .g29-more > summary { color:var(--text); text-decoration:underline; text-underline-offset:3px; }
+  .g29-scale div { border-radius:0; background:none; border-top:1px solid var(--line-2); padding-left:0; }
+  .g-wip { border-radius:var(--r-sm); background:transparent; }
+
+  /* Odds and other panels: outlined boxes, no top glow bar */
+  .o-tile { border-radius:var(--r-sm); background:transparent; border:1px solid var(--line-2); box-shadow:none; }
+  .o-tile::before { height:0; }
+  .o-tile .ol { font-family:var(--display); font-size:0.875rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
+  .o-tile .ov { font-family:var(--display); font-weight:700; }
+  .g-fac { background:none; border:1px solid var(--line-2); border-radius:var(--r-sm); }
+
+  /* Sheets, inputs, toast */
+  .modal, .mode-modal, .picker-modal { border-radius:6px 6px 0 0; }
+  .modal::before, .mode-modal::before, .picker-modal::before { border-radius:0; }
+  input[type="text"], input[type="number"], textarea { border-radius:var(--r-sm); }
+  textarea { font-family:var(--mono); }
+  .fmt-toggle-row, .seg { border-radius:var(--r-sm); }
+  .fmt-opt, .mode-opt { border-radius:2px; }
+  .modal-overlay { -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .toast { border-radius:var(--r-sm); font-family:var(--display); font-weight:600; font-size:1rem; letter-spacing:0.02em; box-shadow:none; transition:transform 0.2s ease-out; }
+  .callout { border-radius:var(--r-sm); }
+  .badge { border-radius:2px; }
+
+  /* v37 fit fixes */
+  .home-cta .btn, .home-cta .btn-primary { font-size:1rem; letter-spacing:0.03em; padding:0 0.6rem; min-height:48px; }
+  .home-cta .btn .ic, .home-action .ha-ic { display:none; }
+  .home-action { padding-left:0.1rem; font-weight:600; }
+  .home-actions .home-action:nth-child(even) { padding-left:0.75rem; }
+  .btn-thumb-edit { width:22px; height:22px; right:-5px; bottom:-5px; }
+  .btn-thumb-edit .ic { width:12px; height:12px; }
+  .deck-grade { flex-wrap:wrap; row-gap:0; }
+  .deck-grade span { font-size:0.8125rem; letter-spacing:0.04em; }
+  .review-stat-label { font-size:0.8125rem; letter-spacing:0.03em; }
+  .comp-legend { gap:0.4rem 0.9rem; }
+  .rv-tab { font-size:1rem; letter-spacing:0.03em; }
+  @media (max-width:360px) {
+    .rv-tab { font-size:0.9375rem; letter-spacing:0.01em; }
+    .app-title { font-size:1.75rem; }
+    .g-score { font-size:4.5rem; }
+    .g-band { font-size:1.125rem; }
+  }
+  /* Old names that point at tokens must follow the light theme too */
+  body[data-theme="light"] {
+    --bg-card:var(--surface); --bg-panel:var(--surface); --bg-mid:var(--surface-2);
+    --gold:var(--accent); --gold-lt:var(--accent-2); --gold-bg:var(--accent-soft);
+    --text-dim:var(--text-2); --muted:var(--line-2); --red:var(--danger); --green:var(--success); --border:var(--line-2);
+  }
+  @media (max-width:360px) {
+    .g29-part + .g29-part { border-left:0; padding-left:0; border-top:1px solid var(--line-2); }
+  }
+  /* Rotation block: same sheet rules */
+  .r29-tag, .r29-tag.ann, .r29-tag.exp { border-radius:2px; background:none; border:1px solid currentColor; font-family:var(--mono); font-weight:500; letter-spacing:0.05em; }
+  .r29-tag.exp { color:var(--electric); }
+  .r29-sum { gap:0; border-top:1px solid var(--line-2); border-bottom:1px solid var(--line-2); }
+  .r29-c { background:none; border:0; border-radius:0; text-align:left; padding:0.55rem 0.6rem 0.55rem 0; }
+  .r29-c + .r29-c { border-left:1px solid var(--line-2); padding-left:0.6rem; }
+  .r29-c b { font-family:var(--display); font-weight:700; font-size:1.75rem; line-height:1.05; }
+  .r29-list { border-radius:0; border:0; border-top:2px solid var(--rule); }
+  .r29-lh { background:none; font-family:var(--display); font-size:0.9375rem; font-weight:600; letter-spacing:0.05em; padding-left:0; }
+  .r29-row { padding-left:0; padding-right:0; }
+  .r29-q { font-family:var(--mono); font-weight:600; }
+  .r29-m { border-radius:2px; font-family:var(--mono); font-weight:600; background:none; border:1px solid var(--line-2); }
+  .r29-rest > summary { background:none; padding-left:0; }
+  .rot35 { border-radius:2px; }
+  /* v37: cards per row. The player picks how many cards fit on a row in the
+     Cards tab and the daily list; the choice is kept on this device. */
+  .cz-bar { display:flex; align-items:center; gap:0.5rem; margin:0 0 0.9rem; }
+  .cz-label { font-family:var(--display); font-weight:700; font-size:0.9375rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-2); margin-right:auto; }
+  .cz-opts { display:flex; border:1px solid var(--rule, var(--line)); border-radius:2px; overflow:hidden; }
+  .cz-opts button { min-width:44px; min-height:44px; padding:0 0.4rem; font-family:var(--mono); font-weight:600; font-size:0.9375rem; color:var(--text); background:transparent; border:0; border-left:1px solid var(--line); cursor:pointer; }
+  .cz-opts button:first-child { border-left:0; }
+  .cz-opts button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); }
+  body:not([data-cz="0"]) #review-body .review-cards { grid-template-columns:repeat(var(--cz-cols,3),minmax(0,1fr)); gap:0.55rem 0.4rem; }
+  body:not([data-cz="0"]) .dly33-list .review-cards { grid-template-columns:repeat(var(--cz-dcols,4),minmax(0,1fr)); gap:0.55rem 0.4rem; }
+  #review-body .review-card, .dly33-list .review-card { container-type:inline-size; }
+  @container (max-width:76px) {
+    .review-card-name { display:block; font-size:0.6875rem; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .review-card-qty, .review-card-qty.multi { top:2px; right:2px; padding:0.12rem 0.2rem; font-size:0.6875rem; }
+    .rot35 { top:2px; left:2px; width:18px; height:18px; }
+    .rot35 .ic { width:12px; height:12px; }
+  }
+  /* v37: ad spots sit between two hairlines with a small mono label, like a ruled box on a sheet */
+  .ad32 { height:138px; box-sizing:border-box; padding:6px 0 12px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .ad32-lbl { max-width:320px; margin:0 auto; text-align:left; font-family:var(--mono); font-weight:500; font-size:0.6875rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); height:20px; line-height:20px; }
+  /* v37: results screen on the same sheet as the rest */
+  #screen-review a:not(.btn), #screen-results a:not(.btn) { color:var(--text); text-decoration:underline; text-decoration-color:var(--mark); text-underline-offset:2px; }
+  .results-time { background:none; border:0; box-shadow:none; padding:0; border-radius:0; font-family:var(--mono); font-weight:500; color:var(--text-2); }
+  .session-rating { border-radius:2px; box-shadow:none; }
+  .prize-reveal, .missed-notes, .guess-comparison, .guess-timing, .history-section, .progress-line, #pb-display > * { border-radius:4px; box-shadow:none; }
+  .prize-reveal-grid > *, .prize-reveal-grid .prc, .guess-compare-grid { border-radius:4px; box-shadow:none; }
+  .guess-compare-title { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
+  /* v37: save and open decks (backup sheet) */
+  .bk37-sec { border-top:2px solid var(--rule, var(--line)); padding-top:0.6rem; margin-top:1rem; }
+  .bk37-sec:first-of-type { margin-top:0.5rem; }
+  .bk37-h { font-family:var(--display); font-weight:700; font-size:1.0625rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); margin:0 0 0.25rem; }
+  .bk37-p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; margin:0 0 0.7rem; }
+  .bk37-btns { display:grid; grid-template-columns:repeat(auto-fit, minmax(118px, 1fr)); gap:0.5rem; }
+  .bk37-btns .btn { min-height:44px; justify-content:center; }
+  .bk37-text { width:100%; box-sizing:border-box; min-height:96px; margin:0.6rem 0 0.5rem; font-family:var(--mono); font-size:0.8125rem; resize:vertical; }
+  .bk37-found { margin-top:0.8rem; padding:0.7rem 0 0; border-top:1px solid var(--line); }
+  .bk37-found[hidden] { display:none; }
+  .bk37-sum { font-family:var(--mono); font-size:0.875rem; color:var(--text); margin:0 0 0.6rem; line-height:1.5; }
+  .bk37-err { font-size:var(--fs-sm); color:var(--mark, var(--red)); margin:0.4rem 0 0; min-height:1.2em; }
+  .bk37-danger { color:var(--mark, var(--red)) !important; }
+  .bk37-found .bk37-btns { grid-template-columns:1fr; }
+  .bk37-btns[hidden] { display:none; }
+  .bk37-btns .btn { white-space:normal; text-align:center; }
 </style>
 </head>
 <body>
@@ -2102,8 +2416,8 @@
       <div class="brand">
         <div class="pball" aria-hidden="true"></div>
         <div>
-          <h1 class="app-title">Prize <span>Trainer</span></h1>
-          <div class="app-subtitle">Grade your Pokémon TCG deck, then practice it</div>
+          <h1 class="app-title">Rdy<span>Deck</span></h1>
+          <div class="app-subtitle">Grade your deck. Drill your prizes.</div>
         </div>
       </div>
       <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle-btn" aria-label="Switch to light theme" title="Switch to light theme">
@@ -2117,7 +2431,7 @@
     <div class="deck-list" id="deck-list">
       <div class="empty-state">
         <span class="icon"><i class=ph-card></i></span>
-        No decks yet.<br>Import your first deck below.
+        No decks yet.<br>Paste a list or grab a starter deck.
       </div>
     </div>
     <div class="home-cta home-cta-row">
@@ -2130,9 +2444,9 @@
       <h2 class="section-title">More</h2>
       <div class="home-actions">
         <button class="home-action" onclick="openTlog()"><span class="ha-ic"><svg class="ic"><use href="#i-trophy"/></svg></span>Tournament log</button>
-        <button class="home-action" onclick="shareApp()"><span class="ha-ic"><svg class="ic"><use href="#i-share"/></svg></span>Share with a friend</button>
+        <button class="home-action" onclick="shareApp()"><span class="ha-ic"><svg class="ic"><use href="#i-share"/></svg></span>Share the app</button>
         <button class="home-action" onclick="openHelpSheet()"><span class="ha-ic"><svg class="ic"><use href="#i-help"/></svg></span>Help and feedback</button>
-        <button class="home-action" onclick="openBackupModal()"><span class="ha-ic"><svg class="ic"><use href="#i-save"/></svg></span>Backup and restore</button>
+        <button class="home-action" onclick="openBackupModal()"><span class="ha-ic"><svg class="ic"><use href="#i-save"/></svg></span>Save and open decks</button>
       </div>
       <div class="home-footer">
         <button class="link-danger" onclick="clearAllData()"><svg class="ic ic-sm"><use href="#i-trash"/></svg>Clear all data</button>
@@ -2426,7 +2740,7 @@
         </div>
         <div class="instr-step">
           <div class="instr-num">6</div>
-          <div class="instr-body"><b>Practice openings and share lists</b>Open a deck and use Practice, then Hand, to drill turn 1 lines. The link button at the top gives you a link that opens the list in Prize Trainer.</div>
+          <div class="instr-body"><b>Practice openings and share lists</b>Open a deck and use Practice, then Hand, to drill turn 1 lines. The link button at the top gives you a link that opens the list in RdyDeck.</div>
         </div>
         <div class="instr-step">
           <div class="instr-num">7</div>
@@ -2744,6 +3058,9 @@ function parseDamage(raw, text) {
   const eachM  = t.match(/(?:plus|does)\s+(\d+)\s+more\s+damage\s+for\s+each/i);
   const minusM = t.match(/minus\s+(\d+)\s+damage\s+for\s+each/i);
   const coinsM = t.match(/flip\s+(\d+)\s+coins?/i);
+  const tailsM = /flip a coin until you get tails/i.test(t);
+  const oneCoin = /flip a coin\.\s*if heads/i.test(t);
+  const tailsNothing = /flip a coin\.\s*if tails, this attack does nothing/i.test(t);
   if (capM) out.cap = parseInt(capM[1], 10);
 
   // Promote a bare number to "plus" or "minus" when the text says so.
@@ -2755,6 +3072,7 @@ function parseDamage(raw, text) {
   if (!sym) {
     out.kind = 'flat';
     out.min = out.typical = out.max = out.base;
+    if (tailsNothing) { out.min = 0; out.typical = Math.round(out.base / 2); out.confidence = 'medium'; out.flip = 1; }
     return out;
   }
 
@@ -2770,7 +3088,12 @@ function parseDamage(raw, text) {
 
   if (sym === 'x' || sym === '×' || sym === '*') {
     out.kind = 'times';
-    if (coinsM) {
+    if (tailsM) {
+      // Heads before the first tails average one.
+      out.mult = null; out.typical = out.base; out.max = out.base * 3; out.min = 0;
+      out.confidence = 'medium'; out.flip = 'tails';
+    } else if (coinsM) {
+      out.flip = parseInt(coinsM[1], 10);
       out.mult = parseInt(coinsM[1], 10);
       out.max = out.base * out.mult;
       out.typical = Math.round(out.base * out.mult / 2); // expected heads
@@ -2797,10 +3120,19 @@ function parseDamage(raw, text) {
     out.max = out.base + out.bonus;
     out.typical = out.base + out.bonus; // these conditions are usually achievable
     out.confidence = 'high';
+    if (oneCoin) { out.typical = out.base + Math.round(out.bonus / 2); out.confidence = 'medium'; out.flip = 1; }
   } else if (eachM) {
     const per = parseInt(eachM[1], 10);
     out.bonus = per;
-    if (out.cap != null) {
+    if (tailsM) {
+      // Heads before the first tails average one.
+      out.typical = out.base + per; out.max = out.base + per * 3;
+      out.confidence = 'medium'; out.flip = 'tails';
+    } else if (coinsM) {
+      const nC = parseInt(coinsM[1], 10);
+      out.typical = out.base + Math.round(per * nC / 2); out.max = out.base + per * nC;
+      out.confidence = 'medium'; out.flip = nC;
+    } else if (out.cap != null) {
       out.max = out.base + out.cap;
       out.typical = out.base + Math.round(out.cap / 2);
       out.confidence = 'medium';
@@ -2821,7 +3153,7 @@ function parseDamage(raw, text) {
 
 /** Energy cost array to lowercase type names. */
 function parseCost(cost) {
-  return (cost || []).map(c => String(c).toLowerCase());
+  return (cost || []).map(c => String(c).toLowerCase()).filter(c => c && c !== 'free');
 }
 
 /** Stage from subtypes. Returns 'basic' | 'stage1' | 'stage2' | null. */
@@ -2841,8 +3173,9 @@ function parsePrizeValue(subtypes, rules) {
   const st = (subtypes || []).map(s => s.toLowerCase());
   const ruleText = (rules || []).join(' ').toLowerCase();
   // Rules text is authoritative when present ("your opponent takes 3 Prize cards")
-  const m = ruleText.match(/takes?\s+(\d+)\s+prize/);
-  if (m) return parseInt(m[1], 10);
+  // v37: a Mega ex prints the ex rule (2) and the Mega rule (3); the larger one applies.
+  const all = [...ruleText.matchAll(/takes?\s+(\d+)\s+prize/g)].map(x => parseInt(x[1], 10));
+  if (all.length) return Math.max(...all);
   if (st.some(s => s === 'mega' || s === 'vmax' || s === 'vstar' || s === 'tag team')) return 3;
   if (st.some(s => s === 'ex' || s === 'v' || s === 'gx' || s === 'v-union')) return 2;
   return 1;
@@ -3119,9 +3452,95 @@ function damageCondition(text) {
   };
 }
 
+// v37: card fixes. Each one was checked against the printed card (Limitless, pokemon-tcg-data).
+// data.json can add more under cardFixes, written by the weekly card check.
+// Keys are card ids from either source: pokemontcg.io (sv5-140) or TCGdex (sv05-140).
+const FIX37 = {
+  // pokemontcg.io lists these as H; the printed cards carry G (Limitless).
+  'sv5-22': { mark: 'G' }, 'sv5-140': { mark: 'G' }, 'sv5-149': { mark: 'G' },
+  'sv6-161': { mark: 'G' }, 'sv6-226': { mark: 'G' }, 'sv8-252': { mark: 'G' },
+  // TCGdex lists Azurill's Bouncy-Bounce Charge as an Ability; it is a 0 cost attack.
+  'me06-080': { abToAtk: 'Bouncy-Bounce Charge' }, 'me06-115': { abToAtk: 'Bouncy-Bounce Charge' },
+  // TCGdex lists these Delta Reign and 30th Celebration cards as Basic with nothing to evolve from.
+  'me06-011': { stage: 'Stage1', from: 'Wimpod' }, 'me06-118': { stage: 'Stage1', from: 'Wimpod' }, 'me06-135': { stage: 'Stage1', from: 'Wimpod' },
+  'me06-047': { stage: 'Stage1', from: 'Golett' }, 'me06-122': { stage: 'Stage1', from: 'Golett' }, 'me06-137': { stage: 'Stage1', from: 'Golett' },
+  'me06-069': { stage: 'Stage1', from: 'Inkay' }, 'me06-123': { stage: 'Stage1', from: 'Inkay' },
+  'me06-067': { stage: 'Stage1', from: 'Zorua' }, 'me06-014': { stage: 'Stage2', from: 'Floragato' },
+  'me06-088': { stage: 'Stage2', from: 'Fletchinder' }, 'me06-124': { stage: 'Stage2', from: 'Fletchinder' },
+  '30th-021': { stage: 'Stage2', from: 'Frogadier' }, '30th-148': { stage: 'Stage2', from: 'Frogadier' },
+  '30th-070': { stage: 'Stage1', from: 'Eevee' }, '30th-071': { stage: 'Stage1', from: 'Eevee' },
+  '30th-092': { stage: 'Stage1', from: 'Eevee' }, '30th-153': { stage: 'Stage1', from: 'Eevee' },
+  '30th-090': { stage: 'Stage2', from: 'Haunter' }, '30th-154': { stage: 'Stage2', from: 'Haunter' },
+  '30th-109': { stage: 'Stage2', from: 'Shelgon' }, '30th-156': { stage: 'Stage2', from: 'Shelgon' },
+  // TCGdex leaves out what these Delta Reign Pokemon evolve from.
+  'me06-003': { from: 'Surskit' }, 'me06-104': { from: 'Surskit' }, 'me06-005': { from: 'Cacnea' }, 'me06-007': { from: 'Combee' },
+  'me06-013': { from: 'Sprigatito' }, 'me06-016': { from: 'Smoliv' }, 'me06-017': { from: 'Dolliv' }, 'me06-019': { from: 'Growlithe' },
+  'me06-021': { from: 'Magmar' }, 'me06-107': { from: 'Magmar' }, 'me06-028': { from: 'Frillish' }, 'me06-031': { from: 'Electabuzz' },
+  'me06-108': { from: 'Electabuzz' }, 'me06-032': { from: 'Eevee' }, 'me06-038': { from: 'Pawmi' }, 'me06-039': { from: 'Pawmo' },
+  'me06-041': { from: 'Wattrel' }, 'me06-044': { from: 'Drowzee' }, 'me06-050': { from: 'Sandshrew' }, 'me06-052': { from: 'Onix' },
+  'me06-056': { from: 'Nidoran\u2640' }, 'me06-057': { from: 'Nidorina' }, 'me06-059': { from: 'Spinarak' }, 'me06-062': { from: 'Carvanha' },
+  'me06-065': { from: 'Purrloin' }, 'me06-074': { from: 'Jangmo-o' }, 'me06-075': { from: 'Hakamo-o' }, 'me06-082': { from: 'Swablu' },
+  'me06-116': { from: 'Swablu' }, 'me06-087': { from: 'Fletchling' },
+};
+// Whole sets where TCGdex has no regulation mark yet: the mark every card in the set carries.
+const FIX37_SET_MARKS = { 'me06': 'J' };
+
+function fix37Get(id) {
+  if (typeof id !== 'string' || !id) return null;
+  const live = typeof DATA30 !== 'undefined' && DATA30 && DATA30.cardFixes;
+  return (live && live[id]) || FIX37[id] || null;
+}
+function fix37SetMark(id) {
+  const set = String(id || '').split('-')[0];
+  const live = typeof DATA30 !== 'undefined' && DATA30 && DATA30.setMarks;
+  return (live && live[set]) || FIX37_SET_MARKS[set] || null;
+}
+/** A pokemontcg.io card with any checked mark fix applied. */
+function fix37Card(c) {
+  if (!c || typeof c !== 'object') return c;
+  const f = fix37Get(c.id);
+  if (!f || !f.mark) return c;
+  return Object.assign({}, c, { regulationMark: f.mark });
+}
+/** A raw TCGdex card with checked fixes applied, or null when the record is known to be wrong. */
+function fix37Td(t) {
+  if (!t || typeof t !== 'object') return t;
+  const f = fix37Get(t.id);
+  if (f && f.bad) return null;
+  const sm = !t.regulationMark ? fix37SetMark(t.id) : null;
+  if (!f && !sm) return t;
+  const o = Object.assign({}, t);
+  if (sm) o.regulationMark = sm;
+  if (f) {
+    if (f.mark) o.regulationMark = f.mark;
+    if (f.stage) o.stage = f.stage;
+    if (f.from && !t.evolveFrom) o.evolveFrom = f.from;
+    if (f.abToAtk && Array.isArray(t.abilities)) {
+      const ab = t.abilities.find(a => a && a.name === f.abToAtk);
+      if (ab) {
+        o.abilities = t.abilities.filter(a => a !== ab);
+        o.attacks = [{ name: ab.name, cost: [], effect: ab.effect }].concat(Array.isArray(t.attacks) ? t.attacks : []);
+      }
+    }
+  }
+  return o;
+}
+/** "Choose 1 of your Benched N's Pokemon's attacks and use it as this attack": the name start it copies from. */
+function copy37(text) {
+  const m = String(text || '').replace(/[‘’]/g, "'")
+    .match(/choose 1 of your benched (.*?)pok[eé]mon'?s? attacks and use it as this attack/i);
+  if (m) return { pre: m[1].trim() };
+  // Slowking's Seek Inspiration: a random Pokemon without a Rule Box from the top of the deck.
+  if (/discard the top card of your deck, and if that card is a pok[eé]mon that doesn'?t have a rule box, choose 1 of its attacks and use it as this attack/i
+    .test(String(text || '').replace(/[\u2018\u2019]/g, "'"))) return { pre: '', mill: true };
+  return null;
+}
+// These sit inside the card layer's closure; the TCGdex reader outside it needs them too.
+if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37 });
+
 function enrichCard(apiCard, opts) {
   const o = opts || {};
-  const card = apiCard || {};
+  const card = fix37Card(apiCard) || {};
   const resolved = !!apiCard;
   const name = card.name || o.fallbackName || '';
 
@@ -3154,11 +3573,15 @@ function enrichCard(apiCard, opts) {
       // there early, so early damage is the base until the condition is met.
       cond: dmg.kind === 'plus' && cond ? cond : null,
       early: dmg.kind === 'plus' && cond ? dmg.base : dmg.typical,
+      flip: dmg.flip || null,
+      copy: copy37(a.text),
     };
   });
   const abilities = (card.abilities || []).map(x => ({
     name: x.name || '',
     protect: /prevent all (?:damage|effects)/i.test(x.text || ''),
+    pkind: /prevent all damage/i.test(x.text || '') ? 'damage' : /prevent all effects/i.test(x.text || '') ? 'effects' : undefined,
+    bench: /if this pok[e\u00e9]mon is in your hand[\s\S]*?put this pok[e\u00e9]mon onto your bench/i.test(x.text || '') || undefined,
   }));
 
   const supertype = String(card.supertype || '').toLowerCase();
@@ -3800,7 +4223,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 4;
+const ENRICH_VER = 5;   // v37: re-read for prize values, coin flips, copy attacks and card fixes
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -3909,7 +4332,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high' }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -3919,6 +4342,8 @@ function toGradeDeck(deck) {
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
       attacks: atks, provides: c.provides||[], requires: c.requires||[],
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
+      pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
+      selfBench: (c.abilities||[]).some(x => x.bench),
       byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
     }};
   });
@@ -3936,7 +4361,14 @@ function gCoherence(deck) {
       if (req.startsWith('energy:')) {
         const ty=req.split(':')[1];
         const payable=(c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any));
+        const cp = (energyTypes[ty] || energyTypes.any || payable) ? null : g37Copier(deck, c);
         if (energyTypes[ty] || energyTypes.any || payable) reqMet++;
+        else if (cp) { reqMet++;
+          const ca = cp.card.attacks.find(a => a.copy) || {}, via = ca.name || 'its attack';
+          if (!synergies.some(s => s.who === c.key)) synergies.push({ link: gCap(cp.name) + ' > ' + gCap(e.name), who: c.key,
+            p: ca.copy && ca.copy.mill
+              ? `${gCap(cp.name)} can use ${gCap(e.name)}'s attacks with ${via} when it comes off the top of your deck, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.`
+              : `${gCap(cp.name)} copies ${gCap(e.name)}'s attacks with ${via}, paying only its own cost, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.` }); }
         else if (c.abil && c.abil.length) { reqMet++;
           if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '),
             p:`${gCap(e.name)} is here for its Ability, so its attack needing ${gCap(ty)} Energy does not matter.`, who:c.key}); }
@@ -3953,8 +4385,11 @@ function gCoherence(deck) {
           d:`${gCap(e.name)} only does its job when ${gCap(who)} is in play, and there is no ${gCap(who)} in the deck. The engine is half-built.`});
       } else if (req==='evolution_access') {
         const candy=provided['evolution_access']>0, pre=c.from&&present[c.from]>0;
-        if (candy||pre) { reqMet++;
-          if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
+        const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
+        if (candy||pre||own||copied) { reqMet++;
+          if (own) synergies.push({link:gCap(e.name)+': '+(c.abil[0]||'Ability'), who:c.key,
+            p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
+          else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
           d:`It is a Stage 2 with no Rare Candy and no ${gCap(c.from||'pre-evolution')} in the deck, so there is no realistic way to evolve into it.`});
       } else {
@@ -4006,37 +4441,91 @@ function gAtkReach(a, deck) {
   return { now, top, cond: top > now ? a.cond : null, have };
 }
 
-// v35: damage boosters, with the numbers and limits printed on each card.
+// v37: damage boosters, each number and limit read from the printed card text.
 // A booster the app does not know adds nothing, so no number is invented.
-// vsEx: the bonus is only against the opponent's Active Pokemon ex.
-// noEx: it cannot help an attacker that is itself a Pokemon ex.
+// vsEx: only against the opponent's Active Pokemon ex. noRuleBox: only for an
+// attacker without a Rule Box. only / pre / type: which attackers it helps.
+// poison: only while the attacker is Poisoned. last: the Supporter must be the
+// last card in your hand. behind: only while you have more prizes left.
 const G35_BOOST = {
-  'brave bangle':          { n:30, cat:'tool', vsEx:true, noEx:true },
-  'maximum belt':          { n:50, cat:'tool', vsEx:true },
-  "black belt's training": { n:40, cat:'supporter', vsEx:true },
-  'kieran':                { n:30, cat:'supporter', vsEx:true },
-  'defiance band':         { n:30, cat:'tool', behind:true },
-  'vitality band':         { n:10, cat:'tool' },
+  'brave bangle':             { n:30, cat:'tool', vsEx:true, noRuleBox:true },
+  'maximum belt':             { n:50, cat:'tool', vsEx:true },
+  'light ball':               { n:50, cat:'tool', vsEx:true, only:['pikachu ex'] },
+  "hop's choice band":        { n:30, cat:'tool', pre:"hop's " },
+  'binding mochi':            { n:40, cat:'tool', poison:true },
+  'defiance band':            { n:30, cat:'tool', behind:true },
+  'vitality band':            { n:10, cat:'tool' },
+  "black belt's training":    { n:40, cat:'supporter', vsEx:true },
+  'kieran':                   { n:30, cat:'supporter', vsEx:true },
+  "gladion's final battle":   { n:80, cat:'supporter', noRuleBox:true, last:true },
+  'premium power pro':        { n:30, cat:'item', type:'fighting' },
+  'postwick':                 { n:30, cat:'stadium', pre:"hop's " },
+  'voltaic lightning energy': { n:20, cat:'energy', type:'lightning' },
 };
-function g35Key(n) { return String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2018\u2019]/g, "'").replace(/\s+/g, ' ').trim(); }
-/** The most one attacker can add: one Tool on it plus one Supporter that turn. */
-function g35Boost(deck, isEx) {
+function g35Key(n) { return String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim(); }
+/** The most one attacker can add: one card of each kind (Tool, Supporter, Item, Stadium, Energy) that helps it. */
+function g35Boost(deck, atk) {
+  const a = typeof atk === 'object' && atk ? atk : { isEx: !!atk };
+  const key = g35Key(a.key || '');
+  const ruleBox = a.isEx || (a.p || 1) >= 2;
   const best = {};
   deck.forEach(e => { const b = G35_BOOST[g35Key(e.name)];
-    if (!b || (b.noEx && isEx)) return;
+    if (!b) return;
+    if (b.noRuleBox && ruleBox) return;
+    if (b.only && !b.only.includes(key)) return;
+    if (b.pre && !key.startsWith(b.pre)) return;
+    if (b.type && !(a.types || []).includes(b.type)) return;
     if (!best[b.cat] || b.n > best[b.cat].n) best[b.cat] = { ...b, name: gCap(e.name).replace(/'S\b/g, "'s") }; });
   const list = Object.values(best);
-  return { n: list.reduce((a, b) => a + b.n, 0), names: list.map(b => b.name),
-    vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind) };
+  return { n: list.reduce((s, b) => s + b.n, 0), names: list.map(b => b.name),
+    vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind), poison: list.some(b => b.poison), last: list.some(b => b.last) };
 }
-/** One grounded sentence head: the printed number, and what each booster adds. */
+/** One sentence on one attacker: the printed number, how it gets there and what each booster adds. */
 function g35Hit(r) {
   const nm = gCap(r.name);
-  let t = r.boost
-    ? `${nm} hits for at most ${r.eff} with ${r.bNames.join(' and ')}${r.vsEx ? ' against a Pokemon ex' : ''}${r.behind ? ' while you are behind on prizes' : ''} (${r.top} without), before Weakness`
-    : `${nm} hits for at most ${r.top} before Weakness`;
-  if (r.conf === 'low') t += `. Its damage scales with the board, so ${r.top} is the app's assumption, not a printed number`;
+  const how = r.copy ? ` copying ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}` : '';
+  const verb = r.flip ? 'averages' : 'hits for at most';
+  let t;
+  if (r.boost) {
+    const when = [r.vsEx && 'against a Pokemon ex', r.poison && 'while it is Poisoned', r.behind && 'while you are behind on prizes',
+      r.last && 'when that Supporter is the last card in your hand'].filter(Boolean).join(' and ');
+    t = `${nm}${how} ${verb} ${r.eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${r.top} without), before Weakness.`;
+  } else t = `${nm}${how} ${verb} ${r.top} before Weakness.`;
+  if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
+  else if (r.flip) t += ' That counts coin flips at their average.';
+  else if (r.conf === 'low') t += ` Its damage depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   return t;
+}
+/** How many hits the format's smallest and biggest threats take at this damage. */
+function g37Hits(eff) {
+  const [lo, hi] = FMT.threatHP;
+  if (!(eff > 0)) return '';
+  const a = Math.ceil(lo / eff), b = Math.ceil(hi / eff);
+  const w = n => n === 1 ? 'one hit' : n === 2 ? 'two hits' : n === 3 ? 'three hits' : n === 4 ? 'four hits' : n + ' hits';
+  if (a === b) return a === 1 ? `That one-shots the format's ${lo} to ${hi} HP threats.` : `The format's ${lo} to ${hi} HP threats take ${w(a)} each.`;
+  return `${lo} HP threats take ${w(a)} and ${hi} HP threats take ${w(b)}.`;
+}
+/** What one attack reaches, following a copy attack to the attacks it can copy. */
+function g37Reach(a, deck, self) {
+  // A random attack off the top of the deck is not counted (the grade says so).
+  if (a.copy && a.copy.mill) return { now: 0, top: 0, cond: null, conf: 'high', flip: null };
+  if (!a.copy) return Object.assign(gAtkReach(a, deck), { conf: a.conf || 'high', flip: a.flip || null });
+  const pre = String(a.copy.pre || '').toLowerCase();
+  let best = null;
+  deck.forEach(e => { const c = e.card;
+    if (!c || c.t !== 'pkmn' || e === self || c.key === (self && self.card && self.card.key) || !c.attacks) return;
+    if (pre && !c.key.startsWith(pre)) return;
+    c.attacks.forEach(x => { if (x.copy) return;
+      const r = Object.assign(gAtkReach(x, deck), { conf: x.conf || 'high', flip: x.flip || null, copy: { who: e.name, atk: x.name, via: a.name } });
+      if (!best || r.top > best.top) best = r; }); });
+  return best || { now: 0, top: 0, cond: null, conf: 'high', flip: null };
+}
+/** A Pokemon in the deck whose copy attack can use this one's attacks. */
+function g37Copier(deck, c) {
+  if (!c || c.t !== 'pkmn') return null;
+  const ruleBox = c.isEx || (c.p || 1) >= 2;
+  return deck.find(e => e.card && e.card !== c && e.card.key !== c.key && (e.card.attacks || []).some(a => a.copy &&
+    (a.copy.mill ? !ruleBox : (!a.copy.pre || c.key.startsWith(String(a.copy.pre).toLowerCase())))));
 }
 
 function gViability(deck, coh) {
@@ -4045,10 +4534,10 @@ function gViability(deck, coh) {
   // Best payable hit per attacker: its ceiling, and what it does early.
   const reach=[];
   attackers.forEach(e => { let r0=null;
-    e.card.attacks.forEach(a => { if (!pay(a)) return; const r=gAtkReach(a, deck); r.conf=a.conf||'high';
+    e.card.attacks.forEach(a => { if (!pay(a)) return; const r=g37Reach(a, deck, e);
       if (!r0 || r.top>r0.top || (r.top===r0.top && r.now>r0.now)) r0=r; });
-    if (r0 && r0.top>0) { const b=g35Boost(deck, e.card.isEx);
-      reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, eff:r0.top+b.n }); } });
+    if (r0 && r0.top>0) { const b=g35Boost(deck, e.card);
+      reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, eff:r0.top+b.n }); } });
   let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
@@ -4063,25 +4552,34 @@ function gViability(deck, coh) {
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=1;
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${g35Hit(bestR)}, enough to one-shot the format's ${lo} to ${hi} HP threats.`}); }
+    d:`${g35Hit(bestR)} ${g37Hits(eff)}`}); }
   else if (eff*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
     closeScore=0.6+0.3*(eff-hi/2)/(FMT.ohkoTarget-hi/2);
     const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${g35Hit(bestR)}, so ${lo} to ${hi} HP threats take two hits.${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+    d:`${g35Hit(bestR)} ${g37Hits(eff)}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
   else { strat='weak'; closeScore=0.15+0.45*eff/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${g35Hit(bestR)}, so even ${lo} HP threats take three or more hits. You cannot trade up, which usually loses the prize race.`}); }
+    d:`${g35Hit(bestR)} ${g37Hits(eff)} You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.cond) findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
     d:`${gCap(bestName)} hits for ${bestR.now} early and ${bestR.top} once ${condTxt(bestR)}. Your list has ${bestR.have} of those cards, so the full hit is a mid game plan, not a turn 2 one.`});
   // Abilities that stop attack effects or damage make the deck hard to disrupt.
   const prot=deck.filter(e=>e.card&&e.card.protect);
   const protN=prot.reduce((a,e)=>a+e.qty,0);
   if (protN>=8) { closeScore+=0.05;
+    const kinds=new Set(prot.flatMap(e=>e.card.pk&&e.card.pk.length?e.card.pk:[null]));
+    const who=prot.slice(0,3).map(e=>gCap(e.name)).join(', ');
     findings.push({sev:'ok', t:'Hard to disrupt',
-    d:`${protN} of your Pokemon have Abilities that stop effects or damage from your opponent's attacks (${prot.slice(0,3).map(e=>gCap(e.name)).join(', ')}). Opponents get fewer cheap knockouts and lock pieces against you.`}); }
+    d: kinds.size===1&&kinds.has('effects')
+      ? `${protN} of your Pokemon have Abilities that block the effects of your opponent's attacks or Abilities (${who}). Damage still goes through, so this stops lock and disruption, not knockouts.`
+      : kinds.size===1&&kinds.has('damage')
+      ? `${protN} of your Pokemon have Abilities that prevent damage from some of your opponent's attacks (${who}). Read each card for when it applies.`
+      : `${protN} of your Pokemon have Abilities that block damage or effects from some of your opponent's attacks (${who}). Read each card for when it applies.`}); }
+  const mill=attackers.map(e=>({e, a:(e.card.attacks||[]).find(a=>a.copy&&a.copy.mill)})).find(x=>x.a);
+  if (mill) findings.push({sev:'warn', t:'Some damage is left out',
+    d:`${gCap(mill.e.name)}'s ${mill.a.name} uses an attack from whatever comes off the top of your deck, so the grade does not count its damage.`});
   closeScore=gClamp(closeScore,0,1);
   const pk=deck.filter(e=>e.card&&e.card.t==='pkmn');
   const pkN=pk.reduce((a,e)=>a+e.qty,0)||1;
@@ -4097,12 +4595,12 @@ function gViability(deck, coh) {
       d:`${list} are risky at 3 prizes each, yet you hit hard enough to justify the trade.`}); }
   else findings.push({sev:'ok', t:'Efficient prize trade',
     d:multiN?`${multiN} of your ${pkN} Pokemon ${multiN>1?'give':'gives'} up two prizes and the rest give up one, so you are not handing over easy multi-prize turns.`:'Every Pokemon here gives up one prize, so the opponent has to take six knockouts.'});
-  const stage2=deck.filter(e=>e.card&&e.card.stage==='stage2').reduce((a,e)=>a+e.qty,0);
+  const stage2=deck.filter(e=>e.card&&e.card.stage==='stage2'&&!e.card.selfBench&&!g37Copier(deck,e.card)).reduce((a,e)=>a+e.qty,0);
   const candy=coh.provided['evolution_access']||0;
   let clockScore=0.82;
   if (stage2>0 && candy<2) { clockScore=0.5;
     findings.push({sev:'warn', t:'Might be slow off the line',
-    d:`You lean on Stage 2 attackers with only ${candy} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
+    d:`You lean on Stage 2 attackers with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 attackers before the game runs away.'});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
@@ -4663,7 +5161,7 @@ function renderOdds() {
   };
   const head = `<div class="o-table-wrap"><table class="o-table"><thead><tr><th>Card</th><th>Copies</th><th>Any prized</th><th>All prized</th></tr></thead><tbody>`;
   h += `<div class="g-sec"><div class="g-sec-t">Prize risk</div>
-    <div class="g-sec-i">Exact chance a card lands in your six prizes, counting only opening hands you keep. <b>All prized</b> means every copy is stuck there, which is the case PrizeTrainer drills you to spot.</div>`;
+    <div class="g-sec-i">Exact chance a card lands in your six prizes, counting only opening hands you keep. <b>All prized</b> means every copy is stuck there, which is the case RdyDeck drills you to spot.</div>`;
   h += head + rows.slice(0, SHOW).map(rowHtml).join('') + `</tbody></table></div>`;
   if (rows.length > SHOW) {
     h += `<details class="o-more"><summary>Show all ${rows.length} cards</summary>` +
@@ -5193,7 +5691,7 @@ async function copyDeckLink() {
 }
 async function nativeShareDeckLink() {
   const deck = state.decks.find(d => d.id === state.activeDeckId);
-  try { await navigator.share({ title: (deck ? deck.name + ' in ' : '') + 'Prize Trainer', url: _deckShareUrl }); } catch (_) {}
+  try { await navigator.share({ title: (deck ? deck.name + ' in ' : '') + 'RdyDeck', url: _deckShareUrl }); } catch (_) {}
 }
 
 /** Open a #deck= link: decode it and fill the Import sheet for the player to check. */
@@ -5720,7 +6218,8 @@ const GF_ABILITIES = {
   'pidgeot ex': { name: 'Quick Search', act: 'search', filter: 'all', dest: 'hand', max: 1 },
   'kirlia': { name: 'Refinement', act: 'draw', n: 2, note: 'Discard a card from your hand first.' },
   'dudunsparce': { name: 'Run Away Draw', act: 'draw', n: 3, note: 'Shuffle Dudunsparce and its cards into the deck after.' },
-  'fezandipiti ex': { name: 'Flip the Script', act: 'draw', n: 3 },
+  // Flip the Script needs one of your Pokemon Knocked Out last turn, which never happens in Goldfish.
+  'fezandipiti ex': null,
   'lumineon v': { name: 'Luminous Sign', act: 'search', filter: 'trainer', dest: 'hand', max: 1, note: 'Only a Supporter.' },
   'radiant greninja': { name: 'Concealed Cards', act: 'draw', n: 2, note: 'Discard an Energy from your hand first.' },
   'pidgeotto': null,
@@ -5732,11 +6231,11 @@ const GF_TRAINERS = {
   'judge': { lbl: 'Shuffle hand in, draw 4', act: 'shuffleDraw', n: 4 },
   "lillie's determination": { lbl: 'Shuffle hand in, draw 8', act: 'shuffleDraw', n: 8 },
   'nest ball': { lbl: 'Search a Basic to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 1 },
-  'buddy-buddy poffin': { lbl: 'Search up to 2 Basics to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2 },
+  'buddy-buddy poffin': { lbl: 'Search up to 2 Basics with 70 HP or less to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2, maxHp: 70 },
   'ultra ball': { lbl: 'Search a Pokémon', act: 'search', filter: 'pokemon', dest: 'hand', max: 1, note: 'Discard 2 other cards from your hand too.' },
-  'level ball': { lbl: 'Search a Pokémon', act: 'search', filter: 'pokemon', dest: 'hand', max: 1 },
+  'level ball': { lbl: 'Search a Pokémon with 90 HP or less', act: 'search', filter: 'pokemon', dest: 'hand', max: 1, maxHp: 90 },
   'arven': { lbl: 'Search an Item and a Tool', act: 'search', filter: 'trainer', dest: 'hand', max: 2 },
-  'battle vip pass': { lbl: 'Search up to 2 Basics to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2 },
+  'battle vip pass': { lbl: 'Search up to 2 Basics to the Bench', act: 'search', filter: 'basic', dest: 'bench', max: 2, firstOnly: true },
   'earthen vessel': { lbl: 'Search up to 2 Basic Energy', act: 'search', filter: 'energy', dest: 'hand', max: 2, note: 'Discard a card from your hand too.' },
 };
 
@@ -5833,9 +6332,10 @@ function gfActions(x) {
       mons.forEach(m => out.push({ label: 'Attach to ' + gfNm(gfTop(m)), fn: `gfTool(${x.uid},${m.id})`, off: !!m.tool, why: 'It already has a Tool.' }));
     } else {
       const sup = gfKind(x) === 'supporter';
+      const firstOnly = (GF_TRAINERS[nm] || {}).firstOnly && t !== 1;
       out.push({ label: sup ? 'Play Supporter' : 'Play', fn: `gfTrainer(${x.uid})`,
-        off: sup && (gf.used.supporter || (gf.first && t === 1 && !/^carmine\b/.test(nm))),
-        why: gf.used.supporter ? 'One Supporter a turn.' : 'The player going first cannot play a Supporter on turn 1.' });
+        off: firstOnly || (sup && (gf.used.supporter || (gf.first && t === 1 && !/^carmine\b/.test(nm)))),
+        why: firstOnly ? 'Only during your first turn.' : gf.used.supporter ? 'One Supporter a turn.' : 'The player going first cannot play a Supporter on turn 1.' });
     }
   }
   out.push({ label: 'Discard', fn: `gfDiscard(${x.uid})`, ghost: true });
@@ -5937,7 +6437,7 @@ function gfRunPreset(i) {
   else if (p.act === 'discardDraw') { gf.hand.forEach(y => gf.discard.push(y)); const n = gf.hand.length; gf.hand = []; gfLog('Discarded ' + n + ' card' + (n !== 1 ? 's' : '')); gfDraw(p.n); }
   else if (p.act === 'bottomDraw') { const n = gf.hand.length; shuffle(gf.hand); gf.deck = gf.deck.concat(gf.hand); gf.hand = []; gfLog('Put ' + n + ' card' + (n !== 1 ? 's' : '') + ' on the bottom'); gfDraw(gf.prizes.length); }
   else if (p.act === 'shuffleDraw') { const n = gf.hand.length; gf.deck = gf.deck.concat(gf.hand); gf.hand = []; shuffle(gf.deck); gfLog('Shuffled ' + n + ' card' + (n !== 1 ? 's' : '') + ' into the deck'); gfDraw(p.n); }
-  else if (p.act === 'search') { gfOpenSearch(p.filter, p.dest, p.max, p.note); return; }
+  else if (p.act === 'search') { gfOpenSearch(p.filter, p.dest, p.max, p.note, p.maxHp); return; }
   if (p.note) showToast(p.note);
   gf.helper = null;
   renderHand();
@@ -5959,15 +6459,16 @@ function gfMatches(x, f) {
   if (f === 'energy') return cat === 'energy';
   return true;
 }
-function gfOpenSearch(filter, dest, max, note) {
-  gfSearch = { filter: filter || 'all', dest: dest || 'hand', max: max || 1, pick: {}, note };
+function gfOpenSearch(filter, dest, max, note, maxHp) {
+  gfSearch = { filter: filter || 'all', dest: dest || 'hand', max: max || 1, pick: {}, maxHp: maxHp || 0,
+    note: [note, maxHp ? 'Only Pokémon with ' + maxHp + ' HP or less.' : ''].filter(Boolean).join(' ') || undefined };
   gfRenderSearch();
 }
 function gfRenderSearch() {
   const S = gfSearch;
   const byName = new Map();
   gf.deck.forEach(x => { const k = gfKey(x); if (!byName.has(k)) byName.set(k, { x, n: 0 }); byName.get(k).n++; });
-  const rows = [...byName.entries()].filter(([, v]) => gfMatches(v.x, S.filter)).sort((a, b) => lbl23(a[1].x.card).localeCompare(lbl23(b[1].x.card)));
+  const rows = [...byName.entries()].filter(([, v]) => gfMatches(v.x, S.filter) && !(S.maxHp && cardCategory(v.x.card) === 'pokemon' && (v.x.card.hp || 0) > S.maxHp)).sort((a, b) => lbl23(a[1].x.card).localeCompare(lbl23(b[1].x.card)));
   S.keys = rows.map(r => r[0]);
   const picked = Object.values(S.pick).reduce((a, b) => a + b, 0);
   const filt = ['all', 'pokemon', 'basic', 'trainer', 'energy'];
@@ -6392,7 +6893,7 @@ function dailyShareText(r, key) {
   const day = new Date(key + 'T12:00:00');
   const dTxt = isNaN(day) ? key : day.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   const bar = Array.from({ length: 6 }, (_, i) => i < r.score ? '■' : '□').join('');
-  return `Prize Trainer daily challenge, ${dTxt}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
+  return `RdyDeck daily challenge, ${dTxt}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
 }
 async function shareDaily() {
   const key = dailyKey(), r = dailyStore().results[key];
@@ -6639,7 +7140,7 @@ function exportTlog() {
     .concat(list.map(x => { const d = state.decks.find(z => z.id === x.deckId); return [x.day, x.event, d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.taken, x.given, x.notes]; }));
   const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = 'prize-trainer-tournament-log.csv';
+  a.href = URL.createObjectURL(blob); a.download = 'rdydeck-tournament-log.csv';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
@@ -6980,7 +7481,7 @@ function buildDeckCard(deck) {
 function renderHome() {
   const list = document.getElementById('deck-list');
   if (state.decks.length === 0) {
-    list.innerHTML = `<div class="empty-state"><span class="icon"><i class=ph-card></i></span>No decks yet.<br>Import your first deck below.</div>`;
+    list.innerHTML = `<div class="empty-state"><span class="icon"><i class=ph-card></i></span>No decks yet.<br>Paste a list or grab a starter deck.</div>`;
     updateHeaderStats();
     return;
   }
@@ -7264,6 +7765,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -8651,7 +9153,7 @@ function setTheme(t) {
     btn.setAttribute('aria-label', lbl);
   }
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', t === 'light' ? '#f4f2ec' : '#0a0e15');
+  if (meta) meta.setAttribute('content', t === 'light' ? '#f2eee5' : '#131210');
 }
 function loadThemePref() {
   try {
@@ -8752,12 +9254,12 @@ async function doNativeShare() {
   try {
     const res = await fetch(location.href);
     const blob = await res.blob();
-    const file = new File([blob], 'PrizeTrainer.html', { type: 'text/html' });
+    const file = new File([blob], 'RdyDeck.html', { type: 'text/html' });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ title: 'Prize Trainer', text: 'Open in a browser to play!', files: [file] });
+      await navigator.share({ title: 'RdyDeck', text: 'Open in a browser to play!', files: [file] });
     } else {
-      await navigator.share({ title: 'Prize Trainer', text: 'Pokémon TCG Prize Card Memory Game: save PrizeTrainer.html and open it in a browser!' });
+      await navigator.share({ title: 'RdyDeck', text: 'Pokémon TCG deck grader and prize trainer: save RdyDeck.html and open it in a browser!' });
     }
   } catch(e) {
     if (e.name !== 'AbortError') {
@@ -8771,7 +9273,7 @@ function downloadAppFile() {
   try {
     const a = document.createElement('a');
     a.href = location.href;
-    a.download = 'PrizeTrainer.html';
+    a.download = 'RdyDeck.html';
     a.click();
   } catch(e) {
     showToast('Right-click the page and choose "Save As" to download.');
@@ -8853,7 +9355,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v35';
+const PT_VERSION = 'v37';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -9088,7 +9590,7 @@ function openHelpSheet() {
       ${row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card')}
       ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard shortcuts', 'For playing on a computer')}
     </div>
-    <div class="modal-hint" style="margin-top:0.9rem">Prize Trainer ${PT_VERSION}</div>
+    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
 }
 
@@ -9097,7 +9599,7 @@ function openFeedback() {
   fbKind = 'Bug';
   const deck = state.decks.find(d => d.id === state.activeDeckId) || state.decks[0];
   openSheet(`<div class="modal-title">Send feedback</div>
-    <div class="modal-hint" style="margin-bottom:0.9rem">This opens a new issue on the Prize Trainer GitHub page with the details filled in. You need a free GitHub account to post it, and nothing is sent until you press Submit there.</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">This opens a new issue on the RdyDeck GitHub page with the details filled in. You need a free GitHub account to post it, and nothing is sent until you press Submit there.</div>
     <div class="field-label">What is it about?</div>
     <div class="seg fb-seg" role="group" aria-label="Feedback type">
       ${['Bug', 'Missing card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
@@ -9117,7 +9619,7 @@ function feedbackUrl(kind, text, deck) {
   kind = ['Bug', 'Missing card', 'Idea'].includes(kind) ? kind : 'Bug';
   const body = v24Clean(text, 1500).trim();
   const first = (body.split('\n')[0] || '').trim().slice(0, 70);
-  const title = `[${kind}] ${first || (kind === 'Idea' ? 'Idea for Prize Trainer' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
+  const title = `[${kind}] ${first || (kind === 'Idea' ? 'Idea for RdyDeck' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
   const scr = (document.querySelector('.screen.active') || {}).id || '';
   const ua = navigator.userAgent;
   const device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone or iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
@@ -9151,7 +9653,7 @@ function sendFeedback() {
 
 // ── First run tour ──
 const TOUR_STEPS = [
-  { ic: 'cards', t: 'Welcome to Prize Trainer', s: 'Before each game, six cards from your deck go face down as prizes. Flip through the rest and name what is missing. It builds the memory you need at the table.' },
+  { ic: 'cards', t: 'Welcome to RdyDeck', s: 'Before each game, six cards from your deck go face down as prizes. Flip through the rest and name what is missing. It builds the memory you need at the table.' },
   { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
   { ic: 'play', t: 'Play a prize game', s: 'Tap the play button on a deck to start. Modes changes the prize count, adds a timer, or runs a tournament block of games.' },
   { ic: 'grid', t: 'Study your deck', s: 'Open a deck to see Cards, Grade and Odds. Practice holds opening hands, goldfish turns, drills and your matchup notes.' },
@@ -9358,14 +9860,14 @@ loadStarterDeck = async function (id) {
 
       <!-- Native share (mobile browsers with Web Share API) -->
       <div id="share-native-wrap" style="display:none;">
-        <p class="share-lead">Send <strong>PrizeTrainer.html</strong> straight to a friend through any app.</p>
+        <p class="share-lead">Send <strong>RdyDeck.html</strong> straight to a friend through any app.</p>
         <button class="btn btn-primary btn-block" onclick="doNativeShare()"><svg class="ic"><use href="#i-share"/></svg>Share the file</button>
       </div>
 
       <!-- Download (desktop / browsers without file share) -->
       <div id="share-download-wrap" style="display:none;">
         <p class="share-lead">Download the file, then send it to your friend however you like.</p>
-        <button class="btn btn-primary btn-block" onclick="downloadAppFile()"><svg class="ic"><use href="#i-save"/></svg>Download PrizeTrainer.html</button>
+        <button class="btn btn-primary btn-block" onclick="downloadAppFile()"><svg class="ic"><use href="#i-save"/></svg>Download RdyDeck.html</button>
       </div>
 
       <!-- Per-platform instructions, shown after download or on fallback -->
@@ -9400,7 +9902,7 @@ loadStarterDeck = async function (id) {
         <div id="share-tab-desktop" class="share-tab-content" style="display:none;">
           <ol class="share-steps">
             <li>Save the file to your computer</li>
-            <li>Double click <strong>PrizeTrainer.html</strong></li>
+            <li>Double click <strong>RdyDeck.html</strong></li>
             <li>It opens in your default browser</li>
             <li>Works in Chrome, Firefox, Edge or Safari</li>
           </ol>
@@ -10257,7 +10759,7 @@ function tl28Hint() {
       }));
     const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'prize-trainer-tournament-log.csv';
+    a.href = URL.createObjectURL(blob); a.download = 'rdydeck-tournament-log.csv';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   };
@@ -10773,7 +11275,7 @@ buildDeckCard = function (deck) {
 // Home says what the app is for now.
 (function () {
   const sub = document.querySelector('#screen-home .app-subtitle');
-  if (sub) sub.textContent = 'Grade your Pokémon TCG deck, then practice it';
+  if (sub) sub.textContent = 'Grade your deck. Drill your prizes.';
   // Tabs: Grade first.
   const tabs = document.querySelector('.review-tabs');
   const order = ['grade', 'odds', 'cards', 'practice'];
@@ -10806,7 +11308,7 @@ updateHeaderStats = function () {
 
 // First run tour, new order: the grade first.
 TOUR_STEPS.splice(0, TOUR_STEPS.length,
-  { ic: 'award', t: 'Welcome to Prize Trainer', s: 'Grade any Pokémon TCG deck: how well the cards work together, whether it can win, and what to fix first. Then practice it.' },
+  { ic: 'award', t: 'Welcome to RdyDeck', s: 'Grade any Pokémon TCG deck: how well the cards work together, whether it can win, and what to fix first. Then practice it.' },
   { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
   { ic: 'award', t: 'Read the grade', s: 'Tap a deck to open its grade. Fix first lists what costs you the most, and Rotation shows which cards leave Standard next.' },
   { ic: 'chart', t: 'Check the odds', s: 'Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.' },
@@ -10914,7 +11416,27 @@ function d30Validate(j) {
     });
     if (Object.keys(sets).length) out.sets = sets;
   }
-  return out.starters || out.meta || out.rotation || out.sets ? out : null;
+  // v37: card fixes found by the weekly card check. Only known fields with checked values pass.
+  if (j.cardFixes && typeof j.cardFixes === 'object' && !Array.isArray(j.cardFixes)) {
+    const fx = {};
+    Object.keys(j.cardFixes).slice(0, 600).forEach(k => {
+      const v = j.cardFixes[k];
+      if (!/^[a-z0-9.]{2,12}-[A-Za-z0-9]{1,8}$/.test(k) || !v || typeof v !== 'object') return;
+      const f = {};
+      if (typeof v.mark === 'string' && /^[A-Z]$/.test(v.mark)) f.mark = v.mark;
+      if (/^(Basic|Stage1|Stage2)$/.test(String(v.stage || ''))) f.stage = v.stage;
+      if (typeof v.from === 'string' && v.from.length <= 40 && !/[<>`]/.test(v.from)) f.from = v.from;
+      if (v.bad === true) f.bad = true;
+      if (Object.keys(f).length) fx[k] = f;
+    });
+    if (Object.keys(fx).length) out.cardFixes = fx;
+  }
+  if (j.setMarks && typeof j.setMarks === 'object' && !Array.isArray(j.setMarks)) {
+    const sm = {};
+    Object.keys(j.setMarks).slice(0, 40).forEach(k => { if (/^[a-z0-9.]{2,12}$/.test(k) && /^[A-Z]$/.test(String(j.setMarks[k]))) sm[k] = j.setMarks[k]; });
+    if (Object.keys(sm).length) out.setMarks = sm;
+  }
+  return out.starters || out.meta || out.rotation || out.sets || out.cardFixes ? out : null;
 }
 
 /** Put a checked file into use. Each part falls back to the built-in copy on its own. */
@@ -10925,6 +11447,7 @@ function d30Apply(d) {
     startersLive: !!d.starters,
     meta: d.meta || null,
     sets: d.sets || {},
+    cardFixes: d.cardFixes || {}, setMarks: d.setMarks || {},
     rotation: d.rotation || DATA30_BUILT.rotation,
     rotationLive: !!d.rotation,
   };
@@ -11009,8 +11532,8 @@ openStarterPicker = function () {
 const _v29Help = openHelpSheet;
 openHelpSheet = function () {
   _v29Help.apply(this, arguments);
-  const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^Prize Trainer v/.test(h.textContent));
-  if (hint) hint.textContent = `Prize Trainer ${PT_VERSION}. ${d30AsOfLine()}`;
+  const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^(RdyDeck|Prize Trainer) v/.test(h.textContent));
+  if (hint) hint.textContent = `RdyDeck ${PT_VERSION}. ${d30AsOfLine()}`;
 };
 
 // Opponent boxes suggest the current meta decks after your own.
@@ -11071,12 +11594,14 @@ function td30CardId(code, num) {
 /** A TCGdex card in the shape pokemontcg.io gives, which enrichCard reads. */
 function td30Shape(t) {
   if (!t || typeof t !== 'object' || typeof t.name !== 'string') return null;
+  t = fix37Td(t);
+  if (!t) return null;
   const cat = String(t.category || '').toLowerCase();
   const supertype = cat === 'pokemon' ? 'Pokémon' : cat === 'trainer' ? 'Trainer' : cat === 'energy' ? 'Energy' : null;
   if (!supertype) return null;
   const sub = [];
   const rules = [];
-  const txt = v => typeof v === 'string' ? v : '';
+  const txt = v => typeof v === 'string' ? v.replace(/<[^>]*>/g, ' ').replace(/[ \t]+/g, ' ').trim() : '';
   if (supertype === 'Pokémon') {
     const stage = String(t.stage || '').replace(/^stage\s*(\d)$/i, 'Stage $1');
     if (/^(basic|stage 1|stage 2)$/i.test(stage)) sub.push(stage.replace(/^basic$/i, 'Basic'));
@@ -11087,11 +11612,12 @@ function td30Shape(t) {
   } else if (supertype === 'Trainer') {
     const tt = String(t.trainerType || '');
     sub.push(/tool/i.test(tt) ? 'Pokémon Tool' : tt || 'Item');
-    if (txt(t.effect)) rules.push(t.effect);
+    if (txt(t.effect)) rules.push(txt(t.effect));
   } else {
     const et = String(t.energyType || '');
-    sub.push(/special/i.test(et) ? 'Special' : 'Basic');
-    if (txt(t.effect)) rules.push(t.effect);
+    // TCGdex marks some Special Energy as "Normal", so Basic goes by the name too.
+    sub.push(!/special/i.test(et) && /^(basic )?(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/i.test(t.name.trim()) ? 'Basic' : 'Special');
+    if (txt(t.effect)) rules.push(txt(t.effect));
   }
   if (/ace spec/i.test(String(t.rarity || ''))) sub.push('ACE SPEC');
   return {
@@ -11116,7 +11642,7 @@ function td30Shape(t) {
 
 // Newest printing first: Mega Evolution sets, then Scarlet and Violet, then older.
 function td30Rank(id) {
-  const m = String(id || '').match(/^([a-z]+)(\d+)?(?:\.(\d))?-/);
+  const m = String(id || '').match(/^([a-z]+)(\d+)?(?:\.(\d))?[a-z]?-/);
   if (!m) return -1;
   const era = { me: 6, sv: 5, sve: 5, svp: 4, swsh: 3, sm: 2, xy: 1 }[m[1]] || 0;
   return era * 1000 + (parseInt(m[2] || '0', 10) * 10) + (m[3] ? 5 : 0);
@@ -11447,7 +11973,7 @@ r29CheckReprints = async function (deck) {
 };
 
 // ═══════════ v31: credits and the unofficial note in Help ═══════════
-const PT31_UNOFFICIAL = 'Prize Trainer is an unofficial, fan-made app. It is not produced, endorsed, supported or affiliated with Nintendo, The Pokémon Company, Game Freak or Creatures. Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.';
+const PT31_UNOFFICIAL = 'RdyDeck is an unofficial, fan-made app. It is not produced, endorsed, supported or affiliated with Nintendo, The Pokémon Company, Game Freak or Creatures. Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.';
 const PT31_MIT = `MIT License
 
 Copyright (c) 2021 TCGdex
@@ -11470,7 +11996,7 @@ openHelpSheet = function () {
     b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Credits and legal</b><span>Where the cards and lists come from</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
     list.appendChild(b);
   }
-  const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^Prize Trainer v/.test(h.textContent));
+  const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^(RdyDeck|Prize Trainer) v/.test(h.textContent));
   if (hint && !document.getElementById('cr31-note')) {
     const p = document.createElement('div');
     p.id = 'cr31-note';
@@ -11490,10 +12016,10 @@ function openCredits() {
       ${row('Backup card data', `${a('https://pokemontcg.io', 'Pokémon TCG API')} (pokemontcg.io)`)}
       ${row('Decklists, meta and card images', a('https://limitlesstcg.com', 'Limitless TCG'))}
       ${row('More card images', 'Pokémon TCG API and TCGdex')}
-      ${row('Font', `${a('https://rsms.me/inter/', 'Inter')} by Rasmus Andersson (SIL Open Font License 1.1)`)}
+      ${row('Fonts', `${a('https://fonts.google.com/specimen/Barlow', 'Barlow')} and Barlow Condensed by Jeremy Tribby, ${a('https://github.com/IBM/plex', 'IBM Plex Mono')} by IBM (both SIL Open Font License 1.1)`)}
     </ul>
     <details class="o-more cr31-mit"><summary>TCGdex license</summary><pre>${esc(PT31_MIT)}</pre></details>
-    <div class="modal-hint" style="margin-top:0.9rem">Prize Trainer ${PT_VERSION}</div>
+    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet();openHelpSheet()">Back</button><button class="btn" onclick="closeSheet()">Close</button></div>`);
 }
 
@@ -11585,7 +12111,7 @@ openHelpSheet = function () {
   if (age32CanTip() && PT_ADS.tipUrl && !document.getElementById('tip32-row')) {
     const a = document.createElement('a');
     a.id = 'tip32-row'; a.className = 'hs-row'; a.href = PT_ADS.tipUrl; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    a.innerHTML = `<span class="ha-ic">${ic23('award')}</span><span class="hs-tx"><b>Support Prize Trainer</b><span>Leave a tip on Ko-fi</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    a.innerHTML = `<span class="ha-ic">${ic23('award')}</span><span class="hs-tx"><b>Support RdyDeck</b><span>Leave a tip on Ko-fi</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
     add(a);
   }
   if (age32Any() && !document.getElementById('age32-row')) {
@@ -11604,7 +12130,7 @@ function buy32Url(name, cards) {
 }
 function buy32Ok() { return !!PT_ADS.buyUrl && age32CanBuy() && /^https:\/\//.test(PT_ADS.buyUrl); }
 function buy32Label(what) { return age32Get() === 'teen' ? `${what} with a parent` : what; }
-const BUY32_NOTE = 'Affiliate link. Prize Trainer may earn a small fee if you buy.';
+const BUY32_NOTE = 'Affiliate link. RdyDeck may earn a small fee if you buy.';
 
 const _v31RenderGrade = renderGrade;
 renderGrade = function () {
@@ -11880,6 +12406,339 @@ r29CheckReprints = async function (deck) {
     if (deck && state.activeDeckId === deck.id && body && body.style.display !== 'none') rot35Mark(deck);
   } catch (_) {}
   return r;
+};
+</script>
+<script>
+// ═══════════ v36: reprint check asks TCGdex too ═══════════
+// pokemontcg.io no longer adds new sets, so a "no later printing" answer from it
+// is not proof (it missed Pokégear 3.0 in Black Bolt, an I mark printing).
+// Every card it leaves rotating or not legal is checked again on TCGdex,
+// and the later mark of the two answers wins.
+ROT29.v = 2;   // drops reprint answers saved before v36
+const _r36Tried = new Set();
+const _v35Reprints = r29CheckReprints;
+r29CheckReprints = async function (deck) {
+  const out = await _v35Reprints.apply(this, arguments);
+  if (!deck || _r36Tried.has(deck.id)) return out;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return out;
+  const names = deck.rot29 && deck.rot29.v === ROT29.v && deck.rot29.names;
+  if (!names) return out;
+  const todo = r29Rows(deck).filter(r => (r.st === 'out' || r.st === 'risk') && names[r.key] && !names[r.key].td);
+  if (!todo.length) return out;
+  _r36Tried.add(deck.id);
+  let td = {};
+  try { td = await r31TdReprints(todo); } catch (_) { return out; }
+  let changed = false;
+  todo.forEach(r => {
+    const t = td[r.key];
+    if (!t) return;                       // TCGdex had no answer, so the first answer stands
+    const a = r29M(names[r.key].best), b = r29M(t.best);
+    names[r.key] = { best: b && (!a || b > a) ? b : a, td: true };
+    changed = true;
+  });
+  if (!changed) return out;
+  try { await saveState(); } catch (_) {}
+  try {
+    if (document.getElementById('screen-home').classList.contains('active')) renderHome();
+    const pane = document.getElementById('grade-body');
+    if (state.activeDeckId === deck.id && pane && pane.style.display !== 'none' &&
+        document.getElementById('screen-review').classList.contains('active')) renderGrade();
+    const body = document.getElementById('review-body');
+    if (state.activeDeckId === deck.id && body && body.style.display !== 'none') rot35Mark(deck);
+  } catch (_) {}
+  return out;
+};
+</script>
+<script>
+// ═══════════ v37: cards per row ═══════════
+// A small control above the card grid lets the player fit more cards on a row
+// (up to three more than the default for the screen width). The choice is a
+// step, so it carries across phone and tablet widths, and is kept on this device.
+// Pinch is left to page zoom, so the two never fight.
+const CZ37_KEY = 'ptcg_cardcols';
+function cz37Step() { try { const n = parseInt(localStorage.getItem(CZ37_KEY), 10); return n >= 0 && n <= 3 ? n : 0; } catch (_) { return 0; } }
+function cz37Base(daily) {
+  const w = (m) => window.matchMedia('(min-width:' + m + 'px)').matches;
+  if (daily) return window.matchMedia('(max-width:340px)').matches ? 3 : 4;
+  return w(1600) ? 10 : w(1100) ? 8 : w(768) ? 6 : w(560) ? 4 : 3;
+}
+function cz37Apply() {
+  const s = cz37Step(), root = document.documentElement;
+  if (document.body) document.body.dataset.cz = String(s);
+  root.style.setProperty('--cz-cols', String(cz37Base(false) + s));
+  root.style.setProperty('--cz-dcols', String(cz37Base(true) + s));
+  document.querySelectorAll('.cz-bar').forEach(b => cz37Fill(b));
+}
+function cz37Fill(bar) {
+  const base = cz37Base(bar.dataset.daily === '1'), s = cz37Step();
+  bar.querySelector('.cz-opts').innerHTML = [0, 1, 2, 3].map(i =>
+    `<button type="button" aria-pressed="${i === s}" aria-label="${base + i} cards per row" onclick="cz37Set(${i})">${base + i}</button>`).join('');
+}
+function cz37Set(i) {
+  try { localStorage.setItem(CZ37_KEY, String(i)); } catch (_) {}
+  cz37Apply();
+}
+function cz37Bar(host, daily) {
+  if (!host || host.querySelector('.cz-bar')) return;
+  const first = host.querySelector('.review-group');
+  if (!first) return;
+  const bar = document.createElement('div');
+  bar.className = 'cz-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Cards per row');
+  if (daily) bar.dataset.daily = '1';
+  bar.innerHTML = '<span class="cz-label">Per row</span><div class="cz-opts"></div>';
+  first.parentNode.insertBefore(bar, first);
+  cz37Fill(bar);
+}
+(function () {
+  const _r = renderReview;
+  renderReview = function (deck) {
+    const out = _r.apply(this, arguments);
+    try { cz37Bar(document.getElementById('review-body'), false); } catch (_) {}
+    return out;
+  };
+  const _d = openDailyList;
+  openDailyList = function () {
+    const out = _d.apply(this, arguments);
+    try { cz37Bar(document.getElementById('dly33-list'), true); } catch (_) {}
+    return out;
+  };
+  try {
+    [560, 768, 1100, 1600].forEach(m => window.matchMedia('(min-width:' + m + 'px)').addEventListener('change', cz37Apply));
+    window.matchMedia('(max-width:340px)').addEventListener('change', cz37Apply);
+  } catch (_) {}
+  if (document.body) cz37Apply(); else document.addEventListener('DOMContentLoaded', cz37Apply);
+})();
+</script>
+<script>
+// ═══════════ v37: save and open decks ═══════════
+// Saved decks live in this browser, for this web address only. To move to a
+// new address (or a new phone), a player saves everything to a file here and
+// opens that file there. Opening adds to what is already saved unless the
+// player picks Replace everything. A backup is someone's text, so it is
+// checked before anything is changed.
+const BK37_MAX = 5 * 1024 * 1024;
+const BK37_PREFS = {
+  theme: ['ptcg_theme', v => v === 'light' || v === 'dark'],
+  cardcols: ['ptcg_cardcols', v => /^[0-3]$/.test(v)],
+  practiceTab: ['pt_practice_tab', v => typeof PRACTICE_TABS === 'undefined' || PRACTICE_TABS.includes(v)],
+  tour: ['pt_tour_v24', v => v === 'done'],
+  seen29: ['pt_v29_seen', v => v === '1'],
+};
+let _bk37 = null;   // what was read and checked, waiting for Add or Replace
+
+function bk37Ok(p) {
+  return p && typeof p === 'object' && Array.isArray(p.decks) && p.decks.length <= 1000 && p.decks.every(d =>
+    d && typeof d === 'object' && d.id != null && typeof d.name === 'string' && d.name.length <= 200 && Array.isArray(d.cards) &&
+    d.cards.every(c => c && typeof c === 'object' && typeof c.name === 'string' && Number.isFinite(c.count) && c.count >= 0 && c.count <= 60) &&
+    (d.history == null || Array.isArray(d.history))) &&
+    (p.tlog == null || Array.isArray(p.tlog)) && (p.daily == null || typeof p.daily === 'object');
+}
+// Ids, numbers and picture addresses go into the page as they are, so only
+// plain values are allowed there.
+const BK37_NUM = new Set(['score', 'time', 'prizeCount', 'count', 'taken', 'given', 'deckVer', 'ts']);
+const BK37_ID = new Set(['id', 'deckId', 'activeDeckId']);
+const BK37_URL = new Set(['imageUrl', 'thumbUrl', 'fallbackUrls']);
+function bk37Plain(v, k, depth) {
+  if (depth > 12) return false;
+  if (Array.isArray(v)) return v.every(x => bk37Plain(x, k === 'fallbackUrls' ? k : '', depth + 1));
+  if (v && typeof v === 'object') return Object.keys(v).every(key => key !== '__proto__' && key !== 'constructor' && bk37Plain(v[key], key, depth + 1));
+  if (v == null) return true;
+  if (BK37_NUM.has(k)) return Number.isFinite(v);
+  if (BK37_ID.has(k)) return /^[\w.-]{1,64}$/.test(String(v));
+  if (BK37_URL.has(k)) return v === '' || /^https?:\/\/[^\s"'<>`\\]+$/.test(String(v));
+  if (k === 'result') return ['W', 'L', 'T'].includes(v);
+  if (k === 'date' || k === 'day') return !/[<>"'`&]/.test(String(v));
+  return true;
+}
+
+function bk37Pack() {
+  const prefs = {};
+  Object.keys(BK37_PREFS).forEach(k => { const v = safeLocalGet(BK37_PREFS[k][0]); if (v != null) prefs[k] = v; });
+  return { app: 'RdyDeck', backup: 1, saved: new Date().toISOString(), state, prefs };
+}
+function bk37FileName() { return 'rdydeck-decks-' + new Date().toISOString().slice(0, 10) + '.json'; }
+function bk37Text() { return JSON.stringify(bk37Pack()); }
+
+function bk37Parse(text) {
+  text = String(text || '').trim();
+  if (!text) return { msg: 'Nothing to open yet.' };
+  if (text.length > BK37_MAX) return { msg: 'That is too big to be a RdyDeck backup.' };
+  let p;
+  try { p = JSON.parse(text); } catch (_) { return { msg: "That isn't a RdyDeck backup. Paste the whole text, from the first { to the last }." }; }
+  // Old backups are the saved data on its own; new ones wrap it with settings.
+  const st = p && p.backup ? p.state : p;
+  const prefs = p && p.backup && p.prefs && typeof p.prefs === 'object' ? p.prefs : {};
+  if (!st || typeof st !== 'object' || !Array.isArray(st.decks)) return { msg: "That isn't a RdyDeck backup." };
+  if (!bk37Ok(st) || !bk37Plain(st, '', 0)) return { msg: 'That backup is damaged or incomplete. Nothing was changed.' };
+  const clean = {};
+  Object.keys(BK37_PREFS).forEach(k => { const v = prefs[k]; if (typeof v === 'string' && BK37_PREFS[k][1](v)) clean[k] = v; });
+  return { st, prefs: clean };
+}
+
+function bk37Summary(b) {
+  const d = b.st.decks, games = d.reduce((a, x) => a + (x.history || []).length, 0), t = (b.st.tlog || []).length;
+  const n = (k, one, many) => `${k} ${k === 1 ? one : many}`;
+  return `${n(d.length, 'deck', 'decks')}, ${n(games, 'prize game', 'prize games')}` + (t ? `, ${n(t, 'tournament', 'tournaments')}` : '') + '.';
+}
+
+function bk37Key(d) { return JSON.stringify([d.name, (d.cards || []).map(c => [c.name, c.set || '', c.num || '', c.count])]); }
+function bk37NewId(used) { let id; do { id = Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); } while (used.has(id)); used.add(id); return id; }
+
+// Adds what is in the backup to what is here. A deck that is already here
+// (same name and same list) keeps its own games and gains any it was missing.
+function bk37Merge(st) {
+  const cur = state, used = new Set(cur.decks.map(d => String(d.id))), byKey = new Map(cur.decks.map(d => [bk37Key(d), d]));
+  const remap = {};
+  let added = 0, joined = 0;
+  st.decks.forEach(d0 => {
+    const d = JSON.parse(JSON.stringify(d0));
+    const same = byKey.get(bk37Key(d));
+    if (same) {
+      const have = new Set((same.history || []).map(h => JSON.stringify(h)));
+      (d.history || []).forEach(h => { if (!have.has(JSON.stringify(h))) { (same.history = same.history || []).push(h); } });
+      remap[String(d.id)] = same.id; joined++;
+      return;
+    }
+    const old = String(d.id);
+    if (used.has(old)) d.id = bk37NewId(used); else used.add(old);
+    remap[old] = d.id;
+    if (cur.decks.some(x => x.name === d.name)) d.name = d.name + ' (opened)';
+    cur.decks.push(d); byKey.set(bk37Key(d), d); added++;
+  });
+  if (Array.isArray(st.tlog) && st.tlog.length) {
+    cur.tlog = cur.tlog || [];
+    const have = new Set(cur.tlog.map(x => String(x.id)));
+    st.tlog.forEach(x0 => {
+      if (have.has(String(x0.id))) return;
+      const x = JSON.parse(JSON.stringify(x0));
+      if (x.deckId != null && remap[String(x.deckId)] != null) x.deckId = remap[String(x.deckId)];
+      cur.tlog.push(x);
+    });
+  }
+  if (st.daily && st.daily.results && typeof st.daily.results === 'object') {
+    cur.daily = cur.daily || { results: {} }; cur.daily.results = cur.daily.results || {};
+    Object.keys(st.daily.results).forEach(k => { if (!(k in cur.daily.results)) cur.daily.results[k] = st.daily.results[k]; });
+  }
+  if (st.drillStats && !cur.drillStats) cur.drillStats = JSON.parse(JSON.stringify(st.drillStats));
+  return { added, joined };
+}
+
+function bk37Prefs(prefs, all) {
+  Object.keys(prefs).forEach(k => {
+    const key = BK37_PREFS[k][0];
+    if (all || safeLocalGet(key) == null) safeLocalSet(key, prefs[k]);
+  });
+  try { if (prefs.theme) loadThemePref(); } catch (_) {}
+  try { cz37Apply(); } catch (_) {}
+}
+
+async function bk37Done(msg) {
+  await saveState();
+  closeSheet();
+  try { renderHome(); } catch (_) {}
+  showToast(msg);
+}
+async function bk37Add() {
+  if (!_bk37) return;
+  const r = bk37Merge(_bk37.st);
+  bk37Prefs(_bk37.prefs, false);
+  _bk37 = null;
+  const n = (k, w) => `${k} ${w}${k === 1 ? '' : 's'}`;
+  await bk37Done(r.added || r.joined ? `Added ${n(r.added, 'deck')}` + (r.joined ? `, ${n(r.joined, 'deck')} already here` : '') + '.' : 'Nothing new to add.');
+}
+let _bk37Arm = 0;
+async function bk37Replace(btn) {
+  if (!_bk37) return;
+  if (Date.now() - _bk37Arm > 4000) { _bk37Arm = Date.now(); btn.textContent = 'Tap again to replace'; return; }
+  const st = JSON.parse(JSON.stringify(_bk37.st));
+  if (!st.decks.some(d => String(d.id) === String(st.activeDeckId))) st.activeDeckId = st.decks[0] ? st.decks[0].id : null;
+  state = st;
+  bk37Prefs(_bk37.prefs, true);
+  _bk37 = null; _bk37Arm = 0;
+  await bk37Done(`Replaced with ${state.decks.length} deck${state.decks.length === 1 ? '' : 's'}.`);
+}
+
+function bk37Read(text) {
+  const err = document.getElementById('bk37-err'), box = document.getElementById('bk37-found');
+  const b = bk37Parse(text);
+  _bk37Arm = 0;
+  if (!b.st) { _bk37 = null; err.textContent = b.msg; box.hidden = true; return; }
+  _bk37 = b; err.textContent = '';
+  document.getElementById('bk37-sum').textContent = 'This backup has ' + bk37Summary(b);
+  document.getElementById('bk37-rep').textContent = 'Replace everything';
+  box.hidden = false;
+  box.scrollIntoView({ block: 'nearest' });
+}
+async function bk37OpenFile(input) {
+  const f = input.files && input.files[0];
+  input.value = '';
+  if (!f) return;
+  if (f.size > BK37_MAX) { bk37Read('x'.repeat(BK37_MAX + 1)); return; }
+  let t = '';
+  try { t = await f.text(); } catch (_) {}
+  bk37Read(t);
+}
+
+function bk37Save() {
+  try {
+    const url = URL.createObjectURL(new Blob([bk37Text()], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = bk37FileName(); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    showToast('Saved ' + bk37FileName() + '.');
+  } catch (_) { showToast("Couldn't save a file here. Use Copy as text instead."); }
+}
+function bk37CanShare() {
+  try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files: [new File(['{}'], 'x.json', { type: 'application/json' })] })); } catch (_) { return false; }
+}
+async function bk37Share() {
+  try {
+    const f = new File([bk37Text()], bk37FileName(), { type: 'application/json' });
+    await navigator.share({ files: [f], title: 'RdyDeck decks' });
+  } catch (e) { if (!e || e.name !== 'AbortError') showToast("Couldn't share. Use Save a file instead."); }
+}
+async function bk37Copy() {
+  const t = bk37Text();
+  try { await navigator.clipboard.writeText(t); showToast('Copied. Paste it somewhere safe, like a note to yourself.'); }
+  catch (_) {
+    const ta = document.getElementById('bk37-text');
+    if (ta) { ta.value = t; ta.select(); }
+    showToast('Select the text in the box and copy it.');
+  }
+}
+
+openBackupModal = function () {
+  _bk37 = null; _bk37Arm = 0;
+  const n = state.decks.length, games = state.decks.reduce((a, d) => a + (d.history || []).length, 0);
+  openSheet(`<div class="modal-title">Save and open decks</div>
+    <div class="bk37-sec">
+      <div class="bk37-h">Save</div>
+      <p class="bk37-p">${n ? `Your ${n} deck${n === 1 ? '' : 's'} and ${games} prize game${games === 1 ? '' : 's'} live in this browser only. Save them to a file to keep a copy or move them to a new phone or web address.` : 'Nothing is saved in this browser yet. To bring decks here, open a file you saved before.'}</p>
+      <div class="bk37-btns"${n ? '' : ' hidden'}>
+        <button class="btn btn-primary" onclick="bk37Save()">Save a file</button>
+        ${bk37CanShare() ? '<button class="btn" onclick="bk37Share()">Share</button>' : ''}
+        <button class="btn" onclick="bk37Copy()">Copy as text</button>
+      </div>
+    </div>
+    <div class="bk37-sec">
+      <div class="bk37-h">Open</div>
+      <p class="bk37-p">Open a saved file or paste the text. Decks are added to the ones here, nothing is removed.</p>
+      <div class="bk37-btns">
+        <button class="btn" onclick="document.getElementById('bk37-file').click()">Open a file</button>
+        <button class="btn" onclick="bk37Read(document.getElementById('bk37-text').value)">Read pasted text</button>
+      </div>
+      <input type="file" id="bk37-file" accept=".json,application/json,.txt,text/plain" hidden onchange="bk37OpenFile(this)">
+      <textarea id="bk37-text" class="bk37-text" placeholder="Paste backup text here" aria-label="Backup text" autocomplete="off" spellcheck="false"></textarea>
+      <div class="bk37-err" id="bk37-err" role="alert"></div>
+      <div class="bk37-found" id="bk37-found" hidden>
+        <p class="bk37-sum" id="bk37-sum"></p>
+        <div class="bk37-btns">
+          <button class="btn btn-primary" onclick="bk37Add()">Add to my decks</button>
+          <button class="btn bk37-danger" id="bk37-rep" onclick="bk37Replace(this)">Replace everything</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Done</button></div>`);
 };
 </script>
 </body>
