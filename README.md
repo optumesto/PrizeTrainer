@@ -68,8 +68,8 @@ After that it runs every Monday at 09:17 UTC (4:17 AM New York time in winter). 
 
 Wait 1 to 3 minutes after the commit, then:
 
-- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v34`.
-- Open the app, then **Help**. It should say **Prize Trainer v34**.
+- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v35`.
+- Open the app, then **Help**. It should say **Prize Trainer v35**.
 - On a phone where the app is installed, close it fully and open it twice. The first open fetches the new version; the second shows it.
 
 ## Rotation

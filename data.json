@@ -121,6 +121,10 @@
     "POR": "me03",
     "CRI": "me04",
     "PBL": "me05",
-    "DLR": "me06"
+    "DLR": "me06",
+    "MEP": "mep",
+    "SVP": "svp",
+    "BLK": "sv10.5b",
+    "WHT": "sv10.5w"
   }
 }

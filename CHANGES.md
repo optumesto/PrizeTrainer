@@ -1,3 +1,27 @@
+# Prize Trainer v35 (9 Nov 2026)
+
+Built on v34. This repo setup already includes it.
+
+## What changed
+
+1. **Rotation caution mark.** In a deck's Cards tab, every card expected to rotate (H mark) gets a small caution mark in its top left corner, and a line above the grid counts them ("6 cards expected to rotate in April 2027 (not announced yet)"). The mark has a spoken label for screen readers. Nothing shows in Expanded. The marks redraw when a reprint check finishes, since a reprint can keep a card legal.
+2. **Damage numbers come from the card text.** The grade used to add a flat 50 for any "damage booster" it guessed at, which is how Dhelmise read as "near 220". Now each booster adds only what its card prints, only where it applies:
+   - Brave Bangle +30 against a Pokémon ex, not on a Pokémon ex attacker
+   - Maximum Belt +50 against a Pokémon ex
+   - Black Belt's Training +40 against a Pokémon ex
+   - Kieran +30 against a Pokémon ex
+   - Defiance Band +30 while behind on prizes, Vitality Band +10
+   One Tool per attacker plus one Supporter a turn. A booster not on this list adds nothing. The critique now reads "Dhelmise hits for at most 200 with Brave Bangle against a Pokemon ex (170 without), before Weakness". No "near" or "around" figures remain. An attack whose damage scales with the board says its number is the app's assumption.
+3. **No more false "not legal".** A card is called not legal only when its own printing carries an old mark and the reprint check found no legal reprint. A missing mark, a mark read from another printing, or a reprint check that has not run counts as legal, with a note in the safe list. The cause in your lists: Mega promos (MEP, like Dhelmise MEP 84) had no card database code, so they were read by name from an old Dhelmise with no mark. MEP, SVP, Black Bolt and White Flare now map to TCGdex (ids mep, svp, sv10.5b, sv10.5w are inferred; the weekly refresh replaces them with TCGdex's own if they differ).
+
+## Tests
+
+- New v35 checks: 26 of 26 pass at 390 and 320 px, including your Dhelmise example (200 with Brave Bangle, 170 without, 230 with Bangle plus Kieran, Bangle ignored on an ex).
+- Older suites pass, except checks that pin the old version string, and v29 checks that expected unconfirmed marks to count as not legal (changed on purpose).
+- Screen walk: no page errors. Offline start: works.
+
+---
+
 # PrizeTrainer v34: audit of v33, full repo setup
 
 ## How to upload

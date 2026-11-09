@@ -2023,6 +2023,12 @@
   .rules34-s { font-size:var(--fs-xs); color:var(--text-3); margin-top:0.35rem; line-height:1.5; }
   /* v34: pinch zoom is on, so text fields are at least 16px on phones; iPhones zoom the page when a smaller field is tapped */
   @media (max-width:820px) { input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select, textarea.backup-textarea { font-size:max(16px, 1em); } }
+  .rot35 { position:absolute; top:6px; left:6px; display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:999px; background:rgba(8,10,16,0.82); color:var(--electric);
+    box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+  .rot35 .ic { width:15px; height:15px; }
+  .rot35-key { display:flex; align-items:center; gap:0.5rem; font-size:var(--fs-sm); color:var(--text-2); margin:0 0 0.75rem; line-height:1.4; }
+  .rot35.rot35-in { position:static; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -3902,7 +3908,8 @@ function toGradeDeck(deck) {
     // and an empty array is truthy.
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
-          early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null }))
+          early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
+          conf: a.conf || 'high' }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -3912,7 +3919,7 @@ function toGradeDeck(deck) {
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
       attacks: atks, provides: c.provides||[], requires: c.requires||[],
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
-      byName: !!c.byName
+      byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
     }};
   });
 }
@@ -3999,19 +4006,53 @@ function gAtkReach(a, deck) {
   return { now, top, cond: top > now ? a.cond : null, have };
 }
 
+// v35: damage boosters, with the numbers and limits printed on each card.
+// A booster the app does not know adds nothing, so no number is invented.
+// vsEx: the bonus is only against the opponent's Active Pokemon ex.
+// noEx: it cannot help an attacker that is itself a Pokemon ex.
+const G35_BOOST = {
+  'brave bangle':          { n:30, cat:'tool', vsEx:true, noEx:true },
+  'maximum belt':          { n:50, cat:'tool', vsEx:true },
+  "black belt's training": { n:40, cat:'supporter', vsEx:true },
+  'kieran':                { n:30, cat:'supporter', vsEx:true },
+  'defiance band':         { n:30, cat:'tool', behind:true },
+  'vitality band':         { n:10, cat:'tool' },
+};
+function g35Key(n) { return String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2018\u2019]/g, "'").replace(/\s+/g, ' ').trim(); }
+/** The most one attacker can add: one Tool on it plus one Supporter that turn. */
+function g35Boost(deck, isEx) {
+  const best = {};
+  deck.forEach(e => { const b = G35_BOOST[g35Key(e.name)];
+    if (!b || (b.noEx && isEx)) return;
+    if (!best[b.cat] || b.n > best[b.cat].n) best[b.cat] = { ...b, name: gCap(e.name).replace(/'S\b/g, "'s") }; });
+  const list = Object.values(best);
+  return { n: list.reduce((a, b) => a + b.n, 0), names: list.map(b => b.name),
+    vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind) };
+}
+/** One grounded sentence head: the printed number, and what each booster adds. */
+function g35Hit(r) {
+  const nm = gCap(r.name);
+  let t = r.boost
+    ? `${nm} hits for at most ${r.eff} with ${r.bNames.join(' and ')}${r.vsEx ? ' against a Pokemon ex' : ''}${r.behind ? ' while you are behind on prizes' : ''} (${r.top} without), before Weakness`
+    : `${nm} hits for at most ${r.top} before Weakness`;
+  if (r.conf === 'low') t += `. Its damage scales with the board, so ${r.top} is the app's assumption, not a printed number`;
+  return t;
+}
+
 function gViability(deck, coh) {
   const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
   const pay=a=>(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]||coh.energyTypes.any);
   // Best payable hit per attacker: its ceiling, and what it does early.
   const reach=[];
   attackers.forEach(e => { let r0=null;
-    e.card.attacks.forEach(a => { if (!pay(a)) return; const r=gAtkReach(a, deck);
+    e.card.attacks.forEach(a => { if (!pay(a)) return; const r=gAtkReach(a, deck); r.conf=a.conf||'high';
       if (!r0 || r.top>r0.top || (r.top===r0.top && r.now>r0.now)) r0=r; });
-    if (r0 && r0.top>0) reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0 }); });
-  let bestR=null; reach.forEach(r => { if (!bestR || r.top>bestR.top) bestR=r; });
+    if (r0 && r0.top>0) { const b=g35Boost(deck, e.card.isEx);
+      reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, eff:r0.top+b.n }); } });
+  let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
-  const boost = coh.provided['damage_boost']>0 ? 50 : 0;
+  const boost = bestR ? bestR.boost : 0;
   const [lo, hi] = FMT.threatHP;
   let eff=best+boost, closeScore, strat;
   const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
@@ -4022,17 +4063,17 @@ function gViability(deck, coh) {
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=1;
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${gCap(bestName)}${boost?' with its damage booster':''} reaches ${eff}, enough to one-shot the format's ${lo} to ${hi} HP threats.`}); }
+    d:`${g35Hit(bestR)}, enough to one-shot the format's ${lo} to ${hi} HP threats.`}); }
   else if (eff*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
     closeScore=0.6+0.3*(eff-hi/2)/(FMT.ohkoTarget-hi/2);
-    const one=[...new Set(reach.filter(r=>r.p===1 && (r.top+boost)*2>=hi).map(r=>gCap(r.name)))];
+    const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${gCap(bestName)} tops out near ${eff}, so ${lo} to ${hi} HP threats take two hits.${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+    d:`${g35Hit(bestR)}, so ${lo} to ${hi} HP threats take two hits.${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
   else { strat='weak'; closeScore=0.15+0.45*eff/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`Your best line caps around ${eff}, so even ${lo} HP threats take three or more hits. You cannot trade up, which usually loses the prize race.`}); }
+    d:`${g35Hit(bestR)}, so even ${lo} HP threats take three or more hits. You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.cond) findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
     d:`${gCap(bestName)} hits for ${bestR.now} early and ${bestR.top} once ${condTxt(bestR)}. Your list has ${bestR.have} of those cards, so the full hit is a mid game plan, not a turn 2 one.`});
   // Abilities that stop attack effects or damage make the deck hard to disrupt.
@@ -8812,7 +8853,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v34';
+const PT_VERSION = 'v35';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -10372,7 +10413,12 @@ function r29Rows(deck) {
     r.reprint = rb && rb > (r.mark || '') ? rb : null;
     r.checked = !!rep;
     const best = r.reprint || r.mark;
-    r.st = r29Safe(best) ? 'safe' : r29Rotates(best) ? 'risk' : best ? 'out' : 'nomark';
+    // v35: a missing mark, a mark read from another printing, or a reprint check
+    // that has not run yet is not proof, so those cards count as legal.
+    if (r29Safe(best)) r.st = 'safe';
+    else if (r29Rotates(best)) r.st = 'risk';
+    else if (best && r.checked && !r.other) r.st = 'out';
+    else { r.st = 'safe'; r.assumed = true; }
     rows.push(r);
   });
   return rows;
@@ -10387,7 +10433,7 @@ function r29Counts(rows) {
 // ── Reprint check: a rotating card stays if a printing with a later mark exists ──
 const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark') && !r.checked);
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || (r.assumed && r.mark && !r.other)) && !r.checked);
 }
 async function r29CheckReprints(deck) {
   if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
@@ -10491,7 +10537,8 @@ function r29Summary(deck) {
     <p>Every card the database could read has a mark that stays legal after the ${marks} rotation.</p></div>`;
   const safeRows = rows.filter(r => r.st === 'safe');
   if (safeRows.length) {
-    safeRows.forEach(r => { r.sub = r.reprint ? `Kept legal by a reprint with the ${r.reprint} mark` : ''; });
+    safeRows.forEach(r => { r.sub = r.reprint ? `Kept legal by a reprint with the ${r.reprint} mark`
+      : r.assumed ? (r.other ? 'Mark read from another printing, so counted as legal' : 'Mark not confirmed in the card database, so counted as legal') : ''; });
     h += `<details class="g29-more"><summary>${safeRows.length} safe card name${safeRows.length > 1 ? 's' : ''}</summary><div class="r29-list">${safeRows.map(row).join('')}</div></details>`;
   }
   if (!busy && pending && _r29Tried.has(deck.id)) h += `<button class="btn btn-sm r29-btn" onclick="r29Retry('${deck.id}')">${ic23('search')}Check reprints again</button>`;
@@ -11762,6 +11809,75 @@ renderGrade = function () {
         <div class="rules34-s">The grade below scores the list as entered. Fix these in <b>Edit deck</b> before an event.</div>`;
       body.insertBefore(box, body.firstChild);
     }
+  } catch (_) {}
+  return r;
+};
+</script>
+<script>
+// ═══════════ v35: rotation marks on the card grid, set codes ═══════════
+// Cards expected to rotate get a small caution mark in the deck's card grid,
+// with a one line key above the grid. Mega promos (MEP), Scarlet and Violet
+// promos (SVP), Black Bolt (BLK) and White Flare (WHT) now map to TCGdex, so
+// those printings are read as themselves and not by name from an older card.
+(function () {
+  const add = { MEP: 'mep', SVP: 'svp', BLK: 'sv10.5b', WHT: 'sv10.5w' };
+  try { Object.keys(add).forEach(k => { if (!TD30_SETS[k]) TD30_SETS[k] = add[k]; }); } catch (_) {}
+})();
+
+function rot35Key(n) { return r29Key(String(n || '').replace(/\{[a-zA-Z]\}/g, '')); }
+
+function rot35Mark(deck) {
+  const body = document.getElementById('review-body');
+  if (!body || !deck) return;
+  const old = document.getElementById('rot35-key');
+  if (old) old.remove();
+  body.querySelectorAll('.rot35').forEach(x => x.remove());
+  if (deck.format === 'expanded' || !(deck.cards || []).some(c => c.supertype)) return;
+  const rows = r29Rows(deck);
+  const risk = new Set(rows.filter(r => r.st === 'risk').map(r => r.key));
+  if (!risk.size) return;
+  // The grid shows the API name where there is one, so map both names.
+  const shown = new Map();
+  (deck.cards || []).forEach(c => {
+    const k = r29Key(c.name);
+    if (!risk.has(k)) return;
+    shown.set(rot35Key(c.apiName || c.name), k); shown.set(rot35Key(c.name), k);
+  });
+  const N = ROT29.next, when = N.when;
+  const label = `${N.announced ? 'Rotates' : 'Expected to rotate'} in ${when}`;
+  let n = 0;
+  body.querySelectorAll('.review-card').forEach(el => {
+    const nm = el.querySelector('.review-card-name'), img = el.querySelector('.review-card-img');
+    if (!nm || !img || !shown.has(rot35Key(nm.textContent))) return;
+    const q = el.querySelector('.review-card-qty');
+    n += q ? (parseInt(q.textContent.replace(/\D/g, ''), 10) || 0) : 0;
+    const b = document.createElement('span');
+    b.className = 'rot35'; b.setAttribute('role', 'img'); b.setAttribute('aria-label', label); b.title = label;
+    b.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>';
+    img.appendChild(b);
+  });
+  if (!n) return;
+  const key = document.createElement('div');
+  key.id = 'rot35-key'; key.className = 'rot35-key';
+  key.innerHTML = `<span class="rot35 rot35-in" aria-hidden="true"><svg class="ic"><use href="#i-alert"/></svg></span>
+    <span>${n} card${n > 1 ? 's' : ''} ${N.announced ? 'rotate' : 'expected to rotate'} in ${esc(when)}${N.announced ? '' : ' (not announced yet)'}.</span>`;
+  body.insertBefore(key, body.firstChild);
+}
+
+const _v34RenderReview = renderReview;
+renderReview = function (deck) {
+  const r = _v34RenderReview.apply(this, arguments);
+  try { rot35Mark(deck); } catch (_) {}
+  return r;
+};
+
+// After a reprint check, a card may no longer rotate, so the marks are redrawn.
+const _v34Reprints = r29CheckReprints;
+r29CheckReprints = async function (deck) {
+  const r = await _v34Reprints.apply(this, arguments);
+  try {
+    const body = document.getElementById('review-body');
+    if (deck && state.activeDeckId === deck.id && body && body.style.display !== 'none') rot35Mark(deck);
   } catch (_) {}
   return r;
 };
