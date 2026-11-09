@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://optumesto.github.io/PrizeTrainer/sitemap.xml
+Sitemap: https://rdydeck.com/sitemap.xml

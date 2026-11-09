@@ -1,3 +1,18 @@
+# v41: RdyDeck moves to rdydeck.com (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v41), terms.html, privacy.html, robots.txt, sitemap.xml, README.md, CHANGES.md.
+Not changed: everything else.
+
+## New home
+- The canonical address, share links, social preview image and Google's structured data now point at https://rdydeck.com/. So do the Terms and Privacy canonicals, robots.txt and the sitemap.
+- Shared deck links made from now on open at rdydeck.com.
+
+## Moving saved decks
+- On the old address (optumesto.github.io/PrizeTrainer), a player with no saved decks goes straight to rdydeck.com, keeping any shared deck or daily link.
+- A player with saved decks sees a banner: "RdyDeck has moved to rdydeck.com." Move my decks opens rdydeck.com with the decks packed into the link, and the usual Add to my decks or Replace choice appears there. The old address keeps its copy, so nothing is lost.
+- The decks ride in the part of the link after #, which browsers never send to any server, and they are cleared from the address bar as soon as they are read.
+- If a player has too many decks for one link, the app opens Backup and asks them to save a file, then open it at rdydeck.com.
+
 # v40: fixes from Muse's audit (9 Nov 2026)
 
 v39 was never uploaded, so v40 carries its fixes too (fonts, icons, the workflow and the install button).

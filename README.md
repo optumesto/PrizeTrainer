@@ -1,9 +1,9 @@
 # RdyDeck
 
 Grade your Pokémon TCG deck, then drill it. Free, offline, no account.
-Live at https://optumesto.github.io/PrizeTrainer/
+Live at https://rdydeck.com/
 
-The app was called Prize Trainer before v37. The repo name, the web address, the saved deck storage and the offline cache names keep the old name on purpose: changing any of them would wipe saved decks or break installed copies.
+The app was called Prize Trainer before v37. The repo name, the saved deck storage and the offline cache names keep the old name on purpose: changing any of them would wipe saved decks or break installed copies. Since v41 the app lives at rdydeck.com (a Cloudflare Worker serves this repo there). The old address, https://optumesto.github.io/PrizeTrainer/, still works: players with saved decks see a banner that moves them over, and everyone else goes straight to rdydeck.com.
 
 Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
 
@@ -75,8 +75,8 @@ After that it runs every Monday at 09:17 UTC (4:17 AM New York time in winter). 
 
 Wait 1 to 3 minutes after the commit, then:
 
-- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v37`.
-- Open the app, then **Help**. It should say **RdyDeck v37**.
+- Open https://rdydeck.com/sw.js and look for the newest `prize-trainer-v` number.
+- Open the app, then **Help**. It should show the newest version number.
 - On a phone where the app is installed, close it fully and open it twice. The first open fetches the new version; the second shows it.
 
 ## Rotation
@@ -86,7 +86,7 @@ When Pokémon announces the 2027 rotation (expected around January, H mark), edi
 ## Ads (later, only after AdSense approves the site)
 
 - Fill in `PT_ADS` near the top of the v32 script block in `index.html` (search for `PT_ADS`). Nothing shows and no ad code loads until then.
-- AdSense gives you an `ads.txt` line. It must sit at the root of the domain, so for `optumesto.github.io` it goes in a separate repo named `optumesto.github.io`, not in this one. A custom domain makes this simpler.
+- AdSense gives you an `ads.txt` line. It must sit at the root of the domain. rdydeck.com serves this repo from its root, so `ads.txt` goes in this repo's top folder.
 
 ## Credits
 

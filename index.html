@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
 <meta name="description" content="Free Pokémon TCG deck grader and prize card trainer. Grade your deck, check its opening odds and Standard rotation, then practice naming your prizes. Works offline, no account.">
-<link rel="canonical" href="https://optumesto.github.io/PrizeTrainer/">
+<link rel="canonical" href="https://rdydeck.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RdyDeck">
 <meta property="og:title" content="RdyDeck: Can Your Deck Win?">
 <meta property="og:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
-<meta property="og:url" content="https://optumesto.github.io/PrizeTrainer/">
-<meta property="og:image" content="https://optumesto.github.io/PrizeTrainer/og-image.png">
+<meta property="og:url" content="https://rdydeck.com/">
+<meta property="og:image" content="https://rdydeck.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RdyDeck: Can Your Deck Win?">
 <meta name="twitter:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
-<meta name="twitter:image" content="https://optumesto.github.io/PrizeTrainer/og-image.png">
+<meta name="twitter:image" content="https://rdydeck.com/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://optumesto.github.io/PrizeTrainer/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://optumesto.github.io/PrizeTrainer/","image":"https://optumesto.github.io/PrizeTrainer/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://optumesto.github.io/PrizeTrainer/#org"}},{"@type":"Organization","@id":"https://optumesto.github.io/PrizeTrainer/#org","name":"Optume Ventures LLC","email":"mmmilliard@optumeventures.com"}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","email":"mmmilliard@optumeventures.com"}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -2624,6 +2624,11 @@
   .about40-faq summary::after { content:'+'; margin-left:auto; padding-left:0.8rem; color:var(--text-3); }
   .about40-faq details[open] summary::after { content:'\2212'; }
   .about40-faq details p { margin:0 0 0.7rem; }
+/* Banner on the old address only */
+.mv41-banner { margin: 12px 16px 0; padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--accent-line); }
+.mv41-t { margin: 0 0 4px; font-weight: 700; }
+.mv41-p { margin: 0 0 10px; }
+.mv41-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 </style>
 </head>
 <body>
@@ -5893,7 +5898,7 @@ function renderHand() {
 // A deck rides in the link's hash (#deck=...), so it never reaches a server.
 // Opening the link fills the normal Import sheet; nothing saves until the
 // player taps Import, and the text goes through the same parser as a paste.
-const SHARE_HOME = 'https://optumesto.github.io/PrizeTrainer/';
+const SHARE_HOME = 'https://rdydeck.com/';
 const SHARE_MAX_TEXT = 6000;
 
 function shareBaseUrl() {
@@ -7545,7 +7550,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadThemePref();
   initImportListener();
   initGuessInput();
-  const _hashes = () => { handleShareHash(); handleDailyHash(); };
+  const _hashes = () => { mv41Init(); handleShareHash(); handleDailyHash(); };
   loadState().then(_hashes, _hashes);
 });
 window.addEventListener('hashchange', handleShareHash);
@@ -9656,7 +9661,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v40';
+const PT_VERSION = 'v41';
 const TOUR_KEY = 'pt_tour_v24';
 const FEEDBACK_REPO = 'https://github.com/optumesto/PrizeTrainer';
 // Captured before the share and daily handlers clear the address.
@@ -12995,6 +13000,128 @@ openBackupModal = function () {
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Done</button></div>`);
 };
+
+// ═══════════ Moving to rdydeck.com: carry saved decks over ═══════════
+// Saved decks live in the browser for one web address only, so decks saved at
+// optumesto.github.io/PrizeTrainer/ do not show at rdydeck.com by themselves.
+// On the old address: a player with nothing saved goes straight to
+// rdydeck.com. A player with saved decks sees a banner; "Move my decks" opens
+// rdydeck.com with the decks packed into the link's #part (which never leaves
+// the phone), and the new address shows the usual "Add to my decks" choice.
+// The old address keeps its copy, so nothing is lost if a move fails.
+// Needs from v37: bk37Text, bk37Read, openBackupModal, BK37_MAX, state.
+// Call mv41Init() once, right after loadState() has finished.
+const MV41_HOME = 'https://rdydeck.com/';
+const MV41_OLD_HOST = 'optumesto.github.io';
+const MV41_MAX_LINK = 400000;   // longest #move link we send; bigger moves use a file
+
+function mv41B64(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function mv41Bytes(b64) {
+  const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/'));
+  const out = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+  return out;
+}
+async function mv41Pack(text) {
+  const raw = new TextEncoder().encode(text);
+  if (typeof CompressionStream === 'undefined') return 'j.' + mv41B64(raw);
+  const z = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());
+  return 'z.' + mv41B64(z);
+}
+async function mv41Unpack(p) {
+  if (typeof p !== 'string' || p.length > MV41_MAX_LINK + 10) return '';
+  const kind = p.slice(0, 2), bytes = mv41Bytes(p.slice(2));
+  if (kind === 'j.') return new TextDecoder().decode(bytes);
+  if (kind !== 'z.' || typeof DecompressionStream === 'undefined') return '';
+  // Read no more than a backup can hold, so a crafted link cannot balloon.
+  const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+  const parts = []; let n = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    n += value.length;
+    if (n > BK37_MAX) { try { reader.cancel(); } catch (_) {} return 'x'.repeat(BK37_MAX + 1); }
+    parts.push(value);
+  }
+  const all = new Uint8Array(n); let o = 0;
+  parts.forEach(v => { all.set(v, o); o += v.length; });
+  return new TextDecoder().decode(all);
+}
+
+function mv41HasData() {
+  return !!(state && ((state.decks && state.decks.length) || (state.tlog && state.tlog.length)));
+}
+function mv41NewUrl() {
+  const rest = location.pathname.replace(/^\/PrizeTrainer\/?/i, '');
+  // Shared deck and daily links (#deck=, #daily) keep working after the jump.
+  const h = /^#(deck=|daily\b)/.test(location.hash) ? location.hash : '';
+  return MV41_HOME + rest + location.search + h;
+}
+
+async function mv41Move(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Packing your decks…'; }
+  let p = '';
+  try { p = await mv41Pack(bk37Text()); } catch (_) { p = ''; }
+  if (!p || p.length > MV41_MAX_LINK) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Move my decks'; }
+    openBackupModal();
+    showToast('Too many decks for one link. Save a file here, then open it at rdydeck.com.');
+    return;
+  }
+  location.href = MV41_HOME + '#move=' + p;
+}
+
+function mv41Banner() {
+  if (document.getElementById('mv41-banner')) return;
+  const n = state.decks.length;
+  const el = document.createElement('div');
+  el.id = 'mv41-banner';
+  el.className = 'mv41-banner';
+  el.setAttribute('role', 'region');
+  el.setAttribute('aria-label', 'RdyDeck has moved');
+  el.innerHTML = `<p class="mv41-t">RdyDeck has moved to rdydeck.com.</p>
+    <p class="mv41-p">Your ${n} saved deck${n === 1 ? '' : 's'} stay here until you move them. One tap brings them along.</p>
+    <div class="mv41-btns">
+      <button class="btn btn-primary" onclick="mv41Move(this)">Move my decks</button>
+      <a class="btn" href="${MV41_HOME}">Go to rdydeck.com</a>
+    </div>`;
+  document.body.insertBefore(el, document.body.firstChild);
+}
+
+async function mv41Arrive() {
+  const h = location.hash;
+  if (!h.startsWith('#move=')) return;
+  // Take the decks out of the address bar first, so they are not kept in
+  // history, bookmarks or a shared link.
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  let text = '';
+  try { text = await mv41Unpack(h.slice(6)); } catch (_) { text = ''; }
+  openBackupModal();
+  if (!text) {
+    const err = document.getElementById('bk37-err');
+    if (err) err.textContent = "That move link didn't work. On the old address, save a file, then open it here.";
+    return;
+  }
+  bk37Read(text);
+  if (_bk37) showToast('Your decks are here. Tap Add to my decks to keep them.');
+}
+
+async function mv41Init() {
+  try {
+    if (location.hostname === MV41_OLD_HOST) {
+      if (!mv41HasData()) { location.replace(mv41NewUrl()); return; }
+      mv41Banner();
+    } else {
+      await mv41Arrive();
+    }
+  } catch (_) {}
+}
+window.addEventListener('hashchange', () => { if (location.hostname !== MV41_OLD_HOST) mv41Arrive(); });
+
 </script>
 <script>
 // ═══════════ v38: settings, a calmer home, the new header ═══════════
