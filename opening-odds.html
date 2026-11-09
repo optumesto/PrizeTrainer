@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pok&eacute;mon TCG Opening Hand and Mulligan Odds | RdyDeck</title>
+<meta name="description" content="Mulligan odds, prize odds and turn 1 setup odds for your exact Pok&eacute;mon TCG list. How the math works, with worked numbers for a 60 card deck.">
+<link rel="canonical" href="https://rdydeck.com/opening-odds.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="RdyDeck">
+<meta property="og:title" content="Pok&eacute;mon TCG Opening Hand and Mulligan Odds | RdyDeck">
+<meta property="og:description" content="Mulligan odds, prize odds and turn 1 setup odds for your exact Pok&eacute;mon TCG list. How the math works, with worked numbers for a 60 card deck.">
+<meta property="og:url" content="https://rdydeck.com/opening-odds.html">
+<meta property="og:image" content="https://rdydeck.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#131210">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
+  @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
+  :root { --bg:#131210; --text:#ede8de; --text-2:#bdb6a9; --text-3:#8f887c; --line:rgba(237,232,222,0.22); --rule:#ede8de; --mark:#e5483a; --on-mark:#ffffff;
+    --font:'RD Body', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; --display:'RD Display', 'Arial Narrow', sans-serif; }
+  html[data-theme="light"] { --bg:#f2eee5; --text:#1a1814; --text-2:#4a453d; --text-3:#6b645a; --line:rgba(26,24,20,0.24); --rule:#1a1814; --mark:#c42b1f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); font-size:1rem; line-height:1.6; }
+  main { max-width:760px; margin:0 auto; padding:1.5rem 1rem 4rem; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:1rem; border-bottom:2px solid var(--rule); padding-bottom:0.8rem; }
+  .brand { font-family:var(--display); font-weight:800; font-size:1.75rem; text-transform:uppercase; letter-spacing:0.01em; color:var(--text); text-decoration:none; line-height:1; }
+  .brand span { color:var(--mark); }
+  .top a.open { font-size:0.875rem; color:var(--text-2); }
+  .kicker { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--mark); margin:1.6rem 0 0; font-size:1rem; }
+  h1 { font-family:var(--display); font-weight:800; font-size:2.4rem; text-transform:uppercase; letter-spacing:0.01em; line-height:1.02; margin:0.2rem 0 0.8rem; }
+  h2 { font-family:var(--display); font-weight:700; font-size:1.3rem; text-transform:uppercase; letter-spacing:0.04em; margin:2.2rem 0 0.4rem; padding-top:0.6rem; border-top:1px solid var(--line); }
+  p, li { color:var(--text-2); }
+  .lead { font-size:1.125rem; color:var(--text); }
+  strong { color:var(--text); }
+  a { color:var(--text); text-decoration:underline; text-decoration-color:var(--mark); text-underline-offset:2px; }
+  ol, ul { padding-left:1.3rem; }
+  li { margin:0.25rem 0; }
+  .cta { display:inline-block; margin:0.6rem 0 0.4rem; padding:0.75rem 1.3rem; background:var(--mark); color:var(--on-mark); font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:1.125rem; text-decoration:none; border-radius:4px; }
+  .cta:hover { filter:brightness(1.08); }
+  .cta-row { margin:1.2rem 0 0.4rem; }
+  table { width:100%; border-collapse:collapse; font-size:0.9375rem; margin:0.6rem 0; }
+  th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem 0.5rem 0; border-bottom:1px solid var(--line); color:var(--text-2); }
+  th { font-family:var(--display); text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:var(--text); }
+  td.n { font-variant-numeric:tabular-nums; color:var(--text); }
+  .note { font-size:0.875rem; color:var(--text-3); }
+  .guides { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; margin:0.4rem 0 0; padding:0; list-style:none; }
+  .guides li { margin:0; }
+  footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--line); font-size:0.875rem; color:var(--text-3); }
+  footer p { color:var(--text-3); margin:0 0 0.6rem; }
+  footer nav { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; }
+  footer a { color:var(--text-2); }
+</style>
+<script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
+</head>
+<body>
+<main>
+  <div class="top"><a class="brand" href="./"><span>Rdy</span>Deck</a><a class="open" href="./">Open RdyDeck</a></div>
+
+  <p class="kicker">Can Your Deck Win?</p>
+  <h1>Pok&eacute;mon TCG opening hand odds</h1>
+  <p class="lead">How often will your deck mulligan, prize a key card or miss its first attacker? RdyDeck works it out for your exact list, free and offline.</p>
+  <div class="cta-row"><a class="cta" href="./">Check my odds</a></div>
+  <p class="note">Import your deck, open it, then open the Odds tab.</p>
+
+  <h2>Mulligan odds by Basic count</h2>
+  <p>You mulligan when your opening 7 cards hold no Basic Pok&eacute;mon. For a 60 card deck, the chance is the number of 7 card hands with no Basic divided by all possible 7 card hands. These are exact for a 60 card deck.</p>
+  <table>
+    <thead><tr><th>Basic Pok&eacute;mon in the deck</th><th>Chance to mulligan</th></tr></thead>
+    <tbody>
+      <tr><td class="n">8</td><td class="n">34.6%</td></tr>
+      <tr><td class="n">10</td><td class="n">25.9%</td></tr>
+      <tr><td class="n">12</td><td class="n">19.1%</td></tr>
+      <tr><td class="n">14</td><td class="n">13.9%</td></tr>
+      <tr><td class="n">16</td><td class="n">9.9%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Prize odds by copies</h2>
+  <p>Six cards go into your prizes. The more copies of a card you play, the more likely one lands there, and the less likely all of them do. Exact numbers for a 60 card deck:</p>
+  <table>
+    <thead><tr><th>Copies</th><th>At least one prized</th><th>Every copy prized</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="n">10.0%</td><td class="n">10.0%</td></tr>
+      <tr><td class="n">2</td><td class="n">19.2%</td><td class="n">0.85%</td></tr>
+      <tr><td class="n">3</td><td class="n">27.5%</td><td class="n">0.06%</td></tr>
+      <tr><td class="n">4</td><td class="n">35.1%</td><td class="n">Under 0.01%</td></tr>
+    </tbody>
+  </table>
+  <p>This is why a single copy of a key card is a risk: one game in ten, it starts in your prizes.</p>
+
+  <h2>Finding a card in your opening hand</h2>
+  <table>
+    <thead><tr><th>Copies</th><th>In your opening 7</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="n">11.7%</td></tr>
+      <tr><td class="n">2</td><td class="n">22.1%</td></tr>
+      <tr><td class="n">3</td><td class="n">31.5%</td></tr>
+      <tr><td class="n">4</td><td class="n">39.9%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What RdyDeck adds for your list</h2>
+  <ul>
+    <li><strong>Mulligan:</strong> the chance your opening 7 has no Basic.</li>
+    <li><strong>Draw card on turn 1:</strong> the chance of a draw card you can use in your first 8 cards.</li>
+    <li><strong>Attacker by your second turn:</strong> how often your main attacker is ready, from raw draws and with search.</li>
+    <li><strong>Prized pieces:</strong> how often every copy of something your attacker needs ends up in the prizes.</li>
+  </ul>
+  <p>Mulligan and prize odds are exact. The setup odds come from 20,000 simulated shuffles of your exact list. Search cards and draw Supporters are not played out, so setup odds are floors, not forecasts. The shuffle is seeded from the list, so the same list always shows the same numbers.</p>
+  <div class="cta-row"><a class="cta" href="./">Check my odds</a></div>
+
+  <h2>More guides</h2>
+  <ul class="guides">
+    <li><a href="deck-grader.html">Deck grader</a></li>
+    <li><a href="prize-trainer.html">Prize trainer</a></li>
+    <li><a href="rotation.html">Rotation checker</a></li>
+  </ul>
+
+  <footer>
+    <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
+    <nav><a href="./">RdyDeck</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a></nav>
+  </footer>
+</main>
+</body>
+</html>

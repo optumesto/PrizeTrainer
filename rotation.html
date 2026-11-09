@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pok&eacute;mon TCG Standard Rotation Checker | RdyDeck</title>
+<meta name="description" content="Check which cards in your Pok&eacute;mon TCG deck are Standard legal now and which may rotate next, by regulation mark. Free, no account.">
+<link rel="canonical" href="https://rdydeck.com/rotation.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="RdyDeck">
+<meta property="og:title" content="Pok&eacute;mon TCG Standard Rotation Checker | RdyDeck">
+<meta property="og:description" content="Check which cards in your Pok&eacute;mon TCG deck are Standard legal now and which may rotate next, by regulation mark. Free, no account.">
+<meta property="og:url" content="https://rdydeck.com/rotation.html">
+<meta property="og:image" content="https://rdydeck.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#131210">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
+  @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
+  :root { --bg:#131210; --text:#ede8de; --text-2:#bdb6a9; --text-3:#8f887c; --line:rgba(237,232,222,0.22); --rule:#ede8de; --mark:#e5483a; --on-mark:#ffffff;
+    --font:'RD Body', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; --display:'RD Display', 'Arial Narrow', sans-serif; }
+  html[data-theme="light"] { --bg:#f2eee5; --text:#1a1814; --text-2:#4a453d; --text-3:#6b645a; --line:rgba(26,24,20,0.24); --rule:#1a1814; --mark:#c42b1f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); font-size:1rem; line-height:1.6; }
+  main { max-width:760px; margin:0 auto; padding:1.5rem 1rem 4rem; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:1rem; border-bottom:2px solid var(--rule); padding-bottom:0.8rem; }
+  .brand { font-family:var(--display); font-weight:800; font-size:1.75rem; text-transform:uppercase; letter-spacing:0.01em; color:var(--text); text-decoration:none; line-height:1; }
+  .brand span { color:var(--mark); }
+  .top a.open { font-size:0.875rem; color:var(--text-2); }
+  .kicker { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--mark); margin:1.6rem 0 0; font-size:1rem; }
+  h1 { font-family:var(--display); font-weight:800; font-size:2.4rem; text-transform:uppercase; letter-spacing:0.01em; line-height:1.02; margin:0.2rem 0 0.8rem; }
+  h2 { font-family:var(--display); font-weight:700; font-size:1.3rem; text-transform:uppercase; letter-spacing:0.04em; margin:2.2rem 0 0.4rem; padding-top:0.6rem; border-top:1px solid var(--line); }
+  p, li { color:var(--text-2); }
+  .lead { font-size:1.125rem; color:var(--text); }
+  strong { color:var(--text); }
+  a { color:var(--text); text-decoration:underline; text-decoration-color:var(--mark); text-underline-offset:2px; }
+  ol, ul { padding-left:1.3rem; }
+  li { margin:0.25rem 0; }
+  .cta { display:inline-block; margin:0.6rem 0 0.4rem; padding:0.75rem 1.3rem; background:var(--mark); color:var(--on-mark); font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:1.125rem; text-decoration:none; border-radius:4px; }
+  .cta:hover { filter:brightness(1.08); }
+  .cta-row { margin:1.2rem 0 0.4rem; }
+  table { width:100%; border-collapse:collapse; font-size:0.9375rem; margin:0.6rem 0; }
+  th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem 0.5rem 0; border-bottom:1px solid var(--line); color:var(--text-2); }
+  th { font-family:var(--display); text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:var(--text); }
+  td.n { font-variant-numeric:tabular-nums; color:var(--text); }
+  .note { font-size:0.875rem; color:var(--text-3); }
+  .guides { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; margin:0.4rem 0 0; padding:0; list-style:none; }
+  .guides li { margin:0; }
+  footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--line); font-size:0.875rem; color:var(--text-3); }
+  footer p { color:var(--text-3); margin:0 0 0.6rem; }
+  footer nav { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; }
+  footer a { color:var(--text-2); }
+</style>
+<script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
+</head>
+<body>
+<main>
+  <div class="top"><a class="brand" href="./"><span>Rdy</span>Deck</a><a class="open" href="./">Open RdyDeck</a></div>
+
+  <p class="kicker">Can Your Deck Win?</p>
+  <h1>Pok&eacute;mon TCG rotation checker</h1>
+  <p class="lead">Paste your list and RdyDeck marks every card as legal now, may rotate next, or safe, using its regulation mark.</p>
+  <div class="cta-row"><a class="cta" href="./">Check my deck</a></div>
+
+  <h2>How Standard rotation works</h2>
+  <p>Most cards carry a regulation mark, a letter in the bottom corner. Once a year, the oldest legal mark leaves Standard. Recent years followed one pattern: D left in 2023, E in 2024, F in 2025 and G in 2026, each announced in January and gone from events in April.</p>
+
+  <h2>Where it stands</h2>
+  <table>
+    <thead><tr><th>Rotation</th><th>Marks</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>Last</td><td>G left Standard</td><td>March 26, 2026 in Pok&eacute;mon TCG Live, April 10, 2026 at events</td></tr>
+      <tr><td>Next</td><td>H expected to leave</td><td>Not announced yet. Expected around April 2027.</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Last rotation: <a href="https://community.pokemon.com/en-us/discussion/23170/letter-to-the-community-march-19-2026">Pok&eacute;mon TCG Live letter to the community, March 19, 2026</a>. Next rotation estimate: <a href="https://cardjinx.com/guides/pokemon-tcg-rotation-2027/">CardJinx, October 25, 2026</a>. RdyDeck updates this when the official announcement comes. Always check the <a href="https://play.pokemon.com/en-ca/resources/rules/">Play! Pok&eacute;mon Rules and Formats</a> page before an event.</p>
+
+  <h2>What the checker shows</h2>
+  <ul>
+    <li><strong>Not legal now:</strong> cards that cannot be played in Standard today. A deck with any of these grades 4.9 at most until they are swapped.</li>
+    <li><strong>May rotate next:</strong> cards with the mark expected to leave at the next rotation.</li>
+    <li><strong>Safe:</strong> cards whose mark is confirmed to stay. A card counts as safe only when its mark is confirmed.</li>
+  </ul>
+  <p>Plan your next list around the safe cards, and use the <a href="deck-grader.html">deck grader</a> to see how the deck holds up once the rotating cards are gone.</p>
+  <div class="cta-row"><a class="cta" href="./">Check my deck</a></div>
+
+  <h2>More guides</h2>
+  <ul class="guides">
+    <li><a href="deck-grader.html">Deck grader</a></li>
+    <li><a href="opening-odds.html">Opening odds</a></li>
+    <li><a href="prize-trainer.html">Prize trainer</a></li>
+  </ul>
+
+  <footer>
+    <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
+    <nav><a href="./">RdyDeck</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a></nav>
+  </footer>
+</main>
+</body>
+</html>

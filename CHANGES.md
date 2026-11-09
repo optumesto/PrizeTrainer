@@ -1,3 +1,22 @@
+# v44: guide pages for search (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v44), sitemap.xml, CHANGES.md.
+New files: deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html.
+Not changed: everything else. Builds on v43. The app looks and works the same.
+
+## Guide pages
+- Four plain pages Google can read and rank: the deck grader, opening odds, the prize trainer and the rotation checker. Each explains one tool and has a button that opens RdyDeck (the prize trainer page also opens the daily challenge).
+- Same fonts, colors and light or dark theme as Terms and Privacy. Every page says RdyDeck is an unofficial fan-made app.
+- Numbers on the pages come from the app's own Help text and code (grade bands, the 4.9 cap, 20,000 shuffles) or exact math for a 60 card deck (mulligan, prize and opening hand odds). Rotation dates match data.json and cite its sources.
+- The rotation page says the next rotation is not announced yet. Update it when the official announcement comes.
+
+## App
+- The About RdyDeck block on the home screen links to the four guides, above Terms and Privacy, so Google finds them from the main page.
+- Version reads v44.
+
+## Search
+- sitemap.xml lists the four new pages.
+
 # v43: ready for the Google Play app (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v43), CHANGES.md.

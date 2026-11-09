@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pok&eacute;mon TCG Deck Grader: Rate Your Deck Free | RdyDeck</title>
+<meta name="description" content="Paste a Pok&eacute;mon TCG Live or Limitless list and get a grade out of 10, with Synergy, Power and what to fix first. Free, no account, works offline.">
+<link rel="canonical" href="https://rdydeck.com/deck-grader.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="RdyDeck">
+<meta property="og:title" content="Pok&eacute;mon TCG Deck Grader: Rate Your Deck Free | RdyDeck">
+<meta property="og:description" content="Paste a Pok&eacute;mon TCG Live or Limitless list and get a grade out of 10, with Synergy, Power and what to fix first. Free, no account, works offline.">
+<meta property="og:url" content="https://rdydeck.com/deck-grader.html">
+<meta property="og:image" content="https://rdydeck.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#131210">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
+  @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
+  :root { --bg:#131210; --text:#ede8de; --text-2:#bdb6a9; --text-3:#8f887c; --line:rgba(237,232,222,0.22); --rule:#ede8de; --mark:#e5483a; --on-mark:#ffffff;
+    --font:'RD Body', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; --display:'RD Display', 'Arial Narrow', sans-serif; }
+  html[data-theme="light"] { --bg:#f2eee5; --text:#1a1814; --text-2:#4a453d; --text-3:#6b645a; --line:rgba(26,24,20,0.24); --rule:#1a1814; --mark:#c42b1f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); font-size:1rem; line-height:1.6; }
+  main { max-width:760px; margin:0 auto; padding:1.5rem 1rem 4rem; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:1rem; border-bottom:2px solid var(--rule); padding-bottom:0.8rem; }
+  .brand { font-family:var(--display); font-weight:800; font-size:1.75rem; text-transform:uppercase; letter-spacing:0.01em; color:var(--text); text-decoration:none; line-height:1; }
+  .brand span { color:var(--mark); }
+  .top a.open { font-size:0.875rem; color:var(--text-2); }
+  .kicker { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--mark); margin:1.6rem 0 0; font-size:1rem; }
+  h1 { font-family:var(--display); font-weight:800; font-size:2.4rem; text-transform:uppercase; letter-spacing:0.01em; line-height:1.02; margin:0.2rem 0 0.8rem; }
+  h2 { font-family:var(--display); font-weight:700; font-size:1.3rem; text-transform:uppercase; letter-spacing:0.04em; margin:2.2rem 0 0.4rem; padding-top:0.6rem; border-top:1px solid var(--line); }
+  p, li { color:var(--text-2); }
+  .lead { font-size:1.125rem; color:var(--text); }
+  strong { color:var(--text); }
+  a { color:var(--text); text-decoration:underline; text-decoration-color:var(--mark); text-underline-offset:2px; }
+  ol, ul { padding-left:1.3rem; }
+  li { margin:0.25rem 0; }
+  .cta { display:inline-block; margin:0.6rem 0 0.4rem; padding:0.75rem 1.3rem; background:var(--mark); color:var(--on-mark); font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:1.125rem; text-decoration:none; border-radius:4px; }
+  .cta:hover { filter:brightness(1.08); }
+  .cta-row { margin:1.2rem 0 0.4rem; }
+  table { width:100%; border-collapse:collapse; font-size:0.9375rem; margin:0.6rem 0; }
+  th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem 0.5rem 0; border-bottom:1px solid var(--line); color:var(--text-2); }
+  th { font-family:var(--display); text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:var(--text); }
+  td.n { font-variant-numeric:tabular-nums; color:var(--text); }
+  .note { font-size:0.875rem; color:var(--text-3); }
+  .guides { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; margin:0.4rem 0 0; padding:0; list-style:none; }
+  .guides li { margin:0; }
+  footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--line); font-size:0.875rem; color:var(--text-3); }
+  footer p { color:var(--text-3); margin:0 0 0.6rem; }
+  footer nav { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; }
+  footer a { color:var(--text-2); }
+</style>
+<script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
+</head>
+<body>
+<main>
+  <div class="top"><a class="brand" href="./"><span>Rdy</span>Deck</a><a class="open" href="./">Open RdyDeck</a></div>
+
+  <p class="kicker">Can Your Deck Win?</p>
+  <h1>Pok&eacute;mon TCG deck grader</h1>
+  <p class="lead">Paste your list and RdyDeck grades it out of 10, then tells you what to fix first. It is free, there is no account, and it works offline.</p>
+  <div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
+  <p class="note">On the home screen, tap Import a deck, paste your list and save, then tap the deck to see its grade.</p>
+
+  <h2>How the grade works</h2>
+  <p>The grade has two parts.</p>
+  <ul>
+    <li><strong>Synergy</strong> checks that your cards support each other: every attacker can pay for its attacks, evolutions have what they evolve from, and the deck can draw and search.</li>
+    <li><strong>Power</strong> checks that the plan can win: how hard it hits against the format's biggest Pok&eacute;mon, how many prizes it gives up and how fast it sets up.</li>
+  </ul>
+  <p>The grade is Synergy times Power, divided by 10, so the weaker part pulls the whole grade down. Each grade comes with a short list of what to fix first.</p>
+
+  <h2>What the numbers mean</h2>
+  <table>
+    <thead><tr><th>Grade</th><th>Reading</th></tr></thead>
+    <tbody>
+      <tr><td class="n">8.5 to 10</td><td>Tournament-ready</td></tr>
+      <tr><td class="n">7 to 8.4</td><td>Strong</td></tr>
+      <tr><td class="n">5 to 6.9</td><td>Fixable</td></tr>
+      <tr><td class="n">3 to 4.9</td><td>Needs work</td></tr>
+      <tr><td class="n">Under 3</td><td>Does not function</td></tr>
+    </tbody>
+  </table>
+  <p>A deck with cards that are not Standard legal right now grades 4.9 at most, until those cards are swapped out. The <a href="rotation.html">rotation checker</a> shows which ones.</p>
+
+  <h2>What it reads, and what it does not</h2>
+  <ul>
+    <li>It reads your list alone, on your own device. It does not compare your deck to the current metagame.</li>
+    <li>Card roles are read from card text. That is usually right and sometimes not, so read the findings and do not worry about the decimal place.</li>
+    <li>Lists from Pok&eacute;mon TCG Live exports and Limitless TCG both work: one card per line with the count, name, set code and number.</li>
+    <li>Built-in starter decks let you try it before you paste your own list.</li>
+  </ul>
+
+  <h2>After the grade</h2>
+  <p>The same deck can go straight into practice. Check its <a href="opening-odds.html">opening odds</a>, then drill it with the <a href="prize-trainer.html">prize trainer</a> until you can name your prizes without thinking.</p>
+  <div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
+
+  <h2>More guides</h2>
+  <ul class="guides">
+    <li><a href="opening-odds.html">Opening odds</a></li>
+    <li><a href="prize-trainer.html">Prize trainer</a></li>
+    <li><a href="rotation.html">Rotation checker</a></li>
+  </ul>
+
+  <footer>
+    <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
+    <nav><a href="./">RdyDeck</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a></nav>
+  </footer>
+</main>
+</body>
+</html>
