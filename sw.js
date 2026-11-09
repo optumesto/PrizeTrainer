@@ -24,15 +24,10 @@ const CORE_ASSETS = [
   './icons/icon.svg',
   './terms.html',
   './privacy.html',
-  './fonts/barlow-400.woff2',
-  './fonts/barlow-500.woff2',
-  './fonts/barlow-600.woff2',
-  './fonts/barlow-700.woff2',
-  './fonts/barlow-condensed-600.woff2',
-  './fonts/barlow-condensed-700.woff2',
-  './fonts/barlow-condensed-800.woff2',
-  './fonts/ibm-plex-mono-500.woff2',
-  './fonts/ibm-plex-mono-600.woff2',
+  './fonts/saira.woff2',
+  './fonts/saira-condensed-600.woff2',
+  './fonts/saira-condensed-700.woff2',
+  './fonts/saira-condensed-800.woff2',
 ];
 
 // On install: pre-cache the core shell, then skip waiting so the new SW
