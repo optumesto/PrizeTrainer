@@ -6016,10 +6016,14 @@ async function nativeShareDeckLink() {
   try { await navigator.share({ title: (deck ? deck.name + ' in ' : '') + 'RdyDeck', url: _deckShareUrl }); } catch (_) {}
 }
 
+// v45: a link from Share grade ends in &g=1, so the grade opens once the list is imported.
+let _v45GradeAfterImport = false;
 /** Open a #deck= link: decode it and fill the Import sheet for the player to check. */
 async function handleShareHash() {
   const m = /^#deck=([^&]*)/.exec(location.hash || '');
   if (!m) return;
+  const fromGrade = /&g=1(&|$)/.test(location.hash || '');
+  _v45GradeAfterImport = false;
   let raw = '';
   try { raw = decodeURIComponent(m[1]); } catch (_) {}
   const shared = await decodeDeckShare(raw);
@@ -6027,6 +6031,10 @@ async function handleShareHash() {
   if (!shared) { showToast('That deck link could not be read.'); return; }
   if (shared.unsupported) { showToast('This browser cannot open compressed deck links. Try an up to date browser.'); return; }
   showScreen('home');
+  if (fromGrade) {
+    const have = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
+    if (have) { openReview(have.id); showToast(`You already have this list as "${have.name}".`); return; }
+  }
   openImportModal();
   document.getElementById('import-name').value = shared.name || 'Shared deck';
   const ta = document.getElementById('import-list');
@@ -6037,7 +6045,9 @@ async function handleShareHash() {
   const same = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
   note.textContent = same
     ? `Shared deck from a link. You already have this list as "${same.name}". Import it again only if you want a second copy.`
+    : fromGrade ? 'Shared grade from a link. Tap Import to see the grade for this list.'
     : 'Shared deck from a link. Check the list, then tap Import and save.';
+  _v45GradeAfterImport = fromGrade;
   note.style.display = 'block';
 }
 
@@ -7188,6 +7198,13 @@ Energy: 8
 8 Basic {R} Energy SVE 2`;
 let _dailyDeck = null;
 function dailyKey(ts) { return pgDayKey(ts || Date.now()); }
+// v45: each day's challenge has a number, counted from 9 Nov 2026 as #1.
+const DAILY_EPOCH = [2026, 10, 9];
+function dailyNumber(key) {
+  const p = String(key || dailyKey()).split('-').map(Number);
+  const n = Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(DAILY_EPOCH[0], DAILY_EPOCH[1], DAILY_EPOCH[2])) / 864e5) + 1;
+  return isNaN(n) || n < 1 ? 1 : n;
+}
 function dailyDeck() {
   if (!_dailyDeck) _dailyDeck = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(DAILY_LIST), history: [], format: 'standard', daily: true };
   return _dailyDeck;
@@ -7212,15 +7229,13 @@ async function startDaily() {
   startGame(DAILY_ID);
 }
 function dailyShareText(r, key) {
-  const day = new Date(key + 'T12:00:00');
-  const dTxt = isNaN(day) ? key : day.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   const bar = Array.from({ length: 6 }, (_, i) => i < r.score ? '■' : '□').join('');
-  return `RdyDeck daily challenge, ${dTxt}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
+  return `RdyDeck Daily #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
 }
 async function shareDaily() {
   const key = dailyKey(), r = dailyStore().results[key];
   if (!r) { showToast('Play today\'s challenge first.'); return; }
-  const text = dailyShareText(r, key), url = shareBaseUrl() + '#daily';
+  const text = dailyShareText(r, key), url = shareBaseUrl() + '?ref=daily#daily';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Score copied. Paste it anywhere.'); }
   catch (_) { openSheet(`<div class="modal-title">Your daily score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
@@ -7231,7 +7246,7 @@ function renderDailyCard() {
   const key = dailyKey(), r = dailyStore().results[key], streak = dailyStreak();
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('calendar')}</div>
-    <div class="dc-tx"><div class="dc-t">Daily challenge</div>
+    <div class="dc-tx"><div class="dc-t">Daily challenge #${dailyNumber(key)}</div>
       <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> in ${formatTime(r.time)}` : 'Same deck and shuffle for everyone today'}${streak > 1 ? `. ${streak} day streak` : ''}</div></div>
     ${r ? `<button class="btn btn-sm" onclick="shareDaily()">${ic23('share')}Share</button>` : ''}
     <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
@@ -7247,7 +7262,7 @@ function dailyAfterReveal(score, elapsed) {
   const r = store.results[key];
   const b = document.createElement('div');
   b.id = 'daily-banner'; b.className = 'dc-banner';
-  b.innerHTML = `<div><b>${first ? 'Daily challenge scored' : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}${dailyStreak() > 1 ? ' ' + dailyStreak() + ' day streak.' : ''}</span></div>
+  b.innerHTML = `<div><b>${first ? `Daily challenge #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}${dailyStreak() > 1 ? ' ' + dailyStreak() + ' day streak.' : ''}</span></div>
     <button class="btn btn-sm btn-primary" onclick="shareDaily()">${ic23('share')}Share score</button>`;
   area.parentElement.insertBefore(b, area);
 }
@@ -7255,7 +7270,7 @@ function handleDailyHash() {
   if (!/^#daily\b/.test(location.hash || '')) return;
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   showScreen('home');
-  openSheet(`<div class="modal-title">Today's daily challenge</div>
+  openSheet(`<div class="modal-title">Daily challenge #${dailyNumber()}</div>
     <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(DAILY_NAME)} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
@@ -9681,7 +9696,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v44';
+const PT_VERSION = 'v45';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -11532,6 +11547,7 @@ renderGrade = function () {
       ${part('Power', powV, 'Can it win a game')}
     </div>
     <div class="g29-how">The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down.${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
+    <div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div>
   </div>`;
 
   if (R.unread > 0) h += `<div class="g-sec"><div class="g-item warn">
@@ -13586,6 +13602,211 @@ if (PT_PLAY) {
     } catch (e) { if (e && e.name === 'AbortError') return; }
     try { await navigator.clipboard.writeText(url); showToast('Link copied. Send it to your friend.'); } catch (_) { showToast(url); }
   };
+}
+</script>
+<style>
+  /* v45: sample grade, share grade */
+  .st-empty .st45-sample { margin-top:0.85rem; }
+  .g45-share { margin-top:0.9rem; display:flex; justify-content:center; }
+  .gs45-img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; }
+  .gs45-actions { flex-wrap:wrap; }
+</style>
+<script>
+// ═══════════ v45: sample grade, share grade, numbered daily ═══════════
+
+// Share links carry ?ref= so a visit from a shared grade or daily score
+// can be counted later. Nothing is stored; the tag comes off the address bar.
+(function () {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (!q.has('ref')) return;
+    q.delete('ref');
+    const rest = q.toString();
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+  } catch (_) {}
+})();
+
+// 1. Sample grade: one tap on the empty home screen loads the first starter
+// deck (a real Regionals list) and opens its grade.
+async function v45SampleGrade() {
+  const s = STARTER_DECKS[0];
+  if (!s) { openStarterPicker(); return; }
+  const mine = () => state.decks.find(d => d.starter === s.id && deckListText(d.cards || []) === deckListText(parseDeckList(s.list)));
+  const have = mine();
+  if (have) { openReview(have.id); return; }
+  await loadStarterDeck(s.id);
+  const d = mine();
+  if (d) openReview(d.id);
+}
+(function () {
+  const _home = renderHome;
+  renderHome = function () {
+    const r = _home.apply(this, arguments);
+    try {
+      if (state.decks.length === 0 && STARTER_DECKS.length) {
+        const box = document.querySelector('#deck-list .st-empty');
+        if (box && !box.querySelector('.st45-sample')) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'btn btn-primary st45-sample';
+          b.innerHTML = ic23('award') + 'Grade a sample deck';
+          b.onclick = v45SampleGrade;
+          box.appendChild(b);
+        }
+      }
+    } catch (_) {}
+    return r;
+  };
+})();
+// rdydeck.com/#sample opens the sample grade straight away.
+function v45SampleHash() {
+  if (!/^#sample\b/.test(location.hash || '')) return;
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  showScreen('home');
+  v45SampleGrade();
+}
+window.addEventListener('hashchange', v45SampleHash);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(v45SampleHash, 400));
+else setTimeout(v45SampleHash, 400);
+
+// A grade link opens the grade as soon as the shared list is imported.
+(function () {
+  const _imp = importDeck;
+  importDeck = async function () {
+    const want = _v45GradeAfterImport, before = state.decks.length;
+    _v45GradeAfterImport = false;
+    const r = await _imp.apply(this, arguments);
+    if (want && state.decks.length > before) openReview(state.decks[state.decks.length - 1].id);
+    return r;
+  };
+})();
+
+// 2. Share grade: a picture of the grade and a link that opens the list.
+// The link holds the list only. Whoever opens it gets the grade worked out
+// fresh on their own device, so a shared number can never be made up.
+const GS45 = { bg:'#131210', panel:'#1a1917', line:'rgba(237,232,222,0.14)', text:'#ede8de', text2:'#bdb6a9', mark:'#e5483a',
+  band:{ 'Tournament-ready':'#6cba8a', 'Strong':'#6f9fd0', 'Fixable':'#d9b24a', 'Needs work':'#e07a4a', 'Does not function':'#ef5a4b' } };
+let _gs45 = null;
+
+function gs45Fit(ctx, text, max) {
+  if (ctx.measureText(text).width <= max) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '…').width > max) t = t.slice(0, -1);
+  return t.trimEnd() + '…';
+}
+function gs45Band(v) { return v >= 8.5 ? 'Tournament-ready' : v >= 7 ? 'Strong' : v >= 5 ? 'Fixable' : v >= 3 ? 'Needs work' : 'Does not function'; }
+
+async function gs45Draw(deck, R) {
+  try {
+    if (document.fonts && document.fonts.load) await Promise.all([
+      document.fonts.load('800 100px "RD Display"'), document.fonts.load('700 40px "RD Display"'),
+      document.fonts.load('600 40px "RD Body"'), document.fonts.load('400 30px "RD Body"')]);
+  } catch (_) {}
+  const W = 1200, H = 630, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const D = '"RD Display", "Arial Narrow", sans-serif', B = '"RD Body", system-ui, sans-serif';
+  const synV = gR1(R.coh.score * 10), powV = gR1(R.via.score * 10);
+  const band = gs45Band(R.overall), col = GS45.band[band];
+
+  x.fillStyle = GS45.bg; x.fillRect(0, 0, W, H);
+  x.fillStyle = col; x.fillRect(0, 0, W, 8);
+
+  // Logo: the Ready Check mark, then RDY in red and DECK in white.
+  x.save(); x.translate(64, 52); x.scale(0.62, 0.62); x.translate(-19, -6);
+  x.lineJoin = 'round'; x.lineCap = 'round';
+  x.strokeStyle = GS45.text; x.lineWidth = 7;
+  x.beginPath(); if (x.roundRect) x.roundRect(23, 10, 54, 80, 5); else x.rect(23, 10, 54, 80); x.stroke();
+  x.strokeStyle = GS45.mark; x.lineWidth = 10;
+  x.beginPath(); x.moveTo(35, 52); x.lineTo(46, 63); x.lineTo(66, 38); x.stroke();
+  x.restore();
+  x.textBaseline = 'alphabetic';
+  x.font = `800 50px ${D}`;
+  x.fillStyle = GS45.mark; x.fillText('RDY', 116, 92);
+  const rw = x.measureText('RDY').width;
+  x.fillStyle = GS45.text; x.fillText('DECK', 116 + rw, 92);
+
+  // Deck name and the grade.
+  x.font = `600 40px ${B}`; x.fillStyle = GS45.text;
+  x.fillText(gs45Fit(x, deck.name || 'My deck', W - 128), 64, 186);
+  x.font = `800 210px ${D}`; x.fillStyle = col;
+  const sc = R.overall.toFixed(1);
+  x.fillText(sc, 58, 404);
+  const sw = x.measureText(sc).width;
+  x.font = `700 60px ${D}`; x.fillStyle = GS45.text2;
+  x.fillText('/10', 58 + sw + 10, 404);
+  x.font = `700 46px ${D}`; x.fillStyle = col;
+  x.fillText(band, 64, 470);
+
+  // Synergy and Power with their bars.
+  const part = (lbl, v, y) => {
+    const px = 700, pw = 436;
+    x.font = `600 30px ${B}`; x.fillStyle = GS45.text2; x.fillText(lbl, px, y);
+    x.font = `800 64px ${D}`; x.fillStyle = GS45.band[gs45Band(v)];
+    const t = v.toFixed(1); x.fillText(t, px + pw - x.measureText(t).width, y + 6);
+    x.fillStyle = GS45.line; x.fillRect(px, y + 26, pw, 10);
+    x.fillStyle = GS45.band[gs45Band(v)]; x.fillRect(px, y + 26, pw * Math.max(0, Math.min(1, v / 10)), 10);
+  };
+  part('Synergy', synV, 262);
+  part('Power', powV, 392);
+
+  // Footer: a note when the grade is held back, the tag line and the address.
+  x.fillStyle = GS45.line; x.fillRect(64, 522, W - 128, 2);
+  x.font = `400 28px ${B}`; x.fillStyle = GS45.text2;
+  const held = R.rawOverall != null ? `Held at ${R.overall.toFixed(1)}: some cards are not Standard legal now. ` : '';
+  x.fillText(gs45Fit(x, held + 'Can Your Deck Win?', 760), 64, 578);
+  x.font = `600 30px ${B}`; x.fillStyle = GS45.text;
+  const site = 'rdydeck.com';
+  x.fillText(site, W - 64 - x.measureText(site).width, 578);
+
+  return new Promise(res => { try { c.toBlob(b => res(b), 'image/png'); } catch (_) { res(null); } });
+}
+
+async function v45ShareGrade() {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  if (!(deck.cards || []).some(c => c.supertype)) { showToast('This deck has no card data yet, so there is no grade to share.'); return; }
+  const R = g29Grade(deck) || gradeDeck(deck);
+  if (R.unread > 0) { showToast('Some cards have not been read yet, so this grade is not final. Open the deck again while online, then share.'); return; }
+  const band = gs45Band(R.overall);
+  const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1';
+  const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}. Can Your Deck Win?`;
+  const blob = await gs45Draw(deck, R);
+  if (_gs45 && _gs45.img) { try { URL.revokeObjectURL(_gs45.img); } catch (_) {} }
+  const file = blob && typeof File !== 'undefined' ? new File([blob], 'rdydeck-grade.png', { type: 'image/png' }) : null;
+  _gs45 = { url, text, blob, file, img: blob ? URL.createObjectURL(blob) : '' };
+  const canShare = !!navigator.share;
+  openSheet(`<div class="modal-title">Share your grade</div>
+    ${_gs45.img ? `<img class="gs45-img" src="${_gs45.img}" alt="${esc(deck.name)}: ${R.overall.toFixed(1)} out of 10, ${band}">` : ''}
+    <div class="modal-hint" style="margin-bottom:0.9rem">The link opens this list in RdyDeck, so anyone can see its grade and odds for themselves.</div>
+    <div class="modal-actions gs45-actions">
+      ${blob ? `<button class="btn" onclick="gs45Save()">${ic23('save')}Save image</button>` : ''}
+      <button class="btn" onclick="gs45Copy()">${ic23('copy')}Copy link</button>
+      ${canShare ? `<button class="btn btn-primary" onclick="gs45Share()">${ic23('share')}Share</button>` : ''}
+    </div>`);
+}
+async function gs45Share() {
+  const g = _gs45; if (!g) return;
+  try {
+    if (g.file && navigator.canShare && navigator.canShare({ files: [g.file] })) {
+      await navigator.share({ files: [g.file], text: g.text + ' ' + g.url });
+      return;
+    }
+    await navigator.share({ text: g.text, url: g.url });
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    gs45Copy();
+  }
+}
+async function gs45Copy() {
+  const g = _gs45; if (!g) return;
+  try { await navigator.clipboard.writeText(g.text + ' ' + g.url); showToast('Grade and link copied. Paste it anywhere.'); }
+  catch (_) { showToast('Could not copy. Try Share instead.'); }
+}
+function gs45Save() {
+  const g = _gs45; if (!g || !g.img) return;
+  const a = document.createElement('a');
+  a.href = g.img; a.download = 'rdydeck-grade.png';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 </script>
 </body>

@@ -1,3 +1,27 @@
+# v45: sample grade, share grade, numbered daily (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v45), CHANGES.md.
+Not changed: everything else. Builds on main after v44 and the Play app's Digital Asset Links.
+
+## Sample grade
+- A new player with no decks sees Grade a sample deck under Start by grading a deck. One tap loads the first starter deck (the most played list in the weekly data) and opens its grade.
+- rdydeck.com/#sample does the same, for posts and guide pages.
+
+## Share grade
+- The grade has a Share grade button under Synergy and Power. It makes a 1200 by 630 picture of the grade (deck name, score, band, Synergy, Power, Can Your Deck Win?, rdydeck.com) and a link.
+- The link carries only the list. Opening it fills Import, and after Import the grade opens. Whoever opens it gets the grade worked out on their own device, so a shared number cannot be made up. If they already have the list, its grade opens straight away.
+- A held grade (cards not Standard legal now) says so on the picture. A deck with cards not read yet cannot be shared until they are read.
+- The picture has no card art.
+- Buttons: Share (phones), Copy link, Save image.
+
+## Daily challenge
+- Each day has a number, counted from 9 Nov 2026 as #1. The home card, the daily link sheet and the score banner show it.
+- Share text: "RdyDeck Daily #N: 4 of 6 prizes in 1:23 ■■■■□□. Same deck and shuffle for everyone today."
+
+## Share links
+- Daily and grade links end in ?ref=daily or ?ref=grade, so visits from shares can be counted once there is a way to count them. Nothing is stored, and the tag is taken off the address bar on arrival.
+- Version reads v45.
+
 # v44: guide pages for search (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v44), sitemap.xml, CHANGES.md.
