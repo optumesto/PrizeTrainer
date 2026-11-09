@@ -1,6 +1,6 @@
 // PrizeTrainer service worker
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v26';
+const CACHE_NAME = 'prize-trainer-v34';
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page
@@ -8,6 +8,12 @@ const CACHE_NAME = 'prize-trainer-v26';
 // fallback addresses never fill the cache.
 const ART_CACHE = 'prize-trainer-art';
 const ART_MAX = 600;
+const ART_HOSTS = ['digitaloceanspaces.com', 'pokemontcg.io', 'tcgdex.net'];
+
+// Ad networks: always straight from the network, never saved, so no ad or
+// ad script is ever shown or kept offline.
+const AD_HOSTS = ['googlesyndication.com', 'doubleclick.net', 'googleadservices.com', 'googletagservices.com', 'adtrafficquality.google', 'fundingchoicesmessages.google.com'];
+const isAdHost = h => AD_HOSTS.some(a => h === a || h.endsWith('.' + a));
 
 const CORE_ASSETS = [
   './',
@@ -30,7 +36,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => Promise.all(
         CORE_ASSETS.map(url =>
-          cache.add(url).catch(() => {
+          cache.add(new Request(url, { cache: 'reload' })).catch(() => {
             // Missing or misnamed asset: skip it, keep the rest of the install.
             console.warn('[sw] could not cache', url);
           })
@@ -53,12 +59,13 @@ self.addEventListener('activate', event => {
 });
 
 // On fetch: network-first for the HTML shell (so deploys show up quickly),
-// cache-first for everything else (images, fonts, icons).
+// network-first for data.json, cache-first for everything else (images, fonts, icons).
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
+  if (isAdHost(url.hostname)) return;
   // Card art from another site: saved copy first, then the network.
   if (req.destination === 'image' && url.origin !== self.location.origin) {
     event.respondWith(
@@ -70,16 +77,35 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // The weekly data file: newest copy first, the saved one with no signal.
+  if (url.origin === self.location.origin && url.pathname.endsWith('/data.json')) {
+    event.respondWith(
+      fetch(req, { cache: 'no-cache' })
+        .then(resp => {
+          if (resp && resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE_NAME).then(c => c.put(req.url, copy)).catch(() => {});
+          }
+          return resp;
+        })
+        .catch(() => caches.match(req.url).then(r => r || Response.error()))
+    );
+    return;
+  }
+
   const isHTML = req.mode === 'navigate' ||
                  (req.headers.get('accept') || '').includes('text/html');
 
   if (isHTML) {
     // Network-first for HTML: falls back to cache if offline
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then(resp => {
-          const copy = resp.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+          // Keep only a good page, so an error page never replaces the saved app.
+          if (resp && resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+          }
           return resp;
         })
         .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
@@ -114,6 +140,8 @@ async function cacheArt(url) {
   let u;
   try { u = new URL(url); } catch (_) { return; }
   if (!/^https?:$/.test(u.protocol) || u.origin === self.location.origin) return;
+  // Card art hosts only: never an ad, a tracker or any other site.
+  if (isAdHost(u.hostname) || !ART_HOSTS.some(a => u.hostname === a || u.hostname.endsWith('.' + a))) return;
   const cache = await caches.open(ART_CACHE);
   if (await cache.match(u.href)) return;
   let resp = null;

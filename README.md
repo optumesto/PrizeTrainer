@@ -1,88 +1,86 @@
-# Prize Trainer — PWA Deployment Guide
+# Prize Trainer
 
-## What's in this package
+Grade your Pokémon TCG deck, then practice it. Free, offline, no account.
+Live at https://optumesto.github.io/PrizeTrainer/
+
+Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
+
+## What the repo should look like
 
 ```
-prize-trainer-pwa/
-├── index.html        ← Your app (updated for PWA)
-├── manifest.json     ← Web app manifest (name, icons, theme)
-├── sw.js             ← Service worker (offline support + installability)
-├── icons/            ← App icons (72px to 512px + SVG)
-│   ├── icon.svg
-│   ├── icon-72x72.png
-│   ├── icon-96x96.png
-│   ├── icon-128x128.png
-│   ├── icon-144x144.png
-│   ├── icon-152x152.png
-│   ├── icon-192x192.png
-│   ├── icon-384x384.png
-│   └── icon-512x512.png
-└── README.md         ← This file
+PrizeTrainer/
+  .github/workflows/refresh-data.yml   weekly job that refreshes data.json
+  scripts/refresh-data.mjs             the script that job runs
+  icons/                               app icons (9 files)
+  .nojekyll                            tells GitHub Pages to serve files as they are
+  index.html                           the app
+  sw.js                                offline support (cache name shows the version)
+  data.json                            meta, starter decks, rotation, set codes
+  manifest.json                        name and icons for Install app
+  CHANGES.md                           what changed in this version
+  README.md                            this file
 ```
 
-## How to deploy (pick one)
+Nothing else. In particular no `.txt` copies of these files: GitHub Pages ignores them.
 
-### Option A: GitHub Pages (free, easiest)
+## Set it up (GitHub website, about 10 minutes)
 
-1. Create a GitHub account if you don't have one
-2. Create a new repository (e.g., `prize-trainer`)
-3. Upload all files from this folder to the repo
-4. Go to **Settings → Pages → Source** → select `main` branch
-5. Your app is live at `https://yourusername.github.io/prize-trainer/`
+Do this on a computer if you can. Phones often save `.html` and `.js` files as `.txt`, which is why v33 never went live.
 
-### Option B: Netlify (free, drag & drop)
+### 1. Delete the stray files
 
-1. Go to [netlify.com](https://www.netlify.com/) and sign up
-2. Drag and drop this entire folder onto the Netlify dashboard
-3. Done — you'll get a URL like `https://prize-trainer.netlify.app`
-4. You can set a custom domain in site settings
+In the repo, open each of these, tap the **...** menu at the top right of the file, choose **Delete file**, then **Commit changes**:
 
-### Option C: Vercel (free)
+- `index.txt`
+- `sw.txt`
+- `CHANGES.txt`
+- `refresh-data.txt`
+- `refresh-data.yml` (the one at the root; the new one goes in `.github/workflows/`)
 
-1. Go to [vercel.com](https://vercel.com/) and sign up
-2. Import your GitHub repo, or use `npx vercel` from the command line
-3. Deployed automatically
+### 2. Upload the new files
 
-### Option D: Any static hosting
+1. Unzip `prizetrainer-repo.zip`.
+2. In the repo, **Add file**, then **Upload files**.
+3. Drag in everything from the unzipped folder, folders included: `index.html`, `sw.js`, `data.json`, `manifest.json`, `CHANGES.md`, `README.md`, `.nojekyll`, and the `icons`, `scripts` and `.github` folders. Files with the same name are replaced.
+4. **Commit changes.**
 
-Upload these files to any web server or static host. The only requirement
-is that it's served over **HTTPS** (needed for service workers / PWA install).
+Folders and files whose names start with a dot are hidden on most computers. On a Mac press Cmd + Shift + . in Finder to show them; on Windows turn on View, Hidden items. If `.github` still will not upload, make it by hand: **Add file**, **Create new file**, type `.github/workflows/refresh-data.yml` as the name (the slashes make the folders), paste in that file's contents, and commit. Do the same for `scripts/refresh-data.mjs` if it is missing, and for `.nojekyll` (an empty file is fine).
 
-## How users install the app
+### 3. Check the names
 
-Once deployed, the app works on **every platform**:
+The repo's front page should match the layout above. Any file ending in `.txt` is wrong: open it, tap the pencil, fix the name in the box at the top, and commit.
 
-| Platform          | How to install                                                  |
-|-------------------|-----------------------------------------------------------------|
-| **Android**       | Chrome shows "Add to Home Screen" banner automatically,         |
-|                   | or tap ⋮ menu → "Install app"                                  |
-| **iOS / iPadOS**  | Safari → Share button (□↑) → "Add to Home Screen"              |
-| **Windows**       | Edge/Chrome → address bar install icon (⊕) → "Install"         |
-| **macOS**         | Chrome → ⋮ menu → "Install Prize Trainer"                      |
-| **Linux**         | Chrome/Edge → address bar install icon → "Install"              |
-| **ChromeOS**      | Chrome → ⋮ menu → "Install app"                                |
+### 4. Turn on the weekly job
 
-The app also shows a gold **"📲 INSTALL APP"** button on the home screen
-when the browser's install prompt is available (Android/desktop Chrome/Edge).
+1. **Settings**, then **Actions**, then **General**.
+2. Under Actions permissions choose **Allow all actions and reusable workflows**.
+3. Under Workflow permissions choose **Read and write permissions**, then **Save**.
+4. Open the **Actions** tab. If it asks, tap the button to enable workflows.
+5. Pick **Refresh data.json**, then **Run workflow**. It should finish with a green tick in about a minute. It commits a new `data.json` only when the meta, starters or set codes changed.
 
-## Offline support
+After that it runs every Monday at 09:17 UTC (4:17 AM New York time in winter). GitHub switches scheduled jobs off after 60 days with no activity in the repo. Since the job only commits when something changed, check the Actions tab now and then and tap **Enable workflow** if it shows as disabled.
 
-After the first visit, the service worker caches:
-- The app shell (HTML, manifest, icons)
-- Google Fonts
-- Pokémon card images (cached after first load)
+### 5. Check GitHub Pages
 
-Users can play with previously loaded decks even without internet.
+**Settings**, then **Pages**: Source should be **Deploy from a branch**, branch **main**, folder **/ (root)**. It is already set up this way if the site works today.
 
-## Updating the app
+### 6. Check the live version
 
-To push an update:
-1. Edit `index.html` with your changes
-2. In `sw.js`, change `CACHE_NAME` from `'prize-trainer-v1'` to `'prize-trainer-v2'` (etc.)
-3. Re-deploy — the service worker will automatically update on users' next visit
+Wait 1 to 3 minutes after the commit, then:
 
-## Custom domain (optional)
+- Open https://optumesto.github.io/PrizeTrainer/sw.js and look for `prize-trainer-v34`.
+- Open the app, then **Help**. It should say **Prize Trainer v34**.
+- On a phone where the app is installed, close it fully and open it twice. The first open fetches the new version; the second shows it.
 
-All three free hosts (GitHub Pages, Netlify, Vercel) support custom domains.
-Buy a domain from Namecheap, Cloudflare, Google Domains, etc., then follow
-your host's DNS setup instructions.
+## Rotation
+
+When Pokémon announces the 2027 rotation (expected around January, H mark), edit the `rotation` block in `data.json` on GitHub: marks, dates, source link and `"announced": true`. No new app version is needed. The weekly job never changes rotation.
+
+## Ads (later, only after AdSense approves the site)
+
+- Fill in `PT_ADS` near the top of the v32 script block in `index.html` (search for `PT_ADS`). Nothing shows and no ad code loads until then.
+- AdSense gives you an `ads.txt` line. It must sit at the root of the domain, so for `optumesto.github.io` it goes in a separate repo named `optumesto.github.io`, not in this one. A custom domain makes this simpler.
+
+## Credits
+
+Card data from TCGdex (MIT license) with pokemontcg.io as a backup. Decklists, meta and card images from Limitless TCG. Font: Inter (SIL Open Font License 1.1). Pokémon, card names, card text and card images are trademarks and copyright of their respective owners.

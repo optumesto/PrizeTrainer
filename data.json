@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "asOf": "2026-11-08",
+  "asOf": "2026-11-09",
   "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it.",
   "starters": [
     {
@@ -120,6 +120,7 @@
     "ASC": "me02.5",
     "POR": "me03",
     "CRI": "me04",
-    "PBL": "me05"
+    "PBL": "me05",
+    "DLR": "me06"
   }
 }
