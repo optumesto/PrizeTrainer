@@ -28,7 +28,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RdyDeck">
-<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
 <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
 <link rel="preload" href="fonts/barlow-500.woff2" as="font" type="font/woff2" crossorigin>
@@ -2508,6 +2508,11 @@
     .deck-thumb { width:54px; height:75px; }
     .deck-name { font-size:1.2rem; }
   }
+
+  /* Ready Check logo in the header */
+  .rd-mark { width:28px; height:40px; flex-shrink:0; display:block; color:var(--text); overflow:visible; }
+  .rd-mark .rd-check { stroke:var(--mark); }
+  @media (min-width:768px) { .rd-mark { width:36px; height:52px; } }
 </style>
 </head>
 <body>
@@ -2581,7 +2586,7 @@
   <header class="app-header">
     <div class="app-header-inner">
       <div class="brand">
-        <div class="pball" aria-hidden="true"></div>
+        <svg class="rd-mark" viewBox="19 6 62 88" aria-hidden="true" focusable="false"><rect x="23" y="10" width="54" height="80" rx="5" fill="none" stroke="currentColor" stroke-width="7"/><polyline class="rd-check" points="35,52 46,63 66,38" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <div>
           <h1 class="app-title"><span class="rdy">Rdy</span>Deck</h1>
           <div class="app-subtitle">Can Your Deck Win?</div>

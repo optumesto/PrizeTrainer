@@ -1,8 +1,8 @@
-# v38: more room, one type system, settings, SEO and legal drafts
+# v38: more room, one type system, settings, SEO, legal drafts and the Ready Check logo
 
-Changed files: index.html, sw.js (cache prize-trainer-v38), manifest.json, CHANGES.md.
+Changed files: index.html, sw.js (cache prize-trainer-v38), manifest.json, CHANGES.md, icons/ (every icon replaced, plus apple-touch-icon.png and two maskable icons).
 New files: fonts/ (9 font files), terms.html, privacy.html, robots.txt, sitemap.xml, og-image.png.
-Not changed: icons/, data.json, scripts/, .github/. The app icon stays as it is until a logo is picked.
+Not changed: data.json, scripts/, .github/.
 
 ## More room
 - Home deck rows show the name, grade, format, card and game count, and the rotation line. Play and a menu button sit on the right.
@@ -12,7 +12,10 @@ Not changed: icons/, data.json, scripts/, .github/. The app icon stays as it is 
 - Deck pages on a computer: tabs no longer stretch across the screen, Grade, Odds and Practice read in one column that lines up with the tabs, and the Prize game button sits at the right of the bottom bar.
 - Checked on every tab (Grade, Odds, Cards, Hand, Drills, Notes and a prize game) at 320, 390, 900 and 1280 px, in dark and light.
 
-## Header
+## Header and logo
+- New logo, Ready Check: a card with a red check. It is in the header (outline in the text color, check in RDY red, in dark and light), the browser tab icon, the home screen and install icons, the share image and the Google Play graphics.
+- Install icons: the normal icons give the mark more room; separate maskable icons keep it inside the safe circle for Android's round and squircle masks. iPhone uses icons/apple-touch-icon.png (180 px).
+- Google Play files are not part of the site: rdydeck-play-icon-512.png (512 px, 32 bit) and rdydeck-play-feature-graphic.png (1024 x 500) sit next to this zip in your files.
 - RDY is red and DECK is white on dark (dark ink on light).
 - The line under the name reads "Can Your Deck Win?".
 - The moon button is now a Settings gear.
