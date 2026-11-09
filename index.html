@@ -2630,6 +2630,24 @@
 .mv41-p { margin: 0 0 10px; }
 .mv41-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 </style>
+<script>
+// v43: Google Play mode. The Play app opens https://rdydeck.com/?src=play.
+// The mark is kept for this visit only (sessionStorage), because the Play app
+// shares Chrome's storage for rdydeck.com with the browser on the same phone.
+const PT_PLAY_PACKAGE = 'com.rdydeck.app';
+const PT_PLAY = (function () {
+  let on = false;
+  try {
+    if (new URLSearchParams(location.search).get('src') === 'play') on = true;
+    if (String(document.referrer || '').indexOf('android-app://' + PT_PLAY_PACKAGE) === 0) on = true;
+    if (on) sessionStorage.setItem('pt_channel', 'play');
+    else on = sessionStorage.getItem('pt_channel') === 'play';
+  } catch (_) {}
+  if (on) document.documentElement.classList.add('pt-play');
+  return on;
+})();
+</script>
+<style>.pt-play #pwa-install-btn { display:none !important; }</style>
 </head>
 <body>
 
@@ -9623,6 +9641,7 @@ window.addEventListener('appinstalled', () => {
 });
 
 function showInstallButton() {
+  if (PT_PLAY) return;  // already an installed app
   let btn = document.getElementById('pwa-install-btn');
   if (!btn) {
     btn = document.createElement('button');
@@ -9661,7 +9680,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v42';
+const PT_VERSION = 'v43';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -9898,7 +9917,7 @@ function openHelpSheet() {
       ${FEEDBACK_EMAIL ? row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card') : ''}
       ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard shortcuts', 'For playing on a computer')}
     </div>
-    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}</div>
+    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
 }
 
@@ -9938,7 +9957,7 @@ function feedbackUrl(kind, text, deck) {
     '',
     kind === 'Bug' ? 'What did you expect?\n\n' : '',
     '----',
-    `App version: ${PT_VERSION}`,
+    `App version: ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}`,
     `Screen: ${scr.replace('screen-', '')}`,
     `Device: ${device}, ${innerWidth} px wide`,
   ];
@@ -11857,7 +11876,7 @@ const _v29Help = openHelpSheet;
 openHelpSheet = function () {
   _v29Help.apply(this, arguments);
   const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^(RdyDeck|Prize Trainer) v/.test(h.textContent));
-  if (hint) hint.textContent = `RdyDeck ${PT_VERSION}. ${d30AsOfLine()}`;
+  if (hint) hint.textContent = `RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}. ${d30AsOfLine()}`;
 };
 
 // Opponent boxes suggest the current meta decks after your own.
@@ -12343,7 +12362,7 @@ function openCredits() {
       ${row('Fonts', `${a('https://fonts.google.com/specimen/Saira', 'Saira')} and Saira Condensed by Omnibus-Type (SIL Open Font License 1.1)`)}
     </ul>
     <details class="o-more cr31-mit"><summary>TCGdex license</summary><pre>${esc(PT31_MIT)}</pre></details>
-    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}</div>
+    <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet();openHelpSheet()">Back</button><button class="btn" onclick="closeSheet()">Close</button></div>`);
 }
 
@@ -12360,7 +12379,8 @@ const AGE32_KEY = 'pt_age_v32';
 const AGE32_LABEL = { u13: 'Under 13', teen: '13 to 17', adult: '18 or over', skip: 'No answer' };
 const AD32_GAP = 30000;  // at most one new ad per spot every 30 seconds
 
-function ads32Real() { return /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
+// The Play app has no ads at launch, so ads stay off there whatever is set above.
+function ads32Real() { return !PT_PLAY && /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
 function ads32On(where) { return ads32Real() && !!(where ? PT_ADS.slots[where] : (PT_ADS.slots.results || PT_ADS.slots.grade)); }
 function age32Any() { return ads32On(); }
 function age32Get() { const v = safeLocalGet(AGE32_KEY); return /^(u13|teen|adult|skip)$/.test(v || '') ? v : ''; }
@@ -13185,7 +13205,7 @@ function openSettings() {
     <div class="st38-sec st38-rows">
       ${row('closeSheet();clearAllData()', 'Clear all data', 'Deletes every deck and score saved in this browser', 'st38-danger')}
     </div>
-    <div class="st38-ver">RdyDeck ${PT_VERSION}</div>
+    <div class="st38-ver">RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
   st38Paint();
 }
@@ -13555,6 +13575,17 @@ function f40Saved(root) {
     try { navigator.clipboard.writeText(url).then(done, () => showToast(url)); } catch (_) { showToast(url); }
   };
 })();
+
+// v43: in the Play app there is no file to send, so Share the app shares the web address.
+if (PT_PLAY) {
+  shareApp = async function () {
+    const url = 'https://rdydeck.com/';
+    try {
+      if (navigator.share) { await navigator.share({ title: 'RdyDeck', text: 'Can Your Deck Win? Grade your deck and train your prizes.', url }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(url); showToast('Link copied. Send it to your friend.'); } catch (_) { showToast(url); }
+  };
+}
 </script>
 </body>
 </html>

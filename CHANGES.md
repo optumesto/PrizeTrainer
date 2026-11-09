@@ -1,3 +1,22 @@
+# v43: ready for the Google Play app (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v43), CHANGES.md.
+New file: offline.html. Held back: .well-known/assetlinks.json (it goes up once the signing key fingerprints exist).
+Not changed: everything else. Builds on v42. The web version looks and works the same as v42.
+
+## Play mode
+- The Play app opens https://rdydeck.com/?src=play. When RdyDeck sees that (or the Play app as the referrer), it switches to Play mode for that visit only.
+- In Play mode: ads stay off whatever AdSense settings are filled in, the Install app button never shows, Share the app shares the rdydeck.com link, and the version reads "v43 (Google Play)" in Help, Settings and feedback emails.
+- The mark lives in session storage, not local storage, because the Play app and Chrome share rdydeck.com's storage on the same phone. A normal Chrome visit never turns into Play mode.
+
+## Offline page
+- offline.html shows when a page can't load and nothing is saved yet (for example the very first open with no signal). Once RdyDeck has loaded once, the saved app opens instead, as before.
+- A start address with ?src=play now finds the saved app offline too.
+
+## Android app link
+- .well-known/assetlinks.json proves rdydeck.com and the Play app belong together, so the app opens full screen with no address bar.
+- Not uploaded yet. Its two fingerprints are placeholders until the upload key and Play App Signing key exist; it goes up only with the real ones. The package name com.rdydeck.app must match the Android app and can never change once published.
+
 # v42: feedback by email (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v42), privacy.html, terms.html, CHANGES.md.

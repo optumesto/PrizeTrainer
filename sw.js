@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v42';
+const CACHE_NAME = 'prize-trainer-v43';
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page
@@ -24,6 +24,7 @@ const CORE_ASSETS = [
   './icon.svg',
   './terms.html',
   './privacy.html',
+  './offline.html',
   './saira.woff2',
   './saira-condensed-600.woff2',
   './saira-condensed-700.woff2',
@@ -114,7 +115,9 @@ self.addEventListener('fetch', event => {
           }
           return resp;
         })
-        .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+        .catch(() => caches.match(req, { ignoreSearch: true })
+          .then(r => r || caches.match('./index.html'))
+          .then(r => r || caches.match('./offline.html')))
     );
     return;
   }
