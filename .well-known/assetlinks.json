@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.rdydeck.app",
+        "sha256_cert_fingerprints": ["DD:C1:74:8B:9D:24:8A:B3:EF:C2:6A:E5:1C:C7:91:46:DC:37:B6:26:95:A3:BF:FA:02:E0:87:F0:CB:AA:6F:DC"]
+      }
+    }]
