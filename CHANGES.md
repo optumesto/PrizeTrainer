@@ -1,3 +1,15 @@
+# v49: Prerelease section (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v49), data.json, CHANGES.md.
+Not changed: everything else. Builds on main after v47 and ads.txt (there is no v48 release).
+
+- Home shows a prerelease card from 4 weeks before a set's prerelease events until 3 weeks after release. It opens the set's sheet: event dates, what the Build and Battle Box holds, and the deck rules (exactly 40 cards, any number of copies, 4 prizes, extra Basic Energy at the store).
+- Build a practice 40 on the sheet: the set's cards with art, tap to add copies, a Basic Energy row, then Save deck.
+- Decks can be Prerelease, next to Standard and Expanded, on import and edit. Prize games for them use 4 prizes. Their Grade tab shows a prerelease check (40 cards, a Basic, evolution gaps) instead of the 0 to 10 grade. Odds and Hand practice are off for them for now.
+- The set comes from the new prerelease block in data.json. Its card list is read from TCGdex once TCGdex has the set; until then a hand-checked cards list in data.json can fill the gap (names and numbers from the printed English cards).
+- No new ad spots. The v47 ad code and ads.txt are unchanged.
+- Version reads v49.
+
 # v47: home and guide ad spots, ads privacy policy (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v47), privacy.html, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, README.md, CHANGES.md.

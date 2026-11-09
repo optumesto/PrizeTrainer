@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "asOf": "2026-11-09",
-  "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it.",
+  "note": "Prize Trainer data file. Refreshed weekly by .github/workflows/refresh-data.yml. Edit rotation by hand when Pokemon announces it. Edit prerelease by hand for each new set: dates, kit, and cards (names and numbers checked against the printed English cards) until TCGdex has the set.",
   "starters": [
     {
       "id": "mega-rayquaza-ex",
@@ -159,5 +159,20 @@
     "BLK": "sv10.5b",
     "WHT": "sv10.5w",
     "DRI": "sv10"
+  },
+  "prerelease": {
+    "set": "Delta Reign",
+    "code": "DLR",
+    "tcgdex": "me06",
+    "official": 103,
+    "total": 141,
+    "start": "2026-10-24",
+    "end": "2026-11-01",
+    "release": "2026-11-06",
+    "kit": [
+      "4 Delta Reign booster packs",
+      "A 40 card deck, ready to play",
+      "1 of 4 foil promo cards"
+    ]
   }
 }
