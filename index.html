@@ -2647,7 +2647,9 @@ const PT_PLAY = (function () {
   return on;
 })();
 </script>
-<style>.pt-play #pwa-install-btn { display:none !important; }</style>
+<style>.pt-play #pwa-install-btn { display:none !important; }
+  /* v46: the Android note is for the website only, never inside the Play app. */
+  .pt-play .an46 { display:none !important; }</style>
 </head>
 <body>
 
@@ -2768,6 +2770,7 @@ const PT_PLAY = (function () {
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
       </div>
+      <p class="an46">An Android app is coming soon to Google Play.</p>
       <p>Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company.</p>
       <div class="about38-links"><a href="deck-grader.html">Deck grader</a><a href="opening-odds.html">Opening odds</a><a href="prize-trainer.html">Prize trainer</a><a href="rotation.html">Rotation checker</a></div>
       <div class="about38-links"><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><button type="button" onclick="openCredits()">Credits</button></div>
@@ -9696,7 +9699,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v45';
+const PT_VERSION = 'v46';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

@@ -1,3 +1,12 @@
+# v46: Android note (9 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v46), CHANGES.md.
+Not changed: everything else. Builds on v45.
+
+- The About RdyDeck block on the home screen says "An Android app is coming soon to Google Play." in the same plain text as the rest of the block. No link yet.
+- The line is hidden in Play mode (?src=play), so it never shows inside the Play app.
+- Version reads v46.
+
 # v45: sample grade, share grade, numbered daily (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v45), CHANGES.md.
