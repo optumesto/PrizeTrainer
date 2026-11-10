@@ -1,6 +1,8 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
 const CACHE_NAME = 'prize-trainer-v59';
+// How long a page open waits for the network before using the saved copy.
+const HTML_WAIT = 3000;
 
 // Card art from other sites lives in its own cache, kept across deploys, so
 // a deck you have opened still shows its pictures with no signal. The page
@@ -104,20 +106,30 @@ self.addEventListener('fetch', event => {
                  (req.headers.get('accept') || '').includes('text/html');
 
   if (isHTML) {
-    // Network-first for HTML: falls back to cache if offline
+    // Network-first for HTML, but never a long wait: after HTML_WAIT ms with
+    // no answer, the saved copy opens and the fresh one is still saved for
+    // next time. A slow phone signal right after a new version used to leave
+    // the app loading for as long as the download took.
+    const saved = () => caches.match(req, { ignoreSearch: true })
+      .then(r => r || caches.match('./index.html'));
+    const net = fetch(req, { cache: 'no-cache' })
+      .then(resp => {
+        // Keep only a good page, so an error page never replaces the saved app.
+        if (resp && resp.ok) {
+          const copy = resp.clone();
+          return caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {}).then(() => resp);
+        }
+        return resp;
+      });
+    event.waitUntil(net.catch(() => {}));
+    const late = new Promise(res => setTimeout(res, HTML_WAIT));
     event.respondWith(
-      fetch(req, { cache: 'no-cache' })
-        .then(resp => {
-          // Keep only a good page, so an error page never replaces the saved app.
-          if (resp && resp.ok) {
-            const copy = resp.clone();
-            caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
-          }
-          return resp;
-        })
-        .catch(() => caches.match(req, { ignoreSearch: true })
-          .then(r => r || caches.match('./index.html'))
-          .then(r => r || caches.match('./offline.html')))
+      Promise.race([net.catch(() => null), late.then(() => null)])
+        .then(r => r || saved())
+        .then(r => r || net)
+        .catch(() => null)
+        .then(r => r || saved())
+        .then(r => r || caches.match('./offline.html'))
     );
     return;
   }
