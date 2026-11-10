@@ -4024,10 +4024,15 @@ function damageCondition(text) {
  *   bnames   "If Beldum and Metang are on your Bench" (Metagross)
  */
 function need62(text) {
-  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/\u00e9/g, 'e').toLowerCase();
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/\u00e9/g, 'e').toLowerCase();
   let m;
   if (/moved from your bench to the active spot this turn/.test(t)) return { k: 'moved' };
-  if (/if this pokemon has (?:any )?damage counters on it/.test(t)) return { k: 'selfdmg' };
+  if (/if this pokemon has (?:any|\d+ or more) damage counters on it/.test(t)) return { k: 'selfdmg' };
+  // v62: a comeback bonus (Koraidon ex's Orichalcum Fang) works only after you lost a Pokemon.
+  if (/if any of your pokemon were knocked out[^.]*during your opponent's last turn/.test(t)) return { k: 'ko' };
+  if ((m = t.match(/if this pokemon has any ([a-z' ]+?) energy attached/))) return { k: 'energy', what: m[1] };
+  if ((m = t.match(/if you played a supporter card that has "([^"]+)" in its name/))) return { k: 'supname', name: m[1] };
+  if ((m = t.match(/if you have (\d+) or more pokemon that have the ([a-z0-9' -]+?) ability in your discard pile/))) return { k: 'discab', n: +m[1], abil: m[2] };
   if (/if your opponent's active pokemon (?:already )?has (?:any )?damage counters on it/.test(t)) return { k: 'oppdmg' };
   if ((m = t.match(/if there are (\d+) or fewer cards in your deck/))) return { k: 'deck', n: +m[1] };
   if ((m = t.match(/has at least (\d+) extra energy attached/))) return { k: 'xenergy', n: +m[1] };
@@ -5356,7 +5361,12 @@ function gNeedReach(a, deck) {
   const qty = f => deck.reduce((s, e) => s + (e.card && f(e.card) ? e.qty : 0), 0);
   let have = null, met = true;
   if (n.k === 'moved') { have = qty(c => c.t === 'trainer' ? (c.provides || []).includes('switch_own') : c.t === 'pkmn' && c.swab); met = have >= 4; }
-  else if (n.k === 'oppdmg') { have = qty(c => c.t === 'pkmn' && ((c.abDmg || []).length || (c.provides || []).includes('spread_counters'))); met = have >= 1; }
+  // v62: moving counters onto the Active counts too (Munkidori's Adrena-Brain for Mega Golisopod's Finishing Blow).
+  else if (n.k === 'oppdmg') { have = qty(c => (c.t === 'pkmn' && (c.abDmg || []).length) || ['spread_counters', 'move_counters'].some(x => (c.provides || []).includes(x))); met = have >= 1; }
+  else if (n.k === 'energy') { const ty = /^(?:grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy|dragon)$/.test(n.what);
+    have = qty(c => c.t === 'energy' && (ty ? (c.etypes || [c.etype]).map(x => String(x || '').toLowerCase()).includes(n.what) : String(c.key || '').includes(n.what + ' energy'))); met = have >= 2; }
+  else if (n.k === 'supname') { have = qty(c => c.t === 'trainer' && (c.sub || []).includes('supporter') && String(c.key || '').includes(n.name.toLowerCase())); met = have >= 4; }
+  else if (n.k === 'discab') { have = qty(c => c.t === 'pkmn' && (c.abil || []).some(x => String(x).toLowerCase() === n.abil)); met = have >= n.n; }
   else if (n.k === 'deck') met = false;
   else if (n.k === 'xenergy') { have = qty(c => (c.provides || []).includes('energy_accel')); met = have >= 3; }
   else if (n.k === 'stadium') { have = qty(c => c.t === 'trainer' && (c.sub || []).includes('stadium')); met = have >= 2; }
@@ -5364,7 +5374,7 @@ function gNeedReach(a, deck) {
   else if (n.k === 'bnames') met = n.names.every(x => deck.some(e => e.card && e.card.key === x));
   const top = met ? full : base;
   // Damage on itself comes from taking a hit first, so the full hit is a later turn's.
-  return { now: n.k === 'selfdmg' ? base : top, top, cond: null, need: Object.assign({}, n, { have, met, full }) };
+  return { now: n.k === 'selfdmg' || n.k === 'ko' ? base : top, top, cond: null, need: Object.assign({}, n, { have, met, full }) };
 }
 function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
@@ -5612,14 +5622,22 @@ function g62Need(r, name) {
   const when = { moved: `on a turn ${nm} moves up from your Bench to the Active Spot`, selfdmg: `once ${nm} has damage counters on it`,
     oppdmg: 'against an Active Pokemon that already has damage counters on it', deck: `once your deck is down to ${n.n} cards or fewer`,
     xenergy: `with ${n.n} extra Energy attached to it`, stadium: 'while you have a Stadium in play',
-    btype: `with a ${gCap(n.type)} Pokemon on your Bench`, bnames: `with ${and(n.names || [])} on your Bench` }[n.k];
+    btype: `with a ${gCap(n.type)} Pokemon on your Bench`, bnames: `with ${and(n.names || [])} on your Bench`,
+    ko: 'on the turn after one of your Pokemon was Knocked Out', energy: `with ${gCap(n.what || '')} Energy attached to ${nm}`,
+    supname: `on a turn you play a ${gCap(n.name || '')} Supporter`, discab: `with ${n.n} Pokemon with ${gCap(n.abil || '')} in your discard pile` }[n.k];
   const head = `${r.atk} does ${n.full} only ${when}, ${n.base} otherwise.`;
   if (n.met) return head + (n.k === 'moved' ? ` Your list has ${n.have} cards that switch it in or let you retreat for free, so the grade counts ${n.full}.`
-    : n.k === 'selfdmg' ? ' The full hit comes after it has taken a hit, not on its first attack.' : '');
+    : n.k === 'selfdmg' ? ' The full hit comes after it has taken a hit, not on its first attack.'
+    : n.k === 'ko' ? ' The full hit comes after you lose a Pokemon, not on your first attack.'
+    : n.k === 'oppdmg' ? ` Your list has ${n.have} cards that put damage counters on it first, so the grade counts ${n.full}.`
+    : n.k === 'xenergy' ? ` Your list has ${n.have} cards that attach extra Energy, so the grade counts ${n.full}.`
+    : ` Your list can set that up, so the grade counts ${n.full}.`);
   const why = { moved: `your list has only ${n.have} cards that switch it in or let you retreat for free`,
     oppdmg: 'nothing in your list puts damage counters on it before you attack', deck: 'that is only at the very end of a game',
     xenergy: `your list has only ${n.have} cards that attach extra Energy`, stadium: `your list has only ${n.have} Stadiums`,
-    btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them' }[n.k];
+    btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them',
+    energy: `your list has only ${n.have} ${gCap(n.what || '')} Energy`, supname: `your list has only ${n.have} ${gCap(n.name || '')} Supporters`,
+    discab: `your list has only ${n.have} Pokemon with ${gCap(n.abil || '')}` }[n.k];
   return head + ` The grade counts ${n.base}, since ${why}.`;
 }
 /** v62: attacking twice a turn, in one sentence. */

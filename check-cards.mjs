@@ -128,7 +128,9 @@ function listRules(cards, info) {
   const total = cards.reduce((a, c) => a + c.n, 0);
   if (total !== 60) out.push(`${total} cards, not 60`);
   const byName = new Map();
-  cards.forEach(c => { const i = info.get(c.code + ' ' + num(c.no)); if (i && i.cat === 'energy' && !i.special) return;
+  // Basic Energy has no copy limit. Its set (MEE, SVE) may be missing from TCGdex, so the name decides too.
+  const basicE = /^(?:basic )?(?:grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/i;
+  cards.forEach(c => { const i = info.get(c.code + ' ' + num(c.no)); if (i ? i.cat === 'energy' && !i.special : basicE.test(String(c.name).trim())) return;
     byName.set(norm(c.name), (byName.get(norm(c.name)) || 0) + c.n); });
   byName.forEach((n, k) => { if (n > 4) out.push(`${n} copies of ${k}`); });
   const ace = cards.filter(c => { const i = info.get(c.code + ' ' + num(c.no)); return i && i.ace; }).reduce((a, c) => a + c.n, 0);

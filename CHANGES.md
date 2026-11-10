@@ -2,18 +2,20 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# RdyDeck 2.1 (build 62): grade fixes for attacks with conditions, Festival Lead attacking twice, and Ability counters (10 Nov 2026)
+# RdyDeck 2.1 (build 62): grade fixes for attacks with conditions, Festival Lead attacking twice, and Ability counters (in progress)
 
-Changed files: index.html, sw.js (cache prize-trainer-v62, the build number), CHANGES.md.
+Changed files: index.html, sw.js (cache prize-trainer-v62, the build number), check-cards.mjs, CHANGES.md.
+
+Weekly card check
+- Basic Energy no longer shows under "Needs a person to check" when its set is missing from TCGdex (10 Fire Energy in a starter list is legal).
 
 Grade
-- Attacks that do more damage only under a printed condition now read that condition from the card. Examples: more damage if it moved from your Bench this turn (Lopunny), if it has damage counters on it (Mega Golisopod's Finishing Blow), if your opponent's Active already has damage counters, if a Stadium is in play, or if you have certain Pokemon on your Bench. The grade counts the full number only when the list can meet the condition, and the plan says which it counted and why. Mega Golisopod goes from 6.6 to 6.0, since Finishing Blow does its full damage only after Golisopod has taken a hit. Lopunny grades the same, because its lists run enough cards to switch it in.
+- Attacks that do more damage only under a printed condition now read that condition from the card. Examples: more damage if it moved from your Bench this turn (Mega Lopunny's Gale Thrust), if your opponent's Active already has damage counters (Mega Golisopod's Finishing Blow), if it has extra Energy (Mega Excadrill's Maximum Drilling), if a Stadium is in play, if certain Pokemon are on your Bench, if it has a type of Energy attached, after you played a named Supporter (Team Rocket's Kangaskhan ex), or with Pokemon with an Ability in your discard pile (Dhelmise's Vengeful Anchor). The grade counts the full number only when the list can meet the condition, and the plan says which it counted and why. Every current meta list meets its condition, so these grades stay the same, and the plan now says how (Mega Golisopod's Munkidori moves damage counters onto the Active first).
 - An Ability that puts damage counters on the opponent after a cost, in a second sentence, is now read (Mega Greninja's Mortal Shuriken). Mega Greninja goes from 6.9 to 7.0.
 - Dipplin's Festival Lead lets it attack twice a turn while Festival Grounds is in play. The grade now counts both attacks when the list runs at least 2 Festival Grounds, and the plan says so. Damage boosts that last the turn or come from a Tool count on both attacks. Festival Lead goes from 8.0 to 9.3.
 - An Ability that searches for Energy and attaches it, with the attach in a later part of the sentence (Steven's Metagross ex's X-Boot), now counts as extra Energy. Steven's Metagross grades 9.2 as before.
 - An Ability with a condition printed at its start shows that condition in the plan, for example Thwackey's Boom Boom Groove: "only if your Active Pokemon has the Festival Lead Ability".
-- Mega Starmie goes from 6.6 to 6.5, since its strongest partner, Mega Golisopod, now counts Finishing Blow at its base damage.
-- Every other test list and built-in deck grades the same as 2.0. Saved decks re-read once (card data version 13).
+- Every other test list and built-in deck grades the same as 2.0, Mega Golisopod and Mega Starmie included. Saved decks re-read once (card data version 13).
 
 # RdyDeck 2.0 (build 61): Against the meta matchup stats, the Android app in the header, and grade fixes for Joltik Box, Alakazam, Slowking and Crustle (10 Nov 2026)
 
