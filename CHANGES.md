@@ -1,3 +1,16 @@
+# v57: illegal lists no longer read Tournament-ready, and the grade flags dead cards, no draw Supporters and heavy Energy (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v57), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt, the ad code and the sims.
+
+- A list that breaks a deck building rule (5 copies of a card, 2 ACE SPEC cards, 59 cards) showed "Not tournament legal yet" and then "Tournament-ready, ready for an event as it is" right under it. Its band now reads "Not legal yet" in red, on the grade and on the home screen, and the verdict says to fix the rule first. The score itself is unchanged, as before.
+- Sharing the grade of a list that breaks a deck building rule asks you to fix it first, so it never shares as Tournament-ready.
+- A Pokemon whose Ability and attacks both need Energy the list does not run (Teal Mask Ogerpon ex in a Fighting list) is now called a dead card, with how many copies and what to do. Before, the grade only said its Ability had nothing to attach.
+- A list with no Supporter that draws or searches is flagged, naming the only draw it has left.
+- A list with 22 or more Energy is flagged as heavy on Energy, unless its attacks count Energy (Ceruledge ex keeps its 21 with no flag).
+- Built-in decks and the 24 test lists grade the same as v56.
+- sw.js cache: prize-trainer-v57. Version reads v57.
+
 # v56: the grade reads attacks that count Pokemon in play and cards off the top of the deck (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v56), CHANGES.md.

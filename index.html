@@ -4910,8 +4910,11 @@ function gCoherence(deck) {
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
-      flaws.push({sev:'warn', who:c.key, t:`${gCap(e.name)}'s ${x.abil} has nothing to attach`,
-        d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.`}); }); });
+      // v57: when its attacks cannot be paid either, the card does nothing at all, so say so.
+      const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any));
+      flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
+        d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.` +
+          (payable ? '' : ` Its attacks need ${gCap(x.type)} Energy too, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${gCap(x.type)} Energy.`)}); }); });
   // v55: an attacker that cannot attack until enough of a group is in play (Team Rocket's Mewtwo ex's Power Saver).
   deck.forEach(e => { const c=e.card; if(!c||!c.gate) return;
     const g=c.gate, n=deck.filter(x=>x.card&&x.card.t==='pkmn'&&x.card.key.startsWith(g.pre)).reduce((k,x)=>k+x.qty,0);
@@ -4973,6 +4976,20 @@ function gCoherence(deck) {
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
   if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
     d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
+  // v57: a list with draw only from Pokemon (Fezandipiti ex after a Knock Out, Squawkabilly ex on turn 1)
+  // and no Supporter that draws or searches runs out of cards once the opening hand is spent.
+  const supQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&e.card.tt==='supporter'&&(e.card.provides||[]).some(p=>p==='draw'||p.startsWith('search')))
+    .reduce((a,e)=>a+e.qty,0);
+  if (draw && !supQ) {
+    const via = [...new Set(deck.filter(e=>e.card&&(e.card.provides||[]).includes('draw')).map(e=>gCap(e.name)))];
+    flaws.push({sev:'warn', t:'No Supporter to draw with',
+      d:`None of your Supporters draws cards or searches your deck, so once your opening hand is spent your only draw is ${via.slice(0,3).join(' and ')}. Most decks run 4 or more Supporters that draw, like Lillie's Determination.`}); }
+  // v57: far more Energy than the attacks use means many draws are Energy you cannot use that turn.
+  // Decks whose attacks count Energy (attached, discarded or in the discard pile) are left alone.
+  const eQ = deck.reduce((a,e)=>a+(e.card&&e.card.t==='energy'?e.qty:0),0);
+  const eScale = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.escale||a.edisc||(a.pile&&a.pile.kind==='energy')||(a.mill&&a.mill.kind==='energy')));
+  if (eQ >= 22 && !eScale) flaws.push({sev:'warn', t:'Heavy on Energy',
+    d:`The list runs ${eQ} Energy. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
   if (!hasAtk) flaws.push({sev:'crit', t:'No clear attacker',
     d:'No Pokemon here is set up to deal meaningful damage, so there is no win condition to build toward.'});
   // Nothing to check is not a fault: with card data read and no needs, nothing is missing.
@@ -10314,7 +10331,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v56';
+const PT_VERSION = 'v57';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -12101,6 +12118,15 @@ function g29Verdict(R, means) {
   return means + ' No problems found.';
 }
 
+// v57: the verdict for a list that breaks a deck building rule.
+function g29Legal(R, n) {
+  const probs = g29Problems(R), crit = probs.filter(f => f.sev === 'crit').length;
+  return `Fix the deck ${n === 1 ? 'rule' : 'rules'} above before an event. ` + (crit
+    ? (crit === 1 ? 'One problem also stops this deck from working.' : `${crit} problems also stop this deck from working.`)
+    : probs.length ? (probs.length === 1 ? 'One other change would make it stronger.' : `${probs.length} other changes would make it stronger.`)
+    : `The cards themselves grade ${R.overall.toFixed(1)}.`);
+}
+
 function g29Item(f, cls) {
   const tag = cls === 'crit' ? '<span class="g29-tag crit">Stops the deck</span>' : cls === 'warn' ? '<span class="g29-tag warn">Worth fixing</span>' : '';
   return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag}</div><p>${esc(f.d)}</p></div>`;
@@ -12130,7 +12156,10 @@ renderGrade = function () {
   }
 
   const R = g29Grade(deck) || gradeDeck(deck);
-  const [band, col] = gBand(R.overall);
+  let [band, col] = gBand(R.overall);
+  // v57: a list that breaks a deck building rule is never called ready for an event.
+  const brk = typeof rules34Breaches === 'function' ? rules34Breaches(deck) : [];
+  if (brk.length) band = 'Not legal yet';
   const synV = gR1(R.coh.score * 10), powV = gR1(R.via.score * 10);
   const means = (G29_BANDS.find(b => R.overall >= b[0]) || G29_BANDS[G29_BANDS.length - 1])[1];
   const probs = g29Problems(R);
@@ -12158,8 +12187,8 @@ renderGrade = function () {
     <div class="g-ring" style="--p:${Math.max(0, Math.min(100, R.overall * 10))};--col:${col}">
       <div class="g-score" style="color:${col}">${R.overall.toFixed(1)}<small>/10</small></div>
     </div>
-    <div class="g-band" style="--col:${col}">${band}</div>
-    <p class="g29-verdict">${esc(g29Verdict(R, means))}</p>
+    <div class="g-band" style="--col:${brk.length ? 'var(--red)' : col}">${band}</div>
+    <p class="g29-verdict">${esc(brk.length ? g29Legal(R, brk.length) : g29Verdict(R, means))}</p>
     ${jumps.length ? `<div class="g29-jump">${jumps.join('')}</div>` : ''}
     <div class="g29-parts">
       ${part('Synergy', synV, 'Do the cards work together')}
@@ -12182,8 +12211,8 @@ renderGrade = function () {
       ${rest.length ? `<details class="g29-more"><summary>${rest.length} more to fix</summary>${rest.map(f => g29Item(f, f.sev)).join('')}</details>` : ''}
     </div>`;
   } else {
-    h += `<div class="g-sec" id="g29-fix"><div class="g-item ok"><div class="gt">Nothing to fix</div>
-      <p>The grader found no problem in this list. Check the odds and the rotation below before an event.</p></div></div>`;
+    h += `<div class="g-sec" id="g29-fix"><div class="g-item ok"><div class="gt">${brk.length ? 'Nothing else to fix' : 'Nothing to fix'}</div>
+      <p>${brk.length ? 'Apart from the deck rules above, the grader found no problem in this list.' : 'The grader found no problem in this list.'} Check the odds and the rotation below before an event.</p></div></div>`;
   }
 
   if (rot) h += rot.html;
@@ -12236,7 +12265,8 @@ buildDeckCard = function (deck) {
   const R = g29Grade(deck);
   let g;
   if (R) {
-    const [band, col] = gBand(R.overall);
+    let [band, col] = gBand(R.overall);
+    if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { band = 'Not legal yet'; col = 'var(--red)'; }
     g = `<div class="deck-grade" style="--col:${col}"><b>${R.overall.toFixed(1)}</b><span>${band}</span></div>`;
   } else {
     g = `<div class="deck-grade none"><span>Not graded yet</span></div>`;
@@ -14468,6 +14498,8 @@ async function v45ShareGrade() {
   if (!(deck.cards || []).some(c => c.supertype)) { showToast('This deck has no card data yet, so there is no grade to share.'); return; }
   const R = g29Grade(deck) || gradeDeck(deck);
   if (R.unread > 0) { showToast('Some cards have not been read yet, so this grade is not final. Open the deck again while online, then share.'); return; }
+  // v57: a list that breaks a deck building rule would share as Tournament-ready, so fix it first.
+  if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { showToast('This list breaks a deck building rule. Fix it in Edit deck, then share the grade.'); return; }
   const band = gs45Band(R.overall);
   const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1';
   const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}. Can Your Deck Win?`;
