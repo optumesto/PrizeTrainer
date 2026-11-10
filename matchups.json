@@ -1,0 +1,5504 @@
+{
+ "schema": 1,
+ "asOf": "2026-11-10",
+ "since": "2026-11-06",
+ "until": "2026-11-10",
+ "note": "Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out.",
+ "sources": [
+  {
+   "id": "online",
+   "name": "Limitless online tournaments",
+   "url": "https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD",
+   "events": 8,
+   "matches": 3103
+  }
+ ],
+ "cols": [
+  "mega-rayquaza-ex",
+  "dragapult-ex",
+  "basic-box-m",
+  "slowking-scr",
+  "alakazam-dudunsparce",
+  "ogerpon-meganium-hydrapple",
+  "dhelmise-pbl",
+  "other",
+  "dragapult-dudunsparce",
+  "n-zoroark"
+ ],
+ "decks": [
+  {
+   "id": "mega-rayquaza-ex",
+   "name": "Mega Rayquaza",
+   "share": 13.2,
+   "lists": 211,
+   "sig": [
+    [
+     "Mega Rayquaza ex",
+     2.2,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     1
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.5,
+     0.98
+    ],
+    [
+     "Talonflame ex",
+     2.1,
+     0.98
+    ],
+    [
+     "Meowth ex",
+     1.7,
+     0.97
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.92
+    ],
+    [
+     "Ethan's Ho-Oh ex",
+     1.8,
+     0.91
+    ],
+    [
+     "Iron Thorns ex",
+     0.5,
+     0.55
+    ]
+   ],
+   "rec": {
+    "online": [
+     356,
+     370,
+     0
+    ]
+   },
+   "vs": {
+    "dragapult-ex": {
+     "online": [
+      20,
+      39,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      27,
+      38,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      17,
+      17,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      17,
+      19,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      15,
+      10,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      10,
+      8,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      11,
+      8,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      10,
+      23,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      5,
+      9,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "20312482",
+     5,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "229ab83d",
+     1,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "572ca3f3",
+     2,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "e33f01fc",
+     3,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "f7f53170",
+     5,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "980b3f83",
+     6,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "368e912b",
+     8,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "edbeaa4f",
+     9,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "ec955769",
+     10,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "c8d8baf6",
+     12,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "d6acf9ae",
+     13,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "664dbe2b",
+     14,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "f411cb41",
+     16,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "dragapult-ex",
+   "name": "Dragapult",
+   "share": 7.8,
+   "lists": 125,
+   "sig": [
+    [
+     "Dreepy",
+     4,
+     1
+    ],
+    [
+     "Drakloak",
+     4,
+     1
+    ],
+    [
+     "Dragapult ex",
+     3,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     0.99
+    ],
+    [
+     "Budew",
+     1.8,
+     0.98
+    ],
+    [
+     "Munkidori",
+     1.9,
+     0.97
+    ],
+    [
+     "Dunsparce",
+     0.8,
+     0.8
+    ],
+    [
+     "Dudunsparce",
+     0.8,
+     0.8
+    ],
+    [
+     "Dudunsparce ex",
+     0.5,
+     0.46
+    ]
+   ],
+   "rec": {
+    "online": [
+     266,
+     211,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      39,
+      20,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      16,
+      27,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      14,
+      12,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      14,
+      7,
+      1
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      19,
+      9,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      7,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      16,
+      11,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      6,
+      17,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "3d24b02a",
+     2,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "e5fb69b1",
+     3,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "59413c75",
+     6,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "e99e5eb9",
+     7,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "cf495381",
+     10,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "9cb42516",
+     13,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "7b9528b0",
+     14,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "e511e308",
+     16,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "basic-box-m",
+   "name": "Basic Box",
+   "share": 6.6,
+   "lists": 105,
+   "sig": [
+    [
+     "Mega Kangaskhan ex",
+     3.7,
+     1
+    ],
+    [
+     "Meowth ex",
+     2.8,
+     1
+    ],
+    [
+     "Teal Mask Ogerpon ex",
+     2.2,
+     1
+    ],
+    [
+     "Lillie's Clefairy ex",
+     2,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Wellspring Mask Ogerpon ex",
+     1,
+     0.98
+    ],
+    [
+     "Chien-Pao",
+     0.9,
+     0.92
+    ],
+    [
+     "Iron Leaves ex",
+     0.9,
+     0.87
+    ],
+    [
+     "Raging Bolt ex",
+     0.8,
+     0.81
+    ]
+   ],
+   "rec": {
+    "online": [
+     237,
+     213,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      38,
+      27,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      27,
+      16,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      9,
+      17,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      9,
+      9,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      4,
+      12,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      11,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      7,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      9,
+      8,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      7,
+      9,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "ef2d4b64",
+     1,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "eb9ae280",
+     2,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "6a57fe4e",
+     3,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "144b7723",
+     9,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "e2b4971b",
+     10,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "ca39c395",
+     13,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "f29fe3b5",
+     14,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "0f3277ba",
+     15,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "9f9c4da8",
+     15,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "be191497",
+     16,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "slowking-scr",
+   "name": "Slowking",
+   "share": 5.1,
+   "lists": 82,
+   "sig": [
+    [
+     "Slowpoke",
+     3.9,
+     1
+    ],
+    [
+     "Slowking",
+     3,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     1
+    ],
+    [
+     "Kyurem",
+     2,
+     1
+    ],
+    [
+     "Metagross",
+     1.6,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     1
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.2,
+     0.99
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     0.99
+    ],
+    [
+     "Lillie's Clefairy ex",
+     1,
+     0.99
+    ],
+    [
+     "Zeraora",
+     0.7,
+     0.68
+    ]
+   ],
+   "rec": {
+    "online": [
+     149,
+     154,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      17,
+      17,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      12,
+      14,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      17,
+      9,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      6,
+      8,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      4,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      4,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      6,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      8,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      7,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "c4a5d8e5",
+     9,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "e540ff0e",
+     11,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "46c682a8",
+     13,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "b2a0b4fb",
+     15,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "alakazam-dudunsparce",
+   "name": "Alakazam Dudunsparce",
+   "share": 3.8,
+   "lists": 60,
+   "sig": [
+    [
+     "Abra",
+     4,
+     1
+    ],
+    [
+     "Kadabra",
+     4,
+     1
+    ],
+    [
+     "Alakazam",
+     3,
+     1
+    ],
+    [
+     "Dunsparce",
+     2.9,
+     1
+    ],
+    [
+     "Dudunsparce",
+     2.1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Genesect",
+     0.9,
+     0.9
+    ],
+    [
+     "Lillie's Clefairy ex",
+     1.5,
+     0.85
+    ],
+    [
+     "Shaymin",
+     0.7,
+     0.67
+    ],
+    [
+     "Flutter Mane",
+     0.3,
+     0.3
+    ]
+   ],
+   "rec": {
+    "online": [
+     131,
+     128,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      19,
+      17,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      7,
+      14,
+      1
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      9,
+      9,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      8,
+      6,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      6,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "1dc580eb",
+     12,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "1a07efc3",
+     12,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "4c68aed7",
+     15,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "ogerpon-meganium-hydrapple",
+   "name": "Ogerpon Meganium Hydrapple",
+   "share": 3.6,
+   "lists": 57,
+   "sig": [
+    [
+     "Teal Mask Ogerpon ex",
+     3.9,
+     1
+    ],
+    [
+     "Chikorita",
+     2,
+     1
+    ],
+    [
+     "Bayleef",
+     2,
+     1
+    ],
+    [
+     "Meganium",
+     2,
+     1
+    ],
+    [
+     "Applin",
+     2,
+     1
+    ],
+    [
+     "Dipplin",
+     2,
+     1
+    ],
+    [
+     "Hydrapple ex",
+     2,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Meowth ex",
+     1.5,
+     0.98
+    ],
+    [
+     "Celebi",
+     1.1,
+     0.95
+    ]
+   ],
+   "rec": {
+    "online": [
+     101,
+     99,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      10,
+      15,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      9,
+      19,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      12,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      4,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "a35acbc3",
+     1,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "7192961c",
+     5,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "ff7f0246",
+     5,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "7d0fe99f",
+     6,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "2abf429e",
+     16,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "dhelmise-pbl",
+   "name": "Dhelmise",
+   "share": 3.1,
+   "lists": 50,
+   "sig": [
+    [
+     "Dhelmise",
+     4,
+     1
+    ],
+    [
+     "Banette",
+     3.8,
+     1
+    ],
+    [
+     "Poltchageist",
+     3.8,
+     0.98
+    ],
+    [
+     "Shuppet",
+     3.6,
+     0.98
+    ],
+    [
+     "Sinistcha",
+     3.2,
+     0.98
+    ],
+    [
+     "Lillie's Clefairy ex",
+     1.5,
+     0.98
+    ],
+    [
+     "Latias ex",
+     0.9,
+     0.88
+    ],
+    [
+     "Spiritomb",
+     0.7,
+     0.68
+    ],
+    [
+     "Bloodmoon Ursaluna ex",
+     0.5,
+     0.52
+    ],
+    [
+     "Dunsparce",
+     1.1,
+     0.5
+    ]
+   ],
+   "rec": {
+    "online": [
+     86,
+     100,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      8,
+      10,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      4,
+      7,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      4,
+      11,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      4,
+      4,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      6,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "c941caf5",
+     3,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "9d8b41f7",
+     8,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "b119533d",
+     11,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "other",
+   "name": "Other",
+   "share": 2.9,
+   "lists": 47,
+   "sig": [
+    [
+     "Latias ex",
+     1,
+     0.62
+    ],
+    [
+     "Mega Kangaskhan ex",
+     1.5,
+     0.51
+    ],
+    [
+     "Fezandipiti ex",
+     0.5,
+     0.51
+    ],
+    [
+     "Lillie's Clefairy ex",
+     0.6,
+     0.49
+    ],
+    [
+     "Meowth ex",
+     0.6,
+     0.49
+    ],
+    [
+     "Mew ex",
+     1.2,
+     0.4
+    ],
+    [
+     "Talonflame ex",
+     0.8,
+     0.34
+    ]
+   ],
+   "rec": {
+    "online": [
+     44,
+     95,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      8,
+      11,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      4,
+      5,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      7,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      6,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "dragapult-dudunsparce",
+   "name": "Dragapult Dudunsparce",
+   "share": 2.7,
+   "lists": 43,
+   "sig": [
+    [
+     "Dreepy",
+     4,
+     1
+    ],
+    [
+     "Drakloak",
+     4,
+     1
+    ],
+    [
+     "Dragapult ex",
+     3,
+     1
+    ],
+    [
+     "Dunsparce",
+     2,
+     1
+    ],
+    [
+     "Munkidori",
+     2,
+     1
+    ],
+    [
+     "Budew",
+     2,
+     1
+    ],
+    [
+     "Dudunsparce",
+     1,
+     1
+    ],
+    [
+     "Dudunsparce ex",
+     1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     1
+    ]
+   ],
+   "rec": {
+    "online": [
+     124,
+     82,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      23,
+      10,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      11,
+      16,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      8,
+      9,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      8,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "cbaa7d21",
+     1,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "bc252abd",
+     3,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "b6b1ec80",
+     4,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "3167eb1c",
+     4,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "d6d6f7f3",
+     11,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "1388d9d7",
+     15,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "n-zoroark",
+   "name": "N's Zoroark",
+   "share": 2.6,
+   "lists": 41,
+   "sig": [
+    [
+     "N's Zorua",
+     4,
+     1
+    ],
+    [
+     "N's Zoroark ex",
+     4,
+     1
+    ],
+    [
+     "N's Zekrom",
+     2,
+     1
+    ],
+    [
+     "Munkidori",
+     1.5,
+     0.98
+    ],
+    [
+     "Pecharunt ex",
+     1,
+     0.93
+    ],
+    [
+     "N's Reshiram",
+     0.9,
+     0.83
+    ],
+    [
+     "Yveltal",
+     0.7,
+     0.73
+    ],
+    [
+     "Fezandipiti ex",
+     0.7,
+     0.71
+    ],
+    [
+     "Tatsugiri",
+     0.5,
+     0.51
+    ],
+    [
+     "Budew",
+     0.4,
+     0.44
+    ]
+   ],
+   "rec": {
+    "online": [
+     94,
+     75,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      9,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      17,
+      6,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      9,
+      7,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      7,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      5,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "48c9efaa",
+     1,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "69466eae",
+     4,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "84c02ab9",
+     4,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "4aa6c39f",
+     5,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "1471ba1f",
+     12,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "talonflame-dusknoir",
+   "name": "Talonflame Dusknoir",
+   "share": 2.5,
+   "lists": 40,
+   "sig": [
+    [
+     "Mega Kangaskhan ex",
+     4,
+     1
+    ],
+    [
+     "Duskull",
+     3.7,
+     1
+    ],
+    [
+     "Dusknoir",
+     3.6,
+     1
+    ],
+    [
+     "Talonflame ex",
+     3.3,
+     1
+    ],
+    [
+     "Latias ex",
+     2.5,
+     1
+    ],
+    [
+     "Dusclops",
+     2.2,
+     1
+    ],
+    [
+     "Meowth ex",
+     1.7,
+     0.98
+    ],
+    [
+     "Bloodmoon Ursaluna ex",
+     1,
+     0.98
+    ],
+    [
+     "Fezandipiti ex",
+     0.5,
+     0.48
+    ]
+   ],
+   "rec": {
+    "online": [
+     77,
+     84,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      9,
+      16,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      6,
+      11,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      6,
+      5,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      5,
+      5,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      7,
+      6,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      5,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      6,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "2305fd3f",
+     6,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "d584d21b",
+     13,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "e37fd228",
+     14,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "lopunny-dudunsparce",
+   "name": "Lopunny Dudunsparce",
+   "share": 2.4,
+   "lists": 38,
+   "sig": [
+    [
+     "Dunsparce",
+     3.3,
+     1
+    ],
+    [
+     "Dudunsparce",
+     2.9,
+     1
+    ],
+    [
+     "Buneary",
+     2.3,
+     1
+    ],
+    [
+     "Mega Lopunny ex",
+     2.1,
+     1
+    ],
+    [
+     "Fan Rotom",
+     1.3,
+     0.97
+    ],
+    [
+     "Dudunsparce ex",
+     0.7,
+     0.74
+    ],
+    [
+     "Mew ex",
+     0.9,
+     0.68
+    ],
+    [
+     "Lillie's Clefairy ex",
+     0.6,
+     0.63
+    ],
+    [
+     "Meowth ex",
+     0.6,
+     0.58
+    ],
+    [
+     "Cacnea",
+     1,
+     0.5
+    ]
+   ],
+   "rec": {
+    "online": [
+     87,
+     84,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      11,
+      10,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      4,
+      8,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      7,
+      8,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      6,
+      9,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      5,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      3,
+      5,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "912469ad",
+     5,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "33f2f4db",
+     6,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "48cbe7c2",
+     8,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "03c16ef7",
+     9,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "crustle-dri",
+   "name": "Crustle",
+   "share": 2.4,
+   "lists": 38,
+   "sig": [
+    [
+     "Dwebble",
+     3,
+     1
+    ],
+    [
+     "Crustle",
+     3,
+     1
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.6,
+     0.95
+    ],
+    [
+     "Azurill",
+     0.3,
+     0.32
+    ]
+   ],
+   "rec": {
+    "online": [
+     92,
+     85,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      18,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      8,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      14,
+      3,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      7,
+      6,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      5,
+      0,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      7,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "0fc2a64f",
+     4,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "7e820b26",
+     14,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "dragapult-blaziken",
+   "name": "Dragapult Blaziken",
+   "share": 2,
+   "lists": 32,
+   "sig": [
+    [
+     "Dreepy",
+     4,
+     1
+    ],
+    [
+     "Drakloak",
+     4,
+     1
+    ],
+    [
+     "Dragapult ex",
+     2,
+     1
+    ],
+    [
+     "Torchic",
+     2,
+     1
+    ],
+    [
+     "Blaziken ex",
+     2,
+     1
+    ],
+    [
+     "Munkidori",
+     2,
+     1
+    ],
+    [
+     "Budew",
+     1.1,
+     1
+    ],
+    [
+     "Combusken",
+     1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     1
+    ]
+   ],
+   "rec": {
+    "online": [
+     80,
+     62,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      16,
+      11,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      3,
+      5,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      5,
+      8,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      4,
+      4,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      6,
+      0,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "1d7539d1",
+     1,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "2c301027",
+     7,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "afe5fd73",
+     12,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "116b5706",
+     15,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "festival-lead",
+   "name": "Festival Lead",
+   "share": 1.9,
+   "lists": 31,
+   "sig": [
+    [
+     "Applin",
+     3.8,
+     1
+    ],
+    [
+     "Thwackey",
+     3.7,
+     1
+    ],
+    [
+     "Grookey",
+     3.5,
+     1
+    ],
+    [
+     "Dipplin",
+     3.2,
+     1
+    ],
+    [
+     "Goldeen",
+     1.9,
+     1
+    ],
+    [
+     "Seaking",
+     1.2,
+     1
+    ],
+    [
+     "Rellor",
+     1,
+     0.94
+    ],
+    [
+     "Rabsca",
+     1,
+     0.94
+    ],
+    [
+     "Shaymin",
+     0.7,
+     0.74
+    ],
+    [
+     "Psyduck",
+     0.4,
+     0.39
+    ]
+   ],
+   "rec": {
+    "online": [
+     70,
+     61,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      7,
+      9,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      4,
+      7,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      4,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "3e557693",
+     1,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "7e32b974",
+     3,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "3e1f0b99",
+     14,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "greninja-ex",
+   "name": "Greninja",
+   "share": 1.9,
+   "lists": 30,
+   "sig": [
+    [
+     "Froakie",
+     2.9,
+     1
+    ],
+    [
+     "Greninja ex",
+     2.4,
+     1
+    ],
+    [
+     "Frogadier",
+     1.9,
+     1
+    ],
+    [
+     "Meowth ex",
+     1.6,
+     1
+    ],
+    [
+     "Latias ex",
+     1.3,
+     0.93
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.87
+    ],
+    [
+     "Duskull",
+     1.7,
+     0.83
+    ],
+    [
+     "Dusknoir",
+     1.7,
+     0.83
+    ],
+    [
+     "Dusclops",
+     1.5,
+     0.83
+    ],
+    [
+     "Snorunt",
+     1.1,
+     0.63
+    ]
+   ],
+   "rec": {
+    "online": [
+     54,
+     54,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      8,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      4,
+      5,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      5,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "60137934",
+     15,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "1120d76b",
+     2,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "75a500a0",
+     9,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "rockets-honchkrow",
+   "name": "Rocket's Honchkrow",
+   "share": 1.8,
+   "lists": 28,
+   "sig": [
+    [
+     "Team Rocket's Murkrow",
+     4,
+     1
+    ],
+    [
+     "Team Rocket's Honchkrow",
+     3,
+     1
+    ],
+    [
+     "Team Rocket's Porygon",
+     2,
+     1
+    ],
+    [
+     "Team Rocket's Articuno",
+     1.8,
+     1
+    ],
+    [
+     "Team Rocket's Porygon2",
+     1.1,
+     1
+    ],
+    [
+     "Team Rocket's Mimikyu",
+     0.4,
+     0.39
+    ]
+   ],
+   "rec": {
+    "online": [
+     72,
+     53,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      9,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      5,
+      7,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      6,
+      3,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      1,
+      1
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      5,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "224c546e",
+     4,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "cd821c4d",
+     9,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "98ef2a42",
+     14,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ]
+   ]
+  },
+  {
+   "id": "mega-excadrill-ex",
+   "name": "Mega Excadrill",
+   "share": 1.7,
+   "lists": 27,
+   "sig": [
+    [
+     "Beldum",
+     4,
+     1
+    ],
+    [
+     "Metang",
+     4,
+     1
+    ],
+    [
+     "Drilbur",
+     3.2,
+     1
+    ],
+    [
+     "Mega Excadrill ex",
+     2,
+     1
+    ],
+    [
+     "Genesect ex",
+     2,
+     1
+    ],
+    [
+     "Metagross",
+     1.3,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     0.7,
+     0.74
+    ],
+    [
+     "Mega Skarmory ex",
+     0.6,
+     0.56
+    ],
+    [
+     "Shaymin",
+     0.4,
+     0.37
+    ]
+   ],
+   "rec": {
+    "online": [
+     63,
+     54,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      8,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      6,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      6,
+      5,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      6,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      5,
+      0,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "d9ea17bf",
+     2,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "8a9ec0ba",
+     6,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "d4c9055c",
+     9,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "9d9fbff1",
+     15,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "mega-lucario-ex",
+   "name": "Mega Lucario",
+   "share": 1.6,
+   "lists": 25,
+   "sig": [
+    [
+     "Riolu",
+     3.6,
+     1
+    ],
+    [
+     "Mega Lucario ex",
+     3,
+     1
+    ],
+    [
+     "Solrock",
+     2.3,
+     0.96
+    ],
+    [
+     "Lunatone",
+     1.9,
+     0.96
+    ],
+    [
+     "Dunsparce",
+     1.2,
+     0.52
+    ],
+    [
+     "Dudunsparce",
+     1,
+     0.52
+    ],
+    [
+     "Meowth ex",
+     0.5,
+     0.52
+    ],
+    [
+     "Dudunsparce ex",
+     0.5,
+     0.48
+    ]
+   ],
+   "rec": {
+    "online": [
+     66,
+     57,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      9,
+      6,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      5,
+      6,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      8,
+      7,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      3,
+      4,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "244e6081",
+     2,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "121a5b37",
+     3,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ]
+   ]
+  },
+  {
+   "id": "sharpedo-toxtricity",
+   "name": "Sharpedo Toxtricity",
+   "share": 1.5,
+   "lists": 24,
+   "sig": [
+    [
+     "Carvanha",
+     3.4,
+     1
+    ],
+    [
+     "Mega Sharpedo ex",
+     3.1,
+     1
+    ],
+    [
+     "Toxel",
+     2.1,
+     1
+    ],
+    [
+     "Toxtricity",
+     2,
+     1
+    ],
+    [
+     "Munkidori",
+     2,
+     1
+    ],
+    [
+     "Pecharunt ex",
+     2.4,
+     0.96
+    ],
+    [
+     "Tatsugiri",
+     1.8,
+     0.96
+    ],
+    [
+     "Fezandipiti ex",
+     0.8,
+     0.79
+    ],
+    [
+     "Yveltal",
+     0.9,
+     0.75
+    ]
+   ],
+   "rec": {
+    "online": [
+     42,
+     46,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      4,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      3,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "3fffac18",
+     5,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "a273297d",
+     6,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "185b0d9c",
+     16,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "lucario-hariyama",
+   "name": "Lucario Hariyama",
+   "share": 1.3,
+   "lists": 21,
+   "sig": [
+    [
+     "Riolu",
+     3.1,
+     1
+    ],
+    [
+     "Mega Lucario ex",
+     2.9,
+     1
+    ],
+    [
+     "Solrock",
+     2.9,
+     1
+    ],
+    [
+     "Makuhita",
+     2,
+     1
+    ],
+    [
+     "Hariyama",
+     2,
+     1
+    ],
+    [
+     "Lunatone",
+     2,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     0.95
+    ],
+    [
+     "Shaymin",
+     0.5,
+     0.48
+    ]
+   ],
+   "rec": {
+    "online": [
+     35,
+     38,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      2,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      7,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      3,
+      4,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "79fbbafd",
+     12,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "cynthia-garchomp-ex",
+   "name": "Cynthia's Garchomp",
+   "share": 1.3,
+   "lists": 21,
+   "sig": [
+    [
+     "Cynthia's Gible",
+     4,
+     1
+    ],
+    [
+     "Cynthia's Gabite",
+     4,
+     1
+    ],
+    [
+     "Cynthia's Roselia",
+     3.4,
+     1
+    ],
+    [
+     "Cynthia's Roserade",
+     3.2,
+     1
+    ],
+    [
+     "Cynthia's Garchomp ex",
+     2.9,
+     1
+    ],
+    [
+     "Cynthia's Spiritomb",
+     1,
+     0.95
+    ],
+    [
+     "Shaymin",
+     0.6,
+     0.57
+    ]
+   ],
+   "rec": {
+    "online": [
+     44,
+     34,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      4,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "e0ee8466",
+     7,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "eac22591",
+     8,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "17a278ae",
+     11,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "mega-greninja-ex",
+   "name": "Mega Greninja",
+   "share": 1.1,
+   "lists": 18,
+   "sig": [
+    [
+     "Froakie",
+     3.9,
+     1
+    ],
+    [
+     "Mega Greninja ex",
+     2.3,
+     1
+    ],
+    [
+     "Frogadier",
+     2.2,
+     1
+    ],
+    [
+     "Greninja ex",
+     1.9,
+     1
+    ],
+    [
+     "Meowth ex",
+     0.9,
+     0.83
+    ],
+    [
+     "Fezandipiti ex",
+     0.8,
+     0.83
+    ],
+    [
+     "Mega Kangaskhan ex",
+     1.8,
+     0.5
+    ],
+    [
+     "Talonflame ex",
+     0.9,
+     0.5
+    ],
+    [
+     "Latias ex",
+     0.8,
+     0.5
+    ]
+   ],
+   "rec": {
+    "online": [
+     24,
+     38,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      0,
+      8,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "mega-golisopod-ex",
+   "name": "Mega Golisopod",
+   "share": 1.1,
+   "lists": 18,
+   "sig": [
+    [
+     "Mega Golisopod ex",
+     2.3,
+     1
+    ],
+    [
+     "Wimpod",
+     2.7,
+     0.94
+    ],
+    [
+     "Budew",
+     1,
+     0.89
+    ],
+    [
+     "Dunsparce",
+     2.3,
+     0.83
+    ],
+    [
+     "Munkidori",
+     1.8,
+     0.78
+    ],
+    [
+     "Dudunsparce",
+     1.6,
+     0.78
+    ],
+    [
+     "Dudunsparce ex",
+     0.7,
+     0.72
+    ],
+    [
+     "Snorunt",
+     1.2,
+     0.56
+    ],
+    [
+     "Froslass",
+     1.2,
+     0.56
+    ],
+    [
+     "Meowth ex",
+     0.6,
+     0.5
+    ]
+   ],
+   "rec": {
+    "online": [
+     18,
+     41,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "dragapult-dusknoir",
+   "name": "Dragapult Dusknoir",
+   "share": 1.1,
+   "lists": 17,
+   "sig": [
+    [
+     "Dreepy",
+     3.9,
+     1
+    ],
+    [
+     "Drakloak",
+     3.9,
+     1
+    ],
+    [
+     "Dragapult ex",
+     2.9,
+     1
+    ],
+    [
+     "Duskull",
+     2.1,
+     1
+    ],
+    [
+     "Dusclops",
+     1.9,
+     1
+    ],
+    [
+     "Dusknoir",
+     1.2,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Budew",
+     1.4,
+     0.94
+    ],
+    [
+     "Meowth ex",
+     0.9,
+     0.88
+    ],
+    [
+     "Munkidori",
+     0.6,
+     0.59
+    ]
+   ],
+   "rec": {
+    "online": [
+     45,
+     40,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      6,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "b0a6bd73",
+     7,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "05071e97",
+     7,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "18b7301c",
+     10,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "ogerpon-meganium-arboliva",
+   "name": "Ogerpon Meganium Arboliva",
+   "share": 1.1,
+   "lists": 17,
+   "sig": [
+    [
+     "Teal Mask Ogerpon ex",
+     4,
+     1
+    ],
+    [
+     "Smoliv",
+     2,
+     1
+    ],
+    [
+     "Dolliv",
+     2,
+     1
+    ],
+    [
+     "Arboliva ex",
+     2,
+     1
+    ],
+    [
+     "Chikorita",
+     2,
+     1
+    ],
+    [
+     "Bayleef",
+     2,
+     1
+    ],
+    [
+     "Meganium",
+     2,
+     1
+    ],
+    [
+     "Budew",
+     1.3,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Meowth ex",
+     1.4,
+     0.88
+    ]
+   ],
+   "rec": {
+    "online": [
+     52,
+     38,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      11,
+      9,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      9,
+      1,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      4,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "3dbd5951",
+     1,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "4043c3cd",
+     2,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ],
+    [
+     "69e1a046",
+     16,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "alakazam-dusknoir",
+   "name": "Alakazam Dusknoir",
+   "share": 1.1,
+   "lists": 17,
+   "sig": [
+    [
+     "Abra",
+     4,
+     1
+    ],
+    [
+     "Kadabra",
+     3.9,
+     1
+    ],
+    [
+     "Duskull",
+     3.6,
+     1
+    ],
+    [
+     "Alakazam",
+     3,
+     1
+    ],
+    [
+     "Dusknoir",
+     2.1,
+     1
+    ],
+    [
+     "Dusclops",
+     1.9,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Shaymin",
+     0.9,
+     0.94
+    ],
+    [
+     "Budew",
+     1.7,
+     0.88
+    ]
+   ],
+   "rec": {
+    "online": [
+     43,
+     31,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      6,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "35e49c42",
+     4,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "5e9c1c82",
+     8,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "grimmsnarl-froslass",
+   "name": "Grimmsnarl Froslass",
+   "share": 1.1,
+   "lists": 17,
+   "sig": [
+    [
+     "Munkidori",
+     3.9,
+     1
+    ],
+    [
+     "Marnie's Impidimp",
+     3.4,
+     1
+    ],
+    [
+     "Snorunt",
+     2.8,
+     1
+    ],
+    [
+     "Froslass",
+     2.6,
+     1
+    ],
+    [
+     "Marnie's Morgrem",
+     2.5,
+     1
+    ],
+    [
+     "Marnie's Grimmsnarl ex",
+     2.5,
+     1
+    ],
+    [
+     "Budew",
+     1.1,
+     1
+    ],
+    [
+     "Yveltal",
+     0.9,
+     0.94
+    ],
+    [
+     "Shaymin",
+     0.8,
+     0.76
+    ],
+    [
+     "Tatsugiri",
+     0.5,
+     0.47
+    ]
+   ],
+   "rec": {
+    "online": [
+     37,
+     33,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      8,
+      5,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "840b1cdc",
+     8,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "mega-starmie-ex",
+   "name": "Mega Starmie",
+   "share": 0.9,
+   "lists": 15,
+   "sig": [
+    [
+     "Staryu",
+     3,
+     1
+    ],
+    [
+     "Mega Starmie ex",
+     2.6,
+     1
+    ],
+    [
+     "Snorunt",
+     1.8,
+     0.8
+    ],
+    [
+     "Mega Froslass ex",
+     1.5,
+     0.8
+    ],
+    [
+     "Meowth ex",
+     1.3,
+     0.8
+    ],
+    [
+     "Fezandipiti ex",
+     0.5,
+     0.47
+    ]
+   ],
+   "rec": {
+    "online": [
+     18,
+     30,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "923fc232",
+     10,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "mega-charizard-y-ex",
+   "name": "Mega Charizard Y",
+   "share": 0.9,
+   "lists": 15,
+   "sig": [
+    [
+     "Mega Kangaskhan ex",
+     4,
+     1
+    ],
+    [
+     "Charmander",
+     3.9,
+     1
+    ],
+    [
+     "Mega Charizard Y ex",
+     2,
+     1
+    ],
+    [
+     "Talonflame ex",
+     2,
+     1
+    ],
+    [
+     "Oricorio ex",
+     2,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     1
+    ],
+    [
+     "Charmeleon",
+     1.3,
+     1
+    ],
+    [
+     "Mega Charizard X ex",
+     1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Meowth ex",
+     1,
+     1
+    ]
+   ],
+   "rec": {
+    "online": [
+     22,
+     22,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      1,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "raging-bolt-ogerpon",
+   "name": "Raging Bolt Ogerpon",
+   "share": 0.8,
+   "lists": 13,
+   "sig": [
+    [
+     "Teal Mask Ogerpon ex",
+     2.8,
+     1
+    ],
+    [
+     "Raging Bolt ex",
+     2.2,
+     1
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.2,
+     0.92
+    ],
+    [
+     "Meowth ex",
+     2.2,
+     0.92
+    ],
+    [
+     "Latias ex",
+     1.8,
+     0.92
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.92
+    ],
+    [
+     "Wellspring Mask Ogerpon ex",
+     0.8,
+     0.77
+    ],
+    [
+     "Talonflame ex",
+     1.3,
+     0.69
+    ],
+    [
+     "Lillie's Clefairy ex",
+     1.1,
+     0.69
+    ],
+    [
+     "Iron Leaves ex",
+     0.4,
+     0.38
+    ]
+   ],
+   "rec": {
+    "online": [
+     30,
+     22,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "7546d586",
+     2,
+     "Sunny's Weekly #281 My Friend Rayquaza :D",
+     "2026-11-09"
+    ],
+    [
+     "d7c249f3",
+     16,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ]
+   ]
+  },
+  {
+   "id": "ethan-typhlosion",
+   "name": "Ethan's Typhlosion",
+   "share": 0.8,
+   "lists": 12,
+   "sig": [
+    [
+     "Ethan's Cyndaquil",
+     4,
+     1
+    ],
+    [
+     "Ethan's Quilava",
+     4,
+     1
+    ],
+    [
+     "Ethan's Typhlosion",
+     3,
+     1
+    ],
+    [
+     "Dreepy",
+     2,
+     1
+    ],
+    [
+     "Drakloak",
+     2,
+     1
+    ],
+    [
+     "Victini",
+     1.9,
+     1
+    ],
+    [
+     "Shaymin",
+     1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     0.8,
+     0.83
+    ],
+    [
+     "Psyduck",
+     0.5,
+     0.5
+    ],
+    [
+     "Budew",
+     0.4,
+     0.42
+    ]
+   ],
+   "rec": {
+    "online": [
+     21,
+     31,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "e1c4dffc",
+     16,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "mew-ex-30c",
+   "name": "Mew Box",
+   "share": 0.8,
+   "lists": 12,
+   "sig": [
+    [
+     "Mew ex",
+     3,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     1
+    ],
+    [
+     "Lillie's Clefairy ex",
+     1.9,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     1
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.6,
+     0.92
+    ],
+    [
+     "Meowth ex",
+     2.5,
+     0.92
+    ],
+    [
+     "Wellspring Mask Ogerpon ex",
+     1.8,
+     0.92
+    ],
+    [
+     "Iron Crown ex",
+     0.9,
+     0.92
+    ],
+    [
+     "Koraidon ex",
+     0.8,
+     0.83
+    ],
+    [
+     "Unown",
+     0.8,
+     0.83
+    ]
+   ],
+   "rec": {
+    "online": [
+     24,
+     29,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      2,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "de1048dc",
+     7,
+     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
+     "2026-11-08"
+    ]
+   ]
+  },
+  {
+   "id": "iron-thorns-ex",
+   "name": "Iron Thorns",
+   "share": 0.8,
+   "lists": 12,
+   "sig": [
+    [
+     "Iron Thorns ex",
+     4,
+     1
+    ]
+   ],
+   "rec": {
+    "online": [
+     21,
+     28,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      4,
+      0,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "07949863",
+     5,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ]
+   ]
+  },
+  {
+   "id": "rocket-mewtwo-ex",
+   "name": "Rocket's Mewtwo",
+   "share": 0.7,
+   "lists": 11,
+   "sig": [
+    [
+     "Team Rocket's Tarountula",
+     4,
+     1
+    ],
+    [
+     "Team Rocket's Spidops",
+     3.9,
+     1
+    ],
+    [
+     "Team Rocket's Mewtwo ex",
+     2.4,
+     1
+    ],
+    [
+     "Team Rocket's Articuno",
+     1.6,
+     1
+    ],
+    [
+     "Team Rocket's Mimikyu",
+     1.5,
+     1
+    ],
+    [
+     "Lillie's Clefairy ex",
+     0.7,
+     0.73
+    ],
+    [
+     "Team Rocket's Sneasel",
+     0.5,
+     0.55
+    ],
+    [
+     "Team Rocket's Wobbuffet",
+     0.5,
+     0.45
+    ]
+   ],
+   "rec": {
+    "online": [
+     17,
+     28,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "froslass-munkidori",
+   "name": "Froslass Munkidori",
+   "share": 0.6,
+   "lists": 10,
+   "sig": [
+    [
+     "Snorunt",
+     3.9,
+     1
+    ],
+    [
+     "Munkidori",
+     3.9,
+     1
+    ],
+    [
+     "Froslass",
+     3,
+     1
+    ],
+    [
+     "Yveltal",
+     1.2,
+     1
+    ],
+    [
+     "Budew",
+     2.4,
+     0.9
+    ],
+    [
+     "Mega Froslass ex",
+     1.7,
+     0.9
+    ],
+    [
+     "Shaymin",
+     0.9,
+     0.9
+    ]
+   ],
+   "rec": {
+    "online": [
+     23,
+     18,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      2,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "87e4caba",
+     11,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ]
+   ]
+  },
+  {
+   "id": "toucannon-pbl",
+   "name": "Toucannon",
+   "share": 0.6,
+   "lists": 10,
+   "sig": [
+    [
+     "Pikipek",
+     3.7,
+     1
+    ],
+    [
+     "Toucannon",
+     3.5,
+     1
+    ],
+    [
+     "Trumbeak",
+     2.7,
+     1
+    ],
+    [
+     "Fan Rotom",
+     1.5,
+     0.8
+    ],
+    [
+     "Hoothoot",
+     1.1,
+     0.4
+    ],
+    [
+     "Noctowl",
+     1.1,
+     0.4
+    ],
+    [
+     "Fezandipiti ex",
+     0.4,
+     0.4
+    ],
+    [
+     "Meowth ex",
+     0.4,
+     0.4
+    ],
+    [
+     "Genesect",
+     0.4,
+     0.4
+    ],
+    [
+     "Shaymin",
+     0.4,
+     0.4
+    ]
+   ],
+   "rec": {
+    "online": [
+     14,
+     21,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      0,
+      6,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      0,
+      0
+     ]
+    }
+   },
+   "tops": []
+  },
+  {
+   "id": "lopunny-dusknoir",
+   "name": "Lopunny Dusknoir",
+   "share": 0.6,
+   "lists": 10,
+   "sig": [
+    [
+     "Duskull",
+     3.5,
+     1
+    ],
+    [
+     "Dusknoir",
+     3.1,
+     1
+    ],
+    [
+     "Buneary",
+     2.2,
+     1
+    ],
+    [
+     "Dusclops",
+     2.1,
+     1
+    ],
+    [
+     "Mega Lopunny ex",
+     2,
+     1
+    ],
+    [
+     "Meowth ex",
+     0.9,
+     0.9
+    ],
+    [
+     "Mega Kangaskhan ex",
+     2.3,
+     0.8
+    ],
+    [
+     "Mew ex",
+     1.4,
+     0.8
+    ],
+    [
+     "Latias ex",
+     1,
+     0.8
+    ],
+    [
+     "Bronzor",
+     1,
+     0.7
+    ]
+   ],
+   "rec": {
+    "online": [
+     9,
+     17,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dhelmise-pbl": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": []
+  }
+ ]
+}
