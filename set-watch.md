@@ -4,5 +4,4 @@ What the twice daily set watch found last time something changed. It moves the P
 
 Prerelease section: Delta Reign (DLR)
 
-- Delta Reign: card list added (141 cards from pokemon-tcg-data).
 - No newer set than Delta Reign in either database yet.
