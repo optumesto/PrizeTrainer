@@ -4265,6 +4265,8 @@ function enrichCard(apiCard, opts) {
       fx: (fx => fx.length ? fx.slice(0, 2) : null)(geEffects(a.text).say),
       // v60: an attack that Knocks Out the opponent's Active Pokemon outright (Mega Absol ex's Terminal Period).
       kox: kox60(a.text),
+      // v61: damage that counts the cards in your hand (Alakazam's Powerful Hand) grows with the list's draw Abilities.
+      hand: /for each card in your hand/i.test(a.text || '') || null,
       // v54: an attack that locks itself (or all attacks) for the attacker's next turn. A coin flip or an optional bonus is left out.
       lock: /flip a coin|if you do/i.test(a.text || '') ? null
         : new RegExp("during your next turn, this pok[e\\u00e9]mon can[\u2019']t use " + String(a.name || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.', 'i').test(a.text || '') ? 'self'
@@ -4942,7 +4944,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 11;  // v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 12;  // v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -5110,7 +5112,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -5271,6 +5273,15 @@ function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks
  * What one attack reaches. A bonus that waits on the discard pile counts
  * only when the deck holds enough of those cards to ever meet it.
  */
+// v61: an attack that counts the cards in your hand. The card reader assumes 7. Each Pokemon in the list
+// with a draw Ability (Kadabra's and Alakazam's Psychic Draw, Dudunsparce's Run Away Draw) adds to the hand
+// you attack with, up to 11 cards with 3 or more of them.
+function gHandReach(a, deck) {
+  const per = Math.round((a.dmg || 0) / 7), drawers = new Set();
+  deck.forEach(e => { const c = e.card; if (c && c.t === 'pkmn' && (c.ab || []).some(x => /\bdraws? (?:\d+|a) cards?\b|draws until/.test(x.p || ''))) drawers.add(c.key); });
+  const hand = 7 + Math.min(4, Math.round(drawers.size * 1.5));
+  return { now: a.dmg || 0, top: per * hand, cond: null, hand };
+}
 function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
   if (a.escale && !a.cond) return gEnergyReach(a, deck);
@@ -5278,6 +5289,7 @@ function gAtkReach(a, deck) {
   if (a.group && !a.cond) return gGroupReach(a, deck);
   if (a.mill && !a.cond) return gMillReach(a, deck);
   if (a.kox) return gKoReach(a, deck);
+  if (a.hand && !a.cond) return gHandReach(a, deck);
   if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
   const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
   let have = 0;
@@ -5544,6 +5556,7 @@ function g35Hit(r) {
   if (r.flip === 'mill') t += ` That is the average for cards off the top of the deck: your list runs ${r.mill.have} ${g56Many(r.mill, r.mill.have)}, so a bigger or smaller hit is down to luck.`;
   else if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
   else if (r.flip) t += ' That counts coin flips at their average.';
+  else if (r.hand && !r.copy) t += ` It counts the cards in your hand, so ${r.top} is the app's estimate for about ${r.hand} cards${r.hand > 7 ? ", with the list's draw Abilities filling the hand" : ''}, not a printed number.`;
   else if (r.conf === 'low') t += ` Its damage depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   return t;
 }
@@ -5711,12 +5724,16 @@ function gMainAttacker(deck, coh, deckName) {
     // those attackers are the plan and the named Pokemon is the engine behind them.
     const nb = reachOf(byName.e), lo = FMT.threatHP[0], hi = FMT.threatHP[1];
     const weak = named.every(e => { const b = reachOf(e); return !b || b.r.top * 2 < lo; });
-    const eng = named.find(e => (e.card.ab || []).length);
+    // v61: an engine can work through an attack too (Joltik's Jolting Charge attaches Energy from the deck).
+    const engAtk = e => (e.card.attacks || []).find(a => (a.fx || []).some(x => /^(?:searches|attaches|draws)\b/.test(x)));
+    const eng = named.find(e => (e.card.ab || []).length) || named.find(engAtk);
     if (weak && eng && nb) {
       const others = mons.filter(e => !named.includes(e) && (b => b && b.r.top * 2 >= hi)(reachOf(e)));
       if (new Set(others.map(e => e.card.key)).size >= 2) {
         const best = pickFrom(others);
-        if (best) return { key: best.e.card.key, name: best.e.name, why: 'list', engine: { name: eng.name, abil: eng.card.ab[0].abil, p: eng.card.ab[0].p } };
+        const ea = (eng.card.ab || []).length ? null : engAtk(eng);
+        const engine = ea ? { name: eng.name, abil: ea.name, p: ea.fx.find(x => /^(?:searches|attaches|draws)\b/.test(x)), atk: true } : { name: eng.name, abil: eng.card.ab[0].abil, p: eng.card.ab[0].p };
+        if (best) return { key: best.e.card.key, name: best.e.name, why: 'list', engine };
       }
     }
     return { key: byName.e.card.key, name: byName.e.name, why: 'name', among: new Set(named.map(e => e.card.key)).size };
@@ -5812,7 +5829,13 @@ function gViability(deck, coh, main) {
   // Fewer multi-prize Pokemon, fewer easy prizes for the opponent.
   let prizeScore=0.9-0.25*multiN/pkN;
   if (bigLiabs.length) { const list=bigLiabs.map(e=>gCap(e.name)).join(', ');
-    if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
+    // v61: when the main attacker gives up one prize and the 3-prize Pokemon are not it (Mega Kangaskhan ex
+    // drawing for Slowking), the plan does not lean on them, so the risk is real but smaller.
+    const sideBig=mainC&&(mainC.card.p||1)===1&&!bigLiabs.some(e=>e.card.key===mainC.card.key);
+    if (eff<FMT.ohkoTarget && strat!=='spread' && sideBig) { prizeScore=0.65;
+      findings.push({sev:'warn', t:'A three-prize Pokemon in a one-prize deck',
+      d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, half the game in one knockout, while ${gCap(mainC.name)} gives up one. Put ${bigLiabs.length>1?'them':'it'} in play only when you need ${bigLiabs.length>1?'them':'it'}.`}); }
+    else if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
       findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
       d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
     else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
@@ -5914,7 +5937,7 @@ function gPlan(entries, coh, via) {
   } else if (r && r.copy) {
     how = `It copies ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}.`;
   } else if (r && r.conf === 'low') {
-    how = `Its ${r.atk} depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
+    how = r.hand ? `Its ${r.atk} counts the cards in your hand: about ${r.top} with ${r.hand} cards, the app's estimate, not a printed number.` : `Its ${r.atk} depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   } else if (r && r.flip === 'mill') {
     how = `Its ${r.atk} discards ${r.mill.n === 1 ? 'the top card' : 'the top ' + r.mill.n + ' cards'} of ${r.mill.both ? 'each deck' : 'your deck'} and does ${r.mill.per} ${r.mill.base ? 'more ' : ''}for each ${g56One(r.mill)} among them, about ${r.top} on average since your list runs ${r.mill.have}.`;
   } else if (r) {
@@ -5928,7 +5951,7 @@ function gPlan(entries, coh, via) {
     const enTxt = enN ? ` Its ${e.card.bmAbil} puts it onto your Bench when you have ${[...new Set(en.map(x => gCap(x.name)))].join(' or ')} in play, so the ${enN} ${enN === 1 ? 'copy' : 'copies'} of ${en.length > 1 ? 'those' : 'that'} in the list are there to bring it in.` : '';
     why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
     // v60: the deck is named for the Pokemon that powers it, not for the one that attacks.
-    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, which powers the attackers rather than attacking: its ${m.engine.abil} ${m.engine.p}.`;
+    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets up the attackers' : 'which powers the attackers rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.`;
   }
   // v59: a toolbox deck (Basic Box) has no single plan, so name the other attackers too.
   const tbx = (via.toolbox || []).filter(k => k !== m.key);
@@ -5937,7 +5960,7 @@ function gPlan(entries, coh, via) {
     const q = k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0);
     const most = tbx.every(k => q(k) <= e.qty);
     why = most ? `${nm} is the one the list runs most copies of (${e.qty}).` : '';
-    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, which powers them rather than attacking: its ${m.engine.abil} ${m.engine.p}.${why ? ' ' + why : ''}`;
+    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets them up' : 'which powers them rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.${why ? ' ' + why : ''}`;
   }
   // v59: what the main attacker's own Ability adds, read from its text (Mega Kangaskhan ex's Run Errand).
   const mAb = (e.card.ab || []).filter(x => !x.passive).map(x => `Its ${x.abil} ${x.p}.`).join(' ');
@@ -10034,7 +10057,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
