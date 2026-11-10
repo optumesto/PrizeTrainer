@@ -1,3 +1,16 @@
+# Not released yet: Against the meta, matchup stats from Limitless (10 Nov 2026)
+
+Ships with the next larger release, which sets the version number and the sw.js cache name.
+Changed files: index.html, sw.js (matchups.json is fetched newest first, like data.json), .github/workflows/refresh-data.yml, README.md, CHANGES.md.
+New files: refresh-matchups.mjs. The weekly job adds matchups.json and .github/matchups-cache.json on its first run.
+
+- The Grade tab has a new section, Against the meta, right after Rotation. It finds the deck archetype closest to your list by the Pokemon it plays and shows how that archetype did against each of the most played decks: win rate and number of matches, with an overall record above. You can pick another archetype, and the pick is kept for that deck.
+- Rows with fewer than 20 matches are gray, with one line saying they are too few to trust. Every number comes from matchups.json. Credit line: Data: Limitless TCG, linked.
+- The numbers come from the Limitless play API (online tournaments of 64 or more players over the last 14 days, from the newest set's release day). Counted the way Limitless counts its own matchup pages: ties are matches but not wins, and mirrors, byes and no-shows are left out.
+- refresh-matchups.mjs runs in the Monday job after refresh-data.mjs. It reads each event once and keeps it in .github/matchups-cache.json, reads at most 12 new events a run (about 27 requests, one at a time with a pause), and stops on a rate limit. A failed or thin run keeps last week's file. The page never asks Limitless itself.
+- The file keeps every record per source, so in-person results can be added later as a second source. When there is more than one, a second picker shows All results, Online or In person.
+- Expanded and prerelease decks show no section. With no file yet, the section is simply not there.
+- How the grade works now says the grade itself does not compare you to the metagame, and points to Against the meta.
 # v60: the grade reads what every Pokemon's Abilities and attacks do from card text, and Power counts more kinds of decks right (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v60), CHANGES.md.

@@ -14,6 +14,8 @@ PrizeTrainer/
   .github/workflows/refresh-data.yml   weekly job that refreshes data.json
   refresh-data.mjs                     the script that job runs first
   check-cards.mjs                      then this one: checks card facts in both card databases
+  refresh-matchups.mjs                 then this one: deck vs deck win rates from Limitless online tournaments
+  .github/matchups-cache.json          what that script already read, so each event is read once
   .github/workflows/watch-sets.yml     twice a day: moves the Prerelease section to the next set
   watch-sets.mjs                       the script it runs (whole card lists only, both databases must agree)
   set-watch.md                         what the set watch found last (the job writes it)
@@ -22,6 +24,7 @@ PrizeTrainer/
   manifest.json                        name and icons for Install app
   data.json                            meta, starter decks, rotation, set codes, card fixes
   card-check.md                        the weekly card check report (the job writes it)
+  matchups.json                        win rates for Against the meta on the Grade tab (the job writes it)
   terms.html, privacy.html             Terms of Service and Privacy Policy
   robots.txt, sitemap.xml              for search engines
   saira*.woff2                         the app's fonts (4 files)

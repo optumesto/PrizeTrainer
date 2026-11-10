@@ -2,6 +2,7 @@
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
+# Last, builds matchups.json (deck vs deck win rates) from Limitless online tournaments.
 name: Refresh data.json
 
 on:
@@ -35,14 +36,20 @@ jobs:
         continue-on-error: true
         run: node check-cards.mjs data.json card-check.md index.html
 
+      - name: Refresh matchups.json
+        # A failed run keeps last week's matchups; it never blocks data.json.
+        continue-on-error: true
+        run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
+
       - name: Commit if it changed
         run: |
-          if git diff --quiet -- data.json card-check.md && [ -z "$(git ls-files --others --exclude-standard card-check.md)" ]; then
+          FILES="data.json card-check.md matchups.json .github/matchups-cache.json"
+          if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.json card-check.md
+          for f in $FILES; do [ -e "$f" ] && git add "$f"; done
           git commit -m "Weekly data refresh and card check"
           git push

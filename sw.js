@@ -68,7 +68,7 @@ self.addEventListener('activate', event => {
 });
 
 // On fetch: network-first for the HTML shell (so deploys show up quickly),
-// network-first for data.json, cache-first for everything else (images, fonts, icons).
+// network-first for data.json and matchups.json, cache-first for everything else (images, fonts, icons).
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -86,8 +86,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // The weekly data file: newest copy first, the saved one with no signal.
-  if (url.origin === self.location.origin && url.pathname.endsWith('/data.json')) {
+  // The weekly data files: newest copy first, the saved one with no signal.
+  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json'))) {
     event.respondWith(
       fetch(req, { cache: 'no-cache' })
         .then(resp => {

@@ -754,6 +754,23 @@
   .g-item .gt { font-size:var(--fs-md); font-weight:700; color:var(--text); line-height:1.35; }
   .g-item.crit .gt { color:var(--danger); }
   .g-item p { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin-top:0.2rem; }
+  /* Against the meta: matchup stats from Limitless */
+  #mu60-sec .x-select { margin-bottom:0.75rem; }
+  .mu60-p { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin:0 0 0.75rem; }
+  .mu60-p b { color:var(--text); }
+  .mu60-t { border:1px solid var(--line); border-radius:var(--r); background:var(--surface); overflow:hidden; }
+  .mu60-r { display:grid; grid-template-columns:1fr 5.5rem 4.5rem; gap:0.5rem; align-items:center; padding:0.6rem 0.95rem; font-size:var(--fs-md); color:var(--text); border-top:1px solid var(--line); }
+  .mu60-r:first-child { border-top:0; }
+  .mu60-r > span:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums; }
+  .mu60-r > span:first-child { min-width:0; overflow-wrap:anywhere; }
+  .mu60-h { font-size:var(--fs-sm); color:var(--text-3); padding-top:0.5rem; padding-bottom:0.5rem; }
+  .mu60-p2 { font-weight:700; }
+  .mu60-p2.good { color:var(--success); }
+  .mu60-p2.bad { color:var(--danger); }
+  .mu60-n { color:var(--text-2); }
+  .mu60-r.thin, .mu60-r.thin .mu60-n { color:var(--text-3); }
+  .mu60-f { font-size:var(--fs-sm); color:var(--text-3); line-height:1.5; margin-top:0.6rem; }
+  .mu60-f a { color:var(--text-2); }
   .g-wip {
     max-width:720px; margin:0.5rem auto 1rem; padding:0.9rem 1rem;
     border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line);
@@ -13556,8 +13573,8 @@ renderGrade = function () {
     <p class="g29-about-p"><b>Synergy</b> checks that your cards support each other: every attacker can pay for its attacks,
     evolutions have what they evolve from, and the deck can draw and search. <b>Power</b> checks that the plan can win:
     how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.</p>
-    <p class="g29-about-p">It runs on your list alone, offline. It does not compare you to the current metagame,
-    and card roles are read from card text, which is usually right and sometimes not. Read the findings and do not
+    <p class="g29-about-p">It runs on your list alone, offline. The grade does not compare you to the current metagame; Against the meta
+    shows how similar decks have done in recent tournaments. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not
     worry about the decimal place.</p></details>`;
 
   el.innerHTML = h;
@@ -16358,6 +16375,202 @@ document.addEventListener('DOMContentLoaded', () => { try { pre47RenderHome(); }
 (function () {
   const _rh = renderHome;
   renderHome = function () { const r = _rh.apply(this, arguments); try { pre47RenderHome(); } catch (_) {} return r; };
+})();
+</script>
+<script>
+// ═══════════ Against the meta: matchup stats from Limitless ═══════════
+// matchups.json sits next to the page and is rebuilt every week by
+// refresh-matchups.mjs from Limitless online tournaments. It holds, per deck
+// archetype, the Pokemon its lists usually play and its record against the most
+// played decks, kept per source ("online" now, in-person can be added later).
+// The Grade tab matches the open deck to its closest archetype by Pokemon names and
+// shows that archetype's win rate against each of the most played decks.
+// Every number on screen comes straight from the file. The page never asks Limitless.
+const MU60_URL = './matchups.json';
+const MU60_KEY = 'pt_mu60';
+const MU60_PICK = 'pt_mu60_pick';
+const MU60_FEW = 20;      // fewer matches than this is too few to trust
+const MU60_CLOSE = 0.45;  // how alike a deck must be to count as that archetype
+const MU60_SRC = { online: 'Online', inperson: 'In person' };
+let mu60Data = null, mu60Busy = false, mu60Tried = false, mu60Src = '';
+
+const mu60Id = v => typeof v === 'string' && /^[a-z0-9-]{1,50}$/.test(v) ? v : null;
+const mu60Rec = r => Array.isArray(r) && r.length === 3 && r.every(n => Number.isInteger(n) && n >= 0 && n < 1e7) ? r.slice() : null;
+function mu60Recs(o) {
+  if (!o || typeof o !== 'object') return null;
+  const out = {};
+  for (const [k, r] of Object.entries(o)) { const s = mu60Id(k), v = mu60Rec(r); if (s && v) out[s] = v; }
+  return Object.keys(out).length ? out : null;
+}
+
+/** Check every field. Returns a clean copy, or null when the file is not usable. */
+function mu60Validate(j) {
+  try {
+    if (!j || j.schema !== 1 || !d30Day(j.asOf) || !d30Day(j.since) || !Array.isArray(j.sources) || !Array.isArray(j.decks)) return null;
+    const sources = j.sources.slice(0, 5).map(s => s && mu60Id(s.id) && d30Str(s.name, 60) ? {
+      id: s.id, name: s.name, url: d30Url(s.url),
+      events: Number.isInteger(s.events) ? s.events : 0, matches: Number.isInteger(s.matches) ? s.matches : 0,
+    } : null).filter(Boolean);
+    const decks = j.decks.slice(0, 60).map(d => {
+      if (!d || !mu60Id(d.id) || !d30Str(d.name, 50) || !Array.isArray(d.sig)) return null;
+      const sig = d.sig.slice(0, 12).filter(s => Array.isArray(s) && d30Str(s[0], 60) && typeof s[2] === 'number' && s[2] > 0 && s[2] <= 1)
+        .map(s => [s[0], Number(s[1]) || 0, s[2]]);
+      if (!sig.length) return null;
+      const vs = {};
+      for (const [o, r] of Object.entries(d.vs || {})) { const k = mu60Id(o), v = mu60Recs(r); if (k && v) vs[k] = v; }
+      return { id: d.id, name: d.name, share: typeof d.share === 'number' ? d.share : 0,
+        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs };
+    }).filter(Boolean);
+    const ids = new Set(decks.map(d => d.id));
+    const cols = (Array.isArray(j.cols) ? j.cols : []).filter(c => ids.has(c)).slice(0, 12);
+    if (!sources.length || decks.length < 2 || cols.length < 2) return null;
+    return { asOf: j.asOf, since: j.since, until: d30Day(j.until) || j.asOf, sources, cols, decks };
+  } catch (_) { return null; }
+}
+
+/** The saved copy at once, the newest copy from the site once per page load. */
+function mu60Load() {
+  if (!mu60Data) { try { mu60Data = mu60Validate(JSON.parse(safeLocalGet(MU60_KEY) || 'null')); } catch (_) {} }
+  if (mu60Busy || mu60Tried) return;
+  mu60Busy = true;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const t = ctl ? setTimeout(() => ctl.abort(), 8000) : 0;
+  fetch(MU60_URL, { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
+    .then(r => r.ok ? r.json() : null)
+    .then(j => {
+      const d = mu60Validate(j);
+      if (!d) return;
+      const was = mu60Data;
+      mu60Data = d;
+      safeLocalSet(MU60_KEY, JSON.stringify(j));
+      if (!was || was.asOf !== d.asOf) mu60Rerender();
+    })
+    .catch(() => {})
+    .finally(() => { clearTimeout(t); mu60Busy = false; mu60Tried = true; });
+}
+
+function mu60Rerender() {
+  const pane = document.getElementById('grade-body');
+  const scr = document.getElementById('screen-review');
+  if (pane && pane.style.display !== 'none' && scr && scr.classList.contains('active')) renderGrade();
+}
+
+const mu60Norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/** The open deck's closest archetype, by the Pokemon it plays. */
+function mu60Match(deck, data) {
+  const mine = new Set((deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => mu60Norm(c.apiName || c.name)).filter(Boolean));
+  if (!mine.size) return null;
+  // A Pokemon most archetypes play (a support ex, say) says little about which deck this is.
+  const df = {};
+  data.decks.forEach(d => new Set(d.sig.map(s => mu60Norm(s[0]))).forEach(n => { df[n] = (df[n] || 0) + 1; }));
+  const N = data.decks.length;
+  const w = n => Math.log(1 + N / (df[n] || 0.5));
+  let best = null;
+  for (const d of data.decks) {
+    let have = 0, all = 0;
+    const theirs = new Set();
+    for (const [name, , freq] of d.sig) {
+      const n = mu60Norm(name);
+      if (theirs.has(n)) continue;
+      theirs.add(n);
+      all += w(n) * freq;
+      if (mine.has(n)) have += w(n) * freq;
+    }
+    let myAll = 0, myHave = 0;
+    mine.forEach(n => { const k = w(n); myAll += k; if (theirs.has(n)) myHave += k; });
+    const score = all ? 0.7 * have / all + 0.3 * (myAll ? myHave / myAll : 0) : 0;
+    if (!best || score > best.score) best = { deck: d, score };
+  }
+  return best && best.score >= MU60_CLOSE ? best.deck : null;
+}
+
+function mu60Picks() { try { return JSON.parse(safeLocalGet(MU60_PICK) || '{}') || {}; } catch (_) { return {}; } }
+function mu60SetPick(v) {
+  const p = mu60Picks();
+  if (v) p[state.activeDeckId] = v; else delete p[state.activeDeckId];
+  safeLocalSet(MU60_PICK, JSON.stringify(p));
+  renderGrade();
+  const s = document.getElementById('mu60-sec');
+  if (s && s.scrollIntoView) s.scrollIntoView({ block: 'nearest' });
+}
+function mu60SetSrc(v) { mu60Src = MU60_SRC[v] ? v : ''; renderGrade(); }
+
+/** Wins, losses and ties summed over the sources in use. */
+function mu60Sum(recs) {
+  const r = [0, 0, 0];
+  for (const [k, v] of Object.entries(recs || {})) if (!mu60Src || k === mu60Src) { r[0] += v[0]; r[1] += v[1]; r[2] += v[2]; }
+  return r;
+}
+const mu60Pct = r => { const n = r[0] + r[1] + r[2]; return n ? r[0] / n * 100 : null; };
+const mu60Fmt = p => p.toFixed(1) + '%';
+const mu60Tone = p => p >= 55 ? 'good' : p < 45 ? 'bad' : '';
+
+function mu60Section(deck) {
+  const data = mu60Data;
+  if (!data || deck.format === 'expanded' || deck.format === 'prerelease') return '';
+  const auto = mu60Match(deck, data);
+  const pickId = mu60Picks()[deck.id];
+  const arch = data.decks.find(d => d.id === pickId) || auto;
+  const byName = data.decks.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const opts = `<option value=""${arch ? '' : ' selected'}>${auto ? 'Closest match: ' + esc(auto.name) : 'Pick a deck'}</option>`
+    + byName.map(d => `<option value="${esc(d.id)}"${pickId === d.id ? ' selected' : ''}>${esc(d.name)}</option>`).join('');
+  const srcIds = data.sources.map(s => s.id);
+  const srcSel = srcIds.length > 1
+    ? `<select class="x-select" aria-label="Results from" onchange="mu60SetSrc(this.value)"><option value="">All results</option>${srcIds.map(id => `<option value="${esc(id)}"${mu60Src === id ? ' selected' : ''}>${esc(MU60_SRC[id] || id)}</option>`).join('')}</select>` : '';
+  const span = data.since === data.until ? d30Nice(data.since) : `${d30Nice(data.since)} to ${d30Nice(data.until)}`;
+  const from = data.sources.filter(s => !mu60Src || s.id === mu60Src);
+  const events = from.reduce((a, s) => a + s.events, 0);
+
+  let h = `<div class="g-sec" id="mu60-sec"><div class="g-sec-t">Against the meta</div>
+    <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${srcIds.length > 1 && !mu60Src ? 'tournaments' : (from[0] ? esc(from[0].name.replace(/^Limitless /, '')) : 'tournaments')}, ${span}.</div>
+    <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;
+
+  if (!arch) {
+    h += `<p class="mu60-p">No deck in recent results plays the same Pokemon as this one. Pick the closest deck above to see its matchups.</p>`;
+  } else {
+    const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2], p = mu60Pct(all);
+    h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of ${n} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
+      : `<p class="mu60-p">No matches for ${esc(arch.name)} in these results yet.</p>`;
+    const rows = data.cols.filter(c => c !== arch.id).map(c => {
+      const opp = data.decks.find(d => d.id === c);
+      const r = mu60Sum(arch.vs[c]);
+      return { opp, r, n: r[0] + r[1] + r[2], p: mu60Pct(r) };
+    }).filter(x => x.opp);
+    let few = false;
+    h += `<div class="mu60-t" role="table" aria-label="Win rate against the most played decks">
+      <div class="mu60-r mu60-h" role="row"><span role="columnheader">Against</span><span role="columnheader">Win rate</span><span role="columnheader">Matches</span></div>
+      ${rows.map(x => {
+        const thin = x.n < MU60_FEW;
+        if (thin) few = true;
+        return `<div class="mu60-r${thin ? ' thin' : ''}" role="row"><span role="cell">${esc(x.opp.name)}</span>
+          <span role="cell" class="mu60-p2 ${thin || x.p == null ? '' : mu60Tone(x.p)}">${x.p == null ? 'None' : mu60Fmt(x.p)}</span>
+          <span role="cell" class="mu60-n">${x.n}</span></div>`;
+      }).join('')}</div>`;
+    if (few) h += `<p class="mu60-f">Gray rows have fewer than ${MU60_FEW} matches, too few to trust.</p>`;
+  }
+  const src = from[0] && from[0].url ? from[0].url : 'https://play.limitlesstcg.com/';
+  h += `<p class="mu60-f">Data: <a href="${esc(src)}" target="_blank" rel="noopener">Limitless TCG</a>. Ties count as matches, not wins. Mirror matches, byes and no-shows are left out. Updated ${d30Nice(data.asOf)}.</p></div>`;
+  return h;
+}
+
+(function () {
+  const _rg = renderGrade;
+  renderGrade = function () {
+    const r = _rg.apply(this, arguments);
+    try {
+      mu60Load();
+      const deck = state.decks.find(d => d.id === state.activeDeckId);
+      const el = document.getElementById('grade-body');
+      const fix = el && el.querySelector('#g29-fix');
+      if (!deck || !fix || el.querySelector('#mu60-sec')) return r;
+      const h = mu60Section(deck);
+      if (!h) return r;
+      const after = el.querySelector('#r29-sec') || fix;
+      after.insertAdjacentHTML('afterend', h);
+    } catch (e) { console.warn('[matchups]', e); }
+    return r;
+  };
 })();
 </script>
 </body>
