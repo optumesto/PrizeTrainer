@@ -3866,8 +3866,31 @@ function copy37(text) {
     .test(String(text || '').replace(/[\u2018\u2019]/g, "'"))) return { pre: '', mill: true };
   return null;
 }
+/**
+ * v53: an attack whose damage counts Energy in play, read from its text:
+ * "50 damage for each Fire Energy and each Lightning Energy attached to all
+ * of your Pokemon" gives { per:50, base:0, types:['fire','lightning'], scope:'all' }.
+ * types is empty when any Energy counts. scope: all (all of your Pokemon),
+ * self (this Pokemon) or both (both Active Pokemon). The numbers are the
+ * card's own; how many Energy are in play is the board's.
+ */
+function escale53(text, damage) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon');
+  const m = t.match(/does (\d+) (more )?damage for each ((?:(?:basic )?\w+ )?energy(?:,? and (?:each )?(?:(?:basic )?\w+ )?energy)*) attached to (all of your pokemon|this pokemon|both active pokemon)/i);
+  if (!m) return null;
+  const types = [...m[3].matchAll(/(?:basic )?(\w+) energy/gi)].map(x => x[1].toLowerCase())
+    .filter(x => ['grass','fire','water','lightning','psychic','fighting','darkness','metal','dragon','fairy','colorless'].includes(x));
+  const base = m[2] ? (parseInt(String(damage || ''), 10) || 0) : 0;
+  const scope = /^all/i.test(m[4]) ? 'all' : /^this/i.test(m[4]) ? 'self' : 'both';
+  return { per: parseInt(m[1], 10), base, types, scope };
+}
+/** "Each Basic Grass Energy attached to all of your Pokemon provides GrassGrass Energy" gives 'grass'. */
+function edouble53(text) {
+  const m = String(text || '').match(/each basic (\w+) energy attached to all of your pok[e\u00e9]mon provides (\w+) energy/i);
+  return m && m[2].toLowerCase() === (m[1] + m[1]).toLowerCase() ? m[1].toLowerCase() : undefined;
+}
 // These sit inside the card layer's closure; the TCGdex reader outside it needs them too.
-if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37 });
+if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53 });
 
 function enrichCard(apiCard, opts) {
   const o = opts || {};
@@ -3906,6 +3929,7 @@ function enrichCard(apiCard, opts) {
       early: dmg.kind === 'plus' && cond ? dmg.base : dmg.typical,
       flip: dmg.flip || null,
       copy: copy37(a.text),
+      escale: escale53(a.text, a.damage),
     };
   });
   const abilities = (card.abilities || []).map(x => ({
@@ -3913,6 +3937,7 @@ function enrichCard(apiCard, opts) {
     protect: /prevent all (?:damage|effects)/i.test(x.text || ''),
     pkind: /prevent all damage/i.test(x.text || '') ? 'damage' : /prevent all effects/i.test(x.text || '') ? 'effects' : undefined,
     bench: /if this pok[e\u00e9]mon is in your hand[\s\S]*?put this pok[e\u00e9]mon onto your bench/i.test(x.text || '') || undefined,
+    edouble: edouble53(x.text),
   }));
 
   const supertype = String(card.supertype || '').toLowerCase();
@@ -4554,7 +4579,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 5;   // v37: re-read for prize values, coin flips, copy attacks and card fixes
+const ENRICH_VER = 6;   // v53: re-read for attacks that count Energy in play
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -4663,7 +4688,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -4675,6 +4700,7 @@ function toGradeDeck(deck) {
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
+      edbl: (c.abilities||[]).filter(x => x.edouble).map(x => ({ type: x.edouble, abil: x.name })),
       byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
     }};
   });
@@ -4759,6 +4785,7 @@ function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks
  */
 function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
+  if (a.escale && !a.cond) return gEnergyReach(a, deck);
   if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
   const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
   let have = 0;
@@ -4770,6 +4797,38 @@ function gAtkReach(a, deck) {
     else have += e.qty; });
   const top = have >= a.cond.n ? Math.max(a.max || 0, now) : now;
   return { now, top, cond: top > now ? a.cond : null, have };
+}
+
+/**
+ * v53: damage that counts Energy in play. The per Energy number and the
+ * Energy types come from the card; the count is an estimate the text says
+ * out loud: 5 across all your Pokemon, 3 on one Pokemon or on both Active
+ * Pokemon, never more than the list holds. need() is how many it takes to
+ * reach a given HP, which is plain arithmetic on the printed numbers.
+ */
+const G53_ESCALE_N = { all: 5, self: 3, both: 3 };
+function gEnergyReach(a, deck) {
+  const e = a.escale;
+  // An Ability like Wild Growth makes each Basic Energy of a type count twice.
+  const dbl = [];
+  deck.forEach(x => (x.card && x.card.edbl || []).forEach(d => {
+    if ((!e.types.length || e.types.includes(d.type)) && !dbl.some(y => y.type === d.type)) dbl.push({ type: d.type, abil: d.abil, who: x.name }); }));
+  let have = 0, haveDbl = 0;
+  deck.forEach(x => { const c = x.card; if (!c || c.t !== 'energy') return;
+    const ty = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : []);
+    if (!e.types.length || ty.includes('any') || e.types.some(t => ty.includes(t))) {
+      have += x.qty;
+      if (/^(basic )?\w+ energy$/i.test(String(x.name || '').trim()) && dbl.some(d => ty.includes(d.type))) haveDbl += x.qty; } });
+  const n = e.scope === 'both' ? G53_ESCALE_N.both : Math.min(have, G53_ESCALE_N[e.scope] || 3);
+  // Doubling counts only when most of the counted Energy is Basic Energy it doubles.
+  const x2 = e.scope !== 'both' && dbl.length && haveDbl * 2 >= have ? dbl[0] : null;
+  const k = x2 ? 2 : 1;
+  // Like a discard pile bonus, the full hit counts when the list holds enough
+  // Energy to one-shot the format's biggest threat; the grade calls it a mid game plan.
+  const need = Math.max(1, Math.ceil((FMT.threatHP[1] - e.base) / (e.per * k)));
+  const nTop = e.scope === 'both' ? n : Math.min(have, Math.max(n, need));
+  const now = e.base + e.per * n * k, top = e.base + e.per * nTop * k;
+  return { now, top, cond: null, conf: 'est', escale: Object.assign({}, e, { n, nTop, have, x2 }) };
 }
 
 // v37: damage boosters, each number and limit read from the printed card text.
@@ -4814,6 +4873,19 @@ function g35Boost(deck, atk) {
 /** One sentence on one attacker: the printed number, how it gets there and what each booster adds. */
 function g35Hit(r) {
   const nm = gCap(r.name);
+  if (r.escale && !r.copy) {
+    const e = r.escale, ty = e.types.map(gCap);
+    const what = (ty.length ? ty.join(' and ') + ' ' : '') + 'Energy';
+    if (e.scope === 'both') return `${nm}'s ${r.atk} does ${e.base ? e.base + ' plus ' : ''}${e.per} for each Energy attached to both Active Pokemon, so ${r.top} with ${e.n} between them is the app's estimate, not a printed number.`;
+    const [lo, hi] = FMT.threatHP;
+    const k = e.x2 ? 2 : 1;
+    const need = hp => Math.max(1, Math.ceil((hp - e.base) / (e.per * k)));
+    const card = e.x2 ? ` Basic ${gCap(e.x2.type)} Energy cards` : '';
+    return `${nm}'s ${r.atk} does ${e.base ? e.base + ' plus ' : ''}${e.per} for each ${what} attached to ${e.scope === 'all' ? 'all your Pokemon' : 'it'}. ` +
+      (e.x2 ? `${gCap(e.x2.who)}'s ${e.x2.abil} makes each Basic ${gCap(e.x2.type)} Energy count twice. ` : '') +
+      `It takes ${need(lo)}${card} to one-shot ${lo} HP and ${need(hi)} for ${hi} HP, before Weakness. Your list runs ${e.have}.` +
+      (r.boost ? ` ${r.bNames.join(' and ')} ${r.bNames.length > 1 ? 'add' : 'adds'} ${r.boost} more${r.vsEx ? ' against a Pokemon ex' : ''}.` : '');
+  }
   const how = r.copy ? ` copying ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}` : '';
   const verb = r.flip ? 'averages' : 'hits for at most';
   let t;
@@ -4840,14 +4912,16 @@ function g37Hits(eff) {
 function g37Reach(a, deck, self) {
   // A random attack off the top of the deck is not counted (the grade says so).
   if (a.copy && a.copy.mill) return { now: 0, top: 0, cond: null, conf: 'high', flip: null };
-  if (!a.copy) return Object.assign(gAtkReach(a, deck), { conf: a.conf || 'high', flip: a.flip || null });
+  if (!a.copy) { const r0 = gAtkReach(a, deck);
+    return Object.assign(r0, { conf: r0.escale ? 'est' : (a.conf || 'high'), flip: a.flip || null, atk: a.name }); }
   const pre = String(a.copy.pre || '').toLowerCase();
   let best = null;
   deck.forEach(e => { const c = e.card;
     if (!c || c.t !== 'pkmn' || e === self || c.key === (self && self.card && self.card.key) || !c.attacks) return;
     if (pre && !c.key.startsWith(pre)) return;
     c.attacks.forEach(x => { if (x.copy) return;
-      const r = Object.assign(gAtkReach(x, deck), { conf: x.conf || 'high', flip: x.flip || null, copy: { who: e.name, atk: x.name, via: a.name } });
+      const r0 = gAtkReach(x, deck);
+      const r = Object.assign(r0, { conf: r0.escale ? 'est' : (x.conf || 'high'), flip: x.flip || null, atk: x.name, copy: { who: e.name, atk: x.name, via: a.name } });
       if (!best || r.top > best.top) best = r; }); });
   return best || { now: 0, top: 0, cond: null, conf: 'high', flip: null };
 }
@@ -4859,7 +4933,63 @@ function g37Copier(deck, c) {
     (a.copy.mill ? !ruleBox : (!a.copy.pre || c.key.startsWith(String(a.copy.pre).toLowerCase())))));
 }
 
-function gViability(deck, coh) {
+/**
+ * v53: the deck's main attacker, the Pokemon the game plan is built around.
+ * 1. The deck's name. Tournament lists are named for their attacker
+ *    ("Mega Rayquaza", "Alakazam Dudunsparce"). When the name calls out
+ *    Pokemon that can attack with the list's Energy, the pick is made among
+ *    those only, by the weighing in 2.
+ * 2. Otherwise the whole list: realistic damage times how much of the deck
+ *    is spent on that Pokemon (its copies, plus half the copies of what it
+ *    evolves from), doubled in step with how much of the list's typed Energy
+ *    its attack cost asks for. A Pokemon that draws or searches with an
+ *    attack the deck's Energy does not shape (all Colorless) counts half,
+ *    since lists play those for the Ability (Mega Kangaskhan ex, Dudunsparce).
+ * Returns { key, name, why: 'name' | 'list' } or null.
+ */
+function gMainAttacker(deck, coh, deckName) {
+  const et = coh.energyTypes || {};
+  const pay = a => (a.cost || []).every(ty => ty === 'colorless' || et[ty] || et.any);
+  const reachOf = e => { let best = null;
+    (e.card.attacks || []).forEach(a => { if (!pay(a)) return;
+      const r = g37Reach(a, deck, e);
+      if (r.top > 0 || (a.copy && a.copy.mill)) { if (!best || r.top > best.r.top) best = { r, a }; } });
+    return best; };
+  const mons = deck.filter(e => e.card && e.card.t === 'pkmn' && e.card.attacks);
+  const nk = x => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u2018\u2019]/g, "'").replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const dn = ' ' + nk(deckName) + ' ';
+  // Every Pokemon the name calls out, by full name, without ex or Mega, or by species alone.
+  const named = dn.trim() ? mons.filter(e => {
+    const full = nk(e.name), bare = full.replace(/ ex$/, ''), noMega = bare.replace(/^mega /, '');
+    return [full, bare, noMega, noMega.split(' ').pop()].some(v => v && dn.includes(' ' + v + ' '));
+  }) : [];
+  const typedTotal = Object.keys(et).filter(k => k !== 'any' && k !== 'colorless').reduce((n, k) => n + et[k], 0);
+  const qtyOf = k => deck.filter(e => e.card && e.card.key === k).reduce((n, e) => n + e.qty, 0);
+  const pickFrom = list => {
+    let best = null;
+    list.forEach(e => {
+      const b = reachOf(e); if (!b) return;
+      const c = e.card;
+      const pre1 = c.from ? qtyOf(c.from) : 0;
+      const pre2 = c.from ? deck.filter(x => x.card && x.card.key === c.from && x.card.from).reduce((n, x) => n + qtyOf(x.card.from), 0) : 0;
+      const weight = e.qty + 0.5 * (pre1 + pre2);
+      const typed = [...new Set((b.a.cost || []).filter(t => t !== 'colorless'))];
+      const share = typedTotal ? Math.min(1, typed.reduce((n, t) => n + (et[t] || 0), 0) / typedTotal) : 0;
+      const support = !typed.length && (c.provides || []).some(p => p === 'draw' || /^search/.test(p)) ? 0.5 : 1;
+      // A named attacker whose damage the grade cannot count (Slowking's Seek Inspiration) still counts as one.
+      const score = weight * Math.max(b.r.top, 1) * (1 + share) * support;
+      if (!best || score > best.score) best = { score, e };
+    });
+    return best;
+  };
+  const byName = pickFrom(named);
+  if (byName) return { key: byName.e.card.key, name: byName.e.name, why: 'name', among: new Set(named.map(e => e.card.key)).size };
+  const best = pickFrom(mons.filter(e => { const b = reachOf(e); return b && b.r.top > 0; }));
+  return best ? { key: best.e.card.key, name: best.e.name, why: 'list' } : null;
+}
+
+function gViability(deck, coh, main) {
   const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
   const pay=a=>(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]||coh.energyTypes.any);
   // Best payable hit per attacker: its ceiling, and what it does early.
@@ -4870,6 +5000,13 @@ function gViability(deck, coh) {
     if (r0 && r0.top>0) { const b=g35Boost(deck, e.card);
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, eff:r0.top+b.n }); } });
   let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
+  // v53: the main attacker leads when it hits at least as hard. When something
+  // else hits harder, the finding says which is which.
+  const mainR = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
+  if (mainR && bestR && mainR.eff >= bestR.eff) bestR = mainR;
+  const lead = main && bestR && bestR !== mainR && main.key !== bestR.name.toLowerCase()
+    ? `${gCap(main.name)} is this deck's main attacker, but the hardest hit the grade can count comes from another Pokemon. ` : '';
+  const hitsTxt = bestR && bestR.escale && bestR.escale.scope !== 'both' ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0);
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
   const boost = bestR ? bestR.boost : 0;
@@ -4883,17 +5020,21 @@ function gViability(deck, coh) {
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=1;
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${g35Hit(bestR)} ${g37Hits(eff)}`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsTxt}`}); }
   else if (eff*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
     closeScore=0.6+0.3*(eff-hi/2)/(FMT.ohkoTarget-hi/2);
     const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${g35Hit(bestR)} ${g37Hits(eff)}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
   else { strat='weak'; closeScore=0.15+0.45*eff/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${g35Hit(bestR)} ${g37Hits(eff)} You cannot trade up, which usually loses the prize race.`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsTxt} You cannot trade up, which usually loses the prize race.`}); }
+  if (bestR && bestR.escale && bestR.top > bestR.now) { const e = bestR.escale;
+    const what = e.x2 ? `Basic ${gCap(e.x2.type)} Energy cards` : (e.types.length ? e.types.map(gCap).join(' and ') + ' ' : '') + 'Energy';
+    findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
+    d:`${gCap(bestName)} hits for ${bestR.now} with ${e.n} ${what} attached and ${bestR.top} once ${e.nTop} are in play. Your list runs ${e.have}, so the full hit is a mid game plan, not a turn 2 one.`}); }
   if (bestR && bestR.cond) findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
     d:`${gCap(bestName)} hits for ${bestR.now} early and ${bestR.top} once ${condTxt(bestR)}. Your list has ${bestR.have} of those cards, so the full hit is a mid game plan, not a turn 2 one.`});
   // Abilities that stop attack effects or damage make the deck hard to disrupt.
@@ -4935,17 +5076,80 @@ function gViability(deck, coh) {
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 attackers before the game runs away.'});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
-  return { score, findings, best, eff, bestName, reach };
+  return { score, findings, best, eff, bestName, reach, main };
+}
+
+/**
+ * v53: how the deck is played, for the top of How it plays. Two items, each
+ * read from the list and the card text only:
+ *   Main attacker: who attacks and what its attack counts on.
+ *   Support: Pokemon with a draw or search Ability whose attack cost is all
+ *   Colorless (the Energy is not chosen for them), so they are mainly there
+ *   for the Ability.
+ */
+function gPlan(entries, coh, via) {
+  const out = [], m = via && via.main;
+  if (!m) return out;
+  const nm = gCap(m.name), e = entries.find(x => x.card && x.card.key === m.key);
+  if (!e) return out;
+  const r = (via.reach || []).find(x => x.name.toLowerCase() === m.key);
+  const mill = (e.card.attacks || []).find(a => a.copy && a.copy.mill);
+  const pre = new Set(); let f = e.card.from;
+  while (f && !pre.has(f)) { pre.add(f); const x = entries.find(y => y.card && y.card.key === f); f = x && x.card.from; }
+  let how = '';
+  if (mill) {
+    const fodder = entries.filter(x => x.card && x.card.t === 'pkmn' && x.card.key !== m.key && !pre.has(x.card.key) &&
+      !x.card.isEx && (x.card.p || 1) < 2 && (x.card.attacks || []).some(a => !a.copy)).map(x => gCap(x.name));
+    how = `Its ${mill.name} uses an attack from a Pokemon without a Rule Box that comes off the top of your deck` +
+      (fodder.length ? `. In this list that is ${fodder.length > 1 ? fodder.slice(0, -1).join(', ') + ' and ' + fodder[fodder.length - 1] : fodder[0]}.` : '.');
+  } else if (r && r.escale) {
+    const x = r.escale, ty = x.types.map(gCap), what = (ty.length ? ty.join(' and ') + ' ' : '') + 'Energy';
+    how = x.scope === 'all'
+      ? `Its ${r.atk} counts ${what} attached to all your Pokemon, so every one you attach anywhere on your board adds ${x.per}${x.x2 ? ` (${x.per * 2} for a Basic ${gCap(x.x2.type)} Energy with ${gCap(x.x2.who)}'s ${x.x2.abil} in play)` : ''}.`
+      : x.scope === 'self' ? `Its ${r.atk} counts ${what} attached to it, so every one you attach to it adds ${x.per}.`
+      : `Its ${r.atk} counts the Energy attached to both Active Pokemon.`;
+  } else if (r && r.cond) {
+    how = `Its ${r.atk} grows as your discard pile fills: ${r.now} early, ${r.top} once you have ${r.cond.n} ${r.cond.what} there.`;
+  } else if (r && r.copy) {
+    how = `It copies ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}.`;
+  } else if (r && r.conf === 'low') {
+    how = `Its ${r.atk} depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
+  } else if (r) {
+    how = `Its ${r.atk} ${r.flip ? 'averages' : 'hits for'} ${r.top}${r.flip === 'tails' ? ' with its coin flips' : ''}.`;
+  }
+  let why;
+  if (m.why === 'name') why = m.among > 1 ? 'Of the Pokemon the deck is named for, it is the one the list is built to attack with.' : 'The deck is named for it.';
+  else {
+    const preN = [...pre].map(k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0));
+    why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.`;
+  }
+  out.push({ link: `Main attacker: ${nm}`, p: `${nm} does the attacking. ${why}${how ? ' ' + how : ''}` });
+  const sup = entries.filter(x => { const c = x.card;
+    if (!c || c.t !== 'pkmn' || c.key === m.key || pre.has(c.key) || !(c.abil || []).length) return false;
+    if (!(c.provides || []).some(t => t === 'draw' || /^search/.test(t))) return false;
+    return (c.attacks || []).every(a => (a.cost || []).every(t => t === 'colorless')); });
+  const seen = new Set(), names = [];
+  sup.forEach(x => { if (seen.has(x.card.key)) return; seen.add(x.card.key); names.push(`${gCap(x.name)} (${x.card.abil.join(', ')})`); });
+  if (names.length) {
+    const draws = sup.some(x => x.card.provides.includes('draw')), finds = sup.some(x => x.card.provides.some(t => /^search/.test(t)));
+    out.push({ link: `Support: ${[...seen].map(k => gCap(sup.find(x => x.card.key === k).name)).join(', ')}`,
+      p: `Played mainly for ${names.length > 1 ? 'their Abilities' : 'its Ability'}, to ${draws && finds ? 'draw and search' : draws ? 'draw cards' : 'search your deck'}: ` +
+         `${names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]}. ` +
+         (names.length > 1 ? `Their attacks cost only Colorless Energy, so the list's Energy is not picked for them.` : `Its attack costs only Colorless Energy, so the list's Energy is not picked for it.`) });
+  }
+  return out;
 }
 
 function gradeDeck(deck) {
   const entries=toGradeDeck(deck);
   const coh=gCoherence(entries);
-  const via=gViability(entries, coh);
+  let main=null; try { main=gMainAttacker(entries, coh, deck.name); } catch (_) {}
+  const via=gViability(entries, coh, main);
   const cohF=Math.max(coh.score,0.06), viaF=Math.max(via.score,0.12);
   const overall=gR1(cohF*viaF*10);
   const unread=entries.filter(e=>!e.card).reduce((a,e)=>a+e.qty,0);
-  return { overall, coh, via, unread, entries };
+  let plan=[]; try { plan=gPlan(entries, coh, via); } catch (_) {}
+  return { overall, coh, via, unread, entries, plan };
 }
 
 function gBand(v) {
@@ -5010,10 +5214,10 @@ function renderGrade() {
     <p>Card roles could not be resolved for these, so they contributed nothing to the grade.
     Opening the deck again while online retries the lookup.</p></div></div>`;
 
-  if (R.coh.synergies.length) {
+  if (R.coh.synergies.length || (R.plan||[]).length) {
     h+=`<div class="g-sec"><div class="g-sec-t">How it plays</div>
-      <div class="g-sec-i">Interactions the engine found between your own cards. This is what the deck is trying to do.</div>`;
-    R.coh.synergies.forEach(s=>h+=`<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`);
+      <div class="g-sec-i">The main attacker and the combos the engine found between your own cards. This is what the deck is trying to do.</div>`;
+    (R.plan||[]).concat(R.coh.synergies).forEach(s=>h+=`<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`);
     h+=`</div>`;
   }
 
@@ -5116,42 +5320,32 @@ function simGroups(cards) {
 
 /**
  * The evolution line behind the main attacker, as group indexes.
- * Main attacker = the most damage summed over its copies, using only
- * attacks the deck's energy can pay for. That picks a 3-of Dragapult ex
- * over a 1-of tech that hits a little harder, which is what you will
- * actually be setting up most games.
+ * Main attacker is the grade's pick (gMainAttacker): the Pokemon the deck is
+ * named for, or else the one the list is built around. Damage alone is not
+ * enough: 4 Mega Kangaskhan ex in a Mega Rayquaza list are there to draw.
  * Returns null when there is no attacker, or a line with missing:true when
  * a piece the attacker needs is not in the list at all.
  */
 function simAttackerLine(deck, groups) {
   let R;
   try { R = gradeDeck(deck); } catch (_) { return null; }
-  if (!R) return null;
+  if (!R || !R.via || !R.via.main) return null;
   const et = (R.coh && R.coh.energyTypes) || {};
-  // Realistic damage: a discard pile bonus counts only when the list can meet it.
-  const payDmg = {}, reachOf = {};
-  R.entries.forEach(e => {
-    if (!e.card || !e.card.attacks) return;
-    let best = null;
-    e.card.attacks.forEach(a => {
-      const ok = (a.cost||[]).every(ty => ty==='colorless' || et[ty] || et.any);
-      if (!ok) return;
-      const r = gAtkReach(a, R.entries);
-      if (!best || r.top > best.top) best = r;
-    });
-    const k = e.card.key;
-    if (best && best.top > (payDmg[k]||0)) { payDmg[k] = best.top; reachOf[k] = best; }
-  });
   const idx = k => groups.findIndex(g => g.key === k);
-  let top = -1, bestScore = 0;
-  groups.forEach((g,i) => {
-    const s = (payDmg[g.key]||0) * g.qty;
-    if (s > bestScore) { bestScore = s; top = i; }
-  });
+  const top = idx(R.via.main.key);
   if (top < 0) return null;
   const g = groups[top];
-  const r = reachOf[g.key];
-  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false,
+  // Realistic damage: a discard pile bonus counts only when the list can meet it.
+  let r = null;
+  R.entries.forEach(e => {
+    if (!e.card || e.card.key !== g.key || !e.card.attacks) return;
+    e.card.attacks.forEach(a => {
+      if (!(a.cost||[]).every(ty => ty==='colorless' || et[ty] || et.any)) return;
+      const x = gAtkReach(a, R.entries);
+      if (!r || x.top > r.top) r = x;
+    });
+  });
+  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:R.via.main.why,
     cond: r && r.cond ? r.cond : null, now: r ? r.now : 0, full: r ? r.top : 0 };
   if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
   if (g.stage === 'stage1') {
@@ -5470,7 +5664,7 @@ function renderOdds() {
       parts.push(`${esc(S.groups[line.basic].name)} by turn 1, then ${esc(line.name)} by turn 2 (nothing evolves on its first turn in play)`);
     } else parts.push(`${esc(line.name)} among your first ${SIM_SEEN_T2} cards`);
     h += `<div class="g-sec"><div class="g-sec-t">Main attacker</div>
-      <div class="g-sec-i">The attacker with the most realistic damage across all its copies, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.</div>
+      <div class="g-sec-i">${line.why === 'name' ? 'The attacker this deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch?' to '+oPct(AT.search):''}</div>
         <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} until you have ${line.cond.n} ${esc(line.cond.what)} in your discard pile, then ${line.full}. Filling the discard pile is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
@@ -8117,7 +8311,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -9712,7 +9906,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v52';
+const PT_VERSION = 'v53';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -11534,6 +11728,7 @@ renderGrade = function () {
   const probs = g29Problems(R);
   const good = R.via.findings.filter(f => f.sev === 'ok');
   const syn = R.coh.synergies;
+  const plays = (R.plan || []).concat(syn);   // v53: the main attacker and support roles lead How it plays
   const rot = typeof r29Summary === 'function' ? r29Summary(deck) : null;
 
   let weak = '';
@@ -11549,7 +11744,7 @@ renderGrade = function () {
   if (probs.length) jumps.push(`<button class="g29-jump-b ${probs.some(f => f.sev === 'crit') ? 'crit' : 'warn'}" onclick="g29Jump('g29-fix')"><b>${probs.length}</b> to fix</button>`);
   if (rot && rot.chip) jumps.push(`<button class="g29-jump-b ${rot.chipTone}" onclick="g29Jump('r29-sec')">${rot.chip}</button>`);
   if (good.length) jumps.push(`<button class="g29-jump-b ok" onclick="g29Jump('g29-good')"><b>${good.length}</b> working well</button>`);
-  if (syn.length) jumps.push(`<button class="g29-jump-b syn" onclick="g29Jump('g29-syn')"><b>${syn.length}</b> combo${syn.length > 1 ? 's' : ''}</button>`);
+  if (plays.length) jumps.push(`<button class="g29-jump-b syn" onclick="g29Jump('g29-syn')">How it plays</button>`);
 
   let h = `<div class="g-hero g29-hero">
     <div class="g-ring" style="--p:${Math.max(0, Math.min(100, R.overall * 10))};--col:${col}">
@@ -11588,9 +11783,9 @@ renderGrade = function () {
   if (good.length) h += `<details class="g-sec g29-fold" id="g29-good"><summary><span class="g-sec-t">Working well</span><span class="g29-n">${good.length}</span></summary>
     ${good.map(f => g29Item(f, 'ok')).join('')}</details>`;
 
-  if (syn.length) h += `<details class="g-sec g29-fold" id="g29-syn"><summary><span class="g-sec-t">How it plays</span><span class="g29-n">${syn.length}</span></summary>
-    <div class="g-sec-i">Combos the grader found between your own cards. This is what the deck is trying to do.</div>
-    ${syn.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`).join('')}</details>`;
+  if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn"><summary><span class="g-sec-t">How it plays</span><span class="g29-n">${plays.length}</span></summary>
+    <div class="g-sec-i">${(R.plan || []).length ? 'The main attacker and the combos' : 'Combos'} the grader found between your own cards. This is what the deck is trying to do.</div>
+    ${plays.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`).join('')}</details>`;
 
   h += `<details class="g-sec g29-fold" id="g29-about"><summary><span class="g-sec-t">How the grade works</span></summary>
     <div class="g29-scale">

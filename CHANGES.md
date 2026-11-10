@@ -1,3 +1,17 @@
+# v53: the grade names each deck's real main attacker (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v53), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt and the ad code.
+
+- Cause: the app picked the main attacker by the biggest damage number it could read. Mega Rayquaza ex's Storm Emerald prints no number (it counts Energy in play), so Mega Kangaskhan ex's coin flip attack won, and Kangaskhan was named the attacker in the grade, the Odds tab and Hand practice.
+- The main attacker now comes first from the deck's name (Mega Rayquaza, Slowking, Hydrapple, Crustle and so on), then from the list: copies of the attacker and what it evolves from, and how much of the list's Energy pays for its attack. Pokemon whose attacks cost only Colorless Energy and that draw or search are counted as support, not the attacker.
+- Attacks that do damage for each Energy attached (Storm Emerald, Syrup Storm, Myriad Leaf Shower) are read from the card text. The grade shows how many Energy it takes to one-shot 280 and 340 HP, and how many the list runs. Meganium's Wild Growth is counted for Hydrapple.
+- How it plays now opens with a Main attacker line and a Support line, each saying why, in plain words. Damage the app works out from the board is called its estimate, not a printed number.
+- Odds and Hand practice use the same main attacker as the grade.
+- Saved decks re-read their card data once, so older imports pick up the new attack details.
+- Corrected built-in decks: Mega Rayquaza (was Mega Kangaskhan ex), Slowking (was Mega Kangaskhan ex), Ogerpon Meganium Hydrapple (now Hydrapple ex), Crustle Kangaskhan backup list (now Crustle).
+- sw.js cache: prize-trainer-v53. Version reads v53.
+
 # v52: ad spots on menu and data screens (9 Nov 2026)
 
 All spots stay off until the AdSense ad unit ids are filled in. Nothing changes on the live site until then.
