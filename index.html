@@ -4878,6 +4878,54 @@ function gEnergyType(c) {
  * Cards with no supertype (never enriched, or API unreachable) come
  * through with card:null and are reported as unread rather than guessed at.
  */
+/**
+ * v59: what each Ability does, read from card text with the same parser Goldfish plays from
+ * (gfAbilities). Returns { tags, say } per card: role tags the grade counts, and short
+ * phrases the plan shows. Only what the text says is used; an Ability it cannot read is left out.
+ */
+function gAbilRead(c) {
+  let list = [];
+  try { list = gfAbilities({ card: c }); } catch (_) { return { tags: [], say: [] }; }
+  const tags = new Set(), say = [];
+  const cnt = (n, one, many) => n === 1 ? (/^[AEIOU]/i.test(one) ? 'an ' : 'a ') + one : (n >= 99 ? 'any number of ' : n + ' ') + many;
+  const pl = w => /Pokemon$/.test(w) ? w : w + 's';
+  const what = F => !F ? 'a card' : F.any ? 'card' : F.cat === 'trainer' ? (F.tk ? (F.tk === 'tool' ? 'Pokemon Tool' : gCap(F.tk)) : 'Trainer')
+    : F.cat === 'energy' ? (F.basic ? 'Basic ' : '') + (F.type ? gCap(F.type) + ' ' : '') + 'Energy'
+    : F.cat === 'pokemon' ? [F.stage === 'evolution' ? 'Evolution' : F.stage ? gCap(F.stage) : '', F.owner ? gCap(F.owner) : '', F.type ? gCap(F.type) : ''].filter(Boolean).concat('Pokemon').join(' ') : 'card';
+  list.forEach(A => {
+    const t = gfNorm(A.text || '').toLowerCase().replace(/\([^)]*\)/g, ' ');
+    const bits = [];
+    if (A.when === 'passive') {
+      let m;
+      if (/your basic pokemon in play have no retreat cost/.test(t)) { tags.add('switch_own'); bits.push('your Basic Pokemon have no Retreat Cost, so you can switch attackers for free'); }
+      else if ((m = t.match(new RegExp("weakness of each of your opponent's (" + GF_TY + ") pokemon in play is now (" + GF_TY + ")")))) {
+        tags.add('weak_' + m[2]); bits.push(`your opponent's ${gCap(m[1])} Pokemon become weak to ${gCap(m[2])}, so your ${gCap(m[2])} attackers do double damage to them`); }
+      if (bits.length) say.push({ abil: A.name, p: bits.join(', and '), passive: true, x: m && m[1] ? { vs: m[1], ty: m[2] } : null });
+      return;
+    }
+    (A.steps || []).forEach(st => {
+      const F = st.spec && st.spec.alts && st.spec.alts[0] && st.spec.alts[0][0];
+      if (st.t === 'draw' && !st.ifAttached) bits.push(`draws ${cnt(st.n, 'card', 'cards')}`);
+      else if (st.t === 'draw' && st.ifAttached) bits.push(`then draws ${cnt(st.n, 'card', 'cards')}`);
+      else if (st.t === 'drawTo') bits.push(`draws until you have ${st.n} cards in hand`);
+      else if (st.t === 'search' && F) { bits.push(`searches your deck for ${cnt(F.n, what(F.F), pl(what(F.F)))}`);
+        tags.add(F.F && F.F.cat === 'pokemon' ? 'search_pokemon' : F.F && F.F.cat === 'trainer' ? (F.F.tk === 'supporter' ? 'search_supporter' : F.F.tk === 'item' ? 'search_item' : 'search_trainer') : 'search_card'); }
+      else if (st.t === 'look' && F && st.dest === 'hand') { bits.push(F.F && F.F.any ? `looks at the top ${st.n} cards and puts ${F.n} into your hand` : `looks at the top ${st.n} cards for ${cnt(F.n, what(F.F), pl(what(F.F)))}`);
+        if (F.F && F.F.cat === 'trainer' && F.F.tk === 'supporter') tags.add('search_supporter'); }
+      else if (st.t === 'look' && F && st.dest === 'self') { bits.push(`attaches ${cnt(F.n, what(F.F), what(F.F))} from the top ${st.n} cards of your deck to itself`); tags.add('energy_accel'); }
+      else if (st.t === 'attach') { const bE = /\bbasic (?:[a-z]+ )?energy/.test(t); bits.push(`attaches ${st.n === 1 ? (st.etype || bE ? 'a' : 'an') : st.n} ${st.etype ? 'Basic ' + gCap(st.etype) + ' ' : bE ? 'Basic ' : ''}Energy from your ${st.from === 'discard' ? 'discard pile' : 'hand'}${st.to === 'self' ? ' to itself' : ''}`); tags.add('energy_accel'); }
+      else if (st.t === 'switchSelf') { bits.push('switches itself into the Active Spot'); tags.add('switch_own'); }
+      else if (st.t === 'moveToSelf') bits.push('moves any amount of Energy from your other Pokemon onto it');
+      else if (st.t === 'discardStadium') bits.push('discards a Stadium in play');
+    });
+    if (!bits.length) return;
+    const when = A.when === 'bench' ? 'when you play it onto your Bench' : A.when === 'evolve' ? 'when you evolve into it from your hand'
+      : A.first ? 'on your first turn' : A.many ? 'as often as you like' : A.active ? 'once a turn while it is Active' : 'once a turn';
+    say.push({ abil: A.name, p: `${bits.join(' and ').replace(/ and then /, ', then ')} ${when}` });
+  });
+  return { tags: [...tags], say };
+}
+
 function toGradeDeck(deck) {
   return (deck.cards||[]).map(c => {
     const sup = String(c.supertype||'').toLowerCase();
@@ -4893,13 +4941,14 @@ function toGradeDeck(deck) {
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
           conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null }))
       : null;
+    const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
-      key: String(c.name||'').toLowerCase(),
+      key: String(c.name||'').toLowerCase(), ab: ar.say,
       t, stage: c.stage||null,
       from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
-      attacks: atks, provides: c.provides||[], requires: c.requires||[],
+      attacks: atks, provides: [...new Set((c.provides||[]).concat(ar.tags))], requires: c.requires||[],
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
@@ -5506,11 +5555,25 @@ function gViability(deck, coh, main) {
     d:`You lean on Stage 2 Pokemon (${s2Names.join(', ')}) with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 Pokemon before the game runs away.'});
+  // v59: a toolbox deck (Basic Box) runs many different attackers and picks the one each turn needs,
+  // so its power is more than its single best hit. Counts distinct Pokemon whose payable attack
+  // (read from card text, as above) reaches a two-hit Knock Out on the format's biggest threats on its
+  // own, without help from other cards (a Dusknoir's Cursed Blast is not a reason to count Meowth ex).
+  const tb=[...new Map(reach.filter(r=>r.top*2>=hi).map(r=>[r.name.toLowerCase(), r])).values()].sort((a,b)=>b.eff-a.eff);
+  const toolbox = tb.length>=4 ? tb.map(r=>r.name.toLowerCase()) : [];
+  if (tb.length>=4) {
+    // No single main attacker in a toolbox deck, so drop the "is this deck's main attacker" lead.
+    if (lead) findings.forEach(f => { if (f.d && f.d.startsWith(lead)) f.d = f.d.slice(lead.length); });
+    closeScore=gClamp(closeScore+Math.min(0.12,0.04*(tb.length-3)),0,1);
+    prizeScore=Math.min(0.9, prizeScore+0.1);
+    const one=tb.filter(r=>(r.p||1)===1).length;
+    findings.push({sev:'ok', t:'Many ways to attack',
+    d:`${tb.length} different Pokemon in the list hit for ${hi/2} or more: ${tb.slice(0,4).map(r=>gCap(r.name)).join(', ')}${tb.length>4?` and ${tb.length-4} more`:''}. You pick the attacker that fits each turn${one?`, including ${one} that ${one>1?'give':'gives'} up one prize`:''}, so your opponent cannot plan around one threat.`}); }
   // v59: a single copy of the main attacker is gone for the game when it is prized or Knocked Out.
   if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
-  return { score, findings, best, eff, bestName, reach, main };
+  return { score, findings, best, eff, bestName, reach, main, toolbox };
 }
 
 /**
@@ -5565,6 +5628,16 @@ function gPlan(entries, coh, via) {
     const enTxt = enN ? ` Its ${e.card.bmAbil} puts it onto your Bench when you have ${[...new Set(en.map(x => gCap(x.name)))].join(' or ')} in play, so the ${enN} ${enN === 1 ? 'copy' : 'copies'} of ${en.length > 1 ? 'those' : 'that'} in the list are there to bring it in.` : '';
     why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
   }
+  // v59: a toolbox deck (Basic Box) has no single plan, so name the other attackers too.
+  const tbx = (via.toolbox || []).filter(k => k !== m.key);
+  const tn = tbx.map(k => gCap((entries.find(y => y.card && y.card.key === k) || { name: k }).name));
+  if (tbx.length >= 3 && m.why !== 'name') {
+    const q = k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0);
+    const most = tbx.every(k => q(k) <= e.qty);
+    why = most ? `${nm} is the one the list runs most copies of (${e.qty}).` : '';
+  }
+  // v59: what the main attacker's own Ability adds, read from its text (Mega Kangaskhan ex's Run Errand).
+  const mAb = (e.card.ab || []).filter(x => !x.passive).map(x => `Its ${x.abil} ${x.p}.`).join(' ');
   // v54: what the main attacker's own Abilities add, from the card text.
   const wall = (e.card.pex || []).length ? ` Its ${e.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out.` : '';
   const own = (e.card.abDmg || []).filter(x => !x.selfKO)[0];
@@ -5588,7 +5661,7 @@ function gPlan(entries, coh, via) {
   const g = e.card.gate;
   const gN = g ? entries.filter(x => x.card && x.card.t === 'pkmn' && x.card.key.startsWith(g.pre)).reduce((k, x) => k + x.qty, 0) : 0;
   const gateTxt = g && gN >= g.n ? ` Its ${g.abil} means it cannot attack until you have ${g.n} or more ${g.pre ? gCap(g.pre).replace(/'S\b/g, "'s") : ''}Pokemon in play, so fill your Bench with them first. The list runs ${gN}.` : '';
-  out.push({ link: `Main attacker: ${nm}`, p: `${nm} does the attacking. ${why}${how ? ' ' + how : ''}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}` });
+  out.push({ link: tbx.length >= 3 && m.why !== 'name' ? `Attackers: ${[nm].concat(tn).join(', ')}` : `Main attacker: ${nm}`, p: `${tbx.length >= 3 && m.why !== 'name' ? `${tbx.length + 1} different Pokemon here can carry the attack, and you pick the one that fits each turn.${why ? ' ' + why : ''}${how ? ' ' + how.replace(/^Its /, nm + "'s ") : ''}` : `${nm} does the attacking. ${why}${how ? ' ' + how : ''}`}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}${mAb ? ' ' + mAb : ''}` });
   // v54: Pokemon played for an Ability that does damage on its own (Dusknoir's Cursed Blast).
   const dmgAb = [], seenAb = new Set();
   entries.forEach(x => { const c = x.card; if (!c || c.key === m.key || seenAb.has(c.key)) return;
@@ -5613,6 +5686,15 @@ function gPlan(entries, coh, via) {
          `${names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]}. ` +
          (names.length > 1 ? `Their attacks cost only Colorless Energy, so the list's Energy is not picked for them.` : `Its attack costs only Colorless Energy, so the list's Energy is not picked for it.`) });
   }
+  // v59: every other Ability the grade can read from card text, so the plan shows what each card adds.
+  const abSeen = new Set([m.key, ...seen, ...seenAb]), abOut = [];
+  entries.forEach(x => { const c = x.card; if (!c || c.t !== 'pkmn' || abSeen.has(c.key) || !(c.ab || []).length) return; abSeen.add(c.key);
+    c.ab.forEach(a => { let p = `${gCap(x.name)}'s ${a.abil}: ${a.p}`;
+      if (a.x) { const hit = [...new Set(entries.filter(y => y.card && y.card.t === 'pkmn' && (y.card.types || []).map(String).map(z => z.toLowerCase()).includes(a.x.ty) && (y.card.attacks || []).some(k => (k.max || k.dmg) > 0)).map(y => gCap(y.name)))];
+        p += hit.length ? ` (${hit.slice(0, 3).join(', ')} in this list)` : `, though no ${gCap(a.x.ty)} attacker is in this list`; }
+      abOut.push({ who: gCap(x.name), p }); }); });
+  if (abOut.length) out.push({ link: `Abilities: ${[...new Set(abOut.map(z => z.who))].slice(0, 4).join(', ')}${new Set(abOut.map(z => z.who)).size > 4 ? ' and more' : ''}`,
+    p: abOut.map(z => z.p).join('. ') + '.' });
   return out;
 }
 
@@ -5821,7 +5903,9 @@ function simAttackerLine(deck, groups) {
       if (!r || x.top > r.top) r = x;
     });
   });
-  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:R.via.main.why,
+  // v59: a toolbox deck (Basic Box) has several attackers, so Hand practice offers each of them.
+  const toolbox = (R.via.toolbox || []).map(idx).filter(i => i >= 0);
+  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:R.via.main.why, toolbox,
     cond: r && r.cond ? r.cond : null, pile: !!(r && r.pile), sc: r && r.sc ? r.sc : null, two: r && r.pile ? g56Many(r.pile, 2) : '', now: r ? r.now : 0, full: r ? r.top : 0 };
   if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
   if (g.stage === 'stage1') {
@@ -6139,8 +6223,9 @@ function renderOdds() {
     } else if (line.stage === 'stage1') {
       parts.push(`${esc(S.groups[line.basic].name)} by turn 1, then ${esc(line.name)} by turn 2 (nothing evolves on its first turn in play)`);
     } else parts.push(`${esc(line.name)} among your first ${SIM_SEEN_T2} cards`);
-    h += `<div class="g-sec"><div class="g-sec-t">Main attacker</div>
-      <div class="g-sec-i">${line.why === 'name' ? 'The attacker this deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.</div>
+    const tbN = line.why !== 'name' && line.toolbox && line.toolbox.length >= 4 ? line.toolbox.length : 0;
+    h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}</div>
+      <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker this deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch?' to '+oPct(AT.search):''}</div>
         <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
@@ -6358,6 +6443,10 @@ function handLineOptions(deck, groups) {
     out.push(l);
   };
   if (main && !main.missing) add(main.top >= 0 ? main.top : main.basic, true);
+  // v59: in a toolbox deck no single Pokemon is the plan, so each big attacker is its own option.
+  const tb = main && main.why !== 'name' && main.toolbox && main.toolbox.length >= 4 ? main.toolbox : [];
+  tb.forEach(i => { if (out.length < 4) add(i, false); });
+  out.forEach(l => { if (tb.length) { l.tool = tb.length; l.main = false; } });
   const evo = groups.map((g, i) => ({ g, i }))
     .filter(x => x.g.read && (x.g.stage === 'stage1' || x.g.stage === 'stage2'))
     .sort((a, b) => (b.g.stage === 'stage2') - (a.g.stage === 'stage2') || b.g.qty - a.g.qty);
@@ -6512,7 +6601,7 @@ function renderHand() {
       else candyIdx.filter(i => handCount[i]).forEach(i => inHand.push(nm(i)));
     }
     if (l.top >= 0 && !handCount[l.top]) need.push(nm(l.top));
-    return `${stageTxt(l.stage)}${l.main ? ', main attacker' : ''}${l.guessed ? ', from ' + nm(l.basic) + ' with Rare Candy' : ''}. ` +
+    return `${stageTxt(l.stage)}${l.main ? ', main attacker' : l.tool ? `, one of ${l.tool} attackers` : ''}${l.guessed ? ', from ' + nm(l.basic) + ' with Rare Candy' : ''}. ` +
       (inHand.length ? `In hand: <b>${inHand.join(', ')}</b>. ` : '') +
       (need.length ? `Still need: ${need.join(', ')}.` : 'Every piece is in your hand.');
   };

@@ -1,4 +1,4 @@
-# v59: pasted lists in more formats, misspelled cards named, and the grade flags dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
+# v59: toolbox decks graded right, Abilities read from card text, more pasted list formats, and new flags for dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v59), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt, the ad code and the Goldfish and Turn 1 work in v58.
@@ -13,8 +13,11 @@ Not changed: everything else, including data.json, ads.txt, the ad code and the 
 - A deck named for a Basic ("Riolu") now picks the Pokemon that evolves from it as the main attacker.
 - Fighting Gong counts as a card that finds Pokemon again.
 - The Odds tab no longer names MetaForge.
-- These flags are notes and do not change the score. The 24 test lists and built-in decks grade the same as v58.
-- sw.js cache: prize-trainer-v59. Version reads v59.
+- These flags are notes and do not change the score.
+- Toolbox decks: a list with 4 or more different Pokemon that each hit for 170 or more on their own gets credit for it in Power and a "Many ways to attack" note. Basic Box goes from 8.7 to 9.0, the Raging Bolt Ogerpon test list from 8.7 to 9.0 and Steven's Metagross from 8.9 to 9.2. Every other test list and built-in deck grades the same as v58.
+- In a toolbox deck that is not named for one Pokemon, the plan says "Attackers" and names them all, Hand practice offers each of them as a turn 1 line, and the Odds tab says these are one attacker's odds. Basic Box no longer reads as looking only for Mega Kangaskhan ex.
+- The grade reads Pokemon Abilities from card text with the same parser Goldfish uses. Meowth ex's Last-Ditch Catch counts as a search, and the plan lists what other Abilities do: Teal Mask Ogerpon ex's Teal Dance, Latias ex's Skyliner, Iron Leaves ex's Rapid Vernier, Chien-Pao's Snow Sink, and Lillie's Clefairy ex's Fairy Zone with the Psychic attackers in the list that hit Dragon Pokemon for double. The main attacker's own Ability is named too (Mega Kangaskhan ex's Run Errand).
+- sw.js: a page open waits at most 3 seconds for the network, then opens the saved copy and saves the new one for next time (from the load fix branch). Cache prize-trainer-v59. Version reads v59.
 
 # v58: Goldfish plays your cards' own text, and Turn 1 line can be played out (10 Nov 2026)
 
