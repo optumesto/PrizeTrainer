@@ -1,3 +1,22 @@
+# v60: the grade reads what every Pokemon's Abilities and attacks do from card text, and Power counts more kinds of decks right (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v60), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt, the ad code and Goldfish.
+
+- One reader for card text. Every Pokemon Ability and attack is read sentence by sentence for draw, search, Energy attachment, gusting, switching, damage counters, spread and Bench hits, Item and Ability lock, Energy removal and healing, with what each needs first (Darkness Energy attached, a Pokemon in play, only while Active, only when Knocked Out) and what it costs. New sets grade from their text without hand fixes. Saved decks re-read once (card data version 11).
+- The plan says what the main attacker's attack does besides damage ("Phantom Dive also puts 6 damage counters on your opponent's Benched Pokemon in any way you like") and what each Ability does (Munkidori's Adrena-Brain with the Darkness Energy it needs, Lunatone discarding a Basic Fighting Energy to draw 3, Iono's Bellibolt ex attaching Energy as often as you like).
+- Both Active Pokemon Energy attacks (Teal Mask Ogerpon ex's Myriad Leaf Shower) count the attack's own cost, one more when the list can attach extra Energy, Wild Growth doubling, and 2 Energy on the opponent's Active. They read 120 before. Ogerpon Meganium goes from 6.7 to 8.8 and names Teal Mask Ogerpon ex as the main attacker.
+- Slowking's Seek Inspiration counts when the list runs cards that put the right Pokemon on top of the deck first (Ciphermaniac's Codebreaking, Academy at Night). It counts the best attack of a Pokemon without a Rule Box, and an Energy discard bonus only when the list runs that Energy. Slowking goes from 6.9 to 7.8.
+- An attack that hits 3 of the opponent's Pokemon at once (Kyurem's Trifrost) gets credit and a "Hits several Pokemon at once" note.
+- Attacks that count a Bench count a full one (4), and both Benches count 8 (Toucannon's Feather Rondo, Lillie's Clefairy ex's Full Moon Rondo). Toucannon goes from 6.7 to 8.1. Rocket Feathers counts 3 Supporters discarded.
+- Attacks that Knock Out the opponent's Active outright are read (Mega Absol ex's Terminal Period when the list can place damage counters, coin flip Knock Outs at their chance). Mega Absol Box goes from 7.0 to 8.9.
+- Mew ex's Memory Helix uses the attacks of the other Pokemon in the list. Mew Box goes from 6.9 to 7.6.
+- A deck named for its engine (Toxtricity Box, Tera Box (Noctowl)) leads with the attackers and says the named Pokemon powers them. Hand practice offers the engine's line too.
+- The two Dragapult test lists now read as closing through spread: 7.4 to 8.6 and 7.2 to 8.4. Marnie's Grimmsnarl Froslass goes from 7.1 to 8.5 and Alakazam Dudunsparce from 6.8 to 7.3.
+- When a card could not be read, the verdict says so instead of "No problems found".
+- Card names keep small words in lower case (Academy at Night).
+- Every other test list and built-in deck grades the same as v59, Basic Box included (9.0).
+
 # v59: toolbox decks graded right, Abilities read from card text, more pasted list formats, and new flags for dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v59), CHANGES.md.
