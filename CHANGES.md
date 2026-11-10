@@ -1,3 +1,18 @@
+# v58: Goldfish plays your cards' own text, and Turn 1 line can be played out (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v58), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt and the ad code.
+
+- Goldfish used to know about a dozen cards by name. Abilities, Items, Supporters and Stadiums now do what their printed text says: draws, searches, looking at the top of the deck, discard costs, the discard pile, attaching Energy, switching, coin flips and "your turn ends".
+- Abilities follow their own limits: once a turn, Active Spot only (Mega Kangaskhan ex's Run Errand), only 1 of that name a turn, first turn only, from your hand (Talonflame ex), when played to the Bench (Meowth ex, Mega Rayquaza ex, Iron Leaves ex), when evolving from your hand (Kadabra, Alakazam). Legendary Pyroduct and an Active Iron Thorns ex turn off the Abilities they name.
+- Supporters keep to one a turn and none on turn 1 going first, except cards that say otherwise (Carmine, Team Rocket's Proton). Cards that need a Pokemon Knocked Out or Prizes taken (Fezandipiti ex, Unfair Stamp, Special Red Card, Counter Catcher) say why they can't be played here.
+- Search and pick screens only let you take cards the text allows (Dawn's one of each stage, Crispin's two types, Secret Box's one of each kind, Buddy-Buddy Poffin's 70 HP or less). The card's text shows under its buttons.
+- Effects on your opponent and healing do nothing in Goldfish and say so. A card the app can't follow yet (Tool Scrapper, Grand Tree, Salvatore) shows its text and you do it with Draw, Search and Discard.
+- Turn 1 line has "Play this hand in Goldfish": the same opening hand, prizes and draws, played out turn by turn.
+- Saved decks re-read their card data once to store the card text. Until then Goldfish reads it from a built-in copy of about 120 common cards.
+- Grades are unchanged: built-in decks and the test lists grade the same as v57.
+- sw.js cache: prize-trainer-v58. Version reads v58.
+
 # v57: illegal lists no longer read Tournament-ready, and the grade flags dead cards, no draw Supporters and heavy Energy (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v57), CHANGES.md.
