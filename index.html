@@ -3516,6 +3516,8 @@ function parseDamage(raw, text) {
 
   if (fixedM) {
     out.bonus = parseInt(fixedM[1], 10);
+    // v62: what the bonus waits on, when the text says ("If this Pokemon moved from your Bench to the Active Spot this turn").
+    if (!oneCoin) { const nd = need62(tNow); if (nd) out.need = Object.assign(nd, { base: out.base, bonus: out.bonus }); }
     out.max = out.base + out.bonus;
     out.typical = out.base + out.bonus; // these conditions are usually achievable
     out.confidence = 'high';
@@ -4008,6 +4010,32 @@ function damageCondition(text) {
   };
 }
 
+/**
+ * v62: the condition on a fixed damage bonus, read from the attack text. Gives { k } and
+ * what it names, or null when the text names none of these:
+ *   moved    "If this Pokemon moved from your Bench to the Active Spot this turn" (Mega Lopunny ex)
+ *   selfdmg  "If this Pokemon has any damage counters on it" (Mega Sharpedo ex)
+ *   oppdmg   "If your opponent's Active Pokemon already has any damage counters on it" (Mega Golisopod ex)
+ *   deck     "If there are 3 or fewer cards in your deck" (Rabsca)
+ *   xenergy  "If this Pokemon has at least 2 extra Energy attached" (Mega Excadrill ex)
+ *   stadium  "If you have a Stadium in play" (Dhelmise)
+ *   btype    "If you have any Metal Pokemon on your Bench" (Dhelmise)
+ *   bnames   "If Beldum and Metang are on your Bench" (Metagross)
+ */
+function need62(text) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/\u00e9/g, 'e').toLowerCase();
+  let m;
+  if (/moved from your bench to the active spot this turn/.test(t)) return { k: 'moved' };
+  if (/if this pokemon has (?:any )?damage counters on it/.test(t)) return { k: 'selfdmg' };
+  if (/if your opponent's active pokemon (?:already )?has (?:any )?damage counters on it/.test(t)) return { k: 'oppdmg' };
+  if ((m = t.match(/if there are (\d+) or fewer cards in your deck/))) return { k: 'deck', n: +m[1] };
+  if ((m = t.match(/has at least (\d+) extra energy attached/))) return { k: 'xenergy', n: +m[1] };
+  if (/if you have a stadium in play|if a stadium is in play/.test(t)) return { k: 'stadium' };
+  if ((m = t.match(/if you have any (\w+) pokemon on your bench/))) return { k: 'btype', type: m[1] };
+  if ((m = t.match(/if ([a-z][a-z' -]*?(?:,? and [a-z][a-z' -]*?)?) (?:is|are) (?:both )?on your bench/))) return { k: 'bnames', names: m[1].split(/,? and |, /).map(x => x.trim()).filter(Boolean) };
+  return null;
+}
+
 // v37: card fixes. Each one was checked against the printed card (Limitless, pokemon-tcg-data).
 // data.json can add more under cardFixes, written by the weekly card check.
 // Keys are card ids from either source: pokemontcg.io (sv5-140) or TCGdex (sv05-140).
@@ -4130,7 +4158,8 @@ function edouble53(text) {
  */
 function abDmg54(text) {
   const t = String(text || '').replace(/[\u2018\u2019]/g, "'");
-  const m = t.match(/once during your turn,[^.]*?(?:put|place) (\d+) damage counters on 1 of your opponent's pok[e\u00e9]mon/i);
+  // v62: the counters may come one sentence after the cost ("discard a Basic Water Energy card ... in order to use this Ability. Place 6 damage counters").
+  const m = t.match(/once during your turn,[^.]*?(?:\.\s*)?(?:put|place) (\d+) damage counters on 1 of your opponent's pok[e\u00e9]mon/i);
   if (!m) return undefined;
   return { n: parseInt(m[1], 10) * 10, selfKO: /this pok[e\u00e9]mon is knocked out/i.test(t) || undefined,
     active: /if this pok[e\u00e9]mon is in the active spot/i.test(t) || undefined };
@@ -4293,6 +4322,8 @@ function enrichCard(apiCard, opts) {
       kox: kox60(a.text),
       // v61: damage that counts the cards in your hand (Alakazam's Powerful Hand) grows with the list's draw Abilities.
       hand: /for each card in your hand/i.test(a.text || '') || null,
+      // v62: the condition on a fixed damage bonus (Gale Thrust's 170 more only on a turn it moves up from the Bench).
+      need: dmg.need || null,
       // v54: an attack that locks itself (or all attacks) for the attacker's next turn. A coin flip or an optional bonus is left out.
       lock: /flip a coin|if you do/i.test(a.text || '') ? null
         : new RegExp("during your next turn, this pok[e\\u00e9]mon can[\u2019']t use " + String(a.name || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.', 'i').test(a.text || '') ? 'self'
@@ -4970,7 +5001,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 12;  // v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 13;  // v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -5138,7 +5169,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -5148,6 +5179,8 @@ function toGradeDeck(deck) {
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
       attacks: atks, provides: [...new Set((c.provides||[]).concat(ar.tags))], requires: c.requires||[],
+      // v62: what a fixed damage bonus can lean on: Stadiums, and Abilities that switch, retreat for free or leave the Active Spot.
+      sub: c.sub || [], swab: (c.atext||[]).some(x => /switch (?:it|this pok[e\u00e9]mon|your active pok[e\u00e9]mon) with|no retreat cost|shuffle this pok[e\u00e9]mon and all attached cards into your deck/i.test(String(x[1]||''))),
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
@@ -5308,6 +5341,24 @@ function gHandReach(a, deck) {
   const hand = 7 + Math.min(4, Math.round(drawers.size * 1.5));
   return { now: a.dmg || 0, top: per * hand, cond: null, hand };
 }
+// v62: a fixed damage bonus with a condition. The full hit counts only when the list can meet the
+// condition every turn it needs to; otherwise the grade counts the printed base. A bonus that waits
+// on a nearly empty deck never counts.
+function gNeedReach(a, deck) {
+  const n = a.need, full = a.dmg || 0, base = n.base || 0;
+  const qty = f => deck.reduce((s, e) => s + (e.card && f(e.card) ? e.qty : 0), 0);
+  let have = null, met = true;
+  if (n.k === 'moved') { have = qty(c => c.t === 'trainer' ? (c.provides || []).includes('switch_own') : c.t === 'pkmn' && c.swab); met = have >= 4; }
+  else if (n.k === 'oppdmg') { have = qty(c => c.t === 'pkmn' && ((c.abDmg || []).length || (c.provides || []).includes('spread_counters'))); met = have >= 1; }
+  else if (n.k === 'deck') met = false;
+  else if (n.k === 'xenergy') { have = qty(c => (c.provides || []).includes('energy_accel')); met = have >= 3; }
+  else if (n.k === 'stadium') { have = qty(c => c.t === 'trainer' && (c.sub || []).includes('stadium')); met = have >= 2; }
+  else if (n.k === 'btype') { have = qty(c => c.t === 'pkmn' && (c.types || []).includes(n.type)); met = have >= 2; }
+  else if (n.k === 'bnames') met = n.names.every(x => deck.some(e => e.card && e.card.key === x));
+  const top = met ? full : base;
+  // Damage on itself comes from taking a hit first, so the full hit is a later turn's.
+  return { now: n.k === 'selfdmg' ? base : top, top, cond: null, need: Object.assign({}, n, { have, met, full }) };
+}
 function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
   if (a.escale && !a.cond) return gEnergyReach(a, deck);
@@ -5316,6 +5367,7 @@ function gAtkReach(a, deck) {
   if (a.mill && !a.cond) return gMillReach(a, deck);
   if (a.kox) return gKoReach(a, deck);
   if (a.hand && !a.cond) return gHandReach(a, deck);
+  if (a.need && !a.cond) return gNeedReach(a, deck);
   if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
   const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
   let have = 0;
@@ -5546,6 +5598,23 @@ function g35Boost(deck, atk) {
     vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind), poison: list.some(b => b.poison), last: list.some(b => b.last),
     ko: list.filter(b => b.selfKO).map(b => b.who) };
 }
+/** v62: what a fixed damage bonus waits on, and whether the list can meet it. Starts with the attack's name. */
+function g62Need(r, name) {
+  const n = r.need, nm = gCap(name || r.name || 'it');
+  const and = l => l.length > 1 ? l.slice(0, -1).map(gCap).join(', ') + ' and ' + gCap(l[l.length - 1]) : gCap(l[0]);
+  const when = { moved: `on a turn ${nm} moves up from your Bench to the Active Spot`, selfdmg: `once ${nm} has damage counters on it`,
+    oppdmg: 'against an Active Pokemon that already has damage counters on it', deck: `once your deck is down to ${n.n} cards or fewer`,
+    xenergy: `with ${n.n} extra Energy attached to it`, stadium: 'while you have a Stadium in play',
+    btype: `with a ${gCap(n.type)} Pokemon on your Bench`, bnames: `with ${and(n.names || [])} on your Bench` }[n.k];
+  const head = `${r.atk} does ${n.full} only ${when}, ${n.base} otherwise.`;
+  if (n.met) return head + (n.k === 'moved' ? ` Your list has ${n.have} cards that switch it in or let you retreat for free, so the grade counts ${n.full}.`
+    : n.k === 'selfdmg' ? ' The full hit comes after it has taken a hit, not on its first attack.' : '');
+  const why = { moved: `your list has only ${n.have} cards that switch it in or let you retreat for free`,
+    oppdmg: 'nothing in your list puts damage counters on it before you attack', deck: 'that is only at the very end of a game',
+    xenergy: `your list has only ${n.have} cards that attach extra Energy`, stadium: `your list has only ${n.have} Stadiums`,
+    btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them' }[n.k];
+  return head + ` The grade counts ${n.base}, since ${why}.`;
+}
 /** One sentence on one attacker: the printed number, how it gets there and what each booster adds. */
 function g35Hit(r) {
   const nm = gCap(r.name);
@@ -5579,6 +5648,7 @@ function g35Hit(r) {
     t = `${nm}${how} ${verb} ${r.eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${r.top} without), before Weakness.`;
   } else t = `${nm}${how} ${verb} ${r.top} before Weakness.`;
   if (r.ko && r.ko.length) t += ` Using it Knocks Out ${r.ko.join(' and ')}, which gives up a prize.`;
+  if (r.need && !r.copy && r.atk) t += ` Its ${g62Need(r, r.name)}`;
   if (r.flip === 'mill') t += ` That is the average for cards off the top of the deck: your list runs ${r.mill.have} ${g56Many(r.mill, r.mill.have)}, so a bigger or smaller hit is down to luck.`;
   else if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
   else if (r.flip) t += ' That counts coin flips at their average.';
@@ -5958,6 +6028,8 @@ function gPlan(entries, coh, via) {
     how = g35Hit(r).replace(/^.*?'s /, 'Its ');
     if (r.kox.how === 'counters') { const who = entries.filter(x => x.card && ((x.card.provides || []).includes('move_counters') || (x.card.abDmg || []).length)).map(x => gCap(x.name));
       if (who.length) how = how.replace('this list can put counters on it to set that up', `${[...new Set(who)].slice(0, 2).join(' and ')} can put them there`); }
+  } else if (r && r.need && !r.copy) {
+    how = `Its ${g62Need(r, m.name)}`;
   } else if (r && r.copy && r.copy.bench) {
     how = `Its ${r.copy.via} lets it use the attacks of your Benched Pokemon, paid with its own Energy. The best one here is ${gCap(r.copy.who)}'s ${r.copy.atk}, which ${r.flip ? 'averages' : 'hits for'} ${r.top}.`;
   } else if (r && r.copy) {
@@ -5969,6 +6041,11 @@ function gPlan(entries, coh, via) {
   } else if (r) {
     how = `Its ${r.atk} ${r.flip ? 'averages' : 'hits for'} ${r.top}${r.flip === 'tails' ? ' with its coin flips' : ''}.`;
   }
+  // v62: a bigger attack on the same card that waits on a condition the list cannot meet (Mega Golisopod ex's
+  // Finishing Blow needs damage already on the target), named so the plan does not leave it out.
+  if (r && !r.copy && !mill) { const na = (e.card.attacks || []).find(a => a.name !== r.atk && a.need && (a.dmg || 0) > r.top);
+    const nr = na && gAtkReach(na, entries);
+    if (nr && nr.need && !nr.need.met) how += ` Its ${g62Need(Object.assign(nr, { atk: na.name }), m.name)}`; }
   let why;
   if (m.why === 'name') why = m.among > 1 ? 'Of the Pokemon the deck is named for, it is the one the list is built to attack with.' : 'The deck is named for it.';
   else {
@@ -5993,7 +6070,8 @@ function gPlan(entries, coh, via) {
   // v54: what the main attacker's own Abilities add, from the card text.
   const wall = (e.card.pex || []).length ? ` Its ${e.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out.` : '';
   const own = (e.card.abDmg || []).filter(x => !x.selfKO)[0];
-  const ownTxt = own ? ` Its ${own.abil} puts ${own.n / 10} damage counters on 1 of your opponent's Pokemon each turn${own.active ? ' while it is Active' : ''}.` : '';
+  // v62: said once. The Ability reader may already describe it, with its cost.
+  const ownTxt = own && !(e.card.ab || []).some(x => !x.passive && x.abil === own.abil) ? ` Its ${own.abil} puts ${own.n / 10} damage counters on 1 of your opponent's Pokemon each turn${own.active ? ' while it is Active' : ''}.` : '';
   // v54: an attack it cannot use two turns in a row.
   const la = r && (e.card.attacks || []).find(a => a.name === r.atk && a.lock);
   const other = la && (e.card.attacks || []).filter(a => a !== la && (a.max || a.dmg) > 0).sort((a, b) => (b.max || b.dmg) - (a.max || a.dmg))[0];
@@ -10083,7 +10161,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
