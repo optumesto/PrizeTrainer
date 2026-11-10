@@ -1,9 +1,25 @@
-# Not released yet: Against the meta, matchup stats from Limitless (10 Nov 2026)
+# RdyDeck changelog
 
-Ships with the next larger release, which sets the version number and the sw.js cache name.
-Changed files: index.html, sw.js (matchups.json is fetched newest first, like data.json), .github/workflows/refresh-data.yml, README.md, CHANGES.md.
+Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
+
+# RdyDeck 2.0 (build 61): Against the meta matchup stats, the Android app in the header, and grade fixes for Joltik Box, Alakazam, Slowking and Crustle (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v61, the build number, matchups.json is fetched newest first, like data.json), .github/workflows/refresh-data.yml, README.md, CHANGES.md.
 New files: refresh-matchups.mjs. The weekly job adds matchups.json and .github/matchups-cache.json on its first run.
 
+Version numbers
+- Versions now read like 2.0. Settings shows RdyDeck v2.0. Feature releases go 2.1, 2.2, and small fixes 2.1.1. The old v1 to v60 releases count as 1.x, the PrizeTrainer era, listed below. A build number keeps counting underneath for the update cache and shows only in feedback mail (build 61).
+
+Header
+- The Android app note moved from the bottom of the home screen into the header, as a pill under the logo: "Android app coming soon to Google Play". Hidden inside the Play app. It becomes the Play link once the app is live.
+
+Grade
+- A deck named for a Pokemon that sets up with an attack (Joltik's Jolting Charge) leads with its real attackers. Joltik Box names Pikachu ex, says Joltik sets them up, and the "Only 1 Galvantula" warning is gone. Grade 9.1 as before.
+- Attacks that count the cards in your hand (Alakazam's Powerful Hand) count a bigger hand when the list runs draw Abilities: 7 cards, plus up to 4 more (11 with Kadabra, Alakazam and Dudunsparce). Alakazam Dudunsparce goes from 7.3 to 8.0 and Alakazam Dusknoir from 8.7 to 9.3. Saved decks re-read once (card data version 12).
+- A three-prize Pokemon played for its Ability in a deck whose main attacker gives up one prize (Mega Kangaskhan ex drawing for Slowking or Crustle) gets its own, smaller warning: "A three-prize Pokemon in a one-prize deck". Slowking goes from 7.8 to 8.3 and Crustle from 7.4 to 7.9.
+- Every other test list and built-in deck grades the same as v60.
+
+Against the meta
 - The Grade tab has a new section, Against the meta, right after Rotation. It finds the deck archetype closest to your list by the Pokemon it plays and shows how that archetype did against each of the most played decks: win rate and number of matches, with an overall record above. You can pick another archetype, and the pick is kept for that deck.
 - Rows with fewer than 20 matches are gray, with one line saying they are too few to trust. Every number comes from matchups.json. Credit line: Data: Limitless TCG, linked.
 - The numbers come from the Limitless play API (online tournaments of 64 or more players over the last 14 days, from the newest set's release day). Counted the way Limitless counts its own matchup pages: ties are matches but not wins, and mirrors, byes and no-shows are left out.
@@ -11,7 +27,11 @@ New files: refresh-matchups.mjs. The weekly job adds matchups.json and .github/m
 - The file keeps every record per source, so in-person results can be added later as a second source. When there is more than one, a second picker shows All results, Online or In person.
 - Expanded and prerelease decks show no section. With no file yet, the section is simply not there.
 - How the grade works now says the grade itself does not compare you to the metagame, and points to Against the meta.
-# v60: the grade reads what every Pokemon's Abilities and attacks do from card text, and Power counts more kinds of decks right (10 Nov 2026)
+- Under the record, one line says whether the numbers are for your exact list. Lists that finished in the top 16 are kept as short codes (card names and counts, no set numbers). When your list is one of them card for card, it says so: "This is the same list, card for card, that finished 3rd at (event) on (day)." Otherwise: "These are results for all (deck) lists, not your exact list." No player names are kept.
+
+# 1.x: the PrizeTrainer era (builds v1 to v60)
+
+## v60: the grade reads what every Pokemon's Abilities and attacks do from card text, and Power counts more kinds of decks right (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v60), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt, the ad code and Goldfish.
@@ -30,7 +50,7 @@ Not changed: everything else, including data.json, ads.txt, the ad code and Gold
 - Card names keep small words in lower case (Academy at Night).
 - Every other test list and built-in deck grades the same as v59, Basic Box included (9.0).
 
-# v59: toolbox decks graded right, Abilities read from card text, more pasted list formats, and new flags for dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
+## v59: toolbox decks graded right, Abilities read from card text, more pasted list formats, and new flags for dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v59), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt, the ad code and the Goldfish and Turn 1 work in v58.
@@ -51,7 +71,7 @@ Not changed: everything else, including data.json, ads.txt, the ad code and the 
 - The grade reads Pokemon Abilities from card text with the same parser Goldfish uses. Meowth ex's Last-Ditch Catch counts as a search, and the plan lists what other Abilities do: Teal Mask Ogerpon ex's Teal Dance, Latias ex's Skyliner, Iron Leaves ex's Rapid Vernier, Chien-Pao's Snow Sink, and Lillie's Clefairy ex's Fairy Zone with the Psychic attackers in the list that hit Dragon Pokemon for double. The main attacker's own Ability is named too (Mega Kangaskhan ex's Run Errand).
 - sw.js: a page open waits at most 3 seconds for the network, then opens the saved copy and saves the new one for next time (from the load fix branch). Cache prize-trainer-v59. Version reads v59.
 
-# v58: Goldfish plays your cards' own text, and Turn 1 line can be played out (10 Nov 2026)
+## v58: Goldfish plays your cards' own text, and Turn 1 line can be played out (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v58), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt and the ad code.
@@ -66,7 +86,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - Grades are unchanged: built-in decks and the test lists grade the same as v57.
 - sw.js cache: prize-trainer-v58. Version reads v58.
 
-# v57: illegal lists no longer read Tournament-ready, and the grade flags dead cards, no draw Supporters and heavy Energy (10 Nov 2026)
+## v57: illegal lists no longer read Tournament-ready, and the grade flags dead cards, no draw Supporters and heavy Energy (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v57), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt, the ad code and the sims.
@@ -79,7 +99,7 @@ Not changed: everything else, including data.json, ads.txt, the ad code and the 
 - Built-in decks and the 24 test lists grade the same as v56.
 - sw.js cache: prize-trainer-v57. Version reads v57.
 
-# v56: the grade reads attacks that count Pokemon in play and cards off the top of the deck (10 Nov 2026)
+## v56: the grade reads attacks that count Pokemon in play and cards off the top of the deck (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v56), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt and the ad code.
@@ -93,7 +113,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - Saved decks re-read their card data once, so older imports pick up the new details.
 - sw.js cache: prize-trainer-v56. Version reads v56.
 
-# v55: the grade reads discard pile damage, Ability boosts and natural Stage 2 lines (10 Nov 2026)
+## v55: the grade reads discard pile damage, Ability boosts and natural Stage 2 lines (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v55), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt and the ad code.
@@ -109,7 +129,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - Saved decks re-read their card data once, so older imports pick up the new details.
 - sw.js cache: prize-trainer-v55. Version reads v55.
 
-# v54: the grade reads damage the card text spells out (10 Nov 2026)
+## v54: the grade reads damage the card text spells out (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v54), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt and the ad code.
@@ -130,7 +150,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - Saved decks re-read their card data once, so older imports pick up the new details.
 - sw.js cache: prize-trainer-v54. Version reads v54.
 
-# v53: the grade names each deck's real main attacker (10 Nov 2026)
+## v53: the grade names each deck's real main attacker (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v53), CHANGES.md.
 Not changed: everything else, including data.json, ads.txt and the ad code.
@@ -144,7 +164,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - Corrected built-in decks: Mega Rayquaza (was Mega Kangaskhan ex), Slowking (was Mega Kangaskhan ex), Ogerpon Meganium Hydrapple (now Hydrapple ex), Crustle Kangaskhan backup list (now Crustle).
 - sw.js cache: prize-trainer-v53. Version reads v53.
 
-# v52: ad spots on menu and data screens (9 Nov 2026)
+## v52: ad spots on menu and data screens (9 Nov 2026)
 
 All spots stay off until the AdSense ad unit ids are filled in. Nothing changes on the live site until then.
 
@@ -158,7 +178,7 @@ All spots stay off until the AdSense ad unit ids are filled in. Nothing changes 
 - Privacy policy: ads section lists the new screens.
 - sw.js cache: prize-trainer-v52.
 
-# v51: Prerelease section hidden for now (9 Nov 2026)
+## v51: Prerelease section hidden for now (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v51), CHANGES.md.
 Not changed: everything else, including ads.txt, the ad code, data.json and the set watch.
@@ -168,7 +188,7 @@ Not changed: everything else, including ads.txt, the ad code, data.json and the 
 - The code stays. Setting PRE47_ON to true in index.html brings it all back. The set watch keeps running, so the card list is current when it returns.
 - Version reads v51.
 
-# v50: new sets reach the Prerelease section on their own (9 Nov 2026)
+## v50: new sets reach the Prerelease section on their own (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v50), data.json (note only), README.md, CHANGES.md.
 New files: watch-sets.mjs, .github/workflows/watch-sets.yml.
@@ -182,7 +202,7 @@ Not changed: everything else, including ads.txt and the ad code.
 - The app never shows a partial TCGdex list. The sheet says Loading while the list loads, and says when it could not load, instead of saying the list is not out yet.
 - Version reads v50.
 
-# v49: Prerelease section (9 Nov 2026)
+## v49: Prerelease section (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v49), data.json, CHANGES.md.
 Not changed: everything else. Builds on main after v47 and ads.txt (there is no v48 release).
@@ -194,7 +214,7 @@ Not changed: everything else. Builds on main after v47 and ads.txt (there is no 
 - No new ad spots. The v47 ad code and ads.txt are unchanged.
 - Version reads v49.
 
-# v47: home and guide ad spots, ads privacy policy (9 Nov 2026)
+## v47: home and guide ad spots, ads privacy policy (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v47), privacy.html, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, README.md, CHANGES.md.
 New file: ads.js.
@@ -217,7 +237,7 @@ Ads stay off until the fill-ins are set (PT_ADS in index.html, the top of ads.js
 ## Version
 - Version reads v47.
 
-# v46: Android note (9 Nov 2026)
+## v46: Android note (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v46), CHANGES.md.
 Not changed: everything else. Builds on v45.
@@ -226,7 +246,7 @@ Not changed: everything else. Builds on v45.
 - The line is hidden in Play mode (?src=play), so it never shows inside the Play app.
 - Version reads v46.
 
-# v45: sample grade, share grade, numbered daily (9 Nov 2026)
+## v45: sample grade, share grade, numbered daily (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v45), CHANGES.md.
 Not changed: everything else. Builds on main after v44 and the Play app's Digital Asset Links.
@@ -250,7 +270,7 @@ Not changed: everything else. Builds on main after v44 and the Play app's Digita
 - Daily and grade links end in ?ref=daily or ?ref=grade, so visits from shares can be counted once there is a way to count them. Nothing is stored, and the tag is taken off the address bar on arrival.
 - Version reads v45.
 
-# v44: guide pages for search (9 Nov 2026)
+## v44: guide pages for search (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v44), sitemap.xml, CHANGES.md.
 New files: deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html.
@@ -269,7 +289,7 @@ Not changed: everything else. Builds on v43. The app looks and works the same.
 ## Search
 - sitemap.xml lists the four new pages.
 
-# v43: ready for the Google Play app (9 Nov 2026)
+## v43: ready for the Google Play app (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v43), CHANGES.md.
 New file: offline.html. Held back: .well-known/assetlinks.json (it goes up once the signing key fingerprints exist).
@@ -288,7 +308,7 @@ Not changed: everything else. Builds on v42. The web version looks and works the
 - .well-known/assetlinks.json proves rdydeck.com and the Play app belong together, so the app opens full screen with no address bar.
 - Not uploaded yet. Its two fingerprints are placeholders until the upload key and Play App Signing key exist; it goes up only with the real ones. The package name com.rdydeck.app must match the Android app and can never change once published.
 
-# v42: feedback by email (9 Nov 2026)
+## v42: feedback by email (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v42), privacy.html, terms.html, CHANGES.md.
 Not changed: everything else. Builds on v41.
@@ -306,7 +326,7 @@ Not changed: everything else. Builds on v41.
 - Terms, section 8: feedback "by email through Send feedback" instead of "through a GitHub issue".
 - The effective date stays November 9, 2026; change it on both pages if this ships on a later day.
 
-# v41: RdyDeck moves to rdydeck.com (9 Nov 2026)
+## v41: RdyDeck moves to rdydeck.com (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v41), terms.html, privacy.html, robots.txt, sitemap.xml, README.md, CHANGES.md.
 Not changed: everything else.
@@ -321,7 +341,7 @@ Not changed: everything else.
 - The decks ride in the part of the link after #, which browsers never send to any server, and they are cleared from the address bar as soon as they are read.
 - If a player has too many decks for one link, the app opens Backup and asks them to save a file, then open it at rdydeck.com.
 
-# v40: fixes from Muse's audit (9 Nov 2026)
+## v40: fixes from Muse's audit (9 Nov 2026)
 
 v39 was never uploaded, so v40 carries its fixes too (fonts, icons, the workflow and the install button).
 Changed files: index.html, sw.js (cache prize-trainer-v40), manifest.json, terms.html, privacy.html, robots.txt, sitemap.xml, refresh-data.mjs, check-cards.mjs, README.md, CHANGES.md.
@@ -381,7 +401,7 @@ Switch https://optumesto.github.io/PrizeTrainer/ back to https://rdydeck.com/ in
 - The full test set at 320, 390 and 1280 px, plus new tests for every fix above.
 - Not checked on a real phone: the confirm boxes for quitting a game, deleting a deck and revealing prizes.
 
-# v39: fixes from testing the live site
+## v39: fixes from testing the live site
 
 Changed files: index.html, sw.js (cache prize-trainer-v39), manifest.json, terms.html, privacy.html, CHANGES.md.
 New file: refresh-data.yml, which goes in .github/workflows/ (see step 2 below).
@@ -403,7 +423,7 @@ Not changed: data.json, refresh-data.mjs, check-cards.mjs, fonts, icons, og-imag
 2. Add the workflow: on the repo page choose Add file, then Create new file. Type .github/workflows/refresh-data.yml as the name (the slashes make the folders), paste in the contents of refresh-data.yml and commit. It then shows on the Actions tab with a Run workflow button.
 3. Optional cleanup, nothing uses these any more: the icons folder, index.txt, sw.txt, refresh-data.txt, CHANGES.txt, the empty file named download, the seven barlow files and the two ibm-plex-mono files.
 
-# v38: more room, one type system, settings, SEO, legal drafts and the Ready Check logo
+## v38: more room, one type system, settings, SEO, legal drafts and the Ready Check logo
 
 Changed files: index.html, sw.js (cache prize-trainer-v38), manifest.json, CHANGES.md, icons/ (every icon replaced, plus apple-touch-icon.png and two maskable icons).
 New files: fonts/ (4 font files: Saira and Saira Condensed), terms.html, privacy.html, robots.txt, sitemap.xml, og-image.png.

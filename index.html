@@ -771,6 +771,8 @@
   .mu60-r.thin, .mu60-r.thin .mu60-n { color:var(--text-3); }
   .mu60-f { font-size:var(--fs-sm); color:var(--text-3); line-height:1.5; margin-top:0.6rem; }
   .mu60-f a { color:var(--text-2); }
+  .mu61-same, .mu61-like { margin:-0.35rem 0 0.75rem; }
+  .mu61-same { color:var(--text-2); }
   .g-wip {
     max-width:720px; margin:0.5rem auto 1rem; padding:0.9rem 1rem;
     border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line);
@@ -2676,7 +2678,14 @@ const PT_PLAY = (function () {
 </script>
 <style>.pt-play #pwa-install-btn { display:none !important; }
   /* v46: the Android note is for the website only, never inside the Play app. */
-  .pt-play .an46 { display:none !important; }</style>
+  .pt-play .an46, .pt-play .an61 { display:none !important; }
+  /* v61: the Android app note sits in the header, where people see it. It becomes the Play link once the app is live. */
+  .an61 { display:flex; align-items:center; gap:0.45rem; width:max-content; max-width:100%; margin-top:0.75rem; padding:0.35rem 0.8rem 0.35rem 0.6rem;
+    border:1px solid color-mix(in srgb, var(--mark) 55%, var(--line)); border-radius:999px; background:color-mix(in srgb, var(--mark) 8%, var(--surface)); color:var(--text); font-family:var(--font); font-size:0.875rem; line-height:1.3; }
+  .an61 b { color:var(--text); font-weight:600; }
+  .an61-i { width:18px; height:18px; flex-shrink:0; color:var(--mark); }
+  @media (min-width:768px) { .an61 { margin-left:max(0px, calc((100% - 760px) / 2)); } }
+  @media (min-width:1100px) { .an61 { margin-left:max(0px, calc((100% - var(--page)) / 2)); } }</style>
 </head>
 <body>
 
@@ -2759,6 +2768,7 @@ const PT_PLAY = (function () {
         <svg class="ic"><use href="#i-gear"/></svg>
       </button>
     </div>
+    <div class="an61" role="note"><svg class="an61-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 9.2v5.6l4.6-2.8z" fill="currentColor"/></svg><span><b>Android app</b> coming soon to Google Play</span></div>
     <div class="header-stats" id="header-stats"></div>
   </header>
   <div class="home-content scrollable">
@@ -2797,7 +2807,6 @@ const PT_PLAY = (function () {
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
       </div>
-      <p class="an46">An Android app is coming soon to Google Play.</p>
       <p>Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company.</p>
       <div class="about38-links"><a href="deck-grader.html">Deck grader</a><a href="opening-odds.html">Opening odds</a><a href="prize-trainer.html">Prize trainer</a><a href="rotation.html">Rotation checker</a></div>
       <div class="about38-links"><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><button type="button" onclick="openCredits()">Credits</button></div>
@@ -11669,7 +11678,10 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v60';
+// v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
+// PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
+const PT_VERSION = 'v2.0';
+const PT_BUILD = 61;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -11946,7 +11958,7 @@ function feedbackUrl(kind, text, deck) {
     '',
     kind === 'Bug' ? 'What did you expect?\n\n' : '',
     '----',
-    `App version: ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}`,
+    `App version: ${PT_VERSION} (build ${PT_BUILD})${PT_PLAY ? ' (Google Play)' : ''}`,
     `Screen: ${scr.replace('screen-', '')}`,
     `Device: ${device}, ${innerWidth} px wide`,
   ];
@@ -16418,8 +16430,12 @@ function mu60Validate(j) {
       if (!sig.length) return null;
       const vs = {};
       for (const [o, r] of Object.entries(d.vs || {})) { const k = mu60Id(o), v = mu60Recs(r); if (k && v) vs[k] = v; }
+      // v61: lists that placed high, as codes (see mu61Code), with the finish and the event.
+      const tops = (Array.isArray(d.tops) ? d.tops : []).slice(0, 40)
+        .filter(x => Array.isArray(x) && /^[0-9a-f]{8}$/.test(x[0]) && Number.isInteger(x[1]) && x[1] >= 1 && x[1] <= 64 && d30Str(x[2], 80) && d30Day(x[3]))
+        .map(x => [x[0], x[1], x[2], x[3]]);
       return { id: d.id, name: d.name, share: typeof d.share === 'number' ? d.share : 0,
-        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs };
+        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs, tops };
     }).filter(Boolean);
     const ids = new Set(decks.map(d => d.id));
     const cols = (Array.isArray(j.cols) ? j.cols : []).filter(c => ids.has(c)).slice(0, 12);
@@ -16485,6 +16501,34 @@ function mu60Match(deck, data) {
   return best && best.score >= MU60_CLOSE ? best.deck : null;
 }
 
+// v61: the open deck as the same short code refresh-matchups.mjs makes for lists that placed
+// (listCode there): card names without set numbers, counts summed, sorted, hashed. Keep in step.
+function mu61Code(deck) {
+  const n = {};
+  let total = 0;
+  for (const c of deck.cards || []) {
+    const k = String(c.apiName || c.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ').trim().replace(/^basic (?=.* energy$)/, '');
+    const q = Number(c.count) || 0;
+    if (!k || q < 1) continue;
+    n[k] = (n[k] || 0) + q; total += q;
+  }
+  if (total !== 60) return null;
+  const s = Object.keys(n).sort().map(k => k + ':' + n[k]).join('|');
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+/** A list that placed in the results, card for card the same as the open deck, or null. */
+function mu61Same(deck, data) {
+  const code = mu61Code(deck);
+  if (!code) return null;
+  let best = null;
+  for (const d of data.decks) for (const x of d.tops || []) if (x[0] === code && (!best || x[1] < best.place)) best = { deck: d, place: x[1], event: x[2], day: x[3] };
+  return best;
+}
+const mu61Nth = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+
 function mu60Picks() { try { return JSON.parse(safeLocalGet(MU60_PICK) || '{}') || {}; } catch (_) { return {}; } }
 function mu60SetPick(v) {
   const p = mu60Picks();
@@ -16532,6 +16576,10 @@ function mu60Section(deck) {
     const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2], p = mu60Pct(all);
     h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of ${n} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
       : `<p class="mu60-p">No matches for ${esc(arch.name)} in these results yet.</p>`;
+    // v61: say whether these numbers are for this exact list. Many players copy a list that placed, card for card.
+    const same = mu61Same(deck, data);
+    h += same ? `<p class="mu60-f mu61-same">This is the same list, card for card, that finished ${mu61Nth(same.place)} at ${esc(same.event)} on ${d30Nice(same.day)}.${same.deck.id !== arch.id ? ` That list was played as ${esc(same.deck.name)}.` : ''}</p>`
+      : `<p class="mu60-f mu61-like">These are results for all ${esc(arch.name)} lists, not your exact list.</p>`;
     const rows = data.cols.filter(c => c !== arch.id).map(c => {
       const opp = data.decks.find(d => d.id === c);
       const r = mu60Sum(arch.vs[c]);

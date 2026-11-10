@@ -55,6 +55,33 @@ const slug = v => clean(v, 60).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replac
 const day = t => new Date(t).toISOString().slice(0, 10);
 const add = (a, b) => { a[0] += b[0]; a[1] += b[1]; a[2] += b[2]; return a; };
 
+// A whole 60-card list as a short code, so the app can tell when a player's list is the
+// same one that placed in an event, card for card. Only names and counts are used, not
+// set numbers, so another printing of the same card still matches. The app builds the
+// same code from the open deck (mu61Code in index.html): keep the two in step.
+const TOP_PLACE = 16;      // lists that finished this high are kept, as codes only
+const TOPS_MAX = 24;       // codes kept per archetype, best finishes first
+const cardKey = n => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  .replace(/[^a-z0-9]+/g, ' ').trim().replace(/^basic (?=.* energy$)/, '');
+function listCode(dl) {
+  if (!dl || typeof dl !== 'object') return null;
+  const n = {};
+  let total = 0;
+  for (const part of ['pokemon', 'trainer', 'energy']) {
+    if (!Array.isArray(dl[part])) return null;
+    for (const c of dl[part]) {
+      const k = cardKey(c && c.name), q = Number(c && c.count);
+      if (!k || !Number.isInteger(q) || q < 1 || q > 60) return null;
+      n[k] = (n[k] || 0) + q; total += q;
+    }
+  }
+  if (total !== 60) return null;
+  const s = Object.keys(n).sort().map(k => k + ':' + n[k]).join('|');
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+
 /** One event's standings and pairings, boiled down to counts. Null when it cannot be used. */
 function digest(t, standings, pairings) {
   const deckOf = new Map();
@@ -66,6 +93,11 @@ function digest(t, standings, pairings) {
     if (!id || !name || !player) continue;
     deckOf.set(player, id);
     const d = decks[id] || (decks[id] = { name, lists: 0, mons: {} });
+    const place = Number(s.placing);
+    if (Number.isInteger(place) && place >= 1 && place <= TOP_PLACE) {
+      const code = listCode(s.decklist);
+      if (code) (d.tops || (d.tops = [])).push([code, place]);
+    }
     const mons = s.decklist && Array.isArray(s.decklist.pokemon) ? s.decklist.pokemon : null;
     if (!mons) continue;
     d.lists++;
@@ -130,13 +162,14 @@ async function eventList(since, now) {
 
 /** Sum the window's events into the file the app reads. */
 function build(events, since, until) {
-  const lists = {}, names = {}, mons = {}, vs = {};
+  const lists = {}, names = {}, mons = {}, vs = {}, tops = {};
   let total = 0, matches = 0;
   for (const e of events) {
     matches += e.matches;
     for (const [id, d] of Object.entries(e.decks)) {
       names[id] = names[id] || d.name;
       lists[id] = (lists[id] || 0) + d.lists;
+      for (const [code, place] of d.tops || []) (tops[id] || (tops[id] = [])).push([code, place, e.name, e.date]);
       total += d.lists;
       const m = mons[id] || (mons[id] = {});
       for (const [n, v] of Object.entries(d.mons)) add(m[n] || (m[n] = [0, 0, 0]), [v[0], v[1], 0]);
@@ -160,7 +193,11 @@ function build(events, since, until) {
     const sig = Object.entries(mons[id] || {})
       .map(([n, x]) => [n, Math.round(x[1] / lists[id] * 10) / 10, Math.round(x[0] / lists[id] * 100) / 100])
       .filter(s => s[2] >= SIG_MIN).sort((a, b) => b[2] - a[2] || b[1] - a[1]).slice(0, SIG_MAX);
-    return { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v };
+    // The same list can place more than once: keep its best finish, then the newest.
+    const best = {};
+    for (const x of (tops[id] || []).sort((a, b) => a[1] - b[1] || (a[3] < b[3] ? 1 : -1))) if (!best[x[0]]) best[x[0]] = x;
+    const top = Object.values(best).slice(0, TOPS_MAX);
+    return { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v, tops: top };
   }).filter(d => d.sig.length);
   return {
     schema: 1,
