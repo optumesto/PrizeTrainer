@@ -3448,10 +3448,18 @@ function parseDamage(raw, text) {
       // v54: a coin for each Energy on it. 3 Energy is the estimate, so 1.5 heads.
       out.mult = null; out.typical = Math.round(out.base * 1.5); out.max = out.base * 3; out.min = 0;
       out.confidence = 'medium'; out.flip = 'energy';
-    } else if ((upM = t.match(/discard up to (\d+) [^.]*?for each card you discarded/i))) {
+    } else if ((upM = t.match(/discard up to (\d+)\b([^.]*)\.?\s*this attack does \d+ (?:more )?damage for each card you discarded/i))) {
       // v54: "Discard up to 2 Energy ... for each card you discarded": the card caps it.
+      // v56: the period between the two sentences is crossed. When it discards from this
+      // Pokemon alone and the cap is over 3 (Ethan's Magcargo, 5), 3 attached is the estimate.
+      out.mult = parseInt(upM[1], 10); out.max = out.base * out.mult; out.min = 0;
+      const self = /from this pok[e\u00e9]mon/i.test(upM[2]) && out.mult > 3;
+      out.typical = out.base * (self ? 3 : out.mult);
+      out.confidence = self ? 'medium' : 'high';
+    } else if ((upM = t.match(/put up to (\d+) damage counters? on this pok[e\u00e9]mon\.?\s*this attack does \d+ damage for each damage counter you placed/i))) {
+      // v56: Walking Wake's Undulating Slice: it places up to 9 on itself, so the cap is the hit.
       out.mult = parseInt(upM[1], 10); out.typical = out.max = out.base * out.mult; out.min = 0;
-      out.confidence = 'high';
+      out.confidence = 'medium';
     } else {
       // Multiplier depends on board state we cannot see (energy, bench count).
       // v54: a full board is 6 Pokemon in play, 5 on the Bench. Anything else
@@ -3487,11 +3495,19 @@ function parseDamage(raw, text) {
       const nC = parseInt(coinsM[1], 10);
       out.typical = out.base + Math.round(per * nC / 2); out.max = out.base + per * nC;
       out.confidence = 'medium'; out.flip = nC;
-    } else if ((upM = t.match(/discard up to (\d+) [^.]*\.\s*this attack does \d+ more damage for each card you discarded/i))) {
+    } else if ((upM = t.match(/discard the top (\d+ cards?|card) of (your|each player's) deck[^.]*?(?:\.\s*|, and )this attack does \d+ more damage for each/i))) {
+      // v56: a mill attack. About a third of what comes off the top counts; the grade
+      // works it out from the list itself (mill56).
+      const n = /^\d+/.test(upM[1]) ? parseInt(upM[1], 10) : 1, k = upM[2] === 'your' ? n : n * 2;
+      out.max = out.base + per * k; out.typical = out.base + Math.round(per * k * 0.35 / 10) * 10;
+      out.confidence = 'low';
+    } else if ((upM = t.match(/discard up to (\d+) [^.]*?[.,]?\s*(?:and )?this attack does \d+ more damage for each card you discarded/i))) {
       // v55: "You may discard up to 2 Energy from your Benched Pokemon. This attack does
       // 60 more damage for each card you discarded" (Team Rocket's Mewtwo ex): the card caps it.
       out.max = out.typical = out.base + per * parseInt(upM[1], 10);
       out.confidence = 'high';
+      // v56: 4 Energy from your hand every turn is a lot to ask (Mega Clefable ex), so 3 is the estimate.
+      if (/from your hand/i.test(upM[0]) && parseInt(upM[1], 10) > 3) { out.typical = out.base + per * 3; out.confidence = 'medium'; }
     } else if (out.cap != null) {
       out.max = out.base + out.cap;
       out.typical = out.base + Math.round(out.cap / 2);
@@ -3961,17 +3977,70 @@ const T55 = ['grass','fire','water','lightning','psychic','fighting','darkness',
 function pile55(text, damage) {
   const t = String(text || '').replace(/[\u2018\u2019]/g, "'");
   if (/if you have \d+ or more/i.test(t)) return undefined;
-  const m = t.match(/does (\d+) more damage for each (.+?) in your discard pile/i);
+  // v56: also "does 20 damage for each Basic Water Energy card in your discard pile" (Kyogre), with no base.
+  const m = t.match(/does (\d+) (more )?damage for each (.+?) in your discard pile/i);
   if (!m) return undefined;
-  const w = m[2].trim(), base = parseInt(String(damage || ''), 10) || 0, per = parseInt(m[1], 10);
+  // Dartrix: "for each Pokemon in your discard pile that has the United Wings attack".
+  const at = t.slice(m.index + m[0].length).match(/^ that has the (.+?) attack/i);
+  const sp = at ? { atk: at[1] } : /^(ancient|future) cards?$/i.test(m[3]) ? null : spec56(m[3]);
+  if (!sp) return undefined;
+  return Object.assign({ per: parseInt(m[1], 10), base: m[2] ? (parseInt(String(damage || ''), 10) || 0) : 0 }, sp);
+}
+/**
+ * v56: the cards an attack counts, from a phrase in its text ("Basic Water Energy card",
+ * "Supporter card that has "Team Rocket" in its name", "Ethan's Adventure card").
+ * Gives { kind, ... } for g56Match, or undefined when the app cannot count it from a list.
+ */
+function spec56(w) {
+  w = String(w || '').trim().replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"');
   let e = w.match(/^(basic )?(?:(\w+) )?energy(?: cards?)?$/i);
-  if (e && (!e[2] || T55.includes(e[2].toLowerCase()))) return { per, base, kind: 'energy', basic: !!e[1] || undefined, type: e[2] ? e[2].toLowerCase() : undefined };
-  if (/^pok[e\u00e9]mon(?: cards?)?$/i.test(w)) return { per, base, kind: 'pokemon' };
-  e = w.match(/^(supporter|item|trainer) cards?$/i);
-  if (e) return { per, base, kind: e[1].toLowerCase() };
+  if (e && (!e[2] || T55.includes(e[2].toLowerCase()))) return { kind: 'energy', basic: !!e[1] || undefined, type: e[2] ? e[2].toLowerCase() : undefined };
+  if (/^pok[e\u00e9]mon(?: cards?)?$/i.test(w)) return { kind: 'pokemon' };
+  e = w.match(/^(supporter|item|trainer) cards?(?: that ha(?:s|ve) "(.+?)" in (?:its|their) names?)?$/i);
+  if (e) return { kind: e[1].toLowerCase(), has: e[2] ? e[2].toLowerCase() : undefined };
+  e = w.match(/^(.+?'s) pok[e\u00e9]mon$/i);
+  if (e) return { kind: 'pre', pre: e[1].toLowerCase() + ' ' };
   e = w.match(/^(.+?) cards?$/i);
-  if (e && !/\b(?:pok[e\u00e9]mon|energy|that|with|of)\b/i.test(e[1])) return { per, base, kind: 'name', what: e[1].trim() };
+  if (e && !/\b(?:pok[e\u00e9]mon|energy|that|with|of)\b/i.test(e[1])) return { kind: 'name', what: e[1].trim() };
   return undefined;
+}
+/**
+ * v56: an attack that counts some of your Pokemon in play or on your Bench, read from its
+ * text: "for each of your Beedrill and Beedrill ex in play", "for each of your Erika's
+ * Pokemon in play", "for each of your Benched Charjabug", "for each Stage 2 Pokemon on your
+ * Bench", "for each of your Pokemon in play that has the Round attack".
+ */
+function group56(text, damage) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon');
+  const m = t.match(/does (\d+) (more )?damage for each (?:of your (benched )?(.+?)(?: in play)?(?: that has the (.+?) attack)?|(stage 1|stage 2|basic|evolution) pokemon on your bench)\./i);
+  if (!m) return undefined;
+  const per = parseInt(m[1], 10), base = m[2] ? (parseInt(String(damage || ''), 10) || 0) : 0;
+  const bench = !!m[3] || !!m[6];
+  if (m[6]) return { per, base, bench, stage: m[6].toLowerCase() };
+  let w = (m[4] || '').trim();
+  if (m[5]) return /^pokemon$/i.test(w) ? { per, base, bench, atk: m[5].trim() } : undefined;
+  if (!/ in play$/i.test(t.match(/for each of your [^.]*/i)[0]) && !bench) return undefined;
+  const st = w.match(/^(stage 1|stage 2|basic|evolution) pokemon$/i);
+  if (st) return { per, base, bench, stage: st[1].toLowerCase() };
+  const pre = w.match(/^(.+?'s) pokemon$/i);
+  if (pre) return { per, base, bench, pre: pre[1].toLowerCase() + ' ' };
+  if (/pokemon|energy|prize|card|damage/i.test(w)) return undefined;
+  return { per, base, bench, names: w.split(/,? and |, /i).map(x => x.trim().toLowerCase()).filter(Boolean) };
+}
+/**
+ * v56: an attack that discards the top cards of your deck and counts what comes off
+ * ("Discard the top 6 cards of your deck, and this attack does 100 damage for each Basic
+ * Water Energy card that you discarded"). The list says how many of those it holds, so the
+ * grade counts the average.
+ */
+function mill56(text, damage) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'");
+  const m = t.match(/discard the top (\d+ cards?|card) of (your|each player's) deck[^.]*?(?:\.\s*|, and )this attack does (\d+) (more )?damage for each (.+?) (?:that )?(?:you )?discarded in this way/i);
+  if (!m) return undefined;
+  const sp = spec56(m[5]);
+  if (!sp) return undefined;
+  return Object.assign({ n: m[1] === 'card' ? 1 : parseInt(m[1], 10), both: /each/i.test(m[2]) || undefined, per: parseInt(m[3], 10),
+    base: m[4] ? (parseInt(String(damage || ''), 10) || 0) : 0, label: m[5].trim() }, sp);
 }
 /** v55: "Attacks used by your Cynthia's Pokemon do 30 more damage to your opponent's Active Pokemon" (Cynthia's Roserade). */
 function aboost55(text) {
@@ -3989,7 +4058,7 @@ function gate55(text) {
   return m ? { n: parseInt(m[1], 10), pre: m[2].toLowerCase() } : undefined;
 }
 // These sit inside the card layer's closure; the TCGdex reader outside it needs them too.
-if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54, pile55, aboost55, gate55 });
+if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54, pile55, aboost55, gate55, spec56, group56, mill56 });
 
 function enrichCard(apiCard, opts) {
   const o = opts || {};
@@ -4034,6 +4103,8 @@ function enrichCard(apiCard, opts) {
         : /during your next turn, this pok[e\u00e9]mon can[\u2019']t (?:attack|use attacks)/i.test(a.text || '') ? 'all' : null,
       escale: escale53(a.text, a.damage),
       pile: pile55(a.text, a.damage),
+      group: group56(a.text, a.damage),
+      mill: mill56(a.text, a.damage),
       // v54: Energy the attack discards from the attacker itself (Metagross's Metallic Hammer, Pikachu ex's Topaz Bolt).
       edisc: (() => { const m = (a.text || '').match(/(you may )?discard (all|an?|\d+) ((?:basic )?(?:grass|fire|water|lightning|psychic|fighting|darkness|metal) )?energy (?:cards? )?from this pok[e\u00e9]mon(?:[^.]*?(\d+) more damage)?/i);
         return m ? { n: m[2].toLowerCase() === 'all' ? 'all' : /^an?$/i.test(m[2]) ? 1 : +m[2], type: m[3] ? m[3].trim().toLowerCase() : '', opt: !!m[1], more: m[4] ? +m[4] : 0 } : null; })(),
@@ -4695,7 +4766,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 8;   // v55: re-read for discard pile damage, Ability boosts and attack gates
+const ENRICH_VER = 9;   // v56: re-read for attacks that count Pokemon in play or cards milled
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -4804,7 +4875,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -4922,6 +4993,8 @@ function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
   if (a.escale && !a.cond) return gEnergyReach(a, deck);
   if (a.pile && !a.cond) return gPileReach(a, deck);
+  if (a.group && !a.cond) return gGroupReach(a, deck);
+  if (a.mill && !a.cond) return gMillReach(a, deck);
   if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
   const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
   let have = 0;
@@ -4940,26 +5013,94 @@ function gAtkReach(a, deck) {
  * Ceruledge ex's Abyssal Flames). Early is 2 of them in the pile. The full hit is as many
  * as it takes to one-shot the format's biggest threat, never more than the list runs.
  */
+// v56: does this list entry fit what an attack counts (spec56, group56)?
+function g56Match(p, e) {
+  const c = e.card; if (!c) return false;
+  if (p.kind === 'name') return g35Key(e.name) === g35Key(p.what);
+  if (p.kind === 'energy') { if (c.t !== 'energy') return false;
+    const ty = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : []);
+    if (p.basic && !/^(basic )?\w+ energy$/i.test(String(e.name || '').trim())) return false;
+    return !p.type || ty.includes(p.type); }
+  if (p.kind === 'pokemon') return c.t === 'pkmn';
+  if (p.kind === 'pre') return c.t === 'pkmn' && g35Key(e.name).startsWith(g35Key(p.pre));
+  if (p.kind === 'trainer' || p.kind === 'supporter' || p.kind === 'item')
+    return c.t === 'trainer' && (p.kind === 'trainer' || c.tt === p.kind) && (!p.has || g35Key(e.name).includes(g35Key(p.has)));
+  // group56: names, a name start, a stage or an attack name.
+  if (c.t !== 'pkmn') return false;
+  if (p.names) return p.names.includes(g35Key(e.name));
+  if (p.pre) return g35Key(e.name).startsWith(g35Key(p.pre));
+  if (p.stage) return p.stage === 'evolution' ? c.stage === 'stage1' || c.stage === 'stage2' : c.stage === p.stage.replace(' ', '');
+  if (p.atk) return (c.attacks || []).some(x => g35Key(x.name) === g35Key(p.atk));
+  return false;
+}
+// v56: one of what an attack counts, in plain words, for the grade's sentences.
+function g56One(p) {
+  if (p.kind === 'name') return `${gCap(p.what).replace(/'S\b/g, "'s")} card`;
+  if (p.kind === 'energy') return `${p.basic ? 'Basic ' : ''}${p.type ? gCap(p.type) + ' ' : ''}Energy card`;
+  if (p.kind === 'pokemon') return 'Pokemon';
+  if (p.kind === 'pre') return `${gCap(p.pre.trim()).replace(/'S\b/g, "'s")} Pokemon`;
+  if (p.kind) return p.has ? `${gCap(p.kind)} card with ${gCap(p.has).replace(/'S\b/g, "'s")} in its name` : `${gCap(p.kind)} card`;
+  if (p.names) return p.names.map(n => gCap(n)).join(' or ');
+  if (p.pre) return `${gCap(p.pre.trim()).replace(/'S\b/g, "'s")} Pokemon`;
+  if (p.stage) return `${gCap(p.stage)} Pokemon`;
+  return `Pokemon with ${p.atk}`;
+}
+function g56Many(p, n) {
+  const one = g56One(p);
+  if (n === 1 || /Pokemon$/.test(one) || p.names) return one;
+  return one.replace(/ card( with|$)/, ' cards$1');
+}
 function gPileReach(a, deck) {
   const p = a.pile;
   let have = 0;
-  deck.forEach(e => { const c = e.card; if (!c) return;
-    if (p.kind === 'name') { if (g35Key(e.name) === g35Key(p.what)) have += e.qty; }
-    else if (p.kind === 'energy') { if (c.t !== 'energy') return;
-      const ty = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : []);
-      if (p.basic && !/^(basic )?\w+ energy$/i.test(String(e.name || '').trim())) return;
-      if (p.type && !ty.includes(p.type)) return;
-      have += e.qty; }
-    else if (p.kind === 'pokemon') { if (c.t === 'pkmn') have += e.qty; }
-    else if (p.kind === 'trainer') { if (c.t === 'trainer') have += e.qty; }
-    else if (c.t === 'trainer' && c.tt === p.kind) have += e.qty; });
+  deck.forEach(e => { if (g56Match(p, e)) have += e.qty; });
   const need = Math.max(1, Math.ceil((FMT.threatHP[1] - p.base) / p.per));
   const nNow = Math.min(have, 2), nTop = Math.min(have, Math.max(2, need));
   const now = p.base + p.per * nNow, top = p.base + p.per * nTop;
-  const label = p.kind === 'name' ? `${gCap(p.what).replace(/'S\b/g, "'s")} ${nTop === 1 ? 'card' : 'cards'}`
-    : p.kind === 'energy' ? `${p.basic ? 'Basic ' : ''}${p.type ? gCap(p.type) + ' ' : ''}Energy ${nTop === 1 ? 'card' : 'cards'}`
-    : p.kind === 'pokemon' ? 'Pokemon' : `${gCap(p.kind)} ${nTop === 1 ? 'card' : 'cards'}`;
-  return { now, top, cond: top > now ? { n: nTop, what: label } : null, have, conf: 'est', pile: p, late: nTop > 6 };
+  return { now, top, cond: top > now ? { n: nTop, what: g56Many(p, nTop) } : null, have, conf: 'est', pile: p,
+    sc: { per: p.per, one: g56One(p), where: 'in your discard pile', fill: 'Filling the discard pile' }, late: nTop > 6 };
+}
+/**
+ * v56: an attack that counts some of your Pokemon in play (group56). Early is 2 of them.
+ * The full hit is as many as the list runs, at most 5 in play or 4 on the Bench, since
+ * the rest of the board holds other Pokemon.
+ */
+function gGroupReach(a, deck) {
+  const g = a.group;
+  // Each evolution line is one Pokemon in play, so Tympole, Palpitoad and Seismitoad with
+  // Round count once per Tympole. When the attacker evolves from what it counts (Vikavolt
+  // from Charjabug), the line it sits on is not on the Bench.
+  const qK = k => deck.reduce((n, e) => n + (e.card && e.card.key === k ? e.qty : 0), 0);
+  const chain = k => { const out = [k]; let f = k;
+    for (;;) { const x = deck.find(y => y.card && y.card.key === f); f = x && x.card.from; if (!f || out.includes(f)) return out; out.push(f); } };
+  const fam = new Map();
+  deck.forEach(e => { if (!g56Match(g, e)) return;
+    const ch = chain(e.card.key), root = ch[ch.length - 1], cap = qK(root) || e.qty;
+    const f = fam.get(root) || { n: 0, cap, keys: new Set() }; f.n += e.qty; f.keys.add(e.card.key); fam.set(root, f); });
+  const self = deck.find(e => e.card && (e.card.attacks || []).includes(a));
+  let have = 0;
+  fam.forEach((f, root) => { let n = Math.min(f.n, f.cap);
+    if (self && !f.keys.has(self.card.key) && chain(self.card.key).some(k => f.keys.has(k))) n = Math.min(n, f.cap - 1);
+    have += Math.max(0, n); });
+  const nNow = Math.min(have, 2), nTop = Math.min(have, g.bench ? 4 : 5);
+  const now = g.base + g.per * nNow, top = g.base + g.per * nTop;
+  const where = g.bench ? 'on your Bench' : 'in play';
+  return { now, top, cond: top > now ? { n: nTop, what: g56Many(g, nTop) } : null, have, conf: 'est', pile: g,
+    sc: { per: g.per, one: g56One(g), where, fill: g.bench ? 'Filling your Bench' : 'Getting them all into play' }, late: false };
+}
+/**
+ * v56: an attack that counts what comes off the top of your deck (mill56). The grade counts
+ * the average for this list: the cards turned over times the share of the list that counts.
+ * With "each player's deck" the opponent's card counts too, at 1 in 5 as the app's estimate.
+ */
+function gMillReach(a, deck) {
+  const m = a.mill;
+  let have = 0, total = 0;
+  deck.forEach(e => { if (!e.card && !e.qty) return; total += e.qty || 0; if (g56Match(m, e)) have += e.qty; });
+  total = total || 60;
+  const avg = m.n * have / total + (m.both ? m.n * 0.2 : 0);
+  const v = m.base + Math.round(m.per * avg / 10) * 10;
+  return { now: v, top: v, cond: null, have, conf: 'est', flip: 'mill', mill: Object.assign({}, m, { have, avg }) };
 }
 
 /**
@@ -5077,7 +5218,8 @@ function g35Hit(r) {
     t = `${nm}${how} ${verb} ${r.eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${r.top} without), before Weakness.`;
   } else t = `${nm}${how} ${verb} ${r.top} before Weakness.`;
   if (r.ko && r.ko.length) t += ` Using it Knocks Out ${r.ko.join(' and ')}, which gives up a prize.`;
-  if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
+  if (r.flip === 'mill') t += ` That is the average for cards off the top of the deck: your list runs ${r.mill.have} ${g56Many(r.mill, r.mill.have)}, so a bigger or smaller hit is down to luck.`;
+  else if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
   else if (r.flip) t += ' That counts coin flips at their average.';
   else if (r.conf === 'low') t += ` Its damage depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   return t;
@@ -5096,7 +5238,7 @@ function g37Reach(a, deck, self) {
   // A random attack off the top of the deck is not counted (the grade says so).
   if (a.copy && a.copy.mill) return { now: 0, top: 0, cond: null, conf: 'high', flip: null };
   if (!a.copy) { const r0 = gAtkReach(a, deck);
-    return Object.assign(r0, { conf: r0.escale || r0.pile ? 'est' : (a.conf || 'high'), flip: a.flip || null, atk: a.name }); }
+    return Object.assign(r0, { conf: r0.escale || r0.pile || r0.mill ? 'est' : (a.conf || 'high'), flip: r0.flip || a.flip || null, atk: a.name }); }
   const pre = String(a.copy.pre || '').toLowerCase();
   let best = null;
   deck.forEach(e => { const c = e.card;
@@ -5104,7 +5246,7 @@ function g37Reach(a, deck, self) {
     if (pre && !c.key.startsWith(pre)) return;
     c.attacks.forEach(x => { if (x.copy) return;
       const r0 = gAtkReach(x, deck);
-      const r = Object.assign(r0, { conf: r0.escale || r0.pile ? 'est' : (x.conf || 'high'), flip: x.flip || null, atk: x.name, copy: { who: e.name, atk: x.name, via: a.name } });
+      const r = Object.assign(r0, { conf: r0.escale || r0.pile || r0.mill ? 'est' : (x.conf || 'high'), flip: r0.flip || x.flip || null, atk: x.name, copy: { who: e.name, atk: x.name, via: a.name } });
       if (!best || r.top > best.top) best = r; }); });
   return best || { now: 0, top: 0, cond: null, conf: 'high', flip: null };
 }
@@ -5235,7 +5377,7 @@ function gViability(deck, coh, main) {
     findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
     d:`${gCap(bestName)} hits for ${bestR.now} with ${e.n} ${what} attached and ${bestR.top} once ${e.nTop} are in play. Your list runs ${e.have}, so the full hit is a mid game plan, not a turn 2 one.`}); }
   if (bestR && bestR.cond) findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
-    d:`${gCap(bestName)} hits for ${bestR.now} ${bestR.pile ? `with 2 ${bestR.cond.what} in your discard pile and ${bestR.top} once you have ${bestR.cond.n}` : `early and ${bestR.top} once ${condTxt(bestR)}`}. Your list has ${bestR.have} of those cards, so the full hit is a ${bestR.late ? 'late game plan that needs a lot of them in the pile' : 'mid game plan, not a turn 2 one'}.`});
+    d:`${gCap(bestName)} hits for ${bestR.now} ${bestR.sc ? `with 2 ${g56Many(bestR.pile, 2)} ${bestR.sc.where} and ${bestR.top} once you have ${bestR.cond.n}` : `early and ${bestR.top} once ${condTxt(bestR)}`}. ${bestR.sc && bestR.sc.where !== 'in your discard pile' ? `Your list can have ${bestR.have} there at once` : `Your list has ${bestR.have} of those cards`}, so the full hit is a ${bestR.late ? 'late game plan that needs a lot of them in the pile' : 'mid game plan, not a turn 2 one'}.`});
   // Abilities that stop attack effects or damage make the deck hard to disrupt.
   const prot=deck.filter(e=>e.card&&e.card.protect);
   const protN=prot.reduce((a,e)=>a+e.qty,0);
@@ -5335,13 +5477,15 @@ function gPlan(entries, coh, via) {
       : x.scope === 'self' ? `Its ${r.atk} counts ${what} attached to it, so every one you attach to it adds ${x.per}.`
       : `Its ${r.atk} counts the Energy attached to both Active Pokemon.`;
   } else if (r && r.cond) {
-    how = r.pile
-      ? `Its ${r.atk} does ${r.pile.per} more for each ${r.pile.kind === 'name' ? gCap(r.pile.what).replace(/'S\b/g, "'s") + ' card' : r.pile.kind === 'pokemon' ? 'Pokemon' : r.cond.what.replace(/s$/, '')} in your discard pile: ${r.now} with 2 there, ${r.top} once you have ${r.cond.n}.`
+    how = r.sc
+      ? `Its ${r.atk} does ${r.sc.per} ${r.pile.base ? 'more ' : ''}for each ${r.sc.one} ${r.sc.where}: ${r.now} with 2 there, ${r.top} once you have ${r.cond.n}.`
       : `Its ${r.atk} grows as your discard pile fills: ${r.now} early, ${r.top} once you have ${r.cond.n} ${r.cond.what} there.`;
   } else if (r && r.copy) {
     how = `It copies ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}.`;
   } else if (r && r.conf === 'low') {
     how = `Its ${r.atk} depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
+  } else if (r && r.flip === 'mill') {
+    how = `Its ${r.atk} discards ${r.mill.n === 1 ? 'the top card' : 'the top ' + r.mill.n + ' cards'} of ${r.mill.both ? 'each deck' : 'your deck'} and does ${r.mill.per} ${r.mill.base ? 'more ' : ''}for each ${g56One(r.mill)} among them, about ${r.top} on average since your list runs ${r.mill.have}.`;
   } else if (r) {
     how = `Its ${r.atk} ${r.flip ? 'averages' : 'hits for'} ${r.top}${r.flip === 'tails' ? ' with its coin flips' : ''}.`;
   }
@@ -5610,7 +5754,7 @@ function simAttackerLine(deck, groups) {
     });
   });
   const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:R.via.main.why,
-    cond: r && r.cond ? r.cond : null, pile: !!(r && r.pile), now: r ? r.now : 0, full: r ? r.top : 0 };
+    cond: r && r.cond ? r.cond : null, pile: !!(r && r.pile), sc: r && r.sc ? r.sc : null, two: r && r.pile ? g56Many(r.pile, 2) : '', now: r ? r.now : 0, full: r ? r.top : 0 };
   if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
   if (g.stage === 'stage1') {
     line.basic = g.from ? idx(g.from) : -1;
@@ -5931,7 +6075,7 @@ function renderOdds() {
       <div class="g-sec-i">${line.why === 'name' ? 'The attacker this deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch?' to '+oPct(AT.search):''}</div>
-        <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.pile ? 'with 2' : 'until you have ' + line.cond.n} ${esc(line.cond.what)} in your discard pile${line.pile ? ' and ' + line.full + ' once you have ' + line.cond.n : ', then ' + line.full}. Filling the discard pile is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
+        <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
       <div class="g-item ${S.locked<=0.02?'ok':S.locked<=0.06?'warn':'crit'}">
         <div class="gt">Line locked in prizes: ${S.locked===0 && [line.basic,line.s1,line.top].some(i=>i>=0&&S.groups[i].qty<=6) ? '<0.1%' : oPct(S.locked)}</div>
         <p>Games where every copy of a piece the attacker needs is prized, so it cannot come online until you take that prize.</p></div>
@@ -8575,7 +8719,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -10170,7 +10314,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v55';
+const PT_VERSION = 'v56';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

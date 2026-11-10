@@ -1,3 +1,17 @@
+# v56: the grade reads attacks that count Pokemon in play and cards off the top of the deck (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v56), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt and the ad code.
+
+- Attacks that do damage for each of your Pokemon in play or on your Bench were a flat guess. They now count what your list can have there at once, one per evolution line: Beedrill ex's Rumbling Bees reaches 440 with 4 Beedrill ex, Vikavolt's Circuit Cannon 360 with 3 Charjabug on the Bench (the fourth line is Vikavolt itself), Seismitoad's Round 280 with 4 lines that know Round. Mamoswine ex, Reuniclus, Erika's Victreebel, Team Rocket's Spidops, Pikachu, Drifblim, Passimian and Farigiraf read the same way.
+- Attacks that discard cards off the top of the deck and count them (Mega Abomasnow ex's Hammer-lanche, Magcargo ex's Ground Burn, Avalugg, Misty's Gyarados) were counted at their best case. The grade now uses the average for your list and says a bigger or smaller hit is down to luck. Magcargo ex went from 560 to about 230.
+- Discard attacks with a printed cap are read as printed: Scizor ex's Cross Breaker 240, Sinistcha's Spill the Tea 210, Ethan's Magcargo's Lava Burst 350 at most (210 with 3 Energy on it), Mega Clefable ex's Shooting Moons 280 at most (240 with 3 Energy from your hand). Walking Wake's Undulating Slice is 180.
+- Discard pile attacks now also read Basic Energy of one type (Kyogre, Heat Rotom ex), Supporters with Team Rocket in the name (Team Rocket's Porygon2 and Porygon-Z) and Pokemon with one attack (Dartrix).
+- The Odds tab says where the cards go for each of these: on your Bench, in play or in your discard pile.
+- Built-in decks and the 24 test lists grade the same as v55.
+- Saved decks re-read their card data once, so older imports pick up the new details.
+- sw.js cache: prize-trainer-v56. Version reads v56.
+
 # v55: the grade reads discard pile damage, Ability boosts and natural Stage 2 lines (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v55), CHANGES.md.
