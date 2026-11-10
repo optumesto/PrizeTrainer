@@ -1,3 +1,19 @@
+# v55: the grade reads discard pile damage, Ability boosts and natural Stage 2 lines (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v55), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt and the ad code.
+
+- Attacks that do more damage for each card in your discard pile (Ethan's Typhlosion's Buddy Blast, Ceruledge ex's Abyssal Flames) were a guess. They now count the cards your list runs: Buddy Blast hits 280 with 4 Ethan's Adventure in the pile, and Abyssal Flames reaches a one-shot only with 16 Energy in the pile, which the grade calls a late game plan.
+- Team Rocket's Mewtwo ex's Erasure Ball is capped at 280, as printed (2 Energy discarded). How it plays says Power Saver needs 4 Team Rocket's Pokemon in play, and a list without 4 is flagged as unable to attack.
+- Cynthia's Roserade's Cheer On to Glory adds 30 to Cynthia's Pokemon, counted for 2 in play. Cynthia's Garchomp ex now one-shots at 350.
+- Stage 2 lines that run as many Stage 1 Pokemon as Stage 2 (Cynthia's Garchomp ex 4-4-3, Dragapult ex, Team Rocket's Crobat ex) read "Evolves the long way" instead of the slow setup warning, and say to plan on attacking from your third turn.
+- A Pokemon the list only plays to evolve (Dreepy into Drakloak in Ethan's Typhlosion) is no longer flagged for missing Energy.
+- Trainer roles fixed from card text: Special Red Card no longer counts as your draw. Hassel and Drakloak's Recon Directive count as draw, Fighting Gong as Basic search, Grand Tree as Rare Candy, Xerosic's Machinations as hand disruption, Air Balloon as a way out of the Active Spot. Energy searches that attach to a Pokemon (Mega Gardevoir ex, Azurill) no longer count as Pokemon search.
+- The Odds tab says what a discard pile attack does with 2 cards there and with the full count.
+- Built-in deck changes: Dragapult 6.8 to 7.2, Ogerpon Meganium Hydrapple 8.4 to 8.8. Main attackers are unchanged.
+- Saved decks re-read their card data once, so older imports pick up the new details.
+- sw.js cache: prize-trainer-v55. Version reads v55.
+
 # v54: the grade reads damage the card text spells out (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v54), CHANGES.md.
