@@ -1,3 +1,17 @@
+# v52: ad spots on menu and data screens (9 Nov 2026)
+
+All spots stay off until the AdSense ad unit ids are filled in. Nothing changes on the live site until then.
+
+- Ad spots at breaks between sections on every screen that is not gameplay: home (end of More), deck grade (under Share grade), odds (under the tiles, and between Opening basics and Main attacker), cards (after Pokemon, and after Trainers), game results (above Session history) and the tournament log (under Log a match).
+- Guide pages: a spot after the opening section, and one before the last section on the longer guides.
+- Never two ads in view at once: a spot is skipped when it would sit within one screen height of another ad. On a computer that drops the second spot on the cards tab and the guides.
+- Sized to fit the space it sits in: a 320 by 100 banner on phones. On computers each ad is as wide as its column (728 by 90 in the grade, odds, tournament log and guide columns, 970 by 90 across the cards list), home gets a 970 by 90 band under the deck list and side column, and game results gets a rectangle filling the right column above Session history.
+- Every spot is labeled Advertisement, with a wide gap above and below so it is never tapped by mistake for a button.
+- Still never in a game, hand, drill or pop-up sheet, never offline and never in the Google Play app.
+- Computer layout: the grade, odds, hand, drills and notes tabs now read in a column centered on the page, instead of starting at the left edge with empty space on the right.
+- Privacy policy: ads section lists the new screens.
+- sw.js cache: prize-trainer-v52.
+
 # v51: Prerelease section hidden for now (9 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v51), CHANGES.md.

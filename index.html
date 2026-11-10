@@ -2017,8 +2017,12 @@
   .ad32 { margin:1rem auto; max-width:100%; height:118px; overflow:hidden; text-align:center; contain:layout paint; }
   .ad32-lbl { font-size:var(--fs-xs); color:var(--text-3); line-height:18px; height:18px; }
   .ad32 ins { overflow:hidden; text-decoration:none; }
-  #ad32-grade { margin-bottom:2.5rem; }
-  #ad32-home { margin:1.5rem auto 0; }
+  /* v52: a wide gap above and below every ad, so it is never tapped by mistake for a button */
+  .ad32 { margin:2rem auto !important; }
+  @media (min-width:1100px) {
+    .home-content > .ad32 { grid-column:1 / -1; grid-row:6; width:100%; margin:2rem 0 0 !important; }
+    .home-content > .ad32 ~ .about38 { grid-row:7; }
+  }
   .age32-in { flex:0 0 6rem; max-width:6rem; }
   .dly33-hint { margin:-0.2rem 0 0.9rem; }
   .dly33-list .review-group { margin-bottom:1rem; }
@@ -2332,7 +2336,7 @@
     .rot35 .ic { width:12px; height:12px; }
   }
   /* v37: ad spots sit between two hairlines with a small mono label, like a ruled box on a sheet */
-  .ad32 { height:138px; box-sizing:border-box; padding:6px 0 12px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .ad32 { box-sizing:border-box; padding:6px 0 12px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
   .ad32-lbl { max-width:320px; margin:0 auto; text-align:left; font-family:var(--mono); font-weight:500; font-size:0.6875rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); height:20px; line-height:20px; }
   /* v37: results screen on the same sheet as the rest */
   #screen-review a:not(.btn), #screen-results a:not(.btn) { color:var(--text); text-decoration:underline; text-decoration-color:var(--mark); text-underline-offset:2px; }
@@ -2458,11 +2462,11 @@
     .review-tabs { justify-content:flex-start; }
     .rv-tab { flex:0 0 auto; padding:0 1.4rem; }
     .rv-tab:first-child { padding-left:0; }
-    /* Text tabs read in a 760px column that starts where the tabs start */
+    /* Text tabs read in a 760px column, centered on the page (v52; it used to start at the left edge) */
     #grade-body, #odds-body, #hand-body, #drills-body, #notes-body {
       max-width:none; margin:0;
-      padding-left:max(var(--pad-x), calc((100% - var(--page)) / 2));
-      padding-right:max(var(--pad-x), calc(100% - 760px - max(var(--pad-x), calc((100% - var(--page)) / 2))));
+      padding-left:max(var(--pad-x), calc((100% - 760px) / 2));
+      padding-right:max(var(--pad-x), calc((100% - 760px) / 2));
     }
     .review-body .g-hero, .review-body .g-sec, .review-body .g-wip, #odds-body .o-tiles, #odds-body .o-meta, #hand-body .hp-wrap { max-width:none; }
     .review-footer { justify-content:space-between; }
@@ -9708,7 +9712,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v51';
+const PT_VERSION = 'v52';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -12402,7 +12406,9 @@ function openCredits() {
 // README.md says how to fill them in.
 const PT_ADS = {
   client: 'ca-pub-XXXXXXXXXXXXXXXX',  // AdSense publisher id, once AdSense approves the site
-  slots: { results: '', grade: '', home: '' },  // ad unit id for each spot, made in AdSense as fixed size display units
+  // Ad unit id for each spot, made in AdSense as fixed size display units (320 by 100).
+  // One id can be used for several spots. A blank spot stays off.
+  slots: { home: '', grade: '', odds: '', odds2: '', cards: '', cards2: '', results: '', tlog: '' },
   // The guide pages have their own fill-ins, at the top of ads.js.
 };
 const AGE32_KEY = 'pt_age_v32';
@@ -12411,7 +12417,7 @@ const AD32_GAP = 30000;  // at most one new ad per spot every 30 seconds
 
 // The Play app has no ads at launch, so ads stay off there whatever is set above.
 function ads32Real() { return !PT_PLAY && /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
-function ads32On(where) { return ads32Real() && !!(where ? PT_ADS.slots[where] : (PT_ADS.slots.results || PT_ADS.slots.grade || PT_ADS.slots.home)); }
+function ads32On(where) { return ads32Real() && (where ? !!PT_ADS.slots[where] : Object.values(PT_ADS.slots).some(Boolean)); }
 function age32Any() { return ads32On(); }
 function age32Get() { const v = safeLocalGet(AGE32_KEY); return /^(u13|teen|adult|skip)$/.test(v || '') ? v : ''; }
 function age32Band(n) { return !(n >= 1 && n <= 130) ? 'skip' : n < 13 ? 'u13' : n < 18 ? 'teen' : 'adult'; }
@@ -12510,41 +12516,86 @@ function ads32Make(where, place) {
   if (!ads32On(where) || !age32Get() || !age32Online() || !place) return;
   const now = Date.now();
   if (ads32Last[where] && now - ads32Last[where] < AD32_GAP) return;
-  const room = place.parent.clientWidth || 320;
-  const w = Math.min(320, Math.floor(room));
-  if (w < 234) return;
+  const size = ads32Size(where, place.parent);
+  if (!size) return;
+  const [w, h] = size;
+  // v52: never two ads in view at once. Skip a spot that would sit within one
+  // screen height of another ad on the same screen.
+  const scr = place.parent.closest('.screen');
+  if (scr) {
+    const b = place.before;
+    const ref = b ? (b.nodeType === 1 ? b : b.nextElementSibling) : null;
+    const y = ref ? ref.getBoundingClientRect().top : place.parent.getBoundingClientRect().bottom;
+    const near = [...scr.querySelectorAll('.ad32')].some(a => a.offsetParent && Math.abs(a.getBoundingClientRect().top - y) < window.innerHeight);
+    if (near) return;
+  }
   ads32Last[where] = now;
   ads32Load();
   const box = document.createElement('div');
   box.id = 'ad32-' + where; box.className = 'ad32';
+  box.style.height = (h + 38) + 'px';
   const tag = age32Tag();
-  box.innerHTML = `<div class="ad32-lbl">Ad</div><ins class="adsbygoogle" style="display:inline-block;width:${w}px;height:100px" data-ad-client="${esc(PT_ADS.client)}" data-ad-slot="${esc(PT_ADS.slots[where])}"${tag ? ` data-tag-for-age-treatment="${tag}"` : ''}></ins>`;
+  box.innerHTML = `<div class="ad32-lbl" style="max-width:${w}px">Advertisement</div><ins class="adsbygoogle" style="display:inline-block;width:${w}px;height:${h}px" data-ad-client="${esc(PT_ADS.client)}" data-ad-slot="${esc(PT_ADS.slots[where])}"${tag ? ` data-tag-for-age-treatment="${tag}"` : ''}></ins>`;
   place.parent.insertBefore(box, place.before || null);
   try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
 }
+// v52: each ad is sized to the space it sits in. Phones: a 320 by 100 banner.
+// Computers: as wide as the column it sits in (up to the standard 728 or 970
+// banner widths), so it fills the row instead of leaving empty space beside it.
+// The game results ad sits in the right column beside the taller guesses panel,
+// so it is a rectangle that fills that column. The ad units in AdSense must be
+// responsive display units, so Google can fill each exact size.
+function ads32Size(where, parent) {
+  const cw = Math.floor(parent.clientWidth || 320);
+  if (window.innerWidth < 768) return cw >= 234 ? [Math.min(320, cw), 100] : null;
+  if (where === 'results') return cw >= 300 ? [Math.min(580, cw), 250] : null;
+  const cap = (where === 'home' && window.innerWidth >= 1100) || where === 'cards' ? 970 : 728;
+  return cw >= 468 ? [Math.min(cap, cw), 90] : cw >= 234 ? [Math.min(320, cw), 100] : null;
+}
 function ads32Drop(where) { const el = document.getElementById('ad32-' + where); if (el) el.remove(); }
 function ads32Sync() {
-  const res = document.getElementById('screen-results');
-  if (res && res.classList.contains('active')) {
-    const h = res.querySelector('.history-section');
-    ads32Make('results', h && { parent: h.parentNode, before: h });
-  } else ads32Drop('results');
-  const rev = document.getElementById('screen-review'), gb = document.getElementById('grade-body');
-  if (rev && gb && rev.classList.contains('active') && gb.style.display !== 'none') {
-    ads32Make('grade', { parent: gb.parentNode, before: gb.nextSibling });
-  } else ads32Drop('grade');
-  // v47: home, at the end of More (under it on phones, in the side column on wide screens).
-  const home = document.getElementById('screen-home'), hm = home && home.querySelector('.home-more');
-  if (home && hm && home.classList.contains('active')) {
-    ads32Make('home', { parent: hm, before: null });
-  } else ads32Drop('home');
+  // v52: ten spots in all, each at a break between sections and never in a game,
+  // hand or drill. Each needs its screen (and tab) open.
+  const on = id => { const el = document.getElementById(id); return el && el.classList.contains('active') ? el : null; };
+  const shown = id => { const el = document.getElementById(id); return el && el.style.display !== 'none' ? el : null; };
+  const after = el => el && el.parentNode ? { parent: el.parentNode, before: el.nextSibling } : null;
+  const before = el => el && el.parentNode ? { parent: el.parentNode, before: el } : null;
+  const want = {};
+  // Home: at the end of More (under it on phones, in the side column on wide screens).
+  const home = on('screen-home');
+  // On a wide computer screen home is two columns; the ad becomes a full-width band
+  // right under them, filling the empty space beside the side column.
+  if (home) want.home = window.innerWidth >= 1100 && home.querySelector('.home-content > .about38')
+    ? before(home.querySelector('.home-content > .about38'))
+    : { parent: home.querySelector('.home-more'), before: null };
+  const res = on('screen-results');
+  if (res) want.results = before(res.querySelector('.history-section'));
+  const tl = on('screen-tlog');
+  if (tl) want.tlog = after(tl.querySelector('#tlog-body .hp-actions'));
+  if (on('screen-review')) {
+    const gb = shown('grade-body'), ob = shown('odds-body'), cb = shown('review-body');
+    if (gb) want.grade = after(gb.querySelector('.g-hero'));                  // under Share grade
+    if (ob) { want.odds = after(ob.querySelector('.o-meta')); want.odds2 = after(ob.querySelector('#ol-wrap')); }
+    if (cb) { const g = cb.querySelectorAll('.review-group'); if (g.length > 1) want.cards = after(g[0]); if (g.length > 2) want.cards2 = after(g[1]); }
+  }
+  // Remove the spots that are gone first, then add the new ones in page order,
+  // so a spot is never skipped for an ad on a tab that is closing.
+  const keys = ['home', 'grade', 'odds', 'odds2', 'cards', 'cards2', 'results', 'tlog'];
+  keys.forEach(k => { const p = want[k]; if (!(p && p.parent)) ads32Drop(k); });
+  keys.forEach(k => { const p = want[k]; if (p && p.parent) ads32Make(k, p); });
 }
 let _ads32T = 0;
 document.addEventListener('DOMContentLoaded', () => {
-  const mo = new MutationObserver(() => { clearTimeout(_ads32T); _ads32T = setTimeout(ads32Sync, 120); });
-  ['screen-results', 'screen-review', 'grade-body', 'screen-home'].forEach(id => {
+  // Wait for a screen to settle before placing its ads.
+  const mo = new MutationObserver(() => { clearTimeout(_ads32T); _ads32T = setTimeout(ads32Sync, 400); });
+  ['screen-results', 'screen-review', 'screen-home', 'screen-tlog', 'grade-body', 'odds-body', 'review-body'].forEach(id => {
     const el = document.getElementById(id);
     if (el) mo.observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
+  });
+  // The tabs and the log redraw their contents, which can remove an ad: place it again.
+  ['grade-body', 'odds-body', 'review-body', 'tlog-body'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) mo.observe(el, { childList: true });
   });
   // v47: the home screen is already open at start, so check the spots once on load too.
   setTimeout(ads32Sync, 1500);

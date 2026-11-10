@@ -88,8 +88,9 @@ When Pokémon announces the 2027 rotation (expected around January, H mark), edi
 
 ## Ads (later, only after AdSense approves the site)
 
-- Fill in `PT_ADS` near the top of the v32 script block in `index.html` (search for `PT_ADS`): the publisher id and the ad unit ids for results, grade and home. Nothing shows and no ad code loads until then.
-- The guide pages have their own two fill-ins at the top of `ads.js`: the same publisher id and the guide ad unit id.
+- Fill in `PT_ADS` near the top of the v32 script block in `index.html` (search for `PT_ADS`): the publisher id and an ad unit id for each spot (home, grade, odds, odds2, cards, cards2, results, tlog). Make them responsive display units in AdSense (one unit can be used for all of them): the app sets each spot's exact size, 320 by 100 on phones and sized to its column on computers. A blank spot stays off, and nothing shows and no ad code loads until the publisher id and at least one spot are set.
+- The guide pages have their own fill-ins at the top of `ads.js`: the same publisher id, `slot` for the first guide spot and `slot2` for the second, also responsive display units.
+- A spot only shows when it is at least one screen height away from another ad on the same screen, so phones can show up to 10 spots across the app and guides, and a computer up to 8.
 - Keep Auto ads off in AdSense. Ads never show in the Play app (?src=play) or offline.
 - AdSense gives you an `ads.txt` line. It must sit at the root of the domain. rdydeck.com serves this repo from its root, so `ads.txt` goes in this repo's top folder.
 
