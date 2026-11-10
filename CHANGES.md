@@ -1,3 +1,21 @@
+# v59: pasted lists in more formats, misspelled cards named, and the grade flags dead Rare Candy, thin lines, no search and no Boss's Orders (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v59), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt, the ad code and the Goldfish and Turn 1 work in v58.
+
+- Lists pasted as "4x Ultra Ball" did not import at all. Lists with set codes in brackets, "Ultra Ball (MEG) 131" or "(MEG 131)", imported with every card unknown and graded 0.3. Both now read normally, and so do lines that start with a bullet.
+- A misspelled card ("Profesor Research") used to show only "Card data read for 13/15 entries". The review screen now names it and says to check the spelling in Edit deck.
+- Rare Candy in a list with no Stage 2 Pokemon is flagged as a card that cannot be played.
+- One copy of a Basic under 2 or more of its evolutions (1 Riolu for 3 Mega Lucario ex) is flagged.
+- One copy of the main attacker is flagged.
+- A list with nothing that searches for a Pokemon is flagged.
+- A list with nothing that pulls up a Benched Pokemon (Boss's Orders, Prime Catcher) is flagged, noting some decks skip it on purpose. The built-in Slowking list, which runs none, now shows this note.
+- A deck named for a Basic ("Riolu") now picks the Pokemon that evolves from it as the main attacker.
+- Fighting Gong counts as a card that finds Pokemon again.
+- The Odds tab no longer names MetaForge.
+- These flags are notes and do not change the score. The 24 test lists and built-in decks grade the same as v58.
+- sw.js cache: prize-trainer-v59. Version reads v59.
+
 # v58: Goldfish plays your cards' own text, and Turn 1 line can be played out (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v58), CHANGES.md.

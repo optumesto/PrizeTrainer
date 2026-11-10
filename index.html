@@ -3739,6 +3739,8 @@ function inferProvides(card) {
   });
 
   // search_basic implies search_pokemon; keep both but dedupe.
+  // v59: the comment said so but the code never added it (Fighting Gong read as Basic search only).
+  if (tags.includes('search_basic')) tags.push('search_pokemon');
   const uniq = [...new Set(tags)];
   return { tags: uniq, weak, confidence: uniq.length ? 'inferred' : 'none' };
 }
@@ -4363,9 +4365,12 @@ async function fetchDeckCards(entries, opts) {
 /** How much of the deck the engine could actually read. */
 function coverage(cardMap) {
   let total = 0, resolved = 0, overridden = 0, inferred = 0;
+  const missing = [];
   cardMap.forEach(c => {
     total++;
     if (c.resolved) resolved++;
+    // v59: name the cards not found, so a misspelled line can be fixed. Basic Energy is always known.
+    else if (c.name && !/^(?:basic\s+)?(?:\{\w\}|grass|fire|water|lightning|psychic|fighting|darkness|metal)\s+energy\b/i.test(c.name)) missing.push(c.name);
     if (c.source === 'override') overridden++;
     else if (c.source === 'inferred') inferred++;
   });
@@ -4373,6 +4378,7 @@ function coverage(cardMap) {
     total, resolved, overridden, inferred,
     unresolved: total - resolved,
     pct: total ? Math.round(resolved / total * 100) : 0,
+    missing: missing.slice(0, 6),
   };
 }
 
@@ -5000,6 +5006,33 @@ function gCoherence(deck) {
   const eScale = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.escale||a.edisc||(a.pile&&a.pile.kind==='energy')||(a.mill&&a.mill.kind==='energy')));
   if (eQ >= 22 && !eScale) flaws.push({sev:'warn', t:'Heavy on Energy',
     d:`The list runs ${eQ} Energy. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
+  // v59: Rare Candy with no Stage 2 in the list can never be played.
+  const hasS2 = deck.some(e=>e.card&&e.card.t==='pkmn'&&e.card.stage==='stage2');
+  const candyQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&(e.card.provides||[]).includes('evolution_access'));
+  if (!hasS2 && candyQ.length) {
+    const n = candyQ.reduce((a,e)=>a+e.qty,0), nm = [...new Set(candyQ.map(e=>gCap(e.name)))].join(' and ');
+    flaws.push({sev:'warn', t:`${nm} has nothing to evolve`,
+      d:`The list has no Stage 2 Pokemon, so the ${n} ${nm} ${n>1?'cards':'card'} cannot be played. Cut ${n>1?'them':'it'} for cards the deck uses.`}); }
+  // v59: one copy of the Basic under 2 or more evolutions: prize it or lose it and the line is gone.
+  const qN = new Map(), cN = new Map(), nN = new Map();
+  deck.forEach(e=>{ if(!e.card||e.card.t!=='pkmn') return; const k=nk(e.name); qN.set(k,(qN.get(k)||0)+e.qty); if(!cN.has(k)) { cN.set(k,e.card); nN.set(k,e.name); } });
+  const thin = new Set();
+  deck.forEach(e=>{ const c=e.card; if(!c||c.t!=='pkmn'||!c.from||(c.stage!=='stage1'&&c.stage!=='stage2')) return;
+    let root=nk(c.from), up=cN.get(root);
+    if (c.stage==='stage2' && up && up.from) root=nk(up.from);
+    const rc=cN.get(root), rq=qN.get(root)||0, eq=qN.get(nk(e.name))||0;
+    if (!rc || rc.stage!=='basic' || rq!==1 || eq<2 || thin.has(root)) return;
+    thin.add(root);
+    const rn=gCap(nN.get(root));
+    flaws.push({sev:'warn', t:`Only 1 ${rn}`,
+      d:`${eq} ${gCap(e.name)} evolve from ${rn}, and the list has 1. If it is prized or Knocked Out, they have nothing to evolve from. Most lists run 3 or 4.`}); });
+  // v59: nothing that finds a Pokemon in the deck means every line rests on drawing it.
+  const anyMon = deck.some(e=>e.card&&e.card.t==='pkmn');
+  if (anyMon && !provided['search_pokemon'] && !provided['search_basic']) flaws.push({sev:'warn', t:'No way to find your Pokemon',
+    d:"Nothing in the list searches your deck for a Pokemon, like Ultra Ball, Poké Pad or Buddy-Buddy Poffin, so getting your attackers into play rests on drawing them."});
+  // v59: no Boss's Orders or the like means you cannot pick which Pokemon to Knock Out.
+  if (anyMon && hasAtk && !provided['gust']) flaws.push({sev:'warn', t:'Nothing to pull up a Benched Pokemon',
+    d:"No card moves your opponent's Benched Pokemon into the Active Spot, like Boss's Orders or Prime Catcher, so you can only Knock Out what they choose to put there. Some decks skip it on purpose, but most run 2 to 4."});
   if (!hasAtk) flaws.push({sev:'crit', t:'No clear attacker',
     d:'No Pokemon here is set up to deal meaningful damage, so there is no win condition to build toward.'});
   // Nothing to check is not a fault: with card data read and no needs, nothing is missing.
@@ -5325,6 +5358,11 @@ function gMainAttacker(deck, coh, deckName) {
     const full = nk(e.name), bare = full.replace(/ ex$/, ''), noMega = bare.replace(/^mega /, '');
     return [full, bare, noMega, noMega.split(' ').pop()].some(v => v && dn.includes(' ' + v + ' '));
   }) : [];
+  // v59: a name that calls out a Basic ("Riolu") means its line, so what evolves from it counts as named too.
+  for (let i = 0; i < 2; i++) {
+    const keys = new Set(named.map(e => e.card.key));
+    mons.forEach(e => { if (e.card.from && keys.has(e.card.from) && !named.includes(e)) named.push(e); });
+  }
   const typedTotal = Object.keys(et).filter(k => k !== 'any' && k !== 'colorless').reduce((n, k) => n + et[k], 0);
   const qtyOf = k => deck.filter(e => e.card && e.card.key === k).reduce((n, e) => n + e.qty, 0);
   const enablersOf = c => gEnablers(deck, c);
@@ -5468,6 +5506,9 @@ function gViability(deck, coh, main) {
     d:`You lean on Stage 2 Pokemon (${s2Names.join(', ')}) with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 Pokemon before the game runs away.'});
+  // v59: a single copy of the main attacker is gone for the game when it is prized or Knocked Out.
+  if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
+    d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   return { score, findings, best, eff, bestName, reach, main };
 }
@@ -6129,8 +6170,8 @@ function renderOdds() {
   }
   h += `</div>`;
 
-  h += `<div class="g-wip"><b>What this does not do.</b> MetaForge's matchup win rates are not here.
-    They need live tournament data this does not have yet, and a stale snapshot would give
+  h += `<div class="g-wip"><b>What this does not do.</b> Matchup win rates are not here.
+    They need live tournament data RdyDeck does not have yet, and a stale snapshot would give
     confident wrong numbers. Everything on this tab comes from shuffling your own list.</div>`;
 
   el.innerHTML = h;
@@ -6156,6 +6197,13 @@ function renderCoverageNote(deck) {
   const cov = deck.coverage;
   if (!cov || !cov.total || cov.unresolved === 0) { el.style.display = 'none'; return; }
   const fromList = deck.cards.some(c => c.section);
+  // v59: when the read finished and cards were still not found, name them: usually a spelling slip.
+  const miss = !cov.partial && Array.isArray(cov.missing) ? cov.missing : [];
+  if (miss.length) {
+    el.textContent = `\u26A0 RdyDeck could not find ${miss.join(', ')}. Check the spelling in Edit deck, because the grade cannot read what ${miss.length > 1 ? 'these cards do' : 'this card does'}.`;
+    el.style.display = 'block';
+    return;
+  }
   el.textContent = `\u26A0 Card data read for ${cov.resolved}/${cov.total} entries. `
     + (fromList ? `Cards are grouped by your list's sections.`
                 : `Grouping for the rest is based on card names.`);
@@ -9464,6 +9512,11 @@ function initImportListener() {
 function parseLine(line) {
   line = line.trim();
   if (!line || line.startsWith('//') || line.startsWith('#')) return null;
+  // v59: "4x Ultra Ball", "4 x Ultra Ball" and a bullet "- 4 Ultra Ball" read as 4 Ultra Ball.
+  line = line.replace(/^[-*\u2022]\s+(?=\d)/, '').replace(/^(\d+)\s*[x\u00d7]\s+/i, '$1 ');
+  // v59: "Ultra Ball (MEG) 131" and "Ultra Ball (MEG 131)" read as "Ultra Ball MEG 131".
+  line = line.replace(/\s*\(\s*([A-Za-z0-9-]+)\s*\)\s*(\d+[a-zA-Z]*)$/, ' $1 $2')
+             .replace(/\s*\(\s*([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)\s*\)$/, ' $1 $2');
 
   // Format 1: "4 Charizard ex OBF 125" (standard with set + number)
   const m = line.match(/^(\d+)\s+(.+?)\s+([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)$/);
@@ -11177,7 +11230,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v58';
+const PT_VERSION = 'v59';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
