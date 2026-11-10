@@ -1,3 +1,23 @@
+# v54: the grade reads damage the card text spells out (10 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v54), CHANGES.md.
+Not changed: everything else, including data.json, ads.txt and the ad code.
+
+- Attacks that print no damage number but put damage counters or damage on the opponent's Pokemon (Oil Salvo, Mega Zygarde ex's Nullifying Zero, "in any way you like" attacks) were read as 0. They now count from the card text, with coin flips averaged.
+- Bonuses that only apply on your next turn (Donphan, Rampardos ex, Kilowattrel, Komala) were added to this turn's hit. They are now left out.
+- Attacks that discard Energy from all your Pokemon and do damage for each one (Raging Bolt ex's Bellowing Thunder, Mega Charizard X ex's Inferno X) are read like Storm Emerald: the grade shows how many Energy it takes to one-shot 280 and 340 HP. Coin flips for each Energy attached are averaged.
+- Attacks that count your Pokemon in play or on your Bench are estimated at a full board (6 in play, 5 on the Bench) instead of 2 to 4, and called the app's estimate.
+- Abilities that put damage counters (Dusknoir's and Dusclops's Cursed Blast) count toward the hardest hit, and How it plays says that using one Knocks Out that Pokemon and gives up a prize. Talonflame Dusknoir no longer names Dusknoir as the main attacker.
+- Crustle's Mysterious Rock Inn is counted: the grade and How it plays say ex attackers cannot knock it out.
+- How it plays says when the main attack cannot be used two turns in a row (Mega Lucario ex's Mega Brave, Zoroark ex's Slashing Strike) and what to use between, and when the big hit discards Energy from the attacker itself (Metagross's Metallic Hammer).
+- An Ability that attaches a type of Basic Energy the list does not run (Teal Mask Ogerpon ex's Teal Dance with no Grass Energy) is now flagged instead of counted as a reason to play the card.
+- The slow setup warning only counts Stage 2 Pokemon the deck leans on (the main attacker, or a line of 2 or more), so one Metagross in Mega Excadrill no longer marks the deck slow. Stage 2 lines are named in the warning.
+- A deck with no name now weighs Pokemon it evolves from at most 2 per copy, so Mega Excadrill is no longer read as a Metagross deck.
+- Prize trade text: a deck of only two-prize Pokemon is no longer told it is not handing over multi-prize turns. One three-prize Pokemon reads "gives up", not "give up".
+- Built-in deck changes: Basic Box now counts Raging Bolt ex's Bellowing Thunder (grade 6.9 to 8.7). Main attackers are unchanged.
+- Saved decks re-read their card data once, so older imports pick up the new details.
+- sw.js cache: prize-trainer-v54. Version reads v54.
+
 # v53: the grade names each deck's real main attacker (10 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v53), CHANGES.md.

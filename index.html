@@ -3343,10 +3343,20 @@ function parseDamage(raw, text) {
     // in your hand", "This attack does 100 damage to 1 of your opponent's
     // Pokemon". Counted as damage; spread to the Bench alone is not.
     const tl = t.toLowerCase().replace(/[\u2019\u2018]/g, "'");
-    const tgt = "(?:your opponent's active pok[e\u00e9]mon|(?:1|one) of your opponent's pok[e\u00e9]mon)";
-    const cm = tl.match(new RegExp("(?:put|place) (\\d+) damage counters? on " + tgt + "([^.]*)"));
+    // v54: also "each of", "2 of" and "3 of your opponent's Pokemon", which can
+    // include the Active, and "the new Active Pokemon" after a gust.
+    const tgt = "(?:your opponent's active pok[e\u00e9]mon|(?:each of |)(?:\\d+|one|each) of your opponent's pok[e\u00e9]mon(?: ex)?|the new active pok[e\u00e9]mon)";
+    const cm = tl.match(new RegExp("(?:put|place) (\\d+) damage counters? on " + tgt + "([^.]*)"))
+      || tl.match(new RegExp("(?:put|place) (\\d+) damage counters? on your opponent's pok[e\u00e9]mon in any way you like()"))
+      || tl.match(new RegExp("choose \\d+ of your opponent's pok[e\u00e9]mon and put (\\d+) damage counters? on each of them()"));
     const dm = tl.match(new RegExp("does (\\d+) damage to " + tgt));
-    const n = cm ? parseInt(cm[1], 10) * 10 : dm ? parseInt(dm[1], 10) : 0;
+    // "Choose 1 of your opponent's Pokemon 6 times ... do 20 damage to it."
+    const tm = tl.match(/choose 1 of your opponent's pok[e\u00e9]mon (\d+) times[^.]*\.[^.]*?do (\d+) damage to it/);
+    // "For each of your opponent's Pokemon, flip a coin. If heads, this attack does 150 damage to that Pokemon."
+    const fm = tl.match(/for each of your opponent's pok[e\u00e9]mon, flip a coin\. if heads, this attack does (\d+) damage to that pok/);
+    if (fm) { const v = parseInt(fm[1], 10);
+      out.base = v; out.kind = 'flat'; out.min = 0; out.typical = Math.round(v / 2); out.max = v; out.confidence = 'medium'; out.flip = 1; return out; }
+    const n = cm ? parseInt(cm[1], 10) * 10 : dm ? parseInt(dm[1], 10) : tm ? parseInt(tm[1], 10) * parseInt(tm[2], 10) : 0;
     if (!n) return out; // effect-only attack
     out.base = n;
     if (cm && /for each/.test(cm[2])) {
@@ -3378,15 +3388,19 @@ function parseDamage(raw, text) {
   }
 
   out.base = parseInt(m[1], 10);
-  let sym = m[2];
+  let sym = m[2], upM = null;
 
   /* ---- Read the text first. The damage suffix is NOT reliable.
      Live example (hgss4-1 Aggron): damage is "40" with no "+", but the
      text reads "does 40 damage plus 40 more damage". Trusting the suffix
      alone understates every attack printed that way. ---- */
   const capM   = t.match(/can'?t\s+add\s+more\s+than\s+(\d+)\s+damage/i);
-  const fixedM = t.match(/(?:plus|does)\s+(\d+)\s+more\s+damage(?!\s+for\s+each)/i);
-  const eachM  = t.match(/(?:plus|does)\s+(\d+)\s+more\s+damage\s+for\s+each/i);
+  // v54: "have this attack do 150 more damage" and "You may do 120 more damage" read the same way.
+  // A bonus for the attacker's next turn ("During your next turn, attacks used by this
+  // Pokemon do 120 more damage") is not part of this attack.
+  const tNow = t.replace(/during your next turn, attacks used by this pok[e\u00e9]mon do \d+ more damage[^.]*\./ig, '');
+  const fixedM = tNow.match(/(?:plus|does|do)\s+(\d+)\s+more\s+damage(?!\s+for\s+each)/i);
+  const eachM  = tNow.match(/(?:plus|does|do)\s+(\d+)\s+more\s+damage\s+for\s+each/i);
   const minusM = t.match(/minus\s+(\d+)\s+damage\s+for\s+each/i);
   const coinsM = t.match(/flip\s+(\d+)\s+coins?/i);
   const tailsM = /flip a coin until you get tails/i.test(t);
@@ -3430,12 +3444,22 @@ function parseDamage(raw, text) {
       out.typical = Math.round(out.base * out.mult / 2); // expected heads
       out.min = 0;
       out.confidence = 'medium';
+    } else if (/flip a coin for each [^.]*energy attached to this pok[e\u00e9]mon/i.test(t)) {
+      // v54: a coin for each Energy on it. 3 Energy is the estimate, so 1.5 heads.
+      out.mult = null; out.typical = Math.round(out.base * 1.5); out.max = out.base * 3; out.min = 0;
+      out.confidence = 'medium'; out.flip = 'energy';
+    } else if ((upM = t.match(/discard up to (\d+) [^.]*?for each card you discarded/i))) {
+      // v54: "Discard up to 2 Energy ... for each card you discarded": the card caps it.
+      out.mult = parseInt(upM[1], 10); out.typical = out.max = out.base * out.mult; out.min = 0;
+      out.confidence = 'high';
     } else {
       // Multiplier depends on board state we cannot see (energy, bench count).
-      // Assume a modest 2x typical, 4x ceiling, and say the confidence is low.
+      // v54: a full board is 6 Pokemon in play, 5 on the Bench. Anything else
+      // gets a modest 2x typical, 4x ceiling. The confidence stays low.
+      const inPlay = /for each of your pok[e\u00e9]mon in play\./i.test(t), bench = /for each of your benched pok[e\u00e9]mon\./i.test(t);
       out.mult = null;
-      out.typical = out.base * 2;
-      out.max = out.base * 4;
+      out.typical = out.base * (inPlay ? 5 : bench ? 4 : 2);
+      out.max = out.base * (inPlay ? 6 : bench ? 5 : 4);
       out.min = 0;
       out.confidence = 'low';
     }
@@ -3877,7 +3901,16 @@ function copy37(text) {
 function escale53(text, damage) {
   const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon');
   const m = t.match(/does (\d+) (more )?damage for each ((?:(?:basic )?\w+ )?energy(?:,? and (?:each )?(?:(?:basic )?\w+ )?energy)*) attached to (all of your pokemon|this pokemon|both active pokemon)/i);
-  if (!m) return null;
+  if (!m) {
+    // v54: "Discard any amount of Fire Energy from among your Pokemon, and this attack
+    // does 90 damage for each card you discarded in this way" counts the same board,
+    // once: every Energy discarded from your Pokemon adds the printed number.
+    const d = t.match(/discard any amount of ((?:basic )?(?:\w+ )?energy) from (?:among )?your pokemon[^.]*?(?:\.\s*this attack|, and this attack) does (\d+) damage for each card you discarded/i);
+    if (!d) return null;
+    const ty = (d[1].match(/(?:basic )?(\w+) energy/i) || [])[1];
+    const types = ty && ['grass','fire','water','lightning','psychic','fighting','darkness','metal','dragon','fairy'].includes(ty.toLowerCase()) ? [ty.toLowerCase()] : [];
+    return { per: parseInt(d[2], 10), base: 0, types, scope: 'all', discard: true };
+  }
   const types = [...m[3].matchAll(/(?:basic )?(\w+) energy/gi)].map(x => x[1].toLowerCase())
     .filter(x => ['grass','fire','water','lightning','psychic','fighting','darkness','metal','dragon','fairy','colorless'].includes(x));
   const base = m[2] ? (parseInt(String(damage || ''), 10) || 0) : 0;
@@ -3889,8 +3922,20 @@ function edouble53(text) {
   const m = String(text || '').match(/each basic (\w+) energy attached to all of your pok[e\u00e9]mon provides (\w+) energy/i);
   return m && m[2].toLowerCase() === (m[1] + m[1]).toLowerCase() ? m[1].toLowerCase() : undefined;
 }
+/**
+ * v54: an Ability that puts damage counters on 1 of your opponent's Pokemon each turn
+ * (Dusknoir's Cursed Blast: 13, then Dusknoir is Knocked Out). Gives { n: damage,
+ * selfKO, active } from the card text, or undefined.
+ */
+function abDmg54(text) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'");
+  const m = t.match(/once during your turn,[^.]*?(?:put|place) (\d+) damage counters on 1 of your opponent's pok[e\u00e9]mon/i);
+  if (!m) return undefined;
+  return { n: parseInt(m[1], 10) * 10, selfKO: /this pok[e\u00e9]mon is knocked out/i.test(t) || undefined,
+    active: /if this pok[e\u00e9]mon is in the active spot/i.test(t) || undefined };
+}
 // These sit inside the card layer's closure; the TCGdex reader outside it needs them too.
-if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53 });
+if (typeof globalThis !== 'undefined') Object.assign(globalThis, { FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54 });
 
 function enrichCard(apiCard, opts) {
   const o = opts || {};
@@ -3929,7 +3974,14 @@ function enrichCard(apiCard, opts) {
       early: dmg.kind === 'plus' && cond ? dmg.base : dmg.typical,
       flip: dmg.flip || null,
       copy: copy37(a.text),
+      // v54: an attack that locks itself (or all attacks) for the attacker's next turn. A coin flip or an optional bonus is left out.
+      lock: /flip a coin|if you do/i.test(a.text || '') ? null
+        : new RegExp("during your next turn, this pok[e\\u00e9]mon can[\u2019']t use " + String(a.name || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.', 'i').test(a.text || '') ? 'self'
+        : /during your next turn, this pok[e\u00e9]mon can[\u2019']t (?:attack|use attacks)/i.test(a.text || '') ? 'all' : null,
       escale: escale53(a.text, a.damage),
+      // v54: Energy the attack discards from the attacker itself (Metagross's Metallic Hammer, Pikachu ex's Topaz Bolt).
+      edisc: (() => { const m = (a.text || '').match(/(you may )?discard (all|an?|\d+) ((?:basic )?(?:grass|fire|water|lightning|psychic|fighting|darkness|metal) )?energy (?:cards? )?from this pok[e\u00e9]mon(?:[^.]*?(\d+) more damage)?/i);
+        return m ? { n: m[2].toLowerCase() === 'all' ? 'all' : /^an?$/i.test(m[2]) ? 1 : +m[2], type: m[3] ? m[3].trim().toLowerCase() : '', opt: !!m[1], more: m[4] ? +m[4] : 0 } : null; })(),
     };
   });
   const abilities = (card.abilities || []).map(x => ({
@@ -3938,6 +3990,11 @@ function enrichCard(apiCard, opts) {
     pkind: /prevent all damage/i.test(x.text || '') ? 'damage' : /prevent all effects/i.test(x.text || '') ? 'effects' : undefined,
     bench: /if this pok[e\u00e9]mon is in your hand[\s\S]*?put this pok[e\u00e9]mon onto your bench/i.test(x.text || '') || undefined,
     edouble: edouble53(x.text),
+    cdmg: abDmg54(x.text),
+    // v54: damage it prevents only from Pokemon ex (Crustle's Mysterious Rock Inn).
+    pex: /prevent all damage done to this pok[e\u00e9]mon by attacks from your opponent's pok[e\u00e9]mon ex/i.test(x.text || '') || undefined,
+    // v54: an Ability that attaches one type of Basic Energy from your hand (Teal Mask Ogerpon ex's Teal Dance).
+    aneed: ((x.text || '').match(/attach (?:a|an|up to \d+|\d+) basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy cards? from your hand/i) || [])[1]?.toLowerCase(),
   }));
 
   const supertype = String(card.supertype || '').toLowerCase();
@@ -4579,7 +4636,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 6;   // v53: re-read for attacks that count Energy in play
+const ENRICH_VER = 7;   // v54: re-read for damage the card text spells out (spread, discards, Abilities)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -4688,7 +4745,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null }))
       : null;
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(),
@@ -4701,6 +4758,9 @@ function toGradeDeck(deck) {
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
       edbl: (c.abilities||[]).filter(x => x.edouble).map(x => ({ type: x.edouble, abil: x.name })),
+      abDmg: (c.abilities||[]).filter(x => x.cdmg).map(x => Object.assign({ abil: x.name }, x.cdmg)),
+      pex: (c.abilities||[]).filter(x => x.pex).map(x => x.name),
+      aneed: (c.abilities||[]).filter(x => x.aneed).map(x => ({ abil: x.name, type: x.aneed })),
       byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
     }};
   });
@@ -4713,6 +4773,11 @@ function gCoherence(deck) {
     if (c.t==='energy') (c.etypes||(c.etype?[c.etype]:[])).forEach(ty => energyTypes[ty]=(energyTypes[ty]||0)+e.qty);
     present[c.key]=(present[c.key]||0)+e.qty; });
   const synergies=[], flaws=[]; let reqTotal=0, reqMet=0;
+  // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
+  deck.forEach(e => { const c=e.card; if(!c) return;
+    (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
+      flaws.push({sev:'warn', who:c.key, t:`${gCap(e.name)}'s ${x.abil} has nothing to attach`,
+        d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.`}); }); });
   deck.forEach(e => { const c=e.card; if(!c||!c.requires) return;
     c.requires.forEach(req => { reqTotal++;
       if (req.startsWith('energy:')) {
@@ -4726,13 +4791,13 @@ function gCoherence(deck) {
             p: ca.copy && ca.copy.mill
               ? `${gCap(cp.name)} can use ${gCap(e.name)}'s attacks with ${via} when it comes off the top of your deck, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.`
               : `${gCap(cp.name)} copies ${gCap(e.name)}'s attacks with ${via}, paying only its own cost, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.` }); }
-        else if (c.abil && c.abil.length) { reqMet++;
+        else if (c.abil && c.abil.length && !(c.aneed||[]).some(x => !energyTypes[x.type])) { reqMet++;
           if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '),
             p:`${gCap(e.name)} is here for its Ability, so its attack needing ${gCap(ty)} Energy does not matter.`, who:c.key}); }
         else if (c.byName) { reqMet++;
           flaws.push({sev:'warn', who:c.key, t:`Check ${gCap(e.name)}'s attack cost`,
             d:`The card data for ${gCap(e.name)} came from another printing, which needs ${gCap(ty)} Energy. If your printing costs something else, ignore this.`}); }
-        else flaws.push({sev:'crit', who:c.key, t:`${gCap(e.name)} has no ${gCap(ty)} Energy`,
+        else if (!flaws.some(f=>f.who===c.key)) flaws.push({sev:'crit', who:c.key, t:`${gCap(e.name)} has no ${gCap(ty)} Energy`,
           d:`Its attack needs ${gCap(ty)} Energy, but there is none in the deck. As built it cannot actually fire.`});
       } else if (req.startsWith('partner:')) {
         const who=req.split(':')[1];
@@ -4866,9 +4931,17 @@ function g35Boost(deck, atk) {
     if (b.pre && !key.startsWith(b.pre)) return;
     if (b.type && !(a.types || []).includes(b.type)) return;
     if (!best[b.cat] || b.n > best[b.cat].n) best[b.cat] = { ...b, name: gCap(e.name).replace(/'S\b/g, "'s") }; });
+  // v54: an Ability that puts damage counters on the opponent's Pokemon in the same turn
+  // (Dusknoir's Cursed Blast). One a turn is counted. One that works only while its own
+  // Pokemon is Active helps only that Pokemon.
+  deck.forEach(e => (e.card && e.card.abDmg || []).forEach(x => {
+    if (x.active && e.card.key !== key) return;
+    if (!best.ability || x.n > best.ability.n)
+      best.ability = { n: x.n, cat: 'ability', name: `${gCap(e.name)}'s ${x.abil}`, who: gCap(e.name), selfKO: !!x.selfKO }; }));
   const list = Object.values(best);
   return { n: list.reduce((s, b) => s + b.n, 0), names: list.map(b => b.name),
-    vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind), poison: list.some(b => b.poison), last: list.some(b => b.last) };
+    vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind), poison: list.some(b => b.poison), last: list.some(b => b.last),
+    ko: list.filter(b => b.selfKO).map(b => b.who) };
 }
 /** One sentence on one attacker: the printed number, how it gets there and what each booster adds. */
 function g35Hit(r) {
@@ -4881,10 +4954,12 @@ function g35Hit(r) {
     const k = e.x2 ? 2 : 1;
     const need = hp => Math.max(1, Math.ceil((hp - e.base) / (e.per * k)));
     const card = e.x2 ? ` Basic ${gCap(e.x2.type)} Energy cards` : '';
-    return `${nm}'s ${r.atk} does ${e.base ? e.base + ' plus ' : ''}${e.per} for each ${what} attached to ${e.scope === 'all' ? 'all your Pokemon' : 'it'}. ` +
+    return (e.discard ? `${nm}'s ${r.atk} discards ${what} from your Pokemon and does ${e.per} for each one discarded. `
+      : `${nm}'s ${r.atk} does ${e.base ? e.base + ' plus ' : ''}${e.per} for each ${what} attached to ${e.scope === 'all' ? 'all your Pokemon' : 'it'}. `) +
       (e.x2 ? `${gCap(e.x2.who)}'s ${e.x2.abil} makes each Basic ${gCap(e.x2.type)} Energy count twice. ` : '') +
       `It takes ${need(lo)}${card} to one-shot ${lo} HP and ${need(hi)} for ${hi} HP, before Weakness. Your list runs ${e.have}.` +
-      (r.boost ? ` ${r.bNames.join(' and ')} ${r.bNames.length > 1 ? 'add' : 'adds'} ${r.boost} more${r.vsEx ? ' against a Pokemon ex' : ''}.` : '');
+      (r.boost ? ` ${r.bNames.join(' and ')} ${r.bNames.length > 1 ? 'add' : 'adds'} ${r.boost} more${r.vsEx ? ' against a Pokemon ex' : ''}.` : '') +
+      (r.ko && r.ko.length ? ` Using it Knocks Out ${r.ko.join(' and ')}, which gives up a prize.` : '');
   }
   const how = r.copy ? ` copying ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}` : '';
   const verb = r.flip ? 'averages' : 'hits for at most';
@@ -4894,6 +4969,7 @@ function g35Hit(r) {
       r.last && 'when that Supporter is the last card in your hand'].filter(Boolean).join(' and ');
     t = `${nm}${how} ${verb} ${r.eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${r.top} without), before Weakness.`;
   } else t = `${nm}${how} ${verb} ${r.top} before Weakness.`;
+  if (r.ko && r.ko.length) t += ` Using it Knocks Out ${r.ko.join(' and ')}, which gives up a prize.`;
   if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
   else if (r.flip) t += ' That counts coin flips at their average.';
   else if (r.conf === 'low') t += ` Its damage depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
@@ -4955,7 +5031,9 @@ function gMainAttacker(deck, coh, deckName) {
       const r = g37Reach(a, deck, e);
       if (r.top > 0 || (a.copy && a.copy.mill)) { if (!best || r.top > best.r.top) best = { r, a }; } });
     return best; };
-  const mons = deck.filter(e => e.card && e.card.t === 'pkmn' && e.card.attacks);
+  // v54: a Pokemon whose Ability does damage and Knocks it Out (Dusknoir's Cursed Blast)
+  // is played for the Ability, not to attack.
+  const mons = deck.filter(e => e.card && e.card.t === 'pkmn' && e.card.attacks && !(e.card.abDmg || []).some(x => x.selfKO));
   const nk = x => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[\u2018\u2019]/g, "'").replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
   const dn = ' ' + nk(deckName) + ' ';
@@ -4973,7 +5051,9 @@ function gMainAttacker(deck, coh, deckName) {
       const c = e.card;
       const pre1 = c.from ? qtyOf(c.from) : 0;
       const pre2 = c.from ? deck.filter(x => x.card && x.card.key === c.from && x.card.from).reduce((n, x) => n + qtyOf(x.card.from), 0) : 0;
-      const weight = e.qty + 0.5 * (pre1 + pre2);
+      // v54: a line that runs more of the earlier stages than two per copy is playing them
+      // for their own Abilities (4 Metang for 1 Metagross), so the extra copies do not count.
+      const weight = e.qty + 0.5 * Math.min(pre1 + pre2, 2 * e.qty);
       const typed = [...new Set((b.a.cost || []).filter(t => t !== 'colorless'))];
       const share = typedTotal ? Math.min(1, typed.reduce((n, t) => n + (et[t] || 0), 0) / typedTotal) : 0;
       const support = !typed.length && (c.provides || []).some(p => p === 'draw' || /^search/.test(p)) ? 0.5 : 1;
@@ -4998,7 +5078,7 @@ function gViability(deck, coh, main) {
     e.card.attacks.forEach(a => { if (!pay(a)) return; const r=g37Reach(a, deck, e);
       if (!r0 || r.top>r0.top || (r.top===r0.top && r.now>r0.now)) r0=r; });
     if (r0 && r0.top>0) { const b=g35Boost(deck, e.card);
-      reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, eff:r0.top+b.n }); } });
+      reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
   let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
   // v53: the main attacker leads when it hits at least as hard. When something
   // else hits harder, the finding says which is which.
@@ -5049,6 +5129,11 @@ function gViability(deck, coh, main) {
       : kinds.size===1&&kinds.has('damage')
       ? `${protN} of your Pokemon have Abilities that prevent damage from some of your opponent's attacks (${who}). Read each card for when it applies.`
       : `${protN} of your Pokemon have Abilities that block damage or effects from some of your opponent's attacks (${who}). Read each card for when it applies.`}); }
+  // v54: a main attacker that takes no damage from Pokemon ex attacks (Crustle's Mysterious Rock Inn).
+  const mainC = main ? deck.find(e=>e.card&&e.card.key===main.key) : null;
+  if (mainC && (mainC.card.pex||[]).length) { closeScore+=0.1;
+    findings.push({sev:'ok', t:`${gCap(mainC.name)} walls Pokemon ex`,
+    d:`${gCap(mainC.name)}'s ${mainC.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so an ex deck has to find another way to knock it out. Pokemon without a Rule Box still hit it normally.`}); }
   const mill=attackers.map(e=>({e, a:(e.card.attacks||[]).find(a=>a.copy&&a.copy.mill)})).find(x=>x.a);
   if (mill) findings.push({sev:'warn', t:'Some damage is left out',
     d:`${gCap(mill.e.name)}'s ${mill.a.name} uses an attack from whatever comes off the top of your deck, so the grade does not count its damage.`});
@@ -5062,19 +5147,28 @@ function gViability(deck, coh, main) {
   if (bigLiabs.length) { const list=bigLiabs.map(e=>gCap(e.name)).join(', ');
     if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
       findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
-      d:`${list} give up 3 prizes when they fall, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
+      d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
     else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
-      d:`${list} are risky at 3 prizes each, yet you hit hard enough to justify the trade.`}); }
+      d:`${list} ${bigLiabs.length>1?'are':'is'} risky at 3 prizes ${bigLiabs.length>1?'each':''}, yet you hit hard enough to justify the trade.`.replace(' ,', ',')}); }
+  // v54: say it plainly when most or all of the Pokemon give up two prizes.
+  else if (multiN && multiN>=pkN) findings.push({sev:'ok', t:'Two prizes per knockout',
+    d:`Every Pokemon here gives up two prizes, so the opponent needs only three knockouts. That is normal for a deck built on Pokemon ex, so each one has to take more than one knockout of its own.`});
+  else if (multiN*2>pkN) findings.push({sev:'ok', t:'Mostly two-prize Pokemon',
+    d:`${multiN} of your ${pkN} Pokemon give up two prizes, so most knockouts cost you two. Send in your one-prize Pokemon when you can.`});
   else findings.push({sev:'ok', t:'Efficient prize trade',
     d:multiN?`${multiN} of your ${pkN} Pokemon ${multiN>1?'give':'gives'} up two prizes and the rest give up one, so you are not handing over easy multi-prize turns.`:'Every Pokemon here gives up one prize, so the opponent has to take six knockouts.'});
-  const stage2=deck.filter(e=>e.card&&e.card.stage==='stage2'&&!e.card.selfBench&&!g37Copier(deck,e.card)).reduce((a,e)=>a+e.qty,0);
+  // v54: only Stage 2 Pokemon the deck leans on: the main attacker, or a line of 2 or more.
+  // A single Stage 2 tech (Metagross in Mega Excadrill) does not make the deck slow.
+  const s2=deck.filter(e=>e.card&&e.card.stage==='stage2'&&!e.card.selfBench&&!g37Copier(deck,e.card)&&(e.qty>=2||(main&&e.card.key===main.key)));
+  const stage2=s2.reduce((a,e)=>a+e.qty,0);
+  const s2Names=[...new Set(s2.map(e=>gCap(e.name)))];
   const candy=coh.provided['evolution_access']||0;
   let clockScore=0.82;
   if (stage2>0 && candy<2) { clockScore=0.5;
     findings.push({sev:'warn', t:'Might be slow off the line',
-    d:`You lean on Stage 2 attackers with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
+    d:`You lean on Stage 2 Pokemon (${s2Names.join(', ')}) with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
-    d:'Enough Rare Candy to land your Stage 2 attackers before the game runs away.'});
+    d:'Enough Rare Candy to land your Stage 2 Pokemon before the game runs away.'});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   return { score, findings, best, eff, bestName, reach, main };
 }
@@ -5104,7 +5198,9 @@ function gPlan(entries, coh, via) {
       (fodder.length ? `. In this list that is ${fodder.length > 1 ? fodder.slice(0, -1).join(', ') + ' and ' + fodder[fodder.length - 1] : fodder[0]}.` : '.');
   } else if (r && r.escale) {
     const x = r.escale, ty = x.types.map(gCap), what = (ty.length ? ty.join(' and ') + ' ' : '') + 'Energy';
-    how = x.scope === 'all'
+    how = x.discard
+      ? `Its ${r.atk} discards ${what} from your Pokemon and does ${x.per} for each one, so every one you attach anywhere on your board adds ${x.per} to its next big hit.`
+      : x.scope === 'all'
       ? `Its ${r.atk} counts ${what} attached to all your Pokemon, so every one you attach anywhere on your board adds ${x.per}${x.x2 ? ` (${x.per * 2} for a Basic ${gCap(x.x2.type)} Energy with ${gCap(x.x2.who)}'s ${x.x2.abil} in play)` : ''}.`
       : x.scope === 'self' ? `Its ${r.atk} counts ${what} attached to it, so every one you attach to it adds ${x.per}.`
       : `Its ${r.atk} counts the Energy attached to both Active Pokemon.`;
@@ -5123,7 +5219,37 @@ function gPlan(entries, coh, via) {
     const preN = [...pre].map(k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0));
     why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.`;
   }
-  out.push({ link: `Main attacker: ${nm}`, p: `${nm} does the attacking. ${why}${how ? ' ' + how : ''}` });
+  // v54: what the main attacker's own Abilities add, from the card text.
+  const wall = (e.card.pex || []).length ? ` Its ${e.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out.` : '';
+  const own = (e.card.abDmg || []).filter(x => !x.selfKO)[0];
+  const ownTxt = own ? ` Its ${own.abil} puts ${own.n / 10} damage counters on 1 of your opponent's Pokemon each turn${own.active ? ' while it is Active' : ''}.` : '';
+  // v54: an attack it cannot use two turns in a row.
+  const la = r && (e.card.attacks || []).find(a => a.name === r.atk && a.lock);
+  const other = la && (e.card.attacks || []).filter(a => a !== la && (a.max || a.dmg) > 0).sort((a, b) => (b.max || b.dmg) - (a.max || a.dmg))[0];
+  const lockTxt = !la ? '' : la.lock === 'self'
+    ? ` It cannot use ${la.name} two turns in a row, so ${other ? `use ${other.name} or ` : ''}bring in another attacker on the turn between.`
+    : ` It cannot attack at all on its next turn after ${la.name}, so switch in another attacker on the turn between.`;
+  // v54: Energy its attack discards from itself, which it has to get back before the next big hit.
+  const da = r && !r.escale && (e.card.attacks || []).find(a => a.name === r.atk && a.edisc && (!a.edisc.opt || a.edisc.more));
+  let discTxt = '';
+  if (da) { const d = da.edisc, ty = d.type ? gCap(d.type) + ' ' : '';
+    const what = d.n === 'all' ? 'all its Energy' : d.n === 1 ? `${/^[aeiou]/i.test(ty || 'e') ? 'an' : 'a'} ${ty}Energy` : `${d.n} ${ty}Energy`;
+    const back = d.n === 'all' ? 'it has to be powered up again' : `it needs ${d.n === 1 ? 'another' : d.n + ' more'} attached`;
+    discTxt = d.opt
+      ? ` That counts the ${d.more} more it does when it discards ${what} from itself, so ${back} before the next big hit.`
+      : ` It discards ${what} from itself each time, so ${back} before it can hit that hard again.`; }
+  out.push({ link: `Main attacker: ${nm}`, p: `${nm} does the attacking. ${why}${how ? ' ' + how : ''}${discTxt}${lockTxt}${wall}${ownTxt}` });
+  // v54: Pokemon played for an Ability that does damage on its own (Dusknoir's Cursed Blast).
+  const dmgAb = [], seenAb = new Set();
+  entries.forEach(x => { const c = x.card; if (!c || c.key === m.key || seenAb.has(c.key)) return;
+    (c.abDmg || []).forEach(a => { if (a.active) return; seenAb.add(c.key); dmgAb.push({ who: gCap(x.name), a }); }); });
+  if (dmgAb.length) {
+    const ko = dmgAb.filter(x => x.a.selfKO).map(x => x.who);
+    const one = x => `${x.who}'s ${x.a.abil} puts ${x.a.n / 10} damage counters on 1 of your opponent's Pokemon`;
+    out.push({ link: `Damage from ${dmgAb.length > 1 ? 'Abilities' : 'an Ability'}: ${dmgAb.map(x => x.who).join(', ')}`,
+      p: `${dmgAb.map(one).join(', and ')}, on top of your attack that turn.` +
+         (ko.length ? ` Using it Knocks Out ${ko.join(' or ')}, which gives up a prize, so it finishes a knockout rather than starting one.` : '') });
+  }
   const sup = entries.filter(x => { const c = x.card;
     if (!c || c.t !== 'pkmn' || c.key === m.key || pre.has(c.key) || !(c.abil || []).length) return false;
     if (!(c.provides || []).some(t => t === 'draw' || /^search/.test(t))) return false;
@@ -8311,7 +8437,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -9906,7 +10032,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
-const PT_VERSION = 'v53';
+const PT_VERSION = 'v54';
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
