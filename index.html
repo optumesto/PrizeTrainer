@@ -3696,7 +3696,8 @@ function geEffects(text) {
     // Energy onto your Pokemon.
     if ((m = s.match(/^look at the top (\d+) cards of your deck,? and attach (.+?) you find there to (this pokemon|your [a-z' ]*pokemon|1 of your [a-z' ]*pokemon)/))) {
       tags.add('energy_accel'); say.push(`attaches ${/any number/.test(m[2]) ? 'any number of ' + geWhat(m[2].replace(/^any number of /, '')).replace(/ Energy$/, ' Energy') : geCnt(geNum(m[2].split(' ')[0]), geWhat(m[2]), geWhat(m[2]))} from the top ${m[1]} cards of your deck to ${m[3] === 'this pokemon' ? 'itself' : 'your Pokemon'}`); return; }
-    if ((m = s.match(/search your deck for (.+?energy[^,]*?)(?:,? reveal (?:it|them))?,? and attach (?:it|them) to (.+)$/))) {
+    // v62: the list may name more than one Energy ("a Basic Psychic Energy card, a Basic Metal Energy card, or 1 of each", Steven's Metagross ex's X-Boot).
+    if ((m = s.match(/search your deck for (.+?energy[^.]*?)(?:,? reveal (?:it|them))?,? and attach (?:it|them) to (.+)$/))) {
       tags.add('energy_accel'); say.push(`searches your deck for ${geTitle(m[1])} and attaches ${/\b(?:them|1 of each|up to|\d+ basic)\b/.test(m[1] + ' ' + s) ? 'them' : 'it'} to ${/this pokemon/.test(m[2]) ? 'itself' : 'your Pokemon'}`); return; }
     if ((m = s.match(new RegExp('^attach (an?|\\d+|up to \\d+) (basic )?(?:(' + GE_TY + ') )?energy cards? from your (hand|discard pile|deck) to (this pokemon|1 of your (?:benched )?(.*?)pokemon|your (?:[a-z\\u0027 ]+ )?pokemon(?: in any way you like)?)')))) {
       tags.add('energy_accel');
@@ -5149,6 +5150,10 @@ function gAbilRead(c) {
       bits.push(...ge.say);
       if (ge.cost) { pre = ge.cost + ' to '; bits[0] = base(bits[0]); }
       if (ge.need && ge.need !== 'only while it is Active') post = ` (${ge.need})`; }
+    // v62: a condition printed at the start of the Ability (Thwackey's Boom Boom Groove needs Festival Lead in the Active Spot).
+    if (!post) { const cm = gfNorm(A.text).match(/^once during your turn, if ([^,]+), you may/i);
+      if (cm && !/^this pokemon is in the active spot$/i.test(cm[1].replace(/\u00e9/g, 'e')))
+        post = ` (only if ${cm[1].replace(/\bthis Pok[e\u00e9]mon('s)?/gi, (q, x) => x ? 'its' : 'it').replace(/Pok\u00e9mon/g, 'Pokemon')})`; }
     const when = A.when === 'bench' ? 'when you play it onto your Bench' : A.when === 'evolve' ? 'when you evolve into it from your hand'
       : A.first ? 'on your first turn' : A.many || / as often as you like$/.test(bits[bits.length - 1]) ? (bits[bits.length - 1] = bits[bits.length - 1].replace(/, as often as you like$/, ''), 'as often as you like') : A.active ? 'once a turn while it is Active' : 'once a turn';
     say.push({ abil: A.name, p: `${pre}${bits.join(' and ').replace(/ and then /, ', then ')} ${when}${post}` });
@@ -5180,6 +5185,8 @@ function toGradeDeck(deck) {
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
       attacks: atks, provides: [...new Set((c.provides||[]).concat(ar.tags))], requires: c.requires||[],
       // v62: what a fixed damage bonus can lean on: Stadiums, and Abilities that switch, retreat for free or leave the Active Spot.
+      // v62: an Ability that lets it attack twice a turn while a Stadium is in play (Dipplin's Festival Lead with Festival Grounds).
+      atk2: (x => x ? { abil: x[0], stadium: ((String(x[1]).match(/if ([a-z0-9' \u00e9-]+?) is in play/i) || [])[1] || null) } : null)((c.atext||[]).find(x => /may use an attack it has twice/i.test(String(x[1]||'')))),
       sub: c.sub || [], swab: (c.atext||[]).some(x => /switch (?:it|this pok[e\u00e9]mon|your active pok[e\u00e9]mon) with|no retreat cost|shuffle this pok[e\u00e9]mon and all attached cards into your deck/i.test(String(x[1]||''))),
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
@@ -5615,6 +5622,10 @@ function g62Need(r, name) {
     btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them' }[n.k];
   return head + ` The grade counts ${n.base}, since ${why}.`;
 }
+/** v62: attacking twice a turn, in one sentence. */
+function g62Twice(r) { const t = r.twice;
+  return `Its ${t.abil} lets it attack twice a turn${t.stadium ? ' while ' + gCap(t.stadium) + ' is in play' : ''}, so the grade counts two hits of ${t.one}, ${t.one * 2} in all` +
+    (r.boost ? `, or ${r.eff} with ${r.bNames.join(' and ')} on both.` : '.'); }
 /** One sentence on one attacker: the printed number, how it gets there and what each booster adds. */
 function g35Hit(r) {
   const nm = gCap(r.name);
@@ -5639,6 +5650,9 @@ function g35Hit(r) {
       : k.how === 'discard' ? `${nm}'s ${r.atk} Knocks Out ${tgt} when you discard ${k.n} ${k.what} from your hand, so the grade counts it as a late game one-shot.`
       : k.how === 'flip' ? `${nm}'s ${r.atk} Knocks Out ${tgt} on a coin flip, ${k.p === 0.5 ? 'half the time' : 'one time in ' + Math.round(1 / k.p)}, so the grade counts it at ${r.top}.`
       : `${nm}'s ${r.atk} Knocks Out ${tgt} outright, so the grade counts it as a one-shot of anything.`; }
+  // v62: two attacks a turn: one hit's sentence, then the two together.
+  if (r.twice) { const one = Object.assign({}, r, { twice: null, top: r.twice.one, now: r.now / 2, boost: r.boost / 2, eff: r.twice.one + r.boost / 2 });
+    return g35Hit(one, nm) + ` ${g62Twice(r)}`; }
   const how = r.copy ? ` copying ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}` : '';
   const verb = r.flip ? 'averages' : 'hits for at most';
   let t;
@@ -5657,12 +5671,14 @@ function g35Hit(r) {
   return t;
 }
 /** How many hits the format's smallest and biggest threats take at this damage. */
-function g37Hits(eff) {
+function g37Hits(eff, tw) {
   const [lo, hi] = FMT.threatHP;
   if (!(eff > 0)) return '';
   const a = Math.ceil(lo / eff), b = Math.ceil(hi / eff);
-  const w = n => n === 1 ? 'one hit' : n === 2 ? 'two hits' : n === 3 ? 'three hits' : n === 4 ? 'four hits' : n + ' hits';
-  if (a === b) return a === 1 ? `That one-shots the format's ${lo} to ${hi} HP threats.` : `The format's ${lo} to ${hi} HP threats take ${w(a)} each.`;
+  // v62: with two attacks a turn the count is in turns, not hits.
+  const u = tw ? 'turn' : 'hit';
+  const w = n => (n === 1 ? 'one' : n === 2 ? 'two' : n === 3 ? 'three' : n === 4 ? 'four' : n) + ' ' + u + (n === 1 ? '' : 's');
+  if (a === b) return a === 1 ? (tw ? `That knocks out the format's ${lo} to ${hi} HP threats in one turn.` : `That one-shots the format's ${lo} to ${hi} HP threats.`) : `The format's ${lo} to ${hi} HP threats take ${w(a)} each.`;
   return `${lo} HP threats take ${w(a)} and ${hi} HP threats take ${w(b)}.`;
 }
 /**
@@ -5847,7 +5863,12 @@ function gViability(deck, coh, main) {
     // v60: compared by gVal, so an attack that hits 3 Pokemon at once can win over a slightly bigger single hit.
     gAtkOpts(e, deck, pay).forEach(({ r }) => {
       if (!r0 || r.val>r0.val || (r.val===r0.val && r.now>r0.now)) r0=r; });
+    // v62: attacking twice a turn doubles what it does to the Active, when the list runs the Stadium it needs (2 or more).
+    const t2 = e.card.atk2, t2n = t2 && t2.stadium ? deck.filter(x => x.card && x.card.key === t2.stadium.toLowerCase()).reduce((n, x) => n + x.qty, 0) : 0;
+    if (r0 && r0.top > 0 && t2 && (!t2.stadium || t2n >= 2)) r0 = Object.assign({}, r0, { now: r0.now * 2, top: r0.top * 2, twice: { abil: t2.abil, stadium: t2.stadium, one: r0.top } });
     if (r0 && r0.top>0) { const b=g35Boost(deck, e.card);
+      // v62: a booster for the turn or a Tool counts on each of the two attacks.
+      if (r0.twice) b.n *= 2;
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
   let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
   // v53: the main attacker leads when it hits at least as hard. When something
@@ -5856,7 +5877,7 @@ function gViability(deck, coh, main) {
   if (mainR && bestR && mainR.eff >= bestR.eff) bestR = mainR;
   const lead = main && bestR && bestR !== mainR && main.key !== bestR.name.toLowerCase()
     ? `${gCap(main.name)} is this deck's main attacker, but the hardest hit the grade can count comes from another Pokemon. ` : '';
-  const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0);
+  const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0, !!(bestR && bestR.twice));
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
   const boost = bestR ? bestR.boost : 0;
@@ -6000,7 +6021,9 @@ function gPlan(entries, coh, via) {
   if (!m) return out;
   const nm = gCap(m.name), e = entries.find(x => x.card && x.card.key === m.key);
   if (!e) return out;
-  const r = (via.reach || []).find(x => x.name.toLowerCase() === m.key);
+  const rTw = (via.reach || []).find(x => x.name.toLowerCase() === m.key);
+  // v62: one hit's numbers for the sentences below; attacking twice is its own sentence.
+  const r = rTw && rTw.twice ? Object.assign({}, rTw, { top: rTw.twice.one, now: rTw.now / 2 }) : rTw;
   const mill = (e.card.attacks || []).find(a => a.copy && a.copy.mill);
   const pre = new Set(); let f = e.card.from;
   while (f && !pre.has(f)) { pre.add(f); const x = entries.find(y => y.card && y.card.key === f); f = x && x.card.from; }
@@ -6046,6 +6069,7 @@ function gPlan(entries, coh, via) {
   if (r && !r.copy && !mill) { const na = (e.card.attacks || []).find(a => a.name !== r.atk && a.need && (a.dmg || 0) > r.top);
     const nr = na && gAtkReach(na, entries);
     if (nr && nr.need && !nr.need.met) how += ` Its ${g62Need(Object.assign(nr, { atk: na.name }), m.name)}`; }
+  if (rTw && rTw.twice) how += ` ${g62Twice(rTw)}`;
   let why;
   if (m.why === 'name') why = m.among > 1 ? 'Of the Pokemon the deck is named for, it is the one the list is built to attack with.' : 'The deck is named for it.';
   else {
@@ -11758,8 +11782,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
-const PT_VERSION = 'v2.0';
-const PT_BUILD = 61;
+const PT_VERSION = 'v2.1';
+const PT_BUILD = 62;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
