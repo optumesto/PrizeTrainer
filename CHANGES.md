@@ -13,6 +13,7 @@ Not changed: everything else, including data.json, ads.txt and the ad code.
 - An Ability that attaches a type of Basic Energy the list does not run (Teal Mask Ogerpon ex's Teal Dance with no Grass Energy) is now flagged instead of counted as a reason to play the card.
 - The slow setup warning only counts Stage 2 Pokemon the deck leans on (the main attacker, or a line of 2 or more), so one Metagross in Mega Excadrill no longer marks the deck slow. Stage 2 lines are named in the warning.
 - A deck with no name now weighs Pokemon it evolves from at most 2 per copy, so Mega Excadrill is no longer read as a Metagross deck.
+- A deck with no name also counts the Mega Pokemon ex that put an attacker onto the Bench (Talonflame ex's Excited Dive) like the Pokemon it evolves from, so the Talonflame Dusknoir list picks Talonflame ex, not Mega Kangaskhan ex. How it plays says the Kangaskhan are there to bring Talonflame in.
 - Prize trade text: a deck of only two-prize Pokemon is no longer told it is not handing over multi-prize turns. One three-prize Pokemon reads "gives up", not "give up".
 - Built-in deck changes: Basic Box now counts Raging Bolt ex's Bellowing Thunder (grade 6.9 to 8.7). Main attackers are unchanged.
 - Saved decks re-read their card data once, so older imports pick up the new details.

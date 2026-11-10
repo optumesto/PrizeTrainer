@@ -3994,6 +3994,8 @@ function enrichCard(apiCard, opts) {
     // v54: damage it prevents only from Pokemon ex (Crustle's Mysterious Rock Inn).
     pex: /prevent all damage done to this pok[e\u00e9]mon by attacks from your opponent's pok[e\u00e9]mon ex/i.test(x.text || '') || undefined,
     // v54: an Ability that attaches one type of Basic Energy from your hand (Teal Mask Ogerpon ex's Teal Dance).
+    // v54: a "put this onto your Bench" Ability that needs a Mega Evolution Pokemon ex in play (Talonflame ex's Excited Dive).
+    bmega: (m => m ? (m[1] || 'any').toLowerCase() : undefined)((x.text || '').match(/put this pok[e\u00e9]mon onto your bench/i) && (x.text || '').match(/if you have any (?:(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|colorless) )?mega evolution pok[e\u00e9]mon ex in play/i)),
     aneed: ((x.text || '').match(/attach (?:a|an|up to \d+|\d+) basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy cards? from your hand/i) || [])[1]?.toLowerCase(),
   }));
 
@@ -4757,6 +4759,8 @@ function toGradeDeck(deck) {
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
+      bmega: ((c.abilities||[]).find(x => x.bench && x.bmega) || {}).bmega || null,
+      bmAbil: ((c.abilities||[]).find(x => x.bench && x.bmega) || {}).name || null,
       edbl: (c.abilities||[]).filter(x => x.edouble).map(x => ({ type: x.edouble, abil: x.name })),
       abDmg: (c.abilities||[]).filter(x => x.cdmg).map(x => Object.assign({ abil: x.name }, x.cdmg)),
       pex: (c.abilities||[]).filter(x => x.pex).map(x => x.name),
@@ -5023,6 +5027,13 @@ function g37Copier(deck, c) {
  *    since lists play those for the Ability (Mega Kangaskhan ex, Dudunsparce).
  * Returns { key, name, why: 'name' | 'list' } or null.
  */
+// v54: the Mega Pokemon ex in the list that let this card put itself onto the Bench.
+function gEnablers(deck, c) {
+  if (!c || !c.bmega) return [];
+  return deck.filter(e => e.card && e.card.t === 'pkmn' && e.card !== c && e.card.isEx && /^mega /.test(e.card.key) &&
+    (c.bmega === 'any' || (e.card.types || []).some(t => String(t).toLowerCase() === c.bmega)));
+}
+
 function gMainAttacker(deck, coh, deckName) {
   const et = coh.energyTypes || {};
   const pay = a => (a.cost || []).every(ty => ty === 'colorless' || et[ty] || et.any);
@@ -5044,6 +5055,7 @@ function gMainAttacker(deck, coh, deckName) {
   }) : [];
   const typedTotal = Object.keys(et).filter(k => k !== 'any' && k !== 'colorless').reduce((n, k) => n + et[k], 0);
   const qtyOf = k => deck.filter(e => e.card && e.card.key === k).reduce((n, e) => n + e.qty, 0);
+  const enablersOf = c => gEnablers(deck, c);
   const pickFrom = list => {
     let best = null;
     list.forEach(e => {
@@ -5053,7 +5065,10 @@ function gMainAttacker(deck, coh, deckName) {
       const pre2 = c.from ? deck.filter(x => x.card && x.card.key === c.from && x.card.from).reduce((n, x) => n + qtyOf(x.card.from), 0) : 0;
       // v54: a line that runs more of the earlier stages than two per copy is playing them
       // for their own Abilities (4 Metang for 1 Metagross), so the extra copies do not count.
-      const weight = e.qty + 0.5 * Math.min(pre1 + pre2, 2 * e.qty);
+      // v54: Mega Pokemon ex that let it onto the Bench (Talonflame ex's Excited Dive) count the same way,
+      // since the list runs them to put it into play.
+      const en = enablersOf(c).reduce((n, x) => n + x.qty, 0);
+      const weight = e.qty + 0.5 * Math.min(pre1 + pre2 + en, 2 * e.qty);
       const typed = [...new Set((b.a.cost || []).filter(t => t !== 'colorless'))];
       const share = typedTotal ? Math.min(1, typed.reduce((n, t) => n + (et[t] || 0), 0) / typedTotal) : 0;
       const support = !typed.length && (c.provides || []).some(p => p === 'draw' || /^search/.test(p)) ? 0.5 : 1;
@@ -5217,7 +5232,9 @@ function gPlan(entries, coh, via) {
   if (m.why === 'name') why = m.among > 1 ? 'Of the Pokemon the deck is named for, it is the one the list is built to attack with.' : 'The deck is named for it.';
   else {
     const preN = [...pre].map(k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0));
-    why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.`;
+    const en = gEnablers(entries, e.card), enN = en.reduce((n, x) => n + x.qty, 0);
+    const enTxt = enN ? ` Its ${e.card.bmAbil} puts it onto your Bench when you have ${[...new Set(en.map(x => gCap(x.name)))].join(' or ')} in play, so the ${enN} ${enN === 1 ? 'copy' : 'copies'} of ${en.length > 1 ? 'those' : 'that'} in the list are there to bring it in.` : '';
+    why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
   }
   // v54: what the main attacker's own Abilities add, from the card text.
   const wall = (e.card.pex || []).length ? ` Its ${e.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out.` : '';
