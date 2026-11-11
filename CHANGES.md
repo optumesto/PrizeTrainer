@@ -8,9 +8,10 @@ Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files
 
 - A Daily puzzle card on home, under the Daily challenge: one board a day, the same for everyone, from two top tournament lists. You can win this turn if you find the line.
 - Every card can be tapped to read it. Plays you can't make right now are listed with the reason.
-- Undo and Start over are free. Your first finished try is your score; looking at the answer first counts as a try. Share sends the result, and a streak counts the days you played.
+- Undo and Start over are free. Your first finished try is your score; looking at the answer first counts as a try.
+- The number is your own: your first day played is your puzzle #1, then one more each day you play. The card shows how many you solved of how many you played, wins in a row and days in a row, all kept on this device. Share sends your number, result and streak; the board itself is the same for everyone that day.
 - Strict: a line that draws, flips or uses a card you can't see never counts as a win, since it isn't sure.
-- 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Puzzle #1 is set to 12 Nov 2026; change PUZZLE_EPOCH on release day.
+- 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Set PUZZLE_EPOCH to the release day so day one opens the pack's first board.
 
 # RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, audit fixes, a grade check and the old address redirect (11 Nov 2026)
 

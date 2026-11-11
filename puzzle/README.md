@@ -26,7 +26,7 @@ Make a new pack. Card data is the PokemonTCG/pokemon-tcg-data repository: a fold
 node puzzle/tools/make-daily.mjs --cards <folder> --n 120 --seed 11
 ```
 
-The app's puzzle settings (goal, strictness, pack file, the date of puzzle #1) are at the top of the DAILY PUZZLE section of `index.html`.
+The app's puzzle settings (goal, strictness, pack file, the day the pack starts) are at the top of the DAILY PUZZLE section of `index.html`.
 
 After changing Goldfish's text reader in `index.html`, regenerate the copy:
 

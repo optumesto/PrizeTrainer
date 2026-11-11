@@ -10340,22 +10340,43 @@ const PUZZLE_RULES = {
   goal: 'prizes',        // 4. Today's goal: take your last Prize cards this turn (the pack only has this kind).
   pack: 'puzzle/daily.json', // 5. A pack made ahead of time, not boards dealt live on the phone.
 };                       // 3. Goldfish keeps its own rules for now and moves onto this engine after the deck builder.
-// Puzzle #1 is the first day it ships. Change this date when it goes live.
+// Which board a day gets: the pack is played in order from this date, the same board for everyone each day.
+// Set it to the release day so day one opens the pack's first board.
 const PUZZLE_EPOCH = [2026, 10, 12];
 const PUZZLE_SCRIPTS = ['puzzle/text.js', 'puzzle/engine.js', 'puzzle/solver.js'];
 let _pzKit = null, pzS = null;
-function puzzleNumber(key) {
+function puzzleBoardDay(key) {
   const p = String(key || dailyKey()).split('-').map(Number);
   const n = Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(PUZZLE_EPOCH[0], PUZZLE_EPOCH[1], PUZZLE_EPOCH[2])) / 864e5) + 1;
   return isNaN(n) || n < 1 ? 1 : n;
 }
 function puzzleStore() { return (state.puzzle = state.puzzle || { results: {} }); }
-function puzzleStreak() {
+// Your own puzzle number: #1 is the first day you played, then one more each day you play.
+// Kept on this device with the rest of your saved data.
+function puzzleNumber(key) {
+  key = key || dailyKey();
+  const R = puzzleStore().results;
+  if (R[key] && R[key].num) return R[key].num;
+  return Object.keys(R).filter(k => k < key).length + 1;
+}
+// Days in a row, counted back from today (or yesterday, while today is still open).
+function puzzleRun(test) {
   const R = puzzleStore().results;
   let n = 0, d = new Date();
   if (!R[dailyKey(d.getTime())]) d.setDate(d.getDate() - 1);
-  while (R[dailyKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
+  while (R[dailyKey(d.getTime())] && test(R[dailyKey(d.getTime())])) { n++; d.setDate(d.getDate() - 1); }
   return n;
+}
+function puzzleStats() {
+  const all = Object.values(puzzleStore().results);
+  return { played: all.length, won: all.filter(r => r.won).length, playRun: puzzleRun(() => true), winRun: puzzleRun(r => r.won) };
+}
+function puzzleStreak() { return puzzleStats().playRun; }
+function puzzleStreakText(st) {
+  const bits = [];
+  if (st.winRun > 1) bits.push(`${st.winRun} wins in a row`);
+  if (st.playRun > 1 && st.playRun !== st.winRun) bits.push(`${st.playRun} days in a row`);
+  return bits.join(', ');
 }
 function loadPuzzleKit() {
   if (_pzKit) return _pzKit;
@@ -10369,13 +10390,13 @@ function loadPuzzleKit() {
 function renderPuzzleCard() {
   const el = document.getElementById('puzzle-card');
   if (!el) return;
-  const key = dailyKey(), r = puzzleStore().results[key], streak = puzzleStreak();
+  const key = dailyKey(), r = puzzleStore().results[key], st = puzzleStats(), runs = puzzleStreakText(st);
   const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
-    : 'Win this turn from a real tournament board';
+    : st.played ? `${st.won} solved of ${st.played} played` : 'Win this turn from a real tournament board';
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('target')}</div>
-    <div class="dc-tx"><div class="dc-t">Daily puzzle #${puzzleNumber(key)}</div>
-      <div class="dc-s">${sub}${streak > 1 ? `. ${streak} day streak` : ''}</div></div>
+    <div class="dc-tx"><div class="dc-t">Your puzzle #${puzzleNumber(key)}</div>
+      <div class="dc-s">${sub}${runs ? '. ' + runs : ''}</div></div>
     ${r ? `<button class="btn btn-sm" onclick="sharePuzzle()">${ic23('share')}Share</button>` : ''}
     <button class="btn btn-sm btn-primary" onclick="openPuzzle()">${r ? 'Replay' : 'Play'}</button>
   </div>`;
@@ -10387,7 +10408,7 @@ async function openPuzzle() {
   try { kit = await loadPuzzleKit(); } catch (e) { hideLoading(); showToast('The puzzle needs a connection the first time. Try again in a moment.'); return; }
   hideLoading();
   const key = dailyKey(), n = puzzleNumber(key), list = kit.pack.puzzles;
-  const p = list[(n - 1) % list.length];
+  const p = list[(puzzleBoardDay(key) - 1) % list.length];
   const s0 = kit.E.fromPuzzle(Object.assign({ cards: kit.pack.cards }, p));
   pzS = { E: kit.E, cards: kit.pack.cards, key, n, p, s0, s: s0, hist: [], plays: 0, over: false, showAns: false, opp: '' };
   showScreen('puzzle');
@@ -10507,7 +10528,7 @@ function renderPuzzle() {
   const el = document.getElementById('pz-body');
   if (!el || !pzS) return;
   const { E, s, p } = pzS;
-  document.getElementById('pz-title').textContent = `Daily puzzle #${pzS.n}`;
+  document.getElementById('pz-title').textContent = `Your puzzle #${pzS.n}`;
   const R = puzzleStore().results[pzS.key];
   let h = `<div class="pz-wrap">`;
   h += `<div class="pz-goal"><b>Win this turn.</b> Take your last ${s.players[0].prizes.length === 1 ? 'Prize card' : s.players[0].prizes.length + ' Prize cards'} before your turn ends. Tap any card to read it.
@@ -10592,7 +10613,7 @@ function pzReset() { if (!pzS) return; pzS.s = pzS.s0; pzS.hist = []; pzS.plays 
 function pzPeek() {
   if (!pzS) return;
   const store = puzzleStore();
-  if (!store.results[pzS.key]) { store.results[pzS.key] = { won: false, peek: true, moves: 0, ts: Date.now() }; saveState(); }
+  if (!store.results[pzS.key]) { store.results[pzS.key] = { won: false, peek: true, moves: 0, num: pzS.n, ts: Date.now() }; saveState(); }
   pzS.showAns = true;
   renderPuzzle();
   const el = document.getElementById('pz-ans'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -10608,7 +10629,7 @@ function pzFinish() {
   pzS.over = true;
   const store = puzzleStore();
   pzS.first = false;
-  if (!store.results[pzS.key]) { store.results[pzS.key] = { won, moves: pzS.plays, ts: Date.now() }; pzS.first = true; saveState(); }
+  if (!store.results[pzS.key]) { store.results[pzS.key] = { won, moves: pzS.plays, num: pzS.n, ts: Date.now() }; pzS.first = true; saveState(); }
   if (typeof renderPuzzleCard === 'function') renderPuzzleCard();
 }
 function pzResult() {
@@ -10617,11 +10638,16 @@ function pzResult() {
     : s.unread.length ? 'The line used something RdyDeck can\'t read yet.' : 'Your turn ended before you took your last Prize card.';
   const saved = pzS.first ? 'Your first try is the one that counts.' : r ? (r.won ? `Today's result stays a win in ${r.moves} play${r.moves === 1 ? '' : 's'}.` : r.peek ? 'Practice replay: you looked at the answer today.' : 'Practice replay: today\'s result stays no win.') : '';
   return `<div class="dc-banner pz-res ${won ? 'win' : 'loss'}"><div><b>${won ? `You won in ${pzS.plays} play${pzS.plays === 1 ? '' : 's'}` : 'No win this time'}</b>
-    <span>${won ? (pzS.plays <= p.moves ? 'That is the shortest win.' : `The shortest win takes ${p.moves}.`) : esc(why)} ${saved}${puzzleStreak() > 1 ? ' ' + puzzleStreak() + ' day streak.' : ''}</span></div>
+    <span>${won ? (pzS.plays <= p.moves ? 'That is the shortest win.' : `The shortest win takes ${p.moves}.`) : esc(why)} ${saved} ${pzTally()}</span></div>
     ${r ? `<button class="btn btn-sm btn-primary" onclick="sharePuzzle()">${ic23('share')}Share</button>` : ''}</div>`;
 }
+function pzTally() {
+  const st = puzzleStats(), runs = puzzleStreakText(st);
+  return st.played ? `${st.won} solved of ${st.played} played${runs ? ', ' + runs : ''}.` : '';
+}
 function puzzleShareText(r, key) {
-  return `RdyDeck Daily Puzzle #${puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}. Same board for everyone today.`;
+  const st = puzzleStats(), runs = puzzleStreakText(st);
+  return `RdyDeck Daily Puzzle, my #${r.num || puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
 async function sharePuzzle() {
   const key = dailyKey(), r = puzzleStore().results[key];
@@ -10673,7 +10699,7 @@ function handlePuzzleHash() {
   if (!/^#puzzle\b/.test(location.hash || '')) return;
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   showScreen('home');
-  openSheet(`<div class="modal-title">Daily puzzle #${puzzleNumber()}</div>
+  openSheet(`<div class="modal-title">Daily puzzle</div>
     <div class="modal-hint" style="margin-bottom:1rem">A real board from two top tournament lists, the same for everyone today. You can win this turn if you find the line. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="openPuzzle()">${ic23('play')}Play</button></div>`);
 }
