@@ -10418,8 +10418,9 @@ const PUZZLE_RULES = {
   pack: 'puzzle/daily.json', // 5. A pack made ahead of time, not boards dealt live on the phone.
 };                       // 3. Goldfish keeps its own rules for now and moves onto this engine after the deck builder.
 // Which board a day gets: the pack is played in order from this date, the same board for everyone each day.
-// Set it to the release day so day one opens the pack's first board.
-const PUZZLE_EPOCH = [2026, 10, 12];
+// The pack runs easy, easy, medium, medium, medium, hard, hard, so it starts on a Monday
+// (9 Nov 2026, the same day as the Daily challenge) to keep the hard boards at the weekend.
+const PUZZLE_EPOCH = [2026, 10, 9];
 const PUZZLE_SCRIPTS = ['puzzle/text.js', 'puzzle/engine.js', 'puzzle/solver.js'];
 let _pzKit = null, pzS = null;
 function puzzleBoardDay(key) {

@@ -13,7 +13,7 @@ Daily puzzle
 - Undo and Start over are free. Your first finished try is your score; looking at the answer first counts as a try.
 - The number is your own: your first day played is your puzzle #1, then one more each day you play. The card shows how many you solved of how many you played, wins in a row and days in a row, all kept on this device. Share sends your number, result and streak; the board itself is the same for everyone that day.
 - Strict: a line that draws, flips or uses a card you can't see never counts as a win, since it isn't sure.
-- 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Set PUZZLE_EPOCH to the release day so day one opens the pack's first board.
+- 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. The pack starts on Monday 9 Nov 2026 (PUZZLE_EPOCH) so the week lines up: release night, Wednesday 11 Nov, opens board 3; the pack lasts until mid March.
 
 Deck builder
 - A new screen, Build a deck on home. Search every Standard legal card (cards.json, rebuilt weekly from pokemon-tcg-data).
