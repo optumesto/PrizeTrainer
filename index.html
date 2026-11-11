@@ -6914,7 +6914,7 @@ function gTrainers(entries, coh, via, main) {
 
   const score = gClamp(1 - cut.reduce((a, x) => a + x, 0), 0, 1);
   const counts = { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN };
-  // v69: a fit label for each card. Explain only: nothing here changes score.
+  // v70: a fit label for each card. Explain only: nothing here changes score.
   let fit = [];
   try { fit = gtFit(entries, coh, via, main, { dead: dead.map(d => d.e.name), counts }); } catch (_) {}
   return { score, flaws, ace, dead: dead.map(d => d.e.name), counts, fit };
@@ -6934,7 +6934,7 @@ function gtAceFor(entries, coh, gap, except) {
 }
 
 /**
- * v69: a fit label for each Trainer and Special Energy, explain only (it does not move a grade).
+ * v70: a fit label for each Trainer and Special Energy, explain only (it does not move a grade).
  *   Does nothing: the list runs nothing the card needs.
  *   Key: does a core job (draw, finding Pokemon, pulling up a Benched Pokemon, evolving, Energy)
  *        and is the list's main card for it, or Rare Candy into a Stage 2 line.
@@ -10507,18 +10507,17 @@ function handleDailyHash() {
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
-// ═══════════ WHAT'S NEW (v2.4) ═══════════
+// ═══════════ WHAT'S NEW (v2.4.1) ═══════════
 // A short log of the latest update. Edit WHATS_NEW for each release. A
 // generation release (2.x) lists what was added, changed or fixed ("Added:",
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.4',
-  kind: 'generation',
+  version: 'v2.4.1',
+  kind: 'small',
   items: [
-    { t: 'Changed: Grades', d: 'Grades now track how decks really do. Part of each grade comes from the deck\'s online tournament results, with games since the newest set counting most, and the grade explains how much.' },
-    { t: 'Changed: Power', d: 'Draw engines like a once-a-turn draw Ability count toward Setup speed, and Damage counts what a deck can really reach in a game, not its best case.' }
+    { t: 'Added: Trainer fit labels on the Grade tab' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13410,8 +13409,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.4';
-const PT_BUILD = 69;
+const PT_VERSION = 'v2.4.1';
+const PT_BUILD = 70;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15303,7 +15302,7 @@ function g67WhyHtml(R, synV, powV) {
   return h;
 }
 
-// v69: how each Trainer and Special Energy fits the list. Explains Synergy; it does not change the grade.
+// v70: how each Trainer and Special Energy fits the list. Explains Synergy; it does not change the grade.
 function t68Html(R) {
   const tr = R && R.coh && R.coh.trainers;
   if (!tr || (!(tr.fit || []).length && !tr.ace)) return '';
