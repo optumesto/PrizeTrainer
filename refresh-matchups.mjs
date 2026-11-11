@@ -7,7 +7,7 @@
 //   (newest first, until it reaches the start of the window), then standings and pairings
 //   for each big event in the window. An event is read once and kept in
 //   .github/matchups-cache.json, so the next week only reads the events that are new.
-//   At most 30 new events a run, at most 90 requests, 3 seconds apart. Requests run one at a
+//   At most 40 new events a run, at most 120 requests, 3 seconds apart. Requests run one at a
 //   time with a pause, and a 429 answer stops the run.
 //
 // The window: the last SETS_BACK sets (two today), from the day the older of them came out,
@@ -51,12 +51,13 @@ const KNOWN_SETS = [
 const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
-const NEW_PER_RUN = BACKFILL ? 50 : 30;   // new events read per run
-const MAX_CALLS = BACKFILL ? 130 : 90;     // requests per run, all told
+const NEW_PER_RUN = BACKFILL ? 50 : 40;   // new events read per run
+const MAX_CALLS = BACKFILL ? 130 : 120;    // requests per run, all told
 const PAUSE = 3000;        // between requests (Limitless answered 429 after about 4 minutes at 1.5 s)
 const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
-const MAX_ROWS = 40;
+const MAX_ROWS = 40;       // plus any deck with MIN_LISTS lists since the newest set
+const NOW_MIN = 500;       // lists since the newest set before its decks pick the opponents
 const COLS = 10;           // the most played decks, shown as opponents
 const SIG_MIN = 0.3;       // a Pokemon in this share of an archetype's lists is part of its shape
 const SIG_MAX = 10;
@@ -205,8 +206,9 @@ async function eventList(since, now) {
 }
 
 /** Sum the window's events into the file the app reads. */
-function build(events, since, until, from) {
-  const lists = {}, names = {}, mons = {}, vs = {}, tops = {}, fin = {}, field = {};
+function build(events, since, until, from, newest) {
+  const lists = {}, names = {}, mons = {}, vs = {}, tops = {}, fin = {}, field = {}, now = {};
+  let nowTotal = 0;
   let total = 0, matches = 0;
   for (const e of events) {
     matches += e.matches;
@@ -219,6 +221,7 @@ function build(events, since, until, from) {
       }
       names[id] = names[id] || d.name;
       lists[id] = (lists[id] || 0) + d.lists;
+      if (newest && e.date >= newest) { now[id] = (now[id] || 0) + d.lists; nowTotal += d.lists; }
       for (const [code, place] of d.tops || []) (tops[id] || (tops[id] = [])).push([code, place, e.name, e.date]);
       total += d.lists;
       const m = mons[id] || (mons[id] = {});
@@ -233,8 +236,14 @@ function build(events, since, until, from) {
       add(ba[src] || (ba[src] = [0, 0, 0]), [r[1], r[0], r[2]]);
     }
   }
-  const rows = Object.keys(lists).filter(id => lists[id] >= MIN_LISTS).sort((a, b) => lists[b] - lists[a]).slice(0, MAX_ROWS);
-  const cols = rows.slice(0, COLS);
+  // Rows: the most played decks over the window, plus every deck played enough since the
+  // newest set came out, so a deck people play today always has a row.
+  const top = Object.keys(lists).filter(id => lists[id] >= MIN_LISTS).sort((a, b) => lists[b] - lists[a]).slice(0, MAX_ROWS);
+  const live = Object.keys(now).filter(id => now[id] >= MIN_LISTS && !top.includes(id)).sort((a, b) => now[b] - now[a]);
+  const rows = [...top, ...live];
+  // Opponents: the decks played most since the newest set came out, once it has enough lists,
+  // since those are the decks a player meets today. Before that, the most played in the window.
+  const cols = nowTotal >= NOW_MIN ? rows.slice().sort((a, b) => (now[b] || 0) - (now[a] || 0) || lists[b] - lists[a]).slice(0, COLS) : rows.slice(0, COLS);
   const decks = rows.map(id => {
     const rec = {};
     for (const opp of Object.values(vs[id] || {})) for (const [src, r] of Object.entries(opp)) add(rec[src] || (rec[src] = [0, 0, 0]), r);
@@ -327,7 +336,8 @@ cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY)
 notes.push(`requests: ${calls}`);
 
 const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY);
-const next = build(use, since, null, fromName);
+const newest = cache.sets.length ? cache.sets[cache.sets.length - 1].release : null;
+const next = build(use, since, null, fromName, newest);
 const ok = next.cols.length >= 3 && next.sources[0].matches >= 200;
 notes.push(ok ? `matchups: ${next.decks.length} decks, ${next.sources[0].matches} matches` : 'matchups: too little data, kept last copy');
 
