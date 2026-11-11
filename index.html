@@ -9856,6 +9856,77 @@ function renderGoldfish() {
   el.innerHTML = h;
 }
 
+/* ═══════════ v67: RdyRules, the play rules Goldfish runs on, for any board ═══════════
+ * Goldfish and the Hand tab use these rules on the live board (gf). Another mode (Puzzle mode) can run
+ * them on a board of its own in the same shape, without the Goldfish screen.
+ *
+ * Board: { turn, first, hand: [x], deck: [x], prizes: [x], discard: [x], active: mon | null, bench: [mon],
+ *          stadium: x | null, used: { energy, supporter, stadium, retreat }, turnOver, monId, log: [] }
+ *   x   = { uid, card, g }   a card, with card as the deck stores it (name, supertype, stage, attacks, atext, rtext...)
+ *   mon = { id, stack: [x], energy: [x], tool: x | null, turnIn, evoTurn, ab: {} }   stack[last] is the top card
+ * RdyRules.newBoard(cards, opts)      a board from a list of deck cards, unshuffled unless opts.shuffle
+ * RdyRules.on(board, fn)              run fn with board as the live board; every call below uses this
+ * RdyRules.moves(board, uid)          what a hand card can do now: [{ label, fn, off, why }], why when off
+ * RdyRules.canPlay(board, uid)        { ok, why } for the card's first real move (play, attach, evolve, bench)
+ * RdyRules.trainerPlan(card)          the parsed conditions and steps of a Trainer (need, steps, opp, noFirst...)
+ * RdyRules.needWhy(need)              why a "you can play this only if" condition is not met, or ''
+ * RdyRules.targetWhy(board, uid)      why a Trainer has nothing to act on (Jumbo Ice Cream with no 3 Energy), or ''
+ * RdyRules.retreatCost(board, monId)  the cost now, after Tools, Stadiums and Abilities
+ * RdyRules.retreatWhy(board)          why the Active cannot retreat now, or ''
+ * RdyRules.canEvolveOnto(board, monId) whether something in hand can evolve that Pokemon this turn
+ * RdyRules.abilities(board, monId)    [{ name, off, why }] for each Ability of a Pokemon in play
+ * RdyRules.benchRoom(board)           free Bench spots
+ * Acts (they change the board, as Goldfish does): play(board, uid, where), attach(board, uid, monId),
+ * evolve(board, uid, monId), retreat(board, benchMonId), endTurn(board).
+ */
+const RdyRules = (() => {
+  // The Goldfish acts redraw the Goldfish screen; on another board they stay quiet.
+  const on = (board, fn) => { const keep = gf, keepR = renderHand; gf = board; if (board !== keep) renderHand = () => {};
+    try { return fn(); } finally { gf = keep; renderHand = keepR; } };
+  const find = (board, uid) => board.hand.find(x => x.uid === uid);
+  const mon = (board, id) => [board.active].concat(board.bench).find(m => m && m.id === id);
+  return {
+    on,
+    newBoard(cards, opts) {
+      const o = opts || {}; let uid = 0;
+      const pool = [];
+      (cards || []).forEach(c => { for (let i = 0; i < (c.count || 1); i++) pool.push({ uid: ++uid, card: c, g: -1 }); });
+      if (o.shuffle) for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      return { turn: o.turn || 0, first: o.first !== false, hand: pool.slice(0, 7), prizes: pool.slice(7, 13), deck: pool.slice(13), discard: [],
+        active: null, bench: [], stadium: null, used: { energy: false, supporter: false, stadium: false, retreat: false }, turnOver: false,
+        monId: 0, log: [], ready: [], groups: [], run: null, sel: null };
+    },
+    moves: (board, uid) => on(board, () => { const x = find(board, uid); return x ? gfActions(x) : []; }),
+    canPlay(board, uid) {
+      const m = this.moves(board, uid).filter(a => !/^Discard$/.test(a.label));
+      const ok = m.find(a => !a.off);
+      if (ok) return { ok: true, why: '' };
+      const x = find(board, uid);
+      if (board.turn === 0 && x && !gfIsBasic(x)) return { ok: false, why: 'During setup only Basic Pokémon go into play.' };
+      return { ok: false, why: (m.find(a => a.why) || {}).why || 'Nothing to do with this card now.' };
+    },
+    trainerPlan: card => gfTrainerPlay({ card }),
+    needWhy: need => gfNeedWhy(need),
+    targetWhy: (board, uid) => on(board, () => { const x = find(board, uid); return x ? gfTargetWhy(x) : ''; }),
+    retreatCost: (board, id) => on(board, () => { const m = mon(board, id); return m ? gfRetreatCost(m) : 0; }),
+    retreatWhy: board => on(board, () => gfRetreatWhy()),
+    canEvolveOnto: (board, id) => on(board, () => { const m = mon(board, id); return !!m && gfCanEvolveOnto(m); }),
+    abilities: (board, id) => on(board, () => { const m = mon(board, id); if (!m) return [];
+      return gfAbilities(gfTop(m)).map(A => { const why = gfAbilWhy(m, A, gfTop(m)); return { name: A.name, off: !!why, why: why || '' }; }); }),
+    benchRoom: board => 5 - board.bench.length,
+    play: (board, uid, where) => on(board, () => gfPlayBasic(uid, where === 'bench' ? 'bench' : 'active')),
+    attach: (board, uid, id) => on(board, () => gfAttach(uid, id)),
+    evolve: (board, uid, id) => on(board, () => gfEvolve(uid, id)),
+    retreat: (board, id) => on(board, () => gfSwitch(id)),
+    // The turn passes: the next turn's limits reset and you draw 1. Turn 0 is setup, so it needs an Active.
+    endTurn: board => on(board, () => {
+      if (board.turn === 0 && !board.active) return 'Put a Basic in the Active Spot first.';
+      board.turn++; board.used = { energy: false, supporter: false, stadium: false, retreat: false };
+      board.sel = null; board.selMon = null; board.turnOver = false;
+      gfLog('Turn ' + board.turn); gfDraw(1); return ''; }),
+  };
+})();
+
 function gfSummary(deck) {
   const opts = handLineOptions(deck, gf.groups);
   let h = '';
