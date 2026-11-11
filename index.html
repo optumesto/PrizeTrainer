@@ -1952,6 +1952,13 @@
   .g29-ps { font-size:var(--fs-sm); color:var(--text-2); line-height:1.35; }
   .g29-how { max-width:520px; margin:0.7rem auto 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; text-align:left; }
   .g29-how b { color:var(--text); }
+  .g67-why { max-width:520px; margin:0.5rem auto 0; text-align:left; }
+  .g67-why > summary { font-size:var(--fs-sm); font-weight:600; color:var(--text); }
+  .g67-why ul { list-style:none; margin:0 0 0.4rem; padding:0; }
+  .g67-why li { display:flex; gap:0.6rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; padding:0.25rem 0; }
+  .g67-why li b { flex:0 0 3.2rem; font-family:var(--mono); font-weight:600; color:var(--text); text-align:right; }
+  .g67-why li b.dn { color:var(--danger); } .g67-why li b.up { color:var(--success); }
+  .g67-why p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; margin:0 0 0.4rem; }
   .g29-tag { display:inline-block; margin-left:0.45rem; padding:0.05rem 0.45rem; border-radius:999px; font-size:0.6875rem; font-weight:700; vertical-align:2px; white-space:nowrap; }
   .g29-tag.crit { color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); }
   .g29-tag.warn { color:var(--text-2); background:color-mix(in srgb, var(--electric) 18%, transparent); }
@@ -2265,6 +2272,7 @@
   .g29-pv { font-family:var(--display); font-weight:700; font-size:2.25rem; line-height:1; }
   .g-meter, .g-meter span { border-radius:0; height:3px; }
   .g29-how { max-width:none; margin:0.7rem 0 0; }
+  .g67-why { max-width:none; margin:0.4rem 0 0; }
   .g-sec { margin-bottom:1.75rem; }
   .g-sec-t { font-size:1.25rem; }
   .g-sec-i { font-size:0.9375rem; color:var(--text-3); }
@@ -5310,7 +5318,7 @@ function gCoherence(deck) {
     (c.provides||[]).forEach(p => provided[p]=(provided[p]||0)+e.qty);
     if (c.t==='energy') (c.etypes||(c.etype?[c.etype]:[])).forEach(ty => energyTypes[ty]=(energyTypes[ty]||0)+e.qty);
     present[c.key]=(present[c.key]||0)+e.qty; });
-  const synergies=[], flaws=[]; let reqTotal=0, reqMet=0;
+  const synergies=[], flaws=[], unmet=[]; let reqTotal=0, reqMet=0;
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
@@ -5325,7 +5333,7 @@ function gCoherence(deck) {
     if (n<g.n && !flaws.some(f=>f.who===c.key)) flaws.push({sev:'crit', who:c.key, t:`${gCap(e.name)} can never attack`,
       d:`Its ${g.abil} stops it attacking unless you have ${g.n} or more ${g.pre?gCap(g.pre).replace(/'S\b/g,"'s"):''}Pokemon in play, and the list runs only ${n}.`}); });
   deck.forEach(e => { const c=e.card; if(!c||!c.requires) return;
-    c.requires.forEach(req => { reqTotal++;
+    c.requires.forEach(req => { reqTotal++; const m0=reqMet, f0=flaws.length;
       if (req.startsWith('energy:')) {
         const ty=req.split(':')[1];
         const payable=(c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any));
@@ -5374,7 +5382,9 @@ function gCoherence(deck) {
           if (prov) synergies.push({link:gCap(prov.name)+' > '+gCap(e.name), p:gSynText(req,prov.name,e.name)});
         } else flaws.push({sev:'warn', t:`${gCap(e.name)} wants ${gHuman(req)} that is not here`,
           d:`${gCap(e.name)} needs ${gHuman(req)} to do its job, and nothing in the deck provides it. A missing piece, or maybe intentional.`});
-      }});});
+      }
+      // v67: what each unmet need was, for the note on why Synergy is what it is.
+      if (reqMet===m0) unmet.push(flaws.length>f0?flaws[f0].t:`${gCap(e.name)} is missing a piece`); });});
   // A Stage 1 whose Basic is not in the list can never reach the board.
   const nk = s => normalizeCardName(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const presentN = new Set(deck.filter(e=>e.card).map(e=>nk(e.name)));
@@ -5383,7 +5393,7 @@ function gCoherence(deck) {
     // v65: a Pokemon ex can also evolve from a card that stands in for its Basic (Eevee ex for Jolteon ex).
     const sub = c.isEx && deck.find(x => x.card && x.card.standIn && nk(x.card.standIn) === nk(c.from));
     if (sub) { synergies.push({link:gCap(sub.name)+' > '+gCap(e.name), p:`${gCap(e.name)} evolves from ${gCap(c.from)}, and ${gCap(sub.name)} can evolve into it, so the line works without a plain ${gCap(c.from)}.`}); return; }
-    reqTotal++;
+    reqTotal++; unmet.push(`No ${gCap(c.from)} for ${gCap(e.name)}`);
     flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.from)} for ${gCap(e.name)}`,
       d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which is not in the list, so it can never reach the board.`}); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
@@ -5434,10 +5444,13 @@ function gCoherence(deck) {
     d:'No Pokemon here is set up to deal meaningful damage, so there is no win condition to build toward.'});
   // Nothing to check is not a fault: with card data read and no needs, nothing is missing.
   let base = reqTotal ? reqMet/reqTotal : (deck.some(e=>e.card&&e.card.t==='pkmn') ? 1 : 0.6);
+  // v67: the parts of the score, kept for the note on why Synergy is what it is.
+  const parts = { met:reqMet, total:reqTotal, unmet, base0:base, noDraw:!draw, noAtk:!hasAtk,
+    crits:flaws.filter(f=>f.sev==='crit').map(f=>f.t) };
   if (!draw) base*=0.4;
   if (!hasAtk) base*=0.3;
   base -= 0.12*flaws.filter(f=>f.sev==='crit').length;
-  return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present };
+  return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present, parts };
 }
 
 function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks&&e.card.hp>h)h=e.card.hp; }); return h||200; }
@@ -6308,7 +6321,9 @@ function gViability(deck, coh, main) {
   if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
-  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl };
+  // v67: the three parts, kept for the note on why Power is what it is.
+  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, strat, multiN, pkN };
+  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, parts };
 }
 
 /**
@@ -6814,20 +6829,23 @@ function gradeDeck(deck) {
   const via=gViability(entries, coh, main);
   // v65: the Trainers and Special Energy scale Synergy; a full suite leaves it as it was.
   let trn=null; try { trn=gTrainers(entries, coh, via, main); } catch (_) {}
+  const steps={ s0:coh.score };
   if (trn) { coh.score=gClamp(coh.score*(1-0.35*(1-trn.score)),0,1); coh.flaws=(coh.flaws||[]).concat(trn.flaws); coh.trainers=trn; }
   // v65: how tightly the list fits together. Synergy shows the full effect; the overall grade only
   // drops once the fit falls below what most winning lists reach, so a focused list is not punished.
+  steps.s1=coh.score;
   let foc=null; try { foc=gFocus(entries, coh, via); } catch (_) {}
   let fitF=1;
   if (foc) { coh.works=coh.score; coh.score=gClamp(coh.score*foc.score,0,1); coh.focus=foc; fitF=gClamp(1-1.5*Math.max(0,0.7-foc.score),0.3,1); }
   const cohF=Math.max((coh.works!=null?coh.works:coh.score)*fitF,0.06), viaF=Math.max(via.score,0.12);
   const overall=gR1(cohF*viaF*10);
+  Object.assign(steps, { s2:coh.score, fitF, cohF, viaF });
   const unread=entries.filter(e=>!e.card).reduce((a,e)=>a+e.qty,0);
   let plan=[]; try { plan=gPlan(entries, coh, via); } catch (_) {}
   if (trn && trn.ace) plan.push({ link: trn.ace.link, p: trn.ace.p });
   if (foc && foc.score < 0.88 && foc.why.length) plan.push({ link: 'Synergy: how the cards fit',
     p: `Fewer of your cards pull the same way: ${foc.why.slice(0, 2).join(', and ')}.${foc.box ? ' A toolbox deck spreads on purpose, so this counts half.' : ''}` });
-  return { overall, coh, via, unread, entries, plan };
+  return { overall, coh, via, unread, entries, plan, steps };
 }
 
 function gBand(v) {
@@ -14247,6 +14265,69 @@ function g29Legal(R, n) {
     : `The cards themselves grade ${R.overall.toFixed(1)}.`);
 }
 
+// v67: why each score is what it is. Every line is read from the same numbers the grader used.
+// Synergy starts from 10 and each line says what took points off (or put them back).
+function g67SynWhy(R) {
+  const P = R.coh.parts, S = R.steps, out = [];
+  if (!P || !S) return out;
+  const nm = a => a.slice(0, 2).join('; ') + (a.length > 2 ? `; and ${a.length - 2} more` : '');
+  let v = 10 * P.base0;
+  if (P.total) {
+    if (P.met < P.total) out.push({ d: v - 10, t: `${P.met} of ${P.total} card needs met. Missing: ${nm(P.unmet)}.` });
+    else out.push({ d: 0, t: `All ${P.total} card needs are met: every attacker has its Energy and every evolution has what it evolves from.` });
+  }
+  if (P.noDraw) { out.push({ d: -v * 0.6, t: 'No real draw engine, so the score is cut to 40%.' }); v *= 0.4; }
+  if (P.noAtk) { out.push({ d: -v * 0.7, t: 'No clear attacker, so the score is cut to 30%.' }); v *= 0.3; }
+  if (P.crits.length) { const d = Math.max(-v, -1.2 * P.crits.length), seen = P.crits.filter(t => P.unmet.includes(t)), other = P.crits.filter(t => !P.unmet.includes(t));
+    out.push({ d, t: seen.length === P.crits.length
+      ? (seen.length === 1 ? 'That one stops the deck, so it costs 1.2 more.' : `Those ${seen.length} stop the deck, so each costs 1.2 more.`)
+      : `${P.crits.length === 1 ? 'A problem that stops the deck' : P.crits.length + ' problems that stop the deck'} (1.2 each): ${nm(other.concat(seen))}.` }); }
+  const tr = R.coh.trainers, dT = 10 * (S.s1 - S.s0);
+  if (tr && Math.abs(dT) >= 0.05) { const t = (tr.flaws || []).filter(f => f.sev !== 'ok').map(f => f.t);
+    out.push({ d: dT, t: `Trainers and Special Energy${t.length ? `: ${nm(t)}` : ''}.` }); }
+  else if (tr) out.push({ d: 0, t: 'Trainers and Special Energy: nothing missing or dead.' });
+  const fo = R.coh.focus, dF = 10 * (S.s2 - S.s1);
+  if (fo && Math.abs(dF) >= 0.05) out.push({ d: dF, t: dF < 0
+    ? `How tightly the list fits${fo.why.length ? `: ${fo.why.slice(0, 2).join(', and ')}` : ''}.`
+    : 'Cards that work together, which the grade found in the list.' });
+  return out;
+}
+// Power is three parts: damage counts half, the prize trade 30% and setup speed 20%.
+const G67_PART = [
+  ['close', /^(Nothing can reliably attack|Closes through spread|Hits hard enough|Two hits for|Damage ceiling|Low damage, by design|Hard to disrupt|.* walls Pokemon ex|Hits several|Few Energy for|Only .* to hit with|Wins by|Many ways to attack|.* grows into its damage|Some damage is left out)/],
+  ['prize', /^(A three-prize|Three-prize attackers|Big attackers|Two prizes per knockout|Mostly two-prize|Efficient prize trade)/],
+  ['clock', /^(Evolves the long way|Might be slow|Sets up on time)/],
+];
+function g67PowWhy(R) {
+  const P = R.via.parts; if (!P) return [];
+  const f = R.via.findings, of = k => f.filter(x => (G67_PART.find(([, re]) => re.test(x.t)) || [])[0] === k).map(x => x.t);
+  const one = a => a.length ? a.slice(0, 2).join('; ') + '.' : '';
+  const clockTxt = one(of('clock')) || (P.stage2 ? '' : 'No Stage 2 line to wait on, which is the usual mark for a deck of Basics and Stage 1s.');
+  return [
+    { k: 'Damage', w: '50%', v: 10 * P.close, t: one(of('close')) || 'How hard the best attacker hits the format\'s biggest threats.' },
+    { k: 'Prize trade', w: '30%', v: 10 * P.prize, t: (P.pkN ? (P.multiN ? `${P.multiN >= P.pkN ? `All ${P.pkN}` : `${P.multiN} of your ${P.pkN}`} Pokemon give up 2 or more prizes. ` : 'Every Pokemon gives up one prize. ') : '') + one(of('prize')) },
+    { k: 'Setup speed', w: '20%', v: 10 * P.clock, t: clockTxt },
+  ];
+}
+function g67HowLine(R, synV, powV) {
+  const S = R.steps, used = S ? gR1(S.cohF * 10) : synV;
+  const raw = R.rawOverall != null ? R.rawOverall : R.overall;
+  if (S && Math.abs(used - synV) >= 0.1) return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down. How tightly the list fits counts in full on Synergy but only in part on the grade, so the grade uses ${used.toFixed(1)} for Synergy: ${used.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
+  return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${synV.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
+}
+function g67WhyHtml(R, synV, powV) {
+  const fmt = d => Math.abs(d) < 0.05 ? '0' : (d > 0 ? '+' : '−') + Math.abs(d).toFixed(1);
+  const syn = g67SynWhy(R), pow = g67PowWhy(R);
+  let h = '';
+  if (syn.length) h += `<details class="g29-fold g67-why"><summary>Why Synergy is ${synV.toFixed(1)}</summary>
+    <p>Synergy starts at 10. These took it to ${synV.toFixed(1)}.</p>
+    <ul>${syn.map(x => `<li><b class="${x.d <= -0.05 ? 'dn' : x.d >= 0.05 ? 'up' : ''}">${fmt(x.d)}</b><span>${esc(x.t)}</span></li>`).join('')}</ul></details>`;
+  if (pow.length) h += `<details class="g29-fold g67-why"><summary>Why Power is ${powV.toFixed(1)}</summary>
+    <p>Power is damage (half), the prize trade (30%) and setup speed (20%), each out of 10.</p>
+    <ul>${pow.map(x => `<li><b>${x.v.toFixed(1)}</b><span><strong>${x.k}</strong> (${x.w}). ${esc(x.t)}</span></li>`).join('')}</ul></details>`;
+  return h;
+}
+
 function g29Item(f, cls) {
   const tag = cls === 'crit' ? '<span class="g29-tag crit">Stops the deck</span>' : cls === 'warn' ? '<span class="g29-tag warn">Worth fixing</span>' : '';
   return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag}</div><p>${esc(f.d)}</p></div>`;
@@ -14314,7 +14395,8 @@ renderGrade = function () {
       ${part('Synergy', synV, 'Do the cards work together')}
       ${part('Power', powV, 'Can it win a game')}
     </div>
-    <div class="g29-how">The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down.${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
+    <div class="g29-how">${g67HowLine(R, synV, powV)}${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
+    ${g67WhyHtml(R, synV, powV)}
     <div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div>
   </div>`;
 
