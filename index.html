@@ -2045,6 +2045,19 @@
   .g67-why li b { flex:0 0 3.2rem; font-family:var(--mono); font-weight:600; color:var(--text); text-align:right; }
   .g67-why li b.dn { color:var(--danger); } .g67-why li b.up { color:var(--success); }
   .g67-why p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; margin:0 0 0.4rem; }
+  .t68-row { padding:0.6rem 0; border-top:1px solid var(--line, rgba(255,255,255,0.08)); }
+  .t68-row:first-of-type { border-top:0; }
+  .t68-h { display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap; }
+  .t68-n { font-weight:700; color:var(--text); font-size:var(--fs-sm); }
+  .t68-k { font-size:0.6875rem; color:var(--text-3, var(--text-2)); }
+  .t68-tag { margin-left:auto; padding:0.05rem 0.5rem; border-radius:999px; font-size:0.6875rem; font-weight:700; white-space:nowrap; }
+  .t68-tag.key { color:var(--success); background:color-mix(in srgb, var(--success) 14%, transparent); }
+  .t68-tag.good { color:var(--water); background:color-mix(in srgb, var(--water) 14%, transparent); }
+  .t68-tag.weak { color:var(--text-2); background:color-mix(in srgb, var(--electric) 18%, transparent); }
+  .t68-tag.dead { color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); }
+  .t68-row p { margin:0.2rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .t68-row p.t68-swap { color:var(--text); }
+  .t68-row.ace .t68-k { color:var(--gold-dim, var(--electric)); font-weight:700; }
   .g29-tag { display:inline-block; margin-left:0.45rem; padding:0.05rem 0.45rem; border-radius:999px; font-size:0.6875rem; font-weight:700; vertical-align:2px; white-space:nowrap; }
   .g29-tag.crit { color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); }
   .g29-tag.warn { color:var(--text-2); background:color-mix(in srgb, var(--electric) 18%, transparent); }
@@ -6900,7 +6913,11 @@ function gTrainers(entries, coh, via, main) {
   if (aceN > 1) ace = { link: `ACE SPEC: ${aceN} cards`, p: `The list runs ${aces.map(e => `${e.qty > 1 ? e.qty + ' ' : ''}${gCap(e.name)}`).join(' and ')}. A deck can hold only one ACE SPEC card, so cut down to one before you play it.`, fit: 'over' };
 
   const score = gClamp(1 - cut.reduce((a, x) => a + x, 0), 0, 1);
-  return { score, flaws, ace, dead: dead.map(d => d.e.name), counts: { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN } };
+  const counts = { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN };
+  // v68: a fit label for each card. Explain only: nothing here changes score.
+  let fit = [];
+  try { fit = gtFit(entries, coh, via, main, { dead: dead.map(d => d.e.name), counts }); } catch (_) {}
+  return { score, flaws, ace, dead: dead.map(d => d.e.name), counts, fit };
 }
 
 /** An ACE SPEC from the table that covers one of the list's gaps and works with the list. */
@@ -6914,6 +6931,126 @@ function gtAceFor(entries, coh, gap, except) {
     return { name, role: g.role, why: g.say };
   }
   return null;
+}
+
+/**
+ * v68: a fit label for each Trainer and Special Energy, explain only (it does not move a grade).
+ *   Does nothing: the list runs nothing the card needs.
+ *   Key: does a core job (draw, finding Pokemon, pulling up a Benched Pokemon, evolving, Energy)
+ *        and is the list's main card for it, or Rare Candy into a Stage 2 line.
+ *   Weak: every job it does is already covered by more cards than most winning lists run.
+ *   Good: anything else that works.
+ * Weak and Does nothing cards get a swap idea: what the list is thinnest on, from a card it already
+ * runs or a staple that works with it. The counts that set "thin" and "crowded" are what the
+ * 128 top lists run (Nov 2026): most run 2 or more ways to pull up a Benched Pokemon, 7 or more
+ * ways to find Pokemon in a deck that evolves, 8 or more draw cards and 1 or more recovery cards,
+ * and few run more than 4 switch cards or 3 recovery cards.
+ */
+const GT_POOL = {
+  "Boss's Orders": ['supporter', "Switch in 1 of your opponent's Benched Pokémon to the Active Spot."],
+  "Lillie's Determination": ['supporter', 'Shuffle your hand into your deck. Then, draw 6 cards. If you have exactly 6 Prize cards remaining, draw 8 cards instead.'],
+  'Ultra Ball': ['item', 'You can use this card only if you discard 2 other cards from your hand. Search your deck for a Pokémon, reveal it, and put it into your hand. Then, shuffle your deck.'],
+  'Poké Pad': ['item', "Search your deck for a Pokémon that doesn't have a Rule Box, reveal it, and put it into your hand. Then, shuffle your deck."],
+  'Night Stretcher': ['item', 'Put a Pokémon or a Basic Energy card from your discard pile into your hand.'],
+  'Switch': ['item', 'Switch your Active Pokémon with 1 of your Benched Pokémon.'],
+};
+const GT_CORE = ['gust', 'draw', 'search', 'evolve', 'energy'];
+// Copies of a job past which another card doing it adds little.
+// Healing, blocking damage and staying alive are left out: a wall deck runs many on purpose.
+const GT_CROWD = { switch: 5, gust: 5, recovery: 4, disrupt: 6, discard: 3, bench: 6 };
+const GT_LABEL = { key: 'Key', good: 'Good', weak: 'Weak', dead: 'Does nothing' };
+
+function gtFit(entries, coh, via, main, ctx) {
+  const cards = entries.filter(e => e.card);
+  const isSpE = c => c.t === 'energy' && (c.sub || []).map(x => String(x).toLowerCase()).includes('special');
+  const pool = cards.filter(e => (e.card.t === 'trainer' || isSpE(e.card)));
+  if (!pool.length) return [];
+  const text = c => c.t === 'energy' ? (c.et || '') : (c.rt || '');
+  const kind = c => c.t === 'energy' ? 'energy' : c.tt;
+  // Moving Energy between your Pokemon (Energy Switch) counts as Energy help here; the grade's own roles stay as they are.
+  const roleOf = new Map(pool.map(e => { const r = new Set(gtRoles(text(e.card), kind(e.card)));
+    if (/move (?:a|an|\d+|any amount of|up to \d+) [^.]{0,40}energy from/.test(gtNorm(text(e.card)))) r.add('energy');
+    return [e.card.key, r]; }));
+  // One row per card name, however many printings the list names.
+  const one = new Map(); pool.forEach(e => { const o = one.get(e.card.key); if (o) o.qty += e.qty; else one.set(e.card.key, { name: e.name, qty: e.qty, card: e.card }); });
+  // Pokemon search counts cards that search for Pokemon, Trainers or Abilities alike, as the grade does.
+  const has = (c, p) => (c.provides || []).includes(p);
+  const copies = {};
+  pool.forEach(e => { if (e.card.ace) return; roleOf.get(e.card.key).forEach(r => { copies[r] = (copies[r] || 0) + e.qty; }); });
+  const P = cards.filter(e => e.card.t === 'pkmn');
+  const st2 = P.filter(e => e.card.stage === 'stage2');
+  const mainSt2 = main && st2.find(e => e.card.key === main.key);
+  const s2 = mainSt2 || st2.sort((a, b) => b.qty - a.qty)[0];
+  const nm = gCap, up = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
+  const deadSet = new Set(ctx.dead || []);
+  const out = [];
+  one.forEach(e => {
+    const c = e.card, roles = roleOf.get(c.key), tx = text(c);
+    if (c.ace) return;   // the ACE SPEC has its own line
+    const row = { name: nm(e.name), qty: e.qty, kind: c.t === 'energy' ? 'Special Energy' : gCap(c.tt || 'item'), roles: [...roles] };
+    if (deadSet.has(e.name)) {
+      const miss = gtUnmet(entries, coh, tx);
+      row.fit = 'dead';
+      row.why = `Needs ${[...new Set(miss.map(gtSay))].join(' or ')}, and the list runs none.`;
+    } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx))) {
+      row.fit = 'key';
+      const s1 = P.find(x => x.card.key === s2.card.from);
+      row.why = `Skips ${s1 ? nm(s1.name) : 'the Stage 1'} to get ${nm(s2.name)} out a turn sooner.`;
+    } else {
+      const core = [...roles].filter(r => GT_CORE.includes(r));
+      const lead = core.find(r => { const n = copies[r] || 0;
+        const most = Math.max(...[...one.values()].filter(x => !x.card.ace && roleOf.get(x.card.key).has(r)).map(x => x.qty));
+        return n && (e.qty === most) && (e.qty >= 2 || n === e.qty) && e.qty / n >= 0.3; });
+      const crowded = roles.size && [...roles].every(r => GT_CROWD[r] && (copies[r] || 0) - e.qty >= GT_CROWD[r]);
+      if (lead) {
+        row.fit = 'key';
+        const n = copies[lead];
+        row.why = lead === 'gust' && n === e.qty ? `Your only card that pulls up a Benched Pokemon, which is how you take the prizes you choose.`
+          : lead === 'energy' && main ? `${up(GT_ROLE_SAY.energy)} for ${nm(main.name)}${n > e.qty ? `, ${e.qty} of the ${n} cards that do` : ''}.`
+          : `${up(GT_ROLE_SAY[lead])}: ${n === e.qty ? `your only ${c.t === 'energy' ? 'card' : 'Trainer'} that does` : `${e.qty} of the ${n} cards that do`}.`;
+      } else if (crowded) {
+        row.fit = 'weak';
+        const r = [...roles][0];
+        row.why = `${up(GT_ROLE_SAY[r])}, but ${copies[r] - e.qty} other cards in the list already do that, more than most winning lists run, so this one adds little.`;
+      } else {
+        row.fit = 'good';
+        const r = [...roles][0];
+        row.why = r ? `${up(GT_ROLE_SAY[r])}${roles.size > 1 ? ` and ${GT_ROLE_SAY[[...roles][1]]}` : ''}${(copies[r] || 0) > e.qty ? `, one of ${copies[r]} cards that do` : ''}.` : c.tt === 'stadium' ? 'Works with this list, and playing it removes the Stadium your opponent has in play.' : 'Works with this list.';
+      }
+    }
+    out.push(row);
+  });
+  // Swap ideas for Weak and Does nothing: the job the list is thinnest on.
+  const k = ctx.counts || {}, evo = P.some(e => e.card.stage === 'stage1' || e.card.stage === 'stage2');
+  const thin = [];
+  if (!via.ctl && (k.gustQ || 0) < 2) thin.push({ role: 'gust', v: 2 - (k.gustQ || 0), say: (k.gustQ ? `only ${k.gustQ} card pulls` : 'nothing pulls') + ' up a Benched Pokemon' });
+  if (evo && (k.find || 0) < 7) thin.push({ role: 'search', v: (7 - (k.find || 0)) / 3.5, say: k.find ? `only ${k.find} cards find Pokemon` : 'nothing in the list finds Pokemon' });
+  if (!via.ctl && (k.drawQ || 0) + (k.abilQ || 0) < 8) thin.push({ role: 'draw', v: (8 - (k.drawQ || 0) - (k.abilQ || 0)) / 4, say: (k.drawQ || 0) + (k.abilQ || 0) ? `only ${(k.drawQ || 0) + (k.abilQ || 0)} cards draw` : 'nothing in the list draws cards' });
+  if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing gets cards back from your discard pile' });
+  thin.sort((a, b) => b.v - a.v);
+  const inList = new Set(cards.map(e => e.card.key));
+  // Each card to swap takes the next job the list is short on, so the ideas do not all name one card.
+  const swapFor = (self, start) => {
+    for (let i = 0; i < thin.length; i++) { const g = thin[(start + i) % thin.length];
+      // One more of a card the list already runs for that job, if there is room.
+      const own = [...one.values()].filter(x => !x.card.ace && x.card.key !== self && x.qty < 4 && roleOf.get(x.card.key).has(g.role) && !gtUnmet(entries, coh, text(x.card)).length)
+        .sort((a, b) => b.qty - a.qty)[0];
+      if (own) return { name: nm(own.name), more: true, why: g.say };
+      for (const [name, [kd, tx]] of Object.entries(GT_POOL)) {
+        if (inList.has(name.toLowerCase())) continue;
+        if (!gtRoles(tx, kd).has(g.role) || gtUnmet(entries, coh, tx).length) continue;
+        // Poke Pad finds only Pokemon with no Rule Box.
+        if (/rule box/.test(gtNorm(tx)) && !P.some(x => !x.card.isEx && !(x.card.p >= 2))) continue;
+        return { name, more: false, why: g.say };
+      }
+    }
+    return null;
+  };
+  let n = 0;
+  out.forEach(r => { if (r.fit === 'weak' || r.fit === 'dead') { const s = thin.length ? swapFor(r.name.toLowerCase(), n++) : null; if (s) r.swap = s; } });
+  const order = { key: 0, good: 1, weak: 2, dead: 3 };
+  out.sort((a, b) => order[a.fit] - order[b.fit] || b.qty - a.qty);
+  return out;
 }
 
 /**
@@ -15166,6 +15303,28 @@ function g67WhyHtml(R, synV, powV) {
   return h;
 }
 
+// v68: how each Trainer and Special Energy fits the list. Explains Synergy; it does not change the grade.
+function t68Html(R) {
+  const tr = R && R.coh && R.coh.trainers;
+  if (!tr || (!(tr.fit || []).length && !tr.ace)) return '';
+  const tag = f => f ? `<span class="t68-tag ${f}">${GT_LABEL[f]}</span>` : '';
+  const swap = s => s ? `<p class="t68-swap">Swap idea: ${s.more ? 'one more ' : ''}${esc(s.name)}, since ${esc(s.why)}.</p>` : '';
+  const rows = [];
+  if (tr.ace) {
+    const a = tr.ace, f = { covers: 'key', fine: 'good', weak: 'weak', dead: 'dead' }[a.fit] || null;
+    const nm = String(a.link || '').replace(/^ACE SPEC: /, '');
+    rows.push(`<div class="t68-row ace"><div class="t68-h"><span class="t68-n">${esc(nm)}</span><span class="t68-k">ACE SPEC</span>${tag(f)}</div>
+      <p>${esc(a.p)}</p></div>`);
+  }
+  (tr.fit || []).forEach(r => rows.push(`<div class="t68-row"><div class="t68-h"><span class="t68-n">${r.qty} ${esc(r.name)}</span><span class="t68-k">${esc(r.kind)}</span>${tag(r.fit)}</div>
+    <p>${esc(r.why)}</p>${swap(r.swap)}</div>`));
+  const cnt = k => (tr.fit || []).filter(r => r.fit === k).length;
+  const low = cnt('weak') + cnt('dead');
+  return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></summary>
+    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here, with a swap idea for each.` : 'Every card here works with the list.'} This explains Synergy and does not change the grade.</div>
+    ${rows.join('')}</details>`;
+}
+
 function g29Item(f, cls) {
   const tag = cls === 'crit' ? '<span class="g29-tag crit">Stops the deck</span>' : cls === 'warn' ? '<span class="g29-tag warn">Worth fixing</span>' : '';
   return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag}</div><p>${esc(f.d)}</p></div>`;
@@ -15263,6 +15422,8 @@ renderGrade = function () {
   if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn"><summary><span class="g-sec-t">How it plays</span><span class="g29-n">${plays.length}</span></summary>
     <div class="g-sec-i">${(R.plan || []).length ? 'The main attacker and the combos' : 'Combos'} the grader found between your own cards. This is what the deck is trying to do.</div>
     ${plays.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`).join('')}</details>`;
+
+  h += t68Html(R);
 
   h += `<details class="g-sec g29-fold" id="g29-about"><summary><span class="g-sec-t">How the grade works</span></summary>
     <div class="g29-scale">
