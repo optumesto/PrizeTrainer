@@ -17649,12 +17649,15 @@ function hx67Open(i) {
     return r;
   };
 })();
-// The saved line under the notes stays until the next keystroke, so it is
-// there when you look up from typing.
+// The saved line sits right under the note you are typing in, and stays until
+// the next keystroke, so it is there when you look up from typing.
 f40Saved = function (root) {
   if (!root) return;
   let s = root.querySelector('.f40-saved');
-  if (!s) { s = document.createElement('div'); s.className = 'f40-saved'; s.setAttribute('role', 'status'); root.appendChild(s); }
+  if (!s) { s = document.createElement('div'); s.className = 'f40-saved'; s.setAttribute('role', 'status'); }
+  const a = document.activeElement;
+  if (a && a.tagName === 'TEXTAREA' && root.contains(a)) a.insertAdjacentElement('afterend', s);
+  else if (s.parentNode !== root) root.appendChild(s);
   s.textContent = 'Notes saved';
   if (!root._f67) { root._f67 = 1; root.addEventListener('input', () => { const z = root.querySelector('.f40-saved'); if (z) z.textContent = ''; }); }
 };
