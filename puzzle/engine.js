@@ -267,15 +267,15 @@ function needWhy(s, need, selfUid) {
     return (m[3] ? n <= k : n === k) ? '' : `Needs you at ${k} Prize card${k !== 1 ? 's' : ''}${m[3] ? ' or fewer' : ''}.`; }
   if (/^you have more prize cards remaining than your opponent$/.test(need)) return P.prizes.length > O.prizes.length ? '' : 'Needs you behind on Prizes.';
   if (/^you have any tera pokemon in play$/.test(need)) return mons(P).some(z => T.gfSubs(topOf(z)).includes('tera')) ? '' : 'Needs a Tera Pokémon in play.';
-  if ((m = need.match(/^your active pokemon has (\d+) or more energy attached(?: to it)?$/))) return P.active && P.active.energy.length >= +m[1] ? '' : `Needs ${m[1]} or more Energy on your Active Pokémon.`;
+  if ((m = need.match(/^your active pokemon has (\d+) or more energy attached(?: to it)?$/))) return P.active && P.active.energy.length >= +m[1] ? '' : `Needs ${m[1]} or more Energy on your Active Pokémon${P.active ? ', which has ' + P.active.energy.length : ''}.`;
   if (/^your active pokemon has (?:any )?energy attached(?: to it)?$/.test(need)) return P.active && P.active.energy.length ? '' : 'Needs Energy on your Active Pokémon.';
   if (/^(?:there is a|a) stadium (?:is )?in play$/.test(need)) return s.stadium ? '' : 'Needs a Stadium in play.';
-  if ((m = need.match(/^you have (\d+) or more cards in your discard pile$/))) return P.discard.length >= +m[1] ? '' : `Needs ${m[1]} or more cards in your discard pile.`;
+  if ((m = need.match(/^you have (\d+) or more cards in your discard pile$/))) return P.discard.length >= +m[1] ? '' : `Needs ${m[1]} or more cards in your discard pile, and you have ${P.discard.length}.`;
   if ((m = need.match(/^you have (\d+) or fewer cards in your hand(?:, not counting this card| other than this card)?$/))) return P.hand.length - 1 <= +m[1] ? '' : `Needs ${m[1]} or fewer other cards in your hand.`;
   if ((m = need.match(/^you have (\d+) or more cards in your hand(?:, not counting this card| other than this card)?$/))) return P.hand.length - 1 >= +m[1] ? '' : `Needs ${m[1]} or more other cards in your hand.`;
   if ((m = need.match(/^you have (?:any |a |an )?(.+?) pokemon in play$/))) { const w = m[1].replace(/^any /, '');
     return mons(P).some(z => { const t = topOf(z); return T.gfKey(t).includes(w) || T.gfSubs(t).includes(w) || T.gfTypes(t).includes(w); }) ? '' : 'Needs ' + w + ' Pokémon in play.'; }
-  if ((m = need.match(/^your bench has (\d+) or more pokemon$|^you have (\d+) or more benched pokemon$/))) return P.bench.length >= +(m[1] || m[2]) ? '' : 'Needs more Benched Pokémon.';
+  if ((m = need.match(/^your bench has (\d+) or more pokemon$|^you have (\d+) or more benched pokemon$/))) { const k = +(m[1] || m[2]); return P.bench.length >= k ? '' : `Needs ${k} or more Benched Pokémon.`; }
   return '?';
 }
 /** Targets a Trainer's effect needs on the board (port of Goldfish's gfTargetWhy, plus gusts). */
@@ -302,7 +302,7 @@ function abilWhy(s, m, A, handRef) {
   if (m) { const off = abilOff(s, m, s.cur); if (off) return off; }
   if (A.koLast && !P.koLastTurn) return 'None of your Pokémon were Knocked Out last turn.';
   if (A.first && s.turn !== 1) return 'Only during your first turn.';
-  if (A.when === 'bench' && !(m && m.trig && m.benchTurn === s.turn)) return 'Only right after you play it onto your Bench.';
+  if (A.when === 'bench' && !(m && m.trig && m.benchTurn === s.turn)) return 'Only right after you play it from your hand onto your Bench.';
   if (A.when === 'evolve' && !(m && m.trig && m.evoTurnHand === s.turn)) return 'Only right after you evolve into it from your hand.';
   if (A.active && m && P.active !== m) return 'Only while it is in the Active Spot.';
   if (A.benchOnly && m && P.active === m) return 'Only while it is on your Bench.';
@@ -853,7 +853,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : ''].join('#');
 }
 
-const api = { HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
+const api = { needWhy, targetWhy, abilWhy, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
