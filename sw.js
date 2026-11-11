@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v66';
+const CACHE_NAME = 'prize-trainer-v67';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 

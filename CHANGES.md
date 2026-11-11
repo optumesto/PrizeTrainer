@@ -2,7 +2,36 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: RdyDeck 2.1.1 (build 66): Rare Candy needs the Basic (branch candy-basic)
+# Not released yet: RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, and audit fixes (branch grade-why)
+
+Changed files: index.html, sw.js (cache prize-trainer-v67), CHANGES.md, deck-grader.html, opening-odds.html, plus the audit fixes' files (404.html, offline.html, manifest.json, guide pages, sitemap.xml, update-sitemap.mjs, README.md, .github/workflows/refresh-data.yml).
+
+Grade
+- Synergy and Power each show why: the parts that make up the number and what moved it, so a 5.3 or an 8.6 can be read line by line.
+- Card text that writes Energy as symbols (TCGdex uses {D} for Darkness and so on) is spelled out before grading. Before, the live app missed text like Munkidori's Adrena-Brain, which needs Darkness Energy, and flagged those Energy as doing nothing. Saved decks are read again once.
+- Energy that a Supporter or Item needs (Crispin, an Energy search) counts as used, so a mixed Energy line that feeds a Trainer is not flagged.
+- A multi-prize Pokemon kept for an Ability that draws, searches or speeds up Energy (Mega Kangaskhan ex in Slowking) is treated as an engine: one note on moving it out before it is Knocked Out, and a small prize cost, instead of a fix.
+- The grade explanation says how the math works: Synergy times Power divided by 10, with the fit part of Synergy pulling the grade down only when the list is loose.
+- A card named without a set that turns out not to be legal now caps the grade at 4.9 once the legality check has run, like any other card.
+- One Rare Candy counts as half a way into a Stage 2, not none.
+- Checked on the 128 top lists: Slowking lists go from 8.3 to 8.6.
+
+Hand and Goldfish
+- Cards can only be played the way their text allows: an attack or Tool that needs Energy says so, Jumbo Ice Cream needs its 3 Energy, and cards no longer go straight to the discard.
+- Copies with the same name are numbered and show their Energy, Tool and the turn they came into play.
+- In the Hand tab's Turn 1 line, a Basic can be tapped to set it up as Active or on the Bench.
+- The odds tiles say which hands they cover: any opening hand, or this one.
+
+Decks
+- The Cards tab has an Edit list button.
+- Each deck's menu on home has Move to the top, Move up, Move down and Move to the bottom. The order is kept on this device.
+- With more than 8 decks, home shows the first 8 with Show all, plus a Find a deck box and a sort (Your order, Best grade, Name).
+
+Audit fixes (branch audit-fixes)
+- Prizes per game in the tournament log, tappable session history, long card names fit their guess chip, time per guess stays on its row, the prize result badge no longer covers HP, Notes saved shows under the note being typed.
+- Service worker, guide pages, 404 and offline pages, sitemap script and small hardening.
+
+# RdyDeck 2.1.1 (build 66): Rare Candy needs the Basic (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v66), CHANGES.md.
 
