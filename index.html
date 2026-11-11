@@ -6230,7 +6230,7 @@ function gViability(deck, coh, main) {
     const cand=coh.provided['evolution_access']||0;
     const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
       while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
-        if (!m) { if (c2.stage==='stage2') { q=Math.min(q,Math.floor(cand/2));
+        if (!m) { if (c2.stage==='stage2') { q=Math.min(q,cand/2); // v67: 1 Rare Candy is half a line here, not none, so Power agrees with Synergy that it can be played
             if (c2.base) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(c2.base)).reduce((n,x)=>n+x.qty,0)); } break; }
         q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
       return q; };
@@ -14164,10 +14164,10 @@ function r29Rows(deck) {
     // from another printing, or a reprint check that has not run yet is unknown.
     if (r29Safe(best) && !(r.other && r.pkmn && !r.reprint)) r.st = 'safe';
     else if (r29Rotates(best)) r.st = 'risk';
-    // v67: a set-coded card whose own mark is below the legal line is not legal now. A reprint check
-    // that finds a legal printing clears it; until then (or offline) it counts, so the grade is capped.
-    // A name-only card counts once the check has looked at every printing with that name.
-    else if (best && (!r.other || r.checked)) { r.st = 'out'; r.pend = !r.checked; }
+    // v67: a name-only card counts too, once the check has looked at every printing with that name.
+    // Before the check a card stays unconfirmed: lists name old printings of Trainers that were reprinted
+    // (Pokegear 3.0 SVI), so capping on the printed mark alone would hold legal decks at 4.9.
+    else if (best && r.checked) r.st = 'out';
     else r.st = 'unconf';
     rows.push(r);
   });
@@ -16599,7 +16599,7 @@ const G40_CAP = 4.9;
         R.coh.flaws.unshift({ sev: 'crit', t: `${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now`,
           d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade is held at ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
             (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') +
-            (rows.some(r => r.st === 'out' && r.pend) ? ' If a newer printing is legal, the reprint check clears it once you are online.' : '') });
+            '' });
       }
     } catch (_) {}
     return R;
