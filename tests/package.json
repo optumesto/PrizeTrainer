@@ -1,0 +1,8 @@
+{
+  "name": "rdydeck-tests",
+  "private": true,
+  "description": "Checks for RdyDeck. See tests/grade-check.mjs.",
+  "type": "module",
+  "scripts": { "grade-check": "node grade-check.mjs" },
+  "devDependencies": { "jsdom": "24.1.3" }
+}

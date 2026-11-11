@@ -30,6 +30,12 @@ PrizeTrainer/
   saira*.woff2                         the app's fonts (4 files)
   icon*.png, icon.svg, apple-touch-icon.png, og-image.png   icons and the share image
   .nojekyll                            tells GitHub Pages to serve files as they are
+  .github/workflows/grade-check.yml    grades the 128 top lists on every push and fails if any grade moved
+  tests/grade-check.mjs                the grade check itself (see "Grade check" below)
+  tests/grade-lists.json               the 128 top 16 lists it grades
+  tests/grade-cards.json.gz            the card data it reads, saved so every run reads the same cards
+  tests/grade-baseline.json            the grades each list should get
+  tests/package.json, package-lock.json   jsdom, which the check needs to run the app outside a browser
   CHANGES.md, README.md, LICENSE
 ```
 
@@ -84,6 +90,19 @@ Wait 1 to 3 minutes after the commit, then:
 - Open https://rdydeck.com/sw.js and look for the newest `prize-trainer-v` number.
 - Open the app, then **Help**. It should show the newest version number.
 - On a phone where the app is installed, close it fully and open it twice. The first open fetches the new version; the second shows it.
+
+## Grade check
+
+Before a release, the Grade check on the Actions tab must be green. It runs on every push that changes `index.html` and grades the 128 top lists with that commit's code. If any grade, Synergy or Power moved from `tests/grade-baseline.json`, it fails and lists each move.
+
+- A move you meant (a grader fix): run `node tests/grade-check.mjs --update` and commit the new baseline with the fix, so the moves are on record.
+- A move you didn't mean: that's the bug the check is for.
+- To run it on a computer: `npm ci --prefix tests`, then `node tests/grade-check.mjs`. No network needed.
+- The card data is frozen in `tests/grade-cards.json.gz`, so a new set or an API change never moves a grade by itself. To read the cards again on purpose, delete that file and push; the next run reads the card APIs and commits new data and a new baseline.
+
+## Old address
+
+`optumesto.github.io/PrizeTrainer/` still serves the files, because the rdydeck.com Worker reads them from there. Visitors who land there are sent on to the same page on rdydeck.com: the guide pages, Terms, Privacy and the 404 page do it at once, and the app does it for anyone with nothing saved. A player with saved decks sees the "Move my decks" banner instead, so nothing is lost. Don't add a server redirect at GitHub Pages: rdydeck.com would loop.
 
 ## Rotation
 

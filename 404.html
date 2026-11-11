@@ -35,16 +35,11 @@
   </nav>
 </main>
 <script>
-// Links here start at the site root, which is right on rdydeck.com. On the
-// older GitHub Pages address the app lives one folder down, so add it there.
+// On the old GitHub Pages address, try the same path on rdydeck.com, which shows
+// its own page or its own "page not found".
 (function () {
-  var m = /^\/[^\/]+\//.exec(location.pathname);
-  if (!/\.github\.io$/.test(location.hostname) || !m) return;
-  var base = m[0];
-  document.querySelectorAll('[href^="/"], [src^="/"]').forEach(function (el) {
-    var k = el.hasAttribute('href') ? 'href' : 'src';
-    el.setAttribute(k, base + el.getAttribute(k).slice(1));
-  });
+  if (location.hostname !== 'optumesto.github.io') return;
+  location.replace('https://rdydeck.com/' + location.pathname.replace(/^\/PrizeTrainer\/?/i, '') + location.search + location.hash);
 })();
 </script>
 </body>

@@ -1,0 +1,60 @@
+# Grade check: grades the 128 top lists in tests/grade-lists.json with this
+# commit's index.html and fails if any grade moved from tests/grade-baseline.json.
+# Runs on every push that touches the app or the check, and from the Actions tab.
+#
+# The card data is saved in tests/grade-cards.json.gz so every run reads the same
+# cards. When that file is missing (the first run, or after deleting it on purpose
+# to read the cards again), this job reads the card APIs, writes the file and the
+# baseline, and commits both to the branch it ran on. It never commits otherwise.
+name: Grade check
+
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'tests/**'
+      - '.github/workflows/grade-check.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'tests/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write            # only used to save the card data on a first run
+
+concurrency:
+  group: grade-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  grades:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install jsdom
+        run: npm ci --prefix tests --no-audit --no-fund
+
+      - name: Read the card data (only when none is saved)
+        id: record
+        if: hashFiles('tests/grade-cards.json.gz') == '' && github.event_name != 'pull_request'
+        run: node tests/grade-check.mjs --record
+
+      - name: Save the card data and baseline
+        if: steps.record.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/grade-cards.json.gz tests/grade-baseline.json
+          git commit -m "Grade check: save the card data and baseline grades"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Check the grades
+        run: node tests/grade-check.mjs

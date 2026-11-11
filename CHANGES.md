@@ -4,7 +4,7 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # Not released yet: RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, and audit fixes (branch grade-why)
 
-Changed files: index.html, sw.js (cache prize-trainer-v67), CHANGES.md, deck-grader.html, opening-odds.html, plus the audit fixes' files (404.html, offline.html, manifest.json, guide pages, sitemap.xml, update-sitemap.mjs, README.md, .github/workflows/refresh-data.yml).
+Changed files: index.html, sw.js (cache prize-trainer-v67), CHANGES.md, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, terms.html, privacy.html, tests/ and .github/workflows/grade-check.yml, plus the audit fixes' files (404.html, offline.html, manifest.json, guide pages, sitemap.xml, update-sitemap.mjs, README.md, .github/workflows/refresh-data.yml).
 
 Grade
 - Synergy and Power each show why: the parts that make up the number and what moved it, so a 5.3 or an 8.6 can be read line by line.
@@ -34,6 +34,10 @@ Audit fixes (branch audit-fixes)
 - Offline: the service worker no longer keeps error pages, keeps the guide pages, icons and data files for offline use, and blocks one more ad host. The offline page has an Open RdyDeck button. The manifest has an id (same app identity as before).
 - Guide pages: register the service worker, link the manifest, and carry Twitter title and description tags. The 404 page's links also work on the GitHub Pages copy.
 - Scripts: the sitemap script fails loudly instead of writing a bad sitemap (sitemap dates refreshed), the data refresh job pulls before it pushes, the README points at the right script path, and the deck cover picker handles quotes in names.
+
+Release checks
+- A grade check on GitHub Actions grades the 128 top lists on every push and fails if any grade moves, with the card data frozen so only a code change can move one. Run it by hand with `node tests/grade-check.mjs`.
+- The old GitHub Pages address sends visitors to the same page on rdydeck.com (guide pages, Terms, Privacy and 404 at once; the app already did this for anyone with nothing saved). It keeps serving the files, since rdydeck.com reads them from there.
 
 # RdyDeck 2.1.1 (build 66): Rare Candy needs the Basic (11 Nov 2026)
 
