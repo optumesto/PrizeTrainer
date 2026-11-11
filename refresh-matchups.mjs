@@ -4,10 +4,16 @@
 //
 // What it reads, and how politely:
 // - Limitless play API (play.limitlesstcg.com/api), no key needed. The tournament list
-//   (up to 3 pages), then standings and pairings for each big event in the window.
-//   An event is read once and kept in .github/matchups-cache.json, so the next week
-//   only reads the events that are new. At most 12 new events a run: about 27 requests.
-//   Requests run one at a time with a pause, and a 429 answer stops the run.
+//   (newest first, until it reaches the start of the window), then standings and pairings
+//   for each big event in the window. An event is read once and kept in
+//   .github/matchups-cache.json, so the next week only reads the events that are new.
+//   At most 40 new events a run, so at most about 100 requests. Requests run one at a
+//   time with a pause, and a 429 answer stops the run.
+//
+// The window: the last SETS_BACK sets (two today), from the day the older of them came out,
+// so it rolls forward by itself when a new set comes out. A rotation inside the window
+// moves its start to the rotation day. PT_SINCE=YYYY-MM-DD sets the start by hand.
+// A run with PT_BACKFILL=1 reads up to 150 new events, to fill a wider window at once.
 //
 // How a match counts, the same way Limitless counts its own matchup tables:
 // - Both players must have a deck the event recorded. A win is a win, a tie is a match
@@ -34,10 +40,20 @@ const DATA = process.argv[4] || 'data.json';
 const UA = 'RdyDeck-data-refresh/1.0 (+https://rdydeck.com/)';
 const LIMITLESS = process.env.PT_LIMITLESS || 'https://play.limitlesstcg.com/api';
 const DAY = 86400000;
-const WINDOW_DAYS = 14;    // the same window as the meta in data.json
+const SETS_BACK = 2;       // the window covers this many of the newest sets
+// Sets that came out, oldest first. New ones are added from data.json's prerelease block
+// on their release day, so this list only seeds the cache.
+const KNOWN_SETS = [
+  { code: 'PBL', name: 'Pitch Black', release: '2026-07-17' },
+  { code: '30C', name: '30th Celebration', release: '2026-09-16' },
+  { code: 'DLR', name: 'Delta Reign', release: '2026-11-06' },
+];
+const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
-const MAX_EVENTS = 16;     // events used at once, biggest first
-const NEW_PER_RUN = 12;    // new events read per run
+const MAX_EVENTS = 400;    // events in the window looked at, biggest first
+const NEW_PER_RUN = BACKFILL ? 150 : 40;   // new events read per run
+const MAX_CALLS = BACKFILL ? 360 : 110;    // requests per run, all told
+const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
 const MAX_ROWS = 40;
 const COLS = 10;           // the most played decks, shown as opponents
@@ -47,7 +63,7 @@ const SIG_MAX = 10;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0;
 async function getJSON(url) {
-  if (calls++ > 40) throw new Error('request budget used up');
+  if (calls++ > MAX_CALLS) throw new Error('request budget used up');
   if (!process.env.PT_NO_PAUSE) await sleep(1500);
   const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
   if (r.status === 429) throw new Error('rate limited by ' + new URL(url).host + ', stopping for this week');
@@ -172,7 +188,7 @@ function digest(t, standings, pairings) {
 /** Big finished events in the window, biggest first. */
 async function eventList(since, now) {
   const out = [];
-  for (let page = 1; page <= 3; page++) {
+  for (let page = 1; page <= MAX_PAGES; page++) {
     const list = await getJSON(`${LIMITLESS}/tournaments?game=PTCG&format=STANDARD&limit=100&page=${page}`);
     if (!Array.isArray(list) || !list.length) break;
     let older = false;
@@ -188,7 +204,7 @@ async function eventList(since, now) {
 }
 
 /** Sum the window's events into the file the app reads. */
-function build(events, since, until) {
+function build(events, since, until, from) {
   const lists = {}, names = {}, mons = {}, vs = {}, tops = {}, fin = {}, field = {};
   let total = 0, matches = 0;
   for (const e of events) {
@@ -236,6 +252,8 @@ function build(events, since, until) {
     schema: 1,
     asOf: day(Date.now()),
     since: day(since), until: until ? day(until) : day(Date.now()),
+    // The oldest set in the window, so the app can say "since 30th Celebration".
+    window: from ? { sets: SETS_BACK, from: from.name, code: from.code } : null,
     note: 'Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out. place per source: [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%], finish 1 for first and 0 for last, sums in thousandths.',
     sources: [{
       id: 'online',
@@ -257,11 +275,22 @@ const cache = await readJSON(CACHE, { schema: 1, formatStart: null, events: [] }
 const old = await readJSON(OUT, null);
 const data = await readJSON(DATA, {});
 
-// A new set changes the format. Once its release day has passed, matches from before
-// it are left out. The day is kept here so it outlives the prerelease block in data.json.
-const rel = data && data.prerelease && /^\d{4}-\d{2}-\d{2}$/.test(String(data.prerelease.release)) ? data.prerelease.release : null;
-if (rel && Date.parse(rel) <= now && (!cache.formatStart || rel > cache.formatStart)) cache.formatStart = rel;
-const since = Math.max(now - WINDOW_DAYS * DAY, cache.formatStart ? Date.parse(cache.formatStart) : 0);
+// Every set that came out, kept here so it outlives the prerelease block in data.json.
+// Once a set's release day has passed it joins the list, and the window moves forward.
+const isDay = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || ''));
+const sets = new Map();
+for (const s of [...KNOWN_SETS, ...(Array.isArray(cache.sets) ? cache.sets : [])]) if (s && isDay(s.release)) sets.set(s.release, s);
+const pre = data && data.prerelease;
+if (pre && isDay(pre.release) && Date.parse(pre.release) <= now && !sets.has(pre.release))
+  sets.set(pre.release, { code: clean(pre.code, 8), name: clean(pre.set, 40), release: pre.release });
+cache.sets = [...sets.values()].filter(s => Date.parse(s.release) <= now).sort((a, b) => a.release.localeCompare(b.release));
+const fromSet = cache.sets[Math.max(0, cache.sets.length - SETS_BACK)] || null;
+cache.formatStart = cache.sets.length ? cache.sets[cache.sets.length - 1].release : cache.formatStart;
+// A rotation inside the window starts it again on the rotation day.
+const rot = Date.parse(data && data.rotation && data.rotation.last && data.rotation.last.live) || 0;
+let since = isDay(process.env.PT_SINCE) ? Date.parse(process.env.PT_SINCE) : fromSet ? Date.parse(fromSet.release) : now - 14 * DAY;
+const fromName = isDay(process.env.PT_SINCE) ? null : rot > since && rot <= now ? null : fromSet;
+since = Math.max(since, rot <= now ? rot : 0);
 
 const notes = [];
 let fresh = 0;
@@ -290,11 +319,12 @@ try {
   }
   if (again) notes.push(`placements: ${again} earlier events read again`);
   cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
-  notes.push(`events: ${fresh} new, ${cache.events.filter(e => !e.skip).length} in use`);
+  notes.push(`window: from ${day(since)}${fromName ? ' (' + fromName.name + ')' : ''}, ${list.length} big events listed`);
+  notes.push(`events: ${fresh} new, ${cache.events.filter(e => !e.skip).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);
 } catch (e) { notes.push('Limitless: ' + e.message + ', kept what was read'); }
 
 const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY);
-const next = build(use, since);
+const next = build(use, since, null, fromName);
 const ok = next.cols.length >= 3 && next.sources[0].matches >= 200;
 notes.push(ok ? `matchups: ${next.decks.length} decks, ${next.sources[0].matches} matches` : 'matchups: too little data, kept last copy');
 
