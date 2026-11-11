@@ -6170,9 +6170,16 @@ function gViability(deck, coh, main) {
     if (eff<FMT.ohkoTarget && strat!=='spread' && sideBig) { prizeScore=0.65;
       findings.push({sev:'warn', t:'A three-prize Pokemon in a one-prize deck',
       d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, half the game in one knockout, while ${gCap(mainC.name)} gives up one. Put ${bigLiabs.length>1?'them':'it'} in play only when you need ${bigLiabs.length>1?'them':'it'}.`}); }
-    else if (eff<FMT.ohkoTarget && strat!=='spread') { prizeScore=0.5;
+    else if (eff<FMT.ohkoTarget && strat!=='spread') {
+      // v64: no cliff at the one-shot line. A 3-prize attacker that hits for 300 (Mega Lucario ex with
+      // Premium Power Pro) already one-shots the format's smaller threats, so it loses less than one that
+      // hits for 200. The penalty fades as the hit nears a one-shot on the biggest threats.
+      const near=gClamp((eff-hi/2)/(FMT.ohkoTarget-hi/2),0,1);
+      prizeScore=0.5+(prizeScore-0.5)*near*near;
       findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
-      d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
+      d: eff>=lo
+        ? `${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}. Your best hit (${eff}) one-shots Pokemon with ${eff} HP or less, but the biggest threats take two hits, so those trades cost you more than they cost your opponent.`
+        : `${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
     else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
       d:`${list} ${bigLiabs.length>1?'are':'is'} risky at 3 prizes ${bigLiabs.length>1?'each':''}, yet you hit hard enough to justify the trade.`.replace(' ,', ',')}); }
   // v54: say it plainly when most or all of the Pokemon give up two prizes.
