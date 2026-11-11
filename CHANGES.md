@@ -2,9 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: Trainers, Special Energy and the ACE SPEC in the grade (branch grade-trainers)
+# RdyDeck 2.1 (build 65): Trainers, Special Energy and the ACE SPEC in the grade, a tighter Synergy and Power, delete deck in the deck menus, and Against the meta over two sets (11 Nov 2026)
 
-Changed files: index.html, CHANGES.md. Version and build number are set when this goes out in a batch.
+Changed files: index.html, sw.js (cache prize-trainer-v65), CHANGES.md, matchups.json, refresh-matchups.mjs, .github/workflows/refresh-data.yml, .github/matchups-cache.json.
+
+Decks
+- Delete deck is now the last row of the deck menu on home and of a new menu on the deck page header, next to Hide or Show, behind one confirm. It no longer sits at the bottom of Game modes.
+
+Against the meta
+- The matchup stats cover the last two sets, from the day the older one came out (now the 30th Celebration), and roll forward when a new set comes out. The page says which set the window starts at.
+- Every deck with 10 or more lists since the newest set keeps a row, and the opponents are the decks played most since that set came out.
+- The weekly job keeps events it already read when it has to stop, reads at a slower pace, and a manual backfill can read up to 150 events at once.
 
 Grade
 - Every Trainer and Special Energy is checked against the rest of the list, from its own card text. A card that needs something the list does not run (Glass Trumpet or Area Zero Underdepths with no Tera Pokemon, Hyper Aroma with no Stage 1, Team Rocket's Energy with no Team Rocket's Pokemon) shows under Fix first and lowers Synergy.
