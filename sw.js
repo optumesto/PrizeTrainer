@@ -14,7 +14,7 @@ const ART_HOSTS = ['digitaloceanspaces.com', 'pokemontcg.io', 'tcgdex.net'];
 
 // Ad networks: always straight from the network, never saved, so no ad or
 // ad script is ever shown or kept offline.
-const AD_HOSTS = ['googlesyndication.com', 'doubleclick.net', 'googleadservices.com', 'googletagservices.com', 'adtrafficquality.google', 'fundingchoicesmessages.google.com'];
+const AD_HOSTS = ['googlesyndication.com', 'doubleclick.net', 'googleadservices.com', 'googletagservices.com', 'adtrafficquality.google', 'tpc.goog', 'fundingchoicesmessages.google.com'];
 const isAdHost = h => AD_HOSTS.some(a => h === a || h.endsWith('.' + a));
 
 const CORE_ASSETS = [
@@ -31,7 +31,24 @@ const CORE_ASSETS = [
   './saira-condensed-600.woff2',
   './saira-condensed-700.woff2',
   './saira-condensed-800.woff2',
+  './icon-maskable-192x192.png',
+  './icon-maskable-512x512.png',
+  './apple-touch-icon.png',
+  './favicon.ico',
+  './data.json',
+  './matchups.json',
+  './deck-grader.html',
+  './opening-odds.html',
+  './prize-trainer.html',
+  './rotation.html',
 ];
+
+// Saved copies are kept under the address without its query, so links with
+// tracking or version tags (?utm_source=, ?src=play) never store extra copies.
+const bare = url => { const u = new URL(url); u.search = ''; u.hash = ''; return u.href; };
+// Addresses that are the app itself. Offline, these open the saved app;
+// any other page that was never saved opens offline.html instead.
+const isAppPath = url => { const p = new URL(url).pathname; return p.endsWith('/') || p.endsWith('/index.html'); };
 
 // On install: pre-cache the core shell, then skip waiting so the new SW
 // activates immediately rather than waiting for all tabs to close.
@@ -110,42 +127,51 @@ self.addEventListener('fetch', event => {
     // no answer, the saved copy opens and the fresh one is still saved for
     // next time. A slow phone signal right after a new version used to leave
     // the app loading for as long as the download took.
-    const saved = () => caches.match(req, { ignoreSearch: true })
-      .then(r => r || caches.match('./index.html'));
     const net = fetch(req, { cache: 'no-cache' })
       .then(resp => {
         // Keep only a good page, so an error page never replaces the saved app.
-        if (resp && resp.ok) {
+        if (resp && resp.ok && url.origin === self.location.origin) {
           const copy = resp.clone();
-          return caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {}).then(() => resp);
+          return caches.open(CACHE_NAME).then(c => c.put(bare(req.url), copy)).catch(() => {}).then(() => resp);
         }
         return resp;
       });
     event.waitUntil(net.catch(() => {}));
-    const late = new Promise(res => setTimeout(res, HTML_WAIT));
-    event.respondWith(
-      Promise.race([net.catch(() => null), late.then(() => null)])
-        .then(r => r || saved())
-        .then(r => r || net)
-        .catch(() => null)
-        .then(r => r || saved())
-        .then(r => r || caches.match('./offline.html'))
-    );
+    const late = new Promise(res => setTimeout(() => res(undefined), HTML_WAIT));
+    event.respondWith((async () => {
+      const quick = await Promise.race([net.catch(() => null), late]);
+      if (quick && quick.ok) return quick;
+      // Slow, offline or an error from the server: a good saved copy of this
+      // page wins over all three.
+      const exact = await caches.match(req, { ignoreSearch: true });
+      if (exact) return exact;
+      // Nothing saved for this page: wait for the network, and show its
+      // answer even when it is an error (a real 404 shows the 404 page).
+      const late2 = quick || await net.catch(() => null);
+      if (late2) return late2;
+      // Offline with nothing saved for this page.
+      if (isAppPath(req.url)) {
+        const shell = await caches.match('./index.html');
+        if (shell) return shell;
+      }
+      return (await caches.match('./offline.html')) || Response.error();
+    })());
     return;
   }
 
   // Cache-first for everything else
+  const same = url.origin === self.location.origin;
   event.respondWith(
-    caches.match(req).then(cached => {
+    caches.match(same ? bare(req.url) : req).then(cached => {
       if (cached) return cached;
       return fetch(req).then(resp => {
         // Only cache successful, same-origin responses
-        if (resp && resp.status === 200 && url.origin === self.location.origin) {
+        if (resp && resp.status === 200 && same) {
           const copy = resp.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
+          caches.open(CACHE_NAME).then(c => c.put(bare(req.url), copy)).catch(() => {});
         }
         return resp;
-      }).catch(() => cached);
+      }).catch(() => Response.error());
     })
   );
 });
@@ -170,6 +196,9 @@ async function cacheArt(url) {
   try { const r = await fetch(u.href, { mode: 'cors', credentials: 'omit' }); if (r.ok) resp = r; } catch (_) {}
   if (!resp) {
     try { resp = await fetch(u.href, { mode: 'no-cors', credentials: 'omit' }); } catch (_) { return; }
+    // An opaque answer hides its status, so it is only kept when it is a
+    // plain opaque response; anything else is a failure and is not saved.
+    if (!resp || resp.type !== 'opaque') return;
   }
   try { await cache.put(u.href, resp); } catch (_) { return; }
   const keys = await cache.keys();

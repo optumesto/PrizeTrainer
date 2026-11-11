@@ -56,7 +56,7 @@ In the repo, open each of these, tap the **...** menu at the top right of the fi
 3. Drag in everything from the unzipped folder, folders included: `index.html`, `sw.js`, `data.json`, `manifest.json`, `CHANGES.md`, `README.md`, `.nojekyll`, and the `icons`, `scripts` and `.github` folders. Files with the same name are replaced.
 4. **Commit changes.**
 
-Folders and files whose names start with a dot are hidden on most computers. On a Mac press Cmd + Shift + . in Finder to show them; on Windows turn on View, Hidden items. If `.github` still will not upload, make it by hand: **Add file**, **Create new file**, type `.github/workflows/refresh-data.yml` as the name (the slashes make the folders), paste in that file's contents, and commit. Do the same for `scripts/refresh-data.mjs` if it is missing, and for `.nojekyll` (an empty file is fine).
+Folders and files whose names start with a dot are hidden on most computers. On a Mac press Cmd + Shift + . in Finder to show them; on Windows turn on View, Hidden items. If `.github` still will not upload, make it by hand: **Add file**, **Create new file**, type `.github/workflows/refresh-data.yml` as the name (the slashes make the folders), paste in that file's contents, and commit. Do the same for `refresh-data.mjs` (at the top level, next to index.html) if it is missing, and for `.nojekyll` (an empty file is fine).
 
 ### 3. Check the names
 

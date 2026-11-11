@@ -34,5 +34,18 @@
     <a href="/rotation.html">Rotation</a>
   </nav>
 </main>
+<script>
+// Links here start at the site root, which is right on rdydeck.com. On the
+// older GitHub Pages address the app lives one folder down, so add it there.
+(function () {
+  var m = /^\/[^\/]+\//.exec(location.pathname);
+  if (!/\.github\.io$/.test(location.hostname) || !m) return;
+  var base = m[0];
+  document.querySelectorAll('[href^="/"], [src^="/"]').forEach(function (el) {
+    var k = el.hasAttribute('href') ? 'href' : 'src';
+    el.setAttribute(k, base + el.getAttribute(k).slice(1));
+  });
+})();
+</script>
 </body>
 </html>
