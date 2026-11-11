@@ -7365,9 +7365,9 @@ function renderOdds() {
       <div class="ov">${S.anyDrawT1?oPct(S.drawT1):'?'}</div>
       <div class="os">A draw card you can use, in your first ${SIM_SEEN_T1}</div></div>
     <div class="o-tile" style="--tone:${tAtk}">
-      <div class="ol">Attacker by T${AT ? AT.turn : 2}</div>
+      <div class="ol">Attacker by T${AT ? AT.turn : 2}, any hand</div>
       <div class="ov">${!AT?'?':S.anySearch?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(AT.raw)}</div>
-      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', raw draws to with search':', raw draws'):'No attacker line read'}</div></div>
+      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', any opening hand, raw draws to with search':', any opening hand, raw draws'):'No attacker line read'}</div></div>
   </div>
   <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
 
@@ -7824,7 +7824,7 @@ function renderHand() {
 
   h += `<div class="o-tiles">
     <div class="o-tile" style="--tone:${tone(pick.o.s2, 0.6, 0.4)}"><div class="ol">This hand by T2</div><div class="ov">${oPct(pick.o.s2)}</div><div class="os">${oPct(pick.o.r2)} on raw draws</div></div>
-    <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">This hand by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">With search, one more draw</div></div>
+    <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">This hand by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">This opening hand only, with search</div></div>
     <div class="o-tile" style="--tone:${toneBad(pick.o.lock, 0.02, 0.06)}"><div class="ol">Locked in prizes</div><div class="ov">${oPct(pick.o.lock)}</div><div class="os">A piece fully prized</div></div>
   </div>
   <div class="o-meta">${HAND_TRIALS.toLocaleString()} shuffles of the other ${rest.length} cards for each line. Same hand, same numbers.</div>`;
@@ -9854,7 +9854,7 @@ function gfSummary(deck) {
     h += `<div class="o-tiles">
       <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when : 'Not in play by turn 3'}</div></div>
       <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">Share of shuffles, not this game</div></div>
-      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">Share of shuffles, with search</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">This game's opening hand, with search</div></div>
     </div>`;
     const verdict = good ? `You had ${esc(main.name)} up by turn ${when}. From this opening hand, the odds count gets it there by turn ${tG} in ${oPct(tG === 3 ? o.s3 : o.s2)} of shuffles.${tG === 3 ? ' With no Rare Candy in the list, turn 3 is the earliest it can be in play.' : ''}`
       : when ? `${esc(main.name)} came up on turn ${when}. The odds count has it ready by turn 2 in ${oPct(o.s2)} of shuffles from this hand, so look back at your first two turns.`
