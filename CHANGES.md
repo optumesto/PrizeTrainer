@@ -14,6 +14,10 @@ Grade
 - An Ability that puts damage counters on the opponent after a cost, in a second sentence, is now read (Mega Greninja's Mortal Shuriken). Mega Greninja goes from 6.9 to 7.0.
 - Dipplin's Festival Lead lets it attack twice a turn while Festival Grounds is in play. The grade now counts both attacks when the list runs at least 2 Festival Grounds, and the plan says so. Damage boosts that last the turn or come from a Tool count on both attacks. Festival Lead goes from 8.0 to 9.3.
 - An Ability that searches for Energy and attaches it, with the attach in a later part of the sentence (Steven's Metagross ex's X-Boot), now counts as extra Energy. Steven's Metagross grades 9.2 as before.
+- A Pokemon whose own Ability adds damage with one type of Energy attached (Okidogi's Adrena-Power, 100 more with Darkness Energy) counts that boost when the list runs Energy that gives the type, Prism Energy included. Okidogi Barbaracle now names Okidogi as the main attacker, not Barbaracle (Barbaracle's Stone Arms attaches the Energy), and the plan says Okidogi hits for 170 with 100 more HP. Grade 8.1 as before.
+- Attacks that do more on the next turn (Metagross's Meteor Mash), only before you take a prize (Steelix's Welcoming Tail), on the turn it evolves (Magnezone's Upper Spark) or with enough Energy of a type in play (Raikou's Electro Fall) read those conditions too.
+- The main attacker's always-on Abilities now show in the plan, for example Iron Thorns ex's Initialization, which turns off the Abilities of every Pokemon with a Rule Box on both sides while it is Active.
+- "Your opponent can't play ACE SPEC cards" Abilities are read (Genesect's ACE Nullifier), with the Pokemon Tool it needs.
 - An Ability with a condition printed at its start shows that condition in the plan, for example Thwackey's Boom Boom Groove: "only if your Active Pokemon has the Festival Lead Ability".
 - Every other test list and built-in deck grades the same as 2.0, Mega Golisopod and Mega Starmie included. Saved decks re-read once (card data version 13).
 

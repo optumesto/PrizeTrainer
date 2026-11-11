@@ -3673,9 +3673,10 @@ function geEffects(text) {
   // What it needs first, and what it costs.
   if ((m = t0.match(/if you have (?:any )?([a-z' -]+?) in play/))) out.need = `needs ${geWhat(m[1])} in play`;
   else if ((m = t0.match(new RegExp('if this pokemon has any (' + GE_TY + ') energy attached')))) out.need = `needs ${geCap(m[1])} Energy attached to it`;
-  else if (/if this pokemon is in the active spot/.test(t0)) out.need = 'only while it is Active';
+  else if (/(?:if|as long as) this pokemon is in the active spot/.test(t0)) out.need = 'only while it is Active';
   else if (/if any of your pokemon were knocked out during your opponent's last turn/.test(t0)) out.need = 'only after one of your Pokemon was Knocked Out';
   else if (/^if this pokemon is knocked out/.test(t0)) out.need = 'only when it is Knocked Out';
+  else if (/^if this pokemon has a pokemon tool attached/.test(t0)) out.need = 'needs a Pokemon Tool attached to it';
   if ((m = t0.match(/discard (an?|\d+) ((?:basic )?(?:[a-z]+ )?(?:energy|cards?))(?: cards?)? from (your hand|this pokemon) in order to/)) ||
       (m = t0.match(/you must discard (an?|\d+) ((?:basic )?(?:[a-z]+ )?(?:energy|cards?))(?: cards?)? from (your hand|this pokemon)/)))
     out.cost = `discards ${geCnt(geNum(m[1]), geWhat(m[2]).replace(/^Cards?$/, 'card'), geWhat(m[2]).replace(/^Cards?$/, 'cards'))} from ${m[3] === 'this pokemon' ? 'itself' : 'your hand'}`;
@@ -3683,7 +3684,8 @@ function geEffects(text) {
   S.forEach(s => {
     const s0 = s;
     s = s.replace(/^(?:once during your (?:first )?turn|as often as you like during your turn|during your turn),?\s*/, '').replace(/^(?:(?:if|when|whenever|for each) [^,]+, (?:you may use this ability(?:, )?)?)+/, '').replace(/^(?:then,? |and )/, '').replace(/^you may /, '');
-    if (/^(?:your opponent|each player|they)\b/.test(s) && !/your opponent's (?:active|benched)/.test(s.slice(0, 40))) {
+    // v62: "your opponent can't play any ACE SPEC cards" is a lock, read below (Genesect's ACE Nullifier).
+    if (/^(?:your opponent|each player|they)\b/.test(s) && !/your opponent's (?:active|benched)/.test(s.slice(0, 40)) && !/can't play any (?:item|ace spec)/.test(s)) {
       if (/(?:shuffles?|discards?|reveals?|puts?) (?:their|his or her) hand|discards? (?:a |an |\d+ |up to \d+ )?cards? from (?:their|his or her) hand/.test(s)) { tags.add('hand_disruption'); say.push("disrupts your opponent's hand"); }
       return;
     }
@@ -3740,7 +3742,9 @@ function geEffects(text) {
     if (/^move (?:an?|any amount of|all|\d+) (?:basic )?(?:[a-z]+ )?energy from (?:1 of )?your benched pokemon to your active pokemon/.test(s)) { tags.add('energy_move'); say.push('moves Energy from your Bench to your Active Pokemon'); return; }
     // Damage boosts and locks.
     if ((m = s.match(/attacks used by your (.+?)(?:, except [^,]+,)? do (\d+) more damage/))) { tags.add('damage_boost'); say.push(`your ${geWhat(m[1])} do ${m[2]} more damage`); return; }
-    if (/ha(?:s|ve) no abilities/.test(s) && /opponent/.test(s)) { tags.add('ability_lock'); say.push("turns off your opponent's Abilities"); return; }
+    // v62: "both yours and your opponent's" sits in parentheses, which are dropped, so "in play" counts too (Iron Thorns ex's Initialization).
+    if (/ha(?:s|ve) no abilities/.test(s) && /opponent|in play/.test(s)) { tags.add('ability_lock');
+      say.push(/rule box/.test(s) ? 'turns off the Abilities of every Pokemon with a Rule Box on both sides' : /opponent/.test(s) ? "turns off your opponent's Abilities" : 'turns off Abilities for both players'); return; }
     if (/(?:opponent|they) can't play any (?:item|ace spec)/.test(s)) { tags.add('item_lock'); say.push(/ace spec/.test(s) ? 'stops your opponent playing ACE SPEC cards' : 'stops your opponent playing Items'); return; }
     if ((m = s.match(/discard (?:an?|\d+|all) energy from (?:your opponent's active pokemon|1 of your opponent's pokemon)/))) { tags.add('energy_denial'); say.push("discards Energy from your opponent's Pokemon"); return; }
     if ((m = s.match(/^heal (\d+|all) damage from (?:each of )?your pokemon|^heal (\d+|all) damage from 1 of your pokemon/))) { tags.add('heal'); return; }
@@ -4035,6 +4039,12 @@ function need62(text) {
   if ((m = t.match(/if you have (\d+) or more pokemon that have the ([a-z0-9' -]+?) ability in your discard pile/))) return { k: 'discab', n: +m[1], abil: m[2] };
   if (/if your opponent's active pokemon (?:already )?has (?:any )?damage counters on it/.test(t)) return { k: 'oppdmg' };
   if ((m = t.match(/if there are (\d+) or fewer cards in your deck/))) return { k: 'deck', n: +m[1] };
+  // v62: only before you take a prize (Steelix's Welcoming Tail), on the turn it evolves (Magnezone's Upper Spark),
+  // or with enough Energy of a type in play (Raikou's Electro Fall).
+  if (/if you have exactly 6 prize cards remaining/.test(t)) return { k: 'prize6' };
+  if (/^during your next turn, this pokemon's [^.]*? attack does \d+ more damage/.test(t)) return { k: 'next' };
+  if ((m = t.match(/if this pokemon evolved from ([a-z' -]+?) during this turn/))) return { k: 'evolved', from: m[1] };
+  if ((m = t.match(/if you have at least (\d+) ([a-z]+) energy in play/))) return { k: 'inplay', n: +m[1], type: m[2] };
   if ((m = t.match(/has at least (\d+) extra energy attached/))) return { k: 'xenergy', n: +m[1] };
   if (/if you have a stadium in play|if a stadium is in play/.test(t)) return { k: 'stadium' };
   if ((m = t.match(/if you have any (\w+) pokemon on your bench/))) return { k: 'btype', type: m[1] };
@@ -4351,6 +4361,8 @@ function enrichCard(apiCard, opts) {
     edouble: edouble53(x.text),
     cdmg: abDmg54(x.text),
     boost: aboost55(x.text),
+    // v62: its own attacks do more with one type of Energy attached (Okidogi's Adrena-Power).
+    sboost: (m => m ? { n: +m[2], type: m[1].toLowerCase(), hp: +((String(x.text || '').match(/gets \+(\d+) hp/i) || [])[1] || 0) || undefined } : undefined)(String(x.text || '').match(/if this pok[e\u00e9]mon has any (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy attached[^.]*?the attacks it uses do (\d+) more damage to your opponent's active/i)),
     gate: gate55(x.text),
     // v54: damage it prevents only from Pokemon ex (Crustle's Mysterious Rock Inn).
     pex: /prevent all damage done to this pok[e\u00e9]mon by attacks from your opponent's pok[e\u00e9]mon ex/i.test(x.text || '') || undefined,
@@ -5128,7 +5140,7 @@ function gAbilRead(c) {
       else if ((m = t.match(new RegExp("weakness of each of your opponent's (" + GF_TY + ") pokemon in play is now (" + GF_TY + ")")))) {
         tags.add('weak_' + m[2]); bits.push(`your opponent's ${gCap(m[1])} Pokemon become weak to ${gCap(m[2])}, so your ${gCap(m[2])} attackers do double damage to them`); }
       // v60: other always-on Abilities read sentence by sentence (Cynthia's Roserade's boost, Flutter Mane's lock).
-      if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (ge.say.length) bits.push(ge.say.join(', and ') + (ge.need === 'only while it is Active' ? ' while it is Active' : ge.need === 'only when it is Knocked Out' ? ' when it is Knocked Out' : '')); }
+      if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (ge.say.length) bits.push(ge.say.join(', and ') + (ge.need === 'only while it is Active' ? ' while it is Active' : ge.need === 'only when it is Knocked Out' ? ' when it is Knocked Out' : ge.need ? ` (${ge.need})` : '')); }
       else if (/active spot/.test(t) && !/while it is Active/.test(bits[0])) bits[0] += ' while it is Active';
       if (bits.length) say.push({ abil: A.name, p: bits.join(', and '), passive: true, x: m && m[1] ? { vs: m[1], ty: m[2] } : null });
       return;
@@ -5205,6 +5217,7 @@ function toGradeDeck(deck) {
       pex: (c.abilities||[]).filter(x => x.pex).map(x => x.name),
       aneed: (c.abilities||[]).filter(x => x.aneed).map(x => ({ abil: x.name, type: x.aneed })),
       abBoost: (c.abilities||[]).filter(x => x.boost).map(x => Object.assign({ abil: x.name }, x.boost)),
+      sboost: (x => x ? Object.assign({ abil: x.name }, x.sboost) : null)((c.abilities||[]).find(x => x.sboost)),
       gate: ((c.abilities||[]).filter(x => x.gate).map(x => Object.assign({ abil: x.name }, x.gate)))[0] || null,
       byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
     }};
@@ -5364,17 +5377,18 @@ function gNeedReach(a, deck) {
   // v62: moving counters onto the Active counts too (Munkidori's Adrena-Brain for Mega Golisopod's Finishing Blow).
   else if (n.k === 'oppdmg') { have = qty(c => (c.t === 'pkmn' && (c.abDmg || []).length) || ['spread_counters', 'move_counters'].some(x => (c.provides || []).includes(x))); met = have >= 1; }
   else if (n.k === 'energy') { const ty = /^(?:grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy|dragon)$/.test(n.what);
-    have = qty(c => c.t === 'energy' && (ty ? (c.etypes || [c.etype]).map(x => String(x || '').toLowerCase()).includes(n.what) : String(c.key || '').includes(n.what + ' energy'))); met = have >= 2; }
+    have = qty(c => c.t === 'energy' && (ty ? (c.etypes || [c.etype]).map(x => String(x || '').toLowerCase()).some(x => x === n.what || x === 'any') : String(c.key || '').includes(n.what + ' energy'))); met = have >= 2; }
   else if (n.k === 'supname') { have = qty(c => c.t === 'trainer' && (c.sub || []).includes('supporter') && String(c.key || '').includes(n.name.toLowerCase())); met = have >= 4; }
-  else if (n.k === 'discab') { have = qty(c => c.t === 'pkmn' && (c.abil || []).some(x => String(x).toLowerCase() === n.abil)); met = have >= n.n; }
-  else if (n.k === 'deck') met = false;
+  else if (n.k === 'discab') { have = qty(c => c.t === 'pkmn' && (c.abil || []).some(x => String(x).toLowerCase().replace(/[\u2018\u2019]/g, "'").replace(/\u00e9/g, 'e') === n.abil)); met = have >= n.n; }
+  else if (n.k === 'deck' || n.k === 'prize6') met = false;
+  else if (n.k === 'inplay') { have = qty(c => c.t === 'energy' && (c.etypes || [c.etype]).map(x => String(x || '').toLowerCase()).some(x => x === n.type || x === 'any')); met = have >= 2 * n.n; }
   else if (n.k === 'xenergy') { have = qty(c => (c.provides || []).includes('energy_accel')); met = have >= 3; }
   else if (n.k === 'stadium') { have = qty(c => c.t === 'trainer' && (c.sub || []).includes('stadium')); met = have >= 2; }
   else if (n.k === 'btype') { have = qty(c => c.t === 'pkmn' && (c.types || []).includes(n.type)); met = have >= 2; }
   else if (n.k === 'bnames') met = n.names.every(x => deck.some(e => e.card && e.card.key === x));
   const top = met ? full : base;
   // Damage on itself comes from taking a hit first, so the full hit is a later turn's.
-  return { now: n.k === 'selfdmg' || n.k === 'ko' ? base : top, top, cond: null, need: Object.assign({}, n, { have, met, full }) };
+  return { now: ['selfdmg', 'ko', 'next'].includes(n.k) ? base : top, top, cond: null, need: Object.assign({}, n, { have, met, full }) };
 }
 function gAtkReach(a, deck) {
   const now = a.early != null ? a.early : (a.dmg || 0);
@@ -5610,6 +5624,9 @@ function g35Boost(deck, atk) {
     const k = x.one ? 1 : Math.min(2, deck.filter(y => y.card && y.card.key === e.card.key).reduce((n, y) => n + y.qty, 0));
     if (!best.aboost || x.n * k > best.aboost.n)
       best.aboost = { n: x.n * k, cat: 'aboost', name: `${x.abil} from ${k > 1 ? k + ' ' : ''}${gCap(e.name).replace(/'S\b/g, "'s")}` }; }));
+  // v62: its own Ability adds damage with one type of Energy attached, when the list runs Energy that gives that type.
+  if (a.sboost && deck.some(e => e.card && e.card.t === 'energy' && (e.card.etypes || []).some(x => x === a.sboost.type || x === 'any')))
+    best.self = { n: a.sboost.n, cat: 'self', name: `its ${a.sboost.abil} with ${gCap(a.sboost.type)} Energy attached` };
   const list = Object.values(best);
   return { n: list.reduce((s, b) => s + b.n, 0), names: list.map(b => b.name),
     vsEx: list.some(b => b.vsEx), behind: list.some(b => b.behind), poison: list.some(b => b.poison), last: list.some(b => b.last),
@@ -5623,12 +5640,15 @@ function g62Need(r, name) {
     oppdmg: 'against an Active Pokemon that already has damage counters on it', deck: `once your deck is down to ${n.n} cards or fewer`,
     xenergy: `with ${n.n} extra Energy attached to it`, stadium: 'while you have a Stadium in play',
     btype: `with a ${gCap(n.type)} Pokemon on your Bench`, bnames: `with ${and(n.names || [])} on your Bench`,
-    ko: 'on the turn after one of your Pokemon was Knocked Out', energy: `with ${gCap(n.what || '')} Energy attached to ${nm}`,
-    supname: `on a turn you play a ${gCap(n.name || '')} Supporter`, discab: `with ${n.n} Pokemon with ${gCap(n.abil || '')} in your discard pile` }[n.k];
+    ko: 'on the turn after one of your Pokemon was Knocked Out', next: 'when it used the same attack the turn before', energy: `with ${gCap(n.what || '')} Energy attached to ${nm}`,
+    supname: `on a turn you play a ${gCap(n.name || '')} Supporter`, prize6: 'while you still have all 6 Prize cards left',
+    evolved: `on the turn it evolves from ${gCap(n.from || '')}`, inplay: `with ${n.n} ${gCap(n.type || '')} Energy in play`, discab: `with ${n.n} Pokemon with ${gCap(n.abil || '')} in your discard pile` }[n.k];
   const head = `${r.atk} does ${n.full} only ${when}, ${n.base} otherwise.`;
   if (n.met) return head + (n.k === 'moved' ? ` Your list has ${n.have} cards that switch it in or let you retreat for free, so the grade counts ${n.full}.`
     : n.k === 'selfdmg' ? ' The full hit comes after it has taken a hit, not on its first attack.'
     : n.k === 'ko' ? ' The full hit comes after you lose a Pokemon, not on your first attack.'
+    : n.k === 'evolved' ? ` The grade counts ${n.full}, since you attack the turn it evolves.`
+    : n.k === 'next' ? ` The grade counts ${n.full}, since it can keep attacking turn after turn, but its first use does ${n.base}.`
     : n.k === 'oppdmg' ? ` Your list has ${n.have} cards that put damage counters on it first, so the grade counts ${n.full}.`
     : n.k === 'xenergy' ? ` Your list has ${n.have} cards that attach extra Energy, so the grade counts ${n.full}.`
     : ` Your list can set that up, so the grade counts ${n.full}.`);
@@ -5637,7 +5657,8 @@ function g62Need(r, name) {
     xenergy: `your list has only ${n.have} cards that attach extra Energy`, stadium: `your list has only ${n.have} Stadiums`,
     btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them',
     energy: `your list has only ${n.have} ${gCap(n.what || '')} Energy`, supname: `your list has only ${n.have} ${gCap(n.name || '')} Supporters`,
-    discab: `your list has only ${n.have} Pokemon with ${gCap(n.abil || '')}` }[n.k];
+    discab: `your list has only ${n.have} Pokemon with ${gCap(n.abil || '')}`, prize6: 'that is only before you take your first prize',
+    inplay: `your list has only ${n.have} ${gCap(n.type || '')} Energy` }[n.k];
   return head + ` The grade counts ${n.base}, since ${why}.`;
 }
 /** v62: attacking twice a turn, in one sentence. */
@@ -5841,7 +5862,9 @@ function gMainAttacker(deck, coh, deckName) {
       // and an attacker that searches with its attack is still the attacker.
       const support = !typed.length && (c.ab || []).some(x => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(x.p || '')) ? 0.5 : 1;
       // A named attacker whose damage the grade cannot count (Slowking's Seek Inspiration) still counts as one.
-      const score = weight * Math.max(b.r.top, 1) * (1 + share) * support;
+      // v62: its own Ability's boost counts too (Okidogi's Adrena-Power with Darkness Energy).
+      const sb = c.sboost && deck.some(x => x.card && x.card.t === 'energy' && (x.card.etypes || []).some(y => y === c.sboost.type || y === 'any')) ? c.sboost.n : 0;
+      const score = weight * Math.max(b.r.top + sb, 1) * (1 + share) * support;
       if (!best || score > best.score) best = { score, e };
     });
     return best;
@@ -6136,7 +6159,12 @@ function gPlan(entries, coh, via) {
   const g = e.card.gate;
   const gN = g ? entries.filter(x => x.card && x.card.t === 'pkmn' && x.card.key.startsWith(g.pre)).reduce((k, x) => k + x.qty, 0) : 0;
   const gateTxt = g && gN >= g.n ? ` Its ${g.abil} means it cannot attack until you have ${g.n} or more ${g.pre ? gCap(g.pre).replace(/'S\b/g, "'s") : ''}Pokemon in play, so fill your Bench with them first. The list runs ${gN}.` : '';
-  out.push({ link: tbx.length >= 3 && m.why !== 'name' ? `Attackers: ${[nm].concat(tn).join(', ')}` : `Main attacker: ${nm}`, p: `${tbx.length >= 3 && m.why !== 'name' ? `${tbx.length + 1} different Pokemon here can carry the attack, and you pick the one that fits each turn.${why ? ' ' + why : ''}${how ? ' ' + how.replace(/^Its /, nm + "'s ") : ''}` : `${nm} does the attacking. ${why}${how ? ' ' + how : ''}`}${fxTxt}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}${mAb ? ' ' + mAb : ''}` });
+  // v62: the main attacker's always-on Abilities too (Iron Thorns ex's Initialization), unless a sentence above already covers one.
+  const sb = e.card.sboost && entries.some(x => x.card && x.card.t === 'energy' && (x.card.etypes || []).some(y => y === e.card.sboost.type || y === 'any')) ? e.card.sboost : null;
+  const sbTxt = sb ? ` Its ${sb.abil} adds ${sb.n} to its attacks while it has ${gCap(sb.type)} Energy attached${r && r.top ? `, so it hits for ${r.top + sb.n}` : ''}${sb.hp ? `, and gives it ${sb.hp} more HP` : ''}.` : '';
+  const pAb = (e.card.ab || []).filter(x => x.passive && !(e.card.pex || []).includes(x.abil) && !(g && g.abil === x.abil) && !(own && own.abil === x.abil))
+    .map(x => /^[a-z]+s\b/.test(x.p) ? ` Its ${x.abil} ${x.p}.` : ` With its ${x.abil}, ${x.p}.`).join('');
+  out.push({ link: tbx.length >= 3 && m.why !== 'name' ? `Attackers: ${[nm].concat(tn).join(', ')}` : `Main attacker: ${nm}`, p: `${tbx.length >= 3 && m.why !== 'name' ? `${tbx.length + 1} different Pokemon here can carry the attack, and you pick the one that fits each turn.${why ? ' ' + why : ''}${how ? ' ' + how.replace(/^Its /, nm + "'s ") : ''}` : `${nm} does the attacking. ${why}${how ? ' ' + how : ''}`}${fxTxt}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}${sbTxt}${pAb}${mAb ? ' ' + mAb : ''}` });
   // v54: Pokemon played for an Ability that does damage on its own (Dusknoir's Cursed Blast).
   const dmgAb = [], seenAb = new Set();
   entries.forEach(x => { const c = x.card; if (!c || c.key === m.key || seenAb.has(c.key)) return;
