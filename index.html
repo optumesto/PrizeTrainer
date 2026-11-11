@@ -6774,7 +6774,9 @@ function gFocus(entries, coh, via) {
   const cards = entries.filter(e => e.card), P = cards.filter(e => e.card.t === 'pkmn');
   const pq = P.reduce((a, e) => a + e.qty, 0);
   if (!pq) return null;
-  const TY = /\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|fairy) energy\b/g;
+  // v67: a type named in words or as a symbol ("Basic Fire Energy" or "Basic {R} Energy").
+  const TY = /(?:\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|fairy)|\{([grwlpfdmy])\}) energy\b/g;
+  const tyOf = m => m[1] || { g: 'grass', r: 'fire', w: 'water', l: 'lightning', p: 'psychic', f: 'fighting', d: 'darkness', m: 'metal', y: 'fairy' }[m[2]];
   // Pokemon lines: follow each card down to its Basic.
   const byKey = new Map(P.map(e => [e.card.key, e.card]));
   const root = c => { let r = c, g = 0; while (r.from && byKey.has(r.from) && g++ < 3) r = byKey.get(r.from); return r.from && !byKey.has(r.from) ? r.from : r.key; };
@@ -6789,18 +6791,30 @@ function gFocus(entries, coh, via) {
   const need = new Set(), atkNeed = new Set();
   P.forEach(e => { (e.card.attacks || []).forEach(a => (a.cost || []).forEach(t => { if (t !== 'colorless') { need.add(t); if (isAtk(e) && (a.max || a.dmg) > 0) atkNeed.add(t); } }));
     (e.card.aneed || []).forEach(x => need.add(x.type));
-    let m; const tx = gtNorm(e.card.atx || ''); TY.lastIndex = 0; while ((m = TY.exec(tx))) need.add(m[1]); });
-  cards.filter(e => e.card.t !== 'pkmn').forEach(e => { let m; const tx = gtNorm(e.card.rt || e.card.et || ''); TY.lastIndex = 0; while ((m = TY.exec(tx))) need.add(m[1]); });
+    let m; const tx = gtNorm(e.card.atx || ''); TY.lastIndex = 0; while ((m = TY.exec(tx))) need.add(tyOf(m)); });
+  let mix = false;
+  cards.filter(e => e.card.t !== 'pkmn').forEach(e => { let m; const tx = gtNorm(e.card.rt || e.card.et || ''); TY.lastIndex = 0; while ((m = TY.exec(tx))) need.add(tyOf(m));
+    // v67: a card that fetches or attaches Energy of different types (Crispin) puts a second type to work.
+    if (/energy cards? of different types|different types of (?:basic )?energy/.test(tx)) mix = true; });
+  // Pokemon text that asks for different types works the same way.
+  P.forEach(e => { if (/energy cards? of different types|different types of (?:basic )?energy/.test(gtNorm(e.card.atx || ''))) mix = true; });
   const EN = cards.filter(e => e.card.t === 'energy'), eq = EN.reduce((a, e) => a + e.qty, 0);
   const BE = EN.filter(e => (e.card.sub || []).map(x => String(x).toLowerCase()).includes('basic'));
   const beq = BE.reduce((a, e) => a + e.qty, 0);
+  if (mix && new Set(BE.flatMap(e => e.card.etypes || [])).size >= 2) BE.forEach(e => (e.card.etypes || []).forEach(t => need.add(t)));
   const offE = BE.filter(e => !(e.card.etypes || []).some(t => need.has(t)));
-  const off = offE.reduce((a, e) => a + e.qty, 0);
+  // v67: Energy of an off type still pays the Colorless part of an attacker's cost, so it counts half.
+  const anyC = P.some(e => isAtk(e) && (e.card.attacks || []).some(a => (a.max || a.dmg) > 0 && (a.cost || []).includes('colorless')));
+  const off = offE.reduce((a, e) => a + e.qty, 0) * (anyC ? 0.5 : 1);
+  const offN = offE.reduce((a, e) => a + e.qty, 0);
+  const offT = [...new Set(offE.flatMap(e => (e.card.etypes || []).map(gCap)))];
   // Shared Energy: for each attacker, the share of the list's Energy its best attack can use.
   let ws = 0, wq = 0;
   P.forEach(e => { const atk = (e.card.attacks || []).filter(a => (a.max || a.dmg) > 0); if (!atk.length || !isAtk(e)) return;
+    // v67: any Energy pays a Colorless slot, so only the typed share of the cost narrows what it can use.
     const best = Math.max(...atk.map(a => { const ty = (a.cost || []).filter(t => t !== 'colorless'); if (!ty.length || !eq) return 1;
-      return EN.filter(x => (x.card.etypes || []).some(t => ty.includes(t) || t === 'any')).reduce((s, x) => s + x.qty, 0) / eq; }));
+      const share = EN.filter(x => (x.card.etypes || []).some(t => ty.includes(t) || t === 'any')).reduce((s, x) => s + x.qty, 0) / eq;
+      const n = (a.cost || []).length || ty.length; return (ty.length * share + (n - ty.length)) / n; }));
     ws += best * e.qty; wq += e.qty; });
   const esh = wq ? ws / wq : 1;
   const T = cards.filter(e => e.card.t === 'trainer'), tq = T.reduce((a, e) => a + e.qty, 0);
@@ -6814,7 +6828,7 @@ function gFocus(entries, coh, via) {
   const score = gClamp(1 - spread - single - offP + links, 0, 1);
   // The plain reasons, biggest first, for the Synergy line under How it plays.
   const why = [];
-  if (offP > 0.02) why.push({ v: offP, s: `${off} Basic Energy (${[...new Set(offE.map(e => gCap(e.name)))].join(', ')}) ${off === 1 ? 'is' : 'are'} a type nothing in the list uses` });
+  if (offP > 0.02) why.push({ v: offP, s: `${offN} Basic ${offT.join(' and ')} Energy ${offN === 1 ? 'is' : 'are'} a type nothing in the list asks for${anyC ? ', though they still pay Colorless costs' : ''}` });
   if (ty > 0.02) why.push({ v: ty * (box ? 0.5 : 1), s: `your attacks need ${atkNeed.size} Energy types` });
   if (es > 0.03) why.push({ v: es * (box ? 0.5 : 1), s: `each attacker can use only about ${Math.round(esh * 100)}% of your Energy` });
   if (fm > 0.03) why.push({ v: fm * (box ? 0.5 : 1), s: `your Pokemon are spread over ${fam.size} lines` });
