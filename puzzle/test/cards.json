@@ -1,0 +1,1190 @@
+[
+{
+"id": "sv6pt5-18",
+"name": "Duskull",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic"
+],
+"hp": "60",
+"types": [
+"Psychic"
+],
+"attacks": [
+{
+"name": "Come and Get You",
+"cost": [
+"Psychic"
+],
+"convertedEnergyCost": 1,
+"damage": "",
+"text": "Put up to 3 Duskull from your discard pile onto your Bench."
+},
+{
+"name": "Mumble",
+"cost": [
+"Psychic",
+"Psychic"
+],
+"convertedEnergyCost": 2,
+"damage": "30",
+"text": ""
+}
+],
+"weaknesses": [
+{
+"type": "Darkness",
+"value": "×2"
+}
+],
+"resistances": [
+{
+"type": "Fighting",
+"value": "-30"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1
+},
+{
+"id": "sv6pt5-19",
+"name": "Dusclops",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 1"
+],
+"hp": "90",
+"types": [
+"Psychic"
+],
+"evolvesFrom": "Duskull",
+"abilities": [
+{
+"name": "Cursed Blast",
+"text": "Once during your turn, you may put 5 damage counters on 1 of your opponent's Pokémon. If you use this Ability, this Pokémon is Knocked Out.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Will-O-Wisp",
+"cost": [
+"Psychic",
+"Psychic"
+],
+"convertedEnergyCost": 2,
+"damage": "50",
+"text": ""
+}
+],
+"weaknesses": [
+{
+"type": "Darkness",
+"value": "×2"
+}
+],
+"resistances": [
+{
+"type": "Fighting",
+"value": "-30"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 2
+},
+{
+"id": "sv6pt5-20",
+"name": "Dusknoir",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 2"
+],
+"hp": "160",
+"types": [
+"Psychic"
+],
+"evolvesFrom": "Dusclops",
+"abilities": [
+{
+"name": "Cursed Blast",
+"text": "Once during your turn, you may put 13 damage counters on 1 of your opponent's Pokémon. If you use this Ability, this Pokémon is Knocked Out.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Shadow Bind",
+"cost": [
+"Psychic",
+"Psychic",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "150",
+"text": "During your opponent's next turn, the Defending Pokémon can't retreat."
+}
+],
+"weaknesses": [
+{
+"type": "Darkness",
+"value": "×2"
+}
+],
+"resistances": [
+{
+"type": "Fighting",
+"value": "-30"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 3
+},
+{
+"id": "sv6-95",
+"name": "Munkidori",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic"
+],
+"hp": "110",
+"types": [
+"Psychic"
+],
+"abilities": [
+{
+"name": "Adrena-Brain",
+"text": "Once during your turn, if this Pokémon has any Darkness Energy attached, you may move up to 3 damage counters from 1 of your Pokémon to 1 of your opponent's Pokémon.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Mind Bend",
+"cost": [
+"Psychic",
+"Colorless"
+],
+"convertedEnergyCost": 2,
+"damage": "60",
+"text": "Your opponent's Active Pokémon is now Confused."
+}
+],
+"weaknesses": [
+{
+"type": "Darkness",
+"value": "×2"
+}
+],
+"resistances": [
+{
+"type": "Fighting",
+"value": "-30"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1
+},
+{
+"id": "sv10-11",
+"name": "Dwebble",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic"
+],
+"hp": "70",
+"types": [
+"Grass"
+],
+"attacks": [
+{
+"name": "Ascension",
+"cost": [
+"Colorless"
+],
+"convertedEnergyCost": 1,
+"damage": "",
+"text": "Search your deck for a card that evolves from this Pokémon and put it onto this Pokémon to evolve it. Then, shuffle your deck."
+}
+],
+"weaknesses": [
+{
+"type": "Fire",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 2
+},
+{
+"id": "sv10-12",
+"name": "Crustle",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 1"
+],
+"hp": "150",
+"types": [
+"Grass"
+],
+"evolvesFrom": "Dwebble",
+"abilities": [
+{
+"name": "Mysterious Rock Inn",
+"text": "Prevent all damage done to this Pokémon by attacks from your opponent's Pokémon ex.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Superb Scissors",
+"cost": [
+"Grass",
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "120",
+"text": "This attack's damage isn't affected by any effects on your opponent's Active Pokémon."
+}
+],
+"weaknesses": [
+{
+"type": "Fire",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 3
+},
+{
+"id": "sv4-160",
+"name": "Counter Catcher",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"You can use this card only if you have more Prize cards remaining than your opponent.  Switch in 1 of your opponent's Benched Pokémon to the Active Spot.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv5-157",
+"name": "Prime Catcher",
+"supertype": "Trainer",
+"subtypes": [
+"Item",
+"ACE SPEC"
+],
+"rules": [
+"Switch in 1 of your opponent's Benched Pokémon to the Active Spot. If you do, switch your Active Pokémon with 1 of your Benched Pokémon.",
+"You may play any number of Item cards during your turn.",
+"ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+]
+},
+{
+"id": "sv8pt5-96",
+"name": "Black Belt's Training",
+"supertype": "Trainer",
+"subtypes": [
+"Supporter"
+],
+"rules": [
+"During this turn, attacks used by your Pokémon do 40 more damage to your opponent's Active Pokémon ex (before applying Weakness and Resistance).",
+"You may play only 1 Supporter card during your turn."
+]
+},
+{
+"id": "sv5-152",
+"name": "Hero's Cape",
+"supertype": "Trainer",
+"subtypes": [
+"Pokémon Tool",
+"ACE SPEC"
+],
+"rules": [
+"The Pokémon this card is attached to gets +100 HP.",
+"You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached.",
+"ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+]
+},
+{
+"id": "sv1-181",
+"name": "Nest Ball",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"Search your deck for a Basic Pokémon and put it onto your Bench. Then, shuffle your deck.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv1-191",
+"name": "Rare Candy",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"Choose 1 of your Basic Pokémon in play. If you have a Stage 2 card in your hand that evolves from that Pokémon, put that card onto the Basic Pokémon to evolve it, skipping the Stage 1. You can't use this card during your first turn or on a Basic Pokémon that was put into play this turn.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv1-194",
+"name": "Switch",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"Switch your Active Pokémon with 1 of your Benched Pokémon.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv1-196",
+"name": "Ultra Ball",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"You can use this card only if you discard 2 other cards from your hand. Search your deck for a Pokémon, reveal it, and put it into your hand. Then, shuffle your deck.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv3-26",
+"name": "Charmander",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic"
+],
+"hp": "60",
+"types": [
+"Fire"
+],
+"attacks": [
+{
+"name": "Heat Tackle",
+"cost": [
+"Fire"
+],
+"convertedEnergyCost": 1,
+"damage": "30",
+"text": "This Pokémon also does 10 damage to itself."
+}
+],
+"weaknesses": [
+{
+"type": "Water",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1
+},
+{
+"id": "sv3-27",
+"name": "Charmeleon",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 1"
+],
+"hp": "90",
+"types": [
+"Fire"
+],
+"evolvesFrom": "Charmander",
+"attacks": [
+{
+"name": "Heat Tackle",
+"cost": [
+"Fire",
+"Fire"
+],
+"convertedEnergyCost": 2,
+"damage": "70",
+"text": "This Pokémon also does 20 damage to itself."
+}
+],
+"weaknesses": [
+{
+"type": "Water",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 2
+},
+{
+"id": "sv3-125",
+"name": "Charizard ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 2",
+"ex",
+"Tera"
+],
+"hp": "330",
+"types": [
+"Darkness"
+],
+"evolvesFrom": "Charmeleon",
+"abilities": [
+{
+"name": "Infernal Reign",
+"text": "When you play this Pokémon from your hand to evolve 1 of your Pokémon during your turn, you may search your deck for up to 3 Basic Fire Energy cards and attach them to your Pokémon in any way you like. Then, shuffle your deck.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Burning Darkness",
+"cost": [
+"Fire",
+"Fire"
+],
+"convertedEnergyCost": 2,
+"damage": "180+",
+"text": "This attack does 30 more damage for each Prize card your opponent has taken."
+}
+],
+"weaknesses": [
+{
+"type": "Grass",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 2,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+"Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+]
+},
+{
+"id": "sv3-164",
+"name": "Pidgeot ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 2",
+"ex"
+],
+"hp": "280",
+"types": [
+"Colorless"
+],
+"evolvesFrom": "Pidgeotto",
+"abilities": [
+{
+"name": "Quick Search",
+"text": "Once during your turn, you may search your deck for a card and put it into your hand. Then, shuffle your deck. You can't use more than 1 Quick Search Ability each turn.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Blustery Wind",
+"cost": [
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 2,
+"damage": "120",
+"text": "You may discard a Stadium in play."
+}
+],
+"weaknesses": [
+{
+"type": "Lightning",
+"value": "×2"
+}
+],
+"resistances": [
+{
+"type": "Fighting",
+"value": "-30"
+}
+],
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sv6-25",
+"name": "Teal Mask Ogerpon ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"Tera",
+"ex"
+],
+"hp": "210",
+"types": [
+"Grass"
+],
+"abilities": [
+{
+"name": "Teal Dance",
+"text": "Once during your turn, you may attach a Basic Grass Energy card from your hand to this Pokémon. If you attached Energy to a Pokémon in this way, draw a card.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Myriad Leaf Shower",
+"cost": [
+"Grass",
+"Grass",
+"Grass"
+],
+"convertedEnergyCost": 3,
+"damage": "30+",
+"text": "This attack does 30 more damage for each Energy attached to both Active Pokémon."
+}
+],
+"weaknesses": [
+{
+"type": "Fire",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1,
+"rules": [
+"As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's).",
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+"Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+]
+},
+{
+"id": "sv6-77",
+"name": "Iron Thorns ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"ex",
+"Future"
+],
+"hp": "230",
+"types": [
+"Lightning"
+],
+"abilities": [
+{
+"name": "Initialization",
+"text": "As long as this Pokémon is in the Active Spot, Pokémon with a Rule Box in play (both yours and your opponent's) have no Abilities, except for Future Pokémon. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Volt Cyclone",
+"cost": [
+"Lightning",
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "140",
+"text": "Move an Energy from this Pokémon to 1 of your Benched Pokémon."
+}
+],
+"weaknesses": [
+{
+"type": "Fighting",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 4,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sv6-128",
+"name": "Dreepy",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic"
+],
+"hp": "70",
+"types": [
+"Dragon"
+],
+"attacks": [
+{
+"name": "Petty Grudge",
+"cost": [
+"Psychic"
+],
+"convertedEnergyCost": 1,
+"damage": "10",
+"text": ""
+},
+{
+"name": "Bite",
+"cost": [
+"Fire",
+"Psychic"
+],
+"convertedEnergyCost": 2,
+"damage": "40",
+"text": ""
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1
+},
+{
+"id": "sv6-129",
+"name": "Drakloak",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 1"
+],
+"hp": "90",
+"types": [
+"Dragon"
+],
+"evolvesFrom": "Dreepy",
+"abilities": [
+{
+"name": "Recon Directive",
+"text": "Once during your turn, you may look at the top 2 cards of your deck and put 1 of them into your hand. Put the other card on the bottom of your deck.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Dragon Headbutt",
+"cost": [
+"Fire",
+"Psychic"
+],
+"convertedEnergyCost": 2,
+"damage": "70",
+"text": ""
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1
+},
+{
+"id": "sv6-130",
+"name": "Dragapult ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Stage 2",
+"Tera",
+"ex"
+],
+"hp": "320",
+"types": [
+"Dragon"
+],
+"evolvesFrom": "Drakloak",
+"attacks": [
+{
+"name": "Jet Headbutt",
+"cost": [
+"Colorless"
+],
+"convertedEnergyCost": 1,
+"damage": "70",
+"text": ""
+},
+{
+"name": "Phantom Dive",
+"cost": [
+"Fire",
+"Psychic"
+],
+"convertedEnergyCost": 2,
+"damage": "200",
+"text": "Put 6 damage counters on your opponent's Benched Pokémon in any way you like."
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1,
+"rules": [
+"As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's).",
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+"Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+]
+},
+{
+"id": "sv2-172",
+"name": "Boss's Orders (Ghetsis)",
+"supertype": "Trainer",
+"subtypes": [
+"Supporter"
+],
+"rules": [
+"Switch in 1 of your opponent's Benched Pokémon to the Active Spot.",
+"You may play only 1 Supporter card during your turn."
+]
+},
+{
+"id": "sv2-185",
+"name": "Iono",
+"supertype": "Trainer",
+"subtypes": [
+"Supporter"
+],
+"rules": [
+"Each player shuffles their hand and puts it on the bottom of their deck. If either player put any cards on the bottom of their deck in this way, each player draws a card for each of their remaining Prize cards.",
+"You may play only 1 Supporter card during your turn."
+]
+},
+{
+"id": "sv1-173",
+"name": "Energy Switch",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"Move a Basic Energy from 1 of your Pokémon to another of your Pokémon.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv5-97",
+"name": "Great Tusk",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"Ancient"
+],
+"hp": "140",
+"types": [
+"Fighting"
+],
+"attacks": [
+{
+"name": "Land Collapse",
+"cost": [
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 2,
+"damage": "",
+"text": "Discard the top card of your opponent's deck. If you played an Ancient Supporter card from your hand during this turn, discard 3 more cards in this way."
+},
+{
+"name": "Giant Tusk",
+"cost": [
+"Fighting",
+"Fighting",
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 4,
+"damage": "160",
+"text": ""
+}
+],
+"weaknesses": [
+{
+"type": "Psychic",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 3
+},
+{
+"id": "sv5-144",
+"name": "Buddy-Buddy Poffin",
+"supertype": "Trainer",
+"subtypes": [
+"Item"
+],
+"rules": [
+"Search your deck for up to 2 Basic Pokémon with 70 HP or less and put them onto your Bench. Then, shuffle your deck.",
+"You may play any number of Item cards during your turn."
+]
+},
+{
+"id": "sv6-141",
+"name": "Bloodmoon Ursaluna ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"ex"
+],
+"hp": "260",
+"types": [
+"Colorless"
+],
+"abilities": [
+{
+"name": "Seasoned Skill",
+"text": "Blood Moon used by this Pokémon costs Colorless less for each Prize card your opponent has taken.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Blood Moon",
+"cost": [
+"Colorless",
+"Colorless",
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedEnergyCost": 5,
+"damage": "240",
+"text": "During your next turn, this Pokémon can't attack."
+}
+],
+"weaknesses": [
+{
+"type": "Fighting",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 3,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sv6-154",
+"name": "Kieran",
+"supertype": "Trainer",
+"subtypes": [
+"Supporter"
+],
+"rules": [
+"Choose 1:    • Switch your Active Pokémon with 1 of your Benched Pokémon.  • During this turn, attacks used by your Pokémon do 30 more damage to your opponent's Active Pokémon ex and Active Pokémon V (before applying Weakness and Resistance).",
+"You may play only 1 Supporter card during your turn."
+]
+},
+{
+"id": "sv8pt5-28",
+"name": "Pikachu ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"Tera",
+"ex"
+],
+"hp": "190",
+"types": [
+"Lightning"
+],
+"attacks": [
+{
+"name": "Tail Whap",
+"cost": [
+"Colorless"
+],
+"convertedEnergyCost": 1,
+"damage": "30",
+"text": ""
+},
+{
+"name": "Thunder",
+"cost": [
+"Lightning",
+"Lightning",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "220",
+"text": "This Pokémon also does 30 damage to itself."
+}
+],
+"weaknesses": [
+{
+"type": "Fighting",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1,
+"rules": [
+"As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's).",
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sv8pt5-122",
+"name": "Professor's Research",
+"supertype": "Trainer",
+"subtypes": [
+"Supporter"
+],
+"rules": [
+"Discard your hand and draw 7 cards.",
+"You may play only 1 Supporter card during your turn."
+]
+},
+{
+"id": "sv9-56",
+"name": "Lillie's Clefairy ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"ex"
+],
+"hp": "190",
+"types": [
+"Psychic"
+],
+"abilities": [
+{
+"name": "Fairy Zone",
+"text": "The Weakness of each of your opponent's Dragon Pokémon in play is now Psychic. (Apply Weakness as ×2.)",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Full Moon Rondo",
+"cost": [
+"Psychic",
+"Colorless"
+],
+"convertedEnergyCost": 2,
+"damage": "20+",
+"text": "This attack does 20 more damage for each Benched Pokémon (both yours and your opponent's)."
+}
+],
+"weaknesses": [
+{
+"type": "Metal",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sv8-57",
+"name": "Pikachu ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"Tera",
+"ex"
+],
+"hp": "200",
+"types": [
+"Lightning"
+],
+"abilities": [
+{
+"name": "Resolute Heart",
+"text": "If this Pokémon has full HP and would be Knocked Out by damage from an attack, it is not Knocked Out, and its remaining HP becomes 10.",
+"type": "Ability"
+}
+],
+"attacks": [
+{
+"name": "Topaz Bolt",
+"cost": [
+"Grass",
+"Lightning",
+"Metal"
+],
+"convertedEnergyCost": 3,
+"damage": "300",
+"text": "Discard 3 Energy from this Pokémon."
+}
+],
+"weaknesses": [
+{
+"type": "Fighting",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless"
+],
+"convertedRetreatCost": 1,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+"Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+]
+},
+{
+"id": "sv4-124",
+"name": "Roaring Moon ex",
+"supertype": "Pokémon",
+"subtypes": [
+"Basic",
+"ex",
+"Ancient"
+],
+"hp": "230",
+"types": [
+"Darkness"
+],
+"attacks": [
+{
+"name": "Frenzied Gouging",
+"cost": [
+"Darkness",
+"Darkness",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "",
+"text": "Knock Out your opponent's Active Pokémon. If your opponent's Active Pokémon is Knocked Out in this way, this Pokémon does 200 damage to itself."
+},
+{
+"name": "Calamity Storm",
+"cost": [
+"Darkness",
+"Darkness",
+"Colorless"
+],
+"convertedEnergyCost": 3,
+"damage": "100+",
+"text": "You may discard a Stadium in play. If you do, this attack does 120 more damage."
+}
+],
+"weaknesses": [
+{
+"type": "Grass",
+"value": "×2"
+}
+],
+"retreatCost": [
+"Colorless",
+"Colorless"
+],
+"convertedRetreatCost": 2,
+"rules": [
+"Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+]
+},
+{
+"id": "sve-1",
+"name": "Basic Grass Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-2",
+"name": "Basic Fire Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-3",
+"name": "Basic Water Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-4",
+"name": "Basic Lightning Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-5",
+"name": "Basic Psychic Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-6",
+"name": "Basic Fighting Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-7",
+"name": "Basic Darkness Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+},
+{
+"id": "sve-8",
+"name": "Basic Metal Energy",
+"supertype": "Energy",
+"subtypes": [
+"Basic"
+]
+}
+]
