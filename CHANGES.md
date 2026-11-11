@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: RdyDeck 2.3 (build 68): daily puzzle (branch puzzle-engine)
+# Not released yet: RdyDeck 2.3 (build 68): daily puzzle, deck builder, MEP promo fix and a What's new log (branch puzzle-engine)
 
 Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files), CHANGES.md, and the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks).
 
@@ -12,6 +12,8 @@ Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files
 - The number is your own: your first day played is your puzzle #1, then one more each day you play. The card shows how many you solved of how many you played, wins in a row and days in a row, all kept on this device. Share sends your number, result and streak; the board itself is the same for everyone that day.
 - Strict: a line that draws, flips or uses a card you can't see never counts as a win, since it isn't sure.
 - 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Set PUZZLE_EPOCH to the release day so day one opens the pack's first board.
+- What's new: Settings has a What's new row with a short log of the latest update. Someone who used an older version also sees a small Updated card on home once; a new user never does. Edit WHATS_NEW in index.html each release: a 2.x release lists "Added:" lines with a short description, a 2.x.y release lists short items only.
+- Version shown in the app is v2.3 (PT_VERSION), build 68 (PT_BUILD), matching the sw.js cache.
 
 # RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, audit fixes, a grade check and the old address redirect (11 Nov 2026)
 

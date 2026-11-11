@@ -37,6 +37,8 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   await new Promise(r => setTimeout(r, 3500));
   const card = d.getElementById('puzzle-card');
   ok(card && /Your puzzle #1\b/.test(card.textContent), 'home card: ' + (card && card.textContent.replace(/\s+/g, ' ').trim()));
+  // What's new: a brand new user never gets the home card.
+  ok(d.getElementById('wn-card').innerHTML === '' && w.localStorage.getItem('rd_seen_version') === w.eval('PT_VERSION'), "new user: no What's new card, version marked seen");
   await w.openPuzzle();
   ok(d.getElementById('screen-puzzle').classList.contains('active'), 'puzzle screen opens');
   const body = d.getElementById('pz-body');
@@ -134,6 +136,21 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     if (E.goalMet(w.eval('pzS').s)) uiWon++;
   }
   ok(uiWon === pack.puzzles.length, `all puzzles won through the screen (${uiWon}); ${oppPicks} opponent choices made by the screen; ${slow} taps over 1.5s`);
+  // What's new: someone who used an older version gets the card once.
+  { const st = w.eval('state'), keep = st.daily;
+    w.localStorage.setItem('rd_seen_version', 'v2.2');
+    st.daily = { results: { '2026-11-10': { score: 6 } } };
+    w.showScreen('home'); w.renderWhatsNewCard();
+    const wn = () => d.getElementById('wn-card').textContent.replace(/\s+/g, ' ').trim();
+    ok(/Updated to RdyDeck 2\.3/.test(wn()) && /Daily Puzzle/.test(wn()), "returning user sees the update card: " + wn());
+    w.openWhatsNew();
+    const sheet = d.getElementById('x-modal').textContent.replace(/\s+/g, ' ');
+    ok(/What's new/.test(sheet) && /Added: Deck Builder/.test(sheet) && /Fixed: MEP promo cards/.test(sheet), "What's new sheet lists the update");
+    w.closeSheet();
+    ok(wn() === '', 'the card is gone once seen');
+    w.renderWhatsNewCard(); ok(wn() === '', 'and stays gone');
+    w.openSettings(); ok(/What's new/.test(d.getElementById('x-modal').textContent) && /RdyDeck v2\.3/.test(d.getElementById('x-modal').textContent), "Settings has What's new and shows v2.3"); w.closeSheet();
+    st.daily = keep; }
   errors.splice(0, errors.length, ...errors.filter(e => !/setting 'font'|PT error/.test(e)));
   ok(errors.length === 0, 'no page errors' + (errors.length ? ': ' + errors.slice(0, 5).join(' | ') : ''));
   console.log(fails ? fails + ' failed' : 'all passed');

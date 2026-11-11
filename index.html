@@ -1579,6 +1579,11 @@
   }
   .dc-banner > div { flex:1 1 180px; display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); }
   .dc-banner b { color:var(--text); font-size:var(--fs-md); }
+  /* What's new */
+  .wn-list { list-style:none; margin:0.5rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.7rem; }
+  .wn-list li { display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
+  .wn-list li b { color:var(--text); font-size:var(--fs-md); font-weight:600; }
+  .wn-sub { font-size:var(--fs-sm); color:var(--text-3); margin-top:0.15rem; }
 
   /* Daily puzzle */
   .pz-wrap { max-width:720px; margin:0 auto; padding:0.75rem var(--pad-x) 2rem; }
@@ -2886,6 +2891,7 @@ const PT_PLAY = (function () {
       <button class="btn btn-primary" onclick="openImportModal()"><svg class="ic"><use href="#i-plus"/></svg>Import a deck</button>
       <button class="btn" onclick="openStarterPicker()"><svg class="ic"><use href="#i-cards"/></svg>Starter decks</button>
     </div>
+    <div id="wn-card"></div>
     <div id="daily-card"></div>
     <div id="puzzle-card"></div>
 
@@ -10316,6 +10322,7 @@ function renderDailyCard() {
     <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
   </div>`;
   renderPuzzleCard();
+  renderWhatsNewCard();
 }
 function dailyAfterReveal(score, elapsed) {
   const area = document.getElementById('prize-reveal-area');
@@ -10338,6 +10345,63 @@ function handleDailyHash() {
   openSheet(`<div class="modal-title">Daily challenge #${dailyNumber()}</div>
     <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(DAILY_NAME)} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
+}
+
+// ═══════════ WHAT'S NEW (v2.3) ═══════════
+// A short log of the latest update. Edit WHATS_NEW for each release. A
+// generation release (2.x) lists what was added or changed, each with a short
+// description. A small release (2.x.y) lists short items like "MEP bug fixed"
+// with no description. It shows in Settings, and once on home for someone who
+// used an older version. A brand new user never sees the home card.
+const WHATS_NEW = {
+  version: 'v2.3',
+  kind: 'generation',
+  items: [
+    { t: 'Added: Daily Puzzle', d: 'A new board every day, the same for everyone. Find the plays that win this turn. Your puzzle number, wins and streaks are kept on this device.' },
+    { t: 'Added: Deck Builder', d: 'Build a deck from scratch: search cards, add and remove copies, and grade it as you go.' },
+    { t: 'Fixed: MEP promo cards', d: 'Cards from the MEP promo set are read correctly, so lists with them are no longer capped at 4.9.' }
+  ]
+};
+const WN_KEY = 'rd_seen_version';
+function wnName() { return WHATS_NEW.version.replace(/^v/, 'RdyDeck '); }
+function wnList() {
+  const full = WHATS_NEW.kind === 'generation';
+  return '<ul class="wn-list">' + WHATS_NEW.items.map(i =>
+    `<li><b>${esc(i.t)}</b>${full && i.d ? `<span>${esc(i.d)}</span>` : ''}</li>`).join('') + '</ul>';
+}
+function wnMarkSeen() { try { localStorage.setItem(WN_KEY, PT_VERSION); } catch (_) {} }
+function openWhatsNew() {
+  wnMarkSeen(); renderWhatsNewCard();
+  openSheet(`<div class="modal-title">What's new</div>
+    <div class="wn-sub">${esc(wnName())}</div>
+    ${wnList()}
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Got it</button></div>`);
+}
+function wnShouldShow() {
+  if (WHATS_NEW.version !== PT_VERSION) return false;
+  let seen;
+  try { seen = localStorage.getItem(WN_KEY); } catch (_) { return false; }
+  if (seen === PT_VERSION) return false;
+  if (seen === null) {
+    // No version seen yet: someone who already has decks or scores used an
+    // older version, so they get the card. Anyone else is new.
+    const used = (state.decks && state.decks.length) ||
+      (state.daily && state.daily.results && Object.keys(state.daily.results).length);
+    if (!used) { wnMarkSeen(); return false; }
+  }
+  return true;
+}
+function wnDismiss() { wnMarkSeen(); renderWhatsNewCard(); }
+function renderWhatsNewCard() {
+  const el = document.getElementById('wn-card');
+  if (!el) return;
+  if (!wnShouldShow()) { el.innerHTML = ''; return; }
+  const names = WHATS_NEW.items.map(i => i.t.replace(/^(Added|Fixed|Changed|New):\s*/, '')).join(', ');
+  el.innerHTML = `<div class="dc-banner" role="status">
+    <div><b>Updated to ${esc(wnName())}</b><span>${esc(names)}</span></div>
+    <button class="btn btn-sm btn-primary" onclick="openWhatsNew()">See what's new</button>
+    <button class="btn btn-sm" onclick="wnDismiss()">Close</button>
+  </div>`;
 }
 
 // ═══════════ DAILY PUZZLE (v2.3) ═══════════
@@ -13186,8 +13250,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.2';
-const PT_BUILD = 67;
+const PT_VERSION = 'v2.3';
+const PT_BUILD = 68;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -16902,6 +16966,7 @@ function openSettings() {
     <div class="st38-sec st38-rows">
       ${row('closeSheet();openBackupModal()', 'Save and open decks', 'Move your decks to a new phone or web address')}
       ${age}
+      ${row('closeSheet();openWhatsNew()', "What's new", wnName())}
       ${row('closeSheet();openHelpSheet()', 'Help and feedback', '')}
       ${link('terms.html', 'Terms of Service')}
       ${link('privacy.html', 'Privacy Policy')}
