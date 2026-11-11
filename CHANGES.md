@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Not released yet: Trainers, Special Energy and the ACE SPEC in the grade (branch grade-trainers)
+
+Changed files: index.html, CHANGES.md. Version and build number are set when this goes out in a batch.
+
+Grade
+- Every Trainer and Special Energy is checked against the rest of the list, from its own card text. A card that needs something the list does not run (Glass Trumpet or Area Zero Underdepths with no Tera Pokemon, Hyper Aroma with no Stage 1, Team Rocket's Energy with no Team Rocket's Pokemon) shows under Fix first and lowers Synergy.
+- An evolution deck with 3 or fewer cards that find Pokemon, or any deck with fewer than 7 Supporters, gets a warning.
+- The ACE SPEC gets its own line under How it plays: what it does and whether it works with the list. A list with no ACE SPEC, or one whose ACE SPEC has nothing to work with, gets a warning and a lower grade. A list with 2 or more is already marked not legal above the grade; the line now names the cards to cut down to one. When the list has a clear hole (nothing pulls up a Benched Pokemon, very few ways to find Pokemon or draw), the line can name an ACE SPEC that fills it, as a suggestion only.
+- Secret Box no longer counts as a way to find Pokemon (its "Pokemon Tool" was read as a Pokemon). This also fixes the odds for lists that run it.
+- Saved decks are read again once to store Special Energy text.
+- Checked on the top 16 lists from the last 8 Limitless events (128 lists): none changes grade and none gets a new warning.
+
 # RdyDeck 2.0.3 (build 64): deck strength from tournament finishes, and no grade cliff at the one-shot line (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v64, the build number), refresh-matchups.mjs, CHANGES.md.

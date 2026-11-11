@@ -3794,7 +3794,8 @@ const PROVIDES_RULES = [
   {
     tag: 'search_pokemon',
     // v55: up to 60 letters, but not an Energy search that attaches to a Pokemon (Mega Gardevoir ex's Overflowing Wishes).
-    test: (all) => /search\s+your\s+deck\s+for(?:(?!energy)[^.]){0,60}pok[eé]mon/.test(all),
+    // v65: "a Pokemon Tool card" is not a Pokemon (Secret Box).
+    test: (all) => /search\s+your\s+deck\s+for(?:(?!energy|pok[eé]mon\s+tool)[^.]){0,60}pok[eé]mon(?!\s+tool)/.test(all),
   },
   {
     tag: 'gust',
@@ -4464,6 +4465,8 @@ function enrichCard(apiCard, opts) {
     // without the lines every Item or Tool repeats.
     atext: (card.abilities || []).filter(x => x && x.text).map(x => [x.name || '', String(x.text)]),
     rtext: t === 'trainer' ? (card.rules || []).map(r => String(r).trim()).filter(r => !RT_BOILER57.test(r.replace(/[\u2018\u2019]/g, "'"))).join(' ').replace(/\s+/g, ' ').trim() : '',
+    // v65: a Special Energy's own text, so the grade can tell whether it has anything to work on.
+    etext: t === 'energy' && !isBasicEnergy(card) ? (card.rules || []).map(r => String(r).trim()).join(' ').replace(/\s+/g, ' ').trim() : '',
     provides,
     requires,
     // Provenance, so a grader can report how much of its input it trusted.
@@ -5083,7 +5086,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 14;  // v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 15;  // v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -5287,7 +5290,9 @@ function toGradeDeck(deck) {
       // v63: lock, mill, wall and other control pieces from its Abilities or Trainer rules (ctl63).
       ctl: [].concat(...(c.atext||[]).map(x => TCGEnrich.ctl63(x[1]).map(p => Object.assign(p, { src:'ability', via:x[0] }))),
         t==='trainer' ? TCGEnrich.ctl63(c.rtext).map(p => Object.assign(p, { src:c.ttype||'item', via:null })) : []),
-      ace: !!c.ace
+      ace: !!c.ace,
+      // v65: printed text the Trainer check reads (Trainer rules, Special Energy text).
+      rt: t==='trainer' ? (c.rtext || '') : '', et: t==='energy' ? (c.etext || '') : ''
     }};
   });
 }
@@ -6391,15 +6396,289 @@ function gPlan(entries, coh, via) {
   return out;
 }
 
+/**
+ * v65: the Trainers and Special Energy, judged from their own text.
+ * Before this, a Trainer counted only when it carried a role tag (draw, search, gust) and a
+ * Special Energy only for the type it gives. Now the grade also asks:
+ *   Does each Trainer and Special Energy have something to work on in this list? A card
+ *     that needs a Tera Pokemon, a Lillie's Pokemon, a Stage 2 or Basic Fire Energy the list
+ *     does not run does nothing. The need is read from the card's words ("only if you have
+ *     any Tera Pokemon in play", "to 1 of your Benched Psychic Pokemon", "search your deck
+ *     for up to 3 Stage 1 Pokemon"), never from a list of card names.
+ *   Is the engine deep enough: Supporters, ways to find Pokemon, to switch, to get cards back?
+ *   The ACE SPEC: is there one, is there only one, does it work here, and does it cover the
+ *     list's thinnest spot or would another ACE SPEC cover a bigger gap?
+ * The result is a Trainer score from 0 to 1 that scales Synergy (a full suite leaves it as it
+ * was), problems under Fix first, and one ACE SPEC line under How it plays.
+ */
+// ACE SPEC cards legal in Standard, with their text (pokemon-tcg-data, regulation mark H and
+// later), so the grade can name an ACE SPEC that would fit better. Roles are read from this
+// text by the same reader as the list's own cards. A new ACE SPEC still grades from its own
+// text in a list; it is only missing as a suggestion until it is added here.
+const GT_ACE = {"Awakening Drum":["item","Draw a card for each of your Ancient Pokémon in play."],"Hero's Cape":["tool","The Pokémon this card is attached to gets +100 HP."],"Master Ball":["item","Search your deck for a Pokémon, reveal it, and put it into your hand. Then, shuffle your deck."],"Maximum Belt":["tool","Attacks used by the Pokémon this card is attached to do 50 more damage to your opponent's Active Pokémon ex (before applying Weakness and Resistance)."],"Prime Catcher":["item","Switch in 1 of your opponent's Benched Pokémon to the Active Spot. If you do, switch your Active Pokémon with 1 of your Benched Pokémon."],"Reboot Pod":["item","Attach a Basic Energy card from your discard pile to each of your Future Pokémon."],"Neo Upper Energy":["energy","As long as this card is attached to a Pokémon, it provides Colorless Energy. If this card is attached to a Stage 2 Pokémon, this card provides every type of Energy but provides only 2 Energy at a time."],"Hyper Aroma":["item","Search your deck for up to 3 Stage 1 Pokémon, reveal them, and put them into your hand. Then, shuffle your deck."],"Scoop Up Cyclone":["item","Put 1 of your Pokémon and all attached cards into your hand."],"Secret Box":["item","You can use this card only if you discard 3 other cards from your hand. Search your deck for an Item card, a Pokémon Tool card, a Supporter card, and a Stadium card, reveal them, and put them into your hand. Then, shuffle your deck."],"Survival Brace":["tool","If the Pokémon this card is attached to has full HP and would be Knocked Out by damage from an attack from your opponent's Pokémon, it is not Knocked Out, and its remaining HP becomes 10. Then, discard this card."],"Unfair Stamp":["item","You can use this card only if any of your Pokémon were Knocked Out during your opponent's last turn. Each player shuffles their hand into their deck. Then, you draw 5 cards, and your opponent draws 2 cards."],"Legacy Energy":["energy","As long as this card is attached to a Pokémon, it provides every type of Energy but provides only 1 Energy at a time. If the Pokémon this card is attached to is Knocked Out by damage from an attack from your opponent's Pokémon, that player takes 1 fewer Prize card. This effect of your Legacy Energy can't be applied more than once per game."],"Dangerous Laser":["item","Your opponent's Active Pokémon is now Burned and Confused."],"Neutralization Zone":["stadium","Prevent all damage done to Pokémon that don't have a Rule Box (both yours and your opponent's) by attacks from the opponent's Pokémon ex and Pokémon V. (Pokémon ex, Pokémon V, etc. have Rule Boxes.) This card can't be put into your hand or deck from the discard pile."],"Poké Vital A":["item","Heal 150 damage from 1 of your Pokémon. This card can't be put into your hand or deck from the discard pile."],"Deluxe Bomb":["tool","If the Pokémon this card is attached to is in the Active Spot and is damaged by an attack from your opponent's Pokémon (even if this Pokémon is Knocked Out), put 12 damage counters on the Attacking Pokémon. If you put any damage counters in this way, discard this card."],"Grand Tree":["stadium","Once during each player's turn, that player may search their deck for a Stage 1 Pokémon that evolves from 1 of their Basic Pokémon and put it onto that Pokémon to evolve it. If that Pokémon was evolved in this way, that player may search their deck for a Stage 2 Pokémon that evolves from that Pokémon and put it onto that Pokémon to evolve it. Then, that player shuffles their deck. (Players can't evolve a Basic Pokémon during their first turn or a Basic Pokémon that was put into play this turn.)"],"Max Rod":["item","Put up to 5 in any combination of Pokémon and Basic Energy cards from your discard pile into your hand."],"Sparkling Crystal":["tool","When the Tera Pokémon this card is attached to uses an attack, that attack costs 1 Energy less. (The Energy can be of any type.)"],"Treasure Tracker":["item","Search your deck for up to 5 Pokémon Tool cards, reveal them, and put them into your hand. Then, shuffle your deck."],"Amulet of Hope":["tool","If the Pokémon this card is attached to is Knocked Out by damage from an attack from your opponent's Pokémon, search your deck for up to 3 cards and put them into your hand. Then, shuffle your deck."],"Brilliant Blender":["item","Search your deck for up to 5 cards and discard them. Then, shuffle your deck."],"Energy Search Pro":["item","Search your deck for any number of Basic Energy cards of different types, reveal them, and put them into your hand. Then, shuffle your deck."],"Megaton Blower":["item","Discard all Pokémon Tools and Special Energy from all of your opponent's Pokémon, and discard a Stadium in play."],"Miracle Headset":["item","Put up to 2 Supporter cards from your discard pile into your hand."],"Precious Trolley":["item","Search your deck for any number of Basic Pokémon and put them onto your Bench. Then, shuffle your deck."],"Scramble Switch":["item","Switch your Active Pokémon with 1 of your Benched Pokémon. If you do, you may move any amount of Energy from the Pokémon you moved to your Bench to the new Active Pokémon."]};
+
+const GT_TY = 'grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|colorless|fairy';
+/** Title case for a name read from text ("team rocket's" to "Team Rocket's"). */
+function gtCap(s) { return String(s || '').replace(/(^|[\s(])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/'S\b/g, "'s"); }
+/** Card text, lower case, accents and curly quotes plain. */
+function gtNorm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').toLowerCase().replace(/\s+/g, ' ').trim(); }
+
+/**
+ * Who a phrase like "Basic Psychic Pokemon", "Lillie's Pokemon", "Stage 2 Pokemon",
+ * "Pokemon ex", "Basic Fire Energy" or "Supporter card that has "Team Rocket" in its name"
+ * asks for. Returns null when the phrase asks for nothing in particular ("a Pokemon",
+ * "Basic Energy cards", "a card"), so only real needs are tested.
+ */
+function gtSubject(s) {
+  s = gtNorm(s).replace(/^(?:up to \d+ |any number of |a |an |\d+ |1 of each |in any combination of )+/, '').replace(/\bcards?\b/g, '').replace(/\s+/g, ' ').trim();
+  if (!s || /^(?:other|another)\b/.test(s)) return null;
+  if (/pokemon tool/.test(s)) return { k: 'tool' };
+  if (/\bstadium\b/.test(s)) return { k: 'stadium' };
+  if (/\bsupporter\b/.test(s)) { const m = s.match(/that has "([^"]+)" in its name/); return { k: 'supporter', name: m ? m[1] : null }; }
+  if (/\bitem\b/.test(s)) return { k: 'item' };
+  if (/\benergy\b/.test(s)) {
+    const m = s.match(new RegExp('basic (' + GT_TY + ') energy')); return m ? { k: 'energy', type: m[1] } : null;
+  }
+  if (!/\bpokemon\b/.test(s)) return null;
+  const q = { k: 'pkmn' };
+  if (/opponent/.test(s)) return null;
+  const pre = s.slice(0, s.indexOf('pokemon'));
+  const own = pre.match(/(?:^|\s)((?:team rocket|[a-z]+)'s) /); if (own) q.owner = own[1];
+  if (/mega evolution/.test(pre)) q.mega = true;
+  else if (/\bstage 2\b/.test(pre)) q.stage = 'stage2';
+  else if (/\bstage 1\b/.test(pre)) q.stage = 'stage1';
+  else if (/\bevolution\b/.test(pre)) q.evo = true;
+  else if (/\bbasic\b/.test(pre)) q.stage = 'basic';
+  const ty = pre.match(new RegExp('\\b(' + GT_TY + ')\\b')); if (ty) q.type = ty[1];
+  const tag = pre.match(/\b(tera|ancient|future)\b/); if (tag) q.tag = tag[1];
+  const post = s.slice(s.indexOf('pokemon') + 7);
+  if (/^ ex\b/.test(post)) q.ex = true;
+  if (/(?:doesn't|don't|do not|does not) have a rule box/.test(post)) q.noRule = true;
+  const hp = post.match(/with (\d+) hp or less/); if (hp) q.hp = +hp[1];
+  // "a Pokemon", "your Benched Pokemon": nothing in particular.
+  return Object.keys(q).length > 1 ? q : null;
+}
+
+/** Does the list hold something a subject asks for? */
+function gtHas(entries, q, coh) {
+  const cs = entries.filter(e => e.card).map(e => e.card);
+  if (q.k === 'energy') return !!(coh.energyTypes[q.type] || coh.energyTypes.any) || cs.some(c => c.t === 'energy' && (c.etypes || []).includes(q.type));
+  if (q.k === 'tool' || q.k === 'stadium' || q.k === 'item') return cs.some(c => c.t === 'trainer' && c.tt === q.k);
+  if (q.k === 'supporter') return cs.some(c => c.t === 'trainer' && c.tt === 'supporter' && (!q.name || c.key.includes(q.name.toLowerCase())));
+  return cs.some(c => {
+    if (c.t !== 'pkmn') return false;
+    const sub = (c.sub || []).map(x => String(x).toLowerCase()), key = gtNorm(c.key);
+    const rule = c.isEx || (c.p || 1) >= 2 || sub.some(x => /\b(ex|mega|radiant|v|vstar|vmax)\b/.test(x));
+    if (q.owner && !key.startsWith(q.owner)) return false;
+    if (q.mega && !(sub.includes('mega') || /^mega /.test(key))) return false;
+    if (q.stage && c.stage !== q.stage) return false;
+    if (q.evo && !(c.stage === 'stage1' || c.stage === 'stage2')) return false;
+    if (q.type && !(c.types || []).map(t => String(t).toLowerCase()).includes(q.type)) return false;
+    if (q.tag && !sub.includes(q.tag)) return false;
+    if (q.ex && !c.isEx) return false;
+    if (q.noRule && rule) return false;
+    if (q.hp && !(c.hp && c.hp <= q.hp)) return false;
+    return true;
+  });
+}
+function gtSay(q) {
+  if (q.k === 'energy') return `Basic ${gCap(q.type)} Energy`;
+  if (q.k === 'tool') return 'Pokemon Tools'; if (q.k === 'stadium') return 'Stadiums'; if (q.k === 'item') return 'Items';
+  if (q.k === 'supporter') return q.name ? `a Supporter with "${gtCap(q.name)}" in its name` : 'Supporters';
+  const w = [];
+  if (q.mega) w.push('Mega Evolution'); else if (q.stage) w.push(q.stage === 'stage2' ? 'Stage 2' : q.stage === 'stage1' ? 'Stage 1' : 'Basic'); else if (q.evo) w.push('Evolution');
+  if (q.owner) w.push(gtCap(q.owner)); if (q.type) w.push(gCap(q.type)); if (q.tag) w.push(gCap(q.tag));
+  w.push('Pokemon'); if (q.ex) w.push('ex');
+  let s = w.join(' '); if (q.noRule) s += ' without a Rule Box'; if (q.hp) s += ` with ${q.hp} HP or less`;
+  return s;
+}
+
+/**
+ * What a Trainer or Special Energy needs from the list, from its text, in three kinds:
+ *   gate: "only if you have any X in play", "only if you discard a Basic X Energy" (all must hold)
+ *   target: "to 1 of your Benched X Pokemon", "the X Pokemon this card is attached to" (any one)
+ *   find: what "search your deck for" or "reveal ... you find there" can find (any one)
+ * Returns { gate, target, find } as lists of subjects; empty lists mean no need.
+ */
+function gtNeeds(text) {
+  const t = gtNorm(text).replace(/\([^)]*rule box[^)]*\)/g, '');
+  const out = { gate: [], target: [], find: [] };
+  const add = (k, s) => { const q = gtSubject(s); if (q) out[k].push(q); };
+  const alts = s => s.split(/,? (?:or|and) |, (?:a|an) |, /);
+  let m;
+  const g1 = /only if you have (?:any )?([^.,]+?) in play/g; while ((m = g1.exec(t))) add('gate', m[1]);
+  const g3 = /each player who has (?:any )?([^.,]+?) in play/g; while ((m = g3.exec(t))) add('gate', m[1]);
+  const g2 = /only if you discard (?:a|an|\d+) ((?:basic )?[a-z]+ energy)(?: card)? from your hand/g; while ((m = g2.exec(t))) add('gate', m[1]);
+  const t1 = /(?:to|on|from) (?:1|one|each|up to \d+|any|2) of your (?:benched )?((?:[a-z'0-9]+ ){0,4}pokemon(?: ex)?)/g; while ((m = t1.exec(t))) add('target', m[1]);
+  const t2 = /each of your (?:benched )?((?:[a-z'0-9]+ ){0,4}pokemon(?: ex)?) in play/g; while ((m = t2.exec(t))) add('target', m[1]);
+  const t3 = /the ((?:[a-z'0-9]+ ){1,4}pokemon(?: ex)?) this card is attached to/g; while ((m = t3.exec(t))) add('target', m[1]);
+  const t4 = /attach this card from your hand to (?:a|an|1 of your) ((?:[a-z'0-9]+ ){0,4}pokemon(?: ex)?)/g; while ((m = t4.exec(t))) add('target', m[1]);
+  const t5 = /can only be attached to (?:a|an) ((?:[a-z'0-9]+ ){0,4}pokemon(?: ex)?)/g; while ((m = t5.exec(t))) add('target', m[1]);
+  const f1 = /search your deck for ([^.]+?)(?:,? reveal|,? and put|\.|, (?:shuffle|then))/g;
+  while ((m = f1.exec(t))) { const all = alts(m[1]).map(gtSubject); if (all.every(Boolean)) out.find.push(...all); }
+  const f2 = /you may reveal (?:up to \d+ in any combination of |a |an )?([^.]+?) you find there/g;
+  while ((m = f2.exec(t))) { const all = alts(m[1]).map(gtSubject); if (all.every(Boolean)) out.find.push(...all); }
+  return out;
+}
+
+/** Which needs the list cannot meet. [] when the card has something to work on. */
+function gtUnmet(entries, coh, text) {
+  const n = gtNeeds(text), miss = [];
+  n.gate.forEach(q => { if (!gtHas(entries, q, coh)) miss.push(q); });
+  if (n.target.length && !n.target.some(q => gtHas(entries, q, coh))) miss.push(n.target[0]);
+  if (n.find.length && !n.find.some(q => gtHas(entries, q, coh))) miss.push(n.find[0]);
+  return miss;
+}
+
+/** The jobs a Trainer or Special Energy does, from its text: what the grade weighs it for. */
+function gtRoles(text, kind) {
+  const t = gtNorm(text), r = new Set();
+  if (/switch(?: in)? 1 of your opponent's benched pokemon/.test(t)) r.add('gust');
+  if (/switch your active pokemon with 1 of your benched|has no retreat cost|retreat cost is (?:\d+|c+) less|put 1 of your pokemon and all attached cards into your hand/.test(t)) r.add('switch');
+  if (/\bdraw (?:\d+ |a )?cards?\b|draw a card for each|draw cards until/.test(t.replace(/(?:your opponent|they) draws? \d+ cards?/g, ''))) r.add('draw');
+  if (/search your deck for (?!up to \d+ cards and discard)/.test(t) || /you may reveal [^.]+ you find there/.test(t)) r.add('search');
+  if (/from your discard pile into your (?:hand|deck)|shuffle [^.]+ from your discard pile into your deck/.test(t)) r.add('recovery');
+  if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|provides every type of energy|costs \d+ energy less/.test(t)) r.add('energy');
+  if (/gets \+\d+ hp|is not knocked out|takes 1 fewer prize/.test(t)) r.add('survive');
+  if (/do \d+ more damage/.test(t)) r.add('damage');
+  if (/heal \d+ damage/.test(t)) r.add('heal');
+  if (/your opponent shuffles|each player shuffles their hand|opponent's active pokemon is now|discard all pokemon tools and special energy|discard a stadium in play|put \d+ damage counters on the attacking/.test(t)) r.add('disrupt');
+  if (/onto your bench/.test(t)) r.add('bench');
+  if (/evolve it|skipping the stage 1/.test(t)) r.add('evolve');
+  if (/search your deck for up to \d+ cards and discard them/.test(t)) r.add('discard');
+  if (/prevent all damage/.test(t)) r.add('protect');
+  if (kind === 'energy' && !r.size) r.add('energy');
+  return r;
+}
+const GT_ROLE_SAY = { gust: 'pulls up a Benched Pokemon', switch: 'switches your Active Pokemon', draw: 'draws you cards', search: 'finds cards in your deck',
+  recovery: 'gets cards back from your discard pile', energy: 'helps pay Energy costs', survive: 'keeps an attacker alive longer', damage: 'adds damage',
+  heal: 'heals', disrupt: 'disrupts your opponent', bench: 'fills your Bench', evolve: 'speeds up evolving', discard: 'fills your discard pile', protect: 'blocks damage' };
+const GT_ROLE_DO = { gust: 'pull up a Benched Pokemon', switch: 'switch your Active Pokemon', draw: 'draw you cards', search: 'find your Pokemon',
+  recovery: 'get cards back from your discard pile', energy: 'help pay Energy costs', survive: 'keep an attacker alive longer', damage: 'add damage',
+  heal: 'heal', disrupt: 'disrupt your opponent', bench: 'fill your Bench', evolve: 'speed up evolving', discard: 'fill your discard pile', protect: 'block damage' };
+
+function gtQ(entries, f) { return entries.reduce((a, e) => a + (e.card && f(e.card) ? e.qty : 0), 0); }
+
+function gTrainers(entries, coh, via, main) {
+  const flaws = [], cut = [];
+  const cards = entries.filter(e => e.card);
+  const trn = cards.filter(e => e.card.t === 'trainer');
+  const spE = cards.filter(e => e.card.t === 'energy' && (e.card.sub || []).map(String).map(x => x.toLowerCase()).includes('special'));
+  const has = (c, p) => (c.provides || []).includes(p);
+  const text = c => c.t === 'energy' ? (c.et || '') : (c.rt || '');
+  const roleOf = new Map();
+  [...trn, ...spE].forEach(e => roleOf.set(e.card.key, gtRoles(text(e.card), e.card.t === 'energy' ? 'energy' : e.card.tt)));
+  const notAce = c => !c.ace;
+
+  // 1. Cards with nothing to work on in this list.
+  const dead = [];
+  [...trn, ...spE].forEach(e => { const tx = text(e.card); if (!tx) return;
+    const miss = gtUnmet(entries, coh, tx);
+    if (miss.length) dead.push({ e, miss }); });
+  dead.filter(d => !d.e.card.ace).forEach(d => {
+    const what = [...new Set(d.miss.map(gtSay))].join(' or ');
+    const isE = d.e.card.t === 'energy', only = isE && /can only be attached to/.test(gtNorm(text(d.e.card)));
+    flaws.push({ sev: 'warn', t: `${gCap(d.e.name)} has nothing to work with`,
+      d: `${gCap(d.e.name)} needs ${what}, and the list runs none, so ${d.e.qty > 1 ? `the ${d.e.qty} copies do` : 'it does'} nothing${only ? ', since it can only be attached to them' : isE ? ' beyond giving Energy' : ''}. Cut ${d.e.qty > 1 ? 'them' : 'it'} or add ${what}.` });
+    cut.push(isE ? 0.06 : 0.12); });
+
+  // 2. The engine: Supporters, finding Pokemon, switching and getting cards back.
+  const sup = gtQ(entries, c => c.t === 'trainer' && c.tt === 'supporter');
+  const anyMon = cards.some(e => e.card.t === 'pkmn');
+  if (anyMon && sup < 7) {
+    flaws.push({ sev: 'warn', t: `Only ${sup} Supporter${sup === 1 ? '' : 's'}`,
+      d: `You can play one Supporter a turn, and most of your draw and your Boss's Orders style plays come from them. With ${sup}, many turns open with none in hand. Most lists run 9 to 14.` });
+    cut.push(sup < 5 ? 0.2 : 0.1); }
+  const find = gtQ(entries, c => (c.t === 'trainer' || (c.t === 'energy')) && (has(c, 'search_pokemon') || has(c, 'search_basic')))
+    + gtQ(entries, c => c.t === 'pkmn' && (has(c, 'search_pokemon') || has(c, 'search_basic')));
+  const evo = cards.some(e => e.card.t === 'pkmn' && (e.card.stage === 'stage1' || e.card.stage === 'stage2'));
+  if (evo && find > 0 && find <= 3) {
+    flaws.push({ sev: 'warn', t: `Only ${find} way${find === 1 ? '' : 's'} to find your Pokemon`,
+      d: `${find} card${find === 1 ? '' : 's'} in the list search${find === 1 ? 'es' : ''} your deck for a Pokemon, so setting up your attackers leans on drawing them. Most lists that evolve run 6 or more, like Ultra Ball, Poké Pad or Buddy-Buddy Poffin.` });
+    cut.push(0.1); }
+  const swT = cards.filter(e => e.card.t !== 'pkmn' && notAce(e.card) && (roleOf.get(e.card.key) || new Set()).has('switch'));
+  const swQ = swT.reduce((a, e) => a + e.qty, 0) + gtQ(entries, c => c.t === 'pkmn' && c.swab);
+  const gustQ = gtQ(entries, c => notAce(c) && has(c, 'gust'));
+  const recQ = gtQ(entries, c => notAce(c) && c.t !== 'pkmn' && ((roleOf.get(c.key) || new Set()).has('recovery') || has(c, 'recovery')));
+  const drawQ = gtQ(entries, c => notAce(c) && has(c, 'draw'));
+  const abil = cards.filter(e => e.card.t === 'pkmn' && (e.card.abil || []).length && (has(e.card, 'draw') || has(e.card, 'search_pokemon') || has(e.card, 'search_basic') || has(e.card, 'energy_accel')));
+  const abilQ = abil.reduce((a, e) => a + e.qty, 0);
+  const stadQ = gtQ(entries, c => c.t === 'trainer' && c.tt === 'stadium');
+  // Switching and a Stadium of your own are left alone: about a third of winning lists run no switch card,
+  // and the ones with no Stadium still place, so neither is a flaw on its own.
+
+  // 3. The ACE SPEC.
+  const aces = cards.filter(e => e.card.ace);
+  const aceN = aces.reduce((a, e) => a + e.qty, 0);
+  // What the rest of the list is thinnest on, measured the same way for every deck.
+  const gap = [];
+  if (gustQ === 0 && !via.ctl) gap.push({ role: 'gust', say: 'nothing else in the list pulls up a Benched Pokemon' });
+  if (evo && find <= 3) gap.push({ role: 'search', say: find ? `only ${find} other cards find Pokemon` : 'nothing else finds Pokemon' });
+  if (drawQ + abilQ <= 3 && !via.ctl) gap.push({ role: 'draw', say: `only ${drawQ + abilQ} other cards draw` });
+  let ace = null;
+  if (anyMon && aceN === 0) {
+    const alt = gtAceFor(entries, coh, gap);
+    flaws.push({ sev: 'warn', t: 'No ACE SPEC',
+      d: `Every deck may run one ACE SPEC card, and nearly every winning list does. It is a free upgrade.${alt ? ` ${alt.name} would suit this list: ${alt.why}.` : ''}` });
+    cut.push(0.2);
+    ace = { link: 'ACE SPEC: none', p: `The list runs no ACE SPEC.${alt ? ` ${alt.name} would ${GT_ROLE_DO[alt.role]}, and ${alt.why}.` : ''}`, alt: alt && alt.name };
+  } else if (aceN === 1) {
+    const e = aces[0], c = e.card, tx = text(c) || (GT_ACE[gCap(e.name)] || GT_ACE[e.name] || [])[1] || '';
+    const roles = gtRoles(tx, c.t === 'energy' ? 'energy' : c.tt);
+    const miss = tx ? gtUnmet(entries, coh, tx) : [];
+    const nm = gCap(e.name);
+    const does = [...roles].slice(0, 2).map(r => GT_ROLE_SAY[r]).join(' and ') || 'does its own job';
+    if (miss.length) {
+      const what = [...new Set(miss.map(gtSay))].join(' or ');
+      const alt = gtAceFor(entries, coh, gap, e.name);
+      flaws.push({ sev: 'warn', t: `Your ACE SPEC, ${nm}, has nothing to work with`,
+        d: `${nm} needs ${what}, and the list runs none, so your one ACE SPEC slot does nothing.${alt ? ` ${alt.name} would ${GT_ROLE_DO[alt.role]} instead.` : ''}` });
+      cut.push(0.2);
+      ace = { link: `ACE SPEC: ${nm}`, p: `Needs ${what}, which this list does not run.`, fit: 'dead', alt: alt && alt.name };
+    } else {
+      const covers = gap.find(g => roles.has(g.role));
+      const alt = covers ? null : gtAceFor(entries, coh, gap, e.name);
+      if (covers) ace = { link: `ACE SPEC: ${nm}`, p: `${nm} ${does}, and that fills a hole: ${covers.say}.`, fit: 'covers' };
+      else if (alt) {
+        ace = { link: `ACE SPEC: ${nm}`, p: `${nm} ${does}. ${alt.name} might fit better, since ${alt.why}.`, fit: 'weak', alt: alt.name };
+        // A suggestion, not a flaw: winning lists pick their ACE SPEC for reasons a count of cards cannot see.
+      } else ace = { link: `ACE SPEC: ${nm}`, p: `${nm} ${does}. It works with this list.`, fit: 'fine' };
+    }
+  }
+  // Two or more ACE SPEC cards break a deck building rule. The rules box above the grade marks the list
+  // not legal; this line says which cards, so the fix is plain.
+  if (aceN > 1) ace = { link: `ACE SPEC: ${aceN} cards`, p: `The list runs ${aces.map(e => `${e.qty > 1 ? e.qty + ' ' : ''}${gCap(e.name)}`).join(' and ')}. A deck can hold only one ACE SPEC card, so cut down to one before you play it.`, fit: 'over' };
+
+  const score = gClamp(1 - cut.reduce((a, x) => a + x, 0), 0, 1);
+  return { score, flaws, ace, dead: dead.map(d => d.e.name), counts: { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN } };
+}
+
+/** An ACE SPEC from the table that covers one of the list's gaps and works with the list. */
+function gtAceFor(entries, coh, gap, except) {
+  for (const g of gap) for (const [name, [kind, tx]] of Object.entries(GT_ACE)) {
+    if (except && gtNorm(name) === gtNorm(except)) continue;
+    const roles = gtRoles(tx, kind);
+    if (!roles.has(g.role)) continue;
+    if (gtUnmet(entries, coh, tx).length) continue;
+    // A card that also needs a condition on the opponent or a turn (Unfair Stamp after a Knock Out) still works, so it stays.
+    return { name, role: g.role, why: g.say };
+  }
+  return null;
+}
+
 function gradeDeck(deck) {
   const entries=toGradeDeck(deck);
   const coh=gCoherence(entries);
   let main=null; try { main=gMainAttacker(entries, coh, deck.name); } catch (_) {}
   const via=gViability(entries, coh, main);
+  // v65: the Trainers and Special Energy scale Synergy; a full suite leaves it as it was.
+  let trn=null; try { trn=gTrainers(entries, coh, via, main); } catch (_) {}
+  if (trn) { coh.score=gClamp(coh.score*(1-0.35*(1-trn.score)),0,1); coh.flaws=(coh.flaws||[]).concat(trn.flaws); coh.trainers=trn; }
   const cohF=Math.max(coh.score,0.06), viaF=Math.max(via.score,0.12);
   const overall=gR1(cohF*viaF*10);
   const unread=entries.filter(e=>!e.card).reduce((a,e)=>a+e.qty,0);
   let plan=[]; try { plan=gPlan(entries, coh, via); } catch (_) {}
+  if (trn && trn.ace) plan.push({ link: trn.ace.link, p: trn.ace.p });
   return { overall, coh, via, unread, entries, plan };
 }
 
@@ -10364,7 +10643,7 @@ async function enrichDeckCards(cards) {
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
       ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','sub','tx'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
         // Every override is a Trainer, and its role is known without the API.
@@ -10385,7 +10664,7 @@ async function enrichDeckCards(cards) {
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
       ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','sub','tx'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
     }
@@ -10409,6 +10688,7 @@ async function enrichDeckCards(cards) {
     // v58: card text for Goldfish (tx marks that this read stored it).
     c.atext = e.atext && e.atext.length ? e.atext : undefined;
     c.rtext = e.rtext || undefined;
+    c.etext = e.etext || undefined;
     c.sub = st.length ? st : undefined;
     c.tx = 1;
     // Read by name from another printing: its costs may not match the card in the list.
