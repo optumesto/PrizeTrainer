@@ -662,7 +662,7 @@ function apply(s0, a) {
     case 'retreat': {
       const old = P.active; a.pay.forEach(uid => P.discard.push(take(old.energy, uid)));
       const i = P.bench.findIndex(m => m.id === a.mon); P.active = P.bench[i]; P.bench[i] = old; P.used.retreat = true;
-      log(s, 'Retreated ' + monName(old) + ' for ' + monName(P.active)); return s;
+      log(s, 'Retreated ' + monName(old) + (monName(old) === monName(P.active) ? ' for the other ' : ' for ') + monName(P.active)); return s;
     }
     case 'attack': return attack(s, a.i);
     case 'end': return endTurn(s, 'Ended the turn');
@@ -698,18 +698,18 @@ function answer(s, v) {
       a.dmg -= 10 * v.n; if (!(O.active !== b && cage)) b.dmg += 10 * v.n;
       log(s, `Moved ${v.n} damage counters from ${monName(a)} to ${monName(b)}`); checkKOs(s); return next();
     }
-    case 'moveEnergy': { const a = findMon(s, v.from).m, b = findMon(s, v.to).m; b.energy.push(take(a.energy, v.uid)); return next(); }
-    case 'moveToSelf': { if (v == null) return next(); const a = findMon(s, v.from).m, b = findMon(s, c.mon).m; b.energy.push(take(a.energy, v.uid)); R.ask = null; return ask(s, 'moveToSelf', { step: A.step }); }
-    case 'pickUp': { const m = findMon(s, v).m; if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
+    case 'moveEnergy': { const a = findMon(s, v.from).m, b = findMon(s, v.to).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${monName(a)} to ${monName(b)}`); return next(); }
+    case 'moveToSelf': { if (v == null) return next(); const a = findMon(s, v.from).m, b = findMon(s, c.mon).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${monName(a)} to ${monName(b)}`); R.ask = null; return ask(s, 'moveToSelf', { step: A.step }); }
+    case 'pickUp': { const m = findMon(s, v).m; log(s, 'Put ' + monName(m) + ' back into your hand'); if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
       P.hand.push.apply(P.hand, m.stack); (st.keep ? P.hand : P.discard).push.apply(st.keep ? P.hand : P.discard, m.energy.concat(m.tool ? [m.tool] : [])); return next(); }
     case 'attach': {
       if (v == null) return next();
       const src = st.from === 'discard' ? P.discard : P.hand, x = take(src, v.uid), m = findMon(s, v.mon).m;
-      m.energy.push(x); c.attached++; c.left--; if (st.each) c.done = c.done.concat(m.id); else c.target = m.id;
+      m.energy.push(x); log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); c.attached++; c.left--; if (st.each) c.done = c.done.concat(m.id); else c.target = m.id;
       R.i = A.step; if (c.left > 0 && attachChoices(s).length) return ask(s, 'attach', { step: A.step });
       return next();
     }
-    case 'cost': v.forEach(uid => P.discard.push(take(P.hand, uid))); return next();
+    case 'cost': { const got = v.map(uid => take(P.hand, uid)); got.forEach(x => P.discard.push(x)); if (got.length) log(s, 'Discarded ' + got.map(x => x.card.name).join(', ')); return next(); }
     case 'search': {
       const got = v.map(uid => take(P.deck, uid));
       if (st.dest === 'bench') got.forEach(x => { const m = newMon(s, x, s.cur); m.trig = true; m.benchTurn = s.turn; P.bench.push(m); benchRuins(s, m); });
@@ -719,9 +719,10 @@ function answer(s, v) {
       log(s, got.length ? 'Searched for ' + got.map(x => x.card.name).join(', ') : 'Searched and took nothing');
       checkKOs(s); return next();
     }
-    case 'splitAttach': { findMon(s, v).m.energy.push(c.splitRef); c.splitRef = null; return next(); }
-    case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') P.deck = P.deck.concat(got); else got.forEach(x => P.hand.push(x)); return next(); }
-    case 'topFromHand': P.deck.unshift(take(P.hand, v)); return next();
+    case 'splitAttach': { const m = findMon(s, v).m; m.energy.push(c.splitRef); log(s, 'Attached ' + c.splitRef.card.name + ' to ' + monName(m)); c.splitRef = null; return next(); }
+    case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') P.deck = P.deck.concat(got); else got.forEach(x => P.hand.push(x));
+      log(s, got.length ? 'Took back ' + got.map(x => x.card.name).join(', ') + (st.dest === 'deck' ? ' into your deck' : '') : 'Took back nothing'); return next(); }
+    case 'topFromHand': { const x = take(P.hand, v); P.deck.unshift(x); log(s, 'Put ' + x.card.name + ' on top of your deck'); return next(); }
   }
   throw new Error('Unknown choice ' + A.kind);
 }
@@ -753,6 +754,7 @@ function cardFromApi(c, opts) {
   const sub = (c.subtypes || []).map(x => String(x).toLowerCase());
   const rules = (c.rules || []).map(r => String(r).trim());
   const out = { key: c.id || c.name, name: c.name, cat, sub, types: (c.types || []).map(t => t.toLowerCase()) };
+  if (c.images && c.images.small) out.img = c.images.small;
   if (cat === 'pokemon') {
     const st = sub.includes('stage 2') ? 'stage2' : sub.includes('stage 1') ? 'stage1' : 'basic';
     const all = [...rules.join(' ').toLowerCase().matchAll(/takes?\s+(\d+)\s+prize/g)].map(x => +x[1]);
@@ -819,27 +821,30 @@ function goalMet(s) {
  */
 function readCheck(s) {
   const P = me(s), O = foe(s), bad = new Set();
-  const check = (ref, mine) => {
-    const c = ref.card;
-    if (c.cat === 'hidden') return;
-    if (c.cat === 'trainer') {
-      if (c.kind === 'tool' || (c.kind === 'stadium' && !readTrainer(ref).once)) { if (!passiveKnown(c.rtext)) bad.add(c.name); }
-      else if (mine && !/^rare candy$/i.test(c.name)) { const TP = readTrainer(ref); if (!TP.steps || (TP.need && needWhy(s, TP.need) === '?')) bad.add(c.name); }
-    } else if (c.cat === 'energy') { if (!provides(ref)) bad.add(c.name); }
-    else if (c.cat === 'pokemon') {
-      readAbilities(ref).forEach(A => { if (A.when === 'passive' ? !passiveKnown(A.text) : mine && !A.steps) bad.add(c.name + ': ' + A.name); });
-      if (mine) (c.attacks || []).forEach(a => { if (!readAttack(a)) bad.add(c.name + ': ' + a.name); });
-      if (mine && c.retreat == null) bad.add(c.name + ': Retreat Cost');
-      if (!mine && c.weak && c.weak.x == null && c.weak.plus == null) bad.add(c.name + ': Weakness amount');
-      if (!mine && c.resUnknown) bad.add(c.name + ': Resistance');
-    }
-  };
+  const check = (ref, mine) => cardProblems(s, ref, mine).forEach(x => bad.add(x));
   // Only the top card of a Pokémon in play acts; the cards under it don't.
   const inPlay = (side, mine) => mons(side).forEach(m => { [topOf(m)].concat(m.energy, m.tool ? [m.tool] : []).forEach(r => check(r, mine)); });
   inPlay(P, true); inPlay(O, false);
   P.hand.concat(P.deck, P.discard).forEach(r => check(r, true));
   if (s.stadium) check(s.stadium.ref, true);
   return [...bad];
+}
+/** What about one card the engine can't read (empty when it reads fully). mine: it is on your side. */
+function cardProblems(s, ref, mine) {
+  const c = ref.card, bad = [];
+  if (c.cat === 'hidden') return bad;
+  if (c.cat === 'trainer') {
+    if (c.kind === 'tool' || (c.kind === 'stadium' && !readTrainer(ref).once)) { if (!passiveKnown(c.rtext)) bad.push(c.name); }
+    else if (mine && !/^rare candy$/i.test(c.name)) { const TP = readTrainer(ref); if (!TP.steps || (TP.need && needWhy(s, TP.need) === '?')) bad.push(c.name); }
+  } else if (c.cat === 'energy') { if (!provides(ref)) bad.push(c.name); }
+  else if (c.cat === 'pokemon') {
+    readAbilities(ref).forEach(A => { if (A.when === 'passive' ? !passiveKnown(A.text) : mine && !A.steps) bad.push(c.name + ': ' + A.name); });
+    if (mine) (c.attacks || []).forEach(a => { if (!readAttack(a)) bad.push(c.name + ': ' + a.name); });
+    if (mine && c.retreat == null) bad.push(c.name + ': Retreat Cost');
+    if (!mine && c.weak && c.weak.x == null && c.weak.plus == null) bad.push(c.name + ': Weakness amount');
+    if (!mine && c.resUnknown) bad.push(c.name + ': Resistance');
+  }
+  return bad;
 }
 /** A short, order-free fingerprint of a state, so the solver can skip positions it has seen. */
 function key(s) {
@@ -853,7 +858,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : ''].join('#');
 }
 
-const api = { needWhy, targetWhy, abilWhy, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
+const api = { needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

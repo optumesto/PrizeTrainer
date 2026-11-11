@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Not released yet: RdyDeck 2.3 (build 68): daily puzzle (branch puzzle-engine)
+
+Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files), CHANGES.md, and the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks).
+
+- A Daily puzzle card on home, under the Daily challenge: one board a day, the same for everyone, from two top tournament lists. You can win this turn if you find the line.
+- Every card can be tapped to read it. Plays you can't make right now are listed with the reason.
+- Undo and Start over are free. Your first finished try is your score; looking at the answer first counts as a try. Share sends the result, and a streak counts the days you played.
+- Strict: a line that draws, flips or uses a card you can't see never counts as a win, since it isn't sure.
+- 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Puzzle #1 is set to 12 Nov 2026; change PUZZLE_EPOCH on release day.
+
 # RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, audit fixes, a grade check and the old address redirect (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v67), CHANGES.md, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, terms.html, privacy.html, tests/ and .github/workflows/grade-check.yml, plus the audit fixes' files (404.html, offline.html, manifest.json, guide pages, sitemap.xml, update-sitemap.mjs, README.md, .github/workflows/refresh-data.yml).
