@@ -2475,6 +2475,7 @@
   .st38-row .ic { width:16px; height:16px; color:var(--text-3); flex-shrink:0; }
   .st38-row:hover { background:var(--accent-soft); }
   .st38-danger { color:var(--danger); }
+  .st38-danger .ic { color:var(--danger); }
   .st38-ver { font-family:var(--mono); font-size:0.75rem; color:var(--text-3); margin-top:0.8rem; }
 
   /* Deck pages on a computer: a reading width for text tabs, tabs that do not stretch */
@@ -2823,6 +2824,7 @@ const PT_PLAY = (function () {
       <div class="review-deck-name" id="review-deck-name">Deck</div>
     </div>
     <button class="icon-btn" onclick="openDeckShare()" aria-label="Share deck link" title="Share deck link"><svg class="ic"><use href="#i-link"/></svg></button>
+    <button class="icon-btn" id="dd65-more" onclick="dd65Menu()" aria-label="More for this deck" title="More"><svg class="ic"><use href="#i-more"/></svg></button>
   </div>
   <div class="review-coverage" id="review-coverage" style="display:none;"></div>
   <div class="review-tabs" role="tablist">
@@ -15690,10 +15692,11 @@ function dm38Open(id) {
       ${row('openReview', 'Grade, odds and cards', '')}
       ${row('startGameDefault', 'Prize game', '')}
       ${played ? row('openWeakSpots', 'Progress', played + ' prize game' + (played !== 1 ? 's' : '') + ' played') : ''}
-      ${row('openModeModal', 'Game modes', 'Also hide or delete this deck')}
+      ${row('openModeModal', 'Game modes', '')}
       ${row('openEditModal', 'Edit the list', '')}
       ${row('openThumbPicker', 'Cover card', '')}
     </div>
+    ${dd65Rows(deck)}
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
 }
 
@@ -17011,6 +17014,64 @@ function mu60Section(deck) {
     return r;
   };
 })();
+</script>
+<script>
+// ═══════════ v65: hide and delete a deck from its menus ═══════════
+// Delete used to sit at the bottom of Game modes. It is now the last row of
+// the deck menu on home and of the menu on the deck page, behind one confirm.
+function dd65Find(id) { return state.decks.find(d => String(d.id) === String(id)) || null; }
+function dd65Rows(deck) {
+  const sid = esc(String(deck.id));
+  const r = (fn, t, ic, cls) => `<button type="button" class="st38-row${cls ? ' ' + cls : ''}" onclick="${fn}('${sid}')"><span>${t}</span><svg class="ic"><use href="#i-${ic}"/></svg></button>`;
+  return `<div class="st38-sec st38-rows">
+      ${r('dd65Hide', deck.hidden ? 'Show deck' : 'Hide deck', deck.hidden ? 'eye' : 'eye-off')}
+      ${r('dd65Ask', 'Delete deck', 'trash', 'st38-danger')}
+    </div>`;
+}
+function dd65Menu() {
+  const deck = dd65Find(state.activeDeckId);
+  if (!deck) return;
+  openSheet(`<div class="modal-title">${esc(deck.name)}</div>
+    ${dd65Rows(deck)}
+    <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
+async function dd65Hide(id) {
+  closeSheet();
+  const deck = dd65Find(id);
+  if (deck) await toggleHideDeck(deck.id);
+}
+function dd65Ask(id) {
+  const deck = dd65Find(id);
+  if (!deck) { closeSheet(); return; }
+  openSheet(`<div class="modal-title">Delete ${esc(deck.name)}?</div>
+    <p class="st38-p">Its prize games, drills and notes are deleted with it. This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-danger" onclick="dd65Delete('${esc(String(deck.id))}')"><svg class="ic ic-sm"><use href="#i-trash"/></svg>Delete</button>
+    </div>`);
+}
+async function dd65Delete(id) {
+  closeSheet();
+  const deck = dd65Find(id);
+  if (!deck) return;
+  state.decks = state.decks.filter(d => d !== deck);
+  await saveState();
+  if (String(state.activeDeckId) === String(deck.id) && document.getElementById('screen-review').classList.contains('active')) showScreen('home');
+  renderHome();
+  showToast('"' + deck.name + '" deleted.');
+}
+// The deck page menu shows only for decks saved on this device.
+(function () {
+  const _r = renderReview;
+  renderReview = function (deck) {
+    const r = _r.apply(this, arguments);
+    const b = document.getElementById('dd65-more');
+    if (b) b.style.display = deck && dd65Find(deck.id) ? '' : 'none';
+    return r;
+  };
+})();
+// Game modes keeps its own delete, now behind the same confirm.
+deleteDeckFromModal = function () { closeModeModal(); if (modeDeckId) dd65Ask(modeDeckId); };
 </script>
 </body>
 </html>
