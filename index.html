@@ -4247,6 +4247,68 @@ function group56(text, damage) {
  * Water Energy card that you discarded"). The list says how many of those it holds, so the
  * grade counts the average.
  */
+/**
+ * v63: what a card does to stop the opponent playing, read from one piece of card text
+ * (an attack, an Ability or a Trainer's rules). Returns a list of pieces:
+ *   k: item, supporter, stadium, tool (cards they cannot play), ability (Abilities turned off),
+ *      attack (cannot attack), retreat, mill (top of their deck), energy (Energy off their Pokemon),
+ *      hand (their hand cut or reset), wall (damage to your Pokemon prevented), heal.
+ *   when: active (while this Pokemon is Active), bench (while on your Bench), always,
+ *      next (for their next turn, after an attack or a card), once (first turn only), now (one time).
+ *   sc: what an Ability lock or a wall covers. n: cards milled, damage healed. flip: a coin decides it.
+ */
+function ctl63(text) {
+  const t = String(text || '').replace(/[‘’ʼ]/g, "'").replace(/[éÉ]/g, 'e').toLowerCase()
+    .replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!t) return [];
+  const out = [], flip = /flip a coin|if heads/.test(t);
+  const when = /during your first turn|only if you go second/.test(t) ? 'once'
+    : /as long as this pokemon is in the active spot/.test(t) ? 'active'
+    : /as long as this pokemon is on your bench/.test(t) ? 'bench'
+    : /during (?:your opponent's|their) next turn/.test(t) ? 'next' : 'always';
+  const opp = /(?:your opponent|they) can't play any ([a-z ,]+?)(?: from (?:their|his or her) hand|$|\.)/.exec(t);
+  if (opp) { const w = opp[1];
+    if (/\bitem\b/.test(w)) out.push({ k: 'item', when, flip });
+    if (/supporter/.test(w)) out.push({ k: 'supporter', when, flip });
+    if (/stadium/.test(w)) out.push({ k: 'stadium', when, flip });
+    if (/pokemon tool/.test(w)) out.push({ k: 'tool', when, flip }); }
+  // Abilities turned off for the opponent, or for both players (Initialization, Legendary Pyroduct).
+  let m = t.match(/([a-z' ]*?)(?: in play)? ha(?:s|ve) no abilities/);
+  if (m && !/^\s*this pokemon\s*$/.test(m[1]) && /opponent|in play|pokemon/.test(m[0])) {
+    const w = m[1];
+    const sc = /rule box/.test(w) ? 'rulebox' : /evolution/.test(w) ? 'evolution' : /colorless/.test(w) ? 'colorless'
+      : /basic/.test(w) ? 'basic' : /active/.test(w) ? 'active' : /this pokemon/.test(w) ? null : 'all';
+    if (sc) out.push({ k: 'ability', sc, when, flip }); }
+  if (/(?:defending pokemon|that pokemon|your opponent's active pokemon) can't attack|pokemon that have \d+ or (?:less|fewer) energy attached can't attack/.test(t))
+    out.push({ k: 'attack', sc: /or (?:less|fewer) energy/.test(t) ? 'low' : 'all', n: +((t.match(/have (\d+) or (?:less|fewer) energy attached can't attack/) || [])[1] || 0) || undefined, when: when === 'always' ? 'next' : when, flip });
+  if (/(?:defending pokemon|that pokemon) can't retreat/.test(t)) out.push({ k: 'retreat', when: when === 'always' ? 'next' : when, flip });
+  if ((m = t.match(/discard the top (\d+|a|an) cards? of (?:your opponent's|their) deck/))) {
+    const n = /^an?$/.test(m[1]) ? 1 : +m[1];
+    out.push({ k: 'mill', n, when: 'now', flip: flip || /for each heads/.test(t), cond: /^if /.test(t) || /if you played/.test(t) }); }
+  if ((m = t.match(/discard (an?|\d+|all) (special )?energy from (?:1 of )?your opponent's (?:active )?pokemon/)))
+    out.push({ k: 'energy', n: /^an?$/.test(m[1]) ? 1 : m[1] === 'all' ? 2 : +m[1], special: !!m[2], when: 'now', flip });
+  if (/each player shuffles their hand into their deck and draws \d|your opponent discards cards from their hand until|you discard up to \d+ (?:item )?cards you find there|your opponent shuffles their hand into their deck|each player shuffles their hand into their deck|each player shuffles their hand and puts it on the bottom of their deck/.test(t))
+    out.push({ k: 'hand', when: 'now', flip });
+  // Damage to your own Pokemon prevented. sc says from what.
+  if (/prevent all damage/.test(t) && !/your opponent's (?:active|benched) pokemon/.test(t.split('prevent all damage')[0].slice(-40))) {
+    const tail = t.slice(t.indexOf('prevent all damage'));
+    const sc = /pokemon that don't have a rule box[^.]*by attacks from (?:the|your) opponent's pokemon ex/.test(tail) ? 'nonrule'
+      : /by attacks from your opponent's basic pokemon ex/.test(tail) ? 'basicex'
+      : /by attacks from your opponent's pokemon ex/.test(tail) ? 'ex'
+      : /pokemon that have an ability/.test(tail) ? 'ability'
+      : /that have \d+ or (?:less|fewer) energy attached/.test(tail) ? 'low'
+      : /if that damage is \d+ or more/.test(tail) ? 'big'
+      : /damage counters from being placed on benched pokemon/.test(tail) ? 'bench'
+      : /benched pokemon/.test(tail) ? 'bench'
+      : /from attacks from basic pokemon|by attacks from basic pokemon/.test(tail) ? 'basic'
+      : /by attacks/.test(tail) ? 'all' : null;
+    const team = /each of your pokemon|pokemon that don't have a rule box|your benched pokemon|benched pokemon/.test(tail);
+    if (sc && !(sc === 'all' && when === 'bench')) out.push({ k: 'wall', sc, team, when, flip, n: +((tail.match(/(\d+) or (?:more|less|fewer)/) || [])[1] || 0) || undefined }); }
+  if ((m = t.match(/^heal (\d+|all) damage from|[.,] heal (\d+|all) damage from|^(?:once during your turn, )?(?:you may )?heal (\d+|all) damage from/)))
+    { const v = m[1] || m[2] || m[3]; out.push({ k: 'heal', n: v === 'all' ? 200 : +v, when: /once during your turn/.test(t) ? 'always' : 'now', flip }); }
+  return out;
+}
+
 function mill56(text, damage) {
   const t = String(text || '').replace(/[\u2018\u2019]/g, "'");
   const m = t.match(/discard the top (\d+ cards?|card) of (your|each player's) deck[^.]*?(?:\.\s*|, and )this attack does (\d+) (more )?damage for each (.+?) (?:that )?(?:you )?discarded in this way/i);
@@ -4348,6 +4410,8 @@ function enrichCard(apiCard, opts) {
       pile: pile55(a.text, a.damage),
       group: group56(a.text, a.damage),
       mill: mill56(a.text, a.damage),
+      // v63: what the attack does to stop the opponent playing (Daunting Gaze is an Ability; Cracking Stomp's mill is this).
+      ctl: (x => x.length ? x : null)(ctl63(a.text)),
       // v54: Energy the attack discards from the attacker itself (Metagross's Metallic Hammer, Pikachu ex's Topaz Bolt).
       edisc: (() => { const m = (a.text || '').match(/(you may )?discard (all|an?|\d+) ((?:basic )?(?:grass|fire|water|lightning|psychic|fighting|darkness|metal) )?energy (?:cards? )?from this pok[e\u00e9]mon(?:[^.]*?(\d+) more damage)?/i);
         return m ? { n: m[2].toLowerCase() === 'all' ? 'all' : /^an?$/i.test(m[2]) ? 1 : +m[2], type: m[3] ? m[3].trim().toLowerCase() : '', opt: !!m[1], more: m[4] ? +m[4] : 0 } : null; })(),
@@ -4625,7 +4689,7 @@ return {
   parseHP, parseDamage, parseCost, parseStage, parsePrizeValue,
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
-  findOverride, enrichCard, fetchDeckCards, coverage,
+  findOverride, enrichCard, fetchDeckCards, coverage, ctl63,
 };
 });
 
@@ -5019,7 +5083,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 13;  // v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 14;  // v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -5191,7 +5255,7 @@ function toGradeDeck(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -5219,7 +5283,11 @@ function toGradeDeck(deck) {
       abBoost: (c.abilities||[]).filter(x => x.boost).map(x => Object.assign({ abil: x.name }, x.boost)),
       sboost: (x => x ? Object.assign({ abil: x.name }, x.sboost) : null)((c.abilities||[]).find(x => x.sboost)),
       gate: ((c.abilities||[]).filter(x => x.gate).map(x => Object.assign({ abil: x.name }, x.gate)))[0] || null,
-      byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim())
+      byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim()),
+      // v63: lock, mill, wall and other control pieces from its Abilities or Trainer rules (ctl63).
+      ctl: [].concat(...(c.atext||[]).map(x => TCGEnrich.ctl63(x[1]).map(p => Object.assign(p, { src:'ability', via:x[0] }))),
+        t==='trainer' ? TCGEnrich.ctl63(c.rtext).map(p => Object.assign(p, { src:c.ttype||'item', via:null })) : []),
+      ace: !!c.ace
     }};
   });
 }
@@ -5895,6 +5963,96 @@ function gMainAttacker(deck, coh, deckName) {
   return best ? { key: best.e.card.key, name: best.e.name, why: 'list' } : null;
 }
 
+/**
+ * v63: control decks (lock, mill and stall) win by stopping the opponent, not by trading knockouts.
+ * Reads the pieces ctl63 found in card text (Abilities, attacks and Trainer rules) and weighs each one:
+ *   how much it stops (an Item lock more than a Tool lock), how often it is on (an Ability on the
+ *   Pokemon that sits Active, an attack the deck uses every turn, a coin flip half the time) and
+ *   how many copies the list runs. The deck counts as control only when its lock, mill and wall
+ *   pieces together reach 0.35, so one tech card in an attacking deck changes nothing.
+ * Returns null for a deck that is not control.
+ */
+function gControl(deck, coh, main) {
+  const mk = main ? main.key : null;
+  const pay = a => (a.cost || []).every(ty => ty === 'colorless' || coh.energyTypes[ty] || coh.energyTypes.any);
+  const byKey = new Map();
+  deck.forEach(e => { const c = e.card; if (!c) return;
+    const x = byKey.get(c.key) || { e, qty: 0 }; x.qty += e.qty; byKey.set(c.key, x); });
+  const LOCK = { item: 0.55, supporter: 0.5, tool: 0.05, stadium: 0.05, retreat: 0.05 };
+  const ABIL = { rulebox: 0.45, all: 0.45, evolution: 0.3, basic: 0.25, colorless: 0.15, active: 0.15 };
+  const WALL = { ex: 0.4, basicex: 0.25, ability: 0.2, big: 0.2, low: 0.3, nonrule: 0.3, all: 0.3, basic: 0.2, bench: 0.03 };
+  const cat = p => p.k === 'mill' ? 'mill' : p.k === 'wall' || p.k === 'heal' ? 'stall' : p.k === 'energy' || p.k === 'hand' ? 'denial' : 'lock';
+  const out = [], perCopy = {};
+  byKey.forEach(({ e, qty }, key) => { const c = e.card;
+    const isMain = key === mk, cf = Math.min(1, qty / 3) * (c.t === 'pkmn' && c.stage === 'stage2' ? 0.85 : 1);
+    const add = (p, how, src, atk) => {
+      // Trainers that do a little each time they are played (Crushing Hammer, Judge, a heal) count per copy.
+      if (p.k === 'energy' || p.k === 'hand' || (p.k === 'heal' && p.when === 'now')) {
+        if (c.t === 'trainer') { const k = p.k; const per = k === 'energy' ? 0.06 : 0.04;
+          perCopy[k] = perCopy[k] || { v: 0, who: [] };
+          perCopy[k].v += per * qty * (p.flip ? 0.5 : 1); perCopy[k].who.push({ name: e.name, qty, p, src }); return; }
+      }
+      let v = p.k === 'ability' ? ABIL[p.sc] || 0 : p.k === 'attack' ? (p.sc === 'low' ? 0.35 : 0.45)
+        : p.k === 'mill' ? Math.min(0.5, 0.15 * (p.n || 1)) : p.k === 'wall' ? WALL[p.sc] || 0
+        : p.k === 'energy' ? 0.3 : p.k === 'heal' ? 0.15 : p.k === 'hand' ? 0.1 : LOCK[p.k] || 0;
+      if (!v) return;
+      let m = 1;
+      if (src === 'attack') m = isMain ? 0.85 : 0.4;
+      else if (src === 'ability') m = p.k === 'wall' && !p.team ? (isMain ? 1 : 0.5) : p.when === 'active' ? (isMain ? 1 : 0.8) : 1;
+      if (p.flip) m *= 0.5;
+      if (p.when === 'once') m *= 0.2;
+      const copies = c.t === 'trainer' && c.ace ? 0.6 : cf;
+      out.push({ name: e.name, key, qty, p, v: v * m * copies, raw: v, src, how, atk, cat: cat(p), main: isMain });
+    };
+    const seen = new Set();
+    (c.ctl || []).forEach(p => { const id = JSON.stringify([p.k, p.sc, p.when, p.via]); if (seen.has(id)) return; seen.add(id);
+      add(p, p.via, p.src === 'ability' ? 'ability' : 'trainer', null); });
+    (c.attacks || []).forEach(a => { if (!pay(a)) return; (a.ctl || []).forEach(p => add(p, a.name, 'attack', a.name)); });
+  });
+  Object.entries(perCopy).forEach(([k, x]) => {
+    const cap = k === 'energy' ? 0.3 : k === 'hand' ? 0.25 : 0.2;
+    out.push({ name: x.who.map(w => w.name).join(', '), who: x.who, key: null, qty: x.who.reduce((n, w) => n + w.qty, 0),
+      p: { k }, v: Math.min(cap, x.v), raw: cap, src: 'trainer', cat: cat({ k, when: 'now' }) });
+  });
+  const comb = l => 1 - l.reduce((a, x) => a * (1 - Math.min(0.95, x.v)), 1);
+  const core = comb(out.filter(x => x.cat !== 'denial' && !(x.cat === 'stall' && x.p.k === 'heal')));
+  if (core < 0.35) return null;
+  const P = comb(out);
+  const by = {}; out.forEach(x => { by[x.cat] = comb(out.filter(y => y.cat === x.cat)); });
+  const kinds = ['lock', 'mill', 'stall'].filter(k => (by[k] || 0) >= 0.25).sort((a, b) => by[b] - by[a]);
+  if (!kinds.length) kinds.push(['lock', 'mill', 'stall'].sort((a, b) => (by[b] || 0) - (by[a] || 0))[0]);
+  return { pieces: out.sort((a, b) => b.v - a.v), core, P, by, kinds, close: 0.45 + 0.4 * P };
+}
+
+/** v63: one control piece in plain words, from what ctl63 read off the card. */
+function gCtlSay(x) {
+  const p = x.p, opp = "your opponent";
+  if (x.who) {
+    const w = x.who.map(y => `${y.qty} ${gCap(y.name)}`).join(', ');
+    return p.k === 'energy' ? `${w} discard Energy from ${opp}'s Pokemon${x.who.every(y => y.p.flip) ? ' on a coin flip' : ''}`
+      : p.k === 'hand' ? `${w} cut down ${opp}'s hand` : `${w} heal your Pokemon`;
+  }
+  const by = x.src === 'attack' ? `${gCap(x.name)}'s ${x.atk}` : x.src === 'ability' ? `${gCap(x.name)}'s ${x.how}` : gCap(x.name);
+  const when = p.when === 'active' ? ' while it is in the Active Spot' : p.when === 'next' ? ` during their next turn` : p.when === 'once' ? ' on your first turn' : '';
+  const flip = p.flip ? ' (on a coin flip)' : '';
+  let t;
+  if (p.k === 'item' || p.k === 'supporter' || p.k === 'tool' || p.k === 'stadium') t = `${opp} can't play ${p.k === 'item' ? 'Item' : p.k === 'supporter' ? 'Supporter' : p.k === 'tool' ? 'Pokemon Tool' : 'Stadium'} cards`;
+  else if (p.k === 'ability') t = ({ rulebox: 'Pokemon with a Rule Box have no Abilities', all: "Pokemon in play have no Abilities", evolution: 'Evolution Pokemon have no Abilities',
+    basic: 'Basic Pokemon have no Abilities', colorless: 'Colorless Pokemon have no Abilities', active: "the Active Pokemon has no Abilities" })[p.sc];
+  else if (p.k === 'attack') t = p.sc === 'low' ? `Pokemon with ${p.n || 'a few'} or less Energy attached can't attack` : "the Defending Pokemon can't attack";
+  else if (p.k === 'retreat') t = "the Defending Pokemon can't retreat";
+  else if (p.k === 'mill') t = `discards the top ${p.n === 1 ? 'card' : p.n + ' cards'} of ${opp}'s deck`;
+  else if (p.k === 'energy') t = `discards ${p.special ? 'Special ' : ''}Energy from ${opp}'s Pokemon`;
+  else if (p.k === 'hand') t = `cuts down ${opp}'s hand`;
+  else if (p.k === 'heal') t = `heals ${p.n >= 200 ? 'all' : p.n} damage`;
+  else if (p.k === 'wall') { const who = p.team ? (p.sc === 'nonrule' ? 'Pokemon without a Rule Box take' : p.sc === 'bench' ? 'your Benched Pokemon take' : 'your Pokemon take') : 'it takes';
+    t = ({ ex: `${who} no damage from attacks by Pokemon ex`, basicex: `${who} no damage from attacks by Basic Pokemon ex`, nonrule: `${who} no damage from attacks by Pokemon ex`,
+      ability: `${who} no damage from attacks by Pokemon with an Ability`, big: `${who} no damage from an attack that does ${p.n || 'a lot'} or more`,
+      low: `${who} no damage from Pokemon with ${p.n || 'a few'} or less Energy attached`, basic: `${who} no damage from attacks by Basic Pokemon`,
+      bench: 'your Benched Pokemon take no damage from attacks', all: `${who} no damage from attacks` })[p.sc] || `${who} less damage`; }
+  return t ? `${by}: ${t}${when}${flip}` : '';
+}
+
 function gViability(deck, coh, main) {
   const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
   const pay=a=>(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]||coh.energyTypes.any);
@@ -5980,6 +6138,25 @@ function gViability(deck, coh, main) {
     findings.push({sev:'ok', t:'Hits several Pokemon at once',
     d:`${how} hits ${multiR.multi>=4?'each':multiR.multi} of your opponent's Pokemon for ${multiR.top}${multiR.multi>=4?'':' each'}, so two uses can Knock Out ${n === 'every one' ? 'a whole board' : n} of their Pokemon with ${multiR.top*2} HP or less. The single-hit number undersells it.`}); }
   closeScore=gClamp(closeScore,0,1);
+  // v63: a lock, mill or stall deck closes games by stopping the opponent. When that counts for more
+  // than its damage, the grade uses it and the damage finding says why low damage is fine here.
+  let ctl=null; try { ctl=gControl(deck, coh, main); } catch (_) {}
+  if (ctl && ctl.close>closeScore) { closeScore=ctl.close;
+    const word={ lock:'locking', mill:'milling', stall:'stalling' };
+    const how=ctl.kinds.map(k=>word[k]).join(' and ');
+    const dmg=findings.find(f=>f.t==='Damage ceiling is too low'||f.t==='Two hits for the biggest threats'||f.t==='Nothing can reliably attack');
+    if (dmg && dmg.t!=='Nothing can reliably attack') { dmg.sev='ok'; dmg.t='Low damage, by design';
+      dmg.d=dmg.d.replace(/ You cannot trade up, which usually loses the prize race\.$/, '').replace(/ Fine if you can take the return hit\.$/, '')+` This deck wins by ${how}, not by trading knockouts, so its damage counts for less.`; }
+    const top=ctl.pieces.filter(x=>x.v>=0.04).map(gCtlSay).filter(Boolean);
+    findings.push({sev:'ok', t:`Wins by ${how}`,
+      d:`The grade counts what this deck stops more than its damage. The biggest piece is ${top[0].replace(/: /, ', where ')}.${top.length>1?` The game plan lists ${Math.min(5,top.length)-1} more.`:''}`});
+    // The piece the plan rests on, when it is one Pokemon: keep it Active, and run enough of it.
+    const k=ctl.pieces.find(x=>x.key&&x.src!=='trainer'&&x.cat!=='denial'&&x.p.k!=='heal');
+    if (k && k.p.when==='active') findings.push({sev:'ok', t:`Keep ${gCap(k.name)} Active`,
+      d:`${gCap(k.name)}'s ${k.how} only works while it is in the Active Spot. Switching it out or losing it turns the ${ctl.kinds[0]} off, so plan your retreats around it.`});
+    if (k && k.qty<=2 && !(main && k.key===main.key && k.qty===1)) findings.push({sev:'warn', t:`Only ${k.qty} ${gCap(k.name)}`,
+      d:`The ${ctl.kinds[0]} rests on ${gCap(k.name)}${k.how ? `'s ${k.how}` : ''}, and the list runs ${k.qty}. With so few copies it is often prized or gone after one knockout. Most lists run 3 or 4.`}); }
+  else ctl=null;
   const pk=deck.filter(e=>e.card&&e.card.t==='pkmn');
   const pkN=pk.reduce((a,e)=>a+e.qty,0)||1;
   const multiN=pk.filter(e=>(e.card.p||1)>=2).reduce((a,e)=>a+e.qty,0);
@@ -6046,7 +6223,7 @@ function gViability(deck, coh, main) {
   if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
-  return { score, findings, best, eff, bestName, reach, main, toolbox };
+  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl };
 }
 
 /**
@@ -6199,6 +6376,11 @@ function gPlan(entries, coh, via) {
       abOut.push({ who: gCap(x.name), p }); }); });
   if (abOut.length) out.push({ link: `Abilities: ${[...new Set(abOut.map(z => z.who))].slice(0, 4).join(', ')}${new Set(abOut.map(z => z.who)).size > 4 ? ' and more' : ''}`,
     p: abOut.map(z => z.p).join('. ') + '.' });
+  // v63: a lock, mill or stall deck's plan comes first: what it stops, from the card text.
+  if (via.ctl) { const C = via.ctl, word = { lock: 'Lock', mill: 'Mill', stall: 'Stall' }, verb = { lock: 'locking', mill: 'milling', stall: 'stalling' };
+    const top = C.pieces.filter(x => x.v >= 0.04).slice(0, 5).map(gCtlSay).filter(Boolean);
+    out.unshift({ link: `Game plan: ${C.kinds.map(k => word[k]).join(' and ')}`,
+      p: `This deck wins by ${C.kinds.map(k => verb[k]).join(' and ')} rather than by trading big hits. ${top.join('. ')}.` }); }
   return out;
 }
 
@@ -10231,7 +10413,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -11828,8 +12010,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
-const PT_VERSION = 'v2.0.1';
-const PT_BUILD = 62;
+const PT_VERSION = 'v2.0.2';
+const PT_BUILD = 63;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

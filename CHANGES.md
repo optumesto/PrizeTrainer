@@ -2,6 +2,20 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.0.2 (build 63): lock, mill and stall decks graded on how they win (11 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v63, the build number), CHANGES.md.
+
+Version
+- Settings shows RdyDeck v2.0.2.
+
+Grade
+- The grader now reads what a card does to stop the opponent, from its text: Item, Supporter, Tool and Stadium locks, Abilities turned off (Iron Thorns ex's Initialization, Legendary Pyroduct, Team Rocket's Watchtower), Pokemon that can't attack or retreat, cards milled from the opponent's deck, Energy discarded from their Pokemon, hand disruption, walls that prevent damage (Crustle's Mysterious Rock Inn, Neutralization Zone) and healing. Saved decks are read again once to pick this up.
+- Each piece counts by how much it stops, how often it is on (an Ability on the Pokemon that sits Active, the attack the deck uses every turn, a coin flip half the time) and how many copies the list runs. A deck counts as lock, mill or stall only when its lock, mill and wall pieces together are strong enough, so one tech card in an attacking deck changes nothing.
+- When that counts for more than the deck's damage, the grade uses it. The damage finding becomes "Low damage, by design", a "Wins by locking" (or milling, or stalling) finding names the biggest piece, and the deck is told to keep that Pokemon Active when the lock only works there. A warning shows when the lock rests on a Pokemon the list runs only 1 or 2 of.
+- How it plays opens with "Game plan: Lock" (or Mill, or Stall), listing what the deck stops in plain words.
+- Iron Thorns goes from 6.5 to 7.3 and Tyranitar from 7.0 to 8.0. Crustle, Sylveon, Dudunsparce Control, Hydreigon and decks with a lock tech (Dragapult Iron Thorns) grade as before, since their damage already counts for more. No other meta deck's grade moves.
+
 # RdyDeck 2.0.1 (build 62): grade fixes for attacks with conditions, Festival Lead attacking twice and Okidogi, SEO fixes, and meta notes (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v62, the build number), check-cards.mjs, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, sitemap.xml, .github/workflows/refresh-data.yml, CHANGES.md.
