@@ -28,8 +28,12 @@ Decks
 - With more than 8 decks, home shows the first 8 with Show all, plus a Find a deck box and a sort (Your order, Best grade, Name).
 
 Audit fixes (branch audit-fixes)
-- Prizes per game in the tournament log, tappable session history, long card names fit their guess chip, time per guess stays on its row, the prize result badge no longer covers HP, Notes saved shows under the note being typed.
-- Service worker, guide pages, 404 and offline pages, sitemap script and small hardening.
+- Tournament log: a best of three records prizes taken and given for each game, and the totals and averages count every game played ("10 taken, 8 given in 2 games"). Labels say "a game". A best of three saved before this counts its last game only.
+- Prize games: a Session History row opens that game, with its score, time and prizes, and the notes on missed cards can be edited there. "Notes saved" shows under the note being typed and stays until the next keystroke.
+- Layout: long card names like Lillie's Determination no longer break mid-word, time per guess stays on one row, and the prize result badge sits clear of the HP.
+- Offline: the service worker no longer keeps error pages, keeps the guide pages, icons and data files for offline use, and blocks one more ad host. The offline page has an Open RdyDeck button. The manifest has an id (same app identity as before).
+- Guide pages: register the service worker, link the manifest, and carry Twitter title and description tags. The 404 page's links also work on the GitHub Pages copy.
+- Scripts: the sitemap script fails loudly instead of writing a bad sitemap (sitemap dates refreshed), the data refresh job pulls before it pushes, the README points at the right script path, and the deck cover picker handles quotes in names.
 
 # RdyDeck 2.1.1 (build 66): Rare Candy needs the Basic (11 Nov 2026)
 
