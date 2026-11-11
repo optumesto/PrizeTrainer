@@ -17939,6 +17939,7 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
 (function () {
   const _home = renderHome;
   renderHome = function () {
+    const typing = document.activeElement && document.activeElement.classList.contains('dl67-q');
     const r = _home.apply(this, arguments);
     try {
       const list = document.getElementById('deck-list');
@@ -17962,6 +17963,8 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
       const after = [...list.querySelectorAll(':scope > .deck-card')].filter(n => !n.classList.contains('deck-hidden')).pop();
       after.insertAdjacentHTML('afterend', '<div class="hidden-toggle-row dl67-more" onclick="dl67Toggle()"></div>');
       dl67Apply();
+      // A redraw while typing (say, card art arriving) keeps the cursor in the box.
+      if (typing) { const q = list.querySelector('.dl67-q'); q.focus(); try { q.setSelectionRange(q.value.length, q.value.length); } catch (_) {} }
     } catch (e) { console.warn('[deck list]', e); }
     return r;
   };
