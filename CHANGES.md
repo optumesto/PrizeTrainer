@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: RdyDeck 2.3 (build 68): daily puzzle, deck builder, MEP promo fix and a What's new log (branch puzzle-engine)
+# RdyDeck 2.3 (build 68): daily puzzle, deck builder, MEP promo fix and a What's new log (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files, and builder.json and cards.json to the network-first data line), CHANGES.md, tests/grade-baseline.json, the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks), and for the deck builder build-cards.mjs, builder-data.mjs, cards.json, builder.json, refresh-data.mjs and .github/workflows/refresh-data.yml.
 
