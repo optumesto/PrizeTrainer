@@ -2,6 +2,25 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Not released yet: Trainers, Special Energy and the ACE SPEC in the grade (branch grade-trainers)
+
+Changed files: index.html, CHANGES.md. Version and build number are set when this goes out in a batch.
+
+Grade
+- Every Trainer and Special Energy is checked against the rest of the list, from its own card text. A card that needs something the list does not run (Glass Trumpet or Area Zero Underdepths with no Tera Pokemon, Hyper Aroma with no Stage 1, Team Rocket's Energy with no Team Rocket's Pokemon) shows under Fix first and lowers Synergy.
+- An evolution deck with 3 or fewer cards that find Pokemon, or any deck with fewer than 7 Supporters, gets a warning.
+- The ACE SPEC gets its own line under How it plays: what it does and whether it works with the list. A list with no ACE SPEC, or one whose ACE SPEC has nothing to work with, gets a warning and a lower grade. A list with 2 or more is already marked not legal above the grade; the line now names the cards to cut down to one. When the list has a clear hole (nothing pulls up a Benched Pokemon, very few ways to find Pokemon or draw), the line can name an ACE SPEC that fills it, as a suggestion only.
+- Secret Box no longer counts as a way to find Pokemon (its "Pokemon Tool" was read as a Pokemon). This also fixes the odds for lists that run it.
+- Saved decks are read again once to store Special Energy text.
+- Synergy now also measures how tightly the list fits together, from the cards themselves: how many Energy types the real attackers need, how much of the Energy each attacker can use, how many Pokemon lines the list spreads over, Basic Energy nothing uses, and how many Trainers and Pokemon are single copies. Pairs that work together (Rare Candy into a Stage 2, a copier) count in its favor. A toolbox deck spreads on purpose, so its spread counts half. When the fit holds a list back, How it plays says why in one line.
+- The overall grade only feels the fit once it falls below what most winning lists reach, so focused lists keep their grades and random piles drop.
+- Checked on the top 16 lists from the last 8 Limitless events (128 lists): Synergy now runs from 5.7 to 10 (median 8.4, 6 lists at 10, was 127 at 10). Overall grades: 2 lists move, by 0.1 and 0.3. No new warnings. A random 60 card pile that graded 8.4 now grades 5.4.
+- Power counts only attackers that can reach the board: every Pokemon a card evolves from has to be in the list, or the list runs 2 or more Rare Candy for a Stage 2 whose Stage 1 is missing. An Ability like Mew ex's Memory Helix borrows attacks only from Pokemon that can reach the Bench, and a spread engine counts only from cards that can reach the board.
+- An attack counts only when the list runs as many Energy cards of each type as it asks for. A Special Energy that works only on some Pokemon (Prism Energy on Basic Pokemon, Neo Upper Energy on Stage 2, Team Rocket's Energy on Team Rocket's Pokemon) counts only for those.
+- The hardest hit counts for less when the list runs few Energy that attacker can use for it (a warning names it), and when it rests on one copy with no attacker close behind (a warning names it, except in decks with 3 or more other strong attackers).
+- Eevee ex (Rainbow DNA) now counts as the Eevee that Pokemon ex like Jolteon ex evolve from. Before, a list with Eevee ex and Jolteon ex was told Jolteon ex could never reach the board.
+- Checked on the same 128 lists: Power is unchanged in range (6.6 to 9.3, median 8.6). Overall grades: 7 lists move. One Mega Rayquaza list goes from 6.8 to 8.6 (the Eevee ex fix), five Team Rocket's Honchkrow lists go from 8.6 to 8.5, and one Mega Charizard X list goes from 9.1 to 8.8 (its Latias ex, run for its Ability, no longer counts as an attacker it cannot power). Random 60 card piles now score 3.4 to 8.1 on Power (were 6.7 to 8.6) and 0.3 to 4.1 overall.
+
 # RdyDeck 2.0.3 (build 64): deck strength from tournament finishes, and no grade cliff at the one-shot line (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v64, the build number), refresh-matchups.mjs, CHANGES.md.
