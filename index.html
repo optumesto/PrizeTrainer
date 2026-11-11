@@ -14825,6 +14825,12 @@ function r29Rows(deck) {
       if (!r.abil.length) r.abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
     }
     if (c.byName) r.other = true;
+    // v68: the list names a set and number the card database does not have (a new promo like
+    // MEP 38), so its mark came from an older printing. New printings reach the database late,
+    // so this card is unconfirmed, never "not legal now".
+    // A row with a printing the database does have still counts as read.
+    const unl = !!(c.byName && c.set && c.num);
+    r.unlisted = (r.unlisted === undefined ? true : r.unlisted) && unl;
     r.marks.push(r29M(c.reg.mark));
   });
   const rows = [];
@@ -14845,7 +14851,7 @@ function r29Rows(deck) {
     // v67: a name-only card counts too, once the check has looked at every printing with that name.
     // Before the check a card stays unconfirmed: lists name old printings of Trainers that were reprinted
     // (Pokegear 3.0 SVI), so capping on the printed mark alone would hold legal decks at 4.9.
-    else if (best && r.checked) r.st = 'out';
+    else if (best && r.checked && !r.unlisted) r.st = 'out';
     else r.st = 'unconf';
     rows.push(r);
   });
@@ -14966,6 +14972,7 @@ function r29Summary(deck) {
   const unk = rows.filter(r => r.st === 'unconf' || r.st === 'unread');
   unk.forEach(r => {
     r.sub = r.st === 'unread' ? 'Could not be read from the card database'
+      : r.unlisted ? 'This printing is not in the card database yet, so its mark is not confirmed'
       : r.other && r.pkmn ? 'Mark read from another printing, so not confirmed'
       : !r.checked ? (busy ? 'Checking for reprints' : 'Reprints not checked yet')
       : 'No mark found in the card database';
