@@ -12,7 +12,9 @@ Grade
 - The ACE SPEC gets its own line under How it plays: what it does and whether it works with the list. A list with no ACE SPEC, or one whose ACE SPEC has nothing to work with, gets a warning and a lower grade. A list with 2 or more is already marked not legal above the grade; the line now names the cards to cut down to one. When the list has a clear hole (nothing pulls up a Benched Pokemon, very few ways to find Pokemon or draw), the line can name an ACE SPEC that fills it, as a suggestion only.
 - Secret Box no longer counts as a way to find Pokemon (its "Pokemon Tool" was read as a Pokemon). This also fixes the odds for lists that run it.
 - Saved decks are read again once to store Special Energy text.
-- Checked on the top 16 lists from the last 8 Limitless events (128 lists): none changes grade and none gets a new warning.
+- Synergy now also measures how tightly the list fits together, from the cards themselves: how many Energy types the real attackers need, how much of the Energy each attacker can use, how many Pokemon lines the list spreads over, Basic Energy nothing uses, and how many Trainers and Pokemon are single copies. Pairs that work together (Rare Candy into a Stage 2, a copier) count in its favor. A toolbox deck spreads on purpose, so its spread counts half. When the fit holds a list back, How it plays says why in one line.
+- The overall grade only feels the fit once it falls below what most winning lists reach, so focused lists keep their grades and random piles drop.
+- Checked on the top 16 lists from the last 8 Limitless events (128 lists): Synergy now runs from 5.7 to 10 (median 8.4, 6 lists at 10, was 127 at 10). Overall grades: 2 lists move, by 0.1 and 0.3. No new warnings. A random 60 card pile that graded 8.4 now grades 5.4.
 
 # RdyDeck 2.0.3 (build 64): deck strength from tournament finishes, and no grade cliff at the one-shot line (11 Nov 2026)
 
