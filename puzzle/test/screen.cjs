@@ -37,6 +37,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   await new Promise(r => setTimeout(r, 3500));
   const card = d.getElementById('puzzle-card');
   ok(card && /Your puzzle #1\b/.test(card.textContent), 'home card: ' + (card && card.textContent.replace(/\s+/g, ' ').trim()));
+  ok(/Build a deck/.test(d.querySelector('.home-cta-row').textContent), 'home has the deck builder button next to the puzzle card');
   // What's new: a brand new user never gets the home card.
   ok(d.getElementById('wn-card').innerHTML === '' && w.localStorage.getItem('rd_seen_version') === w.eval('PT_VERSION'), "new user: no What's new card, version marked seen");
   await w.openPuzzle();

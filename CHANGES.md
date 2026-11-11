@@ -4,7 +4,9 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # Not released yet: RdyDeck 2.3 (build 68): daily puzzle, deck builder, MEP promo fix and a What's new log (branch puzzle-engine)
 
-Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files), CHANGES.md, and the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks).
+Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files, and builder.json and cards.json to the network-first data line), CHANGES.md, tests/grade-baseline.json, the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks), and for the deck builder build-cards.mjs, builder-data.mjs, cards.json, builder.json, refresh-data.mjs and .github/workflows/refresh-data.yml.
+
+Daily puzzle
 
 - A Daily puzzle card on home, under the Daily challenge: one board a day, the same for everyone, from two top tournament lists. You can win this turn if you find the line.
 - Every card can be tapped to read it. Plays you can't make right now are listed with the reason.
@@ -12,6 +14,15 @@ Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files
 - The number is your own: your first day played is your puzzle #1, then one more each day you play. The card shows how many you solved of how many you played, wins in a row and days in a row, all kept on this device. Share sends your number, result and streak; the board itself is the same for everyone that day.
 - Strict: a line that draws, flips or uses a card you can't see never counts as a win, since it isn't sure.
 - 120 boards made ahead of time and checked by the solver, easier early in the week and harder at the weekend. Set PUZZLE_EPOCH to the release day so day one opens the pack's first board.
+
+Deck builder
+- A new screen, Build a deck on home. Search every Standard legal card (cards.json, rebuilt weekly from pokemon-tcg-data).
+- Start from a meta deck's core (cards at least 75% of its top lists run), a Pokémon's evolution line, a saved deck, a pasted list or nothing.
+- Checks: 60 cards, 4 copies, 1 ACE SPEC, 1 Radiant, a Basic, evolution lines, Energy for the main attack.
+- Suggestions come from builder.json, what each meta deck's top quarter of lists runs, rebuilt by the weekly refresh.
+- Save and grade uses the same steps as Import, then opens the grade. The draft is kept on the device.
+
+Fixes and the update log
 - Fixed: a card whose printing is not in the card database yet (like MEP 38 Charmander) is shown as not confirmed instead of capping a legal deck at 4.9. Of the 128 top lists, only Mega Charizard X moves, 4.9 to 8.8.
 - What's new: Settings has a What's new row with a short log of the latest update. Someone who used an older version also sees a small Updated card on home once; a new user never does. Edit WHATS_NEW in index.html each release: a 2.x release lists "Added:" and "Fixed:" lines, each with a short description, a 2.x.y release lists short items only.
 - Version shown in the app is v2.3 (PT_VERSION), build 68 (PT_BUILD), matching the sw.js cache.
