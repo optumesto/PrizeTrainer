@@ -1302,6 +1302,10 @@
   .hp-pill.warn { color:var(--electric); border-color:color-mix(in srgb, var(--electric) 35%, transparent); }
   .hp-hand { display:grid; grid-template-columns:repeat(4,1fr); gap:0.7rem 0.5rem; margin-bottom:1.4rem; }
   .hp-hand .review-card-name { font-size:var(--fs-xs); }
+  .hp-basic { position:relative; display:block; padding:0; border:0; background:none; color:inherit; font:inherit; text-align:inherit; cursor:pointer; border-radius:8px; }
+  .hp-basic:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  .hp-basic-tag { position:absolute; top:6px; left:6px; padding:2px 6px; border-radius:6px; background:var(--accent); color:var(--bg, #111); font-size:var(--fs-xs); font-weight:700; line-height:1.3; }
+  .hp-basic-tip { margin:-0.8rem 0 1.2rem; }
   .hp-opts { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem; }
   .hp-opt {
     display:grid; grid-template-columns:22px 1fr; column-gap:0.7rem; align-items:start; text-align:left;
@@ -7758,7 +7762,10 @@ function renderHand() {
       ${H.mulls ? `<span class="hp-pill warn">${H.mulls} mulligan${H.mulls !== 1 ? 's' : ''} before this hand</span>` : '<span class="hp-pill">Kept the first 7</span>'}
       ${!H.anyBasic ? '<span class="hp-pill warn">No Basic read, mulligan rule off</span>' : ''}
     </div>
-    <div class="hp-hand">${H.hand.map(x => handCardHTML(x.card)).join('')}</div>`;
+    <div class="hp-hand">${H.hand.map((x, i) => gfIsBasic(x)
+      ? `<button type="button" class="hp-basic" onclick="hpSetUp(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set up</span></button>`
+      : handCardHTML(x.card)).join('')}</div>
+    ${H.hand.some(gfIsBasic) ? '<div class="g-sec-i hp-basic-tip">Tap a Basic to put it in play and carry on in Goldfish with this same hand.</div>' : ''}`;
 
   if (!anyRead || !opts.length) {
     h += `<div class="g-item warn"><div class="gt">${!anyRead ? 'No card data yet' : 'No Pokémon line read'}</div>
@@ -9001,6 +9008,17 @@ function gfDeal(first) {
   }
   gfNew(deck, groups, pool, mulls, first, anyBasic);
   closeSheet();
+  renderHand();
+}
+/** v67: tap a Basic in the Turn 1 line hand to set it up: Goldfish opens on this hand with it in play
+ * (Active first, then the Bench), and the rest of the setup carries on there. */
+function hpSetUp(i) {
+  const H = handState;
+  if (!H || !H.hand[i] || !gfIsBasic(H.hand[i])) return;
+  gfFromHand();
+  if (!gf) return;
+  const x = gf.hand.find(y => y.uid === i + 1);
+  if (x) gfPlayBasic(x.uid, gf.active ? 'bench' : 'active');
   renderHand();
 }
 /** v58: play out the hand the Turn 1 line tab dealt, with the same prizes and draws. */
