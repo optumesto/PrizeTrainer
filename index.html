@@ -5088,7 +5088,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 15;  // v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 16;  // v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -5267,6 +5267,7 @@ function toGradeDeck(deck) {
       key: String(c.name||'').toLowerCase(), ab: ar.say,
       t, stage: c.stage||null,
       from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
+      base: c.base ? String(c.base).toLowerCase() : null,
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
       attacks: atks, provides: [...new Set((c.provides||[]).concat(ar.tags))], requires: c.requires||[],
@@ -5353,12 +5354,18 @@ function gCoherence(deck) {
         else flaws.push({sev:'warn', t:`${gCap(e.name)} needs ${gCap(who)} to work`,
           d:`${gCap(e.name)} only does its job when ${gCap(who)} is in play, and there is no ${gCap(who)} in the deck. The engine is half-built.`});
       } else if (req==='evolution_access') {
-        const candy=provided['evolution_access']>0, pre=c.from&&present[c.from]>0;
+        // v66: Rare Candy skips the Stage 1, not the Basic, so with no Stage 1 in the list the Basic has to be.
+        const bk=s=>normalizeCardName(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+        const pre=c.from&&present[c.from]>0;
+        const noBase=!pre&&c.base&&!deck.some(x=>x.card&&bk(x.name)===bk(c.base));
+        const candy=provided['evolution_access']>0&&!noBase;
         const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
         if (candy||pre||own||copied) { reqMet++;
           if (own) synergies.push({link:gCap(e.name)+': '+(c.abil[0]||'Ability'), who:c.key,
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
+        else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.base)} for ${gCap(e.name)}`,
+          d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(c.base)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(c.base)} in play, so ${gCap(e.name)} can never reach the board.`});
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
           d:`It is a Stage 2 with no Rare Candy and no ${gCap(c.from||'pre-evolution')} in the deck, so there is no realistic way to evolve into it.`});
       } else {
@@ -6078,7 +6085,7 @@ function gViability(deck, coh, main) {
     if (mid) return canPlay(mid.card,g+1);
     if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
     // With the Stage 1 missing, Rare Candy has to carry the whole line, so it takes 2 or more.
-    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2; };
+    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2&&(!c.base||deck.some(x=>x.card&&gk(x.card.key)===gk(c.base))); };
   const attackers=deck.filter(e=>e.card&&e.card.attacks&&canPlay(e.card)), findings=[];
   // v65: and an attack counts only when the list runs as many Energy of each type as it asks for
   // (2 Grass in the cost needs 2 or more Grass Energy cards, not just one).
@@ -6196,7 +6203,8 @@ function gViability(deck, coh, main) {
     const cand=coh.provided['evolution_access']||0;
     const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
       while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
-        if (!m) { q=c2.stage==='stage2'?Math.min(q,Math.floor(cand/2)):q; break; }
+        if (!m) { if (c2.stage==='stage2') { q=Math.min(q,Math.floor(cand/2));
+            if (c2.base) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(c2.base)).reduce((n,x)=>n+x.qty,0)); } break; }
         q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
       return q; };
     const av=n=>n>=3?1:n>=2?0.97+0.03*(n-2):n>=1?0.75+0.22*(n-1):0.5+0.25*n;
@@ -10782,7 +10790,7 @@ async function enrichDeckCards(cards) {
     c.resolved = e.resolved;
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
-      ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
+      ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
        'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
@@ -10803,7 +10811,7 @@ async function enrichDeckCards(cards) {
       // The list says one thing and the lookup read another: the read is
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
-      ['supertype','hp','stage','evolvesFrom','prizeValue','types','weak','provides',
+      ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
        'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
@@ -10812,6 +10820,8 @@ async function enrichDeckCards(cards) {
     c.hp          = e.hp;
     c.stage       = e.stage;
     c.evolvesFrom = e.from;
+    // v66: the Basic a Stage 2 starts from, read when its Stage 1 is not in the list.
+    if (e.base) c.base = e.base; else delete c.base;
     c.prizeValue  = e.p;
     c.types       = e.types;
     c.weak        = e.weak;
@@ -12437,8 +12447,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
-const PT_VERSION = 'v2.1';
-const PT_BUILD = 65;
+const PT_VERSION = 'v2.1.1';
+const PT_BUILD = 66;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -14957,8 +14967,41 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
   map.tcgdex = tdRead;
   map.ptcg = ptRead;
   _td31Src = { td: tdRead, pt: ptRead };
+  if (!offline) { try { await td66Bases(map, list); } catch (_) {} }
   return map;
 };
+
+/**
+ * v66: Rare Candy skips the Stage 1, never the Basic. When a Stage 2's Stage 1 is not in the list,
+ * the grade still needs to know which Basic the line starts from, so read the Stage 1 card once
+ * (TCGdex first, then pokemontcg.io) and store its "evolves from" on the Stage 2 as base.
+ */
+async function td66Bases(map, list) {
+  const inList = n => list.some(e => TCGEnrich.sameCard(e.name, n));
+  const want = new Map();
+  map.forEach(v => { if (v && v.resolved && v.stage === 'stage2' && v.from && !inList(v.from)) {
+    const k = TCGEnrich.nameKey(v.from); (want.get(k) || want.set(k, { name: v.from, cards: [] }).get(k)).cards.push(v); } });
+  if (!want.size) return;
+  const found = new Map();
+  await Promise.all([...want.values()].map(async w => {
+    const hits = await td30Get('/cards?name=' + encodeURIComponent('eq:' + TCGEnrich.apiName(w.name)));
+    const b = (Array.isArray(hits) ? hits : []).filter(h => h && typeof h.id === 'string' && TCGEnrich.sameCard(w.name, h.name || ''))
+      .sort((x, y) => td30Rank(y.id) - td30Rank(x.id))[0];
+    const c = b ? await td30Get('/cards/' + encodeURIComponent(b.id)) : null;
+    if (c && typeof c.evolveFrom === 'string' && c.evolveFrom) found.set(TCGEnrich.nameKey(w.name), c.evolveFrom); }));
+  const rest = [...want.values()].filter(w => !found.has(TCGEnrich.nameKey(w.name)));
+  if (rest.length) {
+    const q = rest.map(w => 'name:"' + TCGEnrich.apiName(w.name).replace(/"/g, '') + '"').join(' OR ');
+    try {
+      const init = {}; if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
+      const r = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent('(' + q + ')') + '&select=name,evolvesFrom&pageSize=50', init);
+      const j = r.ok ? await r.json() : null;
+      ((j && j.data) || []).forEach(c => { const k = TCGEnrich.nameKey(c.name);
+        if (want.has(k) && !found.has(k) && c.evolvesFrom) found.set(k, c.evolvesFrom); });
+    } catch (_) {}
+  }
+  want.forEach((w, k) => { if (found.has(k)) w.cards.forEach(v => { v.base = found.get(k); }); });
+}
 
 enrichDeckCards = async function (cards) {
   _td31Src = { td: [], pt: [] };

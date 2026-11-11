@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Not released yet: RdyDeck 2.1.1 (build 66): Rare Candy needs the Basic (branch candy-basic)
+
+Changed files: index.html, sw.js (cache prize-trainer-v66), CHANGES.md.
+
+Grade
+- Rare Candy skips the Stage 1, never the Basic. When a Stage 2's Stage 1 is not in the list, the app now reads the Stage 1 card once (TCGdex first, then pokemontcg.io) to learn which Basic the line starts from. If that Basic is not in the list either, the Stage 2 is marked as never reaching the board, under Fix first, and it no longer counts as an attacker for Power.
+- Saved decks are read again once to store that Basic.
+- Checked on the 128 top 16 lists: no grade changes (every winning list runs its Basics). A random pile with Mega Meganium ex and Grand Tree but no Chikorita goes from 4.1 to 2.8.
+
 # RdyDeck 2.1 (build 65): Trainers, Special Energy and the ACE SPEC in the grade, a tighter Synergy and Power, delete deck in the deck menus, and Against the meta over two sets (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v65), CHANGES.md, matchups.json, refresh-matchups.mjs, .github/workflows/refresh-data.yml, .github/matchups-cache.json.
