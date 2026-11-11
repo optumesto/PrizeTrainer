@@ -6891,7 +6891,7 @@ function gTrainers(entries, coh, via, main) {
 
   const score = gClamp(1 - cut.reduce((a, x) => a + x, 0), 0, 1);
   const counts = { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN };
-  // v68: a fit label for each card. Explain only: nothing here changes score.
+  // v69: a fit label for each card. Explain only: nothing here changes score.
   let fit = [];
   try { fit = gtFit(entries, coh, via, main, { dead: dead.map(d => d.e.name), counts }); } catch (_) {}
   return { score, flaws, ace, dead: dead.map(d => d.e.name), counts, fit };
@@ -6911,7 +6911,7 @@ function gtAceFor(entries, coh, gap, except) {
 }
 
 /**
- * v68: a fit label for each Trainer and Special Energy, explain only (it does not move a grade).
+ * v69: a fit label for each Trainer and Special Energy, explain only (it does not move a grade).
  *   Does nothing: the list runs nothing the card needs.
  *   Key: does a core job (draw, finding Pokemon, pulling up a Benched Pokemon, evolving, Energy)
  *        and is the list's main card for it, or Rare Candy into a Stage 2 line.
@@ -15281,7 +15281,7 @@ function g67WhyHtml(R, synV, powV) {
   return h;
 }
 
-// v68: how each Trainer and Special Energy fits the list. Explains Synergy; it does not change the grade.
+// v69: how each Trainer and Special Energy fits the list. Explains Synergy; it does not change the grade.
 function t68Html(R) {
   const tr = R && R.coh && R.coh.trainers;
   if (!tr || (!(tr.fit || []).length && !tr.ace)) return '';
