@@ -2811,7 +2811,7 @@ const PT_PLAY = (function () {
         <h3>Questions about RdyDeck</h3>
         <details><summary>What is RdyDeck?</summary><p>RdyDeck is a free web app for Pokémon Trading Card Game players. It grades a 60 card deck, shows its opening odds and which cards rotate out of Standard, and trains you to work out your prize cards.</p></details>
         <details><summary>How does prize card training work?</summary><p>RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.</p></details>
-        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, and it comes with a short list of what to fix first.</p></details>
+        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. Each grade shows its own math and comes with a short list of what to fix first.</p></details>
         <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most.</p></details>
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
@@ -14164,7 +14164,10 @@ function r29Rows(deck) {
     // from another printing, or a reprint check that has not run yet is unknown.
     if (r29Safe(best) && !(r.other && r.pkmn && !r.reprint)) r.st = 'safe';
     else if (r29Rotates(best)) r.st = 'risk';
-    else if (best && r.checked && !r.other) r.st = 'out';
+    // v67: a set-coded card whose own mark is below the legal line is not legal now. A reprint check
+    // that finds a legal printing clears it; until then (or offline) it counts, so the grade is capped.
+    // A name-only card counts once the check has looked at every printing with that name.
+    else if (best && (!r.other || r.checked)) { r.st = 'out'; r.pend = !r.checked; }
     else r.st = 'unconf';
     rows.push(r);
   });
@@ -14180,7 +14183,8 @@ function r29Counts(rows) {
 // ── Reprint check: a rotating card stays if a printing with a later mark exists ──
 const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || (r.st === 'unconf' && !r.other)) && !r.checked);
+  // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf') && !r.checked);
 }
 async function r29CheckReprints(deck) {
   if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
@@ -14438,7 +14442,7 @@ function g67PowWhy(R) {
 function g67HowLine(R, synV, powV) {
   const S = R.steps, used = S ? gR1(S.cohF * 10) : synV;
   const raw = R.rawOverall != null ? R.rawOverall : R.overall;
-  if (S && Math.abs(used - synV) >= 0.1) return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down. How tightly the list fits counts in full on Synergy but only in part on the grade, so the grade uses ${used.toFixed(1)} for Synergy: ${used.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
+  if (S && Math.abs(used - synV) >= 0.1) return `The grade is Synergy times Power, divided by 10, except that how tightly the list fits lowers Synergy in full but lowers the grade only when the fit is loose. So the grade uses ${used.toFixed(1)} for Synergy here: ${used.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
   return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${synV.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
 }
 function g67WhyHtml(R, synV, powV) {
@@ -16594,7 +16598,8 @@ const G40_CAP = 4.9;
         R.overall = Math.min(R.overall, G40_CAP);
         R.coh.flaws.unshift({ sev: 'crit', t: `${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now`,
           d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade is held at ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
-            (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') });
+            (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') +
+            (rows.some(r => r.st === 'out' && r.pend) ? ' If a newer printing is legal, the reprint check clears it once you are online.' : '') });
       }
     } catch (_) {}
     return R;
