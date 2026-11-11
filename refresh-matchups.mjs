@@ -16,6 +16,11 @@
 //   games, a decided match with no games recorded is a no-show and is left out too.
 // - Mirror matches are left out of every number.
 //
+// Placements: every list's finish counts too, not just its match record. Per deck and
+// source the file keeps [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%],
+// where a list's finish is 1 for first place and 0 for last (sums in thousandths). The app
+// ranks decks on win rate and finish together, with high finishes weighing more.
+//
 // Built for more than one source: every record is kept per source ("online" today).
 // In-person results can be added later as a second source without changing the app.
 //
@@ -82,6 +87,27 @@ function listCode(dl) {
   return h.toString(16).padStart(8, '0');
 }
 
+/**
+ * Each deck's finishes in one event: [lists, sum of finish, sum of finish squared, top 8, top 16,
+ * top 10%]. A finish is 1 for first place and 0 for last, so events of every size compare;
+ * the sums are in thousandths to keep whole numbers.
+ */
+function placements(standings) {
+  const field = standings.filter(s => s && s.deck && slug(s.deck.id) && Number.isInteger(Number(s.placing)) && Number(s.placing) >= 1);
+  const last = Math.max(2, ...field.map(s => Number(s.placing)));
+  const out = {};
+  for (const s of field) {
+    const id = slug(s.deck.id), place = Number(s.placing);
+    const f = Math.max(0, Math.min(1, (last - place) / (last - 1)));
+    const p = out[id] || (out[id] = [0, 0, 0, 0, 0, 0]);
+    p[0]++; p[1] += Math.round(f * 1000); p[2] += Math.round(f * f * 1000);
+    if (place <= 8) p[3]++;
+    if (place <= 16) p[4]++;
+    if (place <= Math.max(1, Math.round(last * 0.1))) p[5]++;
+  }
+  return out;
+}
+
 /** One event's standings and pairings, boiled down to counts. Null when it cannot be used. */
 function digest(t, standings, pairings) {
   const deckOf = new Map();
@@ -114,6 +140,7 @@ function digest(t, standings, pairings) {
   }
   // Most players need a recorded deck, or the event says too little.
   if (!standings.length || deckOf.size < standings.length * 0.5) return null;
+  for (const [id, p] of Object.entries(placements(standings))) if (decks[id]) decks[id].pl = p;
 
   const decided = pairings.filter(p => p && p.player1 && p.player2 && p.winner !== -1 && p.winner != null);
   const withGames = decided.filter(p => p.games && typeof p.games === 'object' && Object.keys(p.games).length).length;
@@ -138,7 +165,7 @@ function digest(t, standings, pairings) {
   if (!matches) return null;
   return {
     id: String(t.id), src: 'online', date: day(t.date), players: Number(t.players) || 0,
-    name: clean(t.name, 80), decks, pairs, matches,
+    name: clean(t.name, 80), decks, pairs, matches, plv: 1,
   };
 }
 
@@ -162,11 +189,17 @@ async function eventList(since, now) {
 
 /** Sum the window's events into the file the app reads. */
 function build(events, since, until) {
-  const lists = {}, names = {}, mons = {}, vs = {}, tops = {};
+  const lists = {}, names = {}, mons = {}, vs = {}, tops = {}, fin = {}, field = {};
   let total = 0, matches = 0;
   for (const e of events) {
     matches += e.matches;
+    const src = e.src || 'online';
     for (const [id, d] of Object.entries(e.decks)) {
+      if (Array.isArray(d.pl) && d.pl.length === 6) {
+        const pd = (fin[id] = fin[id] || {});
+        const a = pd[src] || (pd[src] = [0, 0, 0, 0, 0, 0]), f = field[src] || (field[src] = [0, 0, 0, 0, 0, 0]);
+        d.pl.forEach((v, i) => { a[i] += v; f[i] += v; });
+      }
       names[id] = names[id] || d.name;
       lists[id] = (lists[id] || 0) + d.lists;
       for (const [code, place] of d.tops || []) (tops[id] || (tops[id] = [])).push([code, place, e.name, e.date]);
@@ -197,19 +230,21 @@ function build(events, since, until) {
     const best = {};
     for (const x of (tops[id] || []).sort((a, b) => a[1] - b[1] || (a[3] < b[3] ? 1 : -1))) if (!best[x[0]]) best[x[0]] = x;
     const top = Object.values(best).slice(0, TOPS_MAX);
-    return { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v, tops: top };
+    return { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v, tops: top, place: fin[id] || {} };
   }).filter(d => d.sig.length);
   return {
     schema: 1,
     asOf: day(Date.now()),
     since: day(since), until: until ? day(until) : day(Date.now()),
-    note: 'Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out.',
+    note: 'Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out. place per source: [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%], finish 1 for first and 0 for last, sums in thousandths.',
     sources: [{
       id: 'online',
       name: 'Limitless online tournaments',
       url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD',
       events: events.length,
       matches,
+      // Every deck's finishes summed, the same six numbers as each deck's place.
+      place: field.online || [0, 0, 0, 0, 0, 0],
     }],
     cols: cols.filter(c => decks.some(d => d.id === c)),
     decks,
@@ -243,6 +278,17 @@ try {
     // An event that cannot be used is still kept, as skipped, so it is not read again.
     have.set(String(t.id), digest(t, standings, pairings) || { id: String(t.id), date: day(t.date), skip: true });
   }
+  // Events read before placements were kept: read their standings once more, a few a run.
+  let again = 0;
+  for (const e of have.values()) {
+    if (e.skip || e.plv === 1 || Date.parse(e.date) < since - DAY || again >= 10) continue;
+    const standings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(e.id)}/standings`);
+    if (!Array.isArray(standings)) continue;
+    again++;
+    for (const [id, p] of Object.entries(placements(standings))) if (e.decks[id]) e.decks[id].pl = p;
+    e.plv = 1;
+  }
+  if (again) notes.push(`placements: ${again} earlier events read again`);
   cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
   notes.push(`events: ${fresh} new, ${cache.events.filter(e => !e.skip).length} in use`);
 } catch (e) { notes.push('Limitless: ' + e.message + ', kept what was read'); }

@@ -12017,8 +12017,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
-const PT_VERSION = 'v2.0.2';
-const PT_BUILD = 63;
+const PT_VERSION = 'v2.0.3';
+const PT_BUILD = 64;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -16745,6 +16745,18 @@ let mu60Data = null, mu60Busy = false, mu60Tried = false, mu60Src = '';
 
 const mu60Id = v => typeof v === 'string' && /^[a-z0-9-]{1,50}$/.test(v) ? v : null;
 const mu60Rec = r => Array.isArray(r) && r.length === 3 && r.every(n => Number.isInteger(n) && n >= 0 && n < 1e7) ? r.slice() : null;
+// v64: finishes per source, [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%].
+// A finish is 1 for first place and 0 for last; the two sums are in thousandths.
+function mu64Pl(p) {
+  if (!Array.isArray(p) || p.length !== 6 || !p.every(n => Number.isInteger(n) && n >= 0 && n < 1e9)) return null;
+  const [n, f, f2, t8, t16, t10] = p;
+  return n && f <= n * 1000 && f2 <= f && t8 <= t16 && t16 <= n && t10 <= n ? p.slice() : null;
+}
+function mu64Pls(o) {
+  const out = {};
+  if (o && typeof o === 'object') for (const [k, r] of Object.entries(o)) { const s = mu60Id(k), v = mu64Pl(r); if (s && v) out[s] = v; }
+  return out;
+}
 function mu60Recs(o) {
   if (!o || typeof o !== 'object') return null;
   const out = {};
@@ -16759,6 +16771,7 @@ function mu60Validate(j) {
     const sources = j.sources.slice(0, 5).map(s => s && mu60Id(s.id) && d30Str(s.name, 60) ? {
       id: s.id, name: s.name, url: d30Url(s.url),
       events: Number.isInteger(s.events) ? s.events : 0, matches: Number.isInteger(s.matches) ? s.matches : 0,
+      place: mu64Pl(s.place),
     } : null).filter(Boolean);
     const decks = j.decks.slice(0, 60).map(d => {
       if (!d || !mu60Id(d.id) || !d30Str(d.name, 50) || !Array.isArray(d.sig)) return null;
@@ -16772,7 +16785,7 @@ function mu60Validate(j) {
         .filter(x => Array.isArray(x) && /^[0-9a-f]{8}$/.test(x[0]) && Number.isInteger(x[1]) && x[1] >= 1 && x[1] <= 64 && d30Str(x[2], 80) && d30Day(x[3]))
         .map(x => [x[0], x[1], x[2], x[3]]);
       return { id: d.id, name: d.name, share: typeof d.share === 'number' ? d.share : 0,
-        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs, tops };
+        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs, tops, place: mu64Pls(d.place) };
     }).filter(Boolean);
     const ids = new Set(decks.map(d => d.id));
     const cols = (Array.isArray(j.cols) ? j.cols : []).filter(c => ids.has(c)).slice(0, 12);
@@ -16883,6 +16896,42 @@ function mu60Sum(recs) {
   for (const [k, v] of Object.entries(recs || {})) if (!mu60Src || k === mu60Src) { r[0] += v[0]; r[1] += v[1]; r[2] += v[2]; }
   return r;
 }
+/**
+ * v64: how strong each deck is, from its win rate and how high its lists finish, together.
+ * Finishes count by their square, so a list in the top 10% weighs far more than one in the
+ * middle. Both parts are pulled toward the field average until a deck has enough results,
+ * so a deck with a few lucky lists does not top the table. 100 is an average deck.
+ */
+const MU64_K = 15, MU64_KM = 40;
+function mu64Strength(data) {
+  const F = [0, 0, 0, 0, 0, 0];
+  for (const s of data.sources) if (s.place && (!mu60Src || s.id === mu60Src)) s.place.forEach((v, i) => { F[i] += v; });
+  if (!F[0]) return null;
+  let W = 0, M = 0;
+  const rows = data.decks.map(d => {
+    const p = [0, 0, 0, 0, 0, 0];
+    for (const [k, v] of Object.entries(d.place || {})) if (!mu60Src || k === mu60Src) v.forEach((x, i) => { p[i] += x; });
+    const r = mu60Sum(d.rec);
+    W += r[0]; M += r[0] + r[1] + r[2];
+    return { d, p, r };
+  }).filter(x => x.p[0]);
+  if (rows.length < 3 || !M) return null;
+  const fw = W / M, fq = F[2] / 1000 / F[0], ft = F[4] / F[0];
+  const out = {};
+  for (const x of rows) {
+    const m = x.r[0] + x.r[1] + x.r[2];
+    const wr = (x.r[0] + MU64_KM * fw) / (m + MU64_KM);
+    const q = (x.p[2] / 1000 + MU64_K * fq) / (x.p[0] + MU64_K);
+    out[x.d.id] = { idx: 100 * Math.sqrt(wr / fw * q / fq), n: x.p[0], fin: x.p[1] / 1000 / x.p[0], t16: x.p[4], exp: x.p[0] * ft };
+  }
+  // "Other" is many small decks lumped together, not a deck, so it gets no rank.
+  delete out.other;
+  const order = Object.keys(out).sort((a, b) => out[b].idx - out[a].idx);
+  order.forEach((id, i) => { out[id].rank = i + 1; out[id].of = order.length; });
+  out._order = order;
+  return out;
+}
+
 const mu60Pct = r => { const n = r[0] + r[1] + r[2]; return n ? r[0] / n * 100 : null; };
 const mu60Fmt = p => p.toFixed(1) + '%';
 const mu60Tone = p => p >= 55 ? 'good' : p < 45 ? 'bad' : '';
@@ -16909,10 +16958,15 @@ function mu60Section(deck) {
 
   if (!arch) {
     h += `<p class="mu60-p">No deck in recent results plays the same Pokemon as this one. Pick the closest deck above to see its matchups.</p>`;
+    const st = mu64Strength(data);
+    if (st) h += `<p class="mu60-p">Strongest right now, by win rate and finishes: ${st._order.slice(0, 3).map(id => esc(data.decks.find(d => d.id === id).name)).join(', ')}.</p>`;
   } else {
     const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2], p = mu60Pct(all);
     h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of ${n} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
       : `<p class="mu60-p">No matches for ${esc(arch.name)} in these results yet.</p>`;
+    // v64: placements, weighed with the win rate into one strength rank.
+    const st = mu64Strength(data), sa = st && st[arch.id];
+    if (sa) h += `<p class="mu60-p">Strength: <b>${mu61Nth(sa.rank)} of ${sa.of}</b> decks, counting wins and how high lists finish. Its ${sa.n} lists finished in the top ${Math.max(1, Math.round((1 - sa.fin) * 100))}% of the field on average, and ${sa.t16} made the top 16, where an average deck with as many lists places ${Math.round(sa.exp)}.</p>`;
     // v61: say whether these numbers are for this exact list. Many players copy a list that placed, card for card.
     const same = mu61Same(deck, data);
     h += same ? `<p class="mu60-f mu61-same">This is the same list, card for card, that finished ${mu61Nth(same.place)} at ${esc(same.event)} on ${d30Nice(same.day)}.${same.deck.id !== arch.id ? ` That list was played as ${esc(same.deck.name)}.` : ''}</p>`

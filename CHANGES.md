@@ -2,6 +2,23 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.0.3 (build 64): deck strength from tournament finishes, and no grade cliff at the one-shot line (11 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v64, the build number), refresh-matchups.mjs, CHANGES.md.
+
+Version
+- Settings shows RdyDeck v2.0.3.
+
+Against the meta
+- The weekly data job now keeps how high every list finished in each Limitless online event, not just its match record: per deck, its lists, their average finish, and how many made the top 8, top 16 and top 10%. Events already read are read once more for their standings, a few a week, so no request goes beyond the usual budget. Nothing is scraped; it is the same public play API.
+- Each deck gets a strength rank that counts its win rate and its finishes together. High finishes count by their square, so a top 10% list weighs far more than one in the middle. Decks with few results are pulled toward the average, so a few lucky lists do not top the table. "Other" gets no rank.
+- The Grade tab shows the rank under the win rate, for example "Strength: 4th of 38 decks", with the average finish and how many lists made the top 16 against what an average deck with as many lists would place. A deck that matches no archetype sees the three strongest decks instead.
+- Kept per source like the match records, so in-person results can be added later without changing the app.
+- The numbers appear after the next run of the data job.
+
+Grade
+- Decks whose main attacker gives up 3 prizes no longer drop sharply when their best hit falls just under the one-shot line. The prize score now slides down as the damage falls, instead of jumping. Mega Lucario goes from 7.4 to 8.2, Lucario Hariyama 7.7 to 8.5, Mega Sharpedo Toxtricity 7.5 to 8.3, Mega Abomasnow 6.9 to 7.2, Mega Greninja 7.0 to 7.3, Mega Starmie and Mega Golisopod 6.6 to 6.8. The warning now says which Pokemon the best hit still one-shots.
+
 # RdyDeck 2.0.2 (build 63): lock, mill and stall decks graded on how they win (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v63, the build number), CHANGES.md.
