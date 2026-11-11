@@ -1,6 +1,6 @@
 # Weekly card check
 
-Run 2026-11-10. 457 requests.
+Run 2026-11-11. 457 requests.
 
 341 cards checked on TCGdex. 326 match pokemon-tcg-data exactly. 0 disagree.
 
@@ -14,9 +14,7 @@ None this week.
 
 ## Needs a person to check the printed card
 
-- Starter deck rule: Mega Rayquaza: 10 copies of fire energy; 5 copies of lightning energy
-- Starter deck rule: Basic Box: 6 copies of grass energy
-- Starter deck rule: Ogerpon Meganium Hydrapple: 13 copies of grass energy
+Nothing.
 
 ## Not checked
 

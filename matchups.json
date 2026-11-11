@@ -1,16 +1,29 @@
 {
  "schema": 1,
- "asOf": "2026-11-10",
- "since": "2026-11-06",
- "until": "2026-11-10",
- "note": "Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out.",
+ "asOf": "2026-11-11",
+ "since": "2026-09-16",
+ "until": "2026-11-11",
+ "window": {
+  "sets": 2,
+  "from": "30th Celebration",
+  "code": "30C"
+ },
+ "note": "Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out. place per source: [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%], finish 1 for first and 0 for last, sums in thousandths.",
  "sources": [
   {
    "id": "online",
    "name": "Limitless online tournaments",
    "url": "https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD",
    "events": 8,
-   "matches": 3103
+   "matches": 3103,
+   "place": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
   }
  ],
  "cols": [
@@ -224,7 +237,8 @@
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "dragapult-ex",
@@ -404,7 +418,8 @@
      "Sunny's Weekly #281 My Friend Rayquaza :D",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "basic-box-m",
@@ -596,7 +611,8 @@
      "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "slowking-scr",
@@ -752,7 +768,8 @@
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "alakazam-dudunsparce",
@@ -902,7 +919,8 @@
      "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "ogerpon-meganium-hydrapple",
@@ -1064,7 +1082,8 @@
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "dhelmise-pbl",
@@ -1214,7 +1233,8 @@
      "Pumpkaweekly",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "other",
@@ -1330,7 +1350,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "dragapult-dudunsparce",
@@ -1498,7 +1519,8 @@
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "n-zoroark",
@@ -1660,7 +1682,8 @@
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "talonflame-dusknoir",
@@ -1812,7 +1835,8 @@
      "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "lopunny-dudunsparce",
@@ -1975,7 +1999,8 @@
      "Pumpkaweekly",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "crustle-dri",
@@ -2096,7 +2121,8 @@
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "dragapult-blaziken",
@@ -2252,7 +2278,8 @@
      "Pumpkaweekly",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "festival-lead",
@@ -2409,7 +2436,8 @@
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "greninja-ex",
@@ -2566,7 +2594,8 @@
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "rockets-honchkrow",
@@ -2696,7 +2725,8 @@
      "CHAMPIONSHIP OF DOOM! TEN!",
      "2026-11-07"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mega-excadrill-ex",
@@ -2854,7 +2884,8 @@
      "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mega-lucario-ex",
@@ -2995,7 +3026,8 @@
      "CHAMPIONSHIP OF DOOM! TEN!",
      "2026-11-07"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "sharpedo-toxtricity",
@@ -3147,7 +3179,8 @@
      "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "lucario-hariyama",
@@ -3282,7 +3315,8 @@
      "Sunny's Weekly #281 My Friend Rayquaza :D",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "cynthia-garchomp-ex",
@@ -3424,7 +3458,8 @@
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mega-greninja-ex",
@@ -3543,7 +3578,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "mega-golisopod-ex",
@@ -3667,7 +3703,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "dragapult-dusknoir",
@@ -3817,7 +3854,8 @@
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "ogerpon-meganium-arboliva",
@@ -3974,7 +4012,8 @@
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "alakazam-dusknoir",
@@ -4120,7 +4159,8 @@
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "grimmsnarl-froslass",
@@ -4251,7 +4291,8 @@
      "Pumpkaweekly",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mega-starmie-ex",
@@ -4362,7 +4403,8 @@
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mega-charizard-y-ex",
@@ -4493,7 +4535,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "raging-bolt-ogerpon",
@@ -4630,7 +4673,8 @@
      "CHAMPIONSHIP OF DOOM! TEN!",
      "2026-11-07"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "ethan-typhlosion",
@@ -4775,7 +4819,8 @@
      "Pumpkaweekly",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "mew-ex-30c",
@@ -4920,7 +4965,8 @@
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "iron-thorns-ex",
@@ -5006,7 +5052,8 @@
      "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
      "2026-11-09"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "rocket-mewtwo-ex",
@@ -5127,7 +5174,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "froslass-munkidori",
@@ -5250,7 +5298,8 @@
      "CHAMPIONSHIP OF DOOM! TEN!",
      "2026-11-07"
     ]
-   ]
+   ],
+   "place": {}
   },
   {
    "id": "toucannon-pbl",
@@ -5381,7 +5430,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   },
   {
    "id": "lopunny-dusknoir",
@@ -5498,7 +5548,8 @@
      ]
     }
    },
-   "tops": []
+   "tops": [],
+   "place": {}
   }
  ]
 }
