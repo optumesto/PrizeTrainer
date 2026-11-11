@@ -6272,7 +6272,20 @@ function gViability(deck, coh, main) {
     // v61: when the main attacker gives up one prize and the 3-prize Pokemon are not it (Mega Kangaskhan ex
     // drawing for Slowking), the plan does not lean on them, so the risk is real but smaller.
     const sideBig=mainC&&(mainC.card.p||1)===1&&!bigLiabs.some(e=>e.card.key===mainC.card.key);
-    if (eff<FMT.ohkoTarget && strat!=='spread' && sideBig) { prizeScore=0.65;
+    // v67: a 3-prize Pokemon that is there for an engine Ability (Mega Kangaskhan ex's Run Errand draws)
+    // is a support piece, not a mistake. Ways to move it out of harm (free retreat, switching) cut the risk.
+    const engine=e=>(e.card.abil||[]).length&&(e.card.provides||[]).some(t=>/^(draw|search(_[a-z]+)?|energy_accel)$/.test(t));
+    const supportBig=sideBig&&bigLiabs.every(engine);
+    if (eff<FMT.ohkoTarget && strat!=='spread' && supportBig) {
+      const esc=deck.filter(e=>e.card&&!bigLiabs.includes(e)&&((e.card.t==='pkmn'&&e.card.swab)||(e.card.t!=='pkmn'&&(e.card.provides||[]).some(t=>/^switch/.test(t)))));
+      const escN=esc.reduce((a,e)=>a+e.qty,0), escP=esc.find(e=>e.card.t==='pkmn');
+      prizeScore=Math.max(0.5,prizeScore-(escN>=2?0.03:0.08));
+      const what=bigLiabs.length>1?bigLiabs.map(e=>`${gCap(e.name)}'s ${(e.card.abil||[])[0]}`).join(' and '):`its ${(bigLiabs[0].card.abil||[])[0]} Ability`;
+      findings.push({sev:'ok', t:`${list}: a three-prize engine`,
+      d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but ${bigLiabs.length>1?'they are':'it is'} here for ${what}, not to trade hits. `+
+        (escN>=2?`Your ${escN} ways to switch or retreat${escP?`, like ${gCap(escP.name)}`:''}, let you use it, then move it out before your opponent can Knock it out.`
+          :`Use it, then retreat or switch it out before your opponent's turn, and keep it off the Bench when they can hit the Bench.`)}); }
+    else if (eff<FMT.ohkoTarget && strat!=='spread' && sideBig) { prizeScore=0.65;
       findings.push({sev:'warn', t:'A three-prize Pokemon in a one-prize deck',
       d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, half the game in one knockout, while ${gCap(mainC.name)} gives up one. Put ${bigLiabs.length>1?'them':'it'} in play only when you need ${bigLiabs.length>1?'them':'it'}.`}); }
     else if (eff<FMT.ohkoTarget && strat!=='spread') {
