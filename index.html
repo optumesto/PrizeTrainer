@@ -16793,7 +16793,9 @@ function mu60Validate(j) {
     const ids = new Set(decks.map(d => d.id));
     const cols = (Array.isArray(j.cols) ? j.cols : []).filter(c => ids.has(c)).slice(0, 12);
     if (!sources.length || decks.length < 2 || cols.length < 2) return null;
-    return { asOf: j.asOf, since: j.since, until: d30Day(j.until) || j.asOf, sources, cols, decks };
+    // The oldest set in the window ("since 30th Celebration"), when the file names one.
+    const from = j.window && d30Str(j.window.from, 40) ? j.window.from : '';
+    return { asOf: j.asOf, since: j.since, until: d30Day(j.until) || j.asOf, from, sources, cols, decks };
   } catch (_) { return null; }
 }
 
@@ -16951,7 +16953,8 @@ function mu60Section(deck) {
   const srcIds = data.sources.map(s => s.id);
   const srcSel = srcIds.length > 1
     ? `<select class="x-select" aria-label="Results from" onchange="mu60SetSrc(this.value)"><option value="">All results</option>${srcIds.map(id => `<option value="${esc(id)}"${mu60Src === id ? ' selected' : ''}>${esc(MU60_SRC[id] || id)}</option>`).join('')}</select>` : '';
-  const span = data.since === data.until ? d30Nice(data.since) : `${d30Nice(data.since)} to ${d30Nice(data.until)}`;
+  const days = data.since === data.until ? d30Nice(data.since) : `${d30Nice(data.since)} to ${d30Nice(data.until)}`;
+  const span = data.from ? `since ${esc(data.from)} came out (${days})` : days;
   const from = data.sources.filter(s => !mu60Src || s.id === mu60Src);
   const events = from.reduce((a, s) => a + s.events, 0);
 
