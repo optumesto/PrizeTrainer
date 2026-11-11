@@ -7,13 +7,13 @@
 //   (newest first, until it reaches the start of the window), then standings and pairings
 //   for each big event in the window. An event is read once and kept in
 //   .github/matchups-cache.json, so the next week only reads the events that are new.
-//   At most 40 new events a run, so at most about 100 requests. Requests run one at a
+//   At most 30 new events a run, at most 90 requests, 3 seconds apart. Requests run one at a
 //   time with a pause, and a 429 answer stops the run.
 //
 // The window: the last SETS_BACK sets (two today), from the day the older of them came out,
 // so it rolls forward by itself when a new set comes out. A rotation inside the window
 // moves its start to the rotation day. PT_SINCE=YYYY-MM-DD sets the start by hand.
-// A run with PT_BACKFILL=1 reads up to 150 new events, to fill a wider window at once.
+// A run with PT_BACKFILL=1 reads up to 50 new events, to fill a wider window sooner.
 //
 // How a match counts, the same way Limitless counts its own matchup tables:
 // - Both players must have a deck the event recorded. A win is a win, a tie is a match
@@ -51,8 +51,9 @@ const KNOWN_SETS = [
 const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
-const NEW_PER_RUN = BACKFILL ? 150 : 40;   // new events read per run
-const MAX_CALLS = BACKFILL ? 360 : 110;    // requests per run, all told
+const NEW_PER_RUN = BACKFILL ? 50 : 30;   // new events read per run
+const MAX_CALLS = BACKFILL ? 130 : 90;     // requests per run, all told
+const PAUSE = 3000;        // between requests (Limitless answered 429 after about 4 minutes at 1.5 s)
 const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
 const MAX_ROWS = 40;
@@ -64,7 +65,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0;
 async function getJSON(url) {
   if (calls++ > MAX_CALLS) throw new Error('request budget used up');
-  if (!process.env.PT_NO_PAUSE) await sleep(1500);
+  if (!process.env.PT_NO_PAUSE) await sleep(PAUSE);
   const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
   if (r.status === 429) throw new Error('rate limited by ' + new URL(url).host + ', stopping for this week');
   if (!r.ok) return null;
@@ -294,9 +295,9 @@ since = Math.max(since, rot <= now ? rot : 0);
 
 const notes = [];
 let fresh = 0;
+const have = new Map((cache.events || []).map(e => [e.id, e]));
 try {
   const list = await eventList(since, now);
-  const have = new Map((cache.events || []).map(e => [e.id, e]));
   for (const t of list) {
     if (have.has(String(t.id)) || fresh >= NEW_PER_RUN) continue;
     const standings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/standings`);
@@ -318,10 +319,12 @@ try {
     e.plv = 1;
   }
   if (again) notes.push(`placements: ${again} earlier events read again`);
-  cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
   notes.push(`window: from ${day(since)}${fromName ? ' (' + fromName.name + ')' : ''}, ${list.length} big events listed`);
-  notes.push(`events: ${fresh} new, ${cache.events.filter(e => !e.skip).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);
-} catch (e) { notes.push('Limitless: ' + e.message + ', kept what was read'); }
+  notes.push(`events: ${fresh} new, ${[...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);
+} catch (e) { notes.push('Limitless: ' + e.message + `, kept what was read (${fresh} new events)`); }
+// Events read before a stop are kept too, so the next run does not read them again.
+cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
+notes.push(`requests: ${calls}`);
 
 const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY);
 const next = build(use, since, null, fromName);
