@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: RdyDeck 2.4 (build 69): grades track tournament results
+# RdyDeck 2.4 (build 69): grades track tournament results (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v69), CHANGES.md, matchups.json, refresh-matchups.mjs, grade-results.md, tests/grade-check.mjs, tests/grade-baseline.json, tests/grade-matchups.json and .github/workflows/refresh-data.yml.
 
