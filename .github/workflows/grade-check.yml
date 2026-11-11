@@ -30,7 +30,7 @@ concurrency:
 jobs:
   grades:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180     # a first run reads about 1,200 cards at the APIs' pace
     steps:
       - uses: actions/checkout@v5
 

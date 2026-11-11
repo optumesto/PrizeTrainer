@@ -98,6 +98,7 @@ Before a release, the Grade check on the Actions tab must be green. It runs on e
 - A move you meant (a grader fix): run `node tests/grade-check.mjs --update` and commit the new baseline with the fix, so the moves are on record.
 - A move you didn't mean: that's the bug the check is for.
 - To run it on a computer: `npm ci --prefix tests`, then `node tests/grade-check.mjs`. No network needed.
+- The saved card data came from pokemontcg.io alone (TCGdex couldn't be reached when it was made) and has no MEP promo set, so list 059 (Mega Charizard X) is capped at 4.9 by its MEP Charmander. 2.1.1 does the same with this data. Reading the cards again, as below, should clear it.
 - The card data is frozen in `tests/grade-cards.json.gz`, so a new set or an API change never moves a grade by itself. To read the cards again on purpose, delete that file and push; the next run reads the card APIs and commits new data and a new baseline.
 
 ## Old address

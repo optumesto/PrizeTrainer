@@ -8,6 +8,9 @@
 //   node tests/grade-check.mjs --record   read the card data again from the card
 //                                          APIs, then rewrite the baseline
 //   add --only=<text> to run only lists whose deck or event names contain it
+//   add --html=<file> to grade another build (say the live index.html) against the baseline
+//   --record --record-from=<module> records from a local stand-in for the APIs
+//                                          (a module exporting fakeFetch(url)) instead
 //
 // The card data the app reads (pokemontcg.io, TCGdex) is saved in
 // tests/grade-cards.json.gz, so a check gives the same answer every time and
@@ -31,6 +34,11 @@ const args = process.argv.slice(2);
 const MODE = args.includes('--record') ? 'record' : args.includes('--update') ? 'update' : 'check';
 const ONLY = (args.find(a => a.startsWith('--only=')) || '').slice(7).toLowerCase();
 const VERBOSE = args.includes('--verbose');
+const HTML = (args.find(a => a.startsWith('--html=')) || '').slice(7);   // grade another build, e.g. the live one
+// --record-from=<module>: record from a local stand-in for the card APIs (a module that
+// exports fakeFetch(url)) instead of the live APIs, for example where they are blocked.
+const FROM = (args.find(a => a.startsWith('--record-from=')) || '').slice(14);
+const upstream = FROM ? (await import(path.resolve(FROM))).fakeFetch : null;
 
 const LISTS = path.join(HERE, 'grade-lists.json');
 const CARDS = path.join(HERE, 'grade-cards.json.gz');
@@ -60,7 +68,12 @@ async function fakeFetch(input, init) {
       let r = null, body = '', tries = 0;
       for (;;) {
         // A gentle pace: pokemontcg.io allows about 30 requests a minute without a key.
-        await new Promise(res => setTimeout(res, /pokemontcg/.test(url) && !process.env.PTCG_API_KEY ? 2100 : 150));
+        if (!upstream) await new Promise(res => setTimeout(res, /pokemontcg/.test(url) && !process.env.PTCG_API_KEY ? 2100 : 150));
+        if (upstream) {
+          r = await upstream(url); body = await r.text();
+          r = { status: r.status, headers: { get: () => 'application/json' } };
+          break;
+        }
         try {
           const headers = Object.assign({}, init && init.headers);
           if (/pokemontcg/.test(url) && process.env.PTCG_API_KEY) headers['X-Api-Key'] = process.env.PTCG_API_KEY;
@@ -88,7 +101,7 @@ async function fakeFetch(input, init) {
 const FIXED_NOW = Date.parse('2026-11-11T12:00:00Z');
 
 async function loadApp() {
-  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const html = fs.readFileSync(HTML ? path.resolve(HTML) : path.join(ROOT, 'index.html'), 'utf8');
   const errors = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', e => errors.push(String(e && e.message || e)));
@@ -161,6 +174,8 @@ async function gradeList(w, list, i) {
     synergy: r2(R.coh && R.coh.score * 10),
     power: r2(R.via && R.via.score * 10),
     read: cov ? cov.resolved + '/' + cov.total : '?',
+    // Held at the legality cap: which cards, so a move to 4.9 explains itself.
+    cap: R.rawOverall != null ? String((R.coh.flaws[0] || {}).d || '').split('.')[0] : undefined,
   };
 }
 
@@ -189,7 +204,7 @@ if (MODE === 'record') {
 }
 
 const base = fs.existsSync(BASE) ? JSON.parse(fs.readFileSync(BASE, 'utf8')) : { lists: {} };
-const fmt = r => r.error ? 'error' : `${r.grade.toFixed(1)} (Synergy ${r.synergy}, Power ${r.power}, read ${r.read})`;
+const fmt = r => r.error ? 'error' : `${r.grade.toFixed(1)} (Synergy ${r.synergy}, Power ${r.power}, read ${r.read}${r.cap ? ', not legal: ' + r.cap : ''})`;
 const moved = [], broke = results.filter(r => r.error);
 for (const r of results) {
   const b = base.lists[r.id];
@@ -218,7 +233,7 @@ if (MODE === 'check') {
 if (broke.length) { console.log('Baseline not written: fix the lists that failed first.'); process.exit(1); }
 const next = { note: 'Written by tests/grade-check.mjs --update or --record. Each list: grade, Synergy and Power as shown, cards read.', lists: {} };
 if (ONLY) Object.assign(next.lists, base.lists);
-for (const r of results) next.lists[r.id] = { deck: r.deck, event: r.event, place: r.place, grade: r.grade, synergy: r.synergy, power: r.power, read: r.read };
+for (const r of results) next.lists[r.id] = { deck: r.deck, event: r.event, place: r.place, grade: r.grade, synergy: r.synergy, power: r.power, read: r.read, cap: r.cap };
 fs.writeFileSync(BASE, JSON.stringify(next, null, 1) + '\n');
 console.log(`Baseline written for ${results.length} lists.`);
 process.exit(0);
