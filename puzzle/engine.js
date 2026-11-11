@@ -655,7 +655,7 @@ function apply(s0, a) {
       if (m) m.ab[A.name] = s.turn; else P.lim['hand:' + A.name + ':' + x.uid] = s.turn;
       if (A.limit) P.lim[A.limit] = s.turn;
       if (A.limitHas) P.lim['has:' + A.name.toLowerCase()] = s.turn;
-      log(s, 'Used ' + A.name);
+      log(s, (m ? monName(m) : x.card.name) + ' used ' + A.name);
       const steps = A.steps ? (A.cost ? [{ t: 'cost', n: A.cost, F: { any: true } }] : []).concat(A.steps) : null;
       return startRun(s, steps, { name: A.name, mon: m && m.id, handUid: x && x.uid });
     }
