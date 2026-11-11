@@ -4368,9 +4368,21 @@ function kox60(text) {
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, { kox60, geEffects, FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54, pile55, aboost55, gate55, spec56, group56, mill56 });
 
 const RT_BOILER57 = /^(you may play (only 1|any number of)|you may attach any number of pok[e\u00e9]mon tools|attach a pok[e\u00e9]mon tool to 1 of your pok[e\u00e9]mon that doesn|ace spec:|you can't have more than 1 ace spec)/i;
+/** v67: card text with Energy symbols spelled out ("{D} Energy" to "Darkness Energy"), from any source. */
+function sym67Card(c) {
+  if (!c || typeof c !== 'object') return c;
+  const S = { g: 'Grass', r: 'Fire', w: 'Water', l: 'Lightning', p: 'Psychic', f: 'Fighting', d: 'Darkness', m: 'Metal', y: 'Fairy', n: 'Dragon', c: 'Colorless' };
+  const w = v => typeof v === 'string' ? v.replace(/\{([a-z])\}/gi, (m, ch) => S[ch.toLowerCase()] || m) : v;
+  return Object.assign({}, c, {
+    attacks: Array.isArray(c.attacks) ? c.attacks.map(a => a && typeof a === 'object' ? Object.assign({}, a, { text: w(a.text) }) : a) : c.attacks,
+    abilities: Array.isArray(c.abilities) ? c.abilities.map(a => a && typeof a === 'object' ? Object.assign({}, a, { text: w(a.text) }) : a) : c.abilities,
+    rules: Array.isArray(c.rules) ? c.rules.map(w) : c.rules,
+  });
+}
+
 function enrichCard(apiCard, opts) {
   const o = opts || {};
-  const card = fix37Card(apiCard) || {};
+  const card = sym67Card(fix37Card(apiCard)) || {};
   const resolved = !!apiCard;
   const name = card.name || o.fallbackName || '';
 
@@ -5098,7 +5110,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 17;  // v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 18;  // v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -14913,7 +14925,10 @@ function td30Shape(t) {
   if (!supertype) return null;
   const sub = [];
   const rules = [];
-  const txt = v => typeof v === 'string' ? v.replace(/<[^>]*>/g, ' ').replace(/[ \t]+/g, ' ').trim() : '';
+  // v67: TCGdex writes Energy as symbols ("any {D} Energy attached"); spell them out the way the
+  // other card source does, so every check that reads card text sees "Darkness Energy".
+  const SYM = { g: 'Grass', r: 'Fire', w: 'Water', l: 'Lightning', p: 'Psychic', f: 'Fighting', d: 'Darkness', m: 'Metal', y: 'Fairy', n: 'Dragon', c: 'Colorless' };
+  const txt = v => typeof v === 'string' ? v.replace(/<[^>]*>/g, ' ').replace(/\{([a-z])\}/gi, (m, ch) => SYM[ch.toLowerCase()] || m).replace(/[ \t]+/g, ' ').trim() : '';
   if (supertype === 'Pokémon') {
     const stage = String(t.stage || '').replace(/^stage\s*(\d)$/i, 'Stage $1');
     if (/^(basic|stage 1|stage 2)$/i.test(stage)) sub.push(stage.replace(/^basic$/i, 'Basic'));
