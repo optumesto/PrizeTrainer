@@ -14,7 +14,4 @@ jobs:
         with:
           node-version: 20
       - run: node audit-lists.mjs .github/matchups-cache.json audit-lists.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: audit-lists
-          path: audit-lists.json
+      - run: echo "B64START $(gzip -9c audit-lists.json | base64 -w 0) B64END"
