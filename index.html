@@ -1908,6 +1908,9 @@
   .tl-games { display:flex; flex-direction:column; gap:0.4rem; }
   .tl-game { display:grid; grid-template-columns:auto 1fr 1fr; align-items:center; gap:0.4rem; }
   .tl-gn { font-size:var(--fs-sm); font-weight:700; color:var(--text-2); white-space:nowrap; width:3.6rem; }
+  .tl-gp { grid-column:1 / -1; display:flex; flex-wrap:wrap; align-items:center; gap:0.35rem 0.6rem; font-size:var(--fs-sm); color:var(--text-2); padding-left:4rem; }
+  .tl-gp label { display:flex; align-items:center; gap:0.3rem; margin:0; font-size:var(--fs-sm); font-weight:600; color:var(--text-2); }
+  .tl-gp select { width:auto; min-width:3.4rem; padding:0.25rem 0.4rem; }
   .tl-sm { padding:3px; }
   .tl-sm .mode-opt { min-height:36px; font-size:var(--fs-sm); }
   .tl-derived { margin-top:0.45rem; font-size:var(--fs-sm); color:var(--text-2); }
@@ -1931,6 +1934,7 @@
   @media (max-width:380px) {
     .tl-game { grid-template-columns:1fr 1fr; }
     .tl-gn { grid-column:1 / -1; width:auto; }
+    .tl-gp { padding-left:0; }
     .tl-ft-tiles .pv { font-size:1.2rem; }
   }
   @media (max-width:430px) {
@@ -2643,6 +2647,17 @@
   }
   .f40-bad { border-color:var(--danger) !important; box-shadow:0 0 0 2px color-mix(in srgb, var(--danger) 30%, transparent); }
   .f40-saved { font-size:var(--fs-sm); color:var(--text-2); min-height:1.2em; margin-top:0.4rem; }
+  .hx67-tr { cursor:pointer; }
+  .hx67-tr:hover td, .hx67-tr:focus-visible td { background:var(--surface-2, rgba(127,127,127,0.08)); }
+  .hx67-tr:focus-visible { outline:2px solid var(--accent, #e3350d); outline-offset:-2px; }
+  .hx67-list { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.5rem; }
+  .hx67-row { display:flex; gap:0.6rem; align-items:flex-start; }
+  .hx67-mk { flex:none; width:1.4rem; height:1.4rem; border-radius:50%; display:grid; place-items:center; font-size:var(--fs-sm); font-weight:700; color:#fff; background:#2e9d5b; margin-top:0.1rem; }
+  .hx67-row.miss .hx67-mk { background:#d33a2c; }
+  .hx67-mid { flex:1; min-width:0; }
+  .hx67-nm { font-weight:600; overflow-wrap:anywhere; }
+  .hx67-note { margin-top:0.3rem; width:100%; }
+  .hx67-row .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   .mode-note40 { font-size:var(--fs-sm); color:var(--text-2); margin:-0.25rem 0 0.75rem; }
   body[data-theme="light"] .badge.wrong { background:#a3241a; color:#fff; }
   /* About: questions, folded so Home looks the same */
@@ -10055,7 +10070,7 @@ function finishReach() {
 function renderProgressExtras(deck) {
   const parts = [];
   const rec = tlogRecord(state.tlog || [], x => x.deckId === deck.id);
-  if (rec.n) parts.push(`<div class="pg-tile"><div class="pl">Match record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} logged, ${rec.avgTaken.toFixed(1)} prizes taken a match</div></div>`);
+  if (rec.n) parts.push(`<div class="pg-tile"><div class="pl">Match record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} logged${rec.pgames ? ', ' + rec.avgTaken.toFixed(1) + ' prizes taken a game' : ''}</div></div>`);
   const v = ensureVersions(deck);
   if (v.length > 1) {
     const lastTs = v[v.length - 1].ts;
@@ -10076,10 +10091,35 @@ function renderProgressExtras(deck) {
 let _tlogDeck = '';
 function tlogRecord(list, f) {
   const xs = (list || []).filter(f);
-  const r = { n: xs.length, w: 0, l: 0, t: 0, avgTaken: 0, avgGiven: 0 };
-  xs.forEach(x => { if (x.result === 'W') r.w++; else if (x.result === 'L') r.l++; else r.t++; r.avgTaken += x.taken || 0; r.avgGiven += x.given || 0; });
-  if (r.n) { r.avgTaken /= r.n; r.avgGiven /= r.n; }
+  // Prizes are an average per game: a best of three match adds each game it
+  // has prizes for, so a 2-0 sweep counts as two games of 6, not one of 12.
+  const r = { n: xs.length, w: 0, l: 0, t: 0, avgTaken: 0, avgGiven: 0, pgames: 0 };
+  xs.forEach(x => {
+    if (x.result === 'W') r.w++; else if (x.result === 'L') r.l++; else r.t++;
+    tlPrizeGames(x).forEach(g => { r.pgames++; r.avgTaken += g.pt; r.avgGiven += g.pg; });
+  });
+  if (r.pgames) { r.avgTaken /= r.pgames; r.avgGiven /= r.pgames; }
   return r;
+}
+// Prizes for each game of a match that has them, as { pt, pg }. Best of
+// three matches saved before per game prizes only kept the last game's.
+const tlNum = v => v !== '' && v != null && Number.isFinite(+v) ? Math.max(0, Math.min(6, +v | 0)) : null;
+function tlPrizeGames(x) {
+  if (!x) return [];
+  if (x.bo === 3 && Array.isArray(x.games) && x.games.some(g => g && (tlNum(g.pt) != null || tlNum(g.pg) != null))) {
+    return x.games.filter(g => g && ['W', 'L', 'T'].includes(g.r) && (tlNum(g.pt) != null || tlNum(g.pg) != null))
+      .map(g => ({ pt: tlNum(g.pt) || 0, pg: tlNum(g.pg) || 0 }));
+  }
+  if (tlNum(x.taken) == null && tlNum(x.given) == null) return [];
+  return [{ pt: tlNum(x.taken) || 0, pg: tlNum(x.given) || 0 }];
+}
+function tlPrizeText(x) {
+  const gs = tlPrizeGames(x);
+  if (!gs.length) return 'prizes not logged';
+  const t = gs.reduce((a, g) => a + g.pt, 0), g = gs.reduce((a, g) => a + g.pg, 0);
+  if (x.bo !== 3) return `${t} taken, ${g} given`;
+  const perGame = Array.isArray(x.games) && x.games.some(z => z && tlNum(z.pt) != null);
+  return perGame ? `${t} taken, ${g} given in ${gs.length} game${gs.length === 1 ? '' : 's'}` : `${t} taken, ${g} given in the last game`;
 }
 function openTlog(deckId) {
   _tlogDeck = deckId || '';
@@ -10101,7 +10141,7 @@ function renderTlog() {
     <div class="pg-tiles" style="margin-top:0.75rem">
       <div class="pg-tile"><div class="pl">Record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} match${rec.n !== 1 ? 'es' : ''}</div></div>
       <div class="pg-tile"><div class="pl">Win rate</div><div class="pv">${rec.n ? Math.round(rec.w / rec.n * 100) + '%' : '?'}</div><div class="ps">Ties count as not won</div></div>
-      <div class="pg-tile"><div class="pl">Prizes</div><div class="pv">${rec.n ? rec.avgTaken.toFixed(1) : '?'}</div><div class="ps">${rec.n ? 'Taken a match, ' + rec.avgGiven.toFixed(1) + ' given' : 'Taken a match'}</div></div>
+      <div class="pg-tile"><div class="pl">Prizes</div><div class="pv">${rec.pgames ? rec.avgTaken.toFixed(1) : '?'}</div><div class="ps">${rec.pgames ? 'Taken a game, ' + rec.avgGiven.toFixed(1) + ' given' : 'Taken a game'}</div></div>
     </div>
     <div class="hp-actions"><button class="btn btn-primary" id="tl-add" onclick="openTlogForm()">${ic23('plus')}Log a match</button>${list.length ? `<button class="btn" onclick="exportTlog()">${ic23('file')}Export CSV</button>` : ''}</div>`;
   if (!list.length) h += `<div class="nt-empty">No matches logged${dk ? ' for this deck' : ''} yet. Log each round at your next event: who you played, the result and how many prizes each of you took.</div>`;
@@ -10110,8 +10150,8 @@ function renderTlog() {
   list.forEach(x => { const k = x.opp.toLowerCase(); (byOpp[k] = byOpp[k] || { name: x.opp, xs: [] }).xs.push(x); });
   const opps = Object.values(byOpp).sort((a, b) => b.xs.length - a.xs.length).slice(0, 8);
   if (opps.length > 1) {
-    h += `<div class="hp-lbl">By opponent</div><div class="o-table-wrap"><table class="o-table"><thead><tr><th>Opponent</th><th>Record</th><th>Prizes a match</th></tr></thead><tbody>
-      ${opps.map(o => { const r = tlogRecord(o.xs, () => true); return `<tr><td>${esc(o.name)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.avgTaken.toFixed(1)}</td></tr>`; }).join('')}</tbody></table></div>`;
+    h += `<div class="hp-lbl">By opponent</div><div class="o-table-wrap"><table class="o-table"><thead><tr><th>Opponent</th><th>Record</th><th>Prizes a game</th></tr></thead><tbody>
+      ${opps.map(o => { const r = tlogRecord(o.xs, () => true); return `<tr><td>${esc(o.name)}</td><td>${r.w}-${r.l}-${r.t}</td><td>${r.pgames ? r.avgTaken.toFixed(1) : '?'}</td></tr>`; }).join('')}</tbody></table></div>`;
   }
   let lastGroup = '';
   list.forEach(x => {
@@ -10125,7 +10165,7 @@ function renderTlog() {
     const note = deck && matchupFor(deck, x.opp);
     h += `<div class="tl-row"><span class="tl-res ${x.result}">${x.result}</span>
       <div class="tl-mid"><div class="tl-opp">vs ${esc(x.opp || 'Unknown deck')}</div>
-        <div class="tl-sub">${esc(deck ? deck.name : x.deckName || 'Deleted deck')}${x.deckVer ? ' v' + x.deckVer : ''}: ${x.taken} taken, ${x.given} given</div>
+        <div class="tl-sub">${esc(deck ? deck.name : x.deckName || 'Deleted deck')}${x.deckVer ? ' v' + x.deckVer : ''}: ${tlPrizeText(x)}</div>
         ${x.notes ? `<div class="tl-notes">${esc(x.notes)}</div>` : ''}
         ${note ? `<button class="tl-plan" onclick="openReview('${deck.id}');showReviewTab('notes')">Prize plan for this matchup</button>` : ''}</div>
       <button class="icon-btn sm" onclick="openTlogForm('${x.id}')" aria-label="Edit match" title="Edit match">${ic23('edit')}</button></div>`;
@@ -11881,7 +11921,7 @@ function openThumbPicker(deckId) {
     const isSelected = card.imageUrl === currentThumb || (card.fallbackUrls || []).includes(currentThumb);
     const fallbacks = JSON.stringify(card.fallbackUrls || []);
     return `
-      <div class="picker-card ${isSelected ? 'selected' : ''}" onclick="selectThumb('${deckId}', this.querySelector('img') ? this.querySelector('img').src : '${card.imageUrl}')">
+      <div class="picker-card ${isSelected ? 'selected' : ''}" data-deck="${esc(deckId)}" data-src="${esc(card.imageUrl)}" onclick="selectThumb(this.dataset.deck, this.querySelector('img') ? this.querySelector('img').src : this.dataset.src)">
         <div class="picker-card-img">
           <img src="${esc(card.imageUrl)}" alt="${displayName}"
             data-fallbacks="${esc(fallbacks)}" data-fallback-idx="0"
@@ -12446,7 +12486,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
-// PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
+// PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
 const PT_VERSION = 'v2.1.1';
 const PT_BUILD = 66;
 const TOUR_KEY = 'pt_tour_v24';
@@ -13686,7 +13726,7 @@ function olPickDone() {
 // game's result and who went first in it. The log then splits your record by
 // going first and going second, overall and per opponent, so the coin flip
 // choice has your own numbers behind it.
-let _tl28 = null; // form state: { bo, turn, games:[{r,t}] }
+let _tl28 = null; // form state: { bo, turn, games:[{r,t,pt,pg}] }
 
 const TL_TURNS = ['first', 'second'];
 function tlGames(x) {
@@ -13729,7 +13769,8 @@ function tl28Form() {
   if (f.bo === 3) {
     h += `<div class="mb"><div class="field-label">Games</div><div class="tl-games">`;
     f.games.forEach((g, i) => {
-      h += `<div class="tl-game"><span class="tl-gn">Game ${i + 1}</span>${tlResSeg('tl-g' + i + 'r', g.r)}${tlTurnSeg('tl-g' + i + 't', g.t, true)}</div>`;
+      const pz = (k, l) => `<label>${l}<select id="tl-g${i}${k}" class="x-select" onchange="tl28Set('tl-g${i}${k}',this.value)" aria-label="Game ${i + 1}, ${l.toLowerCase()}"><option value=""${g[k] === '' ? ' selected' : ''}>-</option>${[0, 1, 2, 3, 4, 5, 6].map(n => `<option value="${n}"${String(g[k]) === String(n) ? ' selected' : ''}>${n}</option>`).join('')}</select></label>`;
+      h += `<div class="tl-game"><span class="tl-gn">Game ${i + 1}</span>${tlResSeg('tl-g' + i + 'r', g.r)}${tlTurnSeg('tl-g' + i + 't', g.t, true)}${g.r ? `<div class="tl-gp">${pz('pt', 'You took')}${pz('pg', 'They took')}</div>` : ''}</div>`;
     });
     const played = f.games.filter(g => g.r);
     h += `</div><div class="tl-derived" id="tl-derived">${played.length ? 'Match result: <b>' + ({ W: 'Win', L: 'Loss', T: 'Tie' })[tlBo3Result(played)] + '</b> (' + tlRec(tlGameRec([{ bo: 3, games: played }])) + ' in games)' : 'Tap W, L or T for each game played.'}</div></div>`;
@@ -13745,10 +13786,11 @@ function tl28Draw() {
   const res = document.getElementById('tl-result');
   const wrap = res && res.closest('.mb');
   if (wrap) wrap.style.display = _tl28 && _tl28.bo === 3 ? 'none' : '';
+  // In best of three each game has its own prizes, so the one game rows hide.
   ['taken', 'given'].forEach(k => {
     const seg = document.getElementById('tl-' + k);
-    const lbl = seg && seg.parentElement.querySelector('.field-label');
-    if (lbl) lbl.textContent = (k === 'taken' ? 'Prizes you took' : 'Prizes they took') + (_tl28 && _tl28.bo === 3 ? ', last game' : '');
+    const mb = seg && seg.closest('.mb');
+    if (mb) mb.style.display = _tl28 && _tl28.bo === 3 ? 'none' : '';
   });
   tl28Hint();
 }
@@ -13756,8 +13798,15 @@ function tl28Set(id, v) {
   if (!_tl28) return;
   if (id === 'tl-bo') { _tl28.bo = +v === 3 ? 3 : 1; tl28Draw(); return; }
   if (id === 'tl-turn') _tl28.turn = v;
-  const m = /^tl-g(\d)([rt])$/.exec(id);
-  if (m) _tl28.games[+m[1]][m[2]] = v;
+  const m = /^tl-g(\d)(r|t|pt|pg)$/.exec(id);
+  if (m) {
+    const g = _tl28.games[+m[1]];
+    g[m[2]] = v;
+    // A won game is usually all 6 of your prizes, a lost one all 6 of theirs.
+    if (m[2] === 'r' && v === 'W' && g.pt === '') g.pt = '6';
+    if (m[2] === 'r' && v === 'L' && g.pg === '') g.pg = '6';
+    if (m[2] === 'pt' || m[2] === 'pg') return;
+  }
   document.querySelectorAll('#' + id + ' .mode-opt').forEach(e => e.classList.toggle('active', e.dataset.val === String(v)));
   if (m && m[2] === 'r') tl28Draw();
 }
@@ -13790,8 +13839,13 @@ function tl28Hint() {
     const last = (state.tlog || []).slice().sort((a, b) => b.ts - a.ts)[0];
     const games = [0, 1, 2].map(i => {
       const g = x && x.bo === 3 && Array.isArray(x.games) && x.games[i] || {};
-      return { r: ['W', 'L', 'T'].includes(g.r) ? g.r : '', t: TL_TURNS.includes(g.t) ? g.t : '' };
+      return { r: ['W', 'L', 'T'].includes(g.r) ? g.r : '', t: TL_TURNS.includes(g.t) ? g.t : '', pt: tlNum(g.pt) == null ? '' : String(tlNum(g.pt)), pg: tlNum(g.pg) == null ? '' : String(tlNum(g.pg)) };
     });
+    // A match saved before per game prizes kept only the last game's: put them there.
+    if (x && x.bo === 3 && !games.some(g => g.pt !== '' || g.pg !== '')) {
+      const lastPlayed = games.map(g => !!g.r).lastIndexOf(true);
+      if (lastPlayed >= 0) { games[lastPlayed].pt = tlNum(x.taken) == null ? '' : String(tlNum(x.taken)); games[lastPlayed].pg = tlNum(x.given) == null ? '' : String(tlNum(x.given)); }
+    }
     _tl28 = { id: x ? x.id : '', bo: x ? (x.bo === 3 ? 3 : 1) : (last && last.bo === 3 ? 3 : 1), turn: x && TL_TURNS.includes(x.turn) ? x.turn : '', games };
     const res = document.getElementById('tl-result');
     const wrap = res && res.closest('.mb');
@@ -13818,7 +13872,7 @@ function tl28Hint() {
   saveTlog = async function (id) {
     if (!_tl28) return _save.apply(this, arguments);
     const f = _tl28;
-    const games = f.games.map(g => ({ r: g.r, t: g.t }));
+    const games = f.games.map(g => g.r ? { r: g.r, t: g.t, pt: tlNum(g.pt), pg: tlNum(g.pg) } : { r: '', t: g.t });
     const played = games.filter(g => ['W', 'L', 'T'].includes(g.r));
     if (f.bo === 3) {
       if (!played.length) { showToast('Add the result of at least one game.'); return; }
@@ -13833,7 +13887,12 @@ function tl28Hint() {
     if (!x) return;
     x.bo = f.bo;
     x.round = round;
-    if (f.bo === 3) { x.games = games; delete x.turn; }
+    if (f.bo === 3) {
+      x.games = games; delete x.turn;
+      // The match's prizes are the totals over its games.
+      x.taken = games.reduce((a, g) => a + (g.pt || 0), 0);
+      x.given = games.reduce((a, g) => a + (g.pg || 0), 0);
+    }
     else { x.turn = TL_TURNS.includes(f.turn) ? f.turn : ''; delete x.games; }
     _tl28 = null;
     await saveState();
@@ -13854,7 +13913,7 @@ function tl28Hint() {
     const rows = [['Date', 'Event', 'Round', 'Deck', 'Version', 'Opponent', 'Result', 'Match', 'Went', 'Games', 'Prizes taken', 'Prizes given', 'Notes']]
       .concat(list.map(x => {
         const d = state.decks.find(z => z.id === x.deckId);
-        const gs = x.bo === 3 ? tlGames(x).map(g => g.r + (g.t ? ' ' + went(g.t).toLowerCase() : '')).join(' / ') : '';
+        const gs = x.bo === 3 ? (x.games || []).filter(g => g && ['W', 'L', 'T'].includes(g.r)).map(g => g.r + (TL_TURNS.includes(g.t) ? ' ' + g.t : '') + (tlNum(g.pt) != null || tlNum(g.pg) != null ? ' ' + (tlNum(g.pt) || 0) + '-' + (tlNum(g.pg) || 0) : '')).join(' / ') : '';
         return [x.day, x.event, x.round || '', d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.bo === 3 ? 'Best of three' : 'One game',
           x.bo === 3 ? '' : went(x.turn), gs, x.taken, x.given, x.notes];
       }));
@@ -13920,7 +13979,7 @@ function tl28Render() {
       const a = tlGameRec(o.xs, 'first'), b = tlGameRec(o.xs, 'second');
       // Only point one way with at least 2 games each way and a clear gap.
       const lean = a.n >= 2 && b.n >= 2 ? (Math.abs(a.w / a.n - b.w / b.n) >= 0.2 ? (a.w / a.n > b.w / b.n ? 'Better going first' : 'Better going second') : 'No clear edge') : '';
-      h += `<tr><td>${esc(o.name)}<div class="tl-lean">${m.avgTaken.toFixed(1)} prizes a game${lean ? ', ' + lean.toLowerCase() : ''}</div></td><td>${m.w}-${m.l}-${m.t}</td><td>${a.n ? tlRec(a) : '?'}</td><td>${b.n ? tlRec(b) : '?'}</td></tr>`;
+      h += `<tr><td>${esc(o.name)}<div class="tl-lean">${m.pgames ? m.avgTaken.toFixed(1) + ' prizes taken a game' : 'No prizes logged'}${lean ? ', ' + lean.toLowerCase() : ''}</div></td><td>${m.w}-${m.l}-${m.t}</td><td>${a.n ? tlRec(a) : '?'}</td><td>${b.n ? tlRec(b) : '?'}</td></tr>`;
     });
     h += `</tbody></table></div>`;
   }
@@ -17536,6 +17595,65 @@ async function dd65Delete(id) {
 })();
 // Game modes keeps its own delete, now behind the same confirm.
 deleteDeckFromModal = function () { closeModeModal(); if (modeDeckId) dd65Ask(modeDeckId); };
+// ═══════════ AUDIT FIXES (v67) ═══════════
+// Session history rows open the game they record: score, time, which prizes
+// you named and missed, and the notes on the missed ones, which can be edited.
+function hx67Open(i) {
+  const deck = findDeck(state.activeDeckId);
+  const h = deck && deck.history && deck.history[i];
+  if (!h) return;
+  const pc = h.prizeCount || 6;
+  const ps = Array.isArray(h.prizes) ? h.prizes : [];
+  const rows = ps.map((p, k) => `<div class="hx67-row${p.missed ? ' miss' : ''}">
+      <span class="hx67-mk" aria-hidden="true">${p.missed ? '&#10005;' : '&#10003;'}</span>
+      <div class="hx67-mid"><div class="hx67-nm">${esc(cn23(p.name || ''))}<span class="sr-only">${p.missed ? ', missed' : ', named'}</span></div>
+      ${p.missed ? `<textarea class="mn-input hx67-note" data-k="${k}" maxlength="500" aria-label="Note on ${esc(cn23(p.name || ''))}" placeholder="Why did I miss this?">${esc(p.note || '')}</textarea>` : ''}</div></div>`).join('');
+  openSheet(`<div class="modal-title">Game ${deck.history.length - i}</div>
+    <div class="pg-tiles">
+      <div class="pg-tile"><div class="pl">Score</div><div class="pv">${h.score}/${pc}</div><div class="ps">${h.score === pc ? 'Perfect' : (pc - h.score) + ' missed'}</div></div>
+      <div class="pg-tile"><div class="pl">Time</div><div class="pv">${formatTime(h.time)}</div><div class="ps">${esc(h.date || '')}</div></div>
+    </div>
+    ${rows ? `<div class="hp-lbl">Prize cards</div><div class="hx67-list" id="hx67-list">${rows}</div>` : '<div class="nt-empty">This game was saved before prize cards were kept.</div>'}
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`);
+  const list = document.getElementById('hx67-list');
+  if (!list) return;
+  let t = null;
+  list.addEventListener('input', e => {
+    const ta = e.target.closest('.hx67-note');
+    if (!ta || !ps[+ta.dataset.k]) return;
+    ps[+ta.dataset.k].note = ta.value.slice(0, 500);
+    clearTimeout(t);
+    t = setTimeout(() => { Promise.resolve(saveState()).then(() => f40Saved(list)); }, 600);
+  });
+}
+(function () {
+  const _r = renderHistoryTable;
+  renderHistoryTable = function () {
+    const r = _r.apply(this, arguments);
+    const deck = findDeck(state.activeDeckId);
+    const tbody = document.getElementById('history-tbody');
+    if (!deck || !deck.history || !deck.history.length || !tbody) return r;
+    tbody.querySelectorAll('tr').forEach((tr, i) => {
+      if (!deck.history[i]) return;
+      tr.className = 'hx67-tr';
+      tr.tabIndex = 0;
+      tr.setAttribute('role', 'button');
+      tr.setAttribute('aria-label', 'Open game ' + (deck.history.length - i) + ', ' + deck.history[i].score + ' of ' + (deck.history[i].prizeCount || 6));
+      tr.onclick = () => hx67Open(i);
+      tr.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hx67Open(i); } };
+    });
+    return r;
+  };
+})();
+// The saved line under the notes stays until the next keystroke, so it is
+// there when you look up from typing.
+f40Saved = function (root) {
+  if (!root) return;
+  let s = root.querySelector('.f40-saved');
+  if (!s) { s = document.createElement('div'); s.className = 'f40-saved'; s.setAttribute('role', 'status'); root.appendChild(s); }
+  s.textContent = 'Notes saved';
+  if (!root._f67) { root._f67 = 1; root.addEventListener('input', () => { const z = root.querySelector('.f40-saved'); if (z) z.textContent = ''; }); }
+};
 </script>
 </body>
 </html>

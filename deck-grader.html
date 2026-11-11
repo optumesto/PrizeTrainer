@@ -16,10 +16,13 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RdyDeck. Pok&eacute;mon TCG deck grader.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pok&eacute;mon TCG Deck Grader: Rate Your Deck Free | RdyDeck">
+<meta name="twitter:description" content="Paste a Pok&eacute;mon TCG Live or Limitless list and get a grade out of 10, with Synergy, Power and what to fix first. Free, no account, works offline.">
 <meta name="twitter:image" content="https://rdydeck.com/og-deck-grader.png">
 <meta name="theme-color" content="#131210">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://rdydeck.com/deck-grader.html#page","url":"https://rdydeck.com/deck-grader.html","name":"Pokémon TCG Deck Grader: Rate Your Deck Free | RdyDeck","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/"},"about":{"@id":"https://rdydeck.com/#app"},"primaryImageOfPage":"https://rdydeck.com/og-deck-grader.png","breadcrumb":{"@id":"https://rdydeck.com/deck-grader.html#crumbs"}},{"@type":"BreadcrumbList","@id":"https://rdydeck.com/deck-grader.html#crumbs","itemListElement":[{"@type":"ListItem","position":1,"name":"RdyDeck","item":"https://rdydeck.com/"},{"@type":"ListItem","position":2,"name":"Pokémon TCG deck grader","item":"https://rdydeck.com/deck-grader.html"}]}]}</script>
 <style>
   @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
@@ -120,5 +123,9 @@
   </footer>
 </main>
 <script src="ads.js" defer></script>
+<script>
+// The app's service worker, so this page and the app open with no signal next time.
+if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
+</script>
 </body>
 </html>
