@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Not released yet: RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, and audit fixes (branch grade-why)
+# RdyDeck 2.2 (build 67): why each grade is what it is, play rules in Hand and Goldfish, deck order on home, audit fixes, a grade check and the old address redirect (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v67), CHANGES.md, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, terms.html, privacy.html, tests/ and .github/workflows/grade-check.yml, plus the audit fixes' files (404.html, offline.html, manifest.json, guide pages, sitemap.xml, update-sitemap.mjs, README.md, .github/workflows/refresh-data.yml).
 
