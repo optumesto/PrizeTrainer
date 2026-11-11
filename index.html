@@ -5286,6 +5286,9 @@ function toGradeDeck(deck) {
       abBoost: (c.abilities||[]).filter(x => x.boost).map(x => Object.assign({ abil: x.name }, x.boost)),
       sboost: (x => x ? Object.assign({ abil: x.name }, x.sboost) : null)((c.abilities||[]).find(x => x.sboost)),
       gate: ((c.abilities||[]).filter(x => x.gate).map(x => Object.assign({ abil: x.name }, x.gate)))[0] || null,
+      // v65: an Ability like Eevee ex's Rainbow DNA lets it stand in for the Basic that a Pokemon ex evolves from.
+      standIn: (((c.atext||[]).map(x => String(x[1]||'')).join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+        .match(/can evolve into any pokemon ex that evolves from ([a-z0-9' ]+?)(?= if|[.,]|$)/)) || [])[1] || null,
       byName: !!c.byName, tt: c.ttype || null, isEx: /\bex$/i.test(String(c.name||'').trim()),
       // v63: lock, mill, wall and other control pieces from its Abilities or Trainer rules (ctl63).
       ctl: [].concat(...(c.atext||[]).map(x => TCGEnrich.ctl63(x[1]).map(p => Object.assign(p, { src:'ability', via:x[0] }))),
@@ -5368,6 +5371,9 @@ function gCoherence(deck) {
   const presentN = new Set(deck.filter(e=>e.card).map(e=>nk(e.name)));
   deck.forEach(e => { const c=e.card; if (!c || c.t!=='pkmn' || c.stage!=='stage1' || !c.from) return;
     if (presentN.has(nk(c.from))) return;
+    // v65: a Pokemon ex can also evolve from a card that stands in for its Basic (Eevee ex for Jolteon ex).
+    const sub = c.isEx && deck.find(x => x.card && x.card.standIn && nk(x.card.standIn) === nk(c.from));
+    if (sub) { synergies.push({link:gCap(sub.name)+' > '+gCap(e.name), p:`${gCap(e.name)} evolves from ${gCap(c.from)}, and ${gCap(sub.name)} can evolve into it, so the line works without a plain ${gCap(c.from)}.`}); return; }
     reqTotal++;
     flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.from)} for ${gCap(e.name)}`,
       d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which is not in the list, so it can never reach the board.`}); });
@@ -5851,12 +5857,14 @@ function g37Reach(a, deck, self) {
  * each attack of the other Pokemon in the list (they sit on the Bench), paid with Energy the list runs.
  * Returns [{ a, r }] with r the reach of each, marked as a copy for the borrowed ones.
  */
-function gAtkOpts(e, deck, pay) {
+function gAtkOpts(e, deck, pay, ok) {
   const out = [];
-  (e.card.attacks || []).forEach(a => { if (!pay(a)) return; const r = g37Reach(a, deck, e); if (r.val == null) r.val = gVal(r, a); out.push({ a, r }); });
+  (e.card.attacks || []).forEach(a => { if (!pay(a, e.card)) return; const r = g37Reach(a, deck, e); if (r.val == null) r.val = gVal(r, a); out.push({ a, r }); });
   if (e.card.bcopy) deck.forEach(o => { const c = o.card;
-    if (!c || c.t !== 'pkmn' || c.key === e.card.key || !c.attacks || c.bcopy) return;
-    c.attacks.forEach(x => { if (x.copy || !pay(x)) return;
+    // v65: only a Pokemon that can reach the Bench can lend its attacks.
+    if (!c || c.t !== 'pkmn' || c.key === e.card.key || !c.attacks || c.bcopy || (ok && !ok(c))) return;
+    // The Energy sits on the copier, so it is the copier that has to be able to use it.
+    c.attacks.forEach(x => { if (x.copy || !pay(x, e.card)) return;
       const r = g37Reach(x, deck, o); if (r.val == null) r.val = gVal(r, x);
       r.copy = { who: o.name, atk: x.name, via: e.card.bcopy, bench: true }; r.atk = x.name;
       out.push({ a: x, r }); }); });
@@ -6060,13 +6068,33 @@ function gCtlSay(x) {
 }
 
 function gViability(deck, coh, main) {
-  const attackers=deck.filter(e=>e.card&&e.card.attacks), findings=[];
-  const pay=a=>(a.cost||[]).every(ty=>ty==='colorless'||coh.energyTypes[ty]||coh.energyTypes.any);
+  // v65: a Pokemon counts as an attacker only when it can reach the board: every Pokemon it evolves
+  // from is in the list (Rare Candy may skip the middle of a Stage 2), or it puts itself in play.
+  const gk=k=>gtNorm(normalizeCardName(k||''));
+  const canPlay=(c,g=0)=>{ if(!c.from||c.stage==='basic'||c.selfBench||c.byName||g>3) return true;
+    const mid=deck.find(x=>x.card&&gk(x.card.key)===gk(c.from));
+    if (mid) return canPlay(mid.card,g+1);
+    if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
+    // With the Stage 1 missing, Rare Candy has to carry the whole line, so it takes 2 or more.
+    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2; };
+  const attackers=deck.filter(e=>e.card&&e.card.attacks&&canPlay(e.card)), findings=[];
+  // v65: and an attack counts only when the list runs as many Energy of each type as it asks for
+  // (2 Grass in the cost needs 2 or more Grass Energy cards, not just one).
+  // A Special Energy that works only on some Pokemon ("if this card is attached to a Basic Pokemon",
+  // "can only be attached to a Team Rocket's Pokemon") counts only for those.
+  const stg={'basic':'basic','stage 1':'stage1','stage 2':'stage2'};
+  const fits=(ec,c)=>{ const m=gtNorm(ec.et||'').match(/(?:only be attached to|if this card is attached to) an? ([a-z0-9' ]+?) pokemon/);
+    if (!m||!c) return true; const x=m[1].trim();
+    return stg[x] ? String(c.stage||'').toLowerCase().replace(/\s+/g,'')===stg[x] : gtNorm(c.key||'').startsWith(x); };
+  const EN=deck.filter(x=>x.card&&x.card.t==='energy');
+  const pay=(a,who)=>{ const need={}; (a.cost||[]).forEach(ty=>{ if(ty!=='colorless') need[ty]=(need[ty]||0)+1; });
+    return Object.keys(need).every(ty=>EN.reduce((n,x)=>{ const ts=x.card.etypes&&x.card.etypes.length?x.card.etypes:[x.card.etype];
+      return n+((ts.includes(ty)||ts.includes('any'))&&fits(x.card,who)?x.qty:0); },0)>=need[ty]); };
   // Best payable hit per attacker: its ceiling, and what it does early.
   const reach=[];
   attackers.forEach(e => { let r0=null;
     // v60: compared by gVal, so an attack that hits 3 Pokemon at once can win over a slightly bigger single hit.
-    gAtkOpts(e, deck, pay).forEach(({ r }) => {
+    gAtkOpts(e, deck, pay, c => canPlay(c)).forEach(({ r }) => {
       if (!r0 || r.val>r0.val || (r.val===r0.val && r.now>r0.now)) r0=r; });
     // v62: attacking twice a turn doubles what it does to the Active, when the list runs the Stadium it needs (2 or more).
     const t2 = e.card.atk2, t2n = t2 && t2.stadium ? deck.filter(x => x.card && x.card.key === t2.stadium.toLowerCase()).reduce((n, x) => n + x.qty, 0) : 0;
@@ -6084,7 +6112,9 @@ function gViability(deck, coh, main) {
     ? `${gCap(main.name)} is this deck's main attacker, but the hardest hit the grade can count comes from another Pokemon. ` : '';
   const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0, !!(bestR && bestR.twice));
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
-  const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0;
+  // v65: the spread engine counts only from cards that can reach the board.
+  const prov=k=>deck.some(e=>e.card&&canPlay(e.card)&&(e.card.provides||[]).includes(k));
+  const spreadEngine = coh.provided['spread_counters']>0 && coh.provided['move_counters']>0 && prov('spread_counters') && prov('move_counters');
   const boost = bestR ? bestR.boost : 0;
   const [lo, hi] = FMT.threatHP;
   let eff=best+boost, closeScore, strat;
@@ -6143,6 +6173,38 @@ function gViability(deck, coh, main) {
     const n=multiR.multi>=4?'every one':multiR.multi;
     findings.push({sev:'ok', t:'Hits several Pokemon at once',
     d:`${how} hits ${multiR.multi>=4?'each':multiR.multi} of your opponent's Pokemon for ${multiR.top}${multiR.multi>=4?'':' each'}, so two uses can Knock Out ${n === 'every one' ? 'a whole board' : n} of their Pokemon with ${multiR.top*2} HP or less. The single-hit number undersells it.`}); }
+  // v65: Energy the top hit can count on. A list wants about 3 Energy cards it can use for each Energy of a type
+  // the attack asks for (cards that attach Energy from the deck or discard stand in for some). Fewer than that
+  // and the attack is often not ready, so the hit counts for less.
+  if (bestR && strat !== 'spread' && best > 0) {
+    const ce=deck.find(x=>x.card&&x.name===bestR.name), cw=ce&&ce.card;
+    // A copy attack is paid with its own cost; an Ability that borrows a Benched Pokemon's attack pays that attack's cost.
+    const bench=bestR.copy&&bestR.copy.bench, src=bench?(deck.find(x=>x.card&&x.name===bestR.copy.who)||{}).card:cw;
+    const at=src&&(src.attacks||[]).find(x=>x.name===(bestR.copy&&!bench?bestR.copy.via:bestR.atk));
+    if (at&&cw) { const need={}; (at.cost||[]).forEach(ty=>{ if(ty!=='colorless') need[ty]=(need[ty]||0)+1; });
+      const acc=(coh.provided['energy_accel']||0)>=4?3:0;
+      const sup=Math.min(1,...Object.keys(need).map(ty=>(EN.reduce((n,x)=>{ const ts=x.card.etypes&&x.card.etypes.length?x.card.etypes:[x.card.etype];
+        return n+((ts.includes(ty)||ts.includes('any'))&&fits(x.card,cw)?x.qty:0); },0)+acc)/(need[ty]*3)));
+      if (sup<0.7) { closeScore*=0.55+0.45*sup/0.7;
+        findings.push({sev:'warn', t:`Few Energy for ${gCap(bestName)}`, d:`${gCap(bestR.atk)} needs ${Object.keys(need).map(ty=>need[ty]+' '+gCap(ty)).join(' and ')} Energy, and the list runs few Energy that ${gCap(bestName)} can use for it, so it is often not ready to attack.`}); } } }
+  // v65: a big hit from a single copy with nothing close behind it shows up in few games. Count the copies
+  // that can reach the board (an evolution line is only as deep as its thinnest stage, Rare Candy filling in
+  // for the Stage 1) across attackers that hit nearly as hard, and trust the hit less when there are few.
+  if (bestR && strat !== 'spread' && best > 0) {
+    const cand=coh.provided['evolution_access']||0;
+    const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
+      while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
+        if (!m) { q=c2.stage==='stage2'?Math.min(q,Math.floor(cand/2)):q; break; }
+        q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
+      return q; };
+    const av=n=>n>=3?1:n>=2?0.97+0.03*(n-2):n>=1?0.75+0.22*(n-1):0.5+0.25*n;
+    // Attackers within 85% of the hit count in full, weaker ones down to half of it count in part.
+    const relOf=r=>av(reach.filter(o=>o.eff>=0.5*r.eff).reduce((n,o)=>n+lineQ(o)*Math.min(1,(o.eff/r.eff)/0.85)**2,0));
+    const rel=Math.max(...reach.map(r=>Math.min(1,r.eff/Math.max(1,bestR.eff))*relOf(r)));
+    if (rel<0.999) { closeScore*=0.4+0.6*rel;
+      // A deck with 3 or more other attackers near the top hit covers the loss, so it gets no warning.
+      if (relOf(bestR)<0.8 && reach.filter(o=>o!==bestR&&o.eff>=0.6*bestR.eff).length<3) findings.push({sev:'warn', t:`Only ${lineQ(bestR)||'no'} ${gCap(bestName)} to hit with`,
+        d:`Your hardest hit comes from ${gCap(bestName)}, and the list can put ${lineQ(bestR)<=1?'only one':'few'} into play, with no other attacker close to it. When it is prized or Knocked Out, your damage drops a lot.`}); } }
   closeScore=gClamp(closeScore,0,1);
   // v63: a lock, mill or stall deck closes games by stopping the opponent. When that counts for more
   // than its damage, the grade uses it and the damage finding says why low damage is fine here.
