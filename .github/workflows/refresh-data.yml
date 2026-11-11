@@ -3,7 +3,8 @@
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
-# Last, builds matchups.json (deck vs deck win rates) from Limitless online tournaments.
+# Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments.
+# Last, checks how well grades track those results and writes grade-results.md.
 name: Refresh data.json
 
 on:
@@ -56,6 +57,14 @@ jobs:
           PT_BACKFILL: ${{ inputs.backfill && '1' || '' }}
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
+      - name: Check grades against results
+        # Ranks archetypes by grade and by this week's results and writes grade-results.md.
+        # A failed run keeps last week's report; it never blocks the refresh.
+        continue-on-error: true
+        run: |
+          npm ci --prefix tests --no-audit --no-fund
+          node tests/grade-check.mjs --results=grade-results.md
+
       - name: Update sitemap dates
         # A failed run keeps the old dates; it never blocks the refresh.
         continue-on-error: true
@@ -63,7 +72,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml"
+          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml grade-results.md"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

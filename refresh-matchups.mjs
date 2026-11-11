@@ -208,16 +208,26 @@ async function eventList(since, now) {
 /** Sum the window's events into the file the app reads. */
 function build(events, since, until, from, newest) {
   const lists = {}, names = {}, mons = {}, vs = {}, tops = {}, fin = {}, field = {}, now = {};
+  // v68: results since the newest set came out, kept apart so the grade can weigh them most.
+  const curRec = {}, curFin = {}, curField = {};
+  let curEvents = 0, curMatches = 0;
   let nowTotal = 0;
   let total = 0, matches = 0;
   for (const e of events) {
     matches += e.matches;
     const src = e.src || 'online';
+    const isCur = !!(newest && e.date >= newest);
+    if (isCur) { curEvents++; curMatches += e.matches; }
     for (const [id, d] of Object.entries(e.decks)) {
       if (Array.isArray(d.pl) && d.pl.length === 6) {
         const pd = (fin[id] = fin[id] || {});
         const a = pd[src] || (pd[src] = [0, 0, 0, 0, 0, 0]), f = field[src] || (field[src] = [0, 0, 0, 0, 0, 0]);
         d.pl.forEach((v, i) => { a[i] += v; f[i] += v; });
+        if (isCur) {
+          const cd = (curFin[id] = curFin[id] || {});
+          const ca = cd[src] || (cd[src] = [0, 0, 0, 0, 0, 0]), cf = curField[src] || (curField[src] = [0, 0, 0, 0, 0, 0]);
+          d.pl.forEach((v, i) => { ca[i] += v; cf[i] += v; });
+        }
       }
       names[id] = names[id] || d.name;
       lists[id] = (lists[id] || 0) + d.lists;
@@ -234,6 +244,11 @@ function build(events, since, until, from, newest) {
       const ba = ((vs[b] = vs[b] || {})[a] = vs[b][a] || {});
       add(ab[src] || (ab[src] = [0, 0, 0]), r);
       add(ba[src] || (ba[src] = [0, 0, 0]), [r[1], r[0], r[2]]);
+      if (isCur && a !== b) {
+        const ca = ((curRec[a] = curRec[a] || {})[src] = curRec[a][src] || [0, 0, 0]);
+        const cb = ((curRec[b] = curRec[b] || {})[src] = curRec[b][src] || [0, 0, 0]);
+        add(ca, r); add(cb, [r[1], r[0], r[2]]);
+      }
     }
   }
   // Rows: the most played decks over the window, plus every deck played enough since the
@@ -256,7 +271,9 @@ function build(events, since, until, from, newest) {
     const best = {};
     for (const x of (tops[id] || []).sort((a, b) => a[1] - b[1] || (a[3] < b[3] ? 1 : -1))) if (!best[x[0]]) best[x[0]] = x;
     const top = Object.values(best).slice(0, TOPS_MAX);
-    return { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v, tops: top, place: fin[id] || {} };
+    const out = { id, name: names[id], share: Math.round(lists[id] / total * 1000) / 10, lists: lists[id], sig, rec, vs: v, tops: top, place: fin[id] || {} };
+    if (now[id]) out.cur = { lists: now[id], rec: curRec[id] || {}, place: curFin[id] || {} };
+    return out;
   }).filter(d => d.sig.length);
   return {
     schema: 1,
@@ -275,6 +292,8 @@ function build(events, since, until, from, newest) {
       place: field.online || [0, 0, 0, 0, 0, 0],
     }],
     cols: cols.filter(c => decks.some(d => d.id === c)),
+    // v68: the same totals for the events since the newest set came out (each deck's cur).
+    cur: newest && curEvents ? { since: newest, events: curEvents, matches: curMatches, place: curField } : null,
     decks,
   };
 }
@@ -305,7 +324,8 @@ since = Math.max(since, rot <= now ? rot : 0);
 const notes = [];
 let fresh = 0;
 const have = new Map((cache.events || []).map(e => [e.id, e]));
-try {
+// PT_OFFLINE=1 rebuilds the file from the cache alone, without reading Limitless.
+if (!process.env.PT_OFFLINE) try {
   const list = await eventList(since, now);
   for (const t of list) {
     if (have.has(String(t.id)) || fresh >= NEW_PER_RUN) continue;

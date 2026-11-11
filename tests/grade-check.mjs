@@ -9,6 +9,12 @@
 //                                          APIs, then rewrite the baseline
 //   add --only=<text> to run only lists whose deck or event names contain it
 //   add --html=<file> to grade another build (say the live index.html) against the baseline
+//   node tests/grade-check.mjs --results=grade-results.md
+//                                          the weekly check of how well grades track tournament
+//                                          results: grades every list from its cards alone and
+//                                          blended with this week's matchups.json, ranks the
+//                                          archetypes both ways against their results and writes
+//                                          a short report. It never fails and never touches the baseline.
 //   --record --record-from=<module> records from a local stand-in for the APIs
 //                                          (a module exporting fakeFetch(url)) instead
 //
@@ -34,6 +40,7 @@ const args = process.argv.slice(2);
 const MODE = args.includes('--record') ? 'record' : args.includes('--update') ? 'update' : 'check';
 const ONLY = (args.find(a => a.startsWith('--only=')) || '').slice(7).toLowerCase();
 const VERBOSE = args.includes('--verbose');
+const REPORT = (args.find(a => a.startsWith('--results=')) || '').slice(10);
 const HTML = (args.find(a => a.startsWith('--html=')) || '').slice(7);   // grade another build, e.g. the live one
 // --record-from=<module>: record from a local stand-in for the card APIs (a module that
 // exports fakeFetch(url)) instead of the live APIs, for example where they are blocked.
@@ -171,6 +178,8 @@ async function gradeList(w, list, i) {
     id: String(i + 1).padStart(3, '0'),
     deck: list.deckName, place: list.place, event: list.event,
     grade: R.overall,
+    // How much of the grade came from tournament results, and which archetype they were for.
+    results: R.res ? R.res.name + ' ' + Math.round(R.res.w * 100) + '%' : undefined,
     synergy: r2(R.coh && R.coh.score * 10),
     power: r2(R.via && R.via.score * 10),
     read: cov ? cov.resolved + '/' + cov.total : '?',
@@ -179,9 +188,76 @@ async function gradeList(w, list, i) {
   };
 }
 
+// ── weekly: how well grades track tournament results ─────────────────────
+const rankOf = a => {
+  const ix = a.map((v, i) => i).sort((i, j) => a[i] - a[j]), r = new Array(a.length);
+  for (let i = 0; i < ix.length;) { let j = i; while (j + 1 < ix.length && a[ix[j + 1]] === a[ix[i]]) j++; for (let k = i; k <= j; k++) r[ix[k]] = (i + j) / 2; i = j + 1; }
+  return r;
+};
+function spearman(x, y) {
+  if (x.length < 4) return null;
+  const a = rankOf(x), b = rankOf(y), n = a.length, ma = (n - 1) / 2;
+  let sab = 0, saa = 0, sbb = 0;
+  for (let i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - ma); saa += (a[i] - ma) ** 2; sbb += (b[i] - ma) ** 2; }
+  return saa && sbb ? Math.round(100 * sab / Math.sqrt(saa * sbb)) / 100 : null;
+}
+async function resultsReport() {
+  const raw = fs.readFileSync(path.join(ROOT, 'matchups.json'), 'utf8');
+  const M = JSON.parse(raw);
+  w.__live = raw;
+  if (!w.eval('!!(mu60Data = mu60Validate(JSON.parse(window.__live)))')) { console.error('matchups.json did not load.'); return; }
+  w.__liveData = w.eval('mu60Data');
+  const per = {};
+  for (let i = 0; i < lists.length; i++) {
+    const l = lists[i];
+    try {
+      w.eval('mu60Data = null');
+      const c = await gradeList(w, l, i);
+      w.eval('mu60Data = window.__liveData');
+      const b = await gradeList(w, l, i);
+      const k = (per[l.deckName] = per[l.deckName] || { card: [], blend: [] });
+      k.card.push(c.grade); k.blend.push(b.grade);
+    } catch (_) {}
+  }
+  const med = a => { const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
+  const sum = v => Object.values(v || {}).reduce((a, r) => a.map((x, i) => x + (r[i] || 0)), [0, 0, 0, 0, 0, 0]);
+  const rows = [];
+  for (const d of M.decks) {
+    const g = per[d.name];
+    if (!g || d.id === 'other') continue;
+    const r = sum(d.rec), cr = sum(d.cur && d.cur.rec);
+    rows.push({ name: d.name, lists: d.lists, n: r[0] + r[1], wr: r[0] / Math.max(1, r[0] + r[1]), cn: cr[0] + cr[1], cwr: cr[0] / Math.max(1, cr[0] + cr[1]), card: med(g.card), blend: med(g.blend) });
+  }
+  const A = rows.filter(r => r.n >= 300), C = rows.filter(r => r.cn >= 100);
+  const f = v => v == null ? 'too few' : (v > 0 ? '+' : '') + v.toFixed(2);
+  const cw = A.map(r => r.wr);
+  const L = [];
+  L.push(`# How well grades track tournament results`, '');
+  L.push(`Results from matchups.json (${M.since} to ${M.until}${M.cur ? `, newest set since ${M.cur.since}` : ''}). Lists: the ${lists.length} fixed top lists in tests/grade-lists.json, so a new archetype shows up here only after the lists are refreshed. 1.00 means the grades rank archetypes exactly as their win rates do, 0 means no link.`, '');
+  L.push(`- **All results (${A.length} archetypes with 300+ games):** cards alone ${f(spearman(A.map(r => r.card), cw))}, grade as shown ${f(spearman(A.map(r => r.blend), cw))}. The grade as shown uses these same results, so it is partly circular.`);
+  L.push(`- **Since the newest set (${C.length} archetypes with 100+ games):** cards alone ${f(spearman(C.map(r => r.card), C.map(r => r.cwr)))}, grade as shown ${f(spearman(C.map(r => r.blend), C.map(r => r.cwr)))}.${C.length < 8 ? ' Too few archetypes to trust yet.' : ''}`);
+  // Where the cards and the results disagree most: rank by card grade against rank by win rate.
+  const rc = rankOf(A.map(r => r.card)), rw = rankOf(cw);
+  const gap = A.map((r, i) => ({ ...r, d: (rc[i] - rw[i]) / Math.max(1, A.length - 1) })).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 8);
+  L.push('', '## Where the cards and the results disagree most', '');
+  for (const r of gap) L.push(`- **${r.name}:** cards ${r.card.toFixed(1)}, shown ${r.blend.toFixed(1)}, wins ${(100 * r.wr).toFixed(1)}% of ${r.n.toLocaleString('en-US')} games. ${r.d > 0 ? 'The cards rate it above its results.' : 'Its results beat what the cards see.'}`);
+  fs.writeFileSync(path.resolve(ROOT, REPORT), L.join('\n') + '\n');
+  console.log(L.join('\n'));
+}
+
 // ── main ─────────────────────────────────────────────────────────────────
 const lists = JSON.parse(fs.readFileSync(LISTS, 'utf8'));
 const { w, errors } = await loadApp();
+// The grade blends in tournament results from matchups.json (v68). The check uses a pinned copy,
+// tests/grade-matchups.json, so a weekly data refresh cannot move the baseline. RESULTS=off grades
+// from the cards alone.
+const PINNED = path.join(HERE, 'grade-matchups.json');
+if (REPORT) { await resultsReport(); process.exit(0); }
+if (process.env.RESULTS !== 'off' && fs.existsSync(PINNED)) {
+  w.__pinned = fs.readFileSync(PINNED, 'utf8');
+  w.eval('mu60Data = mu60Validate(JSON.parse(window.__pinned));');
+  if (!w.eval('!!mu60Data')) { console.error('tests/grade-matchups.json did not load.'); process.exit(2); }
+} else if (w.eval('typeof mu60Data') !== 'undefined') w.eval('mu60Data = null; mu60Tried = true;');
 for (const fn of ['parseDeckList', 'enrichDeckCards', 'gradeDeck']) {
   if (w.eval('typeof ' + fn) !== 'function') {
     console.error(`The app did not load: ${fn} is missing.\n` + errors.slice(0, 5).join('\n'));
@@ -233,7 +309,7 @@ if (MODE === 'check') {
 if (broke.length) { console.log('Baseline not written: fix the lists that failed first.'); process.exit(1); }
 const next = { note: 'Written by tests/grade-check.mjs --update or --record. Each list: grade, Synergy and Power as shown, cards read.', lists: {} };
 if (ONLY) Object.assign(next.lists, base.lists);
-for (const r of results) next.lists[r.id] = { deck: r.deck, event: r.event, place: r.place, grade: r.grade, synergy: r.synergy, power: r.power, read: r.read, cap: r.cap };
+for (const r of results) next.lists[r.id] = { deck: r.deck, event: r.event, place: r.place, grade: r.grade, results: r.results, synergy: r.synergy, power: r.power, read: r.read, cap: r.cap };
 fs.writeFileSync(BASE, JSON.stringify(next, null, 1) + '\n');
 console.log(`Baseline written for ${results.length} lists.`);
 process.exit(0);

@@ -2,6 +2,22 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Not released yet: RdyDeck 2.4 (build 69): grades track tournament results
+
+Changed files: index.html, sw.js (cache prize-trainer-v69), CHANGES.md, matchups.json, refresh-matchups.mjs, grade-results.md, tests/grade-check.mjs, tests/grade-baseline.json, tests/grade-matchups.json and .github/workflows/refresh-data.yml.
+
+Grade
+- Part of the grade comes from tournament results. When a deck plays the named Pokemon of an archetype in matchups.json, up to 60% of the grade comes from that archetype's online win rate and finishes, more as games add up, with games since the newest set counted three times. A list held at the legality cap, a broken list, Expanded and prerelease get none. The grade explanation says how much and why, and the deck picked under Against the meta is the one used.
+- Setup speed counts draw engines: a Pokemon with a once-a-turn draw or search Ability adds up to 1 point, and a Stage 2 line whose middle stage draws every turn is no longer marked slow.
+- Damage counts what the deck reaches in a normal game. A hit that needs a full Bench, many Energy or a condition counts at its midpoint, and the finding says so.
+- matchups.json adds each deck's results since the newest set.
+
+Checks
+- The weekly data job writes grade-results.md: how well grades rank archetypes by online win rate, from cards alone and as shown.
+- The grade check reads a pinned tests/grade-matchups.json, so the weekly refresh cannot move the baseline.
+- Checked on the 128 top lists: grades now rank archetypes by win rate at +0.81 (Spearman), up from -0.10 in 2.3 (+0.21 from cards alone; the shown grade uses the same results, so that number flatters it). On results since Delta Reign only, a grade built from older results ranks archetypes better than cards alone (+0.33 against +0.18, 18 archetypes; data is still thin).
+- Biggest moves: Alakazam Dusknoir 9.3 to 8.3, Ethan's Typhlosion 9.3 to 8.3, Greninja 9.1 to 8.4, Festival Lead 9.3 to 8.7, Mew Box 8.9 to 8.3, Mega Rayquaza 8.6 to 8.0; Lopunny Dudunsparce 6.9 to 7.8, Dragapult Dudunsparce 8.4 to 9.2, Crustle 8.3 to 9.0, Dragapult 8.4 to 9.0.
+
 # RdyDeck 2.3 (build 68): daily puzzle, deck builder, MEP promo fix and a What's new log (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v68, adds the puzzle files, and builder.json and cards.json to the network-first data line), CHANGES.md, tests/grade-baseline.json, the puzzle folder (engine, solver, card reader, puzzle pack, tools and checks), and for the deck builder build-cards.mjs, builder-data.mjs, cards.json, builder.json, refresh-data.mjs and .github/workflows/refresh-data.yml.

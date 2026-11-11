@@ -3372,8 +3372,7 @@ const PT_PLAY = (function () {
 
 <!-- Toast -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<!-- ============================================================
-     tcg-enrich.js, inlined.
+<!-- =====================================================     tcg-enrich.js, inlined.
      Canonical source lives in the shared module repo. This is a
      paste of it, kept inline on purpose: PrizeTrainer is shared as
      a single downloadable HTML file (see downloadAppFile), so an
@@ -6266,6 +6265,13 @@ function gViability(deck, coh, main) {
   const boost = bestR ? bestR.boost : 0;
   const [lo, hi] = FMT.threatHP;
   let eff=best+boost, closeScore, strat;
+  // v68: the hit the grade counts is the one a list can lean on by mid game. A hit that grows
+  // (Energy or discard pile scaling) counts halfway between its early and full numbers, and
+  // boosts from other cards (a Tool, a Supporter, a partner's Ability) count at half, since a
+  // game rarely lines them all up. The full ceiling still shows in the text.
+  const ceOf = r => !r ? 0 : Math.round(((r.cond || (r.escale && r.top > r.now)) ? (r.now + r.top) / 2 : r.top) + (r.boost || 0) / 2);
+  const ce = ceOf(bestR);
+  const ceTxt = bestR && ce < eff ? ` The grade counts ${ce}, since the full hit needs ${bestR.boost && bestR.bNames && bestR.bNames.length ? bestR.bNames.join(' and ') : 'time to grow'}${bestR.boost && (bestR.cond || bestR.escale) ? ' and time to grow' : ''}.` : '';
   const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
     d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
@@ -6273,19 +6279,20 @@ function gViability(deck, coh, main) {
     findings.push({sev:'ok', t:'Closes through spread, not one big hit',
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   // v55: a one-shot that needs a full discard pile (Ceruledge ex) comes late, so it counts for less.
-  else if (eff>=FMT.ohkoTarget) { strat='ohko'; closeScore=bestR&&bestR.late?0.85:1;
+  // v68: a one-shot on the format's biggest threats (340) is full marks; one that stops short of them a bit less.
+  else if (ce>=FMT.ohkoTarget) { strat='ohko'; closeScore=(bestR&&bestR.late?0.85:1)*(ce>=hi?1:0.95);
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
     d:`${lead}${g35Hit(bestR)}${hitsTxt}`}); }
-  else if (eff*2>=hi) { strat='2hko';
+  else if (ce*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
-    closeScore=0.6+0.3*(eff-hi/2)/(FMT.ohkoTarget-hi/2);
+    closeScore=0.6+0.3*(ce-hi/2)/(FMT.ohkoTarget-hi/2);
     const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${lead}${g35Hit(bestR)}${hitsTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
-  else { strat='weak'; closeScore=0.15+0.45*eff/(hi/2);
+    d:`${lead}${g35Hit(bestR)}${hitsTxt}${ceTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+  else { strat='weak'; closeScore=0.15+0.45*ce/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${lead}${g35Hit(bestR)}${hitsTxt} You cannot trade up, which usually loses the prize race.`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsTxt}${ceTxt} You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.escale && bestR.top > bestR.now) { const e = bestR.escale;
     const what = e.x2 ? `Basic ${gCap(e.x2.type)} Energy cards` : (e.types.length ? e.types.map(gCap).join(' and ') + ' ' : '') + 'Energy';
     findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
@@ -6442,6 +6449,22 @@ function gViability(deck, coh, main) {
     d:`You lean on Stage 2 Pokemon (${s2Names.join(', ')}) with ${candy ? 'only ' + candy : 'no'} Rare Candy. In a format that starts swinging by turn ${FMT.fastSetup}, a slow setup can lose the game before you are online.`}); }
   else if (stage2>0) findings.push({sev:'ok', t:'Sets up on time',
     d:'Enough Rare Candy to land your Stage 2 Pokemon before the game runs away.'});
+  // v68: draw and search Abilities used once a turn keep a deck moving every turn, which is what
+  // separates the decks that win from the ones that only hit hard. A Stage 1 that draws (Drakloak's
+  // Recon Directive) makes the long way up to a Stage 2 pay for itself, so that line is on time.
+  // Each engine copy adds a little to Setup speed, up to 4 of them; one that works only some turns counts half.
+  const engAb=e=>e.card&&e.card.t==='pkmn'&&canPlay(e.card)&&(e.card.ab||[]).some(a=>/once a turn/.test(a.p||'')&&/^(?:draws|searches|looks at the top)/.test(a.p||''));
+  const engHalf=e=>(e.card.ab||[]).every(a=>!/once a turn/.test(a.p||'')||/\(only if|only when|if you have|coin/.test(a.p||''));
+  const engs=deck.filter(engAb);
+  const engQ=engs.reduce((n,e)=>n+e.qty*(engHalf(e)?0.5:1),0);
+  const midEng=clockScore===0.7&&s2.some(e=>engs.some(x=>x.card.key===e.card.from&&!engHalf(x)&&qtyK(x.card.key)>=3));
+  if (midEng) { clockScore=0.82; const f=findings.find(f=>f.t==='Evolves the long way');
+    const mid=engs.find(x=>s2.some(e=>e.card.from===x.card.key)), ab=mid&&(mid.card.ab||[]).find(a=>/once a turn/.test(a.p||''));
+    if (f && ab) { f.t='Evolves the long way, drawing as it goes';
+      f.d=`Your Stage 2 Pokemon (${s2Names.join(', ')}) evolve through ${qtyK(mid.card.key)} ${gCap(mid.name)}, and ${gCap(mid.name)}'s ${ab.abil} ${ab.p.replace(/ once a turn$/, '')} every turn on the way up, so the slow line still sets up on time.`; } }
+  if (engQ>0) { const add=Math.min(0.1,0.025*engQ); clockScore=Math.min(0.95,clockScore+add);
+    if (engQ>=2) findings.push({sev:'ok', t:'Draws every turn',
+      d:`${engs.slice(0,3).map(e=>`${e.qty} ${gCap(e.name)}`).join(', ')} ${engs.length>1?'give':'gives'} you a draw or search Ability once a turn, so the deck finds its pieces without spending a Supporter on it.`}); }
   // v59: a toolbox deck (Basic Box) runs many different attackers and picks the one each turn needs,
   // so its power is more than its single best hit. Counts distinct Pokemon whose payable attack
   // (read from card text, as above) reaches a two-hit Knock Out on the format's biggest threats on its
@@ -6461,7 +6484,7 @@ function gViability(deck, coh, main) {
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
-  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, strat, multiN, pkN };
+  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce, strat, multiN, pkN, engQ };
   return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, parts };
 }
 
@@ -10347,19 +10370,18 @@ function handleDailyHash() {
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
-// ═══════════ WHAT'S NEW (v2.3) ═══════════
+// ═══════════ WHAT'S NEW (v2.4) ═══════════
 // A short log of the latest update. Edit WHATS_NEW for each release. A
 // generation release (2.x) lists what was added, changed or fixed ("Added:",
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.3',
+  version: 'v2.4',
   kind: 'generation',
   items: [
-    { t: 'Added: Daily Puzzle', d: 'A new board every day, the same for everyone. Find the plays that win this turn. Your puzzle number, wins and streaks are kept on this device.' },
-    { t: 'Added: Deck Builder', d: 'Build a deck from any Standard card. Start from a top meta deck, a Pokémon or one of your decks; checks keep it legal and suggestions show what winning lists run. Save and grade when it is ready.' },
-    { t: 'Fixed: MEP promo cards', d: 'New promo cards that the card database does not have yet, like MEP Charmander, no longer cap a legal deck at 4.9.' }
+    { t: 'Changed: Grades', d: 'Grades now track how decks really do. Part of each grade comes from the deck\'s online tournament results, with games since the newest set counting most, and the grade explains how much.' },
+    { t: 'Changed: Power', d: 'Draw engines like a once-a-turn draw Ability count toward Setup speed, and Damage counts what a deck can really reach in a game, not its best case.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13251,8 +13273,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.3';
-const PT_BUILD = 68;
+const PT_VERSION = 'v2.4';
+const PT_BUILD = 69;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15112,7 +15134,7 @@ function g67SynWhy(R) {
 const G67_PART = [
   ['close', /^(Nothing can reliably attack|Closes through spread|Hits hard enough|Two hits for|Damage ceiling|Low damage, by design|Hard to disrupt|.* walls Pokemon ex|Hits several|Few Energy for|Only .* to hit with|Wins by|Many ways to attack|.* grows into its damage|Some damage is left out)/],
   ['prize', /^(A three-prize|Three-prize attackers|Big attackers|Two prizes per knockout|Mostly two-prize|Efficient prize trade)/],
-  ['clock', /^(Evolves the long way|Might be slow|Sets up on time)/],
+  ['clock', /^(Evolves the long way|Might be slow|Sets up on time|Draws every turn)/],
 ];
 function g67PowWhy(R) {
   const P = R.via.parts; if (!P) return [];
@@ -18152,15 +18174,20 @@ function mu60Validate(j) {
       const tops = (Array.isArray(d.tops) ? d.tops : []).slice(0, 40)
         .filter(x => Array.isArray(x) && /^[0-9a-f]{8}$/.test(x[0]) && Number.isInteger(x[1]) && x[1] >= 1 && x[1] <= 64 && d30Str(x[2], 80) && d30Day(x[3]))
         .map(x => [x[0], x[1], x[2], x[3]]);
+      // v68: results since the newest set came out, which the grade weighs most.
+      const cur = d.cur && typeof d.cur === 'object' && Number.isInteger(d.cur.lists)
+        ? { lists: d.cur.lists, rec: mu60Recs(d.cur.rec) || {}, place: mu64Pls(d.cur.place) } : null;
       return { id: d.id, name: d.name, share: typeof d.share === 'number' ? d.share : 0,
-        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs, tops, place: mu64Pls(d.place) };
+        lists: Number.isInteger(d.lists) ? d.lists : 0, sig, rec: mu60Recs(d.rec) || {}, vs, tops, place: mu64Pls(d.place), cur };
     }).filter(Boolean);
     const ids = new Set(decks.map(d => d.id));
     const cols = (Array.isArray(j.cols) ? j.cols : []).filter(c => ids.has(c)).slice(0, 12);
     if (!sources.length || decks.length < 2 || cols.length < 2) return null;
     // The oldest set in the window ("since 30th Celebration"), when the file names one.
     const from = j.window && d30Str(j.window.from, 40) ? j.window.from : '';
-    return { asOf: j.asOf, since: j.since, until: d30Day(j.until) || j.asOf, from, sources, cols, decks };
+    const cur = j.cur && typeof j.cur === 'object' && d30Day(j.cur.since)
+      ? { since: j.cur.since, events: Number.isInteger(j.cur.events) ? j.cur.events : 0, matches: Number.isInteger(j.cur.matches) ? j.cur.matches : 0, place: mu64Pls(j.cur.place) } : null;
+    return { asOf: j.asOf, since: j.since, until: d30Day(j.until) || j.asOf, from, sources, cols, decks, cur };
   } catch (_) { return null; }
 }
 
@@ -18195,6 +18222,11 @@ const mu60Norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').t
 
 /** The open deck's closest archetype, by the Pokemon it plays. */
 function mu60Match(deck, data) {
+  const best = mu60Best(deck, data);
+  return best && best.score >= MU60_CLOSE ? best.deck : null;
+}
+/** v68: the closest archetype and how close it is (0 to 1), for callers that need a surer match. */
+function mu60Best(deck, data, ok) {
   const mine = new Set((deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => mu60Norm(c.apiName || c.name)).filter(Boolean));
   if (!mine.size) return null;
   // A Pokemon most archetypes play (a support ex, say) says little about which deck this is.
@@ -18204,6 +18236,7 @@ function mu60Match(deck, data) {
   const w = n => Math.log(1 + N / (df[n] || 0.5));
   let best = null;
   for (const d of data.decks) {
+    if (ok && !ok(d)) continue;
     let have = 0, all = 0;
     const theirs = new Set();
     for (const [name, , freq] of d.sig) {
@@ -18218,7 +18251,7 @@ function mu60Match(deck, data) {
     const score = all ? 0.7 * have / all + 0.3 * (myAll ? myHave / myAll : 0) : 0;
     if (!best || score > best.score) best = { deck: d, score };
   }
-  return best && best.score >= MU60_CLOSE ? best.deck : null;
+  return best;
 }
 
 // v61: the open deck as the same short code refresh-matchups.mjs makes for lists that placed
@@ -19343,5 +19376,121 @@ async function bldSave(update) {
 })();
 </script>
 
+=======
+<script>
+// ═══════════ v69 (2.4): the grade blends in how the deck does in tournaments ═══════════
+// The card grade (Synergy times Power) reads the list. It cannot see matchups, how often a deck
+// draws into its plan, or how it plays, and on 11 Nov 2026 it ranked archetypes no better than
+// chance against their results. So when the open deck matches an archetype in matchups.json, part
+// of the grade comes from that archetype's win rate and finishes. Results since the newest set count
+// three times. The share grows with the games behind it, to at most 60%, so a deck with few games
+// leans on its cards. A list that is broken (a card grade under 6) gets less of it, and a list held
+// at the legality cap gets none.
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.6, G68_N0 = 400, G68_SLOPE = 0.07, G68_MID = 8.5, G68_KM = 40, G68_K = 15;
+let _g68Memo = null;
+function g68Strength(data) {
+  if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
+  const plus = (a, b, k) => a.map((v, i) => v + k * ((b && b[i]) || 0));
+  const F0 = [0, 0, 0, 0, 0, 0];
+  let F = F0.slice();
+  for (const s of data.sources) if (s.place) F = plus(F, s.place, 1);
+  if (data.cur && data.cur.place) for (const v of Object.values(data.cur.place)) F = plus(F, v, G68_CUR - 1);
+  const rows = data.decks.map(d => {
+    let r = [0, 0, 0], p = F0.slice();
+    for (const v of Object.values(d.rec || {})) r = plus(r, v, 1);
+    for (const v of Object.values(d.place || {})) p = plus(p, v, 1);
+    if (d.cur) {
+      for (const v of Object.values(d.cur.rec || {})) r = plus(r, v, G68_CUR - 1);
+      for (const v of Object.values(d.cur.place || {})) p = plus(p, v, G68_CUR - 1);
+    }
+    return { d, r, p };
+  }).filter(x => x.p[0] && x.d.id !== 'other');
+  let W = 0, M = 0;
+  rows.forEach(x => { W += x.r[0]; M += x.r[0] + x.r[1] + x.r[2]; });
+  const out = {};
+  if (rows.length >= 3 && M && F[0]) {
+    const fw = W / M, fq = F[2] / 1000 / F[0];
+    for (const x of rows) {
+      const m = x.r[0] + x.r[1] + x.r[2];
+      const wr = (x.r[0] + G68_KM * fw) / (m + G68_KM);
+      const q = (x.p[2] / 1000 + G68_K * fq) / (x.p[0] + G68_K);
+      const idx = 100 * Math.sqrt(wr / fw * q / fq);
+      const curR = x.d.cur ? Object.values(x.d.cur.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]) : [0, 0, 0];
+      const all = Object.values(x.d.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]);
+      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + G68_SLOPE * (idx - 100), 3, 10),
+        wr: (all[0] + all[1] + all[2]) ? all[0] / (all[0] + all[1] + all[2]) : null, games: all[0] + all[1] + all[2],
+        curGames: curR[0] + curR[1] + curR[2], curWr: (curR[0] + curR[1] + curR[2]) ? curR[0] / (curR[0] + curR[1] + curR[2]) : null };
+    }
+  }
+  _g68Memo = { data, out };
+  return out;
+}
+/** The archetype the grade uses: the player's own pick on the meta section, else the closest match. */
+function g68Arch(deck, data) {
+  try { const pick = mu60Picks()[deck.id]; const d = pick && data.decks.find(x => x.id === pick); if (d) return { deck: d, score: 1, pick: true }; } catch (_) {}
+  // The grade only borrows results from an archetype whose named Pokemon the deck plays, so an
+  // Archaludon list never takes Mega Excadrill's record just because they share support cards.
+  const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
+  const best = mu60Best(deck, data, d => g68Named(d.name).every(p => mons.some(n => n.includes(' ' + p + ' '))));
+  return best && best.score >= G68_MATCH ? best : null;
+}
+const G68_STOP = new Set(['box', 'lead', 'festival', 'basic', 'ex', 'toolbox', 'control', 'turbo']);
+/** The Pokemon an archetype's name asks for: "Mega Charizard Y" is one, "Dragapult Dudunsparce" two. */
+function g68Named(name) {
+  const t = mu60Norm(name).split(' ').filter(x => x && !G68_STOP.has(x)), out = [];
+  for (let i = 0; i < t.length; i++) {
+    const p = [t[i]];
+    while (i + 1 < t.length && (p[p.length - 1] === 'mega' || p[p.length - 1] === 's' || t[i + 1] === 's' || /^[xy]$/.test(t[i + 1]))) p.push(t[++i]);
+    out.push(p.join(' '));
+  }
+  return out;
+}
+function g68Blend(R, deck) {
+  if (!R || !deck || !mu60Data) return R;
+  if (deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily || R.rawOverall != null) return R;
+  if (!(deck.cards || []).some(c => c.supertype)) return R;
+  const m = g68Arch(deck, mu60Data);
+  if (!m) return R;
+  const arch = m.deck;
+  const st = g68Strength(mu60Data)[arch.id];
+  if (!st) return R;
+  const card = R.overall;
+  let w = G68_WMAX * st.n / (st.n + G68_N0);
+  if (card < 6) w *= gClamp((card - 4) / 2, 0, 1);
+  if (w < 0.01) return R;
+  R.cardOverall = card;
+  R.overall = gR1(card * (1 - w) + st.score * w);
+  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
+    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', thin: st.games < 300 };
+  return R;
+}
+/** One plain sentence on the results part, for under the grade. */
+function g68Line(R) {
+  const r = R && R.res; if (!r) return '';
+  const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}: ${wr} wins over ${r.games.toLocaleString('en-US')} games${r.curGames ? ', with games since the newest set counted three times' : ''}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+}
+(function () {
+  const _grade = gradeDeck;
+  gradeDeck = function (deck) {
+    const R = _grade.apply(this, arguments);
+    try { return g68Blend(R, deck); } catch (_) { return R; }
+  };
+  const _sig = g29Sig;
+  g29Sig = function (deck) {
+    let pick = '';
+    try { pick = mu60Picks()[deck.id] || ''; } catch (_) {}
+    return _sig.apply(this, arguments) + '|mu' + (mu60Data ? mu60Data.asOf : '') + ':' + pick;
+  };
+  const _how = g67HowLine;
+  g67HowLine = function (R, synV, powV) {
+    // The Synergy times Power sum explains the card grade; the results sentence explains the rest.
+    const card = R && R.res ? Object.assign({}, R, { overall: R.cardOverall }) : R;
+    return _how.call(this, card, synV, powV) + g68Line(R);
+  };
+  // Read the saved results at once, so grades in the deck list match the grade screen.
+  try { mu60Load(); } catch (_) {}
+})();
+</script>
 </body>
 </html>
