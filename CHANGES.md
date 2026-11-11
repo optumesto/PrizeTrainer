@@ -2,9 +2,22 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# RdyDeck 2.1 (build 62): grade fixes for attacks with conditions, Festival Lead attacking twice, and Ability counters (in progress)
+# RdyDeck 2.0.1 (build 62): grade fixes for attacks with conditions, Festival Lead attacking twice and Okidogi, SEO fixes, and meta notes (11 Nov 2026)
 
-Changed files: index.html, sw.js (cache prize-trainer-v62, the build number), check-cards.mjs, CHANGES.md.
+Changed files: index.html, sw.js (cache prize-trainer-v62, the build number), check-cards.mjs, deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, sitemap.xml, .github/workflows/refresh-data.yml, CHANGES.md.
+New files: update-sitemap.mjs, og-deck-grader.png, og-opening-odds.png, og-prize-trainer.png, og-rotation.png.
+
+Version
+- Settings shows RdyDeck v2.0.1. A batch of fixes on top of 2.0, so a point release rather than 2.1.
+
+Search and sharing
+- The deck grader page no longer says RdyDeck does not compare your deck to the meta. It explains Against the meta, and that the stats are for decks like yours, not your exact list.
+- Each guide page (deck grader, opening odds, prize trainer, rotation) has its own share image and structured data (page, breadcrumbs, site). The home page adds site and organization data with the logo.
+- The home page's search description is shorter, so it is not cut off in results.
+- sitemap.xml dates now follow when each page last changed. update-sitemap.mjs sets them from git history, and the Monday data job runs it (it now checks out the full history for that).
+
+In the app
+- The Grade tab's note and the Odds tab's note no longer say matchup data is missing. They point to Against the meta on the Grade tab.
 
 Weekly card check
 - Basic Energy no longer shows under "Needs a person to check" when its set is missing from TCGdex (10 Fire Energy in a starter list is legal).

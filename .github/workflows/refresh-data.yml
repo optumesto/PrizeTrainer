@@ -23,6 +23,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0     # full history, so update-sitemap.mjs can read when each page changed
 
       - uses: actions/setup-node@v5
         with:
@@ -41,9 +43,14 @@ jobs:
         continue-on-error: true
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
+      - name: Update sitemap dates
+        # A failed run keeps the old dates; it never blocks the refresh.
+        continue-on-error: true
+        run: node update-sitemap.mjs sitemap.xml
+
       - name: Commit if it changed
         run: |
-          FILES="data.json card-check.md matchups.json .github/matchups-cache.json"
+          FILES="data.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
-<meta name="description" content="Free Pokémon TCG deck grader and prize card trainer. Grade your deck, check its opening odds and Standard rotation, then practice naming your prizes. Works offline, no account.">
+<meta name="description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
 <link rel="canonical" href="https://rdydeck.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RdyDeck">
@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
 <meta name="twitter:image" content="https://rdydeck.com/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","email":"mmmilliard@optumeventures.com"}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com"}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -6300,9 +6300,9 @@ function renderGrade() {
   }
 
   h+=`<div class="g-wip"><b>Work in progress.</b> This grade runs entirely on your own list:
-    whether the cards support each other, and whether the plan can close a game. It does not
-    compare you to the current metagame, because that needs live tournament data this does not
-    have yet. Card roles are inferred from card text, which is usually right and occasionally
+    whether the cards support each other, and whether the plan can close a game. The grade itself
+    does not compare you to the current metagame; Against the meta shows how decks like yours have
+    done in recent online tournaments. Card roles are inferred from card text, which is usually right and occasionally
     not. Read the findings, ignore the decimal places.</div>`;
 
   el.innerHTML=h;
@@ -6762,8 +6762,8 @@ function renderOdds() {
   h += `</div>`;
 
   h += `<div class="g-wip"><b>What this does not do.</b> Matchup win rates are not here.
-    They need live tournament data RdyDeck does not have yet, and a stale snapshot would give
-    confident wrong numbers. Everything on this tab comes from shuffling your own list.</div>`;
+    They are on the Grade tab, in Against the meta, from recent online tournaments.
+    Everything on this tab comes from shuffling your own list.</div>`;
 
   el.innerHTML = h;
 }
@@ -11828,7 +11828,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v61); it shows only in feedback mail.
-const PT_VERSION = 'v2.1';
+const PT_VERSION = 'v2.0.1';
 const PT_BUILD = 62;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
