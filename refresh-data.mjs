@@ -8,7 +8,9 @@
 // - TCGdex (api.tcgdex.net), no key needed, MIT licensed. One set list, then at most
 //   8 set details, to learn the codes of new sets.
 //
-// What it changes: the current meta, the starter decks and the set codes.
+// What it changes: the current meta, the starter decks and the set codes in data.json, and
+// builder.json (what each deck's top quarter of lists runs, for the deck builder). No extra requests:
+// builder.json comes from the same standings.
 // Rotation is left exactly as it is, because Pokemon announces it in a news post,
 // not in any data feed. Edit the rotation block by hand when that happens.
 //
@@ -16,8 +18,10 @@
 // back empty or broken keeps last week's copy. The file is only written when
 // something real changed, so a quiet week makes no commit.
 import { readFile, writeFile } from 'node:fs/promises';
+import { usage, limitlessCards } from './builder-data.mjs';
 
 const FILE = process.argv[2] || 'data.json';
+const BUILDER = process.argv[3] || 'builder.json';   // what winning lists run, for the deck builder
 const UA = 'RdyDeck-data-refresh/1.0 (+https://optumesto.github.io/PrizeTrainer/)';
 const LIMITLESS = 'https://play.limitlesstcg.com/api';
 const TCGDEX = 'https://api.tcgdex.net/v2/en';
@@ -129,7 +133,22 @@ async function limitless() {
       list: best.list,
     });
   }
+  // The deck builder: each deck's lists that finished in the top quarter of an event (at least the top 16).
+  const top = [];
+  for (const { t, standings } of events) {
+    const cut = Math.max(16, Math.floor(standings.length / 4));
+    for (const s of standings) {
+      const place = Number(s && s.placing);
+      if (!Number.isInteger(place) || place < 1 || place > cut || !s.deck) continue;
+      const cards = limitlessCards(s.decklist);
+      if (cards) top.push({ deck: s.deck.id, deckName: s.deck.name, place, cards });
+    }
+  }
+  const days = events.map(e => new Date(e.t.date)).sort((a, b) => a - b);
+  const builder = top.length >= 40 ? usage(top, `Limitless online tournaments, top quarter of ${events.length} events, ${nice(days[0])} to ${nice(days[days.length - 1])}`) : null;
+
   return {
+    builder: builder && builder.decks.length >= 5 ? builder : null,
     meta: metaDecks.length >= 3 ? {
       asOf: new Date().toISOString().slice(0, 10),
       from: clean(`Limitless online tournaments, ${events.length} events and ${players} players in the last ${WINDOW_DAYS} days`, 100),
@@ -167,6 +186,7 @@ try {
   const l = await limitless();
   if (l && l.meta) { next.meta = l.meta; notes.push(`meta: ${l.meta.decks.length} decks`); } else notes.push('meta: kept last copy');
   if (l && l.starters) { next.starters = l.starters; notes.push(`starters: ${l.starters.length}`); } else notes.push('starters: kept last copy');
+  if (l && l.builder) { await writeFile(BUILDER, JSON.stringify(l.builder).replace(/\],\[/g, '],\n[') + '\n'); notes.push(`builder: ${l.builder.decks.length} decks from ${l.builder.lists} lists`); } else notes.push('builder: kept last copy');
 } catch (e) { notes.push('Limitless: ' + e.message + ', kept last copy'); }
 
 try {

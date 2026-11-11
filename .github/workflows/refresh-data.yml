@@ -1,4 +1,5 @@
-# Refreshes data.json once a week: current meta and starter decks from Limitless,
+# Refreshes data.json once a week: current meta and starter decks from Limitless (and builder.json,
+# what winning lists run, for the deck builder), the deck builder's card list (cards.json),
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
@@ -36,7 +37,12 @@ jobs:
           node-version: '22'
 
       - name: Refresh data.json
-        run: node refresh-data.mjs data.json
+        run: node refresh-data.mjs data.json builder.json
+
+      - name: Refresh the deck builder's card list
+        # A failed run keeps last week's cards.json; it never blocks the refresh.
+        continue-on-error: true
+        run: node build-cards.mjs cards.json data.json
 
       - name: Check card facts
         # A failed check never blocks the refresh; card-check.md says what happened.
@@ -57,7 +63,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          FILES="data.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml"
+          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0
