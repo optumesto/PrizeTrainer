@@ -462,6 +462,7 @@
   .modal-hint { font-size:var(--fs-sm); color:var(--text-3); margin-top:0.45rem; }
   .parse-preview { margin-top:0.5rem; font-size:var(--fs-sm); font-weight:600; color:var(--success); }
   .parse-preview:empty { display:none; }
+  .parse-preview.warn { color:var(--danger); }
   .modal-actions { display:flex; gap:0.6rem; margin-top:1.25rem; justify-content:flex-end; flex-wrap:wrap; }
   .modal-actions .btn { min-height:46px; }
 
@@ -4987,7 +4988,7 @@ async function loadState() {
       const result = await window.storage.get('ptcg_state');
       if (result && result.value) {
         const p = JSON.parse(result.value);
-        if (p && p.decks) { state = p; renderHome(); return; }
+        if (p && p.decks && ptCleanState(p)) { state = p; renderHome(); return; }
       }
     } catch(_) {}
   }
@@ -5006,8 +5007,18 @@ async function loadState() {
     } catch(_) {}
   }
 
-  if (parsed && parsed.decks) state = parsed;
+  if (parsed && parsed.decks && ptCleanState(parsed)) state = parsed;
   renderHome();
+}
+/** 2.5.1: saved data in a bad shape would stop home from drawing, so drop what cannot be read.
+ *  Returns false when there is nothing usable (decks is not a list). */
+function ptCleanState(p) {
+  if (!p || typeof p !== 'object' || !Array.isArray(p.decks)) return false;
+  p.decks = p.decks.filter(d => d && typeof d === 'object' && Array.isArray(d.cards));
+  ['daily', 'puzzle'].forEach(k => {
+    if (p[k] != null && (typeof p[k] !== 'object' || !p[k].results || typeof p[k].results !== 'object')) delete p[k];
+  });
+  return true;
 }
 
 
@@ -5017,6 +5028,9 @@ async function clearAllStorage() {
   }
   try { await idbSet(STORAGE_KEY, null); } catch(e) {}
   safeLocalSet(STORAGE_KEY, null);
+  // 2.5.1: the deck builder draft and the Against the meta picks go too.
+  try { ['rd_builder_draft_v1', 'pt_mu60_pick', 'pt_mu71_ask'].forEach(k => localStorage.removeItem(k)); } catch (_) {}
+  try { if (typeof bld !== 'undefined') bld = { rows: [], arch: null, from: null, name: '' }; } catch (_) {}
   state = { decks: [], activeDeckId: null };
   renderHome();
   showToast('All data cleared.');
@@ -5217,7 +5231,7 @@ function sectionFromHeader(line) {
 
 /** Parse a whole list, keeping the section each card was listed under. */
 function parseDeckList(raw) {
-  let section = null;
+  let section = null, skipped = 0;
   const cards = [];
   String(raw || '').split('\n').forEach(line => {
     if (!line.trim()) return;
@@ -5225,11 +5239,19 @@ function parseDeckList(raw) {
     if (sec) { section = sec; return; }
     if (/^\s*total\b/i.test(line)) return;
     const c = parseLine(line);
-    if (!c) return;
+    // 2.5.1: count the lines that could not be read (and "0 Card" lines), so the import box can say so.
+    if (!c || !(c.count > 0)) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
     if (section) c.section = section;
     cards.push(c);
   });
+  Object.defineProperty(cards, 'skipped', { value: skipped });
   return cards;
+}
+/** 2.5.1: the import and edit box line under the list: card count, and any lines not read. */
+function parsePreviewText(parsed, want) {
+  const total = parsed.reduce((a, c) => a + c.count, 0), n = parsed.skipped || 0;
+  const skip = n ? ` ${n} line${n === 1 ? ' was' : 's were'} not read. Check ${n === 1 ? 'it' : 'them'} against the list.` : '';
+  return { warn: !!n || total !== want, t: `Parsed ${parsed.length} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}${skip}` };
 }
 
 /** Deck list text grouped under section headers, for the edit box. */
@@ -6877,7 +6899,7 @@ function g76Load() {
 // Read the saved list at once, so grades in the deck list match the grade screen.
 try { g76Load(); } catch (_) {}
 
-function gTrainers(entries, coh, via, main) {
+function gTrainers(entries, coh, via, main, fmt) {
   const flaws = [], cut = [];
   const cards = entries.filter(e => e.card);
   const trn = cards.filter(e => e.card.t === 'trainer');
@@ -6968,6 +6990,8 @@ function gTrainers(entries, coh, via, main) {
   if (aceN > 1) ace = { link: `ACE SPEC: ${aceN} cards`, p: `The list runs ${aces.map(e => `${e.qty > 1 ? e.qty + ' ' : ''}${gCap(e.name)}`).join(' and ')}. A deck can hold only one ACE SPEC card, so cut down to one before you play it.`, fit: 'over' };
 
   // 4. v76: too little draw. Every one of the 128 top lists runs 6 or more cards or Abilities that draw.
+  // 2.5.1: the played list below is from Standard top lists, so it applies to Standard decks only.
+  const g76Std = !fmt || fmt === 'standard';
   if (anyMon && !via.ctl && drawQ + abilQ < G76_DRAW) {
     const n = drawQ + abilQ;
     flaws.push({ sev: 'warn', t: n ? `Only ${n} card${n === 1 ? '' : 's'} that draw` : 'Nothing in the list draws cards',
@@ -6975,7 +6999,7 @@ function gTrainers(entries, coh, via, main) {
     cut.push(Math.min(0.2, G76_DRAW_CUT * (G76_DRAW - n))); }
   // 5. v76: Trainers and Special Energy no winning list runs.
   const unplayed = [];
-  if (g76Played) {
+  if (g76Std && g76Played) {
     const deadN = new Set(dead.map(d => d.e.name)), seen = new Map();
     [...trn, ...spE].forEach(e => { if (deadN.has(e.name) || g76Played.has(g76Key(e.name))) return;
       const k = g76Key(e.name), o = seen.get(k); if (o) o.qty += e.qty; else seen.set(k, { name: gCap(e.name), qty: e.qty }); });
@@ -7232,7 +7256,7 @@ function gradeDeck(deck) {
   let main=null; try { main=gMainAttacker(entries, coh, deck.name); } catch (_) {}
   const via=gViability(entries, coh, main);
   // v65: the Trainers and Special Energy scale Synergy; a full suite leaves it as it was.
-  let trn=null; try { trn=gTrainers(entries, coh, via, main); } catch (_) {}
+  let trn=null; try { trn=gTrainers(entries, coh, via, main, deck && deck.format); } catch (_) {}
   const steps={ s0:coh.score };
   if (trn) { coh.score=gClamp(coh.score*(1-0.35*(1-trn.score)),0,1); coh.flaws=(coh.flaws||[]).concat(trn.flaws); coh.trainers=trn; }
   // v65: how tightly the list fits together. Synergy shows the full effect; the overall grade only
@@ -10535,9 +10559,13 @@ function dailyDeck() {
   if (!_dailyDeck) _dailyDeck = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(DAILY_LIST), history: [], format: 'standard', daily: true };
   return _dailyDeck;
 }
+// 2.5.1: the day a daily game was dealt on, so a game that runs past midnight is scored to that day.
+let _dailyPlayKey = '';
 function dailyShuffle(arr, key) {
-  return shuffleWith(arr, simRng(strHash('prizetrainer-daily|' + (key || dailyKey()))));
+  if (!key) key = _dailyPlayKey = dailyKey();
+  return shuffleWith(arr, simRng(strHash('prizetrainer-daily|' + key)));
 }
+function dailyOkKey(k) { return typeof k === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(k) ? k : ''; }
 function dailyStore() { return (state.daily = state.daily || { results: {} }); }
 function dailyStreak() {
   const R = dailyStore().results;
@@ -10558,8 +10586,8 @@ function dailyShareText(r, key) {
   const bar = Array.from({ length: 6 }, (_, i) => i < r.score ? '■' : '□').join('');
   return `RdyDeck Daily #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
 }
-async function shareDaily() {
-  const key = dailyKey(), r = dailyStore().results[key];
+async function shareDaily(k) {
+  const key = dailyOkKey(k) || dailyKey(), r = dailyStore().results[key];
   if (!r) { showToast('Play today\'s challenge first.'); return; }
   const text = dailyShareText(r, key), url = shareBaseUrl() + '?ref=daily#daily';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
@@ -10584,14 +10612,14 @@ function dailyAfterReveal(score, elapsed) {
   const area = document.getElementById('prize-reveal-area');
   const old = document.getElementById('daily-banner'); if (old) old.remove();
   if (state.activeDeckId !== DAILY_ID || !area) return;
-  const key = dailyKey(), store = dailyStore();
+  const key = dailyOkKey(_dailyPlayKey) || dailyKey(), store = dailyStore();
   let first = false;
   if (!store.results[key]) { store.results[key] = { score, time: elapsed, ts: Date.now() }; first = true; saveState(); }
   const r = store.results[key];
   const b = document.createElement('div');
   b.id = 'daily-banner'; b.className = 'dc-banner';
   b.innerHTML = `<div><b>${first ? `Daily challenge #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}${dailyStreak() > 1 ? ' ' + dailyStreak() + ' day streak.' : ''}</span></div>
-    <button class="btn btn-sm btn-primary" onclick="shareDaily()">${ic23('share')}Share score</button>`;
+    <button class="btn btn-sm btn-primary" onclick="shareDaily('${key}')">${ic23('share')}Share score</button>`;
   area.parentElement.insertBefore(b, area);
 }
 function handleDailyHash() {
@@ -10610,14 +10638,15 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5',
-  kind: 'generation',
+  version: 'v2.5.1',
+  kind: 'fix',
   items: [
-    { t: 'Added: Upgrade suggestions', d: 'Card swaps that raise your grade, each with the new grade it gives.' },
-    { t: 'Added: Matchup chart', d: 'How your deck does against the five most played decks.' },
-    { t: 'Added: Grade history', d: 'Each saved deck keeps its past grades and why each one moved.' },
-    { t: 'Changed: Trainers count more', d: 'Trainers no winning list runs, and too little draw, now lower the grade.' },
-    { t: 'Fixed: Mega Rayquaza lists no longer show as Other' }
+    { t: 'Fixed: Import flags lines it could not read' },
+    { t: 'Fixed: Expanded decks skip the Standard Trainer check' },
+    { t: 'Fixed: Daily challenge past midnight counts for the right day' },
+    { t: 'Fixed: Deck builder updates keep the edit log' },
+    { t: 'Fixed: Deck builder card search works offline' },
+    { t: 'Fixed: Grade history shows the right reason' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -10983,7 +11012,7 @@ function pzResult() {
   const saved = pzS.first ? 'Your first try is the one that counts.' : r ? (r.won ? `Today's result stays a win in ${r.moves} play${r.moves === 1 ? '' : 's'}.` : r.peek ? 'Practice replay: you looked at the answer today.' : 'Practice replay: today\'s result stays no win.') : '';
   return `<div class="dc-banner pz-res ${won ? 'win' : 'loss'}"><div><b>${won ? `You won in ${pzS.plays} play${pzS.plays === 1 ? '' : 's'}` : 'No win this time'}</b>
     <span>${won ? (pzS.plays <= p.moves ? 'That is the shortest win.' : `The shortest win takes ${p.moves}.`) : esc(why)} ${saved} ${pzTally()}</span></div>
-    ${r ? `<button class="btn btn-sm btn-primary" onclick="sharePuzzle()">${ic23('share')}Share</button>` : ''}</div>`;
+    ${r ? `<button class="btn btn-sm btn-primary" onclick="sharePuzzle('${dailyOkKey(pzS.key)}')">${ic23('share')}Share</button>` : ''}</div>`;
 }
 function pzTally() {
   const st = puzzleStats(), runs = puzzleStreakText(st);
@@ -10993,8 +11022,8 @@ function puzzleShareText(r, key) {
   const st = puzzleStats(), runs = puzzleStreakText(st);
   return `RdyDeck Daily Puzzle, my #${r.num || puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
-async function sharePuzzle() {
-  const key = dailyKey(), r = puzzleStore().results[key];
+async function sharePuzzle(k) {
+  const key = dailyOkKey(k) || dailyKey(), r = puzzleStore().results[key];
   if (!r) { showToast('Play today\'s puzzle first.'); return; }
   const text = puzzleShareText(r, key), url = shareBaseUrl() + '?ref=puzzle#puzzle';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
@@ -11710,9 +11739,10 @@ function openEditModal(deckId) {
     const parsed = parseDeckList(this.value);
     const total = parsed.reduce((a,c) => a+c.count, 0);
     const prev = document.getElementById('edit-preview');
-    if (!parsed.length) { prev.textContent = ''; return; }
+    if (!parsed.length) { prev.textContent = ''; prev.classList.remove('warn'); return; }
     const want = editFormat === 'prerelease' ? 40 : 60;
-    prev.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}`;
+    const pv = parsePreviewText(parsed, want);
+    prev.textContent = pv.t; prev.classList.toggle('warn', pv.warn);
   };
   document.getElementById('edit-modal').classList.add('active');
 }
@@ -11783,9 +11813,10 @@ function initImportListener() {
     const total = parsed.reduce((a, c) => a + c.count, 0);
     const preview = document.getElementById('parse-preview');
     if (!preview) return;
-    if (parsed.length === 0) { preview.textContent = ''; return; }
+    if (parsed.length === 0) { preview.textContent = ''; preview.classList.remove('warn'); return; }
     const want = importFormat === 'prerelease' ? 40 : 60;
-    preview.textContent = `Parsed ${parsed.length} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}`;
+    const pv = parsePreviewText(parsed, want);
+    preview.textContent = pv.t; preview.classList.toggle('warn', pv.warn);
   });
 }
 
@@ -11793,7 +11824,8 @@ function parseLine(line) {
   line = line.trim();
   if (!line || line.startsWith('//') || line.startsWith('#')) return null;
   // v59: "4x Ultra Ball", "4 x Ultra Ball" and a bullet "- 4 Ultra Ball" read as 4 Ultra Ball.
-  line = line.replace(/^[-*\u2022]\s+(?=\d)/, '').replace(/^(\d+)\s*[x\u00d7]\s+/i, '$1 ');
+  line = line.replace(/^[-*\u2022]\s+(?=[x\u00d7]?\d)/i, '').replace(/^(\d+)\s*[x\u00d7]\s+/i, '$1 ')
+    .replace(/^[x\u00d7]\s*(\d+)\s+/i, '$1 ');  // 2.5.1: "x3 Ultra Ball" reads as 3 Ultra Ball
   // v59: "Ultra Ball (MEG) 131" and "Ultra Ball (MEG 131)" read as "Ultra Ball MEG 131".
   line = line.replace(/\s*\(\s*([A-Za-z0-9-]+)\s*\)\s*(\d+[a-zA-Z]*)$/, ' $1 $2')
              .replace(/\s*\(\s*([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)\s*\)$/, ' $1 $2');
@@ -11875,6 +11907,9 @@ async function enrichDeckCards(cards) {
       return;
     }
     const dataCat = categoryFromSupertype(e.supertype);
+    // 2.5.1: read by its own set and number (the name was checked too), so the
+    // card data is right and the section header above it was misplaced.
+    if (c.section && dataCat && dataCat !== c.section && sameCardNumber(c, e)) delete c.section;
     if (c.section && dataCat && dataCat !== c.section) {
       // The list says one thing and the lookup read another: the read is
       // a different card (usually a same-number mismatch). Keep nothing.
@@ -13516,8 +13551,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5';
-const PT_BUILD = 73;
+const PT_VERSION = 'v2.5.1';
+const PT_BUILD = 74;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15523,7 +15558,7 @@ renderGrade = function () {
   if (probs.length) {
     const top = probs.slice(0, G29_SHOW), rest = probs.slice(G29_SHOW);
     h += `<div class="g-sec" id="g29-fix"><div class="g-sec-t">Fix first</div>
-      <div class="g-sec-i">The ${top.length === 1 ? 'problem' : top.length + ' problems'} that cost you the most, worst first.</div>
+      <div class="g-sec-i">${top.length === 1 ? 'The problem that costs you the most.' : `The ${top.length} problems that cost you the most, worst first.`}</div>
       ${top.map(f => g29Item(f, f.sev)).join('')}
       ${rest.length ? `<details class="g29-more"><summary>${rest.length} more to fix</summary>${rest.map(f => g29Item(f, f.sev)).join('')}</details>` : ''}
     </div>`;
@@ -19331,7 +19366,7 @@ function bldChecks() {
   const total = bldTotal();
   const act = (label, fn) => ({ label, i: bldActs.push(fn) - 1 });
   if (!total) return out;
-  if (total < 60) out.push({ sev: 'warn', t: `${total} cards. A Standard deck is exactly 60, so ${60 - total} to go.` });
+  if (total < 60) out.push({ sev: 'warn', t: `${total} card${total === 1 ? '' : 's'}. A Standard deck is exactly 60, so ${60 - total} to go.` });
   else if (total > 60) out.push({ sev: 'bad', t: `${total} cards. A Standard deck is exactly 60, so cut ${total - 60}.` });
   else out.push({ sev: 'ok', t: '60 cards.' });
 
@@ -19580,7 +19615,7 @@ function bldRender() {
     <div class="bld-small" id="bld-hint" style="margin:0 0 0.4rem${bldQ ? ';display:none' : ''}">${ref ? `Most run in ${esc(ref.d.name)} lists` : 'Most run in top lists'}</div><div class="bld-results" id="bld-results">${bldResultsHtml()}</div></div>`;
   if (total) {
     const label = { pokemon: 'Pokémon', trainer: 'Trainer', energy: 'Energy' };
-    left += `<div class="bld-sec"><h2 class="bld-h">Your list <span class="bld-n">${total} cards</span></h2>` + ['pokemon', 'trainer', 'energy'].map(k => {
+    left += `<div class="bld-sec"><h2 class="bld-h">Your list <span class="bld-n">${total} card${total === 1 ? '' : 's'}</span></h2>` + ['pokemon', 'trainer', 'energy'].map(k => {
       const rows = bldSorted(k);
       if (!rows.length) return '';
       return `<div class="bld-group"><h3 class="bld-h">${label[k]} <span class="bld-n">${rows.reduce((a, x) => a + x.r.count, 0)}</span></h3>${rows.map(x => bldRowHtml(x.r, x.i, ref)).join('')}</div>`;
@@ -19668,7 +19703,7 @@ function bldStartMine() {
     const i = bldSheetActs.push(() => { closeSheet(); bldConfirmReplace(() => {
       bldReset((d.cards || []).map(c => ({ name: c.name, set: c.set || '', num: c.num || '', count: c.count, section: cardCategory(c) })), { from: d.id, name: d.name });
     }); }) - 1;
-    return `<div class="bld-row" role="button" tabindex="0" onclick="bldSheetActs[${i}]()"><div class="bld-tx"><div class="bld-nm">${esc(d.name)}</div><div class="bld-sub">${n} cards</div></div></div>`;
+    return `<div class="bld-row" role="button" tabindex="0" onclick="bldSheetActs[${i}]()"><div class="bld-tx"><div class="bld-nm">${esc(d.name)}</div><div class="bld-sub">${n} card${n === 1 ? '' : 's'}</div></div></div>`;
   }).join('');
   openSheet(`<div class="modal-title">Start from one of your decks</div><div class="bld-list-pick">${rows || '<p class="bld-small">No saved decks yet.</p>'}</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button></div>`, true);
@@ -19735,9 +19770,24 @@ async function bldSave(update) {
   hideLoading();
   let deck = update && state.decks.find(d => d.id === bld.from);
   if (deck) {
+    // 2.5.1: an update does what Edit deck does after a save: the edit log, fresh deals, and the
+    // Against the meta check when the list changed.
+    const sig = d => (d.cards || []).map(c => c.count + ' ' + c.name).sort().join('|');
+    const before = sig(deck);
+    try { ensureVersions(deck); } catch (_) {}
     deck.name = name.trim(); deck.cards = fetched; deck.coverage = cov; deck.enrichVer = ENRICH_VER;
+    try { recordVersion(deck); } catch (_) {}
+    if (sig(deck) !== before) {
+      const id = deck.id;
+      try { if (typeof handState !== 'undefined' && handState && handState.deckId === id) handState = null; } catch (_) {}
+      try { if (typeof gf !== 'undefined' && gf && gf.deckId === id) gf = null; } catch (_) {}
+      try { if (typeof resDrill !== 'undefined' && resDrill && resDrill.deckId === id) resDrill = null; } catch (_) {}
+      try { if (typeof readDrill !== 'undefined' && readDrill && readDrill.src === 'd:' + id) readDrill = null; } catch (_) {}
+      try { const pick = mu60Picks()[id]; if (pick) mu71SetAsk(id, pick); } catch (_) {}
+    }
   } else {
     deck = { id: Date.now().toString(), name: name.trim(), cards: fetched, history: [], format: 'standard', coverage: cov, enrichVer: ENRICH_VER };
+    try { startVersions(deck, 'import'); } catch (_) {}
     state.decks.push(deck);
   }
   await saveState();
@@ -19875,7 +19925,8 @@ function g68Line(R) {
   g29Sig = function (deck) {
     let pick = '';
     try { pick = mu60Picks()[deck.id] || ''; } catch (_) {}
-    return _sig.apply(this, arguments) + '|mu' + (mu60Data ? mu60Data.asOf : '') + ':' + pick;
+    // 2.5.1: and when the Trainer data (builder.json) arrives, so a grade made before it is not reused.
+    return _sig.apply(this, arguments) + '|mu' + (mu60Data ? mu60Data.asOf : '') + ':' + pick + '|g76' + (g76Played ? g76N : 0);
   };
   const _how = g67HowLine;
   g67HowLine = function (R, synV, powV) {
@@ -20429,7 +20480,10 @@ function gh72Ctx(deck, R) {
   let pick = '';
   try { pick = mu60Picks()[deck.id] || ''; } catch (_) {}
   return { m: mu60Data && mu60Data.asOf ? String(mu60Data.asOf) : '', u: pick, b: typeof PT_BUILD === 'number' ? PT_BUILD : 0,
-    f: deck.format || 'standard', n: typeof rules34Breaches === 'function' && rules34Breaches(deck).length ? 1 : 0, r: R.unread || 0 };
+    // 2.5.1: n is the rotation hold (the grade held at G40_CAP), which is what the history line says.
+    // t is the Trainer data (builder.json) the grade was read with, so a change there reads as results.
+    f: deck.format || 'standard', n: R.rawOverall != null ? 1 : 0, r: R.unread || 0,
+    t: typeof g76Played !== 'undefined' && g76Played ? g76N : 0 };
 }
 /** Keep the grade on the deck's log when it is new: a changed list, or a grade that moved. The
  *  reason is worked out now and kept with the entry (w): s start, e your edit (with r:1 when results
@@ -20447,14 +20501,15 @@ function gh72Note(deck, R) {
     // Same list. Results that have not loaded (offline) or cards that could not be read this time
     // would show a drop that is not real, so those are not kept.
     if (!x.m && was.m) return;
+    if (!x.t && was.t) return;
     if (x.r > (was.r || 0)) return;
     if (last.g === cur.g && last.n === cur.n) {
       // The grade held: remember what it was read with, so the next move is put down to the right cause.
-      if (['m', 'u', 'b', 'f', 'n', 'r'].some(f => was[f] !== x[f])) { log.x = x; deck.gradeLog = log; gh72Save(); }
+      if (['m', 'u', 'b', 'f', 'n', 'r', 't'].some(f => was[f] !== x[f])) { log.x = x; deck.gradeLog = log; gh72Save(); }
       return;
     }
     cur.w = x.u !== (was.u || '') ? 'u' : x.f !== (was.f || 'standard') ? 'f' : x.m !== (was.m || '') ? 'r'
-      : x.b !== was.b ? 'a' : x.n !== (was.n || 0) ? 'l' : 'c';
+      : x.b !== was.b ? 'a' : x.t !== (was.t || 0) ? 'r' : x.n !== (was.n || 0) ? 'l' : 'c';
   } else {
     cur.w = 'e';
     if (x.m && was.m && x.m !== was.m) cur.r = 1;

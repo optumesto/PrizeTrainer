@@ -2,6 +2,32 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.1 (build 74): bug hunt fixes (12 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v74, cards.json and builder.json saved on install) and CHANGES.md.
+
+Import and edit
+- The line under the list says how many lines were not read, and turns red when a line was skipped or the count is off. Before, a skipped line vanished and the line stayed green.
+- "x3 Ultra Ball" reads as 3 Ultra Ball. A "0 Ultra Ball" line counts as not read.
+- A card read by its own set and number keeps its data when it sits under the wrong section header. Before, the header wiped the card data and the card counted as a Pokemon.
+
+Grade
+- Expanded decks no longer get the Standard "no winning list runs" Trainer cost. The draw check still applies to every format.
+- A grade made before the Trainer data (builder.json) loaded is no longer reused after it loads.
+- Fix first says "The problem that costs you the most" when there is one.
+
+Grade history
+- "Held at this grade until the list is legal" and the legality reason follow the rotation hold. Before, they followed the deck building rules check, so a real hold read as "card data read again".
+- A change in the Trainer data reads as a results update.
+
+Daily, builder, saved data
+- A daily challenge that runs past midnight is scored to the day it was dealt. The Share buttons share the day you played.
+- Update from the deck builder records an edit log version, clears old Hand, Goldfish and drill deals, and asks again under Against the meta when the list changed. A new deck from the builder starts its edit log.
+- Deck builder card search works offline from the first visit: cards.json and builder.json are saved when the app installs.
+- Saved data in a bad shape no longer stops home from drawing. Bad decks are dropped.
+- Clear all data also clears the deck builder draft and the Against the meta picks.
+- Deck builder counts say "1 card", not "1 cards".
+
 # RdyDeck 2.5 (build 73): upgrade suggestions, matchup chart, grade history, Trainers count more (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v73), CHANGES.md, builder.json, builder-data.mjs, tests/grade-check.mjs and tests/grade-played.json.

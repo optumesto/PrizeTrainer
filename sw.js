@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v73';
+const CACHE_NAME = 'prize-trainer-v74';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -45,6 +45,9 @@ const CORE_ASSETS = [
   './puzzle/engine.js',
   './puzzle/solver.js',
   './puzzle/daily.json',
+  // 2.5.1: the deck builder's card data, so card search works offline from the first visit.
+  './cards.json',
+  './builder.json',
 ];
 
 // Saved copies are kept under the address without its query, so links with
