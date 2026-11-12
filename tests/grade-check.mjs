@@ -249,6 +249,7 @@ async function resultsReport() {
   const M = JSON.parse(raw);
   w.__live = raw;
   if (!w.eval('!!(mu60Data = mu60Validate(JSON.parse(window.__live)))')) { console.error('matchups.json did not load.'); return; }
+  if (w.eval('typeof g76Set') === 'function') { w.__bld = fs.readFileSync(path.join(ROOT, 'builder.json'), 'utf8'); w.eval('g76Set(JSON.parse(window.__bld))'); }
   w.__liveData = w.eval('mu60Data');
   const per = {};
   // Test lists (a forced rotated card, an old printing) are not real results, so they stay out.
@@ -304,6 +305,15 @@ if (process.env.RESULTS !== 'off' && fs.existsSync(PINNED)) {
   w.eval('mu60Data = mu60Validate(JSON.parse(window.__pinned));');
   if (!w.eval('!!mu60Data')) { console.error('tests/grade-matchups.json did not load.'); process.exit(2); }
 } else if (w.eval('typeof mu60Data') !== 'undefined') w.eval('mu60Data = null; mu60Tried = true;');
+// v76: the Trainers winning lists run (builder.json's played list), pinned the same way in
+// tests/grade-played.json. RESULTS=off leaves it out too.
+const PLAYED = path.join(HERE, 'grade-played.json');
+if (w.eval('typeof g76Set') === 'function') {
+  if (process.env.RESULTS !== 'off' && fs.existsSync(PLAYED)) {
+    w.__played = fs.readFileSync(PLAYED, 'utf8');
+    if (!w.eval('g76Set(JSON.parse(window.__played))')) { console.error('tests/grade-played.json did not load.'); process.exit(2); }
+  } else w.eval('g76Played = null; g76Tried = true;');
+}
 for (const fn of ['parseDeckList', 'enrichDeckCards', 'gradeDeck']) {
   if (w.eval('typeof ' + fn) !== 'function') {
     console.error(`The app did not load: ${fn} is missing.\n` + errors.slice(0, 5).join('\n'));

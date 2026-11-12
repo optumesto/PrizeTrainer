@@ -6824,6 +6824,36 @@ const GT_ROLE_DO = { gust: 'pull up a Benched Pokemon', switch: 'switch your Act
 
 function gtQ(entries, f) { return entries.reduce((a, e) => a + (e.card && f(e.card) ? e.qty : 0), 0); }
 
+// v76 (2.5): Trainer quality. builder.json lists every Trainer and Energy that the top quarter of recent
+// events ran. A Trainer or Special Energy that none of those winning lists runs is a slot they spend on
+// something else, so each copy costs the Trainer score a little (capped). The grade waits for this list
+// the way it waits for tournament results; offline with no saved copy, this part is left out.
+const G76_KEY = 'pt_played', G76_COPY = 0.035, G76_CAP = 0.3, G76_DRAW = 6, G76_DRAW_CUT = 0.04;
+let g76Played = null, g76Busy = false, g76Tried = false, g76N = 0;
+const g76Key = n => rules34Key(String(n || '')).replace(/[^a-z0-9]+/g, ' ').trim();
+/** Read builder.json's played list into a set of card names; false when it is missing or malformed. */
+function g76Set(j) {
+  const rows = j && Array.isArray(j.played) ? j.played.filter(r => Array.isArray(r) && typeof r[0] === 'string' && r[1] > 0) : [];
+  if (rows.length < 30 || !(j.lists >= 40)) return false;
+  g76Played = new Set(rows.map(r => g76Key(r[0]))); g76N = j.lists;
+  return true;
+}
+/** The saved copy at once, the newest copy from the site once per page load. */
+function g76Load() {
+  if (!g76Played) { try { g76Set(JSON.parse(safeLocalGet(G76_KEY) || 'null')); } catch (_) {} }
+  if (g76Busy || g76Tried) return;
+  g76Busy = true;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const t = ctl ? setTimeout(() => ctl.abort(), 8000) : 0;
+  fetch('builder.json', { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
+    .then(r => r.ok ? r.json() : null)
+    .then(j => { if (j && g76Set(j)) safeLocalSet(G76_KEY, JSON.stringify({ lists: j.lists, asOf: j.asOf, played: j.played })); })
+    .catch(() => {})
+    .finally(() => { clearTimeout(t); g76Busy = false; g76Tried = true; if (typeof g71Redraw === 'function') g71Redraw(); });
+}
+// Read the saved list at once, so grades in the deck list match the grade screen.
+try { g76Load(); } catch (_) {}
+
 function gTrainers(entries, coh, via, main) {
   const flaws = [], cut = [];
   const cards = entries.filter(e => e.card);
@@ -6914,12 +6944,33 @@ function gTrainers(entries, coh, via, main) {
   // not legal; this line says which cards, so the fix is plain.
   if (aceN > 1) ace = { link: `ACE SPEC: ${aceN} cards`, p: `The list runs ${aces.map(e => `${e.qty > 1 ? e.qty + ' ' : ''}${gCap(e.name)}`).join(' and ')}. A deck can hold only one ACE SPEC card, so cut down to one before you play it.`, fit: 'over' };
 
+  // 4. v76: too little draw. Every one of the 128 top lists runs 6 or more cards or Abilities that draw.
+  if (anyMon && !via.ctl && drawQ + abilQ < G76_DRAW) {
+    const n = drawQ + abilQ;
+    flaws.push({ sev: 'warn', t: n ? `Only ${n} card${n === 1 ? '' : 's'} that draw` : 'Nothing in the list draws cards',
+      d: `Winning lists run 6 or more cards or Abilities that draw, most of them 10 or more, so a slow hand turns around. With ${n || 'none'}, a bad opening hand stays bad.` });
+    cut.push(Math.min(0.2, G76_DRAW_CUT * (G76_DRAW - n))); }
+  // 5. v76: Trainers and Special Energy no winning list runs.
+  const unplayed = [];
+  if (g76Played) {
+    const deadN = new Set(dead.map(d => d.e.name)), seen = new Map();
+    [...trn, ...spE].forEach(e => { if (deadN.has(e.name) || g76Played.has(g76Key(e.name))) return;
+      const k = g76Key(e.name), o = seen.get(k); if (o) o.qty += e.qty; else seen.set(k, { name: gCap(e.name), qty: e.qty }); });
+    unplayed.push(...seen.values());
+    const n = unplayed.reduce((a, x) => a + x.qty, 0);
+    if (n) {
+      const nm = unplayed.map(x => `${x.qty > 1 ? x.qty + ' ' : ''}${x.name}`), say = nm.length > 3 ? nm.slice(0, 3).join(', ') + `, and ${nm.length - 3} more` : nm.join(' and ');
+      flaws.push({ sev: 'warn', t: `${n} card${n === 1 ? '' : 's'} no winning list runs`,
+        d: `None of the ${g76N} top lists from recent events runs ${say}. Each copy is a slot those lists spend on a card that wins more.` });
+      cut.push(Math.min(G76_CAP, G76_COPY * n)); }
+  }
+
   const score = gClamp(1 - cut.reduce((a, x) => a + x, 0), 0, 1);
   const counts = { sup, find, swQ, gustQ, recQ, drawQ, abilQ, stadQ, aceN };
   // v70: a fit label for each card. Explain only: nothing here changes score.
   let fit = [];
-  try { fit = gtFit(entries, coh, via, main, { dead: dead.map(d => d.e.name), counts }); } catch (_) {}
-  return { score, flaws, ace, dead: dead.map(d => d.e.name), counts, fit };
+  try { fit = gtFit(entries, coh, via, main, { dead: dead.map(d => d.e.name), counts, unplayed: unplayed.map(x => x.name) }); } catch (_) {}
+  return { score, flaws, ace, dead: dead.map(d => d.e.name), unplayed: unplayed.map(x => x.name), counts, fit };
 }
 
 /** An ACE SPEC from the table that covers one of the list's gaps and works with the list. */
@@ -7019,6 +7070,10 @@ function gtFit(entries, coh, via, main, ctx) {
         row.why = lead === 'gust' && n === e.qty ? `Your only card that pulls up a Benched Pokemon, which is how you take the prizes you choose.`
           : lead === 'energy' && main ? `${up(GT_ROLE_SAY.energy)} for ${nm(main.name)}${n > e.qty ? `, ${e.qty} of the ${n} cards that do` : ''}.`
           : `${up(GT_ROLE_SAY[lead])}: ${n === e.qty ? `your only ${c.t === 'energy' ? 'card' : 'Trainer'} that does` : `${e.qty} of the ${n} cards that do`}.`;
+      } else if ((ctx.unplayed || []).includes(nm(e.name))) {
+        // v76: no winning list runs it.
+        row.fit = 'weak';
+        row.why = `${roles.size ? up(GT_ROLE_SAY[[...roles][0]]) + ', but no' : 'No'} winning list from recent events runs it.`;
       } else if (crowded) {
         row.fit = 'weak';
         const r = [...roles][0];
@@ -18443,7 +18498,9 @@ function mu60Best(deck, data, ok) {
   const w = n => Math.log(1 + N / (df[n] || 0.5));
   let best = null;
   for (const d of data.decks) {
-    if (ok && !ok(d)) continue;
+    // v76: "Other" is every list no named archetype claims, so its few common Pokemon (Latias ex,
+    // Fezandipiti ex) match many real decks. A deck is never matched to it.
+    if (d.id === 'other' || (ok && !ok(d))) continue;
     let have = 0, all = 0;
     const theirs = new Set();
     for (const [name, , freq] of d.sig) {
@@ -19786,6 +19843,7 @@ function g71WaitFor(deck) {
   if (_r29Busy.has(deck.id)) return 'rot';
   if (on && !_r29Tried.has(deck.id) && r29NeedsCheck(deck, r29Rows(deck)).length) return 'rot';
   if (mu60Busy || (on && !mu60Tried)) return 'results';
+  if (g76Busy || (on && !g76Tried)) return 'results';
   return '';
 }
 // Card data is read for one deck at a time, so a home full of decks does not flood the card APIs.
@@ -19798,7 +19856,7 @@ function g71Kick(deck) {
     _g71Queued.add(deck.id);
     _g71Q = _g71Q.then(() => refreshDeckData(deck)).catch(() => {}).then(() => { _g71Queued.delete(deck.id); });
   } else if (w === 'rot' && !_r29Busy.has(deck.id)) r29CheckReprints(deck);
-  else if (w === 'results' && !mu60Busy) mu60Load();
+  else if (w === 'results') { if (!mu60Busy) mu60Load(); if (!g76Busy) g76Load(); }
 }
 let _g71T = 0;
 /** Draw home and the open Grade tab again once something a grade waits for has loaded. */

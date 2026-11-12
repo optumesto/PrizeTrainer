@@ -75,7 +75,17 @@ export function usage(lists, from) {
     lists: ok.length,
     decks,
     all: tally(ok).filter(c => c[6] >= 0.15),
+    // Every Trainer and Energy any of these lists runs: [name, how many lists run it]. The grade counts
+    // copies of a Trainer or Special Energy that no winning list runs (index.html, v76).
+    played: played(ok),
   };
+}
+
+/** [name, lists that run it] for every Trainer and Energy in the lists, most played first. */
+function played(lists) {
+  const n = new Map();
+  for (const l of lists) new Set(l.cards.filter(c => c.part !== 'pokemon').map(c => c.name)).forEach(k => n.set(k, (n.get(k) || 0) + 1));
+  return [...n.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 }
 
 /** A Limitless standings decklist as { part, count, name, set, number } cards, or null. */
