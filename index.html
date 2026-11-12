@@ -1584,6 +1584,8 @@
   .wn-list li { display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
   .wn-list li b { color:var(--text); font-size:var(--fs-md); font-weight:600; }
   .wn-sub { font-size:var(--fs-sm); color:var(--text-3); margin-top:0.15rem; }
+  .wn-mini { list-style:none; margin:0.2rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .wn-mini .wn-more { color:var(--text-3); }
 
   /* Daily puzzle */
   .pz-wrap { max-width:720px; margin:0 auto; padding:0.75rem var(--pad-x) 2rem; }
@@ -10576,9 +10578,11 @@ function renderWhatsNewCard() {
   const el = document.getElementById('wn-card');
   if (!el) return;
   if (!wnShouldShow()) { el.innerHTML = ''; return; }
-  const names = WHATS_NEW.items.map(i => i.t.replace(/^(Added|Fixed|Changed|New):\s*/, '')).join(', ');
+  // v72: each change on its own short line, as written, the first 3 here and the rest in What's new.
+  const items = WHATS_NEW.items, top = items.slice(0, 3), more = items.length - top.length;
+  const lines = top.map(i => `<li>${esc(i.t)}</li>`).join('') + (more ? `<li class="wn-more">and ${more} more in What's new</li>` : '');
   el.innerHTML = `<div class="dc-banner" role="status">
-    <div><b>Updated to ${esc(wnName())}</b><span>${esc(names)}</span></div>
+    <div><b>Updated to ${esc(wnName())}</b><ul class="wn-mini">${lines}</ul></div>
     <button class="btn btn-sm btn-primary" onclick="openWhatsNew()">See what's new</button>
     <button class="btn btn-sm" onclick="wnDismiss()">Close</button>
   </div>`;
