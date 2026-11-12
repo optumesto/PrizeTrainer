@@ -9296,6 +9296,8 @@ function gfFromHand() {
   let uid = 0;
   const pool = H.hand.concat(H.restOrder).map(x => ({ uid: ++uid, card: x.card, g: x.g }));
   gfNew(deck, H.groups, pool, H.mulls, gf ? gf.first : true, H.anyBasic);
+  // v71: the summary scores the line the player picked on this hand, so its odds match the Hand tab.
+  gf.line = H.pick != null ? H.pick : 0;
   handMode = 'gold';
   renderHand();
   const el = document.getElementById('hand-body');
@@ -10202,23 +10204,26 @@ function gfSummary(deck) {
     const handCount = new Int32Array(gf.groups.length);
     gf.startHand.forEach(x => handCount[x.g]++);
     const S = { groups: gf.groups, handCount, rest: gf.startRest };
-    const seed = (simSeed(deck.cards) ^ gf.startHand.reduce((a, x) => Math.imul(a ^ (x.g + 1), 16777619), 2166136261)) >>> 0;
-    const main = opts[0];
+    // v71: the line the player picked on the Hand tab (else the main one), with the same seed the
+    // Hand tab uses, so both show the same odds for the same hand. Both tiles are shares of shuffles.
+    const li = gf.line && opts[gf.line] ? gf.line : 0;
+    const seed = ((simSeed(deck.cards) ^ gf.startHand.reduce((a, x) => Math.imul(a ^ (x.g + 1), 16777619), 2166136261)) + li * 7919) >>> 0;
+    const main = opts[li];
     const o = handLineOdds(S, main, HAND_TRIALS, seed);
-    const when = gf.ready[0];
+    const when = gf.ready[li];
     const tG = lineFirstTurn(main, gf.groups);
     const good = when != null && when <= tG;
     h += `<div class="o-tiles">
-      <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when : 'Not in play by turn 3'}</div></div>
-      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">Share of shuffles, not this game</div></div>
-      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">This game's opening hand, with search</div></div>
+      <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when + ' this game' : 'Not in play by turn 3 this game'}</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">${tG === 3 ? 'Turn 3 at the earliest without Rare Candy' : 'Shuffles from this opening hand, with search'}</div></div>
+      <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">Shuffles from this opening hand, with search</div></div>
     </div>`;
     const verdict = good ? `You had ${esc(main.name)} up by turn ${when}. From this opening hand, the odds count gets it there by turn ${tG} in ${oPct(tG === 3 ? o.s3 : o.s2)} of shuffles.${tG === 3 ? ' With no Rare Candy in the list, turn 3 is the earliest it can be in play.' : ''}`
       : when ? `${esc(main.name)} came up on turn ${when}. The odds count has it ready by turn 2 in ${oPct(o.s2)} of shuffles from this hand, so look back at your first two turns.`
       : `${esc(main.name)} was not in play by turn 3. From this opening hand it is ready by turn 3 in ${oPct(o.s3)} of shuffles, so check the moves below for a search you could have made.`;
     h += `<div class="g-item ${good ? 'ok' : 'warn'}"><div class="gt">${good ? 'On schedule' : when ? 'A turn behind' : 'Line did not come together'}</div><p>${verdict}</p></div>`;
     if (opts.length > 1) {
-      h += `<div class="hp-chips" style="margin:0.5rem 0 0.75rem">${opts.slice(1).map((l, i) => `<span class="hp-chip">${esc(l.name)}: ${gf.ready[i + 1] ? 'turn ' + gf.ready[i + 1] : 'not in play'}</span>`).join('')}</div>`;
+      h += `<div class="hp-chips" style="margin:0.5rem 0 0.75rem">${opts.map((l, i) => i === li ? '' : `<span class="hp-chip">${esc(l.name)}: ${gf.ready[i] ? 'turn ' + gf.ready[i] : 'not in play'}</span>`).join('')}</div>`;
     }
   }
   const keys = new Set();
@@ -12204,7 +12209,7 @@ function renderPrizeSlots() {
   container.innerHTML = Array.from({length: pc}, (_, i) => {
     const guess = game.guesses[i];
     return guess
-      ? `<div class="prize-slot filled" data-slot="${i}"><span class="ps40-t${/\S{12,}/.test(guess) ? ' ps67-long' : ''}">${esc(guess)}</span><button type="button" class="remove-btn" aria-label="Remove ${esc(guess)}" onclick="removeGuess(${i})">✕</button></div>`
+      ? `<div class="prize-slot filled" data-slot="${i}"><span class="ps40-t${/\S{9,}/.test(guess) ? ' ps67-long' : ''}">${esc(guess)}</span><button type="button" class="remove-btn" aria-label="Remove ${esc(guess)}" onclick="removeGuess(${i})">✕</button></div>`
       : `<div class="prize-slot" data-slot="${i}">Prize ${i+1}</div>`;
   }).join('');
 }
@@ -19683,6 +19688,16 @@ function g68Line(R) {
   try { mu60Load(); } catch (_) {}
 })();
 </script>
+<style>
+  /* v71: a dialog is solid from its first frame. Only the dimmed page behind it fades in, so the
+     panel never shows the page through it while it opens. */
+  .modal-overlay.active { animation:v71ScrimIn 0.18s ease-out; }
+  @keyframes v71ScrimIn { from { background-color:transparent; } }
+  /* Moving to a field (Tab, or the keyboard opening on a phone) keeps it clear of a dialog's sticky
+     title and Save bar, and of the deck page's tabs and bottom bar. */
+  .modal, .mode-modal, .picker-modal { scroll-padding-top:5rem; scroll-padding-bottom:6rem; }
+  html:has(#screen-review.active) { scroll-padding-top:8rem; scroll-padding-bottom:9rem; }
+</style>
 <script>
 // ═══════════ v71 (2.4.2): fixes from the 11 Nov 2026 evening audit ═══════════
 
