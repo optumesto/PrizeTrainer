@@ -10603,20 +10603,21 @@ function handleDailyHash() {
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
-// ═══════════ WHAT'S NEW (v2.4.3) ═══════════
+// ═══════════ WHAT'S NEW (v2.5) ═══════════
 // A short log of the latest update. Edit WHATS_NEW for each release. A
 // generation release (2.x) lists what was added, changed or fixed ("Added:",
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.4.3',
-  kind: 'small',
+  version: 'v2.5',
+  kind: 'generation',
   items: [
-    { t: 'Fixed: every grade finishes loading' },
-    { t: 'Fixed: the home buttons fit their labels' },
-    { t: 'Fixed: the daily puzzle shows on wide screens' },
-    { t: 'Changed: a shorter update note on home' }
+    { t: 'Added: Upgrade suggestions', d: 'Card swaps that raise your grade, each with the new grade it gives.' },
+    { t: 'Added: Matchup chart', d: 'How your deck does against the five most played decks.' },
+    { t: 'Added: Grade history', d: 'Each saved deck keeps its past grades and why each one moved.' },
+    { t: 'Changed: Trainers count more', d: 'Trainers no winning list runs, and too little draw, now lower the grade.' },
+    { t: 'Fixed: Mega Rayquaza lists no longer show as Other' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13515,8 +13516,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.4.3';
-const PT_BUILD = 72;
+const PT_VERSION = 'v2.5';
+const PT_BUILD = 73;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

@@ -2,6 +2,19 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5 (build 73): upgrade suggestions, matchup chart, grade history, Trainers count more (preview, not live)
+
+Changed files: index.html, sw.js (cache prize-trainer-v73), CHANGES.md, builder.json, builder-data.mjs, tests/grade-check.mjs and tests/grade-played.json.
+
+Added
+- Upgrade suggestions: under Fix first, up to 3 one-card swaps that raise the grade, each checked by grading the changed list, plus all of them together. Cards to add come from what the deck's top lists run.
+- Matchup chart: the five most played decks, each marked Favored, Even or Unfavored from tournament results.
+- Grade history: each saved deck keeps its past grades on the device, with why each one moved (your edit, new results or an app update).
+
+Grade
+- Each copy of a Trainer or Special Energy that none of the top lists in builder.json runs costs a little (capped), and those cards are labeled Weak. A list with fewer than 6 cards or Abilities that draw costs more. None of the 128 top lists moves. builder.json gains a played list for this, and the grade check pins it in tests/grade-played.json.
+- Matching never picks the Other bucket, so a Mega Rayquaza list no longer shows as Other under Against the meta. Its grade already used Mega Rayquaza's results.
+
 # RdyDeck 2.4.3 (build 72): grades always finish, home buttons fit, puzzle on desktop (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v72) and CHANGES.md.
