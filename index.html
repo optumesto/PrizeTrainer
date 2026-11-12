@@ -780,6 +780,29 @@
   .mu60-f a { color:var(--text-2); }
   .mu61-same, .mu61-like { margin:-0.35rem 0 0.75rem; }
   .mu61-same { color:var(--text-2); }
+  /* 2.5: matchup chart, the five most played decks with a call each */
+  .mc73-h { font-size:var(--fs-md); font-weight:700; color:var(--text); margin:0.25rem 0 0.35rem; }
+  .mc73-sum { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin:0 0 0.6rem; }
+  .mc73 { border:1px solid var(--line); border-radius:var(--r); background:var(--surface); margin-bottom:0.75rem; }
+  .mc73-r { padding:0.65rem 0.95rem 0.7rem; border-top:1px solid var(--line); }
+  .mc73-r:first-child { border-top:0; }
+  .mc73-l1 { display:flex; justify-content:space-between; gap:0.75rem; font-size:var(--fs-md); color:var(--text); }
+  .mc73-l1 > span:first-child { min-width:0; overflow-wrap:anywhere; }
+  .mc73-v { font-weight:700; white-space:nowrap; color:var(--text-2); }
+  .mc73-r.good .mc73-v { color:var(--success); }
+  .mc73-r.bad .mc73-v { color:var(--danger); }
+  .mc73-r.thin .mc73-v, .mc73-r.thin .mc73-l1 { color:var(--text-3); }
+  .mc73-l2 { display:flex; align-items:center; gap:0.75rem; margin-top:0.4rem; }
+  .mc73-bar { position:relative; flex:1; height:0.5rem; border-radius:999px; background:var(--surface-2); overflow:hidden; }
+  .mc73-band { position:absolute; top:0; bottom:0; background:var(--text-3); opacity:0.25; }
+  .mc73-fill { position:absolute; top:0; bottom:0; background:var(--text-3); }
+  .mc73-r.good .mc73-fill, .mc73-r.lgood .mc73-fill { background:var(--success); }
+  .mc73-r.bad .mc73-fill, .mc73-r.lbad .mc73-fill { background:var(--danger); }
+  .mc73-r.lgood .mc73-fill, .mc73-r.lbad .mc73-fill { opacity:0.55; }
+  .mc73-mid { position:absolute; left:50%; top:-1px; bottom:-1px; width:2px; margin-left:-1px; background:var(--text-2); opacity:0.6; }
+  .mc73-n { font-size:var(--fs-sm); color:var(--text-2); white-space:nowrap; font-variant-numeric:tabular-nums; min-width:7.5rem; text-align:right; }
+  .mc73-r.thin .mc73-n { color:var(--text-3); }
+  .mc73-sub { font-size:var(--fs-md); font-weight:700; color:var(--text); margin:0.25rem 0 0.35rem; }
   .g-wip {
     max-width:720px; margin:0.5rem auto 1rem; padding:0.9rem 1rem;
     border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line);
@@ -18546,6 +18569,70 @@ const mu60Pct = r => { const n = r[0] + r[1] + r[2]; return n ? r[0] / n * 100 :
 const mu60Fmt = p => p.toFixed(1) + '%';
 const mu60Tone = p => p >= 55 ? 'good' : p < 45 ? 'bad' : '';
 
+// ═══════════ 2.5: matchup chart against the most played decks ═══════════
+// The five decks played most right now (matchups.json cols, mirror left out), each with a call:
+// Favored or Unfavored for decks like the open one only when the likely range of the win rate
+// (90%, Wilson) sits on one side of 50% and the win rate is at least 3 points off even, so a few
+// lucky games never read as a favored matchup. A win rate 5 or more points off even without
+// enough games for that is a lean. Display only: the grade does not read any of this.
+const MC73_TOP = 5, MC73_Z = 1.645, MC73_EDGE = 3, MC73_LEAN = 5;
+/** Likely range of a win rate, in percent: [low, high]. */
+function mc73Range(w, n) {
+  if (!n) return [0, 100];
+  const p = w / n, z2 = MC73_Z * MC73_Z, d = 1 + z2 / n;
+  const c = (p + z2 / (2 * n)) / d, m = MC73_Z * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n)) / d;
+  return [Math.max(0, c - m) * 100, Math.min(1, c + m) * 100];
+}
+/** good, bad, lgood, lbad, even or thin, from a record [wins, losses, ties]. */
+function mc73Call(r) {
+  const n = r[0] + r[1] + r[2];
+  if (n < MU60_FEW) return 'thin';
+  const p = r[0] / n * 100, [lo, hi] = mc73Range(r[0], n);
+  if (lo > 50 && p >= 50 + MC73_EDGE) return 'good';
+  if (hi < 50 && p <= 50 - MC73_EDGE) return 'bad';
+  if (p >= 50 + MC73_LEAN) return 'lgood';
+  if (p <= 50 - MC73_LEAN) return 'lbad';
+  return 'even';
+}
+const MC73_WORD = { good: 'Favored', bad: 'Unfavored', lgood: 'Leans favored', lbad: 'Leans unfavored', even: 'Even', thin: 'Too few games' };
+// The bar runs from 25% to 75% win rate, where nearly every matchup falls, with even in the middle.
+const mc73Pos = v => Math.max(0, Math.min(100, (v - 25) * 2));
+function mc73Names(xs) {
+  const n = xs.map(x => esc(x.opp.name));
+  return n.length < 3 ? n.join(' and ') : n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1];
+}
+/** rows: [{opp, r, n, p}] from mu60Section, most played first. */
+function mc73Chart(rows, data) {
+  const xs = rows.map(x => ({ ...x, call: mc73Call(x.r) }));
+  const by = k => xs.filter(x => x.call === k);
+  const good = by('good'), bad = by('bad');
+  const parts = [];
+  if (good.length) parts.push(`favored against ${mc73Names(good)}`);
+  if (bad.length) parts.push(`unfavored against ${mc73Names(bad)}`);
+  let sum = parts.length ? parts.join(', ') : xs.every(x => x.call === 'thin') ? 'too few games against these decks to call yet' : 'no clear edge either way against these decks yet';
+  sum = sum[0].toUpperCase() + sum.slice(1) + '.';
+  const since = data.cur && data.cur.since ? ` since ${d30Nice(data.cur.since)}` : '';
+  const rowsH = xs.map(x => {
+    const word = MC73_WORD[x.call];
+    let bar = '';
+    if (x.call !== 'thin') {
+      const [lo, hi] = mc73Range(x.r[0], x.n), a = mc73Pos(Math.min(x.p, 50)), b = mc73Pos(Math.max(x.p, 50));
+      bar = `<span class="mc73-band" style="left:${mc73Pos(lo).toFixed(1)}%;width:${(mc73Pos(hi) - mc73Pos(lo)).toFixed(1)}%"></span>`
+        + `<span class="mc73-fill" style="left:${a.toFixed(1)}%;width:${(b - a).toFixed(1)}%"></span>`;
+    }
+    const pct = x.p == null ? 'None' : mu60Fmt(x.p);
+    const label = `${x.opp.name}: ${word}, ${pct} over ${x.n} ${x.n === 1 ? 'match' : 'matches'}`;
+    return `<div class="mc73-r ${x.call}" role="listitem" aria-label="${esc(label)}">
+      <div class="mc73-l1"><span>${esc(x.opp.name)}</span><span class="mc73-v">${word}</span></div>
+      <div class="mc73-l2" aria-hidden="true"><span class="mc73-bar">${bar}<span class="mc73-mid"></span></span><span class="mc73-n">${pct}, ${x.n} ${x.n === 1 ? 'match' : 'matches'}</span></div>
+    </div>`;
+  }).join('');
+  return `<div class="mc73-h">Top ${xs.length} decks right now</div>
+    <p class="mc73-sum">${sum}</p>
+    <div class="mc73" role="list" aria-label="Matchups against the ${xs.length} decks played most${esc(since)}">${rowsH}</div>
+    <p class="mu60-f">The line in each bar is 50%. The light band is the likely range from the games so far. Favored and Unfavored need the whole band on one side of 50%.</p>`;
+}
+
 function mu60Section(deck) {
   const data = mu60Data;
   if (!data || deck.format === 'expanded' || deck.format === 'prerelease') return '';
@@ -18587,10 +18674,13 @@ function mu60Section(deck) {
       const r = mu60Sum(arch.vs[c]);
       return { opp, r, n: r[0] + r[1] + r[2], p: mu60Pct(r) };
     }).filter(x => x.opp);
+    // 2.5: the five most played decks as a chart with a call each; the rest stay in the table.
+    const top = rows.slice(0, MC73_TOP), rest = rows.slice(MC73_TOP);
+    if (top.length) h += mc73Chart(top, data);
     let few = false;
-    h += `<div class="mu60-t" role="table" aria-label="Win rate against the most played decks">
+    if (rest.length) h += `<div class="mc73-sub">Other popular decks</div><div class="mu60-t" role="table" aria-label="Win rate against other popular decks">
       <div class="mu60-r mu60-h" role="row"><span role="columnheader">Against</span><span role="columnheader">Win rate</span><span role="columnheader">Matches</span></div>
-      ${rows.map(x => {
+      ${rest.map(x => {
         const thin = x.n < MU60_FEW;
         if (thin) few = true;
         return `<div class="mu60-r${thin ? ' thin' : ''}" role="row"><span role="cell">${esc(x.opp.name)}</span>
