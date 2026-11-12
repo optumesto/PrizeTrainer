@@ -145,7 +145,7 @@ async function limitless() {
     }
   }
   const days = events.map(e => new Date(e.t.date)).sort((a, b) => a - b);
-  const builder = top.length >= 40 ? usage(top, `Limitless online tournaments, top quarter of ${events.length} events, ${nice(days[0])} to ${nice(days[days.length - 1])}`) : null;
+  const builder = top.length >= 40 ? usage(top, `Limitless online tournaments, the top quarter (at least the top 16) of each of ${events.length} events, ${nice(days[0])} to ${nice(days[days.length - 1])}`) : null;
 
   return {
     builder: builder && builder.decks.length >= 5 ? builder : null,

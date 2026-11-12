@@ -251,8 +251,11 @@ async function resultsReport() {
   if (!w.eval('!!(mu60Data = mu60Validate(JSON.parse(window.__live)))')) { console.error('matchups.json did not load.'); return; }
   w.__liveData = w.eval('mu60Data');
   const per = {};
+  // Test lists (a forced rotated card, an old printing) are not real results, so they stay out.
+  const real = lists.filter(l => !l.rotated && !l.oldPrinting);
   for (let i = 0; i < lists.length; i++) {
     const l = lists[i];
+    if (l.rotated || l.oldPrinting) continue;
     try {
       w.eval('mu60Data = null');
       const c = await gradeList(w, l, i);
@@ -276,7 +279,7 @@ async function resultsReport() {
   const cw = A.map(r => r.wr);
   const L = [];
   L.push(`# How well grades track tournament results`, '');
-  L.push(`Results from matchups.json (${M.since} to ${M.until}${M.cur ? `, newest set since ${M.cur.since}` : ''}). Lists: the ${lists.length} fixed top lists in tests/grade-lists.json, so a new archetype shows up here only after the lists are refreshed. 1.00 means the grades rank archetypes exactly as their win rates do, 0 means no link.`, '');
+  L.push(`Results from matchups.json (${M.since} to ${M.until}${M.cur ? `, newest set since ${M.cur.since}` : ''}). Lists: the ${real.length} fixed top lists in tests/grade-lists.json, so a new archetype shows up here only after the lists are refreshed. 1.00 means the grades rank archetypes exactly as their win rates do, 0 means no link.`, '');
   L.push(`- **All results (${A.length} archetypes with 300+ games):** cards alone ${f(spearman(A.map(r => r.card), cw))}, grade as shown ${f(spearman(A.map(r => r.blend), cw))}. The grade as shown uses these same results, so it is partly circular.`);
   L.push(`- **Since the newest set (${C.length} archetypes with 100+ games):** cards alone ${f(spearman(C.map(r => r.card), C.map(r => r.cwr)))}, grade as shown ${f(spearman(C.map(r => r.blend), C.map(r => r.cwr)))}.${C.length < 8 ? ' Too few archetypes to trust yet.' : ''}`);
   // Where the cards and the results disagree most: rank by card grade against rank by win rate.

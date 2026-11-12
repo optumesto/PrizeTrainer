@@ -89,9 +89,16 @@ for (const s of wanted) {
       e.ty = (c.types || []).map(t => TYPE[t] || '').join('');
       e.hp = parseInt(c.hp, 10) || 0;
       if (c.evolvesFrom) e.ef = clean(c.evolvesFrom, 60);
-      // The last attack (the one printed lowest, usually the main one): its name and the Energy
-      // types its cost asks for, Colorless left out, so the builder can check the list's Energy.
-      const last = (c.attacks || []).slice(-1)[0];
+      // The main attack: the one that costs the most Energy, then the one that asks for the most
+      // typed Energy, then the one with the most printed damage, then the later one. Its name and the Energy types its cost asks for, Colorless left
+      // out, so the builder can check the list's Energy. Reading only the last attack missed a main
+      // first attack and warned from a Colorless filler.
+      const dmg = a => parseInt(String(a.damage || '').replace(/[^0-9]/g, ''), 10) || 0;
+      const cost = a => (a.cost || []).filter(t => t !== 'Free').length;
+      const typed = a => (a.cost || []).filter(t => t !== 'Colorless' && t !== 'Free').length;
+      const rank = a => [cost(a), typed(a), dmg(a)];
+      const better = (a, b) => { const x = rank(a), y = rank(b); for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i]; return true; };
+      const last = (c.attacks || []).reduce((b, a) => (!b || better(a, b) ? a : b), null);
       if (last) {
         const need = [...new Set((last.cost || []).filter(t => t !== 'Colorless' && TYPE[t]).map(t => TYPE[t]))].join('');
         if (need) { e.need = need; e.na = clean(last.name, 30); }
@@ -127,7 +134,7 @@ const file = {
   schema: 1,
   asOf: new Date().toISOString().slice(0, 10),
   firstLegal: first,
-  note: 'Standard legal cards for the RdyDeck deck builder, one per card (reprints count once), built weekly by build-cards.mjs from pokemon-tcg-data. Keys: n name, s set, no number, k P/T/E, st stage, ty types, hp, ef evolves from, need Energy types the last attack asks for, na that attack, w Ability and attack names, tk Trainer kind (I Item, S Supporter, D Stadium, O Tool), ace ACE SPEC, be Basic Energy, pr prints.',
+  note: 'Standard legal cards for the RdyDeck deck builder, one per card (reprints count once), built weekly by build-cards.mjs from pokemon-tcg-data. Keys: n name, s set, no number, k P/T/E, st stage, ty types, hp, ef evolves from, need Energy types the main attack (most Energy, then most typed Energy, then most damage) asks for, na that attack, w Ability and attack names, tk Trainer kind (I Item, S Supporter, D Stadium, O Tool), ace ACE SPEC, be Basic Energy, pr prints.',
   cards: out,
 };
 const same = old && JSON.stringify({ ...old, asOf: null }) === JSON.stringify({ ...file, asOf: null });

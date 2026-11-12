@@ -1,5 +1,6 @@
-# Grade check: grades the 128 top lists in tests/grade-lists.json with this
+# Grade check: grades the top lists in tests/grade-lists.json with this
 # commit's index.html and fails if any grade moved from tests/grade-baseline.json.
+# It also runs the daily puzzle tests (puzzle/test/run.js and screen.cjs).
 # Runs on every push that touches the app or the check, and from the Actions tab.
 #
 # The card data is saved in tests/grade-cards.json.gz so every run reads the same
@@ -13,11 +14,13 @@ on:
     paths:
       - 'index.html'
       - 'tests/**'
+      - 'puzzle/**'
       - '.github/workflows/grade-check.yml'
   pull_request:
     paths:
       - 'index.html'
       - 'tests/**'
+      - 'puzzle/**'
   workflow_dispatch:
 
 permissions:
@@ -58,3 +61,11 @@ jobs:
 
       - name: Check the grades
         run: node tests/grade-check.mjs
+
+      - name: Puzzle engine and daily boards
+        if: always() && steps.record.outcome != 'failure'
+        run: node puzzle/test/run.js
+
+      - name: Puzzle screen
+        if: always() && steps.record.outcome != 'failure'
+        run: node puzzle/test/screen.cjs

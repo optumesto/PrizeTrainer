@@ -1,4 +1,4 @@
-{"schema":1,"asOf":"2026-11-11","from":"Limitless online tournaments, top 16 lists from 8 events, 7 to 9 Nov 2026","note":"What winning lists run, for the RdyDeck deck builder. cards: [name, set, number, part P/T/E, usual count, average count when run, share of lists that run it]. Built by builder-data.mjs.","lists":128,"decks":[{"id":"mega-rayquaza-ex","name":"Mega Rayquaza","lists":13,"cards":[["Fire Energy","MEE","10","E",10,9.23,1],
+{"schema":1,"asOf":"2026-11-11","from":"Limitless online tournaments, the top 16 of each of 8 events, 7 to 9 Nov 2026","note":"What winning lists run, for the RdyDeck deck builder. cards: [name, set, number, part P/T/E, usual count, average count when run, share of lists that run it]. Built by builder-data.mjs.","lists":128,"decks":[{"id":"mega-rayquaza-ex","name":"Mega Rayquaza","lists":13,"cards":[["Fire Energy","MEE","10","E",10,9.23,1],
 ["Lightning Energy","MEE","12","E",5,5.23,1],
 ["Cyrano","SSP","170","T",4,3.15,1],
 ["Mega Kangaskhan ex","MEG","104","P",4,3.85,1],

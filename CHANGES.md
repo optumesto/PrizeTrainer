@@ -2,6 +2,35 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.4.2 (build 71): fixes from the 11 Nov evening audit (12 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v71), CHANGES.md, deck-grader.html, README.md, builder.json, build-cards.mjs, refresh-data.mjs, grade-results.md, puzzle/daily.json, puzzle/engine.js, puzzle/solver.js, puzzle/tools/make-daily.mjs, puzzle/test/screen.cjs, tests/grade-check.mjs, tests/grade-lists.json, tests/grade-baseline.json and .github/workflows/grade-check.yml.
+
+Grade
+- No grade shows until the card data, the reprint check and the tournament results have loaded, so a grade never changes after it paints. Home and the Grade tab say Grading until then.
+- Old art counts: an older printing of a card stays Standard legal when a reprint with the same name (and, for a Pokemon, the same attacks and Abilities) is legal now. Only a card with no legal printing holds a deck at 4.9.
+- An average tournament record now scores 8.0 on results, down from 8.5, so an average deck no longer reads as Tournament-ready on its record alone.
+- When an edit takes out the Pokemon the deck picked under Against the meta is built on, the Grade tab asks which deck it is now. Until it is answered, the grade leaves results out.
+- The sum under the grade adds up as written, the results line shows the win rate the score used and its date, and an archetype named for no Pokemon (Basic Box, Festival Lead) asks for its two most played Pokemon before a deck can borrow its results.
+- "How the grade works" and the Deck Grader page describe the results part.
+- Trainer labels: Iono and Judge count as draw, switch and recovery cards count as crowded past 4 and 3, Rare Candy needs the line's Basic, Radiant Pokemon count for Poke Pad, Jet Energy counts as switching, a card RdyDeck can't read gets no label, and the header counts a weak ACE SPEC.
+
+Puzzle
+- The game ends when either side takes its last Prize card; both at once is Sudden Death, not a win. An Energy RdyDeck can't read no longer counts as paid. The goal line keeps the starting Prize count.
+- Boards from Nov 13 on were checked again: 8 that no longer worked and 21 surplus boards were replaced, and the week runs easy Monday and Tuesday, medium midweek, hard at the weekend. Nov 9 to 12 are unchanged.
+
+Other
+- The Goldfish summary scores the opening line picked on the Hand tab, with clearer captions.
+- Dialogs are solid from their first frame, long names like Charmander fit a prize slot, and a stray marker at the bottom of the page is gone.
+- The deck row's play button says Prizes.
+- Deck builder: a meta deck's core keeps its usual counts, Add line tops up a line already started, and the Energy check reads each Pokemon's main attack.
+- The Odds subtext and the Log a match Notes hint read clearly.
+
+Checks
+- grade-check grades each list twice, checks the sum under the grade, and adds two test lists: an illegal card (4.9) and an old printing with a legal reprint (graded as legal).
+- Grades on the 128 top lists fall 0.1 to 0.3 from the new results midpoint; nothing else moved. Rank match with win rates: +0.79 all results (was +0.81), +0.49 since Delta Reign (was +0.48).
+- CI runs the puzzle tests too.
+
 # RdyDeck 2.4.1 (build 70): trainer fit labels (11 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v70) and CHANGES.md.

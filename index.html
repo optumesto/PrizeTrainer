@@ -7650,7 +7650,7 @@ function renderOdds() {
     <div class="o-tile" style="--tone:${tAtk}">
       <div class="ol">Attacker by T${AT ? AT.turn : 2}, any hand</div>
       <div class="ov">${!AT?'?':S.anySearch?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(AT.raw)}</div>
-      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', any opening hand, raw draws to with search':', any opening hand, raw draws'):'No attacker line read'}</div></div>
+      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', any opening hand, from raw draws alone to with your search cards':', any opening hand, raw draws'):'No attacker line read'}</div></div>
   </div>
   <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
 
@@ -10523,17 +10523,23 @@ function handleDailyHash() {
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
-// ═══════════ WHAT'S NEW (v2.4.1) ═══════════
+// ═══════════ WHAT'S NEW (v2.4.2) ═══════════
 // A short log of the latest update. Edit WHATS_NEW for each release. A
 // generation release (2.x) lists what was added, changed or fixed ("Added:",
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.4.1',
+  version: 'v2.4.2',
   kind: 'small',
   items: [
-    { t: 'Added: Trainer fit labels on the Grade tab' }
+    { t: 'Fixed: grades no longer change after loading' },
+    { t: 'Changed: an average tournament record counts for less in the grade' },
+    { t: 'Added: RdyDeck asks which deck it is after an edit changes it' },
+    { t: 'Changed: the deck button that starts a prize game now says Prizes' },
+    { t: 'Fixed: puzzle endings, and unplayable puzzles replaced' },
+    { t: 'Fixed: grade explainers, Trainer labels and Goldfish numbers' },
+    { t: 'Fixed: dialogs, deck builder counts and small text bugs' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -11147,7 +11153,7 @@ function openTlogForm(id) {
     <div class="mb"><div class="field-label">Result</div>${tlSeg('result', ['W', 'L', 'T'], _tlForm.result)}</div>
     <div class="mb"><div class="field-label">Prizes you took</div>${tlSeg('taken', [0, 1, 2, 3, 4, 5, 6], _tlForm.taken)}</div>
     <div class="mb"><div class="field-label">Prizes they took</div>${tlSeg('given', [0, 1, 2, 3, 4, 5, 6], _tlForm.given)}</div>
-    <div class="mb"><label for="tl-notes">Notes</label><textarea id="tl-notes" class="nt-area sm" maxlength="500" placeholder="Prized both Rare Candy game 2">${esc(x ? x.notes : '')}</textarea></div>
+    <div class="mb"><label for="tl-notes">Notes</label><textarea id="tl-notes" class="nt-area sm" maxlength="500" placeholder="For example: prized both Rare Candy in game 2">${esc(x ? x.notes : '')}</textarea></div>
     <div class="modal-actions">${x ? `<button class="btn btn-ghost danger-txt" onclick="deleteTlog('${x.id}')">Delete</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>`}
       <button class="btn btn-primary" id="tl-save" onclick="saveTlog('${x ? x.id : ''}')">Save</button></div>`);
   tlPlanHint();
@@ -13430,8 +13436,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.4.1';
-const PT_BUILD = 70;
+const PT_VERSION = 'v2.4.2';
+const PT_BUILD = 71;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -19105,9 +19111,11 @@ function bldAddLine(e) {
   }
   const names = [];
   line.forEach((x, i) => {
-    if (bldNameCount(x.n)) return;
+    // v71: a card already in the list is topped up to the usual count, so a lone Basic does not stay at 1.
     const n = bldUsual(x.n) || (line.length === 1 ? 3 : i === 0 ? 4 : 3);
-    if (bldAdd(x, n)) names.push(x.n);
+    const have = bldNameCount(x.n);
+    if (have >= n) return;
+    if (bldAdd(x, n - have)) names.push(x.n);
   });
   return names;
 }
@@ -19137,8 +19145,11 @@ function bldCore(d) {
   let rows = d.cards.filter(c => c[6] >= BLD_CORE).map(c => ({ name: c[0], set: c[1], num: c[2], count: c[4], section: c[3] === 'P' ? 'pokemon' : c[3] === 'E' ? 'energy' : 'trainer', rate: c[6] }));
   let total = rows.reduce((a, r) => a + r.count, 0);
   const byRate = rows.slice().sort((a, b) => a.rate - b.rate);
+  // v71: over 60, leave out the least played cards whole while the rest still makes 60, so the cards
+  // kept stay at their usual counts. Only what is still over comes off one copy at a time.
+  for (const r of byRate) { if (total > 60 && total - r.count >= 60) { total -= r.count; r.count = 0; } }
   for (const r of byRate) { while (total > 60 && r.count > 1) { r.count--; total--; } }
-  rows = rows.map(({ rate, ...r }) => r);
+  rows = rows.filter(r => r.count > 0).map(({ rate, ...r }) => r);
   return rows;
 }
 
@@ -19466,7 +19477,7 @@ function bldStartMeta() {
     if (!bldMeta) { showToast('The meta decks did not load. Check your connection.'); return; }
     const rows = bldMeta.decks.map(d => {
       const top = d.cards.filter(c => c[3] === 'P' && c[6] >= 0.6).slice(0, 1)[0];
-      const i = bldSheetActs.push(() => { closeSheet(); bldConfirmReplace(() => { bldReset(bldCore(d), { arch: d.id, name: d.name }); showToast(`${d.name}: the cards most top lists run. Fill the rest from Suggestions.`); }); }) - 1;
+      const i = bldSheetActs.push(() => { closeSheet(); bldConfirmReplace(() => { const core = bldCore(d), n = core.reduce((a, r) => a + r.count, 0); bldReset(core, { arch: d.id, name: d.name }); showToast(n < 60 ? `${d.name}: the ${n} cards most top lists run. Fill the other ${60 - n} from Suggestions.` : `${d.name}: the cards most top lists run, at their usual counts.`); }); }) - 1;
       return `<div class="bld-row" role="button" tabindex="0" onclick="bldSheetActs[${i}]()">${top ? bldThumb(top[0], top[1], top[2]) : ''}<div class="bld-tx"><div class="bld-nm">${esc(d.name)}</div><div class="bld-sub">${d.lists} top lists</div></div></div>`;
     }).join('');
     openSheet(`<div class="modal-title">Start from a meta deck</div><div class="bld-list-pick">${rows}</div><p class="bld-small" style="margin-top:0.6rem">${esc(bldMeta.from || '')}.</p>
