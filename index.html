@@ -11516,7 +11516,7 @@ function buildDeckCard(deck) {
           ${avgPct !== null ? `<div class="deck-avg"><span>Avg <b>${avgPct}%</b></span>${bestEntry ? `<span>Best <b>${bestEntry.score}/${bestEntry.prizeCount || 6}</b></span>` : ''}</div>` : ''}
           ${histPips}
         </div>
-        <button class="deck-play" onclick="event.stopPropagation();startGameDefault('${deck.id}')" title="Play" aria-label="Play ${esc(deck.name)}">${ic('play')}</button>
+        <button class="deck-play" onclick="event.stopPropagation();startGameDefault('${deck.id}')" title="Start a prize game" aria-label="Start a prize game with ${esc(deck.name)}">${ic('play')}<span class="dp71">Prizes</span></button>
       </div>
       ${missingArt > 0 ? `<div class="deck-warn"><svg class="ic ic-sm"><use href="#i-alert"/></svg>${missingArt} card${missingArt!==1?'s':''} missing art</div>` : ''}
       <div class="deck-actions-col">
@@ -13739,7 +13739,7 @@ function sendFeedback() {
 const TOUR_STEPS = [
   { ic: 'cards', t: 'Welcome to RdyDeck', s: 'Before each game, six cards from your deck go face down as prizes. Flip through the rest and name what is missing. It builds the memory you need at the table.' },
   { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
-  { ic: 'play', t: 'Play a prize game', s: 'Tap the play button on a deck to start. Modes changes the prize count, adds a timer, or runs a tournament block of games.' },
+  { ic: 'play', t: 'Play a prize game', s: 'Tap Prizes on a deck to start. Modes changes the prize count, adds a timer, or runs a tournament block of games.' },
   { ic: 'grid', t: 'Study your deck', s: 'Open a deck to see Grade, Odds and Cards. Hand, Drills and Notes hold opening hands, goldfish turns, drills and your matchup notes.' },
   { ic: 'calendar', t: 'Come back daily', s: 'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour and sends feedback.' },
 ];
@@ -15561,7 +15561,7 @@ TOUR_STEPS.splice(0, TOUR_STEPS.length,
   { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
   { ic: 'award', t: 'Read the grade', s: 'Tap a deck to open its grade. Fix first lists what costs you the most, and Rotation shows which cards leave Standard next.' },
   { ic: 'chart', t: 'Check the odds', s: 'Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.' },
-  { ic: 'target', t: 'Practice', s: 'The play button starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.' },
+  { ic: 'target', t: 'Practice', s: 'Prizes on a deck starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.' },
   { ic: 'calendar', t: 'Come back daily', s: 'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour.' }
 );
 
@@ -15571,7 +15571,7 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(() => {
   if (!safeLocalGet(TOUR_KEY) || !state.decks.length) { safeLocalSet('pt_v29_seen', '1'); return; }
   if (!document.getElementById('screen-home').classList.contains('active') || document.querySelector('.modal-overlay.active')) return;
   safeLocalSet('pt_v29_seen', '1');
-  showToast('Tapping a deck now opens its grade. The play button still starts a prize game.');
+  showToast('Tapping a deck now opens its grade. Prizes on the deck starts a prize game.');
 }, 1300));
 
 </script>
@@ -19794,5 +19794,98 @@ function g71Redraw() {
   };
 })();
 </script>
+<script>
+// ═══════════ v71 (2.4.2): ask which deck a list is after an edit changes it ═══════════
+// A deck picked under Against the meta borrows that deck's tournament results for its grade. When an
+// edit takes out the Pokemon the picked deck is built on, RdyDeck asks which deck it is now rather
+// than keep the old pick or quietly guess. Until it is answered, the grade leaves results out.
+const MU71_ASK = 'pt_mu71_ask';
+function mu71Asks() { try { return JSON.parse(safeLocalGet(MU71_ASK) || '{}') || {}; } catch (_) { return {}; } }
+function mu71SetAsk(id, v) {
+  const a = mu71Asks();
+  if (v) a[id] = v; else delete a[id];
+  try { safeLocalSet(MU71_ASK, JSON.stringify(a)); } catch (_) {}
+}
+/** True when the deck plays every Pokemon the archetype is built on. */
+function mu71Fits(deck, d) {
+  const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
+  return g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' ')));
+}
+/** The open question for this deck, { was, now }, or null. */
+function mu71Question(deck) {
+  if (!deck || !mu60Data) return null;
+  const asks = mu71Asks();
+  if (!asks[deck.id]) return null;
+  const pickId = mu60Picks()[deck.id];
+  const was = pickId && mu60Data.decks.find(d => d.id === pickId);
+  if (!was) { mu71SetAsk(deck.id, null); return null; }
+  if (!(deck.cards || []).some(c => c.supertype)) return null;
+  if (mu71Fits(deck, was)) { mu71SetAsk(deck.id, null); return null; }
+  const best = mu60Best(deck, mu60Data, d => d.id !== was.id && mu71Fits(deck, d));
+  return { was, now: best && best.score >= G68_MATCH ? best.deck : null };
+}
+function mu71Answer(id) {
+  mu71SetAsk(state.activeDeckId, null);
+  if (id === '#keep') { renderGrade(); return; }
+  mu60SetPick(id);
+}
+(function () {
+  const _save = saveEditDeck;
+  saveEditDeck = async function () {
+    const id = editDeckId;
+    const sig = d => d ? (d.cards || []).map(c => c.count + ' ' + c.name).sort().join('|') : '';
+    const before = sig(state.decks.find(d => d.id === id));
+    const r = await _save.apply(this, arguments);
+    try {
+      const deck = state.decks.find(d => d.id === id);
+      const pick = mu60Picks()[id];
+      if (deck && pick && sig(deck) !== before) {
+        mu71SetAsk(id, pick);
+        if (mu71Question(deck)) {
+          showToast('This list looks like a different deck now. Its Grade tab asks which one.');
+          const scr = document.getElementById('screen-review');
+          if (state.activeDeckId === id && scr && scr.classList.contains('active')) renderReview(deck); else renderHome();
+        }
+      }
+    } catch (_) {}
+    return r;
+  };
+  const _pick = mu60SetPick;
+  mu60SetPick = function () { mu71SetAsk(state.activeDeckId, null); return _pick.apply(this, arguments); };
+  const _arch = g68Arch;
+  g68Arch = function (deck) { return mu71Question(deck) ? null : _arch.apply(this, arguments); };
+  const _sig = g29Sig;
+  g29Sig = function (deck) { return _sig.apply(this, arguments) + '|ask' + (deck && mu71Asks()[deck.id] ? 1 : 0); };
+  const _line = g68Line;
+  g68Line = function (R) {
+    const t = _line.apply(this, arguments);
+    try {
+      const deck = state.decks.find(d => d.id === state.activeDeckId);
+      if (!t && mu71Question(deck)) return ' Tournament results are left out until you say which deck this is, under Against the meta.';
+    } catch (_) {}
+    return t;
+  };
+  const _sec = mu60Section;
+  mu60Section = function (deck) {
+    const h = _sec.apply(this, arguments);
+    const q = h && mu71Question(deck);
+    if (!q) return h;
+    const b = (id, label) => `<button class="btn btn-sm" onclick="mu71Answer('${esc(id)}')">${esc(label)}</button>`;
+    const box = `<div class="mu71-ask" role="group" aria-label="Which deck is this now?">
+      <p class="mu60-p"><b>Which deck is this now?</b> You set it to compare as ${esc(q.was.name)}, and after your edit it no longer plays the Pokémon that deck is built on. Until you pick, the grade leaves out tournament results.</p>
+      <div class="mu71-btns">${q.now ? b(q.now.id, q.now.name) : ''}${b('#keep', 'Keep ' + q.was.name)}${q.now ? '' : b('', 'No match')}</div>
+      <p class="mu60-p">Or pick another deck from the list below.</p></div>`;
+    return h.replace('<select class="x-select" aria-label="Deck to compare"', box + '<select class="x-select" aria-label="Deck to compare"');
+  };
+})();
+</script>
+<style>
+  .mu71-ask { margin: 0.5rem 0 0.75rem; padding: 0.75rem; border: 1px solid var(--electric); border-radius: 10px; }
+  /* v71: the deck row's play button says what it starts. */
+  .deck-play { width:58px; height:52px; flex-direction:column; gap:3px; }
+  .deck-play .ic { width:16px; height:16px; margin-left:2px; }
+  .dp71 { font-family:var(--mono); font-size:0.75rem; font-weight:600; line-height:1; text-transform:uppercase; letter-spacing:0.02em; }
+  .mu71-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0; }
+</style>
 </body>
 </html>
