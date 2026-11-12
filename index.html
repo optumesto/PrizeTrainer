@@ -10704,6 +10704,7 @@ function pzPickLabel(s, v) {
     case 'benchMon': return 'Switch in ' + mon(v);
     case 'oppBench': return 'Bring up ' + mon(v);
     case 'oppMon': return mon(v);
+    case 'benchHit': return mon(v);
     case 'moveCounters': return `${v.n} from ${mon(v.from)} to ${mon(v.to)}`;
     case 'moveEnergy': return `${pzRefName(s, v.uid)} from ${mon(v.from)} to ${mon(v.to)}`;
     case 'moveToSelf': return v == null ? 'Done' : `${pzRefName(s, v.uid)} from ${mon(v.from)}`;
@@ -10720,7 +10721,7 @@ function pzAskText(s) {
   const q = {
     yesno: A.q || (st.t === 'switchSelf' ? 'Switch it into the Active Spot?' : 'Do it?'),
     option: 'Choose one', benchMon: 'Choose your new Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
-    oppMon: `Put ${st.n} damage counters on which Pokémon?`, moveCounters: 'Move damage counters', moveEnergy: 'Move an Energy',
+    oppMon: `Put ${st.n} damage counters on which Pokémon?`, benchHit: `Put ${st.dmg} damage on which Benched Pokémon?`, moveCounters: 'Move damage counters', moveEnergy: 'Move an Energy',
     moveToSelf: 'Move Energy to this Pokémon', pickUp: 'Choose a Pokémon to pick up', attach: 'Attach Energy',
     cost: `Discard ${st.n} card${st.n === 1 ? '' : 's'} from your hand`, search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile',
     topFromHand: 'Choose a card to put on top of your deck', splitAttach: `Attach ${R.ctx.splitRef ? esc(R.ctx.splitRef.card.name) : 'the other card'} to which Pokémon?`,
@@ -10767,7 +10768,9 @@ function renderPuzzle() {
   document.getElementById('pz-title').textContent = `Your puzzle #${pzS.n}`;
   const R = puzzleStore().results[pzS.key];
   let h = `<div class="pz-wrap">`;
-  h += `<div class="pz-goal"><b>Win this turn.</b> Take your last ${s.players[0].prizes.length === 1 ? 'Prize card' : s.players[0].prizes.length + ' Prize cards'} before your turn ends. Tap any card to read it.
+  // The goal names the Prize cards you started with, so it still reads right after you take them.
+  const pzLeft = (pzS.s0 || s).players[0].prizes.length;
+  h += `<div class="pz-goal"><b>Win this turn.</b> Take your last ${pzLeft === 1 ? 'Prize card' : pzLeft + ' Prize cards'} before your turn ends. Tap any card to read it.
     <span>Lists: ${esc(p.from.mine)} against ${esc(p.from.theirs)}${p.from.event ? `, from ${esc(p.from.event)}` : ''}.${R && !pzS.over ? ' Replay: today\'s result is already saved.' : ''}</span></div>`;
   h += pzSide(s, 1);
   if (s.stadium) h += `<div class="pz-stadium">Stadium: <button class="pz-chip" onclick="pzKeySheet('${esc(s.stadium.ref.card.key)}')">${esc(s.stadium.ref.card.name)}</button></div>`;
@@ -10871,7 +10874,9 @@ function pzFinish() {
 }
 function pzResult() {
   const { E, s, p } = pzS, won = E.goalMet(s), r = puzzleStore().results[pzS.key];
-  const why = won ? '' : s.luck ? 'The line used a draw, a flip or a card you couldn\'t see, so it can\'t count as a sure win.'
+  const why = won ? '' : s.gameOver === 'sudden' ? 'You both took your last Prize card at the same time. That goes to Sudden Death, so it is not a win.'
+    : s.gameOver === 1 ? (s.players[1].prizes.length ? 'You have no Pokémon left in play, so your opponent wins.' : 'Your opponent took their last Prize card first, so they win.')
+    : s.luck ? 'The line used a draw, a flip or a card you couldn\'t see, so it can\'t count as a sure win.'
     : s.unread.length ? 'The line used something RdyDeck can\'t read yet.' : 'Your turn ended before you took your last Prize card.';
   const saved = pzS.first ? 'Your first try is the one that counts.' : r ? (r.won ? `Today's result stays a win in ${r.moves} play${r.moves === 1 ? '' : 's'}.` : r.peek ? 'Practice replay: you looked at the answer today.' : 'Practice replay: today\'s result stays no win.') : '';
   return `<div class="dc-banner pz-res ${won ? 'win' : 'loss'}"><div><b>${won ? `You won in ${pzS.plays} play${pzS.plays === 1 ? '' : 's'}` : 'No win this time'}</b>
@@ -15462,9 +15467,14 @@ buildDeckCard = function (deck) {
   h = h.replace('<span>Avg <b>', '<span>Prize avg <b>');
   h = h.replace('title="Cards, grade and odds"><svg class="ic"><use href="#i-grid"/></svg><span>Deck</span>', 'title="Grade, odds and cards"><svg class="ic"><use href="#i-award"/></svg><span>Grade</span>');
   h = h.replace(/(\d+) session(s?)<\/span>/, (m, n, pl) => `${n} prize game${pl}</span>`);
-  const R = g29Grade(deck);
+  // v71: no number until the card data, the legality check and the results have all loaded.
+  const wait = typeof g71Wait === 'function' ? g71Wait(deck) : '';
+  const R = wait ? null : g29Grade(deck);
   let g;
-  if (R) {
+  if (wait) {
+    g = `<div class="deck-grade none g71-wait"><span>Grading\u2026</span></div>`;
+    if (typeof g71Kick === 'function') setTimeout(() => g71Kick(deck), 0);
+  } else if (R) {
     let [band, col] = gBand(R.overall);
     if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { band = 'Not legal yet'; col = 'var(--red)'; }
     g = `<div class="deck-grade" style="--col:${col}"><b>${R.overall.toFixed(1)}</b><span>${band}</span></div>`;
@@ -18369,7 +18379,7 @@ function mu60Load() {
       if (!was || was.asOf !== d.asOf) mu60Rerender();
     })
     .catch(() => {})
-    .finally(() => { clearTimeout(t); mu60Busy = false; mu60Tried = true; });
+    .finally(() => { clearTimeout(t); mu60Busy = false; mu60Tried = true; if (typeof g71Redraw === 'function') g71Redraw(); });
 }
 
 function mu60Rerender() {
@@ -19650,6 +19660,85 @@ function g68Line(R) {
   };
   // Read the saved results at once, so grades in the deck list match the grade screen.
   try { mu60Load(); } catch (_) {}
+})();
+</script>
+<script>
+// ═══════════ v71 (2.4.2): fixes from the 11 Nov 2026 evening audit ═══════════
+
+// 1. A grade never changes after it shows. A deck's grade reads three things that load on their
+// own time: the card data, the check for reprints that decides which cards are Standard legal,
+// and the tournament results. Until all three have settled for a deck, home and the Grade tab
+// say "Grading" instead of a number, so the number a player sees is the one that stays.
+const g71On = () => typeof navigator === 'undefined' || navigator.onLine !== false;
+/** What the deck's grade still waits for: 'cards', 'rot', 'results', or '' when it is final. */
+function g71Wait(deck) {
+  if (!deck || !(deck.cards || []).some(c => c.supertype) || deck.format === 'prerelease') return '';
+  const on = g71On();
+  if (_dataBusy.has(deck.id)) return 'cards';
+  if (on && deckNeedsData(deck) && !_dataTried.has(deck.id)) return 'cards';
+  if (deck.format === 'expanded' || deck.daily) return '';
+  if (_r29Busy.has(deck.id)) return 'rot';
+  if (on && !_r29Tried.has(deck.id) && r29NeedsCheck(deck, r29Rows(deck)).length) return 'rot';
+  if (mu60Busy || (on && !mu60Tried)) return 'results';
+  return '';
+}
+// Card data is read for one deck at a time, so a home full of decks does not flood the card APIs.
+let _g71Q = Promise.resolve();
+const _g71Queued = new Set();
+/** Start whatever the grade waits for. */
+function g71Kick(deck) {
+  const w = g71Wait(deck);
+  if (w === 'cards' && !_dataBusy.has(deck.id) && !_g71Queued.has(deck.id)) {
+    _g71Queued.add(deck.id);
+    _g71Q = _g71Q.then(() => refreshDeckData(deck)).catch(() => {}).then(() => { _g71Queued.delete(deck.id); });
+  } else if (w === 'rot' && !_r29Busy.has(deck.id)) r29CheckReprints(deck);
+  else if (w === 'results' && !mu60Busy) mu60Load();
+}
+let _g71T = 0;
+/** Draw home and the open Grade tab again once something a grade waits for has loaded. */
+function g71Redraw() {
+  clearTimeout(_g71T);
+  _g71T = setTimeout(() => {
+    try {
+      const home = document.getElementById('screen-home');
+      if (home && home.classList.contains('active')) renderHome();
+      const pane = document.getElementById('grade-body'), scr = document.getElementById('screen-review');
+      if (pane && pane.style.display !== 'none' && scr && scr.classList.contains('active')) renderGrade();
+    } catch (_) {}
+  }, 60);
+}
+(function () {
+  const _refresh = refreshDeckData;
+  refreshDeckData = async function (deck) {
+    try { return await _refresh.apply(this, arguments); }
+    finally { if (deck) { const w = g71Wait(deck); if (w) g71Kick(deck); } g71Redraw(); }
+  };
+  const _r29 = r29CheckReprints;
+  r29CheckReprints = async function (deck) {
+    // Cards first: a reprint check on marks that are about to be read again could settle on the wrong ones.
+    if (deck && (_dataBusy.has(deck.id) || (g71On() && deckNeedsData(deck) && !_dataTried.has(deck.id)))) return;
+    try { return await _r29.apply(this, arguments); }
+    finally { if (deck) { const w = g71Wait(deck); if (w && w !== 'rot') g71Kick(deck); } g71Redraw(); }
+  };
+  const _rg = renderGrade;
+  renderGrade = function () {
+    const el = document.getElementById('grade-body');
+    const deck = state.decks.find(d => d.id === state.activeDeckId);
+    const w = deck ? g71Wait(deck) : '';
+    if (!el || !w) return _rg.apply(this, arguments);
+    g71Kick(deck);
+    const why = { cards: 'Reading the card data for this deck.', rot: 'Checking which cards are Standard legal now.', results: 'Loading recent tournament results.' }[w];
+    el.innerHTML = `<div class="g-hero g29-hero g71-wait">
+      <div class="g-ring" style="--p:0;--col:var(--text-3)"><div class="g-score" style="color:var(--text-3)">…</div></div>
+      <div class="g-band" style="--col:var(--text-3)">Grading</div>
+      <p class="g29-verdict">${why} The grade shows once it is done, so it will not change while you look at it.</p></div>`;
+  };
+  const _share = v45ShareGrade;
+  v45ShareGrade = function () {
+    const deck = state.decks.find(d => d.id === state.activeDeckId);
+    if (deck && g71Wait(deck)) { showToast('The grade is still loading. Try again in a moment.'); return; }
+    return _share.apply(this, arguments);
+  };
 })();
 </script>
 </body>

@@ -4,6 +4,7 @@
 // forced win this turn that needs no luck and uses only cards the engine fully reads.
 //
 //   node puzzle/tools/make-daily.mjs --cards <dir> [--n 120] [--seed 1] [--out puzzle/daily.json]
+//   node puzzle/tools/make-daily.mjs --cards <dir> --repair [--keep 4]   (fix a live pack, keep played days)
 //
 // <dir> holds pokemon-tcg-data files: sets.json (sets/en.json) and one <set id>.json per set
 // (cards/en/<set id>.json), from github.com/PokemonTCG/pokemon-tcg-data. The app never reads them.
@@ -130,43 +131,100 @@ function deal(A, B) {
 }
 
 /* ---------- Keep only boards with a real out ---------- */
-const kept = [], seenBoards = new Set();
+// Difficulty: 0 easy, 1 medium, 2 hard. A 3-action win with one way to start is medium; with
+// several ways to start it is easy. Rated by firstShort (first actions that start a shortest win).
+const level = p => p.moves >= 4 ? 2 : (p.moves <= 2 || (p.moves === 3 && p.firstShort > 1)) ? 0 : 1;
+// Puzzle 0 is Monday Nov 9 2026 (PUZZLE_EPOCH in index.html): easy Mon and Tue, medium Wed to Fri, hard at the weekend.
+const SHAPE = [0, 0, 1, 1, 1, 2, 2];
+// Solve a board and say why it can't be a puzzle, or null when it can.
+function judge(s) {
+  const rc = E.readCheck(s); if (rc.length) return { why: 'unread', rc };
+  if (S.obviousWin(s)) return { why: 'obvious' };
+  const r = S.solve(s, { maxNodes: 30000, maxMoves: 6 });
+  if (!r.complete) return { why: 'budget' }; if (!r.win) return { why: 'no out' }; if (r.moves < 2) return { why: 'one move' };
+  // Too easy: a two-action win with several ways to start, or Energy then attack.
+  if (r.moves === 2 && (r.firstMoves > 1 || r.line.filter(a => !/^(pick|promote)$/.test(a.t)).map(a => a.t).join() === 'energy,attack')) return { why: 'too easy' };
+  return { r };
+}
+// The answer, in words, for the "Show the answer" button.
+function answerOf(s, r) {
+  let st = s; const answer = [];
+  for (const a of r.line) { const before = st.log.length; st = E.apply(st, a); answer.push(...st.log.slice(before)); }
+  return answer;
+}
+const sigOf = pz => JSON.stringify([pz.me.active.c, pz.me.hand.slice().sort(), pz.opp.active.c, pz.opp.bench.map(b => b.c).sort()]);
+
+// --repair: keep the pack in OUT, leave the first --keep days (already played) exactly as they are,
+// re-check every later board with the current engine, and deal new boards only where one no longer
+// works or where a difficulty level is short for the week's shape.
+const REPAIR = process.argv.includes('--repair'), KEEP = REPAIR ? +arg('keep', 4) : 0;
+const old = REPAIR ? JSON.parse(readFileSync(OUT, 'utf8')) : null;
+if (old) for (const k of Object.keys(old.cards)) CARD[k] = old.cards[k];
+const fixed = old ? old.puzzles.slice(0, KEEP) : [];
+const survivors = [], dropped = [];
+if (old) old.puzzles.slice(KEEP).forEach((pz, j) => {
+  const i = j + KEEP;
+  let s; try { s = E.fromPuzzle(Object.assign({ cards: CARD }, pz)); } catch (e) { dropped.push([i, 'error']); return; }
+  const J = judge(s);
+  if (!J.r) { dropped.push([i, J.why]); return; }
+  const was = pz.moves;
+  Object.assign(pz, { moves: J.r.moves, firstMoves: J.r.firstMoves, firstShort: J.r.firstShort, answer: answerOf(s, J.r) });
+  survivors.push(Object.assign(pz, { _was: i, _moved: was !== pz.moves }));
+});
+const slots = N - KEEP;
+const target = [0, 0, 0]; for (let i = KEEP; i < N; i++) target[SHAPE[i % 7]]++;
+const have = [0, 0, 0]; survivors.forEach(p => have[level(p)]++);
+if (old) console.log('Kept ' + KEEP + ' played days. Re-checked ' + (old.puzzles.length - KEEP) + ': ' + survivors.length + ' still work, ' + dropped.length + ' do not (' + dropped.map(d => d[0] + ' ' + d[1]).join(', ') + '). Levels ' + have.join('/') + ', week needs ' + target.join('/'));
+
+const kept = [], seenBoards = new Set(fixed.concat(survivors).map(sigOf));
+const count = have.slice();
+const done = () => REPAIR ? count.every((c, L) => c >= target[L]) : kept.length >= slots;
 let tries = 0; const why = {}; const no = k => { why[k] = (why[k] || 0) + 1; };
 const started = Date.now();
-while (kept.length < N && tries < N * 400) {
+while (!done() && tries < slots * 400) {
   tries++;
   const A = pick(decks), B = pick(decks);
   const pz = deal(A, B); if (!pz) { no('deal'); continue; }
   let s;
   try { s = E.fromPuzzle(Object.assign({ cards: CARD }, pz)); } catch (e) { continue; }
-  const rc = E.readCheck(s); if (rc.length) { no('unread'); rc.forEach(x => no('  ' + x)); continue; }
-  if (S.obviousWin(s)) { no('obvious'); continue; }
-  const r = S.solve(s, { maxNodes: 30000, maxMoves: 6 });
-  if (!r.complete) { no('budget'); continue; } if (!r.win) { no('no out'); continue; } if (r.moves < 2) { no('one move'); continue; }
-  // Too easy: a two-action win with several ways to start, or Energy then attack.
-  if (r.moves === 2 && (r.firstMoves > 1 || r.line.filter(a => !/^(pick|promote)$/.test(a.t)).map(a => a.t).join() === 'energy,attack')) { no('too easy'); continue; }
+  const J = judge(s); if (!J.r) { no(J.why); (J.rc || []).forEach(x => no('  ' + x)); continue; }
+  const r = J.r, L = level(r);
+  if (REPAIR && count[L] >= target[L]) { no('level full'); continue; }
   // Variety: no one family of decks (first word of its name) gets more than a fifth of the pack.
   const fam = A.name.split(' ')[0];
-  if (kept.filter(p => p.from.mine.split(' ')[0] === fam).length >= Math.ceil(N / 5)) { no('family cap'); continue; }
-  const sig = JSON.stringify([pz.me.active.c, pz.me.hand.slice().sort(), pz.opp.active.c, pz.opp.bench.map(b => b.c).sort()]);
+  if (fixed.concat(survivors, kept).filter(p => p.from.mine.split(' ')[0] === fam).length >= Math.ceil(N / 5)) { no('family cap'); continue; }
+  const sig = sigOf(pz);
   if (seenBoards.has(sig)) continue; seenBoards.add(sig);
-  // The answer, in words, for the "Show the answer" button.
-  let st = s; const answer = [];
-  for (const a of r.line) { const before = st.log.length; st = E.apply(st, a); answer.push(...st.log.slice(before)); }
   kept.push(Object.assign(pz, { from: { mine: A.name, theirs: B.name, event: A.event, place: A.place, date: A.date },
-    moves: r.moves, firstMoves: r.firstMoves, answer }));
-  if (kept.length % 10 === 0) console.log(kept.length + ' kept after ' + tries + ' boards, ' + Math.round((Date.now() - started) / 1000) + 's');
+    moves: r.moves, firstMoves: r.firstMoves, firstShort: r.firstShort, answer: answerOf(s, r) }));
+  count[L]++;
+  if (kept.length % 10 === 0) console.log(kept.length + ' new after ' + tries + ' boards, ' + Math.round((Date.now() - started) / 1000) + 's');
 }
-// Order: easier puzzles early in the week, harder at the weekend, but never two from the same pair of decks in a row.
-kept.sort((a, b) => a.moves - b.moves || b.firstMoves - a.firstMoves);
-const weekShape = [];
-const easy = p => p.moves <= 2 || (p.moves === 3 && p.firstMoves > 1);
-const byLevel = [kept.filter(easy), kept.filter(p => !easy(p) && p.moves === 3), kept.filter(p => p.moves >= 4)].map(shuffle);
-for (let i = 0; weekShape.length < kept.length; i++) {
-  const want = [0, 0, 1, 1, 1, 2, 2][i % 7];
-  const q = byLevel[want].length ? byLevel[want] : byLevel.find(x => x.length);
+// Each level keeps what the week needs. Boards that still work come first, so a repair changes as few days as it can.
+const byLevel = [[], [], []];
+for (const L of [0, 1, 2]) {
+  const pool = shuffle(survivors.filter(p => level(p) === L)).concat(shuffle(kept.filter(p => level(p) === L)));
+  byLevel[L] = pool;
+}
+let spare = byLevel.reduce((n, q) => n + q.length, 0) - slots;
+for (const L of [0, 2, 1]) while (spare > 0 && byLevel[L].length > target[L]) { const p = byLevel[L].pop(); if (p._was != null) dropped.push([p._was, 'level surplus']); spare--; }
+// Order the unplayed days by the week's shape. When a level runs out, take the nearest one,
+// and never a hard board on Monday or Tuesday while an easier one is left.
+const NEAR = [[0, 1, 2], [1, 0, 2], [2, 1, 0]];
+const weekShape = fixed.slice();
+for (let i = KEEP; weekShape.length < N; i++) {
+  const q = NEAR[SHAPE[i % 7]].map(L => byLevel[L]).find(x => x.length);
+  if (!q) break;
   weekShape.push(q.shift());
 }
+if (old) {
+  const moved = weekShape.filter((p, i) => p._was != null && p._was !== i).length;
+  const fresh = weekShape.filter(p => p._was == null).length - KEEP;
+  console.log('Repair: ' + fresh + ' new boards, ' + moved + ' boards moved to another day, ' + weekShape.filter(p => p._moved).length + ' with a new shortest line. Replaced: ' + dropped.map(d => d[0] + ' (' + d[1] + ')').join(', '));
+  const bad = []; weekShape.forEach((p, i) => { if (i >= KEEP && SHAPE[i % 7] === 0 && level(p) === 2) bad.push(i); });
+  if (bad.length) console.log('Warning: hard boards on Mon or Tue at ' + bad.join(', '));
+}
+weekShape.forEach(p => { delete p._was; delete p._moved; });
 // Only the cards these puzzles use, trimmed to what the engine and the screen read.
 const used = new Set();
 const walk = v => { if (typeof v === 'string' && CARD[v]) used.add(v); else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === 'object') Object.values(v).forEach(walk); };

@@ -143,14 +143,17 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     st.daily = { results: { '2026-11-10': { score: 6 } } };
     w.showScreen('home'); w.renderWhatsNewCard();
     const wn = () => d.getElementById('wn-card').textContent.replace(/\s+/g, ' ').trim();
-    ok(/Updated to RdyDeck 2\.3/.test(wn()) && /Daily Puzzle/.test(wn()), "returning user sees the update card: " + wn());
+    // Read the version and the update lines from the page, so this check doesn't go stale with each release.
+    const WN = w.eval('WHATS_NEW'), VER = w.eval('PT_VERSION'), name = VER.replace(/^v/, 'RdyDeck ');
+    ok(WN.version === VER, `What's new is written for this version (${WN.version} vs ${VER})`);
+    ok(wn().includes('Updated to ' + name) && wn().includes(WN.items[0].t.replace(/^\w+: /, '')), "returning user sees the update card: " + wn());
     w.openWhatsNew();
     const sheet = d.getElementById('x-modal').textContent.replace(/\s+/g, ' ');
-    ok(/What's new/.test(sheet) && /Added: Deck Builder/.test(sheet) && /Fixed: MEP promo cards/.test(sheet), "What's new sheet lists the update");
+    ok(/What's new/.test(sheet) && WN.items.every(i => sheet.includes(i.t)), "What's new sheet lists every line of the update");
     w.closeSheet();
     ok(wn() === '', 'the card is gone once seen');
     w.renderWhatsNewCard(); ok(wn() === '', 'and stays gone');
-    w.openSettings(); ok(/What's new/.test(d.getElementById('x-modal').textContent) && /RdyDeck v2\.3/.test(d.getElementById('x-modal').textContent), "Settings has What's new and shows v2.3"); w.closeSheet();
+    w.openSettings(); ok(/What's new/.test(d.getElementById('x-modal').textContent) && d.getElementById('x-modal').textContent.includes('RdyDeck ' + VER), "Settings has What's new and shows " + VER); w.closeSheet();
     st.daily = keep; }
   errors.splice(0, errors.length, ...errors.filter(e => !/setting 'font'|PT error/.test(e)));
   ok(errors.length === 0, 'no page errors' + (errors.length ? ': ' + errors.slice(0, 5).join(' | ') : ''));

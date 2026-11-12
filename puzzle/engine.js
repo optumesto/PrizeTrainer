@@ -52,7 +52,7 @@ function monName(m) { return topOf(m).card.name; }
 
 /* ---------------- State ----------------
  * state = { turn, cur: 0|1, first: bool, players: [me, opp], stadium: { ref, owner } | null,
- *           mods: { exBoost, exvBoost }, pending, luck, unread: [], ended, result, taken: [0,0],
+ *           mods: { exBoost, exvBoost }, pending, luck, unread: [], ended, gameOver (0 you won, 1 they won, 'sudden'), taken: [0,0],
  *           koIds: [], log: [], uid, mid }
  * player = { active, bench, hand, deck, discard, prizes, used: { energy, supporter, stadium, retreat },
  *            lim: {}, koLastTurn }
@@ -356,6 +356,8 @@ function attackWhy(s, m, a) {
   if (m.cantAttack) return monName(m) + " can't attack this turn.";
   const ok = costMet(m.energy, a.cost || []);
   if (ok === false) return 'Not enough Energy.';
+  // An Energy the engine can't read might not pay the cost, so the attack is never counted as paid.
+  if (ok == null) return "RdyDeck can't read an Energy attached here, so this attack can't be used in a puzzle.";
   return '';
 }
 function weakApplies(s, att, def) {
@@ -413,9 +415,22 @@ function checkKOs(s) {
       if (wasActive && P.bench.length) s.promote = (s.promote || []).concat(k);
     }
   }
+  // The game ends the moment a player wins: they took their last Prize card, or the other side has no
+  // Pokémon left in play. When both happen at once the real game goes to Sudden Death, so no one wins
+  // here ('sudden') and that line never counts. Play stops either way, mid-turn included.
+  if (s.gameOver == null) {
+    const won = [0, 1].map(k => (s.players[k].prizes.length === 0 && s.taken[k] > 0) || !mons(s.players[1 - k]).length);
+    if (won[0] || won[1]) {
+      s.gameOver = won[0] && won[1] ? 'sudden' : won[0] ? 0 : 1;
+      s.promote = null;
+      log(s, s.gameOver === 'sudden' ? 'Both players won at once: that goes to Sudden Death' : s.gameOver === 0 ? 'You win' : 'Your opponent wins');
+      s.ended = true; // an effect still running stops at its next step (see go)
+    }
+  }
   return s;
 }
 function winner(s) {
+  if (s.gameOver != null) return s.gameOver === 'sudden' ? -1 : s.gameOver;
   for (const k of [s.cur, 1 - s.cur]) {
     const O = s.players[1 - k];
     if (s.players[k].prizes.length === 0 && s.taken[k] > 0) return k;
@@ -434,6 +449,7 @@ function startRun(s, steps, ctx) {
 }
 function finishRun(s) {
   const R = s.pending; s.pending = null;
+  if (!R) return s;
   if (R.ctx.card) me(s).discard.push(R.ctx.card);
   if (R.ctx.endTurn) endTurn(s, 'Your turn ends');
   return s;
@@ -449,6 +465,7 @@ function go(s) {
   if (!R.steps) { markUnread(s, R.ctx.name); return finishRun(s); }
   const P = me(s), O = foe(s);
   while (R.i < R.steps.length) {
+    if (s.gameOver != null) { s.pending = null; return s; } // the game is over: nothing more happens
     if (s.promote && s.promote.length) return s; // wait for a new Active
     const st = R.steps[R.i], c = R.ctx;
     if ((st.ifHeads && !c.heads) || (st.ifAttached && !c.attached) || (st.ifDrew && !c.drew) || (st.ifSwitched && !c.switched)) { R.i++; continue; }
@@ -475,6 +492,7 @@ function go(s) {
       case 'switch': if (!P.active || !P.bench.length) break; return ask(s, 'benchMon', { step: R.i });
       case 'gust': if (!O.active || !O.bench.length) break; return ask(s, 'oppBench', { step: R.i });
       case 'counters': return ask(s, 'oppMon', { step: R.i });
+      case 'benchHit': if (c.left <= 0 || !O.bench.some(m => !c.done.includes(m.id))) { checkKOs(s); break; } return ask(s, 'benchHit', { step: R.i });
       case 'moveCounters': if (!mons(P).some(z => z.dmg > 0)) break; return ask(s, 'moveCounters', { step: R.i });
       case 'moveEnergy': if (mons(P).length < 2 || !mons(P).some(z => z.energy.some(e => T.gfEType(e)))) break; return ask(s, 'moveEnergy', { step: R.i });
       case 'moveToSelf': { const f = findMon(s, c.mon); if (!f || !mons(P).some(z => z !== f.m && z.energy.length)) break; return ask(s, 'moveToSelf', { step: R.i }); }
@@ -608,6 +626,7 @@ function answers(s) {
     case 'benchMon': P.bench.forEach(m => pick(m.id)); break;
     case 'oppBench': O.bench.forEach(m => pick(m.id)); break;
     case 'oppMon': mons(O).forEach(m => pick(m.id)); break;
+    case 'benchHit': O.bench.filter(m => !c.done.includes(m.id)).forEach(m => pick(m.id)); break;
     case 'moveCounters': mons(P).filter(z => z.dmg > 0).forEach(a => { for (let n = Math.min(st.n, a.dmg / 10); n >= 1; n--) mons(O).forEach(b => pick({ from: a.id, n, to: b.id })); }); break;
     case 'moveEnergy': mons(P).forEach(a => { const seen = new Set(); a.energy.filter(e => T.gfEType(e)).forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key);
       mons(P).filter(b => b !== a).forEach(b => pick({ from: a.id, uid: e.uid, to: b.id })); }); }); break;
@@ -692,6 +711,14 @@ function answer(s, v) {
       if (!(isBench && cage)) m.dmg += 10 * st.n;
       log(s, `Put ${st.n} damage counters on ${monName(m)}`); checkKOs(s); return next();
     }
+    case 'benchHit': {
+      const att = findMon(s, c.mon).m, m = findMon(s, v).m;
+      m.dmg += damageTo(s, att, { base: st.dmg }, m, false); c.done = c.done.concat(m.id); c.left--;
+      log(s, `${st.dmg} damage to ${monName(m)} on the Bench`);
+      R.i = A.step;
+      if (c.left > 0 && O.bench.some(z => !c.done.includes(z.id))) return ask(s, 'benchHit', { step: A.step });
+      checkKOs(s); return next();
+    }
     case 'moveCounters': {
       const a = findMon(s, v.from).m, b = findMon(s, v.to).m;
       const cage = s.stadium && PASSIVE.battleCage.test(ptext(s.stadium.ref));
@@ -733,11 +760,13 @@ function attack(s, i) {
   if (!R) { markUnread(s, monName(att) + ': ' + a.name); return endTurn(s); }
   if (R.luck) s.luck = true;
   if (O.active) O.active.dmg += damageTo(s, att, R, O.active, true);
-  if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { m.dmg += damageTo(s, att, { base: R.bench.n }, m, false); });
-  else if (R.bench) { s.pendingBench = R.bench; }
+  // "1 (or 2) of your opponent's Benched Pokémon": with that many or fewer on the Bench each one is hit;
+  // with more, the player chooses which, and Knock Outs are checked once all the damage is placed.
+  const nb = R.bench && R.bench.who !== 'each' ? +R.bench.who : 0, chooseBench = nb > 0 && O.bench.length > nb;
+  if (R.bench && !chooseBench) O.bench.forEach(m => { m.dmg += damageTo(s, att, { base: R.bench.n }, m, false); });
   if (R.edisc) { const k = att.energy.filter(e => !R.edisc.type || T.gfEType(e) === R.edisc.type).slice(0, R.edisc.n); k.forEach(e => { take(att.energy, e.uid); P.discard.push(e); }); }
+  if (chooseBench) return startRun(s, [{ t: 'benchHit', n: nb, dmg: R.bench.n }], { name: a.name, mon: att.id, left: nb, done: [], endTurn: true });
   checkKOs(s);
-  if (s.pendingBench) { markUnread(s, a.name + ' (Bench damage to a chosen Pokémon)'); s.pendingBench = null; }
   return endTurn(s);
 }
 function endTurn(s, why) { s.ended = true; s.pending = null; if (why) log(s, why); return s; }
@@ -809,6 +838,7 @@ function fromPuzzle(pz) {
 function goalMet(s) {
   const g = s.goal || { t: 'prizes' };
   if (s.luck || s.unread.length) return false;
+  if (s.gameOver != null && s.gameOver !== 0) return false; // the opponent won, or Sudden Death
   if (g.t === 'prizes') return winner(s) === 0;
   if (g.t === 'koActive') return s.koIds.includes(s.start.oppActive);
   if (g.t === 'take') return s.taken[0] >= g.n;
@@ -853,9 +883,10 @@ function key(s) {
     (canEvolve(s, q) ? 'e' : '') + (q.trig && (q.benchTurn === s.turn || q.evoTurnHand === s.turn) ? 't' : '') + '/' + Object.keys(q.ab).filter(n => q.ab[n] === s.turn).sort().join(',');
   const side = p => [p.active ? ms(p.active) : '-', p.bench.map(ms).sort().join(';'), p.hand.map(k).sort().join(','), p.deck.length, p.discard.map(k).sort().join(','),
     p.prizes.length, JSON.stringify(p.used), JSON.stringify(p.lim)].join('|');
-  const pend = s.pending ? JSON.stringify([s.pending.i, s.pending.ask, s.pending.steps && s.pending.steps.map(x => x.t), s.pending.ctx.left, s.pending.ctx.target, s.pending.ctx.attached, s.pending.ctx.done, s.pending.ctx.mon, s.pending.ctx.name, s.pending.ctx.switched, s.pending.ctx.splitRef && s.pending.ctx.splitRef.card.key]) : '';
+  const pend = s.pending ? JSON.stringify([s.pending.i, s.pending.ask, s.pending.steps && s.pending.steps.map(x => x.t), s.pending.ctx.left, s.pending.ctx.target, s.pending.ctx.attached, s.pending.ctx.done, s.pending.ctx.mon, s.pending.ctx.name, s.pending.ctx.switched, s.pending.ctx.splitRef && s.pending.ctx.splitRef.card.key,
+    s.pending.ctx.drew, s.pending.ctx.heads, s.pending.ctx.card && s.pending.ctx.card.card.key, s.pending.ctx.endTurn, s.pending.ctx.gusted, s.pending.ctx.handUid != null]) : '';
   return [side(s.players[0]), side(s.players[1]), s.stadium ? k(s.stadium.ref) + s.stadium.owner : '', JSON.stringify(s.mods), s.taken.join(','), s.koIds.length, pend,
-    s.promote ? s.promote.join(',') : '', s.ended ? 'E' : ''].join('#');
+    s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
 const api = { needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };

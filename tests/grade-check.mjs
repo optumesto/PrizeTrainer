@@ -159,7 +159,10 @@ function listText(list) {
 const r2 = x => (typeof x === 'number' && isFinite(x) ? Math.round(x * 100) / 100 : null);
 
 async function gradeList(w, list, i) {
-  const run = w.eval(`(async function (text, name) {
+  // A list may carry "rotated": { "<card name>": "<mark>" }. That card is then read as a printing
+  // with that mark which no reprint keeps legal, so the list tests the legality cap (the saved card
+  // data has no card that is out of Standard, and the card APIs cannot be read offline).
+  const run = w.eval(`(async function (text, name, rotated) {
     const cards = parseDeckList(text);
     const deck = { id: 'gc' + Math.random().toString(36).slice(2), name, cards, history: [], format: 'standard' };
     const cov = await enrichDeckCards(deck.cards);
@@ -167,12 +170,24 @@ async function gradeList(w, list, i) {
     if (typeof r29NeedsCheck === 'function' && typeof r29CheckReprints === 'function') {
       try { if (r29NeedsCheck(deck, r29Rows(deck))) await r29CheckReprints(deck); } catch (_) {}
     }
+    if (rotated) {
+      if (!deck.rot29 || deck.rot29.v !== ROT29.v) deck.rot29 = { v: ROT29.v, names: {} };
+      for (const c of deck.cards) {
+        const m = rotated[c.name];
+        if (!m) continue;
+        c.reg = { mark: m, status: 'out' }; delete c.byName;
+        deck.rot29.names[r29Key(c.name)] = { best: m };
+      }
+    }
     const R = gradeDeck(deck);
+    // The same deck must grade the same twice in a row: a grade that moves on a second look is a bug.
+    const again = gradeDeck(deck);
+    if (again.overall !== R.overall) throw new Error('graded ' + R.overall + ' then ' + again.overall);
     return { R, cov };
   })`);
   grading = true;
   let out;
-  try { out = await run(listText(list), list.deckName); } finally { grading = false; }
+  try { out = await run(listText(list), list.deckName, list.rotated || null); } finally { grading = false; }
   const { R, cov } = out;
   return {
     id: String(i + 1).padStart(3, '0'),

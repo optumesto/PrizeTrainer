@@ -21,6 +21,7 @@ function isOppChoice(s) {
  * moves: the fewest actions that force the win.
  * complete: false when the node budget ran out (then win may be wrong, so the dealer drops the board).
  * firstMoves: how many different first actions lead to a forced win within maxMoves.
+ * firstShort: how many different first actions lead to a forced win in the fewest actions (moves).
  *
  * Iterative deepening: try a 1-action win, then 2, and so on. Each depth is an exhaustive search, so the
  * first depth that wins is the shortest win. Positions are remembered across depths: a position known to
@@ -52,9 +53,12 @@ function solve(s0, opts) {
   }
   let moves = Infinity;
   for (let d = 0; d <= cap && !capped; d++) if (can(s0, d)) { moves = d; break; }
-  const out = { win: moves < Infinity, moves: moves < Infinity ? moves : null, nodes, complete: !capped, line: [], firstMoves: 0, can };
+  const out = { win: moves < Infinity, moves: moves < Infinity ? moves : null, nodes, complete: !capped, line: [], firstMoves: 0, firstShort: 0, can };
   if (!out.complete) return out;
   for (const a of E.legalActions(s0)) if (a.t !== 'end' && can(E.apply(s0, a), cap - (FREE[a.t] ? 0 : 1))) out.firstMoves++;
+  // firstShort: how many first actions start a shortest win. The dealer rates difficulty by this:
+  // a 3-action win with one way to start is harder than one with several.
+  if (out.win) for (const a of E.legalActions(s0)) if (a.t !== 'end' && can(E.apply(s0, a), moves - (FREE[a.t] ? 0 : 1))) out.firstShort++;
   out.nodes = nodes;
   out.complete = !capped;
   if (out.win) out.line = mainLine(s0, can, moves);
