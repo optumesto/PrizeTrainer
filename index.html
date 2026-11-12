@@ -6797,8 +6797,8 @@ function gtUnmet(entries, coh, text) {
 function gtRoles(text, kind) {
   const t = gtNorm(text), r = new Set();
   if (/switch(?: in)? 1 of your opponent's benched pokemon/.test(t)) r.add('gust');
-  if (/switch your active pokemon with 1 of your benched|has no retreat cost|retreat cost is (?:\d+|c+) less|put 1 of your pokemon and all attached cards into your hand/.test(t)) r.add('switch');
-  if (/\bdraw (?:\d+ |a )?cards?\b|draw a card for each|draw cards until/.test(t.replace(/(?:your opponent|they) draws? \d+ cards?/g, ''))) r.add('draw');
+  if (/switch your active pokemon with 1 of your benched|switch that pokemon with your active pokemon|has no retreat cost|retreat cost is (?:\d+|c+) less|put 1 of your pokemon and all attached cards into your hand/.test(t)) r.add('switch');
+  if (/\bdraws? (?:\d+ |a )?cards?\b|draws? a card for each|draws? cards until/.test(t.replace(/(?:your opponent|they) draws? \d+ cards?/g, ''))) r.add('draw');
   if (/search your deck for (?!up to \d+ cards and discard)/.test(t) || /you may reveal [^.]+ you find there/.test(t)) r.add('search');
   if (/from your discard pile into your (?:hand|deck)|shuffle [^.]+ from your discard pile into your deck/.test(t)) r.add('recovery');
   if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|provides every type of energy|costs \d+ energy less/.test(t)) r.add('energy');
@@ -6957,7 +6957,8 @@ const GT_POOL = {
 const GT_CORE = ['gust', 'draw', 'search', 'evolve', 'energy'];
 // Copies of a job past which another card doing it adds little.
 // Healing, blocking damage and staying alive are left out: a wall deck runs many on purpose.
-const GT_CROWD = { switch: 5, gust: 5, recovery: 4, disrupt: 6, discard: 3, bench: 6 };
+// v71: switch and recovery match the counts above (few lists run more than 4 and 3).
+const GT_CROWD = { switch: 4, gust: 5, recovery: 3, disrupt: 6, discard: 3, bench: 6 };
 const GT_LABEL = { key: 'Key', good: 'Good', weak: 'Weak', dead: 'Does nothing' };
 
 function gtFit(entries, coh, via, main, ctx) {
@@ -6992,10 +6993,18 @@ function gtFit(entries, coh, via, main, ctx) {
       const miss = gtUnmet(entries, coh, tx);
       row.fit = 'dead';
       row.why = `Needs ${[...new Set(miss.map(gtSay))].join(' or ')}, and the list runs none.`;
-    } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx))) {
+    } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx)) && (() => {
+      // v71: Rare Candy needs the line's Basic in the list, or it has nothing to go on.
+      const s1 = P.find(x => x.card.key === s2.card.from);
+      return !(s1 && s1.card.from && !P.some(x => x.card.key === s1.card.from));
+    })()) {
       row.fit = 'key';
       const s1 = P.find(x => x.card.key === s2.card.from);
       row.why = `Skips ${s1 ? nm(s1.name) : 'the Stage 1'} to get ${nm(s2.name)} out a turn sooner.`;
+    } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx))) {
+      const s1 = P.find(x => x.card.key === s2.card.from);
+      row.fit = 'dead';
+      row.why = `Needs ${nm(s1.card.from)} in the list to put ${nm(s2.name)} on, and the list runs none.`;
     } else {
       const core = [...roles].filter(r => GT_CORE.includes(r));
       const lead = core.find(r => { const n = copies[r] || 0;
@@ -7015,7 +7024,9 @@ function gtFit(entries, coh, via, main, ctx) {
       } else {
         row.fit = 'good';
         const r = [...roles][0];
-        row.why = r ? `${up(GT_ROLE_SAY[r])}${roles.size > 1 ? ` and ${GT_ROLE_SAY[[...roles][1]]}` : ''}${(copies[r] || 0) > e.qty ? `, one of ${copies[r]} cards that do` : ''}.` : c.tt === 'stadium' ? 'Works with this list, and playing it removes the Stadium your opponent has in play.' : 'Works with this list.';
+        row.why = r ? `${up(GT_ROLE_SAY[r])}${roles.size > 1 ? ` and ${GT_ROLE_SAY[[...roles][1]]}` : ''}${(copies[r] || 0) > e.qty ? `, one of ${copies[r]} cards that do` : ''}.` : '';
+        // v71: a card whose job RdyDeck doesn't read gets no label, not Good on its say-so.
+        if (!r) { row.fit = null; row.why = c.tt === 'stadium' ? "RdyDeck can't read what this Stadium does for this list, so it has no label. Playing it does remove a Stadium your opponent has in play." : "RdyDeck can't read what this card does for this list, so it has no label."; }
       }
     }
     out.push(row);
@@ -7040,7 +7051,7 @@ function gtFit(entries, coh, via, main, ctx) {
         if (inList.has(name.toLowerCase())) continue;
         if (!gtRoles(tx, kd).has(g.role) || gtUnmet(entries, coh, tx).length) continue;
         // Poke Pad finds only Pokemon with no Rule Box.
-        if (/rule box/.test(gtNorm(tx)) && !P.some(x => !x.card.isEx && !(x.card.p >= 2))) continue;
+        if (/rule box/.test(gtNorm(tx)) && !P.some(x => !x.card.isEx && !(x.card.p >= 2) && !/^radiant /i.test(x.name))) continue;
         return { name, more: false, why: g.say };
       }
     }
@@ -7049,7 +7060,7 @@ function gtFit(entries, coh, via, main, ctx) {
   let n = 0;
   out.forEach(r => { if (r.fit === 'weak' || r.fit === 'dead') { const s = thin.length ? swapFor(r.name.toLowerCase(), n++) : null; if (s) r.swap = s; } });
   const order = { key: 0, good: 1, weak: 2, dead: 3 };
-  out.sort((a, b) => order[a.fit] - order[b.fit] || b.qty - a.qty);
+  out.sort((a, b) => (order[a.fit] ?? 1.5) - (order[b.fit] ?? 1.5) || b.qty - a.qty);
   return out;
 }
 
@@ -15337,9 +15348,12 @@ function t68Html(R) {
   (tr.fit || []).forEach(r => rows.push(`<div class="t68-row"><div class="t68-h"><span class="t68-n">${r.qty} ${esc(r.name)}</span><span class="t68-k">${esc(r.kind)}</span>${tag(r.fit)}</div>
     <p>${esc(r.why)}</p>${swap(r.swap)}</div>`));
   const cnt = k => (tr.fit || []).filter(r => r.fit === k).length;
-  const low = cnt('weak') + cnt('dead');
+  // v71: a weak or dead ACE SPEC counts too, and swap ideas are promised only where there are some.
+  const aceLow = tr.ace && (tr.ace.fit === 'weak' || tr.ace.fit === 'dead') ? 1 : 0;
+  const low = cnt('weak') + cnt('dead') + aceLow;
+  const swaps = (tr.fit || []).filter(r => r.swap).length;
   return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></summary>
-    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here, with a swap idea for each.` : 'Every card here works with the list.'} This explains Synergy and does not change the grade.</div>
+    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every card here works with the list.'} This explains Synergy and does not change the grade.</div>
     ${rows.join('')}</details>`;
 }
 
