@@ -2084,7 +2084,7 @@
   .t68-row p { margin:0.2rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
   .t68-row p.t68-swap { color:var(--text); }
   .t68-row.ace .t68-k { color:var(--gold-dim, var(--electric)); font-weight:700; }
-  .g29-tag { display:inline-block; margin-left:0.45rem; padding:0.05rem 0.45rem; border-radius:999px; font-size:0.6875rem; font-weight:700; vertical-align:2px; white-space:nowrap; }
+  .g29-tag { display:inline-block; margin-left:0.2rem; padding:0.05rem 0.45rem; border-radius:999px; font-size:0.6875rem; font-weight:700; vertical-align:2px; white-space:nowrap; }
   .g29-tag.crit { color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); }
   .g29-tag.warn { color:var(--text-2); background:color-mix(in srgb, var(--electric) 18%, transparent); }
   .g29-more > summary, .g29-fold > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:0.5rem; min-height:44px; }
@@ -6875,7 +6875,10 @@ function gtQ(entries, f) { return entries.reduce((a, e) => a + (e.card && f(e.ca
 // the way it waits for tournament results; offline with no saved copy, this part is left out.
 const G76_KEY = 'pt_played', G76_COPY = 0.035, G76_CAP = 0.3, G76_DRAW = 6, G76_DRAW_CUT = 0.04;
 let g76Played = null, g76Busy = false, g76Tried = false, g76N = 0;
-const g76Key = n => rules34Key(String(n || '')).replace(/[^a-z0-9]+/g, ' ').trim();
+// 2.5.2: Pokemon TCG Live writes Energy types as symbols ("Telepathic {P} Energy"); the played list
+// spells them out ("Telepathic Psychic Energy"), so a symbol reads as its type word before the match.
+const G76_SYM = { g: 'grass', r: 'fire', w: 'water', l: 'lightning', p: 'psychic', f: 'fighting', d: 'darkness', m: 'metal', y: 'fairy', n: 'dragon', c: 'colorless' };
+const g76Key = n => rules34Key(String(n || '')).replace(/\{([a-z])\}/g, (m, k) => G76_SYM[k] || ' ').replace(/[^a-z0-9]+/g, ' ').trim();
 /** Read builder.json's played list into a set of card names; false when it is missing or malformed. */
 function g76Set(j) {
   const rows = j && Array.isArray(j.played) ? j.played.filter(r => Array.isArray(r) && typeof r[0] === 'string' && r[1] > 0) : [];
@@ -11850,6 +11853,7 @@ const WHATS_NEW = {
     { t: 'Fixed: Upgrades never cut your main attacker' },
     { t: 'Fixed: The grade line and Upgrades agree' },
     { t: 'Fixed: The reprint check reads every printing' },
+    { t: 'Fixed: Energy written as {P} counts as played' },
     { t: 'Added: 125 more daily puzzles' }
   ]
 };
@@ -16698,7 +16702,8 @@ function t68Html(R) {
 
 function g29Item(f, cls) {
   const tag = cls === 'crit' ? '<span class="g29-tag crit">Stops the deck</span>' : cls === 'warn' ? '<span class="g29-tag warn">Worth fixing</span>' : '';
-  return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag}</div><p>${esc(f.d)}</p></div>`;
+  // 2.5.2: a real space before the tag, so copied text reads "runs Worth fixing", not "runsWorth fixing".
+  return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag ? ' ' + tag : ''}</div><p>${esc(f.d)}</p></div>`;
 }
 
 function g29Jump(id) {
