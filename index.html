@@ -2926,7 +2926,7 @@ const PT_PLAY = (function () {
         <details><summary>What is RdyDeck?</summary><p>RdyDeck is a free web app for Pokémon Trading Card Game players. It grades a 60 card deck, shows its opening odds and which cards rotate out of Standard, and trains you to work out your prize cards.</p></details>
         <details><summary>How does prize card training work?</summary><p>RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.</p></details>
         <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to 60%, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.</p></details>
-        <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most.</p></details>
+        <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most. An older printing still counts when a reprint with the same name, attacks and Abilities is legal now, so old art is fine.</p></details>
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
       </div>
@@ -19584,7 +19584,10 @@ async function bldSave(update) {
 // three times. The share grows with the games behind it, to at most 60%, so a deck with few games
 // leans on its cards. A list that is broken (a card grade under 6) gets less of it, and a list held
 // at the legality cap gets none.
-const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.6, G68_N0 = 400, G68_SLOPE = 0.07, G68_MID = 8.5, G68_KM = 40, G68_K = 15;
+// v71: an average record scores 8.0 on results (was 8.5), so an average deck no longer reads as
+// Tournament-ready on its record alone. Checked on the 130 test lists: grades fall 0.1 to 0.3, and
+// the rank match with win rates holds (+0.79 all results, +0.49 since the newest set).
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.6, G68_N0 = 400, G68_SLOPE = 0.07, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;

@@ -162,7 +162,10 @@ async function gradeList(w, list, i) {
   // A list may carry "rotated": { "<card name>": "<mark>" }. That card is then read as a printing
   // with that mark which no reprint keeps legal, so the list tests the legality cap (the saved card
   // data has no card that is out of Standard, and the card APIs cannot be read offline).
-  const run = w.eval(`(async function (text, name, rotated) {
+  // A list may also carry "oldPrinting": { "<card name>": "<mark>" }. That card is read as an older
+  // printing with a G mark, and the reprint check finds a printing with the given mark. Old art of a
+  // reprinted card counts as legal, so the list must grade as legal and never show a capped number first.
+  const run = w.eval(`(async function (text, name, rotated, oldPrinting) {
     const cards = parseDeckList(text);
     const deck = { id: 'gc' + Math.random().toString(36).slice(2), name, cards, history: [], format: 'standard' };
     const cov = await enrichDeckCards(deck.cards);
@@ -179,6 +182,25 @@ async function gradeList(w, list, i) {
         deck.rot29.names[r29Key(c.name)] = { best: m };
       }
     }
+    if (oldPrinting) {
+      for (const c of deck.cards) {
+        if (!oldPrinting[c.name]) continue;
+        c.reg = { mark: 'G', status: 'out' }; delete c.byName;
+      }
+      const before = r29Rows(deck).filter(r => oldPrinting[r.name]);
+      if (before.some(r => r.st === 'out')) throw new Error('an old printing counted as not legal before the reprint check');
+      // A fresh deck whose reprint check has not run yet: the grade waits for it rather than show a number.
+      if (typeof g71Wait === 'function') {
+        _r29Tried.delete(deck.id); _dataTried.add(deck.id);
+        const was = mu60Tried; mu60Tried = true;
+        const wt = g71Wait(deck); mu60Tried = was;
+        if (wt !== 'rot') throw new Error('the grade did not wait for the reprint check: ' + (wt || 'no wait'));
+      }
+      if (!deck.rot29 || deck.rot29.v !== ROT29.v) deck.rot29 = { v: ROT29.v, names: {} };
+      for (const c of deck.cards) if (oldPrinting[c.name]) deck.rot29.names[r29Key(c.name)] = { best: oldPrinting[c.name] };
+      const after = r29Rows(deck).filter(r => oldPrinting[r.name]);
+      if (!after.length || after.some(r => r.st !== 'safe')) throw new Error('an old printing with a legal reprint did not count as legal');
+    }
     const R = gradeDeck(deck);
     // The same deck must grade the same twice in a row: a grade that moves on a second look is a bug.
     const again = gradeDeck(deck);
@@ -193,7 +215,7 @@ async function gradeList(w, list, i) {
   })`);
   grading = true;
   let out;
-  try { out = await run(listText(list), list.deckName, list.rotated || null); } finally { grading = false; }
+  try { out = await run(listText(list), list.deckName, list.rotated || null, list.oldPrinting || null); } finally { grading = false; }
   const { R, cov } = out;
   return {
     id: String(i + 1).padStart(3, '0'),
