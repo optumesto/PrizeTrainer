@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.4.3 (build 72): grades always finish, home buttons fit (12 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v72) and CHANGES.md.
+
+- A grade never waits more than 6 seconds. After that it shows from what has loaded. Before, a home with several decks could sit at Grading for minutes, because card data is read one deck at a time and a deck with a card the APIs can't read asked for a fresh read on every visit.
+- Only a deck whose saved card data is out of date waits for a new read. One with a few unreadable cards (a new promo, say) grades from what it has.
+- The three home buttons wrap their labels with room at the edges at every width. On wide screens, Import a deck takes its own row in the right column.
+- The update note on home shows three short lines, with the rest in What's new.
+
 # RdyDeck 2.4.2 (build 71): fixes from the 11 Nov evening audit (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v71), CHANGES.md, deck-grader.html, README.md, builder.json, build-cards.mjs, refresh-data.mjs, grade-results.md, puzzle/daily.json, puzzle/engine.js, puzzle/solver.js, puzzle/tools/make-daily.mjs, puzzle/test/screen.cjs, tests/grade-check.mjs, tests/grade-lists.json, tests/grade-baseline.json and .github/workflows/grade-check.yml.

@@ -10525,23 +10525,19 @@ function handleDailyHash() {
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
-// ═══════════ WHAT'S NEW (v2.4.2) ═══════════
+// ═══════════ WHAT'S NEW (v2.4.3) ═══════════
 // A short log of the latest update. Edit WHATS_NEW for each release. A
 // generation release (2.x) lists what was added, changed or fixed ("Added:",
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.4.2',
+  version: 'v2.4.3',
   kind: 'small',
   items: [
-    { t: 'Fixed: grades no longer change after loading' },
-    { t: 'Changed: an average tournament record counts for less in the grade' },
-    { t: 'Added: RdyDeck asks which deck it is after an edit changes it' },
-    { t: 'Changed: the deck button that starts a prize game now says Prizes' },
-    { t: 'Fixed: puzzle endings, and unplayable puzzles replaced' },
-    { t: 'Fixed: grade explainers, Trainer labels and Goldfish numbers' },
-    { t: 'Fixed: dialogs, deck builder counts and small text bugs' }
+    { t: 'Fixed: every grade finishes loading' },
+    { t: 'Fixed: the home buttons fit their labels' },
+    { t: 'Changed: a shorter update note on home' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13440,8 +13436,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.4.2';
-const PT_BUILD = 71;
+const PT_VERSION = 'v2.4.3';
+const PT_BUILD = 72;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -18926,6 +18922,13 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
   .bld-in { width:100%; padding:0.6rem 0.75rem; font:inherit; font-size:1rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); }
   .home-cta-row.bld-3 .bld-cta { grid-column:1 / -1; }
   @media (min-width:700px) { .home-cta-row.bld-3 { grid-template-columns:1fr 1fr 1fr; } .home-cta-row.bld-3 .bld-cta { grid-column:auto; } }
+  /* v72: the three buttons on home fit their labels, with room at the edges, at every width. In the
+     narrow right column on wide screens, Import a deck takes its own row. */
+  .home-cta.home-cta-row .btn { white-space:normal; text-align:center; line-height:1.15; padding:0.35rem 0.9rem; min-width:0; }
+  @media (min-width:1100px) {
+    .home-content > .home-cta-row.bld-3 { grid-template-columns:1fr 1fr; }
+    .home-content > .home-cta-row.bld-3 .btn-primary { grid-column:1 / -1; }
+  }
 </style>
 <div id="screen-build" class="screen">
   <div class="ws-header">
@@ -19739,11 +19742,30 @@ function g68Line(R) {
 // say "Grading" instead of a number, so the number a player sees is the one that stays.
 const g71On = () => typeof navigator === 'undefined' || navigator.onLine !== false;
 /** What the deck's grade still waits for: 'cards', 'rot', 'results', or '' when it is final. */
+// v72 (2.4.3): a grade never waits more than G71_MAX. Card reads go one deck at a time and the card
+// APIs can be slow, so a home with several decks could sit at "Grading" for minutes. After the
+// limit the grade shows from what has loaded, and that deck stops waiting for this visit.
+const G71_MAX = 6000;
+const _g71Since = new Map(), _g71Late = new Set();
+/** True when the deck's saved card data is from an older card reader, so the grade would read it wrong. */
+const g71Stale = deck => (deck.enrichVer || 0) < ENRICH_VER;
 function g71Wait(deck) {
+  if (!deck || _g71Late.has(deck.id)) return '';
+  const w = g71WaitFor(deck);
+  if (!w) { _g71Since.delete(deck.id); return ''; }
+  const t0 = _g71Since.get(deck.id);
+  if (t0 == null) { _g71Since.set(deck.id, Date.now()); setTimeout(() => g71Redraw(), G71_MAX + 100); return w; }
+  if (Date.now() - t0 >= G71_MAX) { _g71Late.add(deck.id); return ''; }
+  return w;
+}
+function g71WaitFor(deck) {
   if (!deck || !(deck.cards || []).some(c => c.supertype) || deck.format === 'prerelease') return '';
   const on = g71On();
-  if (_dataBusy.has(deck.id)) return 'cards';
-  if (on && deckNeedsData(deck) && !_dataTried.has(deck.id)) return 'cards';
+  // v72: only a deck whose saved card data is out of date waits for a new read. One that only has
+  // a few cards the APIs could not read (a new promo, say) grades from what it has: a read again
+  // usually finds the same, and waiting for it held whole homes at "Grading".
+  if (_dataBusy.has(deck.id) && g71Stale(deck)) return 'cards';
+  if (on && g71Stale(deck) && !_dataTried.has(deck.id)) return 'cards';
   if (deck.format === 'expanded' || deck.daily) return '';
   if (_r29Busy.has(deck.id)) return 'rot';
   if (on && !_r29Tried.has(deck.id) && r29NeedsCheck(deck, r29Rows(deck)).length) return 'rot';
@@ -19784,7 +19806,7 @@ function g71Redraw() {
   const _r29 = r29CheckReprints;
   r29CheckReprints = async function (deck) {
     // Cards first: a reprint check on marks that are about to be read again could settle on the wrong ones.
-    if (deck && (_dataBusy.has(deck.id) || (g71On() && deckNeedsData(deck) && !_dataTried.has(deck.id)))) return;
+    if (deck && g71Stale(deck) && (_dataBusy.has(deck.id) || (g71On() && !_dataTried.has(deck.id)))) return;
     try { return await _r29.apply(this, arguments); }
     finally { if (deck) { const w = g71Wait(deck); if (w && w !== 'rot') g71Kick(deck); } g71Redraw(); }
   };
