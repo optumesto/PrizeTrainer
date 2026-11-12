@@ -2925,7 +2925,7 @@ const PT_PLAY = (function () {
         <h3>Questions about RdyDeck</h3>
         <details><summary>What is RdyDeck?</summary><p>RdyDeck is a free web app for Pokémon Trading Card Game players. It grades a 60 card deck, shows its opening odds and which cards rotate out of Standard, and trains you to work out your prize cards.</p></details>
         <details><summary>How does prize card training work?</summary><p>RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.</p></details>
-        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. Each grade shows its own math and comes with a short list of what to fix first.</p></details>
+        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to 60%, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.</p></details>
         <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most.</p></details>
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
@@ -15289,10 +15289,19 @@ function g67PowWhy(R) {
   ];
 }
 function g67HowLine(R, synV, powV) {
-  const S = R.steps, used = S ? gR1(S.cohF * 10) : synV;
-  const raw = R.rawOverall != null ? R.rawOverall : R.overall;
-  if (S && Math.abs(used - synV) >= 0.1) return `The grade is Synergy times Power, divided by 10, except that how tightly the list fits lowers Synergy in full but lowers the grade only when the fit is loose. So the grade uses ${used.toFixed(1)} for Synergy here: ${used.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
-  return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${synV.toFixed(1)} times ${powV.toFixed(1)}, divided by 10, is ${raw.toFixed(1)}.`;
+  // v71: the sum uses the numbers the grade used (Synergy after the fit rule, Power with its floor),
+  // and shows two decimals when one would make the sum look wrong.
+  const S = R.steps, raw = R.rawOverall != null ? R.rawOverall : R.overall;
+  const sU = S && S.cohF != null ? S.cohF * 10 : synV, pU = S && S.viaF != null ? S.viaF * 10 : powV;
+  const dp = gR1(+sU.toFixed(1) * +pU.toFixed(1) / 10) === raw ? 1 : 2;
+  const f = v => v.toFixed(dp);
+  const fit = S && Math.abs(gR1(sU) - synV) >= 0.1 && S.cohF !== 0.06;
+  let low = '';
+  if (S && S.cohF === 0.06) low += ' Synergy under 0.6 counts as 0.6.';
+  if (S && S.viaF === 0.12) low += ' Power under 1.2 counts as 1.2.';
+  const sum = `${f(sU)} times ${f(pU)}, divided by 10, is ${raw.toFixed(1)}.`;
+  if (fit) return `The grade is Synergy times Power, divided by 10, except that how tightly the list fits lowers Synergy in full but lowers the grade only when the fit is loose. So the grade uses ${f(sU)} for Synergy here: ${sum}${low}`;
+  return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${sum}${low}`;
 }
 function g67WhyHtml(R, synV, powV) {
   const fmt = d => Math.abs(d) < 0.05 ? '0' : (d > 0 ? '+' : '−') + Math.abs(d).toFixed(1);
@@ -15437,9 +15446,11 @@ renderGrade = function () {
     <p class="g29-about-p"><b>Synergy</b> checks that your cards support each other: every attacker can pay for its attacks,
     evolutions have what they evolve from, and the deck can draw and search. <b>Power</b> checks that the plan can win:
     how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.</p>
-    <p class="g29-about-p">It runs on your list alone, offline. The grade does not compare you to the current metagame; Against the meta
-    shows how similar decks have done in recent tournaments. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not
-    worry about the decimal place.</p></details>`;
+    <p class="g29-about-p">The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full,
+    but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the
+    grade comes from that archetype's win rate and finishes: more of it the more games there are, up to 60%, and none while cards are
+    not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and
+    sometimes not. Read the findings and do not worry about the decimal place.</p></details>`;
 
   el.innerHTML = h;
 };
@@ -19545,8 +19556,6 @@ async function bldSave(update) {
   row.insertAdjacentHTML('beforeend', '<button class="btn bld-cta" id="bld-cta" onclick="openBuilder()"><svg class="ic"><use href="#i-edit"/></svg>Build a deck</button>');
 })();
 </script>
-
-=======
 <script>
 // ═══════════ v69 (2.4): the grade blends in how the deck does in tournaments ═══════════
 // The card grade (Synergy times Power) reads the list. It cannot see matchups, how often a deck
@@ -19587,7 +19596,7 @@ function g68Strength(data) {
       const idx = 100 * Math.sqrt(wr / fw * q / fq);
       const curR = x.d.cur ? Object.values(x.d.cur.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]) : [0, 0, 0];
       const all = Object.values(x.d.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]);
-      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + G68_SLOPE * (idx - 100), 3, 10),
+      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + G68_SLOPE * (idx - 100), 3, 10), wrUsed: m ? x.r[0] / m : null,
         wr: (all[0] + all[1] + all[2]) ? all[0] / (all[0] + all[1] + all[2]) : null, games: all[0] + all[1] + all[2],
         curGames: curR[0] + curR[1] + curR[2], curWr: (curR[0] + curR[1] + curR[2]) ? curR[0] / (curR[0] + curR[1] + curR[2]) : null };
     }
@@ -19601,7 +19610,7 @@ function g68Arch(deck, data) {
   // The grade only borrows results from an archetype whose named Pokemon the deck plays, so an
   // Archaludon list never takes Mega Excadrill's record just because they share support cards.
   const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
-  const best = mu60Best(deck, data, d => g68Named(d.name).every(p => mons.some(n => n.includes(' ' + p + ' '))));
+  const best = mu60Best(deck, data, d => g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' '))));
   return best && best.score >= G68_MATCH ? best : null;
 }
 const G68_STOP = new Set(['box', 'lead', 'festival', 'basic', 'ex', 'toolbox', 'control', 'turbo']);
@@ -19614,6 +19623,15 @@ function g68Named(name) {
     out.push(p.join(' '));
   }
   return out;
+}
+/** v71: the Pokemon a deck must play to borrow an archetype's results. An archetype whose name
+ *  names no Pokemon ("Basic Box", "Festival Lead") asks for its two most played Pokemon instead,
+ *  so not every deck passes the check. */
+function g68Need(d) {
+  const named = g68Named(d.name);
+  if (named.length) return named;
+  const sig = (d.sig || []).filter(s => s[2] >= 0.9).slice().sort((a, b) => b[1] - a[1]).slice(0, 2).map(s => mu60Norm(s[0]));
+  return sig.length ? sig : ['\u0000'];
 }
 function g68Blend(R, deck) {
   if (!R || !deck || !mu60Data) return R;
@@ -19630,15 +19648,18 @@ function g68Blend(R, deck) {
   if (w < 0.01) return R;
   R.cardOverall = card;
   R.overall = gR1(card * (1 - w) + st.score * w);
-  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
-    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', thin: st.games < 300 };
+  // v71: wr is the win rate the score was built from (games since the newest set counted three
+  // times), and thin follows the share results actually get, not a separate game count.
+  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wrUsed, games: st.games, curGames: st.curGames, curWr: st.curWr,
+    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2 };
   return R;
 }
 /** One plain sentence on the results part, for under the grade. */
 function g68Line(R) {
   const r = R && R.res; if (!r) return '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}: ${wr} wins over ${r.games.toLocaleString('en-US')} games${r.curGames ? ', with games since the newest set counted three times' : ''}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${wr} wins over ${r.games.toLocaleString('en-US')} games${r.curGames ? ', with games since the newest set counted three times' : ''}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;

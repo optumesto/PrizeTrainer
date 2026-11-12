@@ -183,6 +183,12 @@ async function gradeList(w, list, i) {
     // The same deck must grade the same twice in a row: a grade that moves on a second look is a bug.
     const again = gradeDeck(deck);
     if (again.overall !== R.overall) throw new Error('graded ' + R.overall + ' then ' + again.overall);
+    // The sum under the grade must add up as written.
+    if (typeof g67HowLine === 'function' && R.coh && R.via) {
+      const line = g67HowLine(R, gR1(R.coh.score * 10), gR1(R.via.score * 10));
+      const m = line.match(/([0-9.]+) times ([0-9.]+), divided by 10, is ([0-9]+[.][0-9])/);
+      if (!m || gR1(+m[1] * +m[2] / 10) !== +m[3]) throw new Error('the sum under the grade does not add up: ' + line);
+    }
     return { R, cov };
   })`);
   grading = true;
