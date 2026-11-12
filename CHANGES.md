@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.3 (build 76): card names read the same from every source (12 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v76), CHANGES.md, tests/grade-lists.json and tests/grade-baseline.json.
+
+- An audit after the Telepathic {P} Energy report graded all 131 top lists twice: as Limitless writes them and as Pokemon TCG Live or a phone writes them. Energy written as symbols ("Basic {G} Energy", "Rocky {F} Energy") and curly apostrophes ("N’s Zoroark ex", "Boss’s Orders") moved the grade, Synergy, Power or Upgrades on 32 of them, by up to 3.2 points (N's Zoroark 8.4 to 5.2). Grass and Lightning lists lost Power because their Energy was not counted; lists with apostrophes in Pokemon names lost Synergy.
+- Fix: every list is read into one spelling at import (symbols to type words, "Basic Psychic Energy" to "Psychic Energy", curly apostrophes to straight), and saved decks and backups are moved to it when they load. After the fix, all 131 lists grade exactly the same both ways.
+- Checked with no change needed: accents (Poke Pad, Pokemon Catcher), "Basic Psychic Energy" written out, and lists typed all in lowercase.
+- Not checked: set codes that only Pokemon TCG Live uses (promo codes, for one) could not be looked up here, since the card API is blocked from this machine. A code the app does not know falls back to the card's name.
+- Grade check: list 132 (an N's Zoroark list in TCG Live spelling) grades 8.4, the same as the Limitless spelling. No other grade moved.
+
 # RdyDeck 2.5.2 (build 75): daily deck changes, Upgrades keep the attacker, reprint check, {P} Energy names (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v75), CHANGES.md and puzzle/daily.json.

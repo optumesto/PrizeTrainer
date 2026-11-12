@@ -5015,6 +5015,7 @@ async function loadState() {
 function ptCleanState(p) {
   if (!p || typeof p !== 'object' || !Array.isArray(p.decks)) return false;
   p.decks = p.decks.filter(d => d && typeof d === 'object' && Array.isArray(d.cards));
+  try { ptCanonDecks(p.decks); } catch (_) {}   // 2.5.3: one spelling for card names
   ['daily', 'puzzle'].forEach(k => {
     if (p[k] != null && (typeof p[k] !== 'object' || !p[k].results || typeof p[k].results !== 'object')) delete p[k];
   });
@@ -5230,6 +5231,28 @@ function sectionFromHeader(line) {
 }
 
 /** Parse a whole list, keeping the section each card was listed under. */
+const PT_SYM_WORD = { g: 'Grass', r: 'Fire', w: 'Water', l: 'Lightning', p: 'Psychic', f: 'Fighting', d: 'Darkness', m: 'Metal', y: 'Fairy', n: 'Dragon', c: 'Colorless' };
+/** 2.5.3: one spelling for a card name, whatever list it came from. Pokemon TCG Live writes Energy types
+ *  as symbols ("Basic {G} Energy", "Telepathic {P} Energy"), phones type curly apostrophes ("Boss’s Orders"),
+ *  and the card tables and winning lists spell both out ("Grass Energy", "Telepathic Psychic Energy",
+ *  "Boss's Orders"). A name that read differently missed those tables and graded lower, so every list is
+ *  read into the plain spelling at import, and saved decks are moved to it when they load. */
+function ptCanonName(name) {
+  let s = String(name || '')
+    .replace(/[\u2018\u2019\u02bc\u0060\u00b4\u2032]/g, "'")
+    .replace(/\{([a-z])\}/gi, (m, ch) => PT_SYM_WORD[ch.toLowerCase()] || m)
+    .replace(/\s+/g, ' ').trim();
+  const b = s.match(/^basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy$/i);
+  if (b) s = b[1].charAt(0).toUpperCase() + b[1].slice(1).toLowerCase() + ' Energy';
+  return s;
+}
+/** 2.5.3: saved decks (and decks opened from a backup) to the plain spelling. Card data stays as read. */
+function ptCanonDecks(decks) {
+  (decks || []).forEach(d => (d && Array.isArray(d.cards) ? d.cards : []).forEach(c => {
+    if (c && typeof c.name === 'string') { const n = ptCanonName(c.name); if (n && n !== c.name) c.name = n; }
+  }));
+}
+
 function parseDeckList(raw) {
   let section = null, skipped = 0;
   const cards = [];
@@ -5241,6 +5264,7 @@ function parseDeckList(raw) {
     const c = parseLine(line);
     // 2.5.1: count the lines that could not be read (and "0 Card" lines), so the import box can say so.
     if (!c || !(c.count > 0)) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
+    c.name = ptCanonName(c.name);   // 2.5.3
     if (section) c.section = section;
     cards.push(c);
   });
@@ -11846,15 +11870,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5.2',
+  version: 'v2.5.3',
   kind: 'fix',
   items: [
-    { t: 'Changed: The daily challenge deck changes every day' },
-    { t: 'Fixed: Upgrades never cut your main attacker' },
-    { t: 'Fixed: The grade line and Upgrades agree' },
-    { t: 'Fixed: The reprint check reads every printing' },
-    { t: 'Fixed: Energy written as {P} counts as played' },
-    { t: 'Added: 125 more daily puzzles' }
+    { t: 'Fixed: Pokemon TCG Live lists grade the same as Limitless lists' },
+    { t: 'Fixed: Curly apostrophes no longer change a grade' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -14759,8 +14779,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5.2';
-const PT_BUILD = 75;
+const PT_VERSION = 'v2.5.3';
+const PT_BUILD = 76;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -18294,6 +18314,7 @@ function bk37Read(text) {
   const b = bk37Parse(text);
   _bk37Arm = 0;
   if (!b.st) { _bk37 = null; err.textContent = b.msg; box.hidden = true; return; }
+  try { ptCanonDecks(b.st.decks); } catch (_) {}   // 2.5.3
   _bk37 = b; err.textContent = '';
   document.getElementById('bk37-sum').textContent = 'This backup has ' + bk37Summary(b);
   document.getElementById('bk37-rep').textContent = 'Replace everything';
