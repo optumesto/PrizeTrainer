@@ -20177,7 +20177,7 @@ function up75Html(res) {
     const parts = [];
     if (res.all.syn[1] !== res.all.syn[0]) parts.push(`Synergy ${g(res.all.syn[0], res.all.syn[1])}`);
     if (res.all.pow[1] !== res.all.pow[0]) parts.push(`Power ${g(res.all.pow[0], res.all.pow[1])}`);
-    rows.push(`<div class="up75-row all"><div class="up75-h"><span class="up75-n">All ${res.all.n} swaps together</span>${moved(res.all) ? `<span class="up75-g">${g(res.all.from, res.all.to)}</span>` : ''}</div>
+    rows.push(`<div class="up75-row all"><div class="up75-h"><span class="up75-n">Best ${res.all.n} swaps together</span>${moved(res.all) ? `<span class="up75-g">${g(res.all.from, res.all.to)}</span>` : ''}</div>
     <p>${res.all.swaps.map(s => `${esc(s.out)} for ${esc(s.in)}`).join(', ')}.${parts.length ? ' ' + parts.join(', ') + '.' : ''}</p></div>`);
   }
   const any = res.swaps.some(moved) || (res.all && moved(res.all));
