@@ -10537,6 +10537,7 @@ const WHATS_NEW = {
   items: [
     { t: 'Fixed: every grade finishes loading' },
     { t: 'Fixed: the home buttons fit their labels' },
+    { t: 'Fixed: the daily puzzle shows on wide screens' },
     { t: 'Changed: a shorter update note on home' }
   ]
 };
@@ -18928,6 +18929,21 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
   @media (min-width:1100px) {
     .home-content > .home-cta-row.bld-3 { grid-template-columns:1fr 1fr; }
     .home-content > .home-cta-row.bld-3 .btn-primary { grid-column:1 / -1; }
+  }
+  /* v72: on wide screens the update note and the daily puzzle sit in the right column with the
+     daily challenge. Before, they fell to the bottom of the left column, under every deck. */
+  @media (min-width:1100px) {
+    .home-content { grid-template-rows:repeat(8, auto) 1fr auto auto; }
+    .home-content > .deck-list { grid-row:2 / span 8; }
+    .home-content > #wn-card { grid-column:2; grid-row:3; }
+    .home-content > #daily-card { grid-row:4; }
+    .home-content > #pre47-card { grid-column:2; grid-row:5; }
+    .home-content > #puzzle-card { grid-column:2; grid-row:6; }
+    .home-content > .home-more { grid-row:7; }
+    .home-content > #pwa-install-btn { grid-row:8; }
+    .home-content > .ad32 { grid-row:10; }
+    .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:11; }
+    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty) { margin-top:1.5rem !important; }
   }
 </style>
 <div id="screen-build" class="screen">
