@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# RdyDeck 2.5 (build 73): upgrade suggestions, matchup chart, grade history, Trainers count more (preview, not live)
+# RdyDeck 2.5 (build 73): upgrade suggestions, matchup chart, grade history, Trainers count more (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v73), CHANGES.md, builder.json, builder-data.mjs, tests/grade-check.mjs and tests/grade-played.json.
 
