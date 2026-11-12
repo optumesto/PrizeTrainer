@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.2 (build 75): daily deck changes, Upgrades keep the attacker, reprint check (12 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v75), CHANGES.md and puzzle/daily.json.
+
+- Daily challenge: the deck changes each day. From #5 (13 Nov 2026) each day takes the next of 40 decks, the best placed list of each archetype in tests/grade-lists.json, then the Charizard ex Pidgeot ex list, and around again. Days before #5 keep the Charizard list. Home names today's deck. A game that runs past midnight keeps the deck and shuffle it was dealt.
+- Upgrades never cut the deck's main attacker, the Pokemon it evolves from, or a Pokemon the deck's own name calls out, even when the deck matches the wrong archetype. Of the 130 top lists, two had such a swap before (Raging Bolt Ogerpon cut Raging Bolt ex, Festival Lead cut Dipplin); none do now. No other list's swaps changed.
+- The grade line says what Fix first holds ("Fix first shows the one problem found") instead of "One change would make it stronger". When no one-card swap helps, Upgrades says what Fix first lists needs more than one card changed.
+- Reprint check: a name with more than 250 printings on pokemontcg.io (Pikachu, say) is read page by page, up to 1,000, so a legal reprint past the first page counts. The TCGdex backup checks a Pokemon's 8 newest printings instead of 3, since newer ones can have other attacks. Old printings of legal reprints still count as legal.
+- Daily puzzle: 125 new boards after the first 120, which stay exactly as they were. The pack now runs to 11 Jul 2027 (245 days, 35 whole weeks).
+- No grade moved in the grade check.
+
 # RdyDeck 2.5.1 (build 74): bug hunt fixes (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v74, cards.json and builder.json saved on install) and CHANGES.md.

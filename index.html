@@ -10546,8 +10546,1212 @@ Trainer: 34
 
 Energy: 8
 8 Basic {R} Energy SVE 2`;
-let _dailyDeck = null;
+// 2.5.2: the deck changes each day. Through #4 (12 Nov 2026) every day was the Charizard list
+// above; from then on each day takes the next deck from DAILY_POOL, the best placed list of each
+// archetype in the grade check's top lists (as of 11 Nov 2026), in a fixed mixed order.
+const DAILY_POOL = [
+  { name: "Froslass Munkidori", list: `Pokémon: 18
+4 Snorunt ASC 46
+3 Froslass TWM 53
+2 Mega Froslass ex ASC 47
+4 Munkidori TWM 95
+3 Budew ASC 16
+1 Yveltal MEG 88
+1 Shaymin DRI 10
+
+Trainer: 34
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+3 Team Rocket's Petrel DRI 176
+3 Gwynn PBL 78
+2 Hilda WHT 84
+4 Poké Pad POR 81
+4 Night Stretcher ASC 196
+3 Buddy-Buddy Poffin TEF 144
+2 Team Rocket's Transceiver DRI 178
+1 Secret Box TWM 163
+1 Special Red Card CRI 82
+1 Air Balloon ASC 181
+3 Team Rocket's Factory DRI 173
+
+Energy: 8
+5 Darkness Energy MEE 15
+2 Water Energy MEE 11
+1 Prism Energy ASC 216` },
+  { name: "Starmie Dusknoir", list: `Pokémon: 21
+2 Staryu POR 20
+2 Mega Starmie ex POR 21
+2 Duskull PRE 35
+2 Dusclops PRE 36
+1 Dusknoir PRE 37
+2 Snorunt ASC 46
+2 Mega Froslass ex ASC 47
+2 Budew ASC 16
+1 Dunsparce TEF 128
+1 Dudunsparce TEF 129
+1 Totodile TEF 39
+1 Fezandipiti ex ASC 142
+1 Meowth ex POR 62
+1 Munkidori TWM 95
+
+Trainer: 29
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Hilda WHT 84
+1 Salvatore TEF 160
+1 Xerosic's Machinations SFA 64
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+3 Night Stretcher ASC 196
+3 Ultra Ball MEG 131
+1 Special Red Card CRI 82
+1 Prime Catcher TEF 157
+2 Surfing Beach MEG 129
+
+Energy: 10
+6 Water Energy MEE 11
+2 Ignition Energy WHT 86
+2 Darkness Energy MEE 15` },
+  { name: "Hop's Trevenant", list: `Pokémon: 14
+4 Hop's Phantump ASC 95
+3 Hop's Trevenant ASC 96
+2 Hop's Snorlax JTG 117
+1 Hop's Wooloo JTG 135
+1 Hop's Dubwool JTG 136
+1 Shaymin DRI 10
+1 Lillie's Clefairy ex JTG 56
+1 Hop's Cramorant JTG 138
+
+Trainer: 38
+4 Team Rocket's Petrel DRI 176
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+2 Kieran TWM 154
+2 Hassel TWM 151
+1 Eri TEF 146
+1 Xerosic's Machinations SFA 64
+4 Poké Pad POR 81
+3 Pokégear 3.0 SVI 186
+2 Hop's Bag JTG 147
+2 Night Stretcher ASC 196
+2 Switch MEG 130
+1 Secret Box TWM 163
+4 Hop's Choice Band JTG 148
+4 Postwick JTG 154
+
+Energy: 8
+4 Mist Energy TEF 161
+4 Telepathic Psychic Energy POR 88` },
+  { name: "Alakazam Dudunsparce", list: `Pokémon: 21
+4 Abra MEG 54
+4 Kadabra MEG 55
+3 Alakazam MEG 56
+3 Dunsparce JTG 120
+2 Dudunsparce TEF 129
+2 Lillie's Clefairy ex JTG 56
+1 Fezandipiti ex ASC 142
+1 Shaymin DRI 10
+1 Genesect SFA 40
+
+Trainer: 31
+4 Dawn PFL 87
+4 Hilda WHT 84
+2 Boss's Orders MEG 114
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+2 Rare Candy MEG 125
+2 Wondrous Patch PFL 94
+1 Special Red Card CRI 82
+1 Sacred Ash DRI 168
+3 Lillie's Pearl JTG 151
+4 Battle Cage PFL 85
+
+Energy: 8
+4 Telepathic Psychic Energy POR 88
+2 Psychic Energy MEE 13
+1 Mist Energy TEF 161
+1 Enriching Energy SSP 191` },
+  { name: "Dragapult", list: `Pokémon: 19
+4 Dreepy TWM 128
+4 Drakloak TWM 129
+3 Dragapult ex TWM 130
+2 Munkidori TWM 95
+2 Budew ASC 16
+1 Dunsparce TEF 128
+1 Dudunsparce TEF 129
+1 Fezandipiti ex ASC 142
+1 Meowth ex POR 62
+
+Trainer: 32
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Crispin SCR 133
+1 Rosa's Encouragement POR 84
+1 Judge POR 76
+4 Poké Pad POR 81
+4 Buddy-Buddy Poffin TEF 144
+4 Crushing Hammer POR 71
+3 Night Stretcher ASC 196
+3 Ultra Ball MEG 131
+1 Unfair Stamp TWM 165
+2 Risky Ruins MEG 127
+
+Energy: 9
+3 Darkness Energy MEE 15
+3 Psychic Energy MEE 13
+3 Fire Energy MEE 10` },
+  { name: "Crustle", list: `Pokémon: 11
+3 Dwebble DRI 11
+3 Crustle DRI 12
+3 Mega Kangaskhan ex MEG 104
+2 Azurill DLR 80
+
+Trainer: 37
+4 Boss's Orders MEG 114
+4 Team Rocket's Petrel DRI 176
+4 Hilda WHT 84
+3 Lillie's Determination MEG 119
+2 Eri TEF 146
+1 Xerosic's Machinations SFA 64
+4 Tasty Rice Ball DLR 101
+4 Jumbo Ice Cream PFL 91
+3 Pokégear 3.0 SVI 186
+2 Buddy-Buddy Poffin TEF 144
+1 Switch MEG 130
+1 Ultra Ball MEG 131
+1 Hero's Cape TEF 152
+1 Prism Tower CRI 80
+1 Lumiose City POR 77
+1 Festival Grounds TWM 149
+
+Energy: 12
+4 Mist Energy TEF 161
+4 Growing Grass Energy POR 86
+4 Spiky Energy JTG 159` },
+  { name: "Lopunny Dudunsparce", list: `Pokémon: 18
+3 Buneary PFL 83
+2 Mega Lopunny ex PFL 84
+2 Dunsparce JTG 120
+1 Dunsparce TEF 128
+2 Dudunsparce TEF 129
+2 Snorunt ASC 46
+2 Mega Froslass ex ASC 47
+1 Meowth ex POR 62
+1 Mew ex 30C 66
+1 Fan Rotom SCR 118
+1 Lillie's Clefairy ex JTG 56
+
+Trainer: 34
+4 Lillie's Determination MEG 119
+4 Hilda WHT 84
+3 Boss's Orders MEG 114
+3 Wally's Compassion MEG 132
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+4 Ultra Ball MEG 131
+2 Night Stretcher ASC 196
+1 Special Red Card CRI 82
+2 Air Balloon ASC 181
+3 Battle Cage PFL 85
+
+Energy: 8
+4 Mist Energy TEF 161
+3 Water Energy MEE 11
+1 Enriching Energy SSP 191` },
+  { name: "Basic Box", list: `Pokémon: 21
+4 Mega Kangaskhan ex MEG 104
+3 Meowth ex POR 62
+2 Latias ex SSP 76
+2 Teal Mask Ogerpon ex TWM 25
+2 Lillie's Clefairy ex JTG 56
+1 Chien-Pao SSP 56
+1 Raging Bolt ex TEF 123
+1 Talonflame ex DLR 88
+1 Iron Leaves ex TEF 25
+1 Koraidon ex ASC 121
+1 Iron Crown ex TEF 81
+1 Wellspring Mask Ogerpon ex TWM 64
+1 Fezandipiti ex ASC 142
+
+Trainer: 25
+4 Crispin SCR 133
+2 Cyrano SSP 170
+2 Boss's Orders MEG 114
+1 Judge POR 76
+1 Ciphermaniac's Codebreaking TEF 145
+4 Ultra Ball MEG 131
+4 Energy Switch MEG 115
+2 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+1 Glass Trumpet SCR 135
+3 Area Zero Underdepths SCR 131
+
+Energy: 14
+6 Grass Energy MEE 9
+3 Psychic Energy MEE 13
+2 Fighting Energy MEE 14
+2 Lightning Energy MEE 12
+1 Water Energy MEE 11` },
+  { name: "Mega Manectric", list: `Pokémon: 11
+4 Electrike PBL 23
+3 Manectric PBL 24
+3 Mega Manectric ex MEG 50
+1 Shaymin DRI 10
+
+Trainer: 37
+4 Lillie's Determination MEG 119
+4 Hilda WHT 84
+3 Boss's Orders MEG 114
+2 Wally's Compassion MEG 132
+2 Judge POR 76
+4 Ultra Ball MEG 131
+4 Dusk Ball SSP 175
+4 Night Stretcher ASC 196
+4 Poké Pad POR 81
+3 Buddy-Buddy Poffin TEF 144
+1 Redeemable Ticket JTG 156
+1 Hero's Cape TEF 152
+1 Gravity Mountain SSP 177
+
+Energy: 12
+8 Lightning Energy MEE 12
+4 Voltaic Lightning Energy PBL 84` },
+  { name: "Mega Charizard X", list: `Pokémon: 19
+4 Charmander MEP 38
+1 Charmeleon PFL 12
+2 Mega Charizard X ex PFL 13
+1 Mega Charizard Y ex ASC 22
+4 Mega Kangaskhan ex MEG 104
+2 Meowth ex POR 62
+2 Talonflame ex DLR 88
+2 Oricorio ex PFL 18
+1 Latias ex SSP 76
+
+Trainer: 28
+3 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+2 Hilda WHT 84
+2 Cyrano SSP 170
+1 Dawn PFL 87
+1 Firebreather PFL 89
+3 Rare Candy MEG 125
+3 Ultra Ball MEG 131
+2 Switch MEG 130
+2 Night Stretcher ASC 196
+2 Poké Pad POR 81
+1 Energy Retrieval SVI 171
+1 Mega Signal MEG 121
+1 Special Red Card CRI 82
+1 Lucky Helmet TWM 158
+1 Jamming Tower TWM 153
+
+Energy: 13
+8 Fire Energy MEE 10
+4 Ignition Energy WHT 86
+1 Neo Upper Energy TEF 162` },
+  { name: "Mega Starmie", list: `Pokémon: 16
+4 Staryu POR 20
+3 Mega Starmie ex POR 21
+3 Snorunt ASC 46
+2 Mega Froslass ex ASC 47
+1 Meowth ex POR 62
+1 Mew ex 30C 66
+1 Fezandipiti ex ASC 142
+1 Budew ASC 16
+
+Trainer: 34
+4 Lillie's Determination MEG 119
+3 Salvatore TEF 160
+3 Boss's Orders MEG 114
+3 Hilda WHT 84
+2 Wally's Compassion MEG 132
+4 Ultra Ball MEG 131
+4 Buddy-Buddy Poffin TEF 144
+3 Pokégear 3.0 SVI 186
+2 Night Stretcher ASC 196
+1 Switch MEG 130
+1 Special Red Card CRI 82
+1 Secret Box TWM 163
+1 Air Balloon ASC 181
+1 Battle Cage PFL 85
+1 Surfing Beach MEG 129
+
+Energy: 10
+7 Water Energy MEE 11
+3 Ignition Energy WHT 86` },
+  { name: "Mega Venusaur", list: `Pokémon: 23
+4 Teal Mask Ogerpon ex TWM 25
+3 Chikorita ASC 8
+3 Bayleef MEG 9
+2 Meganium MEG 10
+1 Mega Meganium ex ASC 10
+2 Bulbasaur MEG 1
+2 Ivysaur MEG 2
+2 Mega Venusaur ex MEG 3
+2 Meowth ex POR 62
+1 Fezandipiti ex ASC 142
+1 Celebi MEG 12
+
+Trainer: 25
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+1 Wally's Compassion MEG 132
+1 Lana's Aid TWM 155
+1 Judge POR 76
+4 Ultra Ball MEG 131
+4 Bug Catching Set TWM 143
+2 Poké Pad POR 81
+1 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+4 Forest of Vitality MEG 117
+
+Energy: 12
+12 Grass Energy MEE 9` },
+  { name: "Festival Lead", list: `Pokémon: 21
+4 Applin TWM 126
+3 Dipplin TWM 18
+4 Grookey TWM 14
+4 Thwackey TWM 15
+2 Goldeen TWM 44
+1 Seaking PRE 21
+1 Rellor TEF 23
+1 Rabsca TEF 24
+1 Shaymin DRI 10
+
+Trainer: 34
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+2 Gladion's Final Battle PBL 77
+1 Kieran TWM 154
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+3 Night Stretcher ASC 196
+2 Ultra Ball MEG 131
+1 Switch MEG 130
+1 Tool Scrapper ASC 212
+1 Secret Box TWM 163
+1 Sacred Ash DRI 168
+2 Brave Bangle WHT 80
+2 Air Balloon ASC 181
+4 Festival Grounds TWM 149
+
+Energy: 5
+5 Grass Energy MEE 9` },
+  { name: "Mega Rayquaza", list: `Pokémon: 16
+4 Mega Kangaskhan ex MEG 104
+2 Latias ex SSP 76
+2 Talonflame ex DLR 88
+2 Ethan's Ho-Oh ex DRI 39
+2 Meowth ex POR 62
+2 Mega Rayquaza ex DLR 84
+1 Iron Thorns ex TWM 77
+1 Fezandipiti ex ASC 142
+
+Trainer: 29
+4 Cyrano SSP 170
+2 Judge POR 76
+2 Crispin SCR 133
+2 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+4 Ultra Ball MEG 131
+4 Energy Switch MEG 115
+2 Switch MEG 130
+1 Unfair Stamp TWM 165
+1 Special Red Card CRI 82
+1 Blowtorch PFL 86
+2 Legendary Pyroduct DLR 94
+2 Legendary Pyroduct DLR 95
+
+Energy: 15
+10 Fire Energy MEE 10
+5 Lightning Energy MEE 12` },
+  { name: "Cynthia's Garchomp", list: `Pokémon: 20
+4 Cynthia's Gible DRI 102
+4 Cynthia's Gabite DRI 103
+3 Cynthia's Garchomp ex DRI 104
+3 Cynthia's Roselia DRI 7
+3 Cynthia's Roserade DRI 8
+1 Cynthia's Spiritomb DRI 129
+1 Relicanth TEF 84
+1 Shaymin DRI 10
+
+Trainer: 32
+4 Lillie's Determination MEG 119
+2 Larry's Skill PRE 115
+2 Boss's Orders MEG 114
+1 Judge POR 76
+1 Team Rocket's Petrel DRI 176
+4 Fighting Gong MEG 116
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+2 Premium Power Pro MEG 124
+1 Night Stretcher ASC 196
+1 Special Red Card CRI 82
+1 Unfair Stamp TWM 165
+1 Pokégear 3.0 SVI 186
+3 Cynthia's Power Weight DRI 162
+1 Team Rocket's Watchtower DRI 180
+
+Energy: 8
+4 Rocky Fighting Energy POR 87
+4 Fighting Energy MEE 14` },
+  { name: "Okidogi Barbaracle", list: `Pokémon: 16
+3 Okidogi TWM 111
+3 Solrock MEG 75
+2 Binacle POR 42
+2 Barbaracle POR 43
+2 Lunatone MEG 74
+1 Moltres PFL 14
+1 Patrat CRI 70
+1 Bloodmoon Ursaluna PRE 54
+1 Shaymin DRI 10
+
+Trainer: 31
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Tarragon POR 85
+1 Hassel TWM 151
+1 Morty's Conviction TEF 155
+1 Gwynn PBL 78
+4 Fighting Gong MEG 116
+4 Poké Pad POR 81
+2 Pokégear 3.0 SVI 186
+2 Night Stretcher ASC 196
+1 Energy Retrieval SVI 171
+1 Premium Power Pro MEG 124
+2 Air Balloon ASC 181
+3 Battle Cage PFL 85
+
+Energy: 13
+8 Fighting Energy MEE 14
+4 Prism Energy ASC 216
+1 Legacy Energy TWM 167` },
+  { name: "Rocket's Honchkrow", list: `Pokémon: 12
+4 Team Rocket's Murkrow DRI 127
+3 Team Rocket's Honchkrow ASC 127
+2 Team Rocket's Porygon DRI 153
+1 Team Rocket's Porygon2 DRI 154
+2 Team Rocket's Articuno DRI 51
+
+Trainer: 40
+4 Team Rocket's Petrel DRI 176
+4 Team Rocket's Archer DRI 170
+4 Team Rocket's Proton DRI 177
+4 Team Rocket's Ariana DRI 171
+4 Team Rocket's Giovanni DRI 174
+4 Roto-Stick PRE 127
+4 Team Rocket's Transceiver DRI 178
+3 Poké Pad POR 81
+3 Night Stretcher ASC 196
+1 Miracle Headset SSP 183
+1 Pokégear 3.0 SVI 186
+1 Lucky Helmet TWM 158
+3 Team Rocket's Factory DRI 173
+
+Energy: 8
+4 Ignition Energy WHT 86
+4 Team Rocket's Energy DRI 182` },
+  { name: "Dhelmise", list: `Pokémon: 25
+4 Poltchageist PBL 5
+4 Sinistcha PBL 6
+4 Shuppet PBL 33
+4 Banette PBL 34
+4 Dhelmise PBL 39
+2 Lillie's Clefairy ex JTG 56
+1 Latias ex SSP 76
+1 Bloodmoon Ursaluna ex TWM 141
+1 Spiritomb PBL 35
+
+Trainer: 27
+4 Lillie's Determination MEG 119
+4 Gwynn PBL 78
+3 Boss's Orders MEG 114
+3 Explorer's Guidance TEF 147
+2 Naveen POR 79
+4 Ultra Ball MEG 131
+3 Poké Pad POR 81
+2 Night Stretcher ASC 196
+2 Prism Tower CRI 80
+
+Energy: 8
+4 Telepathic Psychic Energy POR 88
+3 Psychic Energy MEE 13
+1 Legacy Energy TWM 167` },
+  { name: "Sharpedo Toxtricity", list: `Pokémon: 19
+3 Carvanha PFL 60
+3 Mega Sharpedo ex PFL 61
+3 Pecharunt ex SFA 39
+2 Toxel PFL 67
+2 Toxtricity PFL 68
+2 Tatsugiri TWM 131
+2 Munkidori TWM 95
+1 Fezandipiti ex ASC 142
+1 Yveltal MEG 88
+
+Trainer: 32
+4 Boss's Orders MEG 114
+4 Lillie's Determination MEG 119
+3 Judge POR 76
+1 Brock's Scouting JTG 146
+1 Team Rocket's Petrel DRI 176
+4 Ultra Ball MEG 131
+4 Buddy-Buddy Poffin TEF 144
+3 Poké Pad POR 81
+1 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+3 Binding Mochi PRE 95
+2 Team Rocket's Watchtower DRI 180
+1 Gravity Mountain SSP 177
+
+Energy: 9
+9 Darkness Energy MEE 15` },
+  { name: "Mew Box", list: `Pokémon: 22
+3 Mega Kangaskhan ex MEG 104
+3 Mew ex 30C 66
+2 Latias ex SSP 76
+2 Lillie's Clefairy ex JTG 56
+1 Golett DLR 46
+1 Mega Golurk ex DLR 47
+1 Stunfisk ASC 62
+1 Psyduck ASC 39
+1 Pincurchin DLR 36
+1 Moltres PFL 14
+1 Giratina DLR 45
+1 Meowth ex POR 62
+1 Flutter Mane TEF 78
+1 Fezandipiti ex ASC 142
+1 Mega Diancie ex PFL 41
+1 Unown 30C 72
+
+Trainer: 27
+2 Boss's Orders MEG 114
+2 Ciphermaniac's Codebreaking TEF 145
+2 Lillie's Determination MEG 119
+2 Crispin SCR 133
+1 Cyrano SSP 170
+1 Judge POR 76
+4 Ultra Ball MEG 131
+3 Dusk Ball SSP 175
+3 Wondrous Patch PFL 94
+1 Night Stretcher ASC 196
+1 Switch MEG 130
+1 Prime Catcher TEF 157
+2 Prism Tower CRI 80
+1 Gravity Mountain SSP 177
+1 Team Rocket's Watchtower DRI 180
+
+Energy: 11
+4 Telepathic Psychic Energy POR 88
+4 Psychic Energy MEE 13
+2 Lightning Energy MEE 12
+1 Fire Energy MEE 10` },
+  { name: "Dragapult Blaziken", list: `Pokémon: 21
+4 Dreepy TWM 128
+4 Drakloak TWM 129
+2 Dragapult ex TWM 130
+2 Torchic DRI 40
+1 Combusken DRI 41
+2 Blaziken ex JTG 24
+2 Munkidori TWM 95
+1 Budew ASC 16
+1 Fezandipiti ex ASC 142
+1 Meowth ex POR 62
+1 Chi-Yu TWM 39
+
+Trainer: 31
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Crispin SCR 133
+2 Judge POR 76
+4 Poké Pad POR 81
+4 Buddy-Buddy Poffin TEF 144
+4 Ultra Ball MEG 131
+2 Rare Candy MEG 125
+2 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+3 Team Rocket's Watchtower DRI 180
+
+Energy: 8
+3 Psychic Energy MEE 13
+3 Fire Energy MEE 10
+2 Darkness Energy MEE 15` },
+  { name: "Slowking", list: `Pokémon: 22
+4 Slowpoke SCR 57
+3 Slowking SCR 58
+4 Mega Kangaskhan ex MEG 104
+2 Latias ex SSP 76
+2 Kyurem SFA 47
+2 Metagross CRI 61
+1 Meowth ex POR 62
+1 Mew ex 30C 66
+1 Fezandipiti ex ASC 142
+1 Lillie's Clefairy ex JTG 56
+1 Zeraora DRI 78
+
+Trainer: 28
+4 Lillie's Determination MEG 119
+4 Ciphermaniac's Codebreaking TEF 145
+4 Poké Pad POR 81
+4 Ultra Ball MEG 131
+3 Wondrous Patch PFL 94
+2 Night Stretcher ASC 196
+1 Switch MEG 130
+1 Secret Box TWM 163
+1 Lucky Helmet TWM 158
+4 Academy at Night SFA 54
+
+Energy: 10
+4 Telepathic Psychic Energy POR 88
+4 Psychic Energy MEE 13
+2 Boomerang Energy TWM 166` },
+  { name: "Ogerpon Meganium Arboliva", list: `Pokémon: 20
+4 Teal Mask Ogerpon ex TWM 25
+2 Chikorita ASC 8
+2 Bayleef ASC 9
+2 Meganium MEG 10
+2 Smoliv DRI 21
+2 Dolliv DRI 22
+2 Arboliva ex DRI 23
+2 Meowth ex POR 62
+1 Fezandipiti ex ASC 142
+1 Budew ASC 16
+
+Trainer: 28
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+2 Dawn PFL 87
+1 Judge POR 76
+1 Briar SCR 132
+1 Lana's Aid TWM 155
+4 Ultra Ball MEG 131
+4 Bug Catching Set TWM 143
+1 Night Stretcher ASC 196
+1 Energy Switch MEG 115
+1 Special Red Card CRI 82
+1 Unfair Stamp TWM 165
+1 Poké Pad POR 81
+4 Forest of Vitality MEG 117
+
+Energy: 12
+12 Grass Energy MEE 9` },
+  { name: "Dragapult Dusknoir", list: `Pokémon: 22
+4 Dreepy TWM 128
+4 Drakloak TWM 129
+3 Dragapult ex TWM 130
+2 Duskull PRE 35
+2 Dusclops PRE 36
+1 Dusknoir PRE 37
+2 Budew ASC 16
+1 Fezandipiti ex ASC 142
+1 Meowth ex POR 62
+1 Munkidori TWM 95
+1 Moltres PFL 14
+
+Trainer: 30
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Crispin SCR 133
+1 Rosa's Encouragement POR 84
+4 Poké Pad POR 81
+4 Buddy-Buddy Poffin TEF 144
+3 Rare Candy MEG 125
+3 Ultra Ball MEG 131
+2 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+1 Special Red Card CRI 82
+1 Team Rocket's Watchtower DRI 180
+1 Jamming Tower TWM 153
+
+Energy: 8
+3 Psychic Energy MEE 13
+3 Fire Energy MEE 10
+2 Darkness Energy MEE 15` },
+  { name: "Mega Absol Box", list: `Pokémon: 13
+3 Munkidori TWM 95
+2 Yveltal MEG 88
+2 Mega Absol ex MEG 86
+2 Mega Kangaskhan ex MEG 104
+1 Bloodmoon Ursaluna ex TWM 141
+1 Pecharunt ex SFA 39
+1 Latias ex SSP 76
+1 Fezandipiti ex ASC 142
+
+Trainer: 38
+4 Boss's Orders MEG 114
+4 Team Rocket's Petrel DRI 176
+3 Janine's Secret Art PRE 112
+2 Judge POR 76
+1 Aarune DLR 89
+1 Eri TEF 146
+4 Energy Switch MEG 115
+4 Pokégear 3.0 SVI 186
+2 Ultra Ball MEG 131
+2 Team Rocket's Transceiver DRI 178
+2 Night Stretcher ASC 196
+2 Special Red Card CRI 82
+1 Energy Search POR 72
+1 Precious Trolley SSP 185
+2 Legendary Pyroduct DLR 94
+2 Legendary Pyroduct DLR 95
+1 Team Rocket's Factory DRI 173
+
+Energy: 9
+9 Darkness Energy MEE 15` },
+  { name: "N's Zoroark", list: `Pokémon: 17
+4 N's Zorua JTG 97
+4 N's Zoroark ex JTG 98
+2 N's Zekrom ASC 155
+2 Munkidori TWM 95
+1 N's Purrloin JTG 96
+1 N's Reshiram JTG 116
+1 Pecharunt ex SFA 39
+1 Fezandipiti ex ASC 142
+1 Yveltal MEG 88
+
+Trainer: 35
+4 Lillie's Determination MEG 119
+3 Cyrano SSP 170
+3 Boss's Orders MEG 114
+2 Black Belt's Training JTG 143
+2 Judge POR 76
+4 N's PP Up JTG 153
+4 Buddy-Buddy Poffin TEF 144
+2 Ultra Ball MEG 131
+2 Poké Pad POR 81
+2 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+2 Binding Mochi PRE 95
+3 Team Rocket's Watchtower DRI 180
+1 N's Castle JTG 152
+
+Energy: 8
+8 Darkness Energy MEE 15` },
+  { name: "Ethan's Typhlosion", list: `Pokémon: 19
+4 Ethan's Cyndaquil DRI 32
+4 Ethan's Quilava DRI 33
+3 Ethan's Typhlosion DRI 34
+2 Dreepy TWM 128
+2 Drakloak TWM 129
+2 Victini SSP 21
+1 Fezandipiti ex ASC 142
+1 Shaymin DRI 10
+
+Trainer: 36
+4 Ethan's Adventure DRI 165
+2 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+1 Kieran TWM 154
+1 Lana's Aid TWM 155
+1 Ruffian JTG 157
+4 Ultra Ball MEG 131
+4 Poké Pad POR 81
+3 Buddy-Buddy Poffin TEF 144
+3 Rare Candy MEG 125
+2 Night Stretcher ASC 196
+1 Secret Box TWM 163
+1 Redeemable Ticket JTG 156
+1 Special Red Card CRI 82
+1 Sacred Ash DRI 168
+2 Brave Bangle WHT 80
+2 Battle Cage PFL 85
+1 Team Rocket's Watchtower DRI 180
+
+Energy: 5
+5 Fire Energy MEE 10` },
+  { name: "Talonflame Dusknoir", list: `Pokémon: 22
+4 Mega Kangaskhan ex MEG 104
+3 Duskull PRE 35
+2 Dusclops PRE 36
+3 Dusknoir PRE 37
+3 Talonflame ex DLR 88
+2 Meowth ex POR 62
+2 Latias ex SSP 76
+1 Snorunt ASC 46
+1 Mega Froslass ex ASC 47
+1 Bloodmoon Ursaluna ex TWM 141
+
+Trainer: 31
+4 Hilda WHT 84
+3 Cyrano SSP 170
+2 Boss's Orders MEG 114
+2 Dawn PFL 87
+1 Lillie's Determination MEG 119
+4 Ultra Ball MEG 131
+4 Switch MEG 130
+3 Buddy-Buddy Poffin TEF 144
+3 Rare Candy MEG 125
+3 Poké Pad POR 81
+1 Special Red Card CRI 82
+1 Jamming Tower TWM 153
+
+Energy: 7
+4 Ignition Energy WHT 86
+2 Bubbly Water Energy CRI 84
+1 Neo Upper Energy TEF 162` },
+  { name: "Greninja", list: `Pokémon: 24
+3 Froakie CRI 20
+2 Frogadier CRI 21
+2 Greninja ex TWM 106
+1 Greninja ex 30C 21
+2 Duskull PRE 35
+2 Dusclops PRE 36
+2 Dusknoir PRE 37
+2 Snorunt ASC 46
+2 Mega Froslass ex ASC 47
+2 Meowth ex POR 62
+1 Staryu POR 20
+1 Mega Starmie ex POR 21
+1 Fezandipiti ex ASC 142
+1 Budew ASC 16
+
+Trainer: 28
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+2 Hilda WHT 84
+1 Wally's Compassion MEG 132
+1 Judge POR 76
+1 Colress's Tenacity SFA 57
+1 Team Rocket's Petrel DRI 176
+3 Buddy-Buddy Poffin TEF 144
+3 Ultra Ball MEG 131
+3 Poké Pad POR 81
+2 Rare Candy MEG 125
+1 Night Stretcher ASC 196
+1 Special Red Card CRI 82
+1 Switch MEG 130
+1 Gravity Mountain SSP 177
+1 Grand Tree SCR 136
+
+Energy: 8
+4 Water Energy MEE 11
+3 Ignition Energy WHT 86
+1 Bubbly Water Energy CRI 84` },
+  { name: "Mega Lucario", list: `Pokémon: 13
+4 Riolu MEG 76
+3 Mega Lucario ex MEG 77
+3 Solrock MEG 75
+2 Lunatone MEG 74
+1 Meowth ex POR 62
+
+Trainer: 36
+4 Lillie's Determination MEG 119
+2 Judge POR 76
+2 Boss's Orders MEG 114
+1 Wally's Compassion MEG 132
+1 Team Rocket's Petrel DRI 176
+4 Fighting Gong MEG 116
+4 Premium Power Pro MEG 124
+4 Ultra Ball MEG 131
+4 Poké Pad POR 81
+2 Night Stretcher ASC 196
+1 Secret Box TWM 163
+1 Switch MEG 130
+1 Special Red Card CRI 82
+1 Air Balloon ASC 181
+2 Legendary Pyroduct DLR 94
+2 Legendary Pyroduct DLR 95
+
+Energy: 11
+9 Fighting Energy MEE 14
+2 Rocky Fighting Energy POR 87` },
+  { name: "Iron Thorns", list: `Pokémon: 4
+4 Iron Thorns ex TWM 77
+
+Trainer: 41
+4 Boss's Orders MEG 114
+4 Aarune DLR 89
+3 Crispin SCR 133
+3 Lillie's Determination MEG 119
+3 Judge POR 76
+1 Xerosic's Machinations SFA 64
+1 Colress's Tenacity SFA 57
+1 Team Rocket's Petrel DRI 176
+4 Crushing Hammer POR 71
+4 Pokégear 3.0 SVI 186
+2 Adventure Lantern DLR 90
+2 Jumbo Ice Cream PFL 91
+1 Ultra Ball MEG 131
+1 Hero's Cape TEF 152
+2 Nighttime Mine ASC 197
+2 Legendary Pyroduct DLR 94
+2 Legendary Pyroduct DLR 95
+1 Team Rocket's Watchtower DRI 180
+
+Energy: 15
+4 Lightning Energy MEE 12
+4 Voltaic Lightning Energy PBL 84
+4 Fire Energy MEE 10
+3 Mist Energy TEF 161` },
+  { name: "Lucario Hariyama", list: `Pokémon: 16
+3 Riolu MEG 76
+3 Mega Lucario ex MEG 77
+3 Solrock MEG 75
+2 Makuhita MEG 72
+2 Hariyama MEG 73
+2 Lunatone MEG 74
+1 Meowth ex POR 62
+
+Trainer: 33
+4 Lillie's Determination MEG 119
+2 Judge POR 76
+2 Boss's Orders MEG 114
+1 Ciphermaniac's Codebreaking TEF 145
+1 Wally's Compassion MEG 132
+4 Ultra Ball MEG 131
+4 Premium Power Pro MEG 124
+4 Fighting Gong MEG 116
+4 Poké Pad POR 81
+1 Switch MEG 130
+1 Secret Box TWM 163
+2 Air Balloon ASC 181
+2 Gravity Mountain SSP 177
+1 Team Rocket's Watchtower DRI 180
+
+Energy: 11
+11 Fighting Energy MEE 14` },
+  { name: "Mega Chandelure", list: `Pokémon: 20
+4 Litwick PBL 36
+4 Lampent PBL 37
+4 Chandelure TWM 38
+2 Mega Chandelure ex PBL 38
+2 Comfey SCR 63
+1 Maractus JTG 8
+1 Elgyem BLK 40
+1 Psyduck ASC 39
+1 Shaymin DRI 10
+
+Trainer: 32
+4 Hilda WHT 84
+4 Lillie's Determination MEG 119
+3 Xerosic's Machinations SFA 64
+2 Boss's Orders MEG 114
+1 Lana's Aid TWM 155
+4 Poké Pad POR 81
+2 Accompanying Flute TWM 142
+2 Pokégear 3.0 SVI 186
+2 Rare Candy MEG 125
+2 Night Stretcher ASC 196
+2 Buddy-Buddy Poffin TEF 144
+1 Prime Catcher TEF 157
+1 Sacred Ash DRI 168
+2 Air Balloon ASC 181
+
+Energy: 8
+4 Telepathic Psychic Energy POR 88
+2 Fire Energy MEE 10
+2 Psychic Energy MEE 13` },
+  { name: "Grimmsnarl Froslass", list: `Pokémon: 23
+4 Marnie's Impidimp DRI 134
+3 Marnie's Morgrem DRI 135
+2 Marnie's Grimmsnarl ex DRI 136
+4 Munkidori TWM 95
+3 Snorunt ASC 46
+3 Froslass TWM 53
+2 Budew ASC 16
+1 Shaymin DRI 10
+1 Yveltal MEG 88
+
+Trainer: 28
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+3 Judge POR 76
+3 Gwynn PBL 78
+4 Poké Pad POR 81
+2 Night Stretcher ASC 196
+2 Buddy-Buddy Poffin TEF 144
+2 Rare Candy MEG 125
+1 Unfair Stamp TWM 165
+1 Air Balloon ASC 181
+3 Spikemuth Gym DRI 169
+
+Energy: 9
+9 Darkness Energy MEE 15` },
+  { name: "Archaludon", list: `Pokémon: 18
+4 Beldum TEF 113
+4 Metang TEF 114
+2 Metagross CRI 61
+2 Duraludon SCR 106
+2 Archaludon ex SSP 130
+2 Genesect ex BLK 67
+1 Meowth ex POR 62
+1 Mega Skarmory ex POR 55
+
+Trainer: 23
+4 Lillie's Determination MEG 119
+3 Team Rocket's Petrel DRI 176
+2 Boss's Orders MEG 114
+2 Acerola's Mischief MEG 113
+2 Philippe CRI 79
+3 Poké Pad POR 81
+2 Ultra Ball MEG 131
+1 Special Red Card CRI 82
+1 Precious Trolley SSP 185
+3 Battle Cage PFL 85
+
+Energy: 19
+16 Metal Energy MEE 16
+3 Magnetic Metal Energy CRI 85` },
+  { name: "Raging Bolt Ogerpon", list: `Pokémon: 21
+3 Mega Kangaskhan ex MEG 104
+3 Meowth ex POR 62
+2 Raging Bolt ex TEF 123
+2 Latias ex SSP 76
+2 Teal Mask Ogerpon ex TWM 25
+2 Lillie's Clefairy ex JTG 56
+1 Iron Crown ex TEF 81
+1 Talonflame ex DLR 88
+1 Fezandipiti ex ASC 142
+1 Wellspring Mask Ogerpon ex TWM 64
+1 Chien-Pao SSP 56
+1 Enamorus TWM 93
+1 Bloodmoon Ursaluna ex TWM 141
+
+Trainer: 26
+4 Crispin SCR 133
+2 Boss's Orders MEG 114
+2 Cyrano SSP 170
+1 Ciphermaniac's Codebreaking TEF 145
+4 Energy Switch MEG 115
+4 Ultra Ball MEG 131
+2 Night Stretcher ASC 196
+2 Glass Trumpet SCR 135
+1 Prime Catcher TEF 157
+1 Special Red Card CRI 82
+3 Area Zero Underdepths SCR 131
+
+Energy: 13
+6 Grass Energy MEE 9
+2 Fighting Energy MEE 14
+2 Lightning Energy MEE 12
+2 Psychic Energy MEE 13
+1 Water Energy MEE 11` },
+  { name: "Alakazam Dusknoir", list: `Pokémon: 22
+4 Duskull PRE 35
+2 Dusclops PRE 36
+2 Dusknoir PRE 37
+2 Abra TWM 80
+2 Abra MEG 54
+4 Kadabra MEG 55
+3 Alakazam MEG 56
+2 Budew ASC 16
+1 Fezandipiti ex ASC 142
+
+Trainer: 32
+4 Gwynn PBL 78
+4 Hilda WHT 84
+3 Dawn PFL 87
+2 Boss's Orders MEG 114
+4 Buddy-Buddy Poffin TEF 144
+4 Poké Pad POR 81
+4 Rare Candy MEG 125
+2 Night Stretcher ASC 196
+2 Special Red Card CRI 82
+2 Strange Timepiece MEG 128
+1 Sacred Ash DRI 168
+
+Energy: 6
+4 Telepathic Psychic Energy POR 88
+1 Psychic Energy MEE 13
+1 Legacy Energy TWM 167` },
+  { name: "Mega Excadrill", list: `Pokémon: 18
+4 Beldum CRI 59
+4 Metang TEF 114
+1 Metagross CRI 61
+3 Drilbur PBL 46
+2 Mega Excadrill ex PBL 65
+2 Genesect ex BLK 67
+1 Mega Skarmory ex POR 55
+1 Fezandipiti ex ASC 142
+
+Trainer: 26
+4 Team Rocket's Petrel DRI 176
+3 Brock's Scouting JTG 146
+2 Judge POR 76
+2 Lillie's Determination MEG 119
+1 Kieran TWM 154
+4 Buddy-Buddy Poffin TEF 144
+3 Jumbo Ice Cream PFL 91
+1 Energy Recycler DRI 164
+1 Ultra Ball MEG 131
+1 Special Red Card CRI 82
+1 Switch MEG 130
+1 Hero's Cape TEF 152
+2 Lumiose City POR 77
+
+Energy: 16
+16 Metal Energy MEE 16` },
+  { name: "Ogerpon Meganium Hydrapple", list: `Pokémon: 21
+4 Teal Mask Ogerpon ex TWM 25
+2 Chikorita ASC 8
+2 Bayleef MEG 9
+2 Meganium MEG 10
+2 Applin TWM 17
+2 Dipplin TWM 18
+2 Hydrapple ex SCR 14
+2 Meowth ex POR 62
+1 Fezandipiti ex ASC 142
+1 Celebi MEG 12
+1 Tapu Bulu SFA 6
+
+Trainer: 26
+4 Lillie's Determination MEG 119
+2 Boss's Orders MEG 114
+1 Team Rocket's Petrel DRI 176
+1 Briar SCR 132
+1 Judge POR 76
+1 Lana's Aid TWM 155
+4 Bug Catching Set TWM 143
+4 Ultra Ball MEG 131
+2 Night Stretcher ASC 196
+1 Unfair Stamp TWM 165
+1 Poké Pad POR 81
+4 Forest of Vitality MEG 117
+
+Energy: 13
+13 Grass Energy MEE 9` },
+  { name: "Dragapult Dudunsparce", list: `Pokémon: 22
+4 Dreepy TWM 128
+4 Drakloak TWM 129
+3 Dragapult ex TWM 130
+2 Dunsparce TEF 128
+1 Dudunsparce TEF 129
+1 Dudunsparce ex JTG 121
+2 Munkidori TWM 95
+2 Budew ASC 16
+1 Fezandipiti ex ASC 142
+1 Meowth ex POR 62
+1 Shaymin DRI 10
+
+Trainer: 29
+4 Lillie's Determination MEG 119
+3 Boss's Orders MEG 114
+2 Crispin SCR 133
+1 Judge POR 76
+1 Rosa's Encouragement POR 84
+1 Dawn PFL 87
+4 Poké Pad POR 81
+4 Buddy-Buddy Poffin TEF 144
+3 Night Stretcher ASC 196
+3 Ultra Ball MEG 131
+1 Unfair Stamp TWM 165
+2 Risky Ruins MEG 127
+
+Energy: 9
+3 Fire Energy MEE 10
+3 Psychic Energy MEE 13
+3 Darkness Energy MEE 15` }
+];
+const DAILY_POOL_FROM = 5;   // daily #5, 13 Nov 2026, is DAILY_POOL[0]
+const _dailyDecks = {};
+let _dailyViewKey = '';     // the day whose list was opened, so a game past midnight keeps that day's deck
 function dailyKey(ts) { return pgDayKey(ts || Date.now()); }
+function dailyPick(key) {
+  const n = dailyNumber(key);
+  if (n < DAILY_POOL_FROM || !DAILY_POOL.length) return { name: DAILY_NAME, list: DAILY_LIST };
+  const i = (n - DAILY_POOL_FROM) % (DAILY_POOL.length + 1);
+  return i === DAILY_POOL.length ? { name: DAILY_NAME, list: DAILY_LIST } : DAILY_POOL[i];
+}
+function dailyName(key) { return dailyPick(key || _dailyViewKey || dailyKey()).name; }
 // v45: each day's challenge has a number, counted from 9 Nov 2026 as #1.
 const DAILY_EPOCH = [2026, 10, 9];
 function dailyNumber(key) {
@@ -10555,14 +11759,15 @@ function dailyNumber(key) {
   const n = Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(DAILY_EPOCH[0], DAILY_EPOCH[1], DAILY_EPOCH[2])) / 864e5) + 1;
   return isNaN(n) || n < 1 ? 1 : n;
 }
-function dailyDeck() {
-  if (!_dailyDeck) _dailyDeck = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(DAILY_LIST), history: [], format: 'standard', daily: true };
-  return _dailyDeck;
+function dailyDeck(key) {
+  key = dailyOkKey(key) || dailyOkKey(_dailyViewKey) || dailyKey();
+  if (!_dailyDecks[key]) _dailyDecks[key] = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(dailyPick(key).list), history: [], format: 'standard', daily: true };
+  return _dailyDecks[key];
 }
 // 2.5.1: the day a daily game was dealt on, so a game that runs past midnight is scored to that day.
 let _dailyPlayKey = '';
 function dailyShuffle(arr, key) {
-  if (!key) key = _dailyPlayKey = dailyKey();
+  if (!key) key = _dailyPlayKey = dailyOkKey(_dailyViewKey) || dailyKey();
   return shuffleWith(arr, simRng(strHash('prizetrainer-daily|' + key)));
 }
 function dailyOkKey(k) { return typeof k === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(k) ? k : ''; }
@@ -10601,7 +11806,7 @@ function renderDailyCard() {
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('calendar')}</div>
     <div class="dc-tx"><div class="dc-t">Daily challenge #${dailyNumber(key)}</div>
-      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> in ${formatTime(r.time)}` : 'Same deck and shuffle for everyone today'}${streak > 1 ? `. ${streak} day streak` : ''}</div></div>
+      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> in ${formatTime(r.time)}` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}${streak > 1 ? `. ${streak} day streak` : ''}</div></div>
     ${r ? `<button class="btn btn-sm" onclick="shareDaily()">${ic23('share')}Share</button>` : ''}
     <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
   </div>`;
@@ -10627,7 +11832,7 @@ function handleDailyHash() {
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   showScreen('home');
   openSheet(`<div class="modal-title">Daily challenge #${dailyNumber()}</div>
-    <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(DAILY_NAME)} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
+    <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(dailyName(dailyKey()))} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
 
@@ -10638,15 +11843,14 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5.1',
+  version: 'v2.5.2',
   kind: 'fix',
   items: [
-    { t: 'Fixed: Import flags lines it could not read' },
-    { t: 'Fixed: Expanded decks skip the Standard Trainer check' },
-    { t: 'Fixed: Daily challenge past midnight counts for the right day' },
-    { t: 'Fixed: Deck builder updates keep the edit log' },
-    { t: 'Fixed: Deck builder card search works offline' },
-    { t: 'Fixed: Grade history shows the right reason' }
+    { t: 'Changed: The daily challenge deck changes every day' },
+    { t: 'Fixed: Upgrades never cut your main attacker' },
+    { t: 'Fixed: The grade line and Upgrades agree' },
+    { t: 'Fixed: The reprint check reads every printing' },
+    { t: 'Added: 125 more daily puzzles' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13551,8 +14755,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5.1';
-const PT_BUILD = 74;
+const PT_VERSION = 'v2.5.2';
+const PT_BUILD = 75;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15166,6 +16370,19 @@ function r29Counts(rows) {
 }
 
 // ── Reprint check: a rotating card stays if a printing with a later mark exists ──
+// 2.5.2: a name with more printings than one page holds (Pikachu, say) is read to the end,
+// up to 1,000 printings, so a legal reprint past the first 250 is still found.
+async function r52AllPages(get, url) {
+  const json = await get(url);
+  if (!json || !Array.isArray(json.data)) return json;
+  const total = Number(json.totalCount) || 0, size = Number(json.pageSize) || 250;
+  for (let page = 2; total > json.data.length && page <= 4 && (page - 1) * size < total; page++) {
+    const more = await get(url + '&page=' + page);
+    if (!more || !Array.isArray(more.data) || !more.data.length) break;
+    json.data.push(...more.data);
+  }
+  return json;
+}
 const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
   // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
@@ -15195,7 +16412,7 @@ async function r29CheckReprints(deck) {
   };
   await Promise.all(batches.map(async b => {
     const q = '(' + b.map(r => 'name:"' + TCGEnrich.apiName(r.name).replace(/"/g, '') + '"').join(' OR ') + ')';
-    const json = await get('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
+    const json = await r52AllPages(get, 'https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
       '&select=id,name,supertype,regulationMark,attacks,abilities&pageSize=250');
     if (!json || !Array.isArray(json.data)) return;
     b.forEach(r => {
@@ -15365,7 +16582,8 @@ function g29Verdict(R, means) {
   const probs = g29Problems(R);
   const crit = probs.filter(f => f.sev === 'crit').length;
   if (crit) return crit === 1 ? 'One problem stops this deck from working. Fix it first.' : `${crit} problems stop this deck from working. Fix those first.`;
-  if (probs.length) return means + ' ' + (probs.length === 1 ? 'One change would make it stronger.' : `${probs.length} changes would make it stronger.`);
+  // 2.5.2: says what Fix first holds, not that one card change helps, so it agrees with Upgrades.
+  if (probs.length) return means + ' ' + (probs.length === 1 ? 'Fix first shows the one problem found.' : `Fix first shows the ${probs.length} problems found.`);
   // v60: a card the app could not read is left out of the grade, so "no problems" would overstate it.
   const un = (R.entries || []).filter(e => !e.card).length;
   if (un) return means + ` No problems found in what was read, but ${un === 1 ? 'one card was' : un + ' cards were'} not, so check ${un === 1 ? 'its' : 'their'} spelling in Edit deck.`;
@@ -16298,14 +17516,14 @@ getImageCandidates = function (card) {
 
 // Rotation reprint check: pokemontcg.io reads up to four names in one request,
 // so it is still asked first. When it fails, each name is read from TCGdex
-// (its newest three printings), so the check keeps working after the shutdown.
+// (its newest printings: 8 for a Pokemon, 3 for others), so the check keeps working after the shutdown.
 async function r31TdReprints(rows) {
   const found = {};
   for (const r of rows) {
     const list = await td30Get('/cards?name=' + encodeURIComponent('eq:' + TCGEnrich.apiName(r.name)));
     if (!Array.isArray(list)) continue;
     const hits = list.filter(b => b && typeof b.id === 'string' && r29Key(b.name || '') === r.key)
-      .sort((a, b) => td30Rank(b.id) - td30Rank(a.id)).slice(0, 3);
+      .sort((a, b) => td30Rank(b.id) - td30Rank(a.id)).slice(0, r.pkmn ? 8 : 3);  // 2.5.2: a Pokemon's newest printings can have other attacks, so look further
     let best = null;
     for (const b of hits) {
       const c = td30Shape(await td30Get('/cards/' + encodeURIComponent(b.id)));
@@ -16347,7 +17565,7 @@ r29CheckReprints = async function (deck) {
   };
   await Promise.all(batches.map(async b => {
     const q = '(' + b.map(r => 'name:"' + TCGEnrich.apiName(r.name).replace(/"/g, '') + '"').join(' OR ') + ')';
-    const json = await get('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
+    const json = await r52AllPages(get, 'https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
       '&select=id,name,supertype,regulationMark,attacks,abilities&pageSize=250');
     if (!json || !Array.isArray(json.data)) { failed.push(...b); return; }
     b.forEach(r => {
@@ -16641,6 +17859,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // starts with the game, not while the list is open.
 const _v32StartDaily = startDaily;
 startDaily = async function () {
+  _dailyViewKey = dailyKey();
   const d = dailyDeck();
   if (!d._img) { d.cards = await Promise.all(d.cards.map(c => fetchCardImage(c))); d._img = true; }
   openDailyList();
@@ -16665,7 +17884,7 @@ function openDailyList() {
   const r = dailyStore().results[dailyKey()];
   const groups = dly33Groups(d.cards);
   const total = groups.reduce((a, g) => a + g.n, 0);
-  openSheet(`<div class="modal-title">Today's deck: ${esc(DAILY_NAME)}</div>
+  openSheet(`<div class="modal-title">Today's deck: ${esc(dailyName())}</div>
     <div class="modal-hint dly33-hint">Review all ${total} cards, then tap Start. The clock starts with the game. ${r ? 'This is a practice replay, your score for today is already in.' : 'Your first try is your score.'}</div>
     <div class="dly33-list" id="dly33-list">
       ${groups.map(g => `<div class="review-group"><div class="review-group-title ${g.key}"><span class="rg-dot"></span>${g.label}<span class="rg-count">${g.n}</span></div>
@@ -20282,8 +21501,22 @@ async function up75Find(deck) {
   const rows = new Map();
   (deck.cards || []).forEach(c => { const k = up75Key(c.name); const r = rows.get(k); if (r) r.n += c.count || 0; else rows.set(k, { key: k, name: c.name, n: c.count || 0, c }); });
   // The Pokemon the deck is named for stay: cutting the deck's own attacker is never the upgrade a player means.
-  const named = arch && typeof g68Named === 'function' ? g68Named(arch.name) : [];
-  const isNamed = r => cardCategory(r.c) === 'pokemon' && named.some(p => (' ' + mu60Norm(r.c.apiName || r.name) + ' ').includes(' ' + p + ' '));
+  // 2.5.2: so does the deck's own main attacker, as the grade reads it from this list and its name,
+  // with the Pokemon it evolves from, and any Pokemon the player's own deck name calls out. A deck
+  // matched to the wrong archetype (Raging Bolt Ogerpon read as Basic Box) keeps its attacker too.
+  const named = (arch && typeof g68Named === 'function' ? g68Named(arch.name) : [])
+    .concat(typeof g68Named === 'function' && deck.name ? g68Named(deck.name) : []);
+  const keep = new Set();
+  try {
+    const m = gMainAttacker(R0.entries || [], R0.coh, deck.name);
+    if (m) {
+      const line = new Set([m.key]);
+      for (let i = 0; i < 3; i++) (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });
+      (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key)) keep.add(up75Key(e.name)); });
+      if (m.engine && m.engine.name) keep.add(up75Key(m.engine.name));
+    }
+  } catch (_) {}
+  const isNamed = r => keep.has(r.key) || (cardCategory(r.c) === 'pokemon' && named.some(p => (' ' + mu60Norm(r.c.apiName || r.name) + ' ').includes(' ' + p + ' ')));
   const outs = [];
   rows.forEach(r => {
     if (isNamed(r)) return;
@@ -20362,12 +21595,12 @@ function up75Sig(deck) {
   return g29Sig(deck) + '|' + mu + '|' + ((bldMeta && bldMeta.asOf) || '');
 }
 
-function up75Html(res) {
+function up75Html(res, hasFix) {
   const head = n => `<details class="g-sec g29-fold" id="up75-sec"${n ? ' open' : ''}><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
   if (!res || res.busy) return head(0) + `<div class="g-sec-i">Checking which card swaps raise this grade.</div></details>`;
   if (res.why === 'offline') return head(0) + `<div class="g-sec-i">Upgrades need a connection the first time, to read the cards to try.</div></details>`;
   if (res.why && res.why !== 'none') return '';
-  if (res.why === 'none' || !res.swaps.length) return head(0) + `<div class="g-sec-i">No single swap raises this grade${res.arch ? ` with the cards ${esc(res.arch)} top lists run` : ''}.</div></details>`;
+  if (res.why === 'none' || !res.swaps.length) return head(0) + `<div class="g-sec-i">No single swap raises this grade${res.arch ? ` with the cards ${esc(res.arch)} top lists run` : ''}.${hasFix ? ' What Fix first lists needs more than one card changed.' : ''}</div></details>`;
   const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
   const moved = s => s.to > s.from;
   const rows = res.swaps.map(s => `<div class="up75-row"><div class="up75-h"><span class="up75-n">Swap 1 ${esc(s.out)} for 1 ${esc(s.in)}</span>${moved(s) ? `<span class="up75-g">${g(s.from, s.to)}</span>` : ''}</div>
@@ -20394,6 +21627,7 @@ function up75Html(res) {
     const after = el.querySelector('#g29-fix');
     if (after) after.insertAdjacentHTML('afterend', html);
   };
+  const fixed = el => !!el.querySelector('#g29-fix .g-sec-t');   // 2.5.2: Fix first lists a problem
   const _rg = renderGrade;
   renderGrade = function () {
     const r = _rg.apply(this, arguments);
@@ -20403,7 +21637,7 @@ function up75Html(res) {
       if (!el || !deck || !el.querySelector('#g29-fix')) return r;   // still grading, or no grade
       if (typeof g71Wait === 'function' && g71Wait(deck)) return r;
       const sig = up75Sig(deck), hit = _up75Cache.get(deck.id);
-      if (hit && hit.sig === sig) { place(el, up75Html(hit.busy ? { busy: true } : hit.res)); return r; }
+      if (hit && hit.sig === sig) { place(el, up75Html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
       _up75Cache.set(deck.id, { sig, busy: true });
       place(el, up75Html({ busy: true }));
       up75Find(deck).then(res => {
@@ -20411,7 +21645,7 @@ function up75Html(res) {
         if (!h || h.sig !== sig) return;
         _up75Cache.set(deck.id, { sig, res });
         const live = document.getElementById('grade-body');
-        if (live && state.activeDeckId === deck.id && live.querySelector('#g29-fix')) place(live, up75Html(res));
+        if (live && state.activeDeckId === deck.id && live.querySelector('#g29-fix')) place(live, up75Html(res, fixed(live)));
       }).catch(() => { _up75Cache.delete(deck.id); const live = document.getElementById('grade-body'); if (live) place(live, ''); });
     } catch (_) {}
     return r;
