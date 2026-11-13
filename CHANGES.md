@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.4 (build 77): Tera, Ancient and Future marks from every card source (13 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v77) and CHANGES.md.
+
+- A viewer's list ran 4 Tera Pokemon, yet the grade said Glass Trumpet and Area Zero Underdepths "need Tera Pokemon, and the list runs none". Cause: when pokemontcg.io can't be reached, the app reads cards from TCGdex, and TCGdex cards carry no Tera, Ancient or Future mark. The same happened when a card was read by name and the newest printing of that name is not a Tera one (30th Celebration's Pikachu ex, say).
+- Fix: the app now carries the Tera, Ancient and Future mark of every Pokemon and Trainer printing in the Scarlet and Violet and Mega Evolution sets (pokemon-tcg-data: 146 Tera, 73 Ancient, 70 Future printings) and adds a missing mark from the list's own set and number. A card from a set the table doesn't cover goes by its name, but only where every printing of that name agrees. Saved decks and backups are repaired when they load. TCGdex cards named "Radiant ..." are now marked Radiant too (a Rule Box).
+- Checked: all 132 top lists graded with these marks removed, as TCGdex gives them. 15 moved, by up to 0.4 (Basic Box 8.9 to 8.5, Raging Bolt Ogerpon 8.6 to 8.2, Mega Rayquaza 7.8 to 7.4), all from Glass Trumpet or Area Zero Underdepths. With the fix all 132 come back exactly. Other card-type checks were reviewed: stages, ex, Mega, ACE SPEC, Trainer kinds and Basic or Special Energy already read the same from both sources.
+- Grade check: no grade moved.
+
 # RdyDeck 2.5.3 (build 76): card names read the same from every source (12 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v76), CHANGES.md, tests/grade-lists.json and tests/grade-baseline.json.

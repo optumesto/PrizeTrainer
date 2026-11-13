@@ -5247,9 +5247,35 @@ function ptCanonName(name) {
   return s;
 }
 /** 2.5.3: saved decks (and decks opened from a backup) to the plain spelling. Card data stays as read. */
+// 2.5.4: Tera, Ancient and Future, by printing, from pokemon-tcg-data (every Scarlet and Violet and
+// Mega Evolution set). The second card source (TCGdex, used when pokemontcg.io can't be reached)
+// has no such marks, so a Tera Pokemon read from it lost its Tera tag, and Glass Trumpet or Area
+// Zero Underdepths said the list ran no Tera Pokemon. A printing in a set this table covers goes by
+// the table alone; a card from a set it doesn't cover goes by its name, where every printing agrees.
+const PT_TAGS = {"ids":{"tera":"ASC 121|ASC 160|ASC 179|ASC 277|ASC 38|ASC 57|ASC 73|OBF 125|OBF 159|OBF 179|OBF 210|OBF 211|OBF 212|OBF 215|OBF 222|OBF 223|OBF 228|OBF 42|OBF 66|OBF 96|PAF 2|PAF 212|PAF 214|PAF 234|PAF 54|PAF 6|PAL 230|PAL 238|PAL 239|PAL 5|PAL 86|PAL 93|PAR 100|PAR 137|PAR 217|PAR 219|PAR 220|PAR 226|PAR 227|PAR 245|PAR 260|PAR 3|PAR 38|PAR 46|PAR 58|PAR 98|PRE 12|PRE 14|PRE 144|PRE 145|PRE 146|PRE 147|PRE 148|PRE 149|PRE 150|PRE 152|PRE 153|PRE 155|PRE 156|PRE 160|PRE 161|PRE 165|PRE 167|PRE 169|PRE 17|PRE 177|PRE 179|PRE 180|PRE 23|PRE 26|PRE 27|PRE 28|PRE 30|PRE 34|PRE 41|PRE 58|PRE 6|PRE 60|PRE 73|PRE 75|SCR 128|SCR 157|SCR 158|SCR 159|SCR 168|SCR 170|SCR 173|SCR 28|SCR 32|SCR 51|SFA 15|SFA 81|SSP 106|SSP 119|SSP 133|SSP 142|SSP 159|SSP 219|SSP 221|SSP 222|SSP 223|SSP 225|SSP 226|SSP 228|SSP 238|SSP 240|SSP 242|SSP 247|SSP 248|SSP 36|SSP 57|SSP 86|SSP 91|SVI 224|SVI 225|SVI 32|SVI 45|SVP 163|SVP 164|SVP 165|SVP 56|SVP 74|TEF 108|TEF 190|TEF 194|TEF 60|TWM 106|TWM 112|TWM 130|TWM 190|TWM 191|TWM 192|TWM 194|TWM 198|TWM 199|TWM 200|TWM 211|TWM 212|TWM 213|TWM 214|TWM 215|TWM 221|TWM 25|TWM 29|TWM 40|TWM 64","ancient":"PAF 53|PAR 107|PAR 108|PAR 123|PAR 124|PAR 159|PAR 163|PAR 170|PAR 203|PAR 207|PAR 228|PAR 229|PAR 239|PAR 250|PAR 251|PAR 256|PAR 262|PAR 86|PRE 106|PRE 107|PRE 120|PRE 159|PRE 162|PRE 166|PRE 178|PRE 42|PRE 43|PRE 55|PRE 56|PRE 65|SCR 111|SFA 26|SFA 96|SSP 116|SSP 38|SSP 96|SVP 127|SVP 144|SVP 145|SVP 151|SVP 65|SVP 67|SVP 72|SVP 91|SVP 97|TEF 109|TEF 119|TEF 120|TEF 123|TEF 140|TEF 141|TEF 147|TEF 188|TEF 189|TEF 196|TEF 200|TEF 204|TEF 205|TEF 208|TEF 214|TEF 215|TEF 218|TEF 38|TEF 50|TEF 77|TEF 78|TEF 96|TEF 97|TEF 98|TWM 118|TWM 197|TWM 63|TWM 94","future":"PAF 66|PAR 158|PAR 164|PAR 171|PAR 180|PAR 187|PAR 216|PAR 223|PAR 225|PAR 240|PAR 248|PAR 249|PAR 257|PAR 261|PAR 28|PAR 56|PAR 70|PAR 89|PRE 104|PRE 121|PRE 130|PRE 154|PRE 157|PRE 158|PRE 176|PRE 31|PRE 32|PRE 46|SCR 71|SFA 9|SSP 132|SSP 55|SSP 69|SVP 128|SVP 146|SVP 147|SVP 58|SVP 66|SVP 68|SVP 73|SVP 92|SVP 98|TEF 118|TEF 121|TEF 122|TEF 139|TEF 145|TEF 149|TEF 158|TEF 186|TEF 191|TEF 192|TEF 198|TEF 203|TEF 206|TEF 207|TEF 213|TEF 216|TEF 217|TEF 25|TEF 61|TEF 62|TEF 79|TEF 80|TEF 81|TEF 99|TWM 19|TWM 196|TWM 62|TWM 77"},"names":{"tera":["Alolan Exeggutor ex","Arcanine ex","Ceruledge ex","Cinderace ex","Cornerstone Mask Ogerpon ex","Dedenne ex","Dragapult ex","Dragonite ex","Eevee ex","Eiscue ex","Espathra ex","Farigiraf ex","Flareon ex","Flygon ex","Forretress ex","Froslass ex","Galvantula ex","Garchomp ex","Glaceon ex","Greedent ex","Gyarados ex","Hearthflame Mask Ogerpon ex","Hoopa ex","Jolteon ex","Leafeon ex","Magcargo ex","Palossand ex","Slowking ex","Tatsugiri ex","Teal Mask Ogerpon ex","Toxtricity ex","Tsareena ex","Vaporeon ex","Vespiquen ex","Wellspring Mask Ogerpon ex","Wugtrio ex"],"ancient":["Ancient Booster Energy Capsule","Awakening Drum","Brute Bonnet","Earthen Vessel","Explorer's Guidance","Flutter Mane","Gouging Fire","Gouging Fire ex","Great Tusk","Professor Sada's Vitality","Raging Bolt","Raging Bolt ex","Roaring Moon","Roaring Moon ex","Sandy Shocks","Sandy Shocks ex","Scream Tail","Scream Tail ex","Slither Wing","Walking Wake","Walking Wake ex"],"future":["Ciphermaniac's Codebreaking","Future Booster Energy Capsule","Iron Boulder","Iron Boulder ex","Iron Bundle","Iron Crown","Iron Crown ex","Iron Hands","Iron Hands ex","Iron Jugulis","Iron Leaves","Iron Leaves ex","Iron Moth","Iron Thorns","Iron Thorns ex","Iron Treads","Iron Valiant","Iron Valiant ex","Professor Turo's Scenario","Reboot Pod","Techno Radar"]},"sets":"30C ASC BLK CRI DLR DRI JTG MEG MEW OBF PAF PAL PAR PBL PFL POR PRE SCR SFA SSP SVE SVI SVP TEF TWM WHT"};
+let _ptTagSets = null;
+function ptTagsFor(name, set, num) {
+  if (!_ptTagSets) _ptTagSets = { sets: new Set(PT_TAGS.sets.split(' ')), ids: {} };
+  const code = String(set || '').trim().toUpperCase().replace(/^PR-SV$/, 'SVP');
+  const id = code + ' ' + String(num || '').trim().toUpperCase().replace(/^0+(?=\d)/, '');
+  const known = _ptTagSets.sets.has(code) && !!String(num || '').trim();
+  const nm = ptCanonName(name);
+  return Object.keys(PT_TAGS.ids).filter(t => {
+    if (!_ptTagSets.ids[t]) _ptTagSets.ids[t] = new Set(PT_TAGS.ids[t].split('|'));
+    return known ? _ptTagSets.ids[t].has(id) : PT_TAGS.names[t].includes(nm);
+  });
+}
+/** Add a Pokemon's or Trainer's missing Tera, Ancient or Future mark to its card data. */
+function ptTagCard(c) {
+  if (!c || !/^(pok[e\u00e9]mon|trainer)$/i.test(String(c.supertype || ''))) return;
+  const sub = Array.isArray(c.sub) ? c.sub : [];
+  const add = ptTagsFor(c.name, c.set, c.num).filter(t => !sub.includes(t));
+  if (add.length) c.sub = sub.concat(add);
+}
 function ptCanonDecks(decks) {
   (decks || []).forEach(d => (d && Array.isArray(d.cards) ? d.cards : []).forEach(c => {
     if (c && typeof c.name === 'string') { const n = ptCanonName(c.name); if (n && n !== c.name) c.name = n; }
+    try { ptTagCard(c); } catch (_) {}   // 2.5.4
   }));
 }
 
@@ -11870,11 +11896,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5.3',
+  version: 'v2.5.4',
   kind: 'fix',
   items: [
-    { t: 'Fixed: Pokemon TCG Live lists grade the same as Limitless lists' },
-    { t: 'Fixed: Curly apostrophes no longer change a grade' }
+    { t: 'Fixed: Tera Pokemon count for Glass Trumpet and Area Zero Underdepths' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13172,6 +13197,7 @@ async function enrichDeckCards(cards) {
     c.rtext = e.rtext || undefined;
     c.etext = e.etext || undefined;
     c.sub = st.length ? st : undefined;
+    ptTagCard(c);   // 2.5.4: Tera, Ancient and Future the card source left out
     c.tx = 1;
     // Read by name from another printing: its costs may not match the card in the list.
     c.byName      = e.matchedBy === 'name' && !sameCardNumber(c, e) ? true : undefined;
@@ -14779,8 +14805,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5.3';
-const PT_BUILD = 76;
+const PT_VERSION = 'v2.5.4';
+const PT_BUILD = 77;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -17225,6 +17251,7 @@ function td30Shape(t) {
     if (suffix) sub.push(suffix);
     else if (/ ex$/.test(t.name)) sub.push('ex');
     if (/^mega /i.test(t.name)) sub.push('MEGA');
+    if (/^radiant /i.test(t.name)) sub.push('Radiant');   // 2.5.4: a Rule Box, as pokemontcg.io marks it
   } else if (supertype === 'Trainer') {
     const tt = String(t.trainerType || '');
     sub.push(/tool/i.test(tt) ? 'Pokémon Tool' : tt || 'Item');
