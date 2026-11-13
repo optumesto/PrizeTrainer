@@ -41,7 +41,17 @@ const TYPE = { Grass: 'G', Fire: 'R', Water: 'W', Lightning: 'L', Psychic: 'P', 
 // Lower is the print to show: the plain one first, so the number matches the card most people own.
 const RARITY = ['Common', 'Uncommon', 'Rare', 'Double Rare', 'Rare Holo', 'Promo', 'ACE SPEC Rare', 'Ultra Rare', 'Illustration Rare', 'Shiny Rare', 'Special Illustration Rare', 'Shiny Ultra Rare', 'Hyper Rare', 'Mega Hyper Rare'];
 const rank = r => { const i = RARITY.indexOf(r || ''); return i < 0 ? 9 : i; };
-const clean = (s, max) => String(s == null ? '' : s).replace(/[<>`\u0000-\u001f]/g, ' ').replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().slice(0, max || 80);
+const clean = (s, max) => String(s == null ? '' : s).replace(/[<>`\u0000-\u001f]/g, ' ').replace(/[–—]/g, '-').replace(/\s+/g, ' ').replace(/ ([\u2640\u2642])/g, '$1').trim().slice(0, max || 80);   // 2.5.5: "Nidoran ♀" and "Nidoran♀" are one name
+// 2.5.5: pokemon-tcg-data mistakes, checked against Limitless and TCGdex on 13 Nov 2026.
+// The app's own FIX37 table in index.html carries the same fixes for the grader.
+const DATA_FIX = {
+  'zsv10pt5-80': { number: '80' },                                   // Antique Cover Fossil is listed as BLK 60, which is Escavalier
+  'rsv10pt5-50': { evolvesFrom: 'Antique Plume Fossil' }, 'rsv10pt5-131': { evolvesFrom: 'Antique Plume Fossil' },   // Archen: "Antiuqe"
+  'me55-96': { evolvesFrom: 'Zorua' },                               // Zoroark: nothing to evolve from
+  'me5-115': { subtypes: ['Stage 2', 'MEGA', 'ex'] },               // Mega Chandelure ex: no stage
+  'me5-42': { subtypes: ['Basic'] },                                 // Mankey: no stage
+  'me6-132': { subtypes: ['Special'] }, 'me6-133': { subtypes: ['Special'] }, 'me6-134': { subtypes: ['Special'] },   // Delta Reign Special Energy: no subtype
+};
 
 const data = JSON.parse(await readFile(DATA, 'utf8'));
 const first = String((data.rotation && data.rotation.firstLegal) || 'H').toUpperCase();
@@ -64,7 +74,8 @@ for (const s of wanted) {
   const cards = await getJSON(`cards/en/${s.id}.json`);
   if (!Array.isArray(cards)) continue;
   read++;
-  for (const c of cards) {
+  for (const c0 of cards) {
+    const c = DATA_FIX[c0.id] ? Object.assign({}, c0, DATA_FIX[c0.id]) : c0;
     const sup = c.supertype === 'Pokémon' ? 'P' : c.supertype === 'Trainer' ? 'T' : c.supertype === 'Energy' ? 'E' : '';
     if (!sup) continue;
     const subs = c.subtypes || [];
@@ -106,7 +117,9 @@ for (const s of wanted) {
       const words = [...(c.abilities || []).map(a => a.name), ...(c.attacks || []).map(a => a.name)].map(w => clean(w, 30));
       if (words.length) e.w = words.join(', ').slice(0, 90);
     } else if (sup === 'T') {
-      e.tk = subs.includes('Supporter') ? 'S' : subs.includes('Stadium') ? 'D' : subs.includes('Pokémon Tool') ? 'O' : 'I';
+      // 2.5.5: a "Tool" whose text never attaches it is an Item (Adventure Lantern is listed as a Tool).
+      const tool = subs.includes('Pokémon Tool') && !((c.rules || []).join(' ').trim() && !/\battach/i.test((c.rules || []).join(' ')));
+      e.tk = subs.includes('Supporter') ? 'S' : subs.includes('Stadium') ? 'D' : tool ? 'O' : 'I';
       if (subs.includes('ACE SPEC')) e.ace = 1;
     } else {
       if (basicE) e.be = 1;

@@ -2,6 +2,20 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.5 (build 78): card traits checked across every source and import format (13 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v78), CHANGES.md, build-cards.mjs, cards.json and tests/grade-cards.json.gz.
+
+- A hunt for bugs like the Tera and Telepathic {P} Energy ones. Every legal card (3,243 printings) was read the way the app reads it, from pokemontcg.io and from TCGdex (its own card files, read 13 Nov 2026), and compared trait by trait: Tera, Ancient, Future, ex, Mega, ACE SPEC, Trainer kind, Basic or Special Energy, stage, what it evolves from, type and regulation mark. All 132 top lists were graded from each source, in Limitless and TCG Live spelling, and through a saved deck and back.
+- Backup card source: 30th Celebration (30C) and Mega Evolution Energy (MEE) had no TCGdex set, and 30th Celebration numbers were not padded, so those cards were read by name from another printing (Mew ex with Restart in place of Memory Helix, the wrong Zekrom, Reshiram, Unown and Greninja ex). 30C Classic Collection cards are tried too. When a card is read by name, the newest printing now really comes first (30th Celebration, Mega promos, MEE). 14 top lists graded differently from the backup source, by up to 0.3 (Slowking 8.5 to 8.2). Now 1 does, for the reason under Not fixed.
+- TCGdex gaps filled from pokemon-tcg-data: what 33 Pokemon evolve from (30th Celebration Toxtricity, Lucario, Gholdengo, Kommo-o and others) and the text of 28 Trainers and Special Energy (Delta Reign's Aarune, Emcee's Hype, Legendary Pyroduct, Custom Vest, Tasty Rice Ball and others, 30th Celebration Ultra Ball, Bubbly Water, Growing Grass and Nitro Fire Energy). Without text these graded as doing nothing.
+- pokemontcg.io mistakes: Delta Reign's Bubbly Water, Growing Grass and Nitro Fire Energy have no subtype, so the grade left them out of Trainer and Energy checks; any Energy without one is now read from its name. Adventure Lantern is listed as a Pokemon Tool but is an Item; a "Tool" whose text never attaches it now counts as an Item. Mankey (PBL 42) and Mega Chandelure ex had no stage; Zoroark (30C) had nothing to evolve from; Archen evolved from "Antiuqe Plume Fossil". "Nidoran ♀" and "Nidoran♀" are now one name.
+- Import: TCG Live promo codes PR-SV and PR-ME are read as SVP and MEP, in pasted lists and saved decks.
+- Deck builder (cards.json, build-cards.mjs): the same fixes, plus Antique Cover Fossil listed as BLK 60 (that number is Escavalier); it is BLK 80.
+- Not fixed, a product call: when a list runs two different cards with the same name (Greninja ex from TWM and 30C, Riolu from MEG and PRE, Dunsparce, Abra, Applin), the grade reads only one of them. 10 of the 132 top lists do this.
+- Not fixed, harmless: TCGdex leaves out many Weaknesses and Retreat Costs; neither moves a grade.
+- Grade check: no grade moved. The saved card data gained the new TCGdex lookups (as not found, like every TCGdex entry there).
+
 # RdyDeck 2.5.4 (build 77): Tera, Ancient and Future marks from every card source (13 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v77) and CHANGES.md.
