@@ -138,6 +138,7 @@ const TECH_MIN = 25;        // matches with and without a card before its record
 const TECH_EDGE = 0.03;     // win rate with it at least this much higher
 const TECH_Z = 1.28;        // and unlikely to be chance alone (one sided, about 90%)
 const TECH_MAX = 6;
+const TECH_SHARE = 0.6;      // a card most lists run is a staple, not a tech
 
 /**
  * meta-cards.json from the card digests of the window's events.
@@ -200,6 +201,7 @@ export function buildMetaCards(events, opts) {
     }
 
     // Techs: per opponent, cards whose lists did better against it than lists without them.
+    const shareOf = new Map(cards.map(c => [c[0], c[6]]));
     const techs = {};
     for (const opp of opts.cols || []) {
       if (opp === id || opp === 'other') continue;
@@ -222,6 +224,7 @@ export function buildMetaCards(events, opts) {
       for (const [name, w] of withC) {
         const mw = w[0] + w[1] + w[2], mo = m - mw, wo = total[0] - w[0];
         if (mw < TECH_MIN || mo < TECH_MIN) continue;
+        if (mw / m > TECH_SHARE || (shareOf.get(name) || 0) > TECH_SHARE) continue;
         const pw = w[0] / mw, po = wo / mo, p = total[0] / m;
         const se = Math.sqrt(p * (1 - p) * (1 / mw + 1 / mo));
         if (pw - po < TECH_EDGE || !se || (pw - po) / se < TECH_Z) continue;
