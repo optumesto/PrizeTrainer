@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.5.6 (build 79): two different cards with one name each get their own data (13 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v79), CHANGES.md, tests/grade-cards.json.gz and tests/grade-baseline.json.
+
+- A list can run two different cards with the same name, such as Greninja ex from TWM (Shinobi Blade) and from 30C (Stealthy Slash). Card data was looked up by name, so every line of that name got one printing's data and the grade read only one of the cards. 10 of the 132 top lists do this (Greninja ex, Riolu, Dunsparce, Abra, Applin).
+- Fix: lines are read in layers, each holding at most one printing of each name, so every printing gets its own data. A printing that can't be read keeps the data of the first one. Saved decks read their card data again once (ENRICH_VER 19).
+- Checked: in all 10 lists each printing now has its own attacks. The main and backup card sources now grade all 132 top lists the same (one list differed before).
+- Grade check: 1 list moved. Greninja (Rare Candy Club Showdown #51, 2nd) stays 8.1; Synergy 7.32 to 7.55, now that TWM Greninja ex's Shinobi Blade is read. The new lookups were recorded from a local copy of pokemon-tcg-data, checked first against the saved answers: it gave the same cards for every set it holds, and older sets came from the saved answers.
+
 # RdyDeck 2.5.5 (build 78): card traits checked across every source and import format (13 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v78), CHANGES.md, build-cards.mjs, cards.json and tests/grade-cards.json.gz.

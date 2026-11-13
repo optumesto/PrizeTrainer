@@ -5432,7 +5432,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 18;  // v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 19;  // 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -11997,14 +11997,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5.5',
+  version: 'v2.5.6',
   kind: 'fix',
   items: [
-    { t: 'Fixed: Delta Reign Special Energy graded as Special Energy' },
-    { t: 'Fixed: Adventure Lantern counts as an Item' },
-    { t: 'Fixed: 30th Celebration cards read right from the backup card source' },
-    { t: 'Fixed: TCG Live promo codes PR-SV and PR-ME' },
-    { t: 'Fixed: missing or wrong card details on about 70 cards' }
+    { t: 'Fixed: two different cards with one name are each graded' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -14910,8 +14906,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5.5';
-const PT_BUILD = 78;
+const PT_VERSION = 'v2.5.6';
+const PT_BUILD = 79;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -17644,6 +17640,42 @@ enrichDeckCards = async function (cards) {
     else if (c.resolved === false) delete c.via;
   });
   if (cov) { cov.tcgdex = td.size; cov.ptcg = pt.size; }
+  return cov;
+};
+
+// 2.5.6: a list can run two different cards with one name (Greninja ex from TWM and from 30C,
+// Riolu from MEG and PRE). Card data was looked up by name, so every line of that name got
+// one printing's data and the grade read only one of the cards. Lines are now read in layers,
+// each layer holding at most one printing of each name, so every printing gets its own data.
+// A layer that cannot read a line keeps the data its first printing got.
+const _v256EnrichDeck = enrichDeckCards;
+const _v256Fields = ['resolved','supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','retreat','provides',
+  'requires','reg','ace','dataSource','abilities','ttype','atext','rtext','etext','sub','tx','byName','attacks','via'];
+enrichDeckCards = async function (cards) {
+  const list = Array.isArray(cards) ? cards : [];
+  const print = c => String(c.set || '').trim().toUpperCase() + ' ' + String(c.num || '').trim().replace(/^0+(?=\d)/, '').toUpperCase();
+  const seen = new Map(), layers = [];
+  list.forEach(c => {
+    const n = String(c && c.name || '').toLowerCase();
+    let m = seen.get(n);
+    if (!m) { m = new Map(); seen.set(n, m); }
+    const k = print(c);
+    if (!m.has(k)) m.set(k, m.size);
+    (layers[m.get(k)] = layers[m.get(k)] || []).push(c);
+  });
+  if (layers.length < 2) return _v256EnrichDeck.apply(this, arguments);
+  const cov = await _v256EnrichDeck.call(this, layers[0]);
+  const first = new Map();
+  layers[0].forEach(c => { const n = String(c.name || '').toLowerCase(); if (!first.has(n)) first.set(n, c); });
+  for (const layer of layers.slice(1)) {
+    try { await _v256EnrichDeck.call(this, layer); } catch (_) {}
+    layer.forEach(c => {
+      const f = first.get(String(c.name || '').toLowerCase());
+      if (c.resolved || !f || !f.resolved) return;
+      _v256Fields.forEach(k => { if (f[k] === undefined) delete c[k]; else c[k] = JSON.parse(JSON.stringify(f[k])); });
+      c.byName = true;
+    });
+  }
   return cov;
 };
 
