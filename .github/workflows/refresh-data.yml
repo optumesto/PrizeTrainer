@@ -32,7 +32,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45   # a cards_only run reads about 300 requests 5 seconds apart
     steps:
       - uses: actions/checkout@v5
         with:

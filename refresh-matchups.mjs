@@ -59,9 +59,9 @@ const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
 const NEW_PER_RUN = BACKFILL ? 50 : 40;   // new events read per run
-const MAX_CALLS = BACKFILL || CARDS_ONLY ? 130 : 120;    // requests per run, all told
-const CARDS_AGAIN = CARDS_ONLY ? 60 : 10;  // events read once more for their card data, per run
-const PAUSE = 3000;        // between requests (Limitless answered 429 after about 4 minutes at 1.5 s)
+const MAX_CALLS = CARDS_ONLY ? 300 : BACKFILL ? 130 : 120;    // requests per run, all told
+const CARDS_AGAIN = CARDS_ONLY ? 150 : 10;  // events read once more for their card data, per run
+const PAUSE = CARDS_ONLY ? 5000 : 3000;   // between requests (Limitless answered 429 after about 4 minutes at 1.5 s); the one-off card data run goes slower
 const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
 const MAX_ROWS = 40;       // plus any deck with MIN_LISTS lists since the newest set
@@ -71,12 +71,17 @@ const SIG_MIN = 0.3;       // a Pokemon in this share of an archetype's lists is
 const SIG_MAX = 10;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-let calls = 0;
+let calls = 0, limitSeen = 'no limit headers';
 async function getJSON(url) {
   if (calls++ > MAX_CALLS) throw new Error('request budget used up');
   if (!process.env.PT_NO_PAUSE) await sleep(PAUSE);
   const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
   if (r.status === 429) throw new Error('rate limited by ' + new URL(url).host + ', stopping for this week');
+  // Stop well short of any limit the server reports (X-RateLimit-* or RateLimit-* headers).
+  const hv = n => { const v = r.headers.get(n); return v == null ? null : parseFloat(v); };
+  const left = hv('x-ratelimit-remaining') ?? hv('ratelimit-remaining'), cap = hv('x-ratelimit-limit') ?? hv('ratelimit-limit');
+  if (left != null || cap != null) limitSeen = `${left ?? '?'} of ${cap ?? '?'} left`;
+  if (left != null && left <= Math.max(5, (cap || 0) * 0.25)) throw new Error(`stopping early: ${limitSeen} at ${new URL(url).host}`);
   if (!r.ok) return null;
   return r.json();
 }
@@ -382,7 +387,7 @@ if (!process.env.PT_OFFLINE) try {
 } catch (e) { notes.push('Limitless (card data): ' + e.message + `, kept what was read (${cardAgain} events)`); }
 // Events read before a stop are kept too, so the next run does not read them again.
 cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
-notes.push(`requests: ${calls}`);
+notes.push(`requests: ${calls} (rate limit: ${limitSeen})`);
 
 const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY);
 const newest = cache.sets.length ? cache.sets[cache.sets.length - 1].release : null;
