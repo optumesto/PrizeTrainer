@@ -19274,11 +19274,16 @@ function gs261Info(deck, R) {
     out.main = gCap(m.name);
     const k = mu60Norm(m.name);
     const c = (deck.cards || []).find(x => x.imageUrl && mu60Norm(x.apiName || x.name) === k);
-    if (c) out.urls = gs261Big([c.imageUrl].concat(c.fallbackUrls || []));
+    if (c) {
+      let more = [];
+      try { more = getImageCandidates(c); } catch (_) {}
+      out.urls = gs261Big([c.imageUrl].concat(c.fallbackUrls || [], more));
+    }
   }
   return out;
 }
-/** Larger copies first: Limitless LG and full size before XS, pokemontcg.io hires before small. */
+/** Larger copies first, and the hosts that let a page read their pictures first: pokemontcg.io
+ *  and TCGdex do; the Limitless image host does not (checked 13 Nov 2026), so it is tried last. */
 function gs261Big(list) {
   const out = [];
   list.forEach(u => {
@@ -19286,9 +19291,11 @@ function gs261Big(list) {
     if (!/^https:\/\//.test(u)) return;
     if (/_R_EN_XS\.png$/.test(u)) out.push(u.replace(/_XS\.png$/, '_LG.png'), u.replace(/_XS\.png$/, '.png'));
     if (/images\.pokemontcg\.io\/[^/]+\/[^/_]+\.png$/.test(u)) out.push(u.replace(/\.png$/, '_hires.png'));
+    if (/assets\.tcgdex\.net\/.+\/low\.(webp|png)$/.test(u)) out.push(u.replace(/low\.(webp|png)$/, 'high.webp'));
     out.push(u);
   });
-  return [...new Set(out)];
+  const rank = u => /pokemontcg\.io/.test(u) ? 0 : /tcgdex\.net/.test(u) ? 1 : 2;
+  return [...new Set(out)].map((u, i) => ({ u, i })).sort((a, b) => rank(a.u) - rank(b.u) || a.i - b.i).map(x => x.u);
 }
 /** The first art that loads as a readable picture, or null. Gives up after 4 seconds in all. */
 async function gs261Art(urls) {
@@ -19296,7 +19303,7 @@ async function gs261Art(urls) {
   const ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const t = setTimeout(() => { if (ac) ac.abort(); }, 4000);
   try {
-    for (const u of urls.slice(0, 6)) {
+    for (const u of urls.slice(0, 8)) {
       try {
         const r = await fetch(u, { mode: 'cors', credentials: 'omit', signal: ac ? ac.signal : undefined });
         if (!r.ok || !/^image\//.test(r.headers.get('content-type') || 'image/')) continue;
