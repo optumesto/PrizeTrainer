@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>art check</title>
+<pre id="o">checking</pre>
+<script>
+const urls = [
+ 'https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_016_R_EN_LG.png',
+ 'https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_016_R_EN.png',
+ 'https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_016_R_EN_XS.png',
+ 'https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_130_R_EN_XS.png',
+ 'https://images.pokemontcg.io/sv6/130_hires.png',
+ 'https://images.pokemontcg.io/sv6/130.png',
+ 'https://assets.tcgdex.net/en/sv/sv06/130/high.webp',
+ 'https://assets.tcgdex.net/en/sv/sv06/130/low.png'];
+(async () => { const o = []; for (const u of urls) { let s;
+  try { const r = await fetch(u, { mode: 'cors', credentials: 'omit' }); s = r.status + ' ' + r.headers.get('content-type') + ' acao=' + r.headers.get('access-control-allow-origin'); }
+  catch (e) { s = 'FAILED ' + e.name; }
+  let im = await new Promise(res => { const i = new Image(); i.onload = () => res('img ok ' + i.naturalWidth + 'x' + i.naturalHeight); i.onerror = () => res('img error'); i.src = u; });
+  o.push(u.replace(/^https:\/\//, '') + '\n   fetch: ' + s + '\n   ' + im); document.getElementById('o').textContent = o.join('\n'); } o.push('done'); document.getElementById('o').textContent = o.join('\n'); })();
+</script>
