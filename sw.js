@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v79';
+const CACHE_NAME = 'prize-trainer-v80';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -48,6 +48,8 @@ const CORE_ASSETS = [
   // 2.5.1: the deck builder's card data, so card search works offline from the first visit.
   './cards.json',
   './builder.json',
+  // 2.6: what each meta deck's top lists run, for the deck builder's panel.
+  './meta-cards.json',
 ];
 
 // Saved copies are kept under the address without its query, so links with
@@ -111,7 +113,7 @@ self.addEventListener('fetch', event => {
   }
 
   // The weekly data files: newest copy first, the saved one with no signal.
-  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/cards.json'))) {
+  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/meta-cards.json') || url.pathname.endsWith('/cards.json'))) {
     event.respondWith(
       fetch(req, { cache: 'no-cache' })
         .then(resp => {

@@ -11997,10 +11997,13 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.5.6',
-  kind: 'fix',
+  version: 'v2.6',
+  kind: 'generation',
   items: [
-    { t: 'Fixed: two different cards with one name are each graded' }
+    { t: 'Added: What top lists run, in the deck builder', d: 'Core and flex cards with the counts top lists run, from every top list of the last two sets.' },
+    { t: 'Added: Count checks', d: 'The builder flags counts few top lists run and cards they do not run.' },
+    { t: 'Added: Matchup techs', d: 'Cards whose lists won more often against each of the most played decks.' },
+    { t: 'Added: Card trends', d: 'Cards rising or falling in the last two weeks.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -14906,8 +14909,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.5.6';
-const PT_BUILD = 79;
+const PT_VERSION = 'v2.6';
+const PT_BUILD = 80;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -20582,7 +20585,7 @@ const BLD_BASIC_E = /^(?:basic\s+)?(grass|fire|water|lightning|psychic|fighting|
 // Special Energy that pays for a type: the type in its name, or every type (Prism, Luminous, Neo Upper).
 const BLD_SPECIAL_TYPES = { 'prism energy': 'GRWLPFDMYN', 'luminous energy': 'GRWLPFDMYN', 'neo upper energy': 'GRWLPFDMYN', "team rocket's energy": 'PD' };
 
-let bldCat = null, bldMeta = null, bldLoad = null, bldQ = '', bldTab = 'all', bldActs = [], bldSheetActs = [];
+let bldCat = null, bldMeta = null, bldUp = null, bldMC = null, bldLoad = null, bldQ = '', bldTab = 'all', bldActs = [], bldSheetActs = [];
 let bld = bldRead();
 
 function bldRead() {
@@ -20602,8 +20605,12 @@ const bldPct = r => Math.round(r * 100) + '%';
 function bldData() {
   if (bldLoad) return bldLoad;
   const get = f => fetch(f, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null);
-  bldLoad = Promise.all([get('cards.json'), get('builder.json')]).then(([c, m]) => {
-    bldMeta = m && Array.isArray(m.decks) ? m : null;
+  // 2.6: meta-cards.json (every top list of the last two sets) is what the builder shows; builder.json
+  // stays as it was for the grade's upgrade suggestions (bldUp), so they do not move.
+  bldLoad = Promise.all([get('cards.json'), get('builder.json'), get('meta-cards.json')]).then(([c, m, mc]) => {
+    bldUp = m && Array.isArray(m.decks) ? m : null;
+    bldMC = mc && Array.isArray(mc.decks) && mc.decks.length ? mc : null;
+    bldMeta = mc26Merge(bldUp, bldMC);
     bldIndex(c && Array.isArray(c.cards) ? c.cards : []);
     if (!c) bldLoad = null;   // try again next time
   });
@@ -20841,6 +20848,8 @@ function bldChecks() {
   if (bldCat && bldCat.cards.length) {
     rows.filter(x => !x.e).slice(0, 5).forEach(({ r }) => out.push({ sev: 'warn', t: `${r.name}${r.set ? ` ${r.set} ${r.num}` : ''} is not in the Standard card list. Check the name, or it may not be legal.` }));
   }
+  // 2.6: counts few of the meta deck's top lists run, and cards they do not run.
+  if (typeof mc26Checks === 'function') out.push(...mc26Checks(bldRef(), act));
   const order = { bad: 0, warn: 1, ok: 2 };
   return out.sort((a, b) => order[a.sev] - order[b.sev]);
 }
@@ -20876,13 +20885,13 @@ function bldSuggest(ref) {
       const k = bldKey(c[0]);
       if (c[6] < 0.5 || !inList(k)) return;
       const n = bldNameCount(c[0]);
-      if (n < c[4] && !BLD_BASIC_E.test(c[0])) out.push({ c, e: entry(c), why: `${bldPct(c[6])} of ${d.name} lists run it, most with ${c[4]}. You have ${n}.`, act: act(`Make it ${c[4]}`, () => { bldAdd(entry(c), c[4] - n); }) });
+      if (n < c[4] && !BLD_BASIC_E.test(c[0])) out.push({ c, e: entry(c), why: `${bldPct(c[6])} of ${d.name} top lists run it, most with ${c[4]}. You have ${n}.`, act: act(`Make it ${c[4]}`, () => { bldAdd(entry(c), c[4] - n); }) });
     });
     d.cards.forEach(c => {
       if (c[6] < BLD_SUGGEST || inList(bldKey(c[0]))) return;
       const e = entry(c);
       if (e.ace && bld.rows.some(r => { const x = bldEntry(r); return x && x.ace; })) return;
-      out.push({ c, e, why: `${bldPct(c[6])} of ${d.name} lists run it, most with ${c[4]}.`, act: act(`Add ${c[4]}`, () => { bldAdd(e, c[4]); }) });
+      out.push({ c, e, why: `${bldPct(c[6])} of ${d.name} top lists run it, most with ${c[4]}.`, act: act(`Add ${c[4]}`, () => { bldAdd(e, c[4]); }) });
     });
   } else if (bldMeta) {
     // No meta deck to go by: the Trainers most top lists run, whatever the deck.
@@ -20941,8 +20950,7 @@ function bldFacts(e) {
 
 function bldRowHtml(r, i, ref) {
   const e = bldEntry(r);
-  const u = ref && bldUseIn(ref.d, r.name);
-  const sub = u ? `${bldPct(u[6])} of ${ref.d.name} lists run it, most with ${u[4]}.` : bldFacts(e);
+  const sub = (typeof mc26RowSub === 'function' && mc26RowSub(ref, r)) || bldFacts(e);
   return `<div class="bld-row">${bldThumb(r.name, r.set, r.num)}
     <div class="bld-tx"><div class="bld-nm">${esc(r.name)} <span class="bld-pr">${esc([r.set, r.num].filter(Boolean).join(' '))}</span></div>${sub ? `<div class="bld-sub">${esc(sub)}</div>` : ''}</div>
     <div class="bld-step"><button type="button" onclick="bldStep(${i},-1)" aria-label="One fewer ${esc(r.name)}">&minus;</button><b>${r.count}</b><button type="button" onclick="bldStep(${i},1)" aria-label="One more ${esc(r.name)}"${bldCanAdd(r) ? '' : ' disabled'}>+</button></div></div>`;
@@ -21059,6 +21067,7 @@ function bldRender() {
     } else if (total) refLine = `<div class="bld-ref"><span>No meta deck matches these Pokémon yet, so these are what top lists run whatever the deck.</span></div>`;
     if (total) side += `<div class="bld-sec"><h2 class="bld-h">Suggestions</h2>${refLine}${sugg.length ? `<div class="bld-group">${sugg.slice(0, 14).map(s => `<div class="bld-row">${bldThumb(s.e.n, s.e.s, s.e.no)}<div class="bld-tx"><div class="bld-nm">${esc(s.e.n)} <span class="bld-pr">${esc(s.e.s + ' ' + s.e.no)}</span></div><div class="bld-sub">${esc(s.why)}</div></div><button type="button" class="bld-add wide" onclick="bldAct(${s.act.i})">${esc(s.act.label)}</button></div>`).join('')}</div>` : '<div class="bld-small">Nothing to add from the top lists.</div>'}
       <div class="bld-small">${esc(bldMeta.from || '')}. The grade checks the rest when you save.</div></div>`;
+    if (total && typeof mc26PanelHtml === 'function') side += mc26PanelHtml(ref);
   }
   body.innerHTML = side ? `<div class="bld-grid"><div>${left}</div><div class="bld-side">${side}</div></div>` : left;
   if (focus) { const q = document.getElementById('bld-q'); if (q) { q.focus(); try { q.setSelectionRange(q.value.length, q.value.length); } catch (_) {} } }
@@ -21225,6 +21234,194 @@ async function bldSave(update) {
   row.classList.add('bld-3');
   row.insertAdjacentHTML('beforeend', '<button class="btn bld-cta" id="bld-cta" onclick="openBuilder()"><svg class="ic"><use href="#i-edit"/></svg>Build a deck</button>');
 })();
+</script>
+<!-- ═══════════════════════════ DECK BUILDER: WHAT TOP LISTS RUN (2.6) -->
+<style id="mc26-css">
+  .mc26-tabs { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.6rem; }
+  .mc26-tabs button { flex:1; min-height:34px; border:0; background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:var(--r-sm); cursor:pointer; }
+  .mc26-tabs button.active { background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--line-2); }
+  .mc26-opps { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 0.6rem; }
+  .mc26-opps button { min-height:32px; padding:0 0.7rem; border:1px solid var(--line-2); background:var(--surface); color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:999px; cursor:pointer; }
+  .mc26-opps button.active { color:var(--text); border-color:var(--text-2); background:var(--surface-2); }
+  .mc26-row { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.6rem; border-bottom:1px solid var(--line); min-height:48px; }
+  .mc26-row:last-child { border-bottom:0; }
+  .mc26-you { flex-shrink:0; font-size:var(--fs-sm); color:var(--text-2); white-space:nowrap; text-align:right; min-width:3.2rem; }
+  .mc26-more { display:block; width:100%; min-height:40px; border:0; border-top:1px solid var(--line); background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; cursor:pointer; border-radius:0 0 var(--r) var(--r); }
+  .mc26-p { margin:0 0 0.6rem; }
+</style>
+<script>
+// ═══════════ 2.6: What top lists run, in the deck builder ═══════════
+// meta-cards.json (built weekly by refresh-matchups.mjs with meta-cards.mjs) holds, per meta deck, what
+// its top lists run (the top quarter of each Limitless online event in the last two sets, or only those
+// since the newest set when there are enough), how the share of its lists that run each card moved in
+// the last two weeks, and cards whose lists won more often against each of the most played decks.
+// The builder shows them for the meta deck the list is built from or looks like: the cards with their
+// usual counts (core and flex), how the list's counts compare, matchup techs and trends.
+// None of it feeds the grade, which keeps reading builder.json and matchups.json.
+const MC26_COMMON = 0.15;   // a count this share of top lists run is common
+const MC26_RARE = 0.05;     // under this share of top lists, a count (or a card) is unusual
+let mc26Tab = 'cards', mc26Opp = null, mc26AllFlex = false;
+
+const MC26_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const mc26Day = d => { const m = String(d || '').match(/^\d{4}-(\d{2})-(\d{2})$/); return m ? `${+m[2]} ${MC26_MON[+m[1] - 1]}` : String(d || ''); };
+
+/** The builder's meta decks: meta-cards.json's when it loaded, builder.json's for any deck it lacks. */
+function mc26Merge(up, mc) {
+  if (!mc) return up;
+  const decks = mc.decks.filter(d => Array.isArray(d.cards) && d.cards.length).map(d => ({ id: d.id, name: d.name, lists: d.tops, cards: d.cards, mc: d }));
+  const have = new Set(decks.map(d => d.id));
+  if (up && Array.isArray(up.decks)) up.decks.forEach(d => { if (!have.has(d.id)) decks.push(d); });
+  let all = up && Array.isArray(up.all) ? up.all : null;
+  if (!all) {
+    // No builder.json: what every deck's top lists run, weighted by how many top lists each deck has.
+    const tops = decks.reduce((a, d) => a + d.lists, 0) || 1, by = new Map();
+    decks.forEach(d => d.cards.forEach(c => { const x = by.get(c[0]) || { c, n: 0 }; x.n += c[6] * d.lists; by.set(c[0], x); }));
+    all = [...by.values()].map(({ c, n }) => [c[0], c[1], c[2], c[3], c[4], c[5], Math.round(n / tops * 100) / 100]).filter(c => c[6] >= 0.15).sort((a, b) => b[6] - a[6]);
+  }
+  const from = mc.from ? `Top lists from Limitless online tournaments since ${mc.from} came out (${mc26Day(mc.since)} to ${mc26Day(mc.until)})` : `Top lists from Limitless online tournaments, ${mc26Day(mc.since)} to ${mc26Day(mc.until)}`;
+  return { ...(up || {}), asOf: mc.asOf, from, decks, all };
+}
+
+/** Where a deck's card numbers come from, in a sentence. */
+function mc26Basis(d) {
+  if (!d.mc || !bldMC) return `${d.lists} top lists.`;
+  const n = bldMC.newest;
+  return d.mc.basis === 'cur' && n ? `${d.lists} top lists since ${n.name || 'the newest set'} came out (${mc26Day(n.since)}).` : `${d.lists} top lists since ${bldMC.from || mc26Day(bldMC.since)}${bldMC.from ? ' came out' : ''}.`;
+}
+
+/** Share of a deck's top lists that run a card at exactly n copies (0 when none do). */
+function mc26At(c, n) {
+  if (!c) return 0;
+  if (Array.isArray(c[7])) { const h = c[7].find(x => x[0] === n); return h ? c[6] * h[1] : 0; }
+  return n === c[4] ? c[6] : 0;   // builder.json has the usual count only
+}
+/** "70% run 2, 22% run 3": the counts top lists run, as shares of all of them. */
+function mc26Counts(c) {
+  if (!Array.isArray(c[7])) return `${bldPct(c[6])} run it, most with ${c[4]}.`;   // builder.json: the usual count only
+  const h = c[7];
+  const parts = h.map(([k, s]) => [k, c[6] * s]).filter(x => x[1] >= 0.03).slice(0, 3).map(([k, s]) => `${bldPct(s)} run ${k}`);
+  return parts.length ? parts.join(', ') + '.' : `${bldPct(c[6])} run it.`;
+}
+
+/**
+ * How a count in the list compares with the deck's top lists: null when they run it at that count
+ * commonly, else { sev, t } in a sentence. sev warn: under MC26_RARE of top lists run that count.
+ */
+function mc26Fit(d, name, n) {
+  if (!d || !n) return null;
+  const c = bldUseIn(d, name);
+  if (!c) return { sev: 'warn', none: true };
+  if (n === c[4] || !Array.isArray(c[7])) return null;   // builder.json has no counts to compare with
+  const s = mc26At(c, n);
+  if (s >= MC26_COMMON) return null;
+  if (s >= MC26_RARE) return { sev: 'info', t: `${bldPct(s)} of ${d.name} top lists run ${n} ${name}. Most that run it run ${c[4]}.` };
+  return { sev: 'warn', t: `${s ? `Only ${bldPct(s)} of ${d.name} top lists run` : `No ${d.name} top list runs`} ${n} ${name}. Most that run it run ${c[4]}.`, to: c[4] };
+}
+
+/** Checks for the counts: each count few top lists run, and the cards they do not run. */
+function mc26Checks(ref, act) {
+  if (!ref || !ref.d) return [];
+  const d = ref.d, out = [], none = [];
+  const seen = new Map();
+  bld.rows.forEach(r => { const k = bldKey(r.name); const x = seen.get(k) || { name: r.name, n: 0, r }; x.n += r.count; seen.set(k, x); });
+  let odd = 0;
+  seen.forEach(x => {
+    const f = mc26Fit(d, x.name, x.n);
+    if (!f) return;
+    // Too few copies of a card most lists run is already a suggestion ("Make it 2").
+    const c = bldUseIn(d, x.name);
+    if (c && x.n < c[4] && c[6] >= 0.5) return;
+    if (f.none) { none.push(x.name); return; }
+    if (f.sev !== 'warn') return;
+    odd++;
+    if (odd > 6) return;
+    const to = f.to, cur = x.n, row = x.r;
+    out.push({ sev: 'warn', t: f.t, act: act(`Make it ${to}`, () => {
+      if (to < cur) { let cut = cur - to; bld.rows.filter(r => bldKey(r.name) === bldKey(row.name)).forEach(r => { const k = Math.min(cut, r.count); r.count -= k; cut -= k; }); bld.rows = bld.rows.filter(r => r.count > 0); }
+      else bldAdd({ n: row.name, s: row.set, no: row.num, k: { pokemon: 'P', trainer: 'T', energy: 'E' }[bldKind(row)] }, to - cur);
+    }) });
+  });
+  // meta-cards.json keeps cards 5% of top lists run, builder.json 10%.
+  if (none.length) out.push({ sev: 'warn', t: `Under ${d.mc ? '5%' : '10%'} of ${d.name} top lists run ${none.slice(0, 5).join(', ')}${none.length > 5 ? ` and ${none.length - 5} more` : ''}.` });
+  if (!odd && !none.length && bldTotal() >= 40) out.push({ sev: 'ok', t: `Every count is one ${d.name} top lists run.` });
+  return out;
+}
+
+/** The sentence under a card in the list: how many top lists run it, and how the count compares. */
+function mc26RowSub(ref, r) {
+  const d = ref && ref.d, c = d && bldUseIn(d, r.name);
+  if (!c) return null;
+  let t = `${bldPct(c[6])} of ${d.name} top lists run it, most with ${c[4]}.`;
+  const n = bldNameCount(r.name);
+  if (n !== c[4] && Array.isArray(c[7])) { const s = mc26At(c, n); t += ` ${s ? bldPct(s) : 'None'} run ${n}.`; }
+  return t;
+}
+
+function mc26SetTab(t) { mc26Tab = t; bldRender(); }
+function mc26SetOpp(id) { mc26Opp = id; bldRender(); }
+function mc26More() { mc26AllFlex = !mc26AllFlex; bldRender(); }
+
+/** One card line with what the list has of it, or a button to add the usual count. */
+function mc26Line(c, sub, usual) {
+  const n = bldNameCount(c[0]);
+  let right;
+  if (n) right = `<span class="mc26-you">You ${n}</span>`;
+  else {
+    const e = (bldCat && bldCat.byPrint.get(c[1] + ' ' + c[2])) || (bldCat && (bldCat.byName.get(bldKey(c[0])) || [])[0]);
+    const card = e ? { ...e, n: c[0], s: c[1] || e.s, no: c[2] || e.no } : { n: c[0], s: c[1], no: c[2], k: c[3] };
+    const k = Math.max(1, usual || c[4] || 1);
+    const i = bldActs.push(() => { if (bldAdd(card, k)) showToast(`Added ${k} ${c[0]}.`); }) - 1;
+    right = `<button type="button" class="bld-add wide" onclick="bldAct(${i})">Add ${k}</button>`;
+  }
+  return `<div class="mc26-row"><div class="bld-tx"><div class="bld-nm">${esc(c[0])}</div><div class="bld-sub">${esc(sub)}</div></div>${right}</div>`;
+}
+
+function mc26CardsHtml(d) {
+  const core = d.cards.filter(c => c[6] >= BLD_CORE), flex = d.cards.filter(c => c[6] < BLD_CORE);
+  const shown = mc26AllFlex ? flex : flex.slice(0, 12);
+  let h = `<p class="bld-small mc26-p">${esc(mc26Basis(d))} Core is what ${bldPct(BLD_CORE)} or more of them run.</p>`;
+  h += `<div class="bld-group"><h3 class="bld-h">Core <span class="bld-n">${core.length} cards</span></h3>${core.map(c => mc26Line(c, mc26Counts(c))).join('') || '<div class="mc26-row bld-small">No card is in that many lists.</div>'}</div>`;
+  if (flex.length) h += `<div class="bld-group"><h3 class="bld-h">Flex <span class="bld-n">${flex.length} cards</span></h3>${shown.map(c => mc26Line(c, mc26Counts(c))).join('')}${flex.length > 12 ? `<button type="button" class="mc26-more" onclick="mc26More()">${mc26AllFlex ? 'Show fewer' : `Show all ${flex.length}`}</button>` : ''}</div>`;
+  return h;
+}
+
+function mc26TechsHtml(d) {
+  const t = d.mc && d.mc.techs, names = new Map(((bldMC && bldMC.opponents) || []).map(x => [x[0], x[1]]));
+  const opps = ((bldMC && bldMC.opponents) || []).map(x => x[0]).filter(id => id !== d.id && t && t[id]);
+  if (!opps.length) return `<p class="bld-small mc26-p">Too few recorded matches for ${esc(d.name)} against the most played decks to tell.</p>`;
+  if (!opps.includes(mc26Opp)) mc26Opp = opps[0];
+  const x = t[mc26Opp], name = names.get(mc26Opp) || mc26Opp;
+  const m = x.rec[0] + x.rec[1] + x.rec[2];
+  let h = `<div class="mc26-opps" role="group" aria-label="Opponent">${opps.map(id => `<button type="button" class="${id === mc26Opp ? 'active' : ''}" onclick="mc26SetOpp('${esc(id)}')">${esc(names.get(id) || id)}</button>`).join('')}</div>`;
+  h += `<p class="bld-small mc26-p">${esc(d.name)} against ${esc(name)}: won ${bldPct(x.rec[0] / m)} of ${m.toLocaleString('en-US')} matches.</p>`;
+  if (!x.cards.length) return h + `<p class="bld-small mc26-p">No card stands out against ${esc(name)} yet. Lists with and without each card did about the same.</p>`;
+  const usual = name => { const c = bldUseIn(d, name); return c ? c[4] : 1; };
+  h += `<div class="bld-group">${x.cards.map(c => mc26Line([c[0], '', '', c[1]], `With it: won ${bldPct(c[2] / c[3])} of ${c[3].toLocaleString('en-US')}. Without: ${bldPct(c[4] / c[5])} of ${c[5].toLocaleString('en-US')}.`, usual(c[0]))).join('')}</div>`;
+  return h + `<p class="bld-small">Lists that ran these won more often against ${esc(name)}. The card may not be the only reason.</p>`;
+}
+
+function mc26TrendsHtml(d) {
+  const t = d.mc && d.mc.trend, r = bldMC && bldMC.recent;
+  if (!t || !r) return `<p class="bld-small mc26-p">Not enough ${esc(d.name)} lists both in the last two weeks and before to show what is changing.</p>`;
+  let h = `<p class="bld-small mc26-p">Share of all ${esc(d.name)} lists that run each card: the last two weeks (${mc26Day(r.since)} to ${mc26Day(r.until)}, ${t.late.toLocaleString('en-US')} lists) against before (${t.early.toLocaleString('en-US')} lists).</p>`;
+  if (!t.cards.length) return h + '<p class="bld-small">No card moved by 10 points or more.</p>';
+  const usual = name => { const c = bldUseIn(d, name); return c ? c[4] : 1; };
+  const up = t.cards.filter(c => c[3] > c[2]), down = t.cards.filter(c => c[3] < c[2]);
+  const group = (title, cs) => cs.length ? `<div class="bld-group"><h3 class="bld-h">${title} <span class="bld-n">${cs.length}</span></h3>${cs.map(c => mc26Line([c[0], '', '', c[1]], `${bldPct(c[2])} to ${bldPct(c[3])} of lists.`, usual(c[0]))).join('')}</div>` : '';
+  return h + group('Rising', up) + group('Falling', down);
+}
+
+/** The builder's panel for the meta deck the list is built from or looks like. */
+function mc26PanelHtml(ref) {
+  if (!ref || !ref.d) return '';
+  const d = ref.d, rich = !!(d.mc && bldMC);
+  const tabs = rich ? [['cards', 'Cards'], ['techs', 'Matchups'], ['trends', 'Trends']] : [['cards', 'Cards']];
+  if (!tabs.some(x => x[0] === mc26Tab)) mc26Tab = 'cards';
+  const body = mc26Tab === 'techs' ? mc26TechsHtml(d) : mc26Tab === 'trends' ? mc26TrendsHtml(d) : mc26CardsHtml(d);
+  return `<div class="bld-sec"><h2 class="bld-h">What ${esc(d.name)} top lists run</h2>
+    ${tabs.length > 1 ? `<div class="mc26-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" aria-selected="${mc26Tab === k}" class="${mc26Tab === k ? 'active' : ''}" onclick="mc26SetTab('${k}')">${l}</button>`).join('')}</div>` : ''}
+    ${body}<p class="bld-small">These are for decks like yours, not your exact list.</p></div>`;
+}
 </script>
 <script>
 // ═══════════ v69 (2.4): the grade blends in how the deck does in tournaments ═══════════
@@ -21582,7 +21779,7 @@ const up75Key = n => typeof bldKey === 'function' ? bldKey(n) : rules34Key(n);
 
 /** The builder.json deck this list plays: the archetype its grade takes results from, or the best match. */
 function up75Arch(deck, R) {
-  const decks = (bldMeta && bldMeta.decks) || [];
+  const decks = (bldUp && bldUp.decks) || [];
   if (!decks.length) return null;
   if (R && R.res) { const d = decks.find(x => x.id === R.res.id); if (d) return d; }
   try { const pick = mu60Picks()[deck.id]; const d = pick && decks.find(x => x.id === pick); if (d) return d; } catch (_) {}
@@ -21664,7 +21861,7 @@ async function up75Find(deck) {
   const adds = new Map();
   // A list with no meta deck to go by is offered the staples most top lists run, of any deck:
   // Trainers and the support Pokemon nearly every deck plays, never Energy or another deck's attackers.
-  const ref = arch ? arch.cards : ((bldMeta && bldMeta.all) || []).filter(c => c[3] === 'T' ? c[6] >= 0.4 : c[3] === 'P' && c[6] >= 0.6);
+  const ref = arch ? arch.cards : ((bldUp && bldUp.all) || []).filter(c => c[3] === 'T' ? c[6] >= 0.4 : c[3] === 'P' && c[6] >= 0.6);
   ref.forEach(c => {
     const [name, set, num, part, usual, , share] = c;
     const key = up75Key(name);
@@ -21697,7 +21894,7 @@ async function up75Find(deck) {
   // Cards to take out: one copy of anything its top lists run fewer of, or rarely run, and
   // Trainers marked Weak or Does nothing. Never the last Basic Energy of a type the deck needs:
   // the grade decides that, like everything else.
-  const usualOf = new Map((arch ? arch.cards : ((bldMeta && bldMeta.all) || [])).map(c => [up75Key(c[0]), c]));
+  const usualOf = new Map((arch ? arch.cards : ((bldUp && bldUp.all) || [])).map(c => [up75Key(c[0]), c]));
   const rows = new Map();
   (deck.cards || []).forEach(c => { const k = up75Key(c.name); const r = rows.get(k); if (r) r.n += c.count || 0; else rows.set(k, { key: k, name: c.name, n: c.count || 0, c }); });
   // The Pokemon the deck is named for stay: cutting the deck's own attacker is never the upgrade a player means.
@@ -21792,7 +21989,7 @@ async function up75Find(deck) {
 function up75Sig(deck) {
   let mu = '';
   try { mu = (mu60Data && mu60Data.asOf) || ''; } catch (_) {}
-  return g29Sig(deck) + '|' + mu + '|' + ((bldMeta && bldMeta.asOf) || '');
+  return g29Sig(deck) + '|' + mu + '|' + ((bldUp && bldUp.asOf) || '');
 }
 
 function up75Html(res, hasFix) {

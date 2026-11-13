@@ -2,6 +2,19 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6 (build 80): what top lists run, in the deck builder (13 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v80), CHANGES.md, refresh-matchups.mjs, new meta-cards.mjs, .github/workflows/refresh-data.yml, and new data files meta-cards.json and .github/cards-cache.json.
+
+- New data, meta-cards.json: the weekly refresh already reads every big Limitless online event in the window (standings and pairings) for matchups.json. It now also keeps, per deck and event, how many lists run each card and at what count, the top quarter of each event apart (at least the top 16), and each card's record against the event's most played decks. meta-cards.json sums them over the window: about 150 events since 30th Celebration came out, against 8 events and 128 top lists in builder.json. A deck's cards come from its top lists since the newest set came out when it has 24 or more, else from the whole window.
+- Deck builder, What top lists run (for the meta deck the list is built from or looks like):
+  - Cards: core (75% or more of top lists run it) and flex, each with the counts top lists run ("82% run 2, 18% run 3") and the list's own count, or a button to add the usual count.
+  - Matchups: pick one of the most played decks to see cards whose lists won more often against it than lists without them, with both win rates and match counts. A card shows only with 25 or more matches each way, 3 points or more better, and an edge unlikely to be chance alone.
+  - Trends: cards whose share of the deck's lists moved by 10 points or more, the last two weeks against before.
+- Count checks: a count under 5% of the deck's top lists run is flagged with a button to make it the usual count, and cards under 5% of them run are named. The sentence under each card in the list says how many top lists run it and how many run the list's count.
+- Data reads: the same Limitless requests as before for new events. Events read before 2.6 are read once more for their card data, newest first: 10 a week in the weekly run, or 60 a run with the new cards_only option, 3 seconds apart, stopping at the first 429.
+- Not the grade: the grade and the Upgrades section keep reading builder.json and matchups.json, so no grade or upgrade moves. Grade check: no grade moved.
+
 # RdyDeck 2.5.6 (build 79): two different cards with one name each get their own data (13 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v79), CHANGES.md, tests/grade-cards.json.gz and tests/grade-baseline.json.
