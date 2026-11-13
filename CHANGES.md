@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7 (build 81): shareable grade cards (13 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v81), CHANGES.md.
+
+- Share grade (on the Grade tab) now makes a grade card in two sizes: Wide (1200 by 630, for X, Discord and YouTube) and Square (1080 by 1080, for Instagram and TikTok). The size picked is remembered.
+- The card adds the deck's archetype (when the list matches one of the meta decks and its name does not already say it) and its main attacker, as the Grade tab reads them, and the main attacker's card art.
+- The art is read only from an image host that allows a page to read it, and the search gives up after 4 seconds. Without art the card uses a layout made for no art.
+- When the archetype or the art comes from Limitless, the card says so on its last line.
+- The sheet opens at once and shows the card when it is drawn. Save image, Copy link and Share work as before; the link still holds only the list, so whoever opens it gets the grade worked out on their own device.
+- Not the grade: no grading code changed. Grade check: no grade moved.
+
 # RdyDeck 2.6 (build 80): what top lists run, in the deck builder (13 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v80), CHANGES.md, refresh-matchups.mjs, new meta-cards.mjs, .github/workflows/refresh-data.yml, and new data files meta-cards.json and .github/cards-cache.json.
