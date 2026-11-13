@@ -3,7 +3,8 @@
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
-# Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments.
+# Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments, and from the
+# same reads meta-cards.json (what each deck's lists run, for the deck builder).
 # Last, checks how well grades track those results and writes grade-results.md.
 name: Refresh data.json
 
@@ -14,6 +15,10 @@ on:
     inputs:
       backfill:
         description: 'Read up to 150 new tournaments for matchups.json (to fill a wider window at once)'
+        type: boolean
+        default: false
+      cards_only:
+        description: 'Only read earlier tournaments again for the deck builder card data (meta-cards.json); leaves everything else alone'
         type: boolean
         default: false
 
@@ -38,14 +43,17 @@ jobs:
           node-version: '22'
 
       - name: Refresh data.json
+        if: ${{ !inputs.cards_only }}
         run: node refresh-data.mjs data.json builder.json
 
       - name: Refresh the deck builder's card list
+        if: ${{ !inputs.cards_only }}
         # A failed run keeps last week's cards.json; it never blocks the refresh.
         continue-on-error: true
         run: node build-cards.mjs cards.json data.json
 
       - name: Check card facts
+        if: ${{ !inputs.cards_only }}
         # A failed check never blocks the refresh; card-check.md says what happened.
         continue-on-error: true
         run: node check-cards.mjs data.json card-check.md index.html
@@ -55,9 +63,11 @@ jobs:
         continue-on-error: true
         env:
           PT_BACKFILL: ${{ inputs.backfill && '1' || '' }}
+          PT_CARDS_ONLY: ${{ inputs.cards_only && '1' || '' }}
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
       - name: Check grades against results
+        if: ${{ !inputs.cards_only }}
         # Ranks archetypes by grade and by this week's results and writes grade-results.md.
         # A failed run keeps last week's report; it never blocks the refresh.
         continue-on-error: true
@@ -66,13 +76,14 @@ jobs:
           node tests/grade-check.mjs --results=grade-results.md
 
       - name: Update sitemap dates
+        if: ${{ !inputs.cards_only }}
         # A failed run keeps the old dates; it never blocks the refresh.
         continue-on-error: true
         run: node update-sitemap.mjs sitemap.xml
 
       - name: Commit if it changed
         run: |
-          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json sitemap.xml grade-results.md"
+          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

@@ -33,10 +33,17 @@
 // Safety: a run that reads too little keeps last week's matchups.json. The files are
 // only written when something real changed, so a quiet week makes no commit.
 import { readFile, writeFile } from 'node:fs/promises';
+import { cardDigest, buildMetaCards, CARD_VERSION } from './meta-cards.mjs';
 
 const OUT = process.argv[2] || 'matchups.json';
 const CACHE = process.argv[3] || '.github/matchups-cache.json';
 const DATA = process.argv[4] || 'data.json';
+// The deck builder's card data (2.6): what each deck's lists run, from the same standings and pairings.
+const CARDS_OUT = process.env.PT_CARDS_OUT || 'meta-cards.json';
+const CARDS_CACHE = process.env.PT_CARDS_CACHE || '.github/cards-cache.json';
+// PT_CARDS_ONLY=1 reads no new events and leaves matchups.json alone: it only reads events already in
+// the window once more for their card data (each event is read again only once), newest first.
+const CARDS_ONLY = !!process.env.PT_CARDS_ONLY;
 const UA = 'RdyDeck-data-refresh/1.0 (+https://rdydeck.com/)';
 const LIMITLESS = process.env.PT_LIMITLESS || 'https://play.limitlesstcg.com/api';
 const DAY = 86400000;
@@ -52,7 +59,8 @@ const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
 const NEW_PER_RUN = BACKFILL ? 50 : 40;   // new events read per run
-const MAX_CALLS = BACKFILL ? 130 : 120;    // requests per run, all told
+const MAX_CALLS = BACKFILL || CARDS_ONLY ? 130 : 120;    // requests per run, all told
+const CARDS_AGAIN = CARDS_ONLY ? 60 : 10;  // events read once more for their card data, per run
 const PAUSE = 3000;        // between requests (Limitless answered 429 after about 4 minutes at 1.5 s)
 const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
@@ -301,6 +309,8 @@ function build(events, since, until, from, newest) {
 const readJSON = async (f, fb) => { try { return JSON.parse(await readFile(f, 'utf8')); } catch (_) { return fb; } };
 const now = Date.now();
 const cache = await readJSON(CACHE, { schema: 1, formatStart: null, events: [] });
+const cardCache = await readJSON(CARDS_CACHE, { schema: 1, events: [] });
+const cardHave = new Map((cardCache.events || []).filter(e => e && e.cv === CARD_VERSION).map(e => [e.id, e]));
 const old = await readJSON(OUT, null);
 const data = await readJSON(DATA, {});
 
@@ -325,7 +335,7 @@ const notes = [];
 let fresh = 0;
 const have = new Map((cache.events || []).map(e => [e.id, e]));
 // PT_OFFLINE=1 rebuilds the file from the cache alone, without reading Limitless.
-if (!process.env.PT_OFFLINE) try {
+if (!process.env.PT_OFFLINE && !CARDS_ONLY) try {
   const list = await eventList(since, now);
   for (const t of list) {
     if (have.has(String(t.id)) || fresh >= NEW_PER_RUN) continue;
@@ -336,6 +346,8 @@ if (!process.env.PT_OFFLINE) try {
     fresh++;
     // An event that cannot be used is still kept, as skipped, so it is not read again.
     have.set(String(t.id), digest(t, standings, pairings) || { id: String(t.id), date: day(t.date), skip: true });
+    const cd = cardDigest(t, standings, pairings);
+    if (cd) cardHave.set(cd.id, cd);
   }
   // Events read before placements were kept: read their standings once more, a few a run.
   let again = 0;
@@ -351,6 +363,23 @@ if (!process.env.PT_OFFLINE) try {
   notes.push(`window: from ${day(since)}${fromName ? ' (' + fromName.name + ')' : ''}, ${list.length} big events listed`);
   notes.push(`events: ${fresh} new, ${[...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);
 } catch (e) { notes.push('Limitless: ' + e.message + `, kept what was read (${fresh} new events)`); }
+// Card data for events read before 2.6: read them once more, newest first, a few a run.
+let cardAgain = 0;
+if (!process.env.PT_OFFLINE) try {
+  const todo = [...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY && !cardHave.has(e.id))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  for (const e of todo) {
+    if (cardAgain >= CARDS_AGAIN) break;
+    const standings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(e.id)}/standings`);
+    if (!Array.isArray(standings)) continue;
+    const pairings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(e.id)}/pairings`);
+    if (!Array.isArray(pairings)) continue;
+    cardAgain++;
+    const cd = cardDigest({ id: e.id, date: e.date }, standings, pairings);
+    cardHave.set(e.id, cd || { id: e.id, date: e.date, cv: CARD_VERSION, decks: {} });
+  }
+  notes.push(`card data: ${cardAgain} earlier events read again, ${todo.length - cardAgain} left`);
+} catch (e) { notes.push('Limitless (card data): ' + e.message + `, kept what was read (${cardAgain} events)`); }
 // Events read before a stop are kept too, so the next run does not read them again.
 cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
 notes.push(`requests: ${calls}`);
@@ -362,9 +391,27 @@ const ok = next.cols.length >= 3 && next.sources[0].matches >= 200;
 notes.push(ok ? `matchups: ${next.decks.length} decks, ${next.sources[0].matches} matches` : 'matchups: too little data, kept last copy');
 
 const strip = d => JSON.stringify(d ? { ...d, asOf: null, until: null } : null);
-await writeFile(CACHE, JSON.stringify(cache) + '\n');
-if (ok && strip(next) !== strip(old)) {
+if (!CARDS_ONLY) await writeFile(CACHE, JSON.stringify(cache) + '\n');
+if (CARDS_ONLY) notes.push('matchups.json: left alone (card data run)');
+else if (ok && strip(next) !== strip(old)) {
   await writeFile(OUT, JSON.stringify(next, null, 1) + '\n');
   notes.push('matchups.json updated, as of ' + next.asOf);
 } else notes.push('matchups.json: no change');
+
+// The deck builder's card data, from the same events as matchups.json.
+const inWindow = new Set(use.map(e => e.id));
+cardCache.events = [...cardHave.values()].filter(e => inWindow.has(e.id));
+await writeFile(CARDS_CACHE, JSON.stringify(cardCache) + '\n');
+const names = {};
+for (const e of use) for (const [id, d] of Object.entries(e.decks)) if (!names[id]) names[id] = d.name;
+const shown = ok ? next : old;
+const newestSet = cache.sets.length ? cache.sets[cache.sets.length - 1] : null;
+const mc = buildMetaCards(cardCache.events, { since: day(since), newest, newestName: newestSet && newestSet.name, from: fromName && fromName.name, cols: (shown && shown.cols) || [], names });
+if (mc) {
+  const oldMc = await readJSON(CARDS_OUT, null);
+  if (JSON.stringify({ ...mc, asOf: null }) !== JSON.stringify(oldMc ? { ...oldMc, asOf: null } : null)) {
+    await writeFile(CARDS_OUT, JSON.stringify(mc).replace(/\},\{"id"/g, '},\n{"id"') + '\n');
+    notes.push(`meta-cards.json: ${mc.decks.length} decks from ${mc.events} events (${mc.lists} lists)`);
+  } else notes.push('meta-cards.json: no change');
+} else notes.push('meta-cards.json: no card data yet');
 console.log(notes.join('\n'));
