@@ -1992,6 +1992,9 @@
   .ol-db i { display:block; width:100%; background:var(--accent); border-radius:6px; }
   .ol-dp { font-size:var(--fs-sm); font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
   .ol-pick-i { font-size:var(--fs-sm); color:var(--text-2); margin:0.1rem 0 0.6rem; }
+  .ol-mode { display:flex; margin-bottom:0.4rem; }
+  .ol-mode .mode-opt { flex:1; text-align:center; min-height:44px; display:flex; align-items:center; justify-content:center; }
+  .ol-mode-i { font-size:var(--fs-xs); color:var(--text-3); }
   .ol-quick { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.6rem; }
   .ol-find { width:100%; margin-bottom:0.5rem; }
   .ol-pick-list { max-height:min(52vh, 420px); overflow-y:auto; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface-2); }
@@ -6113,19 +6116,21 @@ function g62Need(r, name) {
     supname: `on a turn you play a ${gCap(n.name || '')} Supporter`, prize6: 'while you still have all 6 Prize cards left',
     evolved: `on the turn it evolves from ${gCap(n.from || '')}`, inplay: `with ${n.n} ${gCap(n.type || '')} Energy in play`, discab: `with ${n.n} Pokemon with ${gCap(n.abil || '')} in your discard pile` }[n.k];
   const head = `${r.atk} does ${n.full} only ${when}, ${n.base} otherwise.`;
-  if (n.met) return head + (n.k === 'moved' ? ` Your list has ${n.have} cards that switch it in or let you retreat for free, so the grade counts ${n.full}.`
+  // 2.6.6: one card reads "1 card that does", not "1 cards that do".
+  const cs = (k, does) => `${k} card${k === 1 ? '' : 's'} that ${k === 1 ? does.replace(/^switch (.*) or let /, 'switches $1 or lets ').replace(/^(put|attach) /, (m, w) => w + (w === 'attach' ? 'es ' : 's ')) : does}`;
+  if (n.met) return head + (n.k === 'moved' ? ` Your list has ${cs(n.have, 'switch it in or let you retreat for free')}, so the grade counts ${n.full}.`
     : n.k === 'selfdmg' ? ' The full hit comes after it has taken a hit, not on its first attack.'
     : n.k === 'ko' ? ' The full hit comes after you lose a Pokemon, not on your first attack.'
     : n.k === 'evolved' ? ` The grade counts ${n.full}, since you attack the turn it evolves.`
     : n.k === 'next' ? ` The grade counts ${n.full}, since it can keep attacking turn after turn, but its first use does ${n.base}.`
-    : n.k === 'oppdmg' ? ` Your list has ${n.have} cards that put damage counters on it first, so the grade counts ${n.full}.`
-    : n.k === 'xenergy' ? ` Your list has ${n.have} cards that attach extra Energy, so the grade counts ${n.full}.`
+    : n.k === 'oppdmg' ? ` Your list has ${cs(n.have, 'put damage counters on it first')}, so the grade counts ${n.full}.`
+    : n.k === 'xenergy' ? ` Your list has ${cs(n.have, 'attach extra Energy')}, so the grade counts ${n.full}.`
     : ` Your list can set that up, so the grade counts ${n.full}.`);
-  const why = { moved: `your list has only ${n.have} cards that switch it in or let you retreat for free`,
+  const why = { moved: `your list has only ${cs(n.have, 'switch it in or let you retreat for free')}`,
     oppdmg: 'nothing in your list puts damage counters on it before you attack', deck: 'that is only at the very end of a game',
-    xenergy: `your list has only ${n.have} cards that attach extra Energy`, stadium: `your list has only ${n.have} Stadiums`,
+    xenergy: `your list has only ${cs(n.have, 'attach extra Energy')}`, stadium: `your list has only ${n.have} Stadium${n.have === 1 ? '' : 's'}`,
     btype: `your list has only ${n.have} ${gCap(n.type)} Pokemon`, bnames: 'your list does not run all of them',
-    energy: `your list has only ${n.have} ${gCap(n.what || '')} Energy`, supname: `your list has only ${n.have} ${gCap(n.name || '')} Supporters`,
+    energy: `your list has only ${n.have} ${gCap(n.what || '')} Energy`, supname: `your list has only ${n.have} ${gCap(n.name || '')} Supporter${n.have === 1 ? '' : 's'}`,
     discab: `your list has only ${n.have} Pokemon with ${gCap(n.abil || '')}`, prize6: 'that is only before you take your first prize',
     inplay: `your list has only ${n.have} ${gCap(n.type || '')} Energy` }[n.k];
   return head + ` The grade counts ${n.base}, since ${why}.`;
@@ -6726,9 +6731,22 @@ function gViability(deck, coh, main) {
   // v59: a single copy of the main attacker is gone for the game when it is prized or Knocked Out.
   if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
+  // 2.6.6: setup speed also reads how often the attacker is in play with the Energy its attack needs, from
+  // shuffles of the list (g80Speed), by your second turn. Ready in half of games or more is full marks (9.5),
+  // a quarter is about the usual 8.2. When that reads faster than the rules above, it sets the score; it never
+  // lowers it. Checked against tournament results: this ranks archetypes a little closer to their win rates.
+  let speed=null;
+  if (bestR && best > 0) { try {
+    const sw=deck.find(x=>x.card&&x.name===bestR.name), cw=sw&&sw.card;
+    const bench=bestR.copy&&bestR.copy.bench, src=bench?(deck.find(x=>x.card&&x.name===bestR.copy.who)||{}).card:cw;
+    const at=src&&(src.attacks||[]).find(x=>x.name===(bestR.copy&&!bench?bestR.copy.via:bestR.atk));
+    const sp=at&&!at.need?g80Speed(deck, cw, at):null;
+    if (sp) { const v=0.7+0.25*Math.min(1, sp.t2/0.5);
+      speed={ ...sp, name:bestR.name, atk:at.name, n:(at.cost||[]).length, v, used:v>clockScore+0.005 };
+      if (speed.used) clockScore=Math.min(0.95, v); } } catch (_) {} }
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
-  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce, strat, multiN, pkN, engQ };
+  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce, strat, multiN, pkN, engQ, speed };
   return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, parts };
 }
 
@@ -7331,8 +7349,8 @@ function gtFit(entries, coh, via, main, ctx) {
   const k = ctx.counts || {}, evo = P.some(e => e.card.stage === 'stage1' || e.card.stage === 'stage2');
   const thin = [];
   if (!via.ctl && (k.gustQ || 0) < 2) thin.push({ role: 'gust', v: 2 - (k.gustQ || 0), say: (k.gustQ ? `only ${k.gustQ} card pulls` : 'nothing pulls') + ' up a Benched Pokemon' });
-  if (evo && (k.find || 0) < 7) thin.push({ role: 'search', v: (7 - (k.find || 0)) / 3.5, say: k.find ? `only ${k.find} cards find Pokemon` : 'nothing in the list finds Pokemon' });
-  if (!via.ctl && (k.drawQ || 0) + (k.abilQ || 0) < 8) thin.push({ role: 'draw', v: (8 - (k.drawQ || 0) - (k.abilQ || 0)) / 4, say: (k.drawQ || 0) + (k.abilQ || 0) ? `only ${(k.drawQ || 0) + (k.abilQ || 0)} cards draw` : 'nothing in the list draws cards' });
+  if (evo && (k.find || 0) < 7) thin.push({ role: 'search', v: (7 - (k.find || 0)) / 3.5, say: k.find ? `only ${k.find} ${k.find === 1 ? 'card finds' : 'cards find'} Pokemon` : 'nothing in the list finds Pokemon' });
+  if (!via.ctl && (k.drawQ || 0) + (k.abilQ || 0) < 8) thin.push({ role: 'draw', v: (8 - (k.drawQ || 0) - (k.abilQ || 0)) / 4, say: (k.drawQ || 0) + (k.abilQ || 0) ? `only ${(k.drawQ || 0) + (k.abilQ || 0)} ${(k.drawQ || 0) + (k.abilQ || 0) === 1 ? 'card draws' : 'cards draw'}` : 'nothing in the list draws cards' });
   if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing gets cards back from your discard pile' });
   thin.sort((a, b) => b.v - a.v);
   const inList = new Set(cards.map(e => e.card.key));
@@ -7436,8 +7454,8 @@ function gFocus(entries, coh, via) {
   if (ty > 0.02) why.push({ v: ty * (box ? 0.5 : 1), s: `your attacks need ${atkNeed.size} Energy types` });
   if (es > 0.03) why.push({ v: es * (box ? 0.5 : 1), s: `each attacker can use only about ${Math.round(esh * 100)}% of your Energy` });
   if (fm > 0.03) why.push({ v: fm * (box ? 0.5 : 1), s: `your Pokemon are spread over ${fam.size} lines` });
-  if (pp > 0.03) why.push({ v: pp * (box ? 0.5 : 1), s: `${p1n} of your ${pq} Pokemon are single copies` });
-  if (single > 0.03) why.push({ v: single, s: `${Math.round(t1 * tq)} of your ${tq} Trainers are single copies` });
+  if (pp > 0.03) why.push({ v: pp * (box ? 0.5 : 1), s: `${p1n} of your ${pq} Pokemon ${p1n === 1 ? 'is a single copy' : 'are single copies'}` });
+  if (single > 0.03) why.push({ v: single, s: `${Math.round(t1 * tq)} of your ${tq} Trainers ${Math.round(t1 * tq) === 1 ? 'is a single copy' : 'are single copies'}` });
   why.sort((a, b) => b.v - a.v);
   return { score, box, why: why.map(x => x.s), m: { conc: +conc.toFixed(2), need: atkNeed.size, esh: +esh.toFixed(2), off, t1: +t1.toFixed(2), p1: +p1.toFixed(2), links: (coh.synergies || []).length } };
 }
@@ -7910,6 +7928,139 @@ function oddsAttacker(S) {
   return { turn: t3 ? 3 : 2, raw: t3 ? S.online3 : S.online, search: t3 ? S.onlineS3 : S.onlineS };
 }
 
+/**
+ * 2.6.6: setup speed from the cards. How often the main attacker is in play with the Energy its attack
+ * needs by your second turn and by your third, averaged over going first and going second.
+ * Dealt like the Odds tab: a hand with no Basic is redrawn, six prizes come off, and both players draw on
+ * their first turn. Then each turn plays out simply: put the attacker's Basic down (or fetch it with a
+ * search card), evolve when the rules allow (not on your first turn or the turn it was played; Rare Candy
+ * skips the Stage 1), attach one Energy from your hand, and play cards that attach more when their text
+ * says the Energy comes from your hand or deck (the discard pile is empty this early). One Supporter a turn,
+ * none on the first turn of the player going first: one that attaches Energy when the attacker needs it,
+ * else one that draws (counted as 4 new cards). Seeded by the list, so a list always gets the same numbers.
+ */
+const G80_TRIALS = 2000, G80_DRAW = 4;
+const _g80Cache = new Map();
+function g80Speed(deck, att, at) {
+  if (!att || !at) return null;
+  const cost = at.cost || [];
+  const sig = deck.filter(e => e.card).map(e => e.qty + 'x' + e.card.key).join('|') + '#' + att.key + '#' + at.name;
+  if (_g80Cache.has(sig)) return _g80Cache.get(sig);
+  const gk = k => gtNorm(normalizeCardName(k || ''));
+  // The attacker's line, Basic first. A missing Stage 1 leaves Basic to Stage 2 by Rare Candy.
+  const line = [att.key];
+  for (let c = att, g = 0; c && c.from && c.stage !== 'basic' && g < 3; g++) {
+    const m = deck.find(x => x.card && gk(x.card.key) === gk(c.from)); if (!m) break; line.unshift(m.card.key); c = m.card; }
+  const stage = att.stage === 'stage2' ? 2 : att.stage === 'stage1' ? 1 : 0;
+  const ty = cost.filter(t => t !== 'colorless');
+  const stg = { 'basic': 'basic', 'stage 1': 'stage1', 'stage 2': 'stage2' };
+  const fits = ec => { const m = gtNorm(ec.et || '').match(/(?:only be attached to|if this card is attached to) an? ([a-z0-9' ]+?) pokemon/);
+    if (!m) return true; const x = m[1].trim();
+    return stg[x] ? String(att.stage || '').toLowerCase().replace(/\s+/g, '') === stg[x] : gtNorm(att.key || '').startsWith(x); };
+  // What each card does here.
+  const K = [], ids = [];
+  deck.forEach(e => { if (!e.card) return;
+    const c = e.card, pv = c.provides || [], li = line.findIndex(k => gk(k) === gk(c.key));
+    const o = { line: li, basic: c.t === 'pkmn' && (c.stage === 'basic' || !c.from), sup: c.tt === 'supporter' };
+    if (c.t === 'energy' && fits(c)) {
+      const ts = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : ['colorless']);
+      o.en = /stage 2 pok.mon, this card provides every type/i.test(c.et || '') && stage !== 2 ? { n: 1, ts: ['colorless'] }
+        : { n: /provides 2\b/i.test(c.et || '') ? 2 : 1, ts }; }
+    if (c.t === 'trainer') {
+      if (pv.includes('search_pokemon')) o.find = 'any'; else if (pv.includes('search_basic')) o.find = 'basic';
+      if (pv.includes('evolution_access')) o.candy = true;
+      if (pv.includes('draw') && o.sup) o.draw = true;
+      const rt = gtNorm(c.rt || '');
+      if (pv.includes('energy_accel') && !/discard pile|only if|only during/.test(rt)) {
+        const m = rt.match(/attach (?:up to )?(\d+)/);
+        if (/\battach/.test(rt)) o.acc = { n: m ? +m[1] : 1, hand: /your hand/.test(rt) && !/your deck/.test(rt) };
+        else if (/energy/.test(rt) && /into your hand/.test(rt)) o.fetch = +((rt.match(/up to (\d+)/) || [0, 1])[1]); } }
+    if (c.t === 'pkmn' && pv.includes('energy_accel')) (c.ab || []).forEach(a => { const p = gtNorm(a.p || '');
+      if (!/^attaches/.test(p) || /discard pile/.test(p) || o.ab) return;
+      const m = p.match(/^attaches (any number of|up to \d+|\d+|an?)\b/);
+      o.ab = { n: /as often as you like/.test(p) ? 4 : !m ? 1 : /\d/.test(m[1]) ? +m[1].match(/\d+/)[0] : /any number/.test(m[1]) ? 2 : 1,
+        self: /to itself/.test(p), hand: /your hand/.test(p), when: /when you evolve/.test(p) ? 'evolve' : /when you play/.test(p) ? 'play' : 'turn' }; });
+    const i = K.length; K.push(o); for (let q = 0; q < e.qty; q++) ids.push(i); });
+  const N = ids.length;
+  if (N < 20 || !K.some(k => k.line === 0)) { _g80Cache.set(sig, null); return null; }
+  const top = line.length - 1;
+  const deckTy = [...new Set(K.filter(k => k.en && k.en.n === 1 && !/^(?:colorless)$/.test(k.en.ts[0])).flatMap(k => k.en.ts))];
+  const fromDeck = deckTy.length ? deckTy : ['colorless'];
+  let h = 2166136261; for (let i = 0; i < sig.length; i++) { h ^= sig.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const rng = simRng(h >>> 0);
+  const arr = Int32Array.from(ids), DEPTH = Math.min(N, 13 + 3 + 3 * G80_DRAW);
+  // One game: true when the attack can be paid on turn T.
+  const play = (T, first) => {
+    const hand = Array.from(arr.slice(0, 7)), inPrize = Array.from(arr.slice(7, 13));
+    let pos = 13; const draw = n => { for (let q = 0; q < n && pos < DEPTH; q++) hand.push(arr[pos++]); };
+    const take = pred => { const j = hand.findIndex(i => pred(K[i])); return j < 0 ? -1 : hand.splice(j, 1)[0]; };
+    const has = pred => hand.some(i => pred(K[i]));
+    const left = s => { const inDeck = N - hand.length - 6; return inDeck > 0 && ids.filter(i => K[i].line === s).length > hand.filter(i => K[i].line === s).length + inPrize.filter(i => K[i].line === s).length; };
+    // Fetch a line piece: from hand, else with a search card (Basic search finds only Basics).
+    const get = s => { if (take(k => k.line === s) >= 0) return true;
+      if (!left(s)) return false;
+      const isB = s === 0;
+      return take(k => k.find === 'any' || (isB && k.find === 'basic')) >= 0; };
+    let placed = [0, 0, 0].map(() => 0), units = [], abUsed = new Set();
+    const attachHand = () => { let best = -1, bv = -1;
+      hand.forEach((i, j) => { const e = K[i].en; if (!e) return; const v = e.n * 2 + (e.ts.some(x => ty.includes(x) || x === 'any') ? 1 : 0); if (v > bv) { bv = v; best = j; } });
+      if (best < 0) return false; const e = K[hand.splice(best, 1)[0]].en; for (let q = 0; q < e.n; q++) units.push(e.ts); return true; };
+    const short = () => units.length < cost.length;
+    for (let t = 1; t <= T; t++) {
+      draw(1);
+      // Energy fetched to hand (Earthen Vessel and the like) comes as soon as it is drawn.
+      for (let j; (j = take(k => k.fetch)) >= 0;) for (let q = 0; q < K[j].fetch; q++) hand.push(-1);
+      // The line: Basic down, then evolve when the rules allow.
+      if (!placed[0] && get(0)) placed[0] = t;
+      const can = s => placed[s] && placed[s] < t && t >= 2;
+      if (top === 1 && placed[0] && !placed[1] && can(0) && get(1)) placed[1] = t;
+      if (top === 2 && placed[0] && !placed[2]) {
+        if (can(1) && get(2)) placed[2] = t;
+        else if (can(0) && has(k => k.candy) && get(2)) { take(k => k.candy); placed[2] = t; }
+        else if (can(0) && !placed[1] && line.length === 3 && get(1)) placed[1] = t; }
+      const supOk = !(first && t === 1);
+      let supUsed = !supOk;
+      // A Supporter that attaches Energy, when the attacker's Basic is down and still short.
+      if (!supUsed && placed[0] && short() && has(k => k.acc && k.sup)) { const j = take(k => k.acc && k.sup); supUsed = true;
+        for (let q = 0; q < K[j].acc.n; q++) { if (K[j].acc.hand) attachHand(); else units.push(fromDeck); } }
+      // Else a Supporter that draws, when anything is still missing; then try the line again.
+      if (!supUsed && (short() || !placed[top]) && has(k => k.draw)) { take(k => k.draw); supUsed = true; draw(G80_DRAW);
+        if (!placed[0] && get(0)) placed[0] = t;
+        if (top === 1 && placed[0] && !placed[1] && can(0) && get(1)) placed[1] = t;
+        if (top === 2 && placed[0] && !placed[2] && ((can(1) && get(2)) || (can(0) && has(k => k.candy) && get(2) && take(k => k.candy) >= 0))) placed[2] = t; }
+      if (!placed[0]) continue;
+      attachHand();
+      // Items that attach Energy.
+      for (let j; short() && (j = take(k => k.acc && !k.sup)) >= 0;) for (let q = 0; q < K[j].acc.n; q++) { if (K[j].acc.hand) attachHand(); else units.push(fromDeck); }
+      // Pokemon whose Ability attaches Energy: a Basic one in hand goes down; the attacker's own line counts once it is in play.
+      K.forEach((k, i) => { if (!k.ab || !short()) return;
+        let on = false;
+        if (k.line >= 0) on = !!placed[k.line] && (k.ab.when !== 'evolve' || placed[k.line] === t) && (k.ab.when !== 'play' || placed[k.line] === t);
+        else if (!k.ab.self && k.basic && hand.includes(i)) { hand.splice(hand.indexOf(i), 1); abUsed.add(i); on = true; }
+        else if (!k.ab.self && k.basic && abUsed.has(i)) on = k.ab.when === 'turn';
+        if (!on || (k.ab.when !== 'turn' && abUsed.has('o' + i))) return;
+        if (k.ab.when !== 'turn') abUsed.add('o' + i);
+        for (let q = 0; q < k.ab.n && short(); q++) { if (k.ab.hand) { if (!attachHand()) break; } else units.push(fromDeck); } });
+    }
+    if (!placed[top] || short()) return false;
+    const pool = units.slice();
+    for (const x of ty) { const j = pool.findIndex(u => u.includes(x) || u.includes('any')); if (j < 0) return false; pool.splice(j, 1); }
+    return true; };
+  const isB = K.map(k => k.basic);
+  let f2 = 0, s2 = 0, f3 = 0, s3 = 0;
+  for (let tr = 0; tr < G80_TRIALS; tr++) {
+    for (let m = 0; m < 50; m++) {
+      for (let i = 0; i < DEPTH; i++) { const j = i + Math.floor(rng() * (N - i)); const x = arr[i]; arr[i] = arr[j]; arr[j] = x; }
+      let ok = false; for (let i = 0; i < 7; i++) if (isB[arr[i]]) { ok = true; break; }
+      if (ok) break; }
+    if (play(2, true)) f2++; if (play(2, false)) s2++;
+    if (play(3, true)) f3++; if (play(3, false)) s3++;
+  }
+  const r = { t2: (f2 + s2) / 2 / G80_TRIALS, t3: (f3 + s3) / 2 / G80_TRIALS, first2: f2 / G80_TRIALS, second2: s2 / G80_TRIALS };
+  _g80Cache.set(sig, r);
+  return r;
+}
+
 /** n choose k, as a float (fine for a 60 card deck). */
 function oChoose(n, k) {
   if (k < 0 || k > n) return 0;
@@ -7999,8 +8150,8 @@ function renderOdds() {
       <div class="os">A draw card you can use, in your first ${SIM_SEEN_T1}</div></div>
     <div class="o-tile" style="--tone:${tAtk}">
       <div class="ol">Attacker by T${AT ? AT.turn : 2}, any hand</div>
-      <div class="ov">${!AT?'?':S.anySearch?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(AT.raw)}</div>
-      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?', any opening hand, from raw draws alone to with your search cards':', any opening hand, raw draws'):'No attacker line read'}</div></div>
+      <div class="ov">${!AT?'?':S.anySearch&&oPct(AT.raw)!==oPct(AT.search)?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(S.anySearch?AT.search:AT.raw)}</div>
+      <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?(AT&&oPct(AT.raw)===oPct(AT.search)?', any opening hand, the same from raw draws alone or with your search cards':', any opening hand, from raw draws alone to with your search cards'):', any opening hand, raw draws'):'No attacker line read'}</div></div>
   </div>
   <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
 
@@ -12089,13 +12240,12 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6.5',
+  version: 'v2.6.6',
   kind: 'fix',
   items: [
-    { t: 'Added: Paste and go', d: 'Paste a full list and it grades right away. The deck name is optional.' },
-    { t: 'Added: Try a sample deck', d: 'One tap grades the top list of the most played deck right now.' },
-    { t: 'Added: Top fixes', d: 'The top of each grade lists the three changes that help most.' },
-    { t: 'Phone fixes', d: 'Bigger buttons and nothing cut off on small screens.' }
+    { t: 'Setup speed fix', d: 'Setup speed now counts how often your attacker has the Energy its attack needs by turn 2.' },
+    { t: 'Added: And in Ask the odds', d: 'Pick Every one (and) to ask for two cards together, like Rare Candy and Ultra Ball.' },
+    { t: 'Wording fixes', d: 'No more 100-100% or "All 1 card needs".' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15003,8 +15153,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6.5';
-const PT_BUILD = 85;
+const PT_VERSION = 'v2.6.6';
+const PT_BUILD = 86;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15835,7 +15985,11 @@ openCompare = function (val) {
 // (both players draw on their first turn). Prizes do not change what you
 // draw, only what is left to find later, so the prize line is its own number.
 const OL_MAX_ROWS = 3, OL_MAX_TURN = 4;
-let _olState = null;   // { deckId, rows:[{keys:[...], k}], turn }
+// 2.6.6: a line can ask for any of its cards (or) or for every one of them (and). An "and" line counts
+// as one line per card, so the question holds at most OL_MAX_LINES of those in all.
+const OL_MAX_LINES = 4;
+const olLines = rows => rows.flatMap(r => r.all && r.keys.length > 1 ? r.keys.map(k => ({ keys: [k], k: r.k })) : [{ keys: r.keys, k: r.k }]);
+let _olState = null;   // { deckId, rows:[{keys:[...], k, all}], turn }
 let _olPick = null;    // row being edited in the picker sheet
 const _olMemo = new Map();
 
@@ -15997,23 +16151,26 @@ function olLoad(deck, groups) {
   if (_olState && _olState.deckId === deck.id) return _olState;
   const saved = deck.oddsLab && Array.isArray(deck.oddsLab.rows) ? deck.oddsLab : null;
   const keys = new Set(groups.map(g => g.key));
-  let rows = saved ? saved.rows.map(r => ({ keys: (r.keys || []).filter(k => keys.has(k)).slice(0, 40), k: Math.max(1, Math.min(4, r.k | 0)) })).filter(r => r.keys.length) : [];
+  let rows = saved ? saved.rows.map(r => ({ keys: (r.keys || []).filter(k => keys.has(k)).slice(0, r.all ? OL_MAX_LINES : 40), k: Math.max(1, Math.min(4, r.k | 0)), all: !!r.all })).filter(r => r.keys.length) : [];
   if (!rows.length) {
     // Start from something useful: the Supporters and Items that find or
     // draw cards, if the card data says which those are.
     const out = groups.filter(g => (g.sBasic || g.sAny || g.draw) && g.kind !== 'pokemon').map(g => g.key);
     if (out.length) rows = [{ keys: out, k: 1 }];
   }
-  _olState = { deckId: deck.id, rows: rows.slice(0, OL_MAX_ROWS), turn: saved && saved.turn >= 0 && saved.turn <= OL_MAX_TURN ? saved.turn | 0 : 1 };
+  rows = rows.slice(0, OL_MAX_ROWS);
+  while (rows.length > 1 && olLines(rows).length > OL_MAX_LINES) rows.pop();
+  _olState = { deckId: deck.id, rows, turn: saved && saved.turn >= 0 && saved.turn <= OL_MAX_TURN ? saved.turn | 0 : 1 };
   return _olState;
 }
 function olSave() {
   const deck = olDeck(); if (!deck || !_olState) return;
-  deck.oddsLab = { rows: _olState.rows.map(r => ({ keys: r.keys.slice(), k: r.k })), turn: _olState.turn };
+  deck.oddsLab = { rows: _olState.rows.map(r => ({ keys: r.keys.slice(), k: r.k, all: !!r.all })), turn: _olState.turn };
   saveState();
 }
 
-function olCompute(deck, groups, rows, turn) {
+function olCompute(deck, groups, asked, turn) {
+  const rows = olLines(asked);
   const key = olSig(deck) + '|' + JSON.stringify(rows) + '|' + turn;
   if (_olMemo.has(key)) return _olMemo.get(key);
   const anyBasic = groups.some(g => g.basic);
@@ -16085,16 +16242,18 @@ function olSectionHTML(deck) {
   st.rows.forEach((r, i) => {
     const names = olRowText(groups, r);
     const tot = r.keys.reduce((a, k) => { const g = groups.find(x => x.key === k); return a + (g ? g.qty : 0); }, 0);
+    const each = r.all && names.length > 1, word = each ? 'and' : 'or';
+    const minQ = Math.min(...r.keys.map(k => { const g = groups.find(x => x.key === k); return g ? g.qty : 0; }));
     h += `<div class="ol-row">
       <div class="ol-row-top"><span class="ol-and">${i ? 'and at least' : 'At least'}</span>
-        <div class="seg ol-k" role="group" aria-label="How many">${[1, 2, 3, 4].map(k => `<div class="mode-opt${r.k === k ? ' active' : ''}${k > tot ? ' ol-dis' : ''}" data-k="${k}" onclick="olSetK(${i},${k})">${k}</div>`).join('')}</div>
-        <span class="ol-of">of</span></div>
-      <div class="ol-line"><button class="ol-names" onclick="olOpenPick(${i})" aria-label="Change cards">${names.length ? names.map(n => `<span class="ol-chip">${esc(n)}</span>`).join(names.length > 1 ? '<span class="ol-or">or</span>' : '') : '<span class="ol-ph">Pick cards</span>'}<span class="ol-tot">${tot} in list</span></button>
-        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove ${esc(names.length ? names.join(' or ') : 'this row')}" title="Remove">${ic23('x')}</button></div>
+        <div class="seg ol-k" role="group" aria-label="How many">${[1, 2, 3, 4].map(k => `<div class="mode-opt${r.k === k ? ' active' : ''}${k > (each ? minQ : tot) ? ' ol-dis' : ''}" data-k="${k}" onclick="olSetK(${i},${k})">${k}</div>`).join('')}</div>
+        <span class="ol-of">${each ? 'of each' : 'of'}</span></div>
+      <div class="ol-line"><button class="ol-names" onclick="olOpenPick(${i})" aria-label="Change cards">${names.length ? names.map(n => `<span class="ol-chip">${esc(n)}</span>`).join(names.length > 1 ? `<span class="ol-or">${word}</span>` : '') : '<span class="ol-ph">Pick cards</span>'}<span class="ol-tot">${tot} in list</span></button>
+        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove ${esc(names.length ? names.join(' ' + word + ' ') : 'this row')}" title="Remove">${ic23('x')}</button></div>
     </div>`;
   });
   h += `</div>`;
-  if (st.rows.length < OL_MAX_ROWS) h += `<button class="btn btn-sm ol-add" onclick="olOpenPick(-1)">${ic23('plus')}${st.rows.length ? 'Add another card' : 'Pick a card'}</button>`;
+  if (st.rows.length < OL_MAX_ROWS && olLines(st.rows).length < OL_MAX_LINES) h += `<button class="btn btn-sm ol-add" onclick="olOpenPick(-1)">${ic23('plus')}${st.rows.length ? 'And another card' : 'Pick a card'}</button>`;
   h += `<div class="ol-turn-lbl">By</div><div class="seg ol-turn" role="group" aria-label="By when">${[0, 1, 2, 3, 4].map(t => `<div class="mode-opt${st.turn === t ? ' active' : ''}" data-t="${t}" onclick="olSetTurn(${t})">${t === 0 ? 'Open' : 'T' + t}</div>`).join('')}</div>`;
 
   if (!st.rows.length) {
@@ -16107,15 +16266,16 @@ function olSectionHTML(deck) {
   const seen = 7 + st.turn;
   const ask = st.rows.map((r, i) => {
     const n = olRowText(groups, r);
-    const list = n.length <= 1 ? esc(n[0] || '') : n.slice(0, -1).map(esc).join(', ') + ' or ' + esc(n[n.length - 1]);
-    return `${r.k} ${n.length > 1 ? 'of ' : ''}${list}`;
+    const each = r.all && n.length > 1;
+    const list = n.length <= 1 ? esc(n[0] || '') : n.slice(0, -1).map(esc).join(', ') + (each ? ' and ' : ' or ') + esc(n[n.length - 1]);
+    return `${r.k} ${each ? 'each of ' : n.length > 1 ? 'of ' : ''}${list}`;
   }).join(', and ');
   h += `<div class="ol-res" style="--tone:${tone}"><div class="ol-big">${olPct(p)}</div>
     <div class="ol-what">Chance of at least ${ask} ${st.turn === 0 ? 'in your opening hand' : `by your turn ${st.turn} (your first ${seen} cards)`}.${R.anyBasic ? '' : ' No Basic was read, so mulligans are not taken out.'}</div></div>`;
   h += `<div class="o-table-wrap"><table class="o-table ol-tt"><thead><tr>${R.turns.map((x, t) => `<th${t === st.turn ? ' class="on"' : ''}>${t === 0 ? 'Open' : 'T' + t}</th>`).join('')}</tr></thead>
     <tbody><tr>${R.turns.map((x, t) => `<td${t === st.turn ? ' class="on"' : ''}>${olPct(x)}</td>`).join('')}</tr></tbody></table></div>`;
   if (R.lock != null) h += `<div class="g-item ${R.lock <= 0.02 ? 'ok' : R.lock <= 0.08 ? 'warn' : 'crit'}"><div class="gt">Stuck in prizes: ${olPct(R.lock)}</div>
-    <p>Games where the prizes hold so many copies that hand and deck cannot make ${st.rows.length > 1 ? 'every line of this question' : 'this'} until you take the right prize. The same on every turn.</p></div>`;
+    <p>Games where the prizes hold so many copies that hand and deck cannot make ${olLines(st.rows).length > 1 ? 'every line of this question' : 'this'} until you take the right prize. The same on every turn.</p></div>`;
   if (R.tune) {
     h += `<div class="ol-tune"><div class="ol-tune-t">How many ${esc(R.tune.name)}?</div>
       <div class="ol-tune-i">The same question by ${turnLbl(st.turn).toLowerCase()}, with more or fewer copies. Each copy added replaces a card that is not in the question, so the list stays at ${R.N}.</div>
@@ -16160,7 +16320,9 @@ function olDelRow(i) { if (!_olState) return; _olState.rows.splice(i, 1); olSave
 function olOpenPick(i) {
   const deck = olDeck(); if (!deck || !_olState) return;
   const groups = olGroups(deck);
-  _olPick = { row: i, keys: new Set(i >= 0 && _olState.rows[i] ? _olState.rows[i].keys : []) };
+  _olPick = { row: i, keys: new Set(i >= 0 && _olState.rows[i] ? _olState.rows[i].keys : []), all: !!(i >= 0 && _olState.rows[i] && _olState.rows[i].all) };
+  // Lines the other rows already use, so an "and" line here cannot push the question past OL_MAX_LINES.
+  _olPick.room = OL_MAX_LINES - olLines(_olState.rows.filter((r, j) => j !== i)).length;
   const used = new Set();
   _olState.rows.forEach((r, j) => { if (j !== i) r.keys.forEach(k => used.add(k)); });
   const sec = [['pokemon', 'Pokemon'], ['trainer', 'Trainers'], ['energy', 'Energy']];
@@ -16172,7 +16334,9 @@ function olOpenPick(i) {
   ].filter(q => groups.some(g => q[2](g) && !used.has(g.key)));
   _olPick.quick = quick;
   let h = `<div class="modal-title">${i >= 0 ? 'Change cards' : 'Pick cards'}</div>
-    <p class="ol-pick-i">Tick one card, or several to count any of them (Ultra Ball or Nest Ball).</p>`;
+    <p class="ol-pick-i">Tick one card, or several. With several, pick how they count.</p>
+    <div class="seg ol-mode" role="group" aria-label="How several cards count"><div class="mode-opt${_olPick.all ? '' : ' active'}" data-m="or" onclick="olSetMode(false)">Any of them (or)</div><div class="mode-opt${_olPick.all ? ' active' : ''}" data-m="and" onclick="olSetMode(true)">Every one (and)</div></div>
+    <p class="ol-pick-i ol-mode-i" id="ol-mode-i">${olModeHint()}</p>`;
   if (quick.length) h += `<div class="ol-quick">${quick.map((q, n) => `<button class="btn btn-sm" onclick="olQuick(${n})">${q[1]}</button>`).join('')}</div>`;
   h += `<input type="text" inputmode="search" autocomplete="off" id="ol-find" class="ol-find" placeholder="Find a card" aria-label="Find a card" oninput="olFilter(this.value)">
     <div class="ol-pick-list" id="ol-pick-list">`;
@@ -16191,14 +16355,29 @@ function olOpenPick(i) {
     <button class="btn btn-primary" id="ol-pick-done" onclick="olPickDone()">Done</button></div>`;
   openSheet(h);
 }
+function olModeHint() {
+  return _olPick && _olPick.all
+    ? `Every card you tick has to be there (Rare Candy and Ultra Ball). Up to ${Math.max(1, _olPick.room)} cards this way.`
+    : 'Any one of the cards you tick counts (Ultra Ball or Nest Ball). For an Energy and a draw card on top, add another card after this.';
+}
+function olSetMode(all) {
+  if (!_olPick) return;
+  if (all && _olPick.keys.size > _olPick.room) { showToast(`Every one (and) takes up to ${_olPick.room} cards here. Untick some first.`); return; }
+  _olPick.all = all;
+  document.querySelectorAll('.ol-mode .mode-opt').forEach(el => el.classList.toggle('active', (el.getAttribute('data-m') === 'and') === all));
+  const hint = document.getElementById('ol-mode-i'); if (hint) hint.textContent = olModeHint();
+}
 function olToggle(cb) {
   if (!_olPick) return;
   const k = cb.getAttribute('data-key');
+  if (cb.checked && _olPick.all && _olPick.keys.size >= _olPick.room) { cb.checked = false; showToast(`Every one (and) takes up to ${_olPick.room} cards here.`); return; }
   if (cb.checked) _olPick.keys.add(k); else _olPick.keys.delete(k);
 }
 function olQuick(n) {
   const deck = olDeck(); if (!deck || !_olPick) return;
   const q = _olPick.quick[n]; if (!q) return;
+  // A quick pick is a group where any one counts, so it sets the line to "any of them".
+  if (_olPick.all) olSetMode(false);
   const groups = olGroups(deck);
   _olPick.keys = new Set();
   document.querySelectorAll('#ol-pick-list input[type=checkbox]').forEach(cb => {
@@ -16218,8 +16397,8 @@ function olPickDone() {
   const keys = [..._olPick.keys];
   const i = _olPick.row;
   if (!keys.length) { if (i >= 0) _olState.rows.splice(i, 1); }
-  else if (i >= 0 && _olState.rows[i]) _olState.rows[i].keys = keys;
-  else if (_olState.rows.length < OL_MAX_ROWS) _olState.rows.push({ keys, k: 1 });
+  else if (i >= 0 && _olState.rows[i]) { _olState.rows[i].keys = keys; _olState.rows[i].all = _olPick.all && keys.length > 1; }
+  else if (_olState.rows.length < OL_MAX_ROWS) _olState.rows.push({ keys, k: 1, all: _olPick.all && keys.length > 1 });
   _olPick = null;
   closeSheet();
   olSave();
@@ -16856,8 +17035,8 @@ function g67SynWhy(R) {
   const nm = a => a.slice(0, 2).join('; ') + (a.length > 2 ? `; and ${a.length - 2} more` : '');
   let v = 10 * P.base0;
   if (P.total) {
-    if (P.met < P.total) out.push({ d: v - 10, t: `${P.met} of ${P.total} card needs met. Missing: ${nm(P.unmet)}.` });
-    else out.push({ d: 0, t: `All ${P.total} card needs are met: every attacker has its Energy and every evolution has what it evolves from.` });
+    if (P.met < P.total) out.push({ d: v - 10, t: `${P.met} of ${P.total} card need${P.total === 1 ? '' : 's'} met. Missing: ${nm(P.unmet)}.` });
+    else out.push({ d: 0, t: `${P.total === 1 ? 'The one card need is met' : `All ${P.total} card needs are met`}: every attacker has its Energy and every evolution has what it evolves from.` });
   }
   if (P.noDraw) { out.push({ d: -v * 0.6, t: 'No real draw engine, so the score is cut to 40%.' }); v *= 0.4; }
   if (P.noAtk) { out.push({ d: -v * 0.7, t: 'No clear attacker, so the score is cut to 30%.' }); v *= 0.3; }
@@ -16885,7 +17064,10 @@ function g67PowWhy(R) {
   const P = R.via.parts; if (!P) return [];
   const f = R.via.findings, of = k => f.filter(x => (G67_PART.find(([, re]) => re.test(x.t)) || [])[0] === k).map(x => x.t);
   const one = a => a.length ? a.slice(0, 2).join('; ') + '.' : '';
-  const clockTxt = one(of('clock')) || (P.stage2 ? '' : 'No Stage 2 line to wait on, which is the usual mark for a deck of Basics and Stage 1s.');
+  const sp = P.speed, pc = x => Math.round(100 * x) + '%';
+  const clockTxt = sp && sp.used
+    ? `${gCap(sp.name)} is in play with ${sp.n === 1 ? 'the 1 Energy' : `the ${sp.n} Energy`} ${sp.atk} needs by your second turn in ${pc(sp.t2)} of games and by your third in ${pc(sp.t3)}, from shuffles of this list, so it is quick to set up.`
+    : one(of('clock')) || (P.stage2 ? '' : 'No Stage 2 line to wait on, which is the usual mark for a deck of Basics and Stage 1s.');
   return [
     { k: 'Damage', w: '50%', v: 10 * P.close, t: one(of('close')) || 'How hard the best attacker hits the format\'s biggest threats.' },
     { k: 'Prize trade', w: '30%', v: 10 * P.prize, t: (P.pkN ? (P.multiN ? `${P.multiN >= P.pkN ? `All ${P.pkN}` : `${P.multiN} of your ${P.pkN}`} Pokemon give up 2 or more prizes. ` : 'Every Pokemon gives up one prize. ') : '') + one(of('prize')) },

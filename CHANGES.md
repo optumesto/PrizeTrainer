@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.6 (build 86): setup speed, And in Ask the odds (14 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v86), tests/grade-baseline.json and CHANGES.md.
+
+- Setup speed: Power's setup speed part also shuffles the list (2,000 games, going first and second, mulligans and prizes dealt like the Odds tab) and counts how often the main attacker is in play with all the Energy its attack needs by your second turn. Basics, search cards, evolution and Rare Candy, one manual attach a turn, one Supporter a turn (attach Supporters when short, else a draw Supporter is 4 new cards), Items and Abilities that attach from hand or deck all count. Ready in half of games or more is 9.5, a quarter is about the old 8.2. It only raises the score, never lowers it. The deck name is not read. The setup line now says the turn 2 and turn 3 numbers when they set the score. Checked against tournament results: ranks archetypes a little closer to their win rates (cards alone 0.21 to 0.22, newest set 0.19 to 0.20).
+- Ask the odds: each card line can be Any of them (or) or Every one (and). And asks for at least the chosen count of each ticked card together, with the same exact counting; up to 4 cards in all across lines. The add button reads And another card.
+- Wording: a tile shows one number when the raw and with search odds match (no more 100-100%); card needs, Stadiums, Supporters, single copies and the search and draw lines read right for 1.
+- Grade check: 132 tournament lists, 29 moved, all up (16 by less than 0.05, 10 by 0.1, 3 by 0.2). Iron Thorns 7.4 to 7.5. Baseline updated.
+
 # RdyDeck 2.6.5 (build 85): easier to start, easier on phones (14 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v85) and CHANGES.md.
