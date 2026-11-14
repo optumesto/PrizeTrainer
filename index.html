@@ -5591,7 +5591,35 @@ function gAbilRead(c) {
   return { tags: [...tags], say };
 }
 
+/** 2.6.1: the name of the meta deck these cards match, for picking the main attacker. Never the player's own name. */
+function gArchName(deck) {
+  try {
+    if (!deck || deck.format === 'expanded' || deck.format === 'prerelease') return '';
+    if (typeof mu60Data === 'undefined' || !mu60Data || typeof g68Arch !== 'function') return '';
+    if (!(deck.cards || []).some(c => c.supertype)) return '';
+    const m = g68Arch(deck, mu60Data);
+    return m && m.deck && m.deck.name ? m.deck.name : '';
+  } catch (_) { return ''; }
+}
 function toGradeDeck(deck) {
+  return gMergeRows(toGradeRows(deck));
+}
+// 2.6.1: the same card on two lines (2 Iono PAL 185 and 2 Iono PAL 269, as TCG Live exports split
+// printings) is one card to the grade, so its copies add up. Rows merge only when everything the
+// grade reads is the same for a Pokemon; two different Pokemon with one name stay apart.
+function gMergeRows(rows) {
+  const out = [], at = new Map();
+  rows.forEach(e => {
+    // A Trainer or Energy is one card by its name alone (the four-copy rule counts them that way, and a
+    // reprint may word its text a little differently); a Pokemon only when everything the grade reads matches.
+    const k = String(e.name || '').toLowerCase() + '\u0000' + (!e.card ? '' : e.card.t === 'pkmn' ? JSON.stringify(e.card) : e.card.t);
+    const i = at.get(k);
+    if (i == null) { at.set(k, out.length); out.push(Object.assign({}, e)); }
+    else out[i].qty = (out[i].qty || 0) + (e.qty || 0);
+  });
+  return out;
+}
+function toGradeRows(deck) {
   return (deck.cards||[]).map(c => {
     const sup = String(c.supertype||'').toLowerCase();
     const t = sup.startsWith('pok') ? 'pkmn'
@@ -6238,7 +6266,8 @@ function g37Copier(deck, c) {
 
 /**
  * v53: the deck's main attacker, the Pokemon the game plan is built around.
- * 1. The deck's name. Tournament lists are named for their attacker
+ * 1. The name of the meta deck the cards match (2.6.1: never the player's own deck name, so renaming
+ *    a deck cannot move its grade). Tournament lists are named for their attacker
  *    ("Mega Rayquaza", "Alakazam Dudunsparce"). When the name calls out
  *    Pokemon that can attack with the list's Energy, the pick is made among
  *    those only, by the weighing in 2.
@@ -6326,10 +6355,10 @@ function gMainAttacker(deck, coh, deckName) {
         const best = pickFrom(others);
         const ea = (eng.card.ab || []).length ? null : engAtk(eng);
         const engine = ea ? { name: eng.name, abil: ea.name, p: ea.fx.find(x => /^(?:searches|attaches|draws)\b/.test(x)), atk: true } : { name: eng.name, abil: eng.card.ab[0].abil, p: eng.card.ab[0].p };
-        if (best) return { key: best.e.card.key, name: best.e.name, why: 'list', engine };
+        if (best) return { key: best.e.card.key, name: best.e.name, why: 'list', named: String(deckName), engine };
       }
     }
-    return { key: byName.e.card.key, name: byName.e.name, why: 'name', among: new Set(named.map(e => e.card.key)).size };
+    return { key: byName.e.card.key, name: byName.e.name, why: 'name', named: String(deckName), among: new Set(named.map(e => e.card.key)).size };
   }
   const best = pickFrom(mons.filter(e => { const b = reachOf(e); return b && b.r.top > 0; }));
   return best ? { key: best.e.card.key, name: best.e.name, why: 'list' } : null;
@@ -6762,14 +6791,15 @@ function gPlan(entries, coh, via) {
     if (nr && nr.need && !nr.need.met) how += ` Its ${g62Need(Object.assign(nr, { atk: na.name }), m.name)}`; }
   if (rTw && rTw.twice) how += ` ${g62Twice(rTw)}`;
   let why;
-  if (m.why === 'name') why = m.among > 1 ? 'Of the Pokemon the deck is named for, it is the one the list is built to attack with.' : 'The deck is named for it.';
+  // 2.6.1: the name is the meta deck the cards match, never the player's own name for the deck.
+  if (m.why === 'name') why = m.among > 1 ? `The list plays as ${m.named}, and of the Pokemon that deck is named for, it is the one the list is built to attack with.` : `The list plays as ${m.named}, a deck named for it.`;
   else {
     const preN = [...pre].map(k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0));
     const en = gEnablers(entries, e.card), enN = en.reduce((n, x) => n + x.qty, 0);
     const enTxt = enN ? ` Its ${e.card.bmAbil} puts it onto your Bench when you have ${[...new Set(en.map(x => gCap(x.name)))].join(' or ')} in play, so the ${enN} ${enN === 1 ? 'copy' : 'copies'} of ${en.length > 1 ? 'those' : 'that'} in the list are there to bring it in.` : '';
     why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
     // v60: the deck is named for the Pokemon that powers it, not for the one that attacks.
-    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets up the attackers' : 'which powers the attackers rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.`;
+    if (m.engine) why = `The list plays as ${m.named}, a deck named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets up the attackers' : 'which powers the attackers rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.`;
   }
   // v59: a toolbox deck (Basic Box) has no single plan, so name the other attackers too.
   const tbx = (via.toolbox || []).filter(k => k !== m.key);
@@ -6778,7 +6808,7 @@ function gPlan(entries, coh, via) {
     const q = k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0);
     const most = tbx.every(k => q(k) <= e.qty);
     why = most ? `${nm} is the one the list runs most copies of (${e.qty}).` : '';
-    if (m.engine) why = `The deck is named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets them up' : 'which powers them rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.${why ? ' ' + why : ''}`;
+    if (m.engine) why = `The list plays as ${m.named}, a deck named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets them up' : 'which powers them rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.${why ? ' ' + why : ''}`;
   }
   // v59: what the main attacker's own Ability adds, read from its text (Mega Kangaskhan ex's Run Errand).
   const mAb = (e.card.ab || []).filter(x => !x.passive).map(x => `Its ${x.abil} ${x.p}.`).join(' ');
@@ -7407,7 +7437,11 @@ function gFocus(entries, coh, via) {
 function gradeDeck(deck) {
   const entries=toGradeDeck(deck);
   const coh=gCoherence(entries);
-  let main=null; try { main=gMainAttacker(entries, coh, deck.name); } catch (_) {}
+  // 2.6.1: the grade reads the cards only. The player's own deck name used to pick the main attacker, so
+  // renaming a deck could move its grade (a viewer's deck went from Synergy 7.2 as "Bolt" to 7.7 as "Slop").
+  // The name now comes from the meta deck the cards match (or the one picked under Against the meta),
+  // so an Archaludon list still leads with Archaludon ex and not the Metagross that powers it.
+  let main=null; try { main=gMainAttacker(entries, coh, gArchName(deck)); } catch (_) {}
   const via=gViability(entries, coh, main);
   // v65: the Trainers and Special Energy scale Synergy; a full suite leaves it as it was.
   let trn=null; try { trn=gTrainers(entries, coh, via, main, deck && deck.format); } catch (_) {}
@@ -7947,7 +7981,7 @@ function renderOdds() {
     } else parts.push(`${esc(line.name)} among your first ${SIM_SEEN_T2} cards`);
     const tbN = line.why !== 'name' && line.toolbox && line.toolbox.length >= 4 ? line.toolbox.length : 0;
     h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}</div>
-      <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker this deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
+      <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker its meta deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch?' to '+oPct(AT.search):''}</div>
         <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
@@ -11997,13 +12031,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6',
-  kind: 'generation',
+  version: 'v2.6.1',
+  kind: 'fix',
   items: [
-    { t: 'Added: What top lists run, in the deck builder', d: 'Core and flex cards with the counts top lists run, from every top list of the last two sets.' },
-    { t: 'Added: Count checks', d: 'The builder flags counts few top lists run and cards they do not run.' },
-    { t: 'Added: Matchup techs', d: 'Cards whose lists won more often against each of the most played decks.' },
-    { t: 'Added: Card trends', d: 'Cards rising or falling in the last two weeks.' }
+    { t: 'Fixed: renaming a deck no longer changes its grade' },
+    { t: 'Fixed: a card split over two lines grades the same as one line' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -14909,8 +14941,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6';
-const PT_BUILD = 80;
+const PT_VERSION = 'v2.6.1';
+const PT_BUILD = 81;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -21905,7 +21937,8 @@ async function up75Find(deck) {
     .concat(typeof g68Named === 'function' && deck.name ? g68Named(deck.name) : []);
   const keep = new Set();
   try {
-    const m = gMainAttacker(R0.entries || [], R0.coh, deck.name);
+    // 2.6.1: the main attacker as the grade reads it, from the cards alone; Pokemon the player's deck name calls out stay through named.
+    const m = gMainAttacker(R0.entries || [], R0.coh, gArchName(deck));
     if (m) {
       const line = new Set([m.key]);
       for (let i = 0; i < 3; i++) (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });

@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.1 (build 81): a deck's name no longer changes its grade (14 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v81), CHANGES.md and tests/grade-baseline.json.
+
+- Viewer report: a deck graded Synergy 7.2 named "Bolt" and 7.7 renamed "Slop", with no card changed. Cause: since v53 the grade picked the main attacker from the player's own deck name first ("Bolt" calls out Raging Bolt ex), and the main attacker feeds Power, the Trainer check and Focus. Fix: the name used for that pick is now the meta deck the cards match in matchups.json (or the one picked under Against the meta), never the player's name. With no match, the attacker comes from the list alone. Upgrades still never cut a Pokemon the player's own name calls out.
+- Same kind of leak, found in the sweep: the same card on two lines (two printings, as TCG Live exports them, or a repeated line) was graded as two cards, so 2 + 2 Iono counted as two 2-ofs. A top list split that way dropped as far as 7.8 to 4.5. Rows now merge before grading: a Trainer or Energy by name, a Pokemon only when everything the grade reads matches, so two different Pokemon with one name stay apart.
+- Checked and clean: card order (shuffled lists grade the same), and every top list renamed "Slop", "Bolt", "Meowth", "Fezandipiti", "Dusknoir" or left blank, or split over two lines, now grades the same as under its own name.
+- The attacker reason now says which meta deck the list plays as, not that the deck is named for it.
+- Grade check: one list moved, Archaludon (Moujii's Dojo, 4th) 8.3 to 8.1 (Power 8.31 to 8.05). Archaludon is not a tracked meta deck, so the list alone picks Metagross as the attacker; its grade used to rest on being named "Archaludon".
+
 # RdyDeck 2.6 (build 80): what top lists run, in the deck builder (13 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v80), CHANGES.md, refresh-matchups.mjs, new meta-cards.mjs, .github/workflows/refresh-data.yml, and new data files meta-cards.json and .github/cards-cache.json.
