@@ -12089,10 +12089,13 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6.4',
+  version: 'v2.6.5',
   kind: 'fix',
   items: [
-    { t: 'Site check fixes', d: 'Small fixes for the site review. The not found page now links the deck guides, FAQ, About and Contact.' }
+    { t: 'Added: Paste and go', d: 'Paste a full list and it grades right away. The deck name is optional.' },
+    { t: 'Added: Try a sample deck', d: 'One tap grades the top list of the most played deck right now.' },
+    { t: 'Added: Top fixes', d: 'The top of each grade lists the three changes that help most.' },
+    { t: 'Phone fixes', d: 'Bigger buttons and nothing cut off on small screens.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15000,8 +15003,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6.4';
-const PT_BUILD = 84;
+const PT_VERSION = 'v2.6.5';
+const PT_BUILD = 85;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -22416,6 +22419,273 @@ function gh72Html(deck) {
   .gh72-row p { margin:0.15rem 0 0; font-size:0.9375rem; color:var(--text-2); line-height:1.45; overflow-wrap:anywhere; }
   .gh72-not p { color:var(--text-3); }
   .gh72-note { margin:0.5rem 0 0; font-size:0.875rem; color:var(--text-3); }
+</style>
+<script>
+// ═══════════ 2.6.5: easier first visit ═══════════
+// Paste and go, Try a sample deck, Top fixes on each grade. The phone pass is CSS in the style block below.
+
+// ── Paste and go ──
+// A whole list pasted into Import is saved and graded straight away: no name to type, no
+// Import tap, no tap on the deck. Only a paste (or the Paste button) starts it, never typing,
+// and only when every line was read and the count is right (60, or 40 for Prerelease).
+// Anything else waits for Import and save, as before.
+let _ez265Timer = null;
+function ez265Stop() { if (_ez265Timer) { clearTimeout(_ez265Timer); _ez265Timer = null; } }
+function ez265Check() {
+  ez265Stop();
+  const modal = document.getElementById('import-modal');
+  const ta = document.getElementById('import-list'), pv = document.getElementById('parse-preview');
+  if (!modal || !modal.classList.contains('active') || !ta || !pv) return;
+  // A list from a shared link is checked by the player first.
+  const note = document.getElementById('import-share-note');
+  if (note && note.style.display !== 'none' && note.textContent) return;
+  const parsed = parseDeckList(ta.value);
+  const want = importFormat === 'prerelease' ? 40 : 60;
+  if (!parsed.length || parsePreviewText(parsed, want).warn) return;
+  pv.classList.remove('warn');
+  pv.textContent = `${want} cards read. Grading it now…`;
+  const snap = ta.value;
+  _ez265Timer = setTimeout(() => {
+    _ez265Timer = null;
+    if (!modal.classList.contains('active') || ta.value !== snap) return;
+    importDeck();
+  }, 700);
+}
+(function () {
+  const ta = document.getElementById('import-list');
+  if (ta) ta.addEventListener('input', e => {
+    ez265Stop();
+    const t = e && e.inputType;
+    // After the preview line is written, so the "Grading it now" line replaces it.
+    if (t === 'insertFromPaste' || t === 'insertFromDrop') setTimeout(ez265Check, 0);
+  });
+  const nm = document.getElementById('import-name');
+  // Typing a name stops the automatic grade; Import and save takes it from there.
+  if (nm) nm.addEventListener('input', () => {
+    if (!_ez265Timer) return;
+    ez265Stop();
+    if (ta) ta.dispatchEvent(new Event('input'));
+  });
+  const _paste = pasteFromClipboard;
+  pasteFromClipboard = async function () {
+    const r = await _paste.apply(this, arguments);
+    const box = document.getElementById('import-list');
+    if (box && box.value.trim()) ez265Check();
+    return r;
+  };
+  const _close = closeImportModal;
+  closeImportModal = function () { ez265Stop(); return _close.apply(this, arguments); };
+  // The name is optional now, and the hint says a full list grades on its own.
+  const lbl = document.querySelector('label[for="import-name"]');
+  if (lbl) lbl.textContent = 'Deck name (optional)';
+  if (nm) nm.placeholder = 'Leave blank to name it from the list';
+  const hint = document.querySelector('#import-modal .modal-hint');
+  if (hint) hint.textContent = 'Paste the export from Limitless or Pokémon TCG Live, section headers included. A full list grades as soon as it is pasted.';
+})();
+
+// A deck with no name is named after the meta deck it matches, or else its main attacker.
+// The name never changes the grade (2.6.1), so this is only a label.
+function ez265Name(deck) {
+  let n = '';
+  try { n = gArchName(deck) || ''; } catch (_) {}
+  if (!n) {
+    try {
+      const R = g29Grade(deck), v = R && R.via;
+      const m = v && (v.auto || v.main);
+      if (m && m.name) n = m.name;
+    } catch (_) {}
+  }
+  n = String(n || 'My deck').trim() || 'My deck';
+  const taken = new Set(state.decks.filter(d => d.id !== deck.id).map(d => String(d.name).toLowerCase()));
+  if (!taken.has(n.toLowerCase())) return n;
+  for (let i = 2; i < 100; i++) if (!taken.has((n + ' ' + i).toLowerCase())) return n + ' ' + i;
+  return n;
+}
+function ez265OpenGrade(id) {
+  openReview(id);
+  try { showReviewTab('grade'); } catch (_) {}
+}
+// Every import now lands on the new deck's grade instead of the deck list.
+(function () {
+  const TMP = 'Pasted deck';
+  const _imp = importDeck;
+  importDeck = async function () {
+    ez265Stop();
+    const nm = document.getElementById('import-name');
+    const auto = !!nm && !nm.value.trim();
+    if (auto) nm.value = TMP;
+    const before = new Set(state.decks.map(d => d.id));
+    let r;
+    try { r = await _imp.apply(this, arguments); }
+    finally { if (auto && nm && nm.value === TMP) nm.value = ''; }
+    const added = state.decks.filter(d => !before.has(d.id));
+    if (!added.length) return r;
+    const d = added[added.length - 1];
+    if (auto) {
+      d.name = ez265Name(d);
+      try { await saveState(); } catch (_) {}
+      renderHome();
+      showToast(`Added "${d.name}". Rename it any time in Edit deck.`);
+    }
+    ez265OpenGrade(d.id);
+    return r;
+  };
+})();
+
+// ── Try a sample deck ──
+// The first starter deck is the top list of the most played deck right now (data.json,
+// refreshed weekly). One tap loads it and opens its grade.
+function ez265SampleLine() {
+  const s = STARTER_DECKS[0];
+  if (!s) return '';
+  return `${s.name}, ${s.place} place on ${s.date}`;
+}
+(function () {
+  const _sample = v45SampleGrade;
+  v45SampleGrade = async function () {
+    const r = await _sample.apply(this, arguments);
+    try { if (document.getElementById('screen-review').classList.contains('active')) showReviewTab('grade'); } catch (_) {}
+    return r;
+  };
+  const _home = renderHome;
+  renderHome = function () {
+    const r = _home.apply(this, arguments);
+    try {
+      const b = document.querySelector('#deck-list .st45-sample');
+      if (b && !b.dataset.ez265) {
+        b.dataset.ez265 = '1';
+        b.innerHTML = ic23('award') + 'Try a sample deck';
+        const line = ez265SampleLine();
+        if (line) b.insertAdjacentHTML('afterend', `<span class="ez265-sample-s">${esc(line)}, graded in one tap</span>`);
+      }
+    } catch (_) {}
+    return r;
+  };
+  // The first screen of the welcome tour offers the two quickest starts.
+  const _tour = renderTour;
+  renderTour = function () {
+    const r = _tour.apply(this, arguments);
+    try {
+      if (tourStep !== 0 || state.decks.length || !STARTER_DECKS.length) return r;
+      const acts = document.querySelector('#tour-inner .tour-acts');
+      if (!acts) return r;
+      acts.classList.add('ez265-acts');
+      acts.innerHTML = `<button class="btn" onclick="closeTour();openImportModal()">${ic23('clipboard')}Paste my list</button>
+        <button class="btn btn-primary" id="tour-next" onclick="closeTour();v45SampleGrade()">${ic23('award')}Try a sample deck</button>
+        <button class="btn btn-ghost btn-sm ez265-tour" onclick="tourGo(1)">Take the tour${ic23('next')}</button>`;
+    } catch (_) {}
+    return r;
+  };
+})();
+
+// ── Top fixes ──
+// A short list at the top of each grade: up to three changes that help most, taken only from
+// what the grade already says. Problems that stop the deck come first, then the swaps from
+// Upgrades that raise the grade (best first), then the other Fix first problems, then swaps
+// that raise Synergy or Power. Upgrades never cut the main attacker; this checks that again.
+function tf265Up(deck) {
+  try {
+    const hit = _up75Cache.get(deck.id);
+    if (!hit || hit.sig !== up75Sig(deck)) return { wait: true };
+    if (hit.busy) return { wait: true };
+    return { res: hit.res };
+  } catch (_) { return {}; }
+}
+function tf265Keep(R) {
+  const keep = new Set();
+  try {
+    const v = R.via || {};
+    const line = new Set([v.auto, v.main].filter(Boolean).map(m => m.key).concat(v.boxPick || []));
+    for (let i = 0; i < 3; i++) (R.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });
+    (R.entries || []).forEach(e => { if (e.card && line.has(e.card.key)) keep.add(up75Key(e.name)); });
+  } catch (_) {}
+  return keep;
+}
+function tf265Items(deck) {
+  const R = g29Grade(deck);
+  if (!R) return null;
+  const brk = typeof rules34Breaches === 'function' ? rules34Breaches(deck) : [];
+  const probs = g29Problems(R);
+  const up = tf265Up(deck), res = up.res;
+  const keep = tf265Keep(R);
+  const swaps = ((res && !res.why && res.swaps) || []).filter(s => !keep.has(up75Key(s.out)));
+  const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
+  const raise = swaps.filter(s => s.to > s.from).sort((a, b) => b.to - a.to);
+  const lift = swaps.filter(s => !(s.to > s.from));
+  const out = [];
+  brk.forEach(t => out.push({ t, tone: 'crit' }));
+  probs.filter(f => f.sev === 'crit').forEach(f => out.push({ t: f.t, tone: 'crit', j: 'g29-fix' }));
+  raise.forEach(s => out.push({ t: `Swap 1 ${s.out} for 1 ${s.in}`, n: `grade ${g(s.from, s.to)}`, j: 'up75-sec' }));
+  probs.filter(f => f.sev !== 'crit').forEach(f => out.push({ t: f.t, tone: 'warn', j: 'g29-fix' }));
+  lift.forEach(s => {
+    const n = s.syn[1] > s.syn[0] ? `Synergy ${g(s.syn[0], s.syn[1])}` : s.pow[1] > s.pow[0] ? `Power ${g(s.pow[0], s.pow[1])}` : '';
+    out.push({ t: `Swap 1 ${s.out} for 1 ${s.in}`, n, j: 'up75-sec' });
+  });
+  return { items: out.slice(0, 3), wait: !!up.wait && out.length < 3 };
+}
+function tf265Html(deck) {
+  const r = tf265Items(deck);
+  if (!r || !r.items.length) return r && r.wait ? `<div class="tf265" id="tf265"><div class="tf265-h">Top fixes</div><p class="tf265-wait">Checking which changes help most.</p></div>` : '';
+  const li = r.items.map(it => {
+    const body = `<span class="tf265-t">${esc(it.t)}</span>${it.n ? `<span class="tf265-n">${esc(it.n)}</span>` : ''}`;
+    return `<li class="${it.tone || ''}">${it.j ? `<button type="button" onclick="g29Jump('${it.j}')">${body}</button>` : `<div>${body}</div>`}</li>`;
+  }).join('');
+  const h = r.items.length === 1 ? 'Top fix' : `Top ${r.items.length === 2 ? 'two' : 'three'} fixes`;
+  return `<div class="tf265" id="tf265"><div class="tf265-h">${h}</div><ol>${li}</ol></div>`;
+}
+function tf265Place() {
+  try {
+    const el = document.getElementById('grade-body');
+    const deck = state.decks.find(d => d.id === state.activeDeckId);
+    if (!el || !deck) return;
+    const hero = el.querySelector('.g29-hero');
+    const old = el.querySelector('#tf265');
+    if (!hero || !el.querySelector('#g29-fix')) { if (old) old.remove(); return; }
+    const h = tf265Html(deck);
+    if (old) { if (h) old.outerHTML = h; else old.remove(); return; }
+    if (!h) return;
+    const at = hero.querySelector('.g29-verdict');
+    if (at) at.insertAdjacentHTML('afterend', h); else hero.insertAdjacentHTML('beforeend', h);
+  } catch (e) { console.warn('[top fixes]', e); }
+}
+(function () {
+  const _rg = renderGrade;
+  renderGrade = function () { const r = _rg.apply(this, arguments); tf265Place(); return r; };
+  // Upgrades finish after the grade is drawn; the list catches up when they do.
+  const _uh = up75Html;
+  up75Html = function () { const r = _uh.apply(this, arguments); setTimeout(tf265Place, 0); return r; };
+})();
+</script>
+<style>
+  /* 2.6.5: Paste and go, Try a sample deck, Top fixes */
+  .ez265-sample-s { display:block; margin-top:0.45rem; font-size:var(--fs-xs, 0.8125rem); color:var(--text-3); }
+  .tour-acts.ez265-acts { flex-wrap:wrap; }
+  .tour-acts.ez265-acts .ez265-tour { flex:1 1 100%; }
+  .tf265 { margin:0.75rem 0 0.25rem; padding:0.6rem 0.75rem 0.5rem; border:1px solid var(--line-2, var(--line)); border-radius:10px; text-align:left; }
+  .tf265-h { font-family:var(--mono); font-size:0.75rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-3); }
+  .tf265 ol { margin:0.25rem 0 0; padding:0 0 0 1.25rem; }
+  .tf265 li { margin:0; padding:0; color:var(--text-2); }
+  .tf265 li::marker { font-family:var(--mono); color:var(--text-3); }
+  .tf265 li.crit::marker { color:var(--red, var(--fire)); }
+  .tf265 li button, .tf265 li > div { display:block; width:100%; min-height:44px; padding:0.45rem 0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+  .tf265 li + li button, .tf265 li + li > div { border-top:1px solid var(--line); }
+  .tf265-t { display:block; color:var(--text); font-size:0.9375rem; line-height:1.35; overflow-wrap:anywhere; }
+  .tf265-n { display:block; margin-top:0.1rem; font-family:var(--mono); font-size:0.8125rem; color:var(--green, var(--grass)); }
+  .tf265-wait { margin:0.3rem 0 0.2rem; font-size:0.875rem; color:var(--text-3); }
+  /* 2.6.5 phone pass: taps of at least 44px on phones and touch screens */
+  @media (max-width:600px), (pointer:coarse) {
+    .deck-more { height:44px; }
+    .about40-faq summary { min-height:44px; }
+    .about38-links { gap:0 1rem; }
+    .about38-links a, .about38-links button { display:inline-flex; align-items:center; min-height:44px; }
+    .ol-k .mode-opt { min-width:44px; min-height:44px; }
+    .bld-kinds button { min-height:44px; }
+    .bld-add { width:44px; height:44px; }
+    .bld-add.wide { width:auto; }
+    .bld-th { width:44px; height:61px; }
+    .about38-links button { min-width:44px; justify-content:center; }
+    .deck-card .deck-name { white-space:normal; overflow-wrap:anywhere; }
+  }
 </style>
 </body>
 </html>
