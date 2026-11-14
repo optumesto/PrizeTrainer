@@ -764,6 +764,7 @@
   .g-item p { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin-top:0.2rem; }
   /* Against the meta: matchup stats from Limitless */
   #mu60-sec .x-select { margin-bottom:0.75rem; }
+  #atk62-sec .x-select { margin-bottom:0.25rem; }
   .mu60-p { font-size:var(--fs-md); color:var(--text-2); line-height:1.5; margin:0 0 0.75rem; }
   .mu60-p b { color:var(--text); }
   .mu60-t { border:1px solid var(--line); border-radius:var(--r); background:var(--surface); overflow:hidden; }
@@ -6496,7 +6497,7 @@ function gViability(deck, coh, main) {
   const mainR = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
   if (mainR && bestR && mainR.eff >= bestR.eff) bestR = mainR;
   const lead = main && bestR && bestR !== mainR && main.key !== bestR.name.toLowerCase()
-    ? `${gCap(main.name)} is this deck's main attacker, but the hardest hit the grade can count comes from another Pokemon. ` : '';
+    ? `${gCap(main.name)} is ${main.why === 'pick' ? 'the main attacker you set' : "this deck's main attacker"}, but the hardest hit the grade can count comes from another Pokemon. ` : '';
   const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0, !!(bestR && bestR.twice));
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   // v65: the spread engine counts only from cards that can reach the board.
@@ -6553,7 +6554,8 @@ function gViability(deck, coh, main) {
       : `${protN} of your Pokemon have Abilities that block damage or effects from some of your opponent's attacks (${who}). Read each card for when it applies.`}); }
   // v54: a main attacker that takes no damage from Pokemon ex attacks (Crustle's Mysterious Rock Inn).
   const mainC = main ? deck.find(e=>e.card&&e.card.key===main.key) : null;
-  if (mainC && (mainC.card.pex||[]).length) { closeScore+=0.1;
+  // 2.6.2: a main attacker the player set counts here only with 2 or more copies, so naming a single tech copy is not a free bonus.
+  if (mainC && (mainC.card.pex||[]).length && (main.why!=='pick' || deck.filter(x=>x.card&&x.card.key===main.key).reduce((n,x)=>n+x.qty,0)>=2)) { closeScore+=0.1;
     findings.push({sev:'ok', t:`${gCap(mainC.name)} walls Pokemon ex`,
     d:`${gCap(mainC.name)}'s ${mainC.card.pex[0]} prevents all damage done to it by attacks from your opponent's Pokemon ex, so an ex deck has to find another way to knock it out. Pokemon without a Rule Box still hit it normally.`}); }
   const mill=attackers.map(e=>({e, a:(e.card.attacks||[]).find(a=>a.copy&&a.copy.mill)})).find(x=>x.a);
@@ -6737,7 +6739,10 @@ function gViability(deck, coh, main) {
  *   for the Ability.
  */
 function gPlan(entries, coh, via) {
-  const out = [], m = via && via.main;
+  const out = [];
+  let m = via && via.main;
+  // 2.6.2: a deck the player set as a toolbox has no single main attacker, so the plan leads with its hardest hitter and names the rest.
+  if (!m && via && (via.boxPick || []).length) { const x = entries.find(y => y.card && y.card.key === via.boxPick[0]); if (x) m = { key: x.card.key, name: x.name, why: 'box' }; }
   if (!m) return out;
   const nm = gCap(m.name), e = entries.find(x => x.card && x.card.key === m.key);
   if (!e) return out;
@@ -6797,14 +6802,15 @@ function gPlan(entries, coh, via) {
     const preN = [...pre].map(k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0));
     const en = gEnablers(entries, e.card), enN = en.reduce((n, x) => n + x.qty, 0);
     const enTxt = enN ? ` Its ${e.card.bmAbil} puts it onto your Bench when you have ${[...new Set(en.map(x => gCap(x.name)))].join(' or ')} in play, so the ${enN} ${enN === 1 ? 'copy' : 'copies'} of ${en.length > 1 ? 'those' : 'that'} in the list are there to bring it in.` : '';
-    why = `It is the attacker this list is built around: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
+    why = `${m.why === 'pick' ? 'You set it as the main attacker' : 'It is the attacker this list is built around'}: ${e.qty} ${e.qty === 1 ? 'copy' : 'copies'}${preN.some(n => n) ? ' plus ' + preN.reduce((a, b) => a + b, 0) + ' Pokemon it evolves from' : ''}.${enTxt}`;
     // v60: the deck is named for the Pokemon that powers it, not for the one that attacks.
     if (m.engine) why = `The list plays as ${m.named}, a deck named for ${gCap(m.engine.name)}, ${m.engine.atk ? 'which sets up the attackers' : 'which powers the attackers rather than attacking'}: its ${m.engine.abil}${m.engine.atk ? ' attack' : ''} ${m.engine.p}.`;
   }
   // v59: a toolbox deck (Basic Box) has no single plan, so name the other attackers too.
-  const tbx = (via.toolbox || []).filter(k => k !== m.key);
+  const tbx = ((m.why === 'box' ? via.boxPick : via.toolbox) || []).filter(k => k !== m.key);
+  const isBox = m.why === 'box' ? tbx.length >= 1 : tbx.length >= 3 && m.why !== 'name' && m.why !== 'pick';
   const tn = tbx.map(k => gCap((entries.find(y => y.card && y.card.key === k) || { name: k }).name));
-  if (tbx.length >= 3 && m.why !== 'name') {
+  if (isBox) {
     const q = k => entries.filter(y => y.card && y.card.key === k).reduce((n, y) => n + y.qty, 0);
     const most = tbx.every(k => q(k) <= e.qty);
     why = most ? `${nm} is the one the list runs most copies of (${e.qty}).` : '';
@@ -6844,7 +6850,7 @@ function gPlan(entries, coh, via) {
   const sbTxt = sb ? ` Its ${sb.abil} adds ${sb.n} to its attacks while it has ${gCap(sb.type)} Energy attached${r && r.top ? `, so it hits for ${r.top + sb.n}` : ''}${sb.hp ? `, and gives it ${sb.hp} more HP` : ''}.` : '';
   const pAb = (e.card.ab || []).filter(x => x.passive && !(e.card.pex || []).includes(x.abil) && !(g && g.abil === x.abil) && !(own && own.abil === x.abil))
     .map(x => /^[a-z]+s\b/.test(x.p) ? ` Its ${x.abil} ${x.p}.` : ` With its ${x.abil}, ${x.p}.`).join('');
-  out.push({ link: tbx.length >= 3 && m.why !== 'name' ? `Attackers: ${[nm].concat(tn).join(', ')}` : `Main attacker: ${nm}`, p: `${tbx.length >= 3 && m.why !== 'name' ? `${tbx.length + 1} different Pokemon here can carry the attack, and you pick the one that fits each turn.${why ? ' ' + why : ''}${how ? ' ' + how.replace(/^Its /, nm + "'s ") : ''}` : `${nm} does the attacking. ${why}${how ? ' ' + how : ''}`}${fxTxt}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}${sbTxt}${pAb}${mAb ? ' ' + mAb : ''}` });
+  out.push({ link: isBox ? `Attackers: ${[nm].concat(tn).join(', ')}` : `Main attacker: ${nm}`, p: `${isBox ? `${tbx.length + 1} different Pokemon here can carry the attack, and you pick the one that fits each turn.${why ? ' ' + why : ''}${how ? ' ' + how.replace(/^Its /, nm + "'s ") : ''}` : `${nm} does the attacking. ${why}${how ? ' ' + how : ''}`}${fxTxt}${discTxt}${lockTxt}${gateTxt}${wall}${ownTxt}${sbTxt}${pAb}${mAb ? ' ' + mAb : ''}` });
   // v54: Pokemon played for an Ability that does damage on its own (Dusknoir's Cursed Blast).
   const dmgAb = [], seenAb = new Set();
   entries.forEach(x => { const c = x.card; if (!c || c.key === m.key || seenAb.has(c.key)) return;
@@ -7434,6 +7440,26 @@ function gFocus(entries, coh, via) {
   return { score, box, why: why.map(x => x.s), m: { conc: +conc.toFixed(2), need: atkNeed.size, esh: +esh.toFixed(2), off, t1: +t1.toFixed(2), p1: +p1.toFixed(2), links: (coh.synergies || []).length } };
 }
 
+/** 2.6.2: the main attacker the player set for this deck: 'toolbox', a Pokemon in the list that has attacks, or '' for Auto. */
+function gAtkPick(deck, entries) {
+  const v = deck && typeof deck.atk === 'string' ? deck.atk : '';
+  if (!v) return '';
+  if (v === 'toolbox') return 'toolbox';
+  const e = (entries || []).find(x => x.card && x.card.t === 'pkmn' && x.card.key === v && (x.card.attacks || []).length);
+  return e ? { key: e.card.key, name: e.name } : '';
+}
+/** 2.6.2: the Pokemon the Main attacker pick offers: each one in the list with an attack that nothing
+ *  else in the list evolves from (Dragapult ex, not Dreepy), hardest hitters first, by key. */
+function gAtkOptions(entries, reach) {
+  const P = (entries || []).filter(e => e.card && e.card.t === 'pkmn');
+  const from = new Set(P.map(e => e.card.from).filter(Boolean));
+  const eff = new Map();
+  (reach || []).forEach(r => { const k = String(r.name).toLowerCase(); eff.set(k, Math.max(eff.get(k) || 0, r.eff || 0)); });
+  const m = new Map();
+  P.forEach(e => { if ((e.card.attacks || []).length && !from.has(e.card.key) && !m.has(e.card.key)) m.set(e.card.key, e.name); });
+  return [...m].map(([key, name]) => ({ key, name })).sort((a, b) => (eff.get(b.key) || 0) - (eff.get(a.key) || 0));
+}
+
 function gradeDeck(deck) {
   const entries=toGradeDeck(deck);
   const coh=gCoherence(entries);
@@ -7442,7 +7468,34 @@ function gradeDeck(deck) {
   // The name now comes from the meta deck the cards match (or the one picked under Against the meta),
   // so an Archaludon list still leads with Archaludon ex and not the Metagross that powers it.
   let main=null; try { main=gMainAttacker(entries, coh, gArchName(deck)); } catch (_) {}
-  const via=gViability(entries, coh, main);
+  // 2.6.2: the player can set the main attacker, or mark the deck as a toolbox, under Main attacker.
+  // Auto is the grade's own pick above. The plan, upgrades and draw odds follow the pick. The grade
+  // follows it only when the pick is a real attacker: a Pokemon that hits for at least half of what the
+  // list's hardest hitter does, or for Toolbox, 3 or more of those. A weaker pick leaves the grade on Auto,
+  // so naming a tech or a Pokemon played for its Ability cannot move the grade either way.
+  const auto=main, pick=gAtkPick(deck, entries);
+  let via=gViability(entries, coh, main);
+  if (pick) {
+    const top=Math.max(0, ...(via.reach||[]).map(r=>r.eff||0));
+    const effOf=k=>Math.max(0, ...(via.reach||[]).filter(r=>r.name.toLowerCase()===k).map(r=>r.eff||0));
+    const box=pick==='toolbox' ? [...new Map((via.reach||[]).filter(r=>r.top>0 && (r.eff||0)*2>=top).sort((a,b)=>b.eff-a.eff).map(r=>[r.name.toLowerCase(), r])).keys()] : null;
+    const pm=box ? null : { key:pick.key, name:pick.name, why:'pick' };
+    const same=!box && auto && pick.key===auto.key;
+    const real=box ? box.length>=3 : effOf(pick.key)*2>=top;
+    if (!same && real) { main=pm; via=gViability(entries, coh, main); }
+    else if (!same) {
+      const lead=auto ? gCap(auto.name) : 'the cards alone';
+      via.findings.push(box
+        ? { sev:'warn', t:box.length>1 ? `${box.length} attackers for a toolbox` : 'One attacker for a toolbox',
+            d:`You set this as a toolbox deck, but ${box.length>1 ? `only ${box.length} Pokemon in the list hit` : 'only one Pokemon in the list hits'} for half of what the best one does or more (${box.map(gCap).join(', ')}). Toolbox decks usually have 4 or more, so the grade and the plan still read it as built around ${lead}.` }
+        : { sev:'warn', t:`${gCap(pick.name)} is not a big hitter here`,
+            d:`You set ${gCap(pick.name)} as the main attacker, but it hits for less than half of what the list's hardest hitter does, so the grade still reads the deck as built around ${lead}. The plan, upgrades and draw odds follow your pick.` });
+      // Too few attackers for a toolbox: the plan stays on Auto too, with the finding above saying why.
+      via.main=box ? auto : pm;
+    }
+    if (box && real) via.boxPick=box;
+  }
+  via.auto=auto; via.pick=pick==='toolbox' ? 'toolbox' : pick ? pick.key : '';
   // v65: the Trainers and Special Energy scale Synergy; a full suite leaves it as it was.
   let trn=null; try { trn=gTrainers(entries, coh, via, main, deck && deck.format); } catch (_) {}
   const steps={ s0:coh.score };
@@ -7641,10 +7694,13 @@ function simGroups(cards) {
 function simAttackerLine(deck, groups) {
   let R;
   try { R = gradeDeck(deck); } catch (_) { return null; }
-  if (!R || !R.via || !R.via.main) return null;
+  if (!R || !R.via) return null;
+  // 2.6.2: a deck set as a toolbox leads with its hardest hitter and offers the others.
+  const box = !R.via.main && (R.via.boxPick || []).length ? R.via.boxPick : null;
+  if (!R.via.main && !box) return null;
   const et = (R.coh && R.coh.energyTypes) || {};
   const idx = k => groups.findIndex(g => g.key === k);
-  const top = idx(R.via.main.key);
+  const top = idx(box ? box[0] : R.via.main.key);
   if (top < 0) return null;
   const g = groups[top];
   // Realistic damage: a discard pile bonus counts only when the list can meet it.
@@ -7658,10 +7714,10 @@ function simAttackerLine(deck, groups) {
     });
   });
   // v59: a toolbox deck (Basic Box) has several attackers, so Hand practice offers each of them.
-  const toolbox = (R.via.toolbox || []).map(idx).filter(i => i >= 0);
+  const toolbox = ((box || R.via.toolbox) || []).map(idx).filter(i => i >= 0);
   // v60: a deck named for its engine (Tera Box (Noctowl)) offers that engine's line too.
-  const engine = R.via.main.engine ? idx(String(R.via.main.engine.name || '').toLowerCase()) : -1;
-  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:R.via.main.why, toolbox, engine,
+  const engine = !box && R.via.main.engine ? idx(String(R.via.main.engine.name || '').toLowerCase()) : -1;
+  const line = { name:g.name, stage:g.stage, top, s1:-1, basic:-1, missing:false, why:box ? 'box' : R.via.main.why, toolbox, engine,
     cond: r && r.cond ? r.cond : null, pile: !!(r && r.pile), sc: r && r.sc ? r.sc : null, two: r && r.pile ? g56Many(r.pile, 2) : '', now: r ? r.now : 0, full: r ? r.top : 0 };
   if (g.stage === 'basic' || !g.stage) { line.basic = top; line.top = -1; return line; }
   if (g.stage === 'stage1') {
@@ -7979,9 +8035,9 @@ function renderOdds() {
     } else if (line.stage === 'stage1') {
       parts.push(`${esc(S.groups[line.basic].name)} by turn 1, then ${esc(line.name)} by turn 2 (nothing evolves on its first turn in play)`);
     } else parts.push(`${esc(line.name)} among your first ${SIM_SEEN_T2} cards`);
-    const tbN = line.why !== 'name' && line.toolbox && line.toolbox.length >= 4 ? line.toolbox.length : 0;
+    const tbN = line.toolbox && (line.why === 'box' ? line.toolbox.length >= 2 : line.why !== 'name' && line.why !== 'pick' && line.toolbox.length >= 4) ? line.toolbox.length : 0;
     h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}</div>
-      <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker its meta deck is named for' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
+      <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker its meta deck is named for' : line.why === 'pick' ? 'The main attacker you set' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch?' to '+oPct(AT.search):''}</div>
         <p>Needs ${parts[0]}. ${oPct(AT.raw)} is raw draws alone, the floor.${S.anySearch?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out. Real games land in between.${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
@@ -8200,7 +8256,7 @@ function handLineOptions(deck, groups) {
   };
   if (main && !main.missing) add(main.top >= 0 ? main.top : main.basic, true);
   // v59: in a toolbox deck no single Pokemon is the plan, so each big attacker is its own option.
-  const tb = main && main.why !== 'name' && main.toolbox && main.toolbox.length >= 4 ? main.toolbox : [];
+  const tb = main && main.toolbox && (main.why === 'box' ? main.toolbox.length >= 2 : main.why !== 'name' && main.why !== 'pick' && main.toolbox.length >= 4) ? main.toolbox : [];
   if (main && main.engine >= 0) add(main.engine, false);
   tb.forEach(i => { if (out.length < 4) add(i, false); });
   out.forEach(l => { if (tb.length) { l.tool = tb.length; l.main = false; } });
@@ -12031,11 +12087,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6.1',
+  version: 'v2.6.2',
   kind: 'fix',
   items: [
-    { t: 'Fixed: renaming a deck no longer changes its grade' },
-    { t: 'Fixed: a card split over two lines grades the same as one line' }
+    { t: 'Added: Main attacker on the Grade tab', d: 'Pick the Pokemon your deck attacks with, or Toolbox. The plan, upgrades and draw odds follow it.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -13188,6 +13243,8 @@ async function duplicateDeckFromEdit() {
     coverage: cov,
     enrichVer: ENRICH_VER,
   };
+  // 2.6.2: the copy keeps the Main attacker pick.
+  if (typeof orig.atk === 'string' && orig.atk) newDeck.atk = orig.atk;
   state.decks.push(newDeck);
   await saveState();
   renderHome();
@@ -14941,8 +14998,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6.1';
-const PT_BUILD = 81;
+const PT_VERSION = 'v2.6.2';
+const PT_BUILD = 82;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -16744,7 +16801,8 @@ const G29_SHOW = 3;
 // Grading a list is quick, but home grades every deck, so keep the last answer.
 const _g29Cache = new Map();
 function g29Sig(deck) {
-  return (deck.enrichVer || 0) + '|' + ((deck.coverage && deck.coverage.resolved) || 0) + '|' +
+  // 2.6.2: the Main attacker pick is part of what the grade read.
+  return (deck.enrichVer || 0) + '|' + (typeof deck.atk === 'string' ? deck.atk : '') + '|' + ((deck.coverage && deck.coverage.resolved) || 0) + '|' +
     (deck.cards || []).map(c => c.count + 'x' + c.name + ':' + (c.supertype || '') + ':' + (c.stage || '')).join('|');
 }
 function g29Grade(deck) {
@@ -20261,6 +20319,38 @@ function mu60Section(deck) {
 })();
 </script>
 <script>
+// ═══════════ 2.6.2: Main attacker pick ═══════════
+// The player says which Pokemon the deck attacks with, or that it is a toolbox deck that picks
+// its attacker each turn. Auto is the grade's own read of the cards. Saved with the deck (deck.atk).
+function atk62Set(v) {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  if (v) deck.atk = String(v).slice(0, 80); else delete deck.atk;
+  try { saveState(); } catch (_) {}
+  renderGrade();
+  const s = document.getElementById('atk62-sec');
+  if (s && s.scrollIntoView) s.scrollIntoView({ block: 'nearest' });
+}
+function atk62Section(deck, R) {
+  if (!R || !R.via || !R.entries) return '';
+  const opts = gAtkOptions(R.entries, R.via.reach);
+  // A Pokemon set before, still in the list but no longer offered (it now evolves into something), stays in the menu.
+  if (R.via.pick && R.via.pick !== 'toolbox' && !opts.some(x => x.key === R.via.pick) && R.via.main) opts.push({ key: R.via.main.key, name: R.via.main.name });
+  if (!opts.length) return '';
+  const auto = R.via.auto, cur = R.via.pick || '';
+  const gone = typeof deck.atk === 'string' && deck.atk && !cur;
+  const o = (v, t) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`;
+  const sel = o('', auto ? `Auto: ${gCap(auto.name)}` : 'Auto') + opts.map(x => o(x.key, gCap(x.name))).join('') + o('toolbox', 'Toolbox: several attackers');
+  const say = cur === 'toolbox' ? 'Set as a toolbox deck, so the plan names each attacker. The grade still counts only the hits the cards can make.'
+    : cur ? 'The plan, upgrades and draw odds are built around the attacker you set. Auto is what the grade reads from the cards.'
+    : 'The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.';
+  return `<div class="g-sec" id="atk62-sec"><div class="g-sec-t">Main attacker</div>
+    <div class="g-sec-i">${say}</div>
+    <select class="x-select" aria-label="Main attacker" onchange="atk62Set(this.value)">${sel}</select>
+    ${gone ? '<p class="mu60-p">The Pokemon you set is no longer in the list, so the grade is back on Auto.</p>' : ''}</div>`;
+}
+</script>
+<script>
 // ═══════════ v65: hide and delete a deck from its menus ═══════════
 // Delete used to sit at the bottom of Game modes. It is now the last row of
 // the deck menu on home and of the menu on the deck page, behind one confirm.
@@ -21933,18 +22023,19 @@ async function up75Find(deck) {
   // 2.5.2: so does the deck's own main attacker, as the grade reads it from this list and its name,
   // with the Pokemon it evolves from, and any Pokemon the player's own deck name calls out. A deck
   // matched to the wrong archetype (Raging Bolt Ogerpon read as Basic Box) keeps its attacker too.
-  const named = (arch && typeof g68Named === 'function' ? g68Named(arch.name) : [])
-    .concat(typeof g68Named === 'function' && deck.name ? g68Named(deck.name) : []);
+  // 2.6.2: the player's own deck name no longer counts here; the Main attacker pick says what the deck is built around.
+  const named = arch && typeof g68Named === 'function' ? g68Named(arch.name) : [];
   const keep = new Set();
   try {
-    // 2.6.1: the main attacker as the grade reads it, from the cards alone; Pokemon the player's deck name calls out stay through named.
-    const m = gMainAttacker(R0.entries || [], R0.coh, gArchName(deck));
-    if (m) {
-      const line = new Set([m.key]);
-      for (let i = 0; i < 3; i++) (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });
-      (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key)) keep.add(up75Key(e.name)); });
-      if (m.engine && m.engine.name) keep.add(up75Key(m.engine.name));
-    }
+    // The main attacker as the grade reads it from the cards, and the one the player set under Main attacker
+    // (every attacker the grade leads with when it is set as a toolbox), each with the Pokemon it evolves from.
+    const v = R0.via || {};
+    let ms = [v.auto, v.main].filter(Boolean);
+    if (!R0.via) { const m = gMainAttacker(R0.entries || [], R0.coh, gArchName(deck)); if (m) ms = [m]; }
+    const line = new Set(ms.map(m => m.key).concat(v.boxPick || []));
+    for (let i = 0; i < 3; i++) (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });
+    (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key)) keep.add(up75Key(e.name)); });
+    ms.forEach(m => { if (m.engine && m.engine.name) keep.add(up75Key(m.engine.name)); });
   } catch (_) {}
   const isNamed = r => keep.has(r.key) || (cardCategory(r.c) === 'pokemon' && named.some(p => (' ' + mu60Norm(r.c.apiName || r.name) + ' ').includes(' ' + p + ' ')));
   const outs = [];
@@ -22147,7 +22238,9 @@ function gh72Ctx(deck, R) {
     // 2.5.1: n is the rotation hold (the grade held at G40_CAP), which is what the history line says.
     // t is the Trainer data (builder.json) the grade was read with, so a change there reads as results.
     f: deck.format || 'standard', n: R.rawOverall != null ? 1 : 0, r: R.unread || 0,
-    t: typeof g76Played !== 'undefined' && g76Played ? g76N : 0 };
+    t: typeof g76Played !== 'undefined' && g76Played ? g76N : 0,
+    // 2.6.2: the Main attacker pick ('' is Auto), as the grade read it.
+    atk: R.via && R.via.pick ? R.via.pick : '' };
 }
 /** Keep the grade on the deck's log when it is new: a changed list, or a grade that moved. The
  *  reason is worked out now and kept with the entry (w): s start, e your edit (with r:1 when results
@@ -22169,11 +22262,12 @@ function gh72Note(deck, R) {
     if (x.r > (was.r || 0)) return;
     if (last.g === cur.g && last.n === cur.n) {
       // The grade held: remember what it was read with, so the next move is put down to the right cause.
-      if (['m', 'u', 'b', 'f', 'n', 'r', 't'].some(f => was[f] !== x[f])) { log.x = x; deck.gradeLog = log; gh72Save(); }
+      if (['m', 'u', 'b', 'f', 'n', 'r', 't', 'atk'].some(f => (was[f] || '') !== (x[f] || ''))) { log.x = x; deck.gradeLog = log; gh72Save(); }
       return;
     }
-    cur.w = x.u !== (was.u || '') ? 'u' : x.f !== (was.f || 'standard') ? 'f' : x.m !== (was.m || '') ? 'r'
+    cur.w = x.atk !== (was.atk || '') ? 'k' : x.u !== (was.u || '') ? 'u' : x.f !== (was.f || 'standard') ? 'f' : x.m !== (was.m || '') ? 'r'
       : x.b !== was.b ? 'a' : x.t !== (was.t || 0) ? 'r' : x.n !== (was.n || 0) ? 'l' : 'c';
+    if (cur.w === 'k') { cur.ak = x.atk; if (x.atk && x.atk !== 'toolbox') { const pe = (R.entries || []).find(y => y.card && y.card.key === x.atk); cur.akn = pe ? pe.name : x.atk; } }
   } else {
     cur.w = 'e';
     if (x.m && was.m && x.m !== was.m) cur.r = 1;
@@ -22219,6 +22313,7 @@ function gh72Why(e) {
     }
     case 'u': { const n = gh72Arch(e.u); return e.u ? `You set it to compare as ${n || 'another deck'} under Against the meta.` : 'You cleared the deck picked under Against the meta.'; }
     case 'f': return 'You changed the format.';
+    case 'k': return e.ak === 'toolbox' ? 'You set it as a toolbox deck under Main attacker.' : e.ak ? `You set the main attacker to ${typeof e.akn === 'string' ? gCap(e.akn) : 'another Pokemon'}.` : 'You set the main attacker back to Auto.';
     case 'r': return `Tournament results updated${e.m && typeof d30Nice === 'function' ? ' (as of ' + d30Nice(e.m) + ')' : ''}. Your list did not change.`;
     case 'a': return 'A RdyDeck update changed how grades are worked out. Your list did not change.';
     case 'l': return e.n ? 'Some cards are no longer Standard legal. Your list did not change.' : 'Every card is Standard legal again. Your list did not change.';
@@ -22226,7 +22321,7 @@ function gh72Why(e) {
     default: return 'Where your history starts.';
   }
 }
-const gh72Mine = e => !e.w || e.w === 's' || e.w === 'e' || e.w === 'u' || e.w === 'f';
+const gh72Mine = e => !e.w || e.w === 's' || e.w === 'e' || e.w === 'u' || e.w === 'f' || e.w === 'k';
 function gh72Chart(e) {
   const W = 320, H = 96, px = 14, py = 14;
   const gs = e.map(x => x.g), lo = Math.max(0, Math.min(...gs) - 0.5), hi = Math.min(10, Math.max(...gs) + 0.5), span = Math.max(hi - lo, 1);
@@ -22279,6 +22374,22 @@ function gh72Html(deck) {
       const fix = el.querySelector('#g29-fix');
       if (fix) fix.insertAdjacentHTML('afterend', h); else el.insertAdjacentHTML('beforeend', h);
     } catch (_) {}
+    return r;
+  };
+})();
+// 2.6.2: Main attacker sits right under Fix first; this wraps last so it lands above Grade history and Upgrades.
+(function () {
+  const _rg = renderGrade;
+  renderGrade = function () {
+    const r = _rg.apply(this, arguments);
+    try {
+      const deck = state.decks.find(d => d.id === state.activeDeckId);
+      const el = document.getElementById('grade-body');
+      const fix = el && el.querySelector('#g29-fix');
+      if (!deck || !fix || el.querySelector('.g71-wait') || el.querySelector('#atk62-sec')) return r;
+      const h = atk62Section(deck, g29Grade(deck));
+      if (h) fix.insertAdjacentHTML('afterend', h);
+    } catch (e) { console.warn('[attacker]', e); }
     return r;
   };
 })();

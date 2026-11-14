@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.2 (build 82): pick the main attacker, or Toolbox (14 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v82) and CHANGES.md.
+
+- Mason's ask after the 2.6.1 name fix: a slot to say which Pokemon the deck attacks with, or that it is a toolbox deck, instead of the grade guessing from a name. New Main attacker section on the Grade tab, right under Fix first: Auto (the grade's own read of the cards, named), each Pokemon in the list with an attack that nothing else in the list evolves from (hardest hitters first), and Toolbox. Saved with the deck (deck.atk); Duplicate keeps it; a backup keeps it.
+- What follows the pick: the How it plays plan (Main attacker, or Attackers for Toolbox), the Upgrades keep list (the picked attacker and its line are never cut, plus the Auto pick), and the Odds and Hand practice attacker line.
+- What the grade does with it: a pick moves the grade only when it is a real attacker, hitting for at least half of what the list's hardest hitter does, or for Toolbox, 3 or more of those. A weaker pick keeps the Auto grade and adds a finding that says so. Found in the sweep: before this rule, naming a one-prize tech (Psyduck in Lopunny, Budew in Mega Starmie) as the main attacker gave the deck the one-prize prize trade and lifted it up to 0.2. The hardest hit the grade counts and the toolbox bonus still come from the cards. A main attacker the player set gets the Crustle style wall bonus only with 2 or more copies.
+- The player's own deck name is out of grading entirely now: the Upgrades keep list no longer reads it either; the pick replaces it.
+- Grade history: setting the pick is its own reason ("You set the main attacker to X", "You set it as a toolbox deck", "back to Auto"), counted as your change. The grade cache keys on the pick.
+- A pick whose Pokemon leaves the list falls back to Auto, with a note under the menu; an unknown or non-text value reads as Auto.
+- Grade check: no grade moved (Auto is the old behaviour).
+
 # RdyDeck 2.6.1 (build 81): a deck's name no longer changes its grade (14 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v81), CHANGES.md and tests/grade-baseline.json.
