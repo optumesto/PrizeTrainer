@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.3 (build 83): deck guides and content pages (14 Nov 2026)
+
+Changed files: 9 new deck-*.html guides, meta-decks.html, how-grading-works.html, faq.html, about.html, contact.html, build-pages.mjs, deck-guides.json, .github/pages/ (sources for the hand-written pages), privacy.html, terms.html, the 4 guide pages, index.html, sitemap.xml, sw.js (cache prize-trainer-v83) and CHANGES.md.
+
+- For AdSense's content review: plain HTML pages that read without running the app. Deck guides for the 9 top decks (core list, game plan, key cards, matchups, how RdyDeck grades it) and an index, built by build-pages.mjs from deck-guides.json and the data files already in the repo; no new Limitless requests. How grading works, FAQ, About and Contact are written in .github/pages and built by the same script.
+- Privacy policy (effective Nov 14): discloses Cloudflare Web Analytics, on since Nov 13.
+- Linked from the app's About section, every guide page footer and sitemap.xml.
+
 # RdyDeck 2.6.2 (build 82): pick the main attacker, or Toolbox (14 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v82) and CHANGES.md.
