@@ -1,5 +1,5 @@
 // Builds RdyDeck's plain reading pages: the deck guides (meta-decks.html and one deck-*.html per
-// deck in deck-guides.json) and the pages written in pages/*.html (How grading works, FAQ, About,
+// deck in deck-guides.json) and the pages written in .github/pages/*.html (How grading works, FAQ, About,
 // Contact). They are plain HTML that reads without running the app, so search engines and
 // visitors with scripts off see the same text.
 //
@@ -327,15 +327,15 @@ ${rows.join('\n')}
   });
 }
 
-// ── pages written by hand in pages/*.html ──────────────────────────────────────────────────────
+// ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
 function handPages() {
-  const dir = path.join(ROOT, 'pages');
+  const dir = path.join(ROOT, '.github/pages');
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter(f => f.endsWith('.html')).sort().map(f => {
     const src = readFileSync(path.join(dir, f), 'utf8');
     const m = /^<!--\s*(\{[\s\S]*?\})\s*-->\n/.exec(src);
-    if (!m) throw new Error(`pages/${f}: the first line must be a <!-- {json} --> header`);
+    if (!m) throw new Error(`.github/pages/${f}: the first line must be a <!-- {json} --> header`);
     const meta = JSON.parse(m[1]);
     return [meta.file, page({ ...meta, body: src.slice(m[0].length) })];
   });
