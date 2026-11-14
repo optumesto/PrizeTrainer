@@ -1,0 +1,186 @@
+{
+  "note": "Hand-written text for the deck guide pages (deck-*.html and meta-decks.html). build-guides.mjs adds the numbers (field share, core list, matchups, grade) from data.json, meta-cards.json, matchups.json and tests/grade-baseline.json. Every card claim here is read from the card's own text. No em or en dashes.",
+  "decks": [
+    {
+      "id": "mega-rayquaza-ex",
+      "slug": "mega-rayquaza",
+      "title": "Mega Rayquaza",
+      "lead": "Mega Rayquaza ex spreads Fire and Lightning Energy across a board of Basic Pokémon ex, then Storm Emerald does 50 damage for every one of them. It is the most played deck in recent online tournaments.",
+      "plan": [
+        "Storm Emerald costs Fire, Lightning and Colorless and does 50 damage for each Fire Energy and each Lightning Energy attached to all of your Pokémon, not only to Mega Rayquaza ex. Every Energy you attach anywhere on your board adds 50. Six in play is 300 damage and seven is 350, enough for nearly any Pokémon in the format.",
+        "Most of the deck exists to get that Energy into play quickly. Ethan's Ho-Oh ex's Golden Flame attaches up to two Basic Fire Energy from your hand to one of your Benched Ethan's Pokémon once a turn. Mega Rayquaza ex's Ruler's Roar attaches a Basic Energy from the top 4 cards of your deck to itself when you play it onto your Bench. Crispin finds two Basic Energy of different types, puts one in your hand and attaches the other. Energy Switch then moves a Basic Energy to whichever Pokémon is about to attack.",
+        "Mega Kangaskhan ex draws 2 cards with Run Errand while it sits in the Active Spot, and Latias ex's Skyliner gives your Basic Pokémon no Retreat Cost, so you can draw with Kangaskhan and then retreat into Mega Rayquaza ex for free. Talonflame ex puts itself onto your Bench from your hand with Excited Dive while you have a Colorless Mega Evolution Pokémon ex in play, and its Talon Hunt searches your deck for any 2 cards. Legendary Pyroduct turns off the Abilities of Evolution Pokémon in play for both players, which shuts down engines like Drakloak and Meganium while your Basic Pokémon keep theirs.",
+        "The cost is prizes. Every Pokémon in the list is a Pokémon ex, and the two Mega Evolution Pokémon ex give up 3 prizes each when they are Knocked Out. The deck has to win the race with big hits rather than trade evenly."
+      ],
+      "keys": [
+        ["Mega Rayquaza ex", "The attacker. Storm Emerald does 50 for each Fire and Lightning Energy on all your Pokémon, and Ruler's Roar gives it a free Energy when you bench it."],
+        ["Ethan's Ho-Oh ex", "Golden Flame attaches two Basic Fire Energy at a time, the fastest way to grow Storm Emerald."],
+        ["Mega Kangaskhan ex", "Run Errand draws 2 a turn from the Active Spot. Its own Rapid-Fire Combo is a backup attack for three Colorless Energy."],
+        ["Latias ex", "Skyliner gives every Basic Pokémon free retreat, so you can draw in the Active Spot and still attack with Rayquaza."],
+        ["Legendary Pyroduct", "A Stadium that turns off Evolution Pokémon's Abilities, which hurts most other top decks more than this one."],
+        ["Energy Switch", "Four copies move Basic Energy onto the attacker, so the Energy count is never wasted."]
+      ],
+      "grade": "RdyDeck grades winning Mega Rayquaza lists lower than most other top decks. Power reads Storm Emerald as a two hit plan for the biggest Pokémon early in a game, since the full 350 needs seven Energy in play, and every Pokémon in the list gives up 2 or 3 prizes, which costs it on the prize trade. Its online record since Delta Reign is close to even, so the results part of the grade sits near the middle too."
+    },
+    {
+      "id": "dragapult-ex",
+      "slug": "dragapult",
+      "title": "Dragapult",
+      "lead": "Dragapult ex wins by spreading damage. Every Phantom Dive does 200 to the Active Pokémon and puts 6 more damage counters wherever you like on the Bench. Over the last two sets it has the best record of any deck with more than 2,000 games.",
+      "plan": [
+        "Dreepy evolves into Drakloak and then Dragapult ex, a Stage 2 line that most lists play without Rare Candy. That sounds slow, but Drakloak's Recon Directive looks at the top 2 cards of your deck and puts 1 into your hand every turn, so each Drakloak is a draw engine on the way up. Buddy-Buddy Poffin puts two Basic Pokémon with 70 HP or less, like Dreepy, onto your Bench at once.",
+        "Phantom Dive costs only Fire and Psychic, does 200 damage, and puts 6 damage counters on your opponent's Benched Pokémon in any way you like. Munkidori's Adrena-Brain moves up to 3 damage counters from one of your Pokémon to one of your opponent's each turn while it has Darkness Energy attached, so damage Dragapult takes comes back out onto the other board. Spread damage sets up turns where one attack Knocks Out the Active Pokémon and a damaged Benched Pokémon together.",
+        "Dragapult ex is a Tera Pokémon, so damage from attacks can't hurt it while it is on your Bench. Budew's Itchy Pollen costs no Energy and stops your opponent playing Items from their hand during their next turn, which buys time while your Stage 2 Pokémon come online. Rosa's Encouragement attaches up to two Basic Energy from your discard pile to a Stage 2 Pokémon when you have more Prize cards left than your opponent, so a fresh Dragapult ex can attack right away after one is Knocked Out."
+      ],
+      "keys": [
+        ["Dragapult ex", "The attacker. Phantom Dive does 200 and spreads 6 damage counters across the Bench for just two Energy."],
+        ["Drakloak", "Recon Directive picks 1 of the top 2 cards every turn, so the evolution line draws as it grows."],
+        ["Munkidori", "Adrena-Brain moves 3 damage counters from your Pokémon to your opponent's, turning spread into knockouts."],
+        ["Budew", "Itchy Pollen locks Items for a turn, for free, while you set up."],
+        ["Buddy-Buddy Poffin", "Benches two Dreepy at once on the first turn, so the line is ready to evolve."],
+        ["Rosa's Encouragement", "Refuels a new Dragapult ex from the discard pile when you are behind on prizes."]
+      ],
+      "grade": "RdyDeck grades Dragapult as tournament ready. Power counts its spread as more than the 200 printed on Phantom Dive, Drakloak's draw keeps Setup speed high without Rare Candy, and most of the list gives up a single prize. Its strong online record adds to the grade."
+    },
+    {
+      "id": "basic-box-m",
+      "slug": "basic-box",
+      "title": "Basic Box",
+      "lead": "Basic Box plays only Basic Pokémon and picks a different attacker every turn. With Area Zero Underdepths and a Tera Pokémon in play it can hold up to 8 Pokémon on the Bench, so the right answer is usually already waiting.",
+      "plan": [
+        "Every Pokémon in the list is a Basic, so there is nothing to evolve and no turn spent waiting. Teal Mask Ogerpon ex's Teal Dance attaches a Basic Grass Energy from your hand to itself and draws a card, Mega Kangaskhan ex draws 2 with Run Errand from the Active Spot, and Latias ex gives every Basic Pokémon free retreat. Area Zero Underdepths lets a player with a Tera Pokémon in play, like Teal Mask Ogerpon ex, have up to 8 Pokémon on their Bench.",
+        "The attackers each solve a different problem. Raging Bolt ex's Bellowing Thunder discards any amount of Basic Energy from your Pokémon and does 70 damage for each one, so it can take one huge knockout. Iron Leaves ex's Rapid Vernier switches it into the Active Spot when you bench it and moves any amount of Energy from your other Pokémon onto it, so it can attack for 180 out of nowhere. Lillie's Clefairy ex's Fairy Zone makes your opponent's Dragon Pokémon weak to Psychic, a tool against Dragapult.",
+        "Energy Switch, Crispin and Glass Trumpet keep the Energy moving. Glass Trumpet works while you have a Tera Pokémon in play and attaches a Basic Energy from your discard pile to each of up to two Benched Colorless Pokémon, such as Mega Kangaskhan ex, which turns Energy spent on Bellowing Thunder back into fuel. The price is prizes: nearly every Pokémon gives up 2, and Mega Kangaskhan ex gives up 3."
+      ],
+      "keys": [
+        ["Teal Mask Ogerpon ex", "Teal Dance attaches Grass Energy and draws a card each turn, and it is the Tera Pokémon that turns on Area Zero Underdepths and Glass Trumpet."],
+        ["Raging Bolt ex", "Bellowing Thunder does 70 for each Basic Energy you discard from your Pokémon, the deck's biggest single hit."],
+        ["Iron Leaves ex", "Rapid Vernier jumps into the Active Spot with all the Energy it needs when you bench it."],
+        ["Lillie's Clefairy ex", "Fairy Zone makes Dragon Pokémon weak to Psychic."],
+        ["Area Zero Underdepths", "Up to 8 Benched Pokémon while you have a Tera Pokémon in play."],
+        ["Glass Trumpet", "Puts discarded Basic Energy back onto two Benched Colorless Pokémon."]
+      ],
+      "grade": "Basic Box grades among the highest decks in RdyDeck. Power is near full because six different Pokémon in a typical list can hit for 170 or more, and its Abilities draw cards every turn. Synergy reads lower than the grade, because a toolbox spreads its cards over many single copies, but that fit check only lowers the grade when the fit is very loose."
+    },
+    {
+      "id": "slowking-scr",
+      "slug": "slowking",
+      "title": "Slowking",
+      "lead": "Slowking borrows other Pokémon's attacks. Its Seek Inspiration discards the top card of your deck and, if that card is a Pokémon without a Rule Box, uses one of its attacks. The deck sets up the top of its own deck so it knows what Slowking will copy.",
+      "plan": [
+        "Seek Inspiration costs Psychic and Colorless. Academy at Night lets each player put a card from their hand on top of their deck once during their turn, and Ciphermaniac's Codebreaking searches your deck for any 2 cards and puts them on top in the order you choose. Either way, you decide which Pokémon Seek Inspiration discards.",
+        "Kyurem is the usual target. Its Trifrost does 110 damage to 3 of your opponent's Pokémon, so two uses through Slowking can Knock Out three Pokémon with 220 HP or less. Trifrost also discards all Energy from the attacking Pokémon. Boomerang Energy helps here: when it is discarded by an effect of an attack used by the Pokémon it is attached to, it is attached back to that Pokémon after the attack. Annihilape's Ghostly Blow and Zeraora's Thunder Raid give Slowking other options in some lists.",
+        "Telepathic Psychic Energy searches your deck for up to 2 Basic Psychic Pokémon and puts them onto your Bench when you attach it from your hand to a Psychic Pokémon, which fills the board with Slowpoke on the first turns. Wondrous Patch attaches a Basic Psychic Energy from your discard pile to a Benched Psychic Pokémon. Mega Kangaskhan ex draws 2 a turn from the Active Spot, and Latias ex keeps retreat free for your Basic Pokémon."
+      ],
+      "keys": [
+        ["Slowking", "Seek Inspiration copies an attack from the Pokémon it discards from the top of your deck."],
+        ["Kyurem", "The usual copy target: Trifrost hits 3 of your opponent's Pokémon for 110 each."],
+        ["Academy at Night", "Puts a card from your hand on top of your deck once a turn, so you choose what Slowking copies."],
+        ["Ciphermaniac's Codebreaking", "Searches for any 2 cards and stacks them on top of your deck."],
+        ["Boomerang Energy", "Comes back to the attacker after an attack's effect discards it, like Trifrost's."],
+        ["Telepathic Psychic Energy", "Benches up to 2 Basic Psychic Pokémon when you attach it to a Psychic Pokémon."]
+      ],
+      "grade": "RdyDeck reads the Kyurem copy and counts Slowking as hitting three Pokémon at once. Its main caution for most Slowking lists is that they run no Boss's Orders or Prime Catcher, so the deck can only Knock Out what your opponent puts in the Active Spot, which Trifrost's Bench damage partly makes up for."
+    },
+    {
+      "id": "alakazam-dudunsparce",
+      "slug": "alakazam-dudunsparce",
+      "title": "Alakazam Dudunsparce",
+      "lead": "Alakazam's Powerful Hand places 2 damage counters on your opponent's Active Pokémon for each card in your hand. This deck draws as many cards as it can, and the more it holds, the harder it hits.",
+      "plan": [
+        "Abra evolves into Kadabra and then Alakazam, and both evolutions draw when you play them from your hand to evolve: Kadabra's Psychic Draw draws 2 and Alakazam's draws 3. Rare Candy skips Kadabra when you need Alakazam fast, and Dawn searches your deck for a Basic, a Stage 1 and a Stage 2 Pokémon at once. Dudunsparce's Run Away Draw draws 3 more and then shuffles Dudunsparce and its attached cards back into your deck, so you can play it again later.",
+        "Powerful Hand costs a single Psychic Energy. With 11 cards in hand it places 22 damage counters, the same as 220 damage. Enriching Energy, the usual ACE SPEC, draws 4 cards when you attach it from your hand. Because Powerful Hand places damage counters rather than doing damage, Weakness and Resistance don't apply to it.",
+        "Alakazam gives up just one prize, so the deck can trade one Pokémon for each two prize Pokémon ex the other side loses. Battle Cage stops damage counters from being placed on Benched Pokémon by the opponent's attacks and Abilities, which protects your Abra and Kadabra from spread like Phantom Dive's."
+      ],
+      "keys": [
+        ["Alakazam", "Powerful Hand places 2 damage counters for each card in your hand, for one Psychic Energy."],
+        ["Kadabra", "Psychic Draw draws 2 when you evolve into it."],
+        ["Dudunsparce", "Run Away Draw draws 3, then shuffles itself back into your deck to be used again."],
+        ["Rare Candy", "Evolves Abra straight into Alakazam."],
+        ["Enriching Energy", "Draws 4 cards when you attach it, a big boost to Powerful Hand."],
+        ["Battle Cage", "Keeps damage counters off your Bench, a shield against spread decks."]
+      ],
+      "grade": "Synergy is close to perfect for this deck: every evolution has its line and the deck draws every turn. Power holds it back a little. RdyDeck estimates Powerful Hand at about 220 from an 11 card hand, which means two hits for the biggest Pokémon ex, though each Alakazam gives up only one prize."
+    },
+    {
+      "id": "ogerpon-meganium-hydrapple",
+      "slug": "ogerpon-meganium-hydrapple",
+      "title": "Ogerpon Meganium Hydrapple",
+      "lead": "This Grass deck puts as many Basic Grass Energy into play as it can. Meganium's Wild Growth makes each one provide two Grass Energy, and Hydrapple ex's Syrup Storm grows with every Grass Energy on your board.",
+      "plan": [
+        "Teal Mask Ogerpon ex is the early attacker and an engine: Teal Dance attaches a Basic Grass Energy from your hand to it once a turn and draws a card. Its Myriad Leaf Shower does 30 plus 30 for each Energy attached to both Active Pokémon. Hydrapple ex's Ripening Charge attaches another Basic Grass Energy from your hand to one of your Pokémon each turn and heals 30 damage from it.",
+        "Meganium and Hydrapple ex are Stage 2 Pokémon, and the list plays no Rare Candy. Forest of Vitality lets Grass Pokémon evolve during the turn they are played, except on a player's first turn, which saves time on both lines. Bug Catching Set looks at the top 7 cards of your deck and takes up to 2 Grass Pokémon or Basic Grass Energy, and Celebi's Traverse Time searches for up to 3 Grass Pokémon and Stadiums for one Grass Energy.",
+        "Once Meganium is in play, Wild Growth makes each Basic Grass Energy on your Pokémon provide two Grass Energy. Syrup Storm costs two Colorless and does 30 plus 30 for each Grass Energy attached to all of your Pokémon, so five Basic Grass Energy cards in play make 330 damage. Lana's Aid brings back Pokémon without a Rule Box and Basic Energy from your discard pile for the long game."
+      ],
+      "keys": [
+        ["Teal Mask Ogerpon ex", "Teal Dance attaches Grass Energy and draws a card every turn."],
+        ["Meganium", "Wild Growth makes every Basic Grass Energy provide two Grass Energy."],
+        ["Hydrapple ex", "Syrup Storm grows by 30 for each Grass Energy on your board, and Ripening Charge adds Energy and heals."],
+        ["Forest of Vitality", "Lets Grass Pokémon evolve the turn they are played, after your first turn."],
+        ["Bug Catching Set", "Finds Grass Pokémon and Grass Energy from the top 7 cards."],
+        ["Celebi", "Traverse Time fetches up to 3 Grass Pokémon and Stadiums."]
+      ],
+      "grade": "Damage is full marks for this deck, since Syrup Storm can reach 330 with five Grass Energy cards in play. Setup speed is where it loses points: both Stage 2 lines evolve the long way without Rare Candy, so RdyDeck expects them to attack from your third turn. The Setup speed check does not count Forest of Vitality yet, so it may undersell how fast real games go."
+    },
+    {
+      "id": "dragapult-dudunsparce",
+      "slug": "dragapult-dudunsparce",
+      "title": "Dragapult Dudunsparce",
+      "lead": "A Dragapult ex build that adds two kinds of Dudunsparce: the regular one to draw cards and Dudunsparce ex as a second attacker. It has the best online win rate of any deck in RdyDeck's data over the last two sets, from fewer games than the main Dragapult build.",
+      "plan": [
+        "The core is the same as Dragapult: Dreepy, Drakloak and Dragapult ex, with Buddy-Buddy Poffin to bench Dreepy and Drakloak's Recon Directive to draw on the way up. Phantom Dive does 200 and puts 6 damage counters on your opponent's Benched Pokémon in any way you like, and Munkidori's Adrena-Brain moves damage counters from your Pokémon to theirs.",
+        "Dudunsparce's Run Away Draw draws 3 cards and then shuffles Dudunsparce back into your deck. Dudunsparce ex evolves from the same Dunsparce and attacks instead: Tenacious Tail does 60 damage for each of your opponent's Pokémon ex in play for a single Colorless Energy, which hits very hard against decks built from Pokémon ex like Mega Rayquaza or Basic Box. Its Destructive Drill does 150 and is not affected by any effects on your opponent's Active Pokémon.",
+        "Risky Ruins places 2 damage counters on any Basic Pokémon that is not a Darkness Pokémon when a player puts it onto their Bench during their turn. It hits both players, but it adds to Phantom Dive's spread against decks that bench lots of Basic Pokémon. Poké Pad searches for any Pokémon without a Rule Box, like Dreepy, Drakloak or Dunsparce."
+      ],
+      "keys": [
+        ["Dragapult ex", "Phantom Dive does 200 and spreads 6 damage counters across the Bench."],
+        ["Dudunsparce ex", "Tenacious Tail does 60 for each of your opponent's Pokémon ex in play, for one Energy."],
+        ["Dudunsparce", "Run Away Draw draws 3 and shuffles itself back in to use again."],
+        ["Munkidori", "Adrena-Brain moves 3 damage counters onto your opponent's Pokémon each turn."],
+        ["Risky Ruins", "Puts 2 damage counters on most Basic Pokémon a player benches, adding to the spread."],
+        ["Poké Pad", "Finds any Pokémon without a Rule Box, which is most of this list."]
+      ],
+      "grade": "RdyDeck grades this the highest of the top decks. Its cards grade the same way as Dragapult's, with spread counted above the printed 200 and Drakloak keeping Setup speed high, and its online record is the best in the data, which lifts the grade further. The record comes from fewer games than the main build, so the results part counts for a little less."
+    },
+    {
+      "id": "dhelmise-pbl",
+      "slug": "dhelmise",
+      "title": "Dhelmise",
+      "lead": "Dhelmise's Vengeful Anchor does 170 damage for a single Psychic Energy once you have 4 Pokémon with the Hide 'n' Sneak Ability in your discard pile. The deck fills its own discard pile on purpose.",
+      "plan": [
+        "Shuppet, Banette, Poltchageist and Sinistcha all have Hide 'n' Sneak, which prevents all effects of your opponent's attacks and Abilities on them, though damage still goes through. Gwynn discards up to 2 Pokémon without a Rule Box from your hand and draws 3 cards for each one, so it fills the discard pile and refills your hand with one card. Ultra Ball and Prism Tower discard more cards along the way.",
+        "With 4 Hide 'n' Sneak Pokémon in the discard pile, Vengeful Anchor does 30 plus 140, so 170 damage. Dhelmise is a Basic Pokémon with 140 HP that gives up one prize. Sinistcha's Matcha Spin places 4 damage counters on each of your opponent's Pokémon once 6 Hide 'n' Sneak Pokémon are in your discard pile, which softens the whole board for Dhelmise. Banette's Puppet Pull does 80 and lets you search your deck for any card.",
+        "Telepathic Psychic Energy searches for up to 2 Basic Psychic Pokémon and puts them onto your Bench when you attach it from your hand to a Psychic Pokémon. Legacy Energy, the usual ACE SPEC, makes your opponent take one fewer Prize card the first time a Pokémon with it attached is Knocked Out by an attack."
+      ],
+      "keys": [
+        ["Dhelmise", "Vengeful Anchor does 170 for one Psychic Energy with 4 Hide 'n' Sneak Pokémon in your discard pile."],
+        ["Sinistcha", "Matcha Spin places 4 damage counters on every one of your opponent's Pokémon with 6 in the discard pile."],
+        ["Banette", "Puppet Pull does 80 and searches for any card."],
+        ["Gwynn", "Discards up to 2 Pokémon without a Rule Box and draws 3 for each."],
+        ["Telepathic Psychic Energy", "Benches 2 Basic Psychic Pokémon when attached to a Psychic Pokémon."],
+        ["Legacy Energy", "Your opponent takes one fewer prize the first time its Pokémon is Knocked Out."]
+      ],
+      "grade": "Synergy is high: the discard plan has every piece it needs. Power reads the deck's best hit as two hits for the biggest Pokémon ex, which still keeps the prize race even, since Dhelmise gives up one prize. Its online record is about even, which keeps the results part of the grade near the middle."
+    },
+    {
+      "id": "n-zoroark",
+      "slug": "ns-zoroark",
+      "title": "N's Zoroark",
+      "lead": "N's Zoroark ex copies attacks. Night Joker uses an attack from one of your Benched N's Pokémon for just two Darkness Energy, so the deck benches N's Zekrom and N's Reshiram and borrows their biggest hits.",
+      "plan": [
+        "Night Joker costs two Darkness Energy and lets N's Zoroark ex use any attack of one of your Benched N's Pokémon. N's Zekrom's Rampaging Thunder does 250 but needs Fire, two Lightning and Colorless Energy on Zekrom itself. Through Night Joker, Zoroark ex only pays its own two Darkness. N's PP Up attaches a Basic Energy from your discard pile to a Benched N's Pokémon, and N's Castle gives every N's Pokémon in play no Retreat Cost.",
+        "Each N's Zoroark ex in play can use Trade once a turn: discard a card from your hand and draw 2. With two or three on the board, the deck draws deep every turn. Pecharunt ex's Subjugating Chains switches one of your Benched Darkness Pokémon into the Active Spot and makes it Poisoned, and Binding Mochi adds 40 damage to the attacks of the Poisoned Pokémon it is attached to. Black Belt's Training adds 40 more against a Pokémon ex that turn.",
+        "Put together, a Poisoned N's Zoroark ex with Binding Mochi copying Rampaging Thunder after Black Belt's Training does 330 damage to a Pokémon ex. Munkidori's Adrena-Brain moves damage counters onto your opponent's Pokémon, and Yveltal is a single prize attacker for when trading two prizes would lose the race."
+      ],
+      "keys": [
+        ["N's Zoroark ex", "Night Joker copies a Benched N's Pokémon's attack, and Trade draws 2 a turn."],
+        ["N's Zekrom", "Its Rampaging Thunder does 250, the attack Zoroark ex copies most."],
+        ["Pecharunt ex", "Subjugating Chains switches in a Darkness Pokémon and Poisons it, which turns on Binding Mochi."],
+        ["Binding Mochi", "Adds 40 damage while the Pokémon it is attached to is Poisoned."],
+        ["N's PP Up", "Puts Basic Energy from the discard pile onto Benched N's Pokémon."],
+        ["N's Castle", "Free retreat for every N's Pokémon in play."]
+      ],
+      "grade": "RdyDeck counts the copied Rampaging Thunder at 290 for Power, since the full 330 needs both Black Belt's Training and Binding Mochi. Synergy reads lower than most top decks because several lines run single copies, but that only lowers the grade when the fit is very loose. Its online record is about even."
+    }
+  ]
+}
