@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.4 (build 84): AdSense site check (14 Nov 2026)
+
+Changed files: index.html, 404.html, sw.js (cache prize-trainer-v84) and CHANGES.md.
+
+- Home page head now carries the AdSense site verification tag (google-adsense-account, publisher id from ads.txt). Ads stay off: the ad code is still not loaded and PT_ADS.client is still the placeholder.
+- The not found page links Deck guides, How grading works, FAQ, About and Contact, so no page is a dead end for the reviewer.
+- Checked and already fine: ads.txt, robots.txt, the home page's plain links and About text, unique titles and descriptions on every page, no empty ad slots.
+
 # RdyDeck 2.6.3 (build 83): deck guides and content pages (14 Nov 2026)
 
 Changed files: 9 new deck-*.html guides, meta-decks.html, how-grading-works.html, faq.html, about.html, contact.html, build-pages.mjs, deck-guides.json, .github/pages/ (sources for the hand-written pages), privacy.html, terms.html, the 4 guide pages, index.html, sitemap.xml, sw.js (cache prize-trainer-v83) and CHANGES.md.
