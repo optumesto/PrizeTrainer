@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.5 (build 95): fresh tournament data (15 Nov 2026)
+
+Changed files: index.html (version, What's new), sw.js (cache prize-trainer-v95), matchups.json, builder.json, meta-cards.json, data.json, card-check.md, grade-results.md, sitemap.xml, .github/matchups-cache.json, .github/cards-cache.json, refresh-matchups.mjs, .github/workflows/refresh-data.yml, tests/grade-matchups.json, tests/grade-played.json, tests/grade-builds.json, tests/grade-baseline.json and CHANGES.md.
+
+- Tournament results now run to 14 Nov. matchups.json: 247 events from 16 Sep (30th Celebration and Delta Reign), 57,952 matches, up from 147 events and 42,116. Since Delta Reign: 31 events and 7,965 matches, up from 8 and 3,103. 58 archetypes have results, up from 45 (new: Mega Venusaur, Mega Absol Box, Okidogi Barbaracle, Mega Charizard X and others).
+- Deck builder: winning lists from 5 events, 12 to 14 Nov (233 lists, was 128 from 7 to 9 Nov); card data from 247 events (31,340 lists, 66 archetypes).
+- Most played since Delta Reign: Mega Rayquaza 11.5% (was 14.6%), Dragapult 9.4%, Basic Box 6.0%, Slowking 5.2%, Ogerpon Meganium Hydrapple 4.2%. Talonflame Dusknoir joins the 10 decks used as opponents; Dhelmise leaves.
+- The data job has a slow mode (input "slow": 30 seconds between requests, 25 new events a run, matchups and card data only).
+- Grade check: 132 tournament lists, 66 moved, all from results: 39 down, 23 up, 4 Synergy only. Largest: Mega Venusaur and Mega Absol Box down 0.5, Okidogi Barbaracle up 0.4, Iron Thorns and Mega Manectric down 0.3. Ogerpon Meganium Hydrapple 5 lists up 0.2. Pinned copies in tests updated.
+- Tracking tournament results: grade as shown 0.81 unchanged, newest set 0.52 to 0.75, cards alone 0.22 to 0.12 (more archetypes and older events counted; no card grade changed).
+
 # RdyDeck 2.7.4 (build 94): faster, steadier first load on phones (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v94) and CHANGES.md.
