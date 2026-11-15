@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "asOf": "2026-11-11",
+ "asOf": "2026-11-15",
  "since": "2026-09-16",
- "until": "2026-11-11",
+ "until": "2026-11-15",
  "window": {
   "sets": 2,
   "from": "30th Celebration",
@@ -14,15 +14,15 @@
    "id": "online",
    "name": "Limitless online tournaments",
    "url": "https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD",
-   "events": 147,
-   "matches": 42116,
+   "events": 187,
+   "matches": 50222,
    "place": [
-    16333,
-    8151916,
-    5458522,
-    1176,
-    2342,
-    1652
+    19912,
+    9940554,
+    6657595,
+    1496,
+    2979,
+    2013
    ]
   }
  ],
@@ -31,25 +31,25 @@
   "dragapult-ex",
   "basic-box-m",
   "slowking-scr",
-  "alakazam-dudunsparce",
   "ogerpon-meganium-hydrapple",
-  "dhelmise-pbl",
+  "alakazam-dudunsparce",
+  "talonflame-dusknoir",
   "other",
   "dragapult-dudunsparce",
   "n-zoroark"
  ],
  "cur": {
   "since": "2026-11-06",
-  "events": 8,
-  "matches": 3103,
+  "events": 22,
+  "matches": 6912,
   "place": {
    "online": [
-    1068,
-    532306,
-    355967,
-    64,
-    128,
-    109
+    2758,
+    1376436,
+    920955,
+    176,
+    349,
+    280
    ]
   }
  },
@@ -57,8 +57,8 @@
   {
    "id": "dragapult-ex",
    "name": "Dragapult",
-   "share": 11.7,
-   "lists": 2710,
+   "share": 11.6,
+   "lists": 3230,
    "sig": [
     [
      "Dreepy",
@@ -108,78 +108,78 @@
     [
      "Moltres",
      0.4,
-     0.38
+     0.37
     ]
    ],
    "rec": {
     "online": [
-     5319,
-     4240,
-     14
+     6274,
+     5012,
+     17
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      39,
-      20,
+      92,
+      45,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      316,
-      406,
+      376,
+      466,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      273,
-      300,
+      320,
+      349,
+      2
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      299,
+      183,
       1
      ]
     },
     "alakazam-dudunsparce": {
      "online": [
-      258,
-      182,
+      311,
+      210,
       1
      ]
     },
-    "ogerpon-meganium-hydrapple": {
+    "talonflame-dusknoir": {
      "online": [
-      256,
-      148,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      261,
-      288,
+      34,
+      20,
       0
      ]
     },
     "other": {
      "online": [
-      142,
-      52,
+      174,
+      65,
       1
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
+      100,
       70,
-      51,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      289,
-      282,
-      4
+      319,
+      323,
+      5
      ]
     }
    },
@@ -195,6 +195,12 @@
      3,
      "CHALLENGE OF DOOM! GOODBYE TO 30TH FORMAT!",
      "2026-11-03"
+    ],
+    [
+     "36358946",
+     10,
+     "SEASAC League Challenge #24 (SEASON 5) [50 CODES]",
+     "2026-10-03"
     ],
     [
      "45169432",
@@ -223,8 +229,20 @@
     [
      "59413c75",
      1,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-29"
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "3d24b02a",
+     1,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
+    ],
+    [
+     "83ae0915",
+     1,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
     ],
     [
      "c63b7d01",
@@ -233,10 +251,10 @@
      "2026-10-27"
     ],
     [
-     "3d24b02a",
+     "053d5b84",
      1,
-     "RCC 2000 MEMBERS | $50 USD PRIZE | NO ENTRY FEE",
-     "2026-10-26"
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
     ],
     [
      "2e473271",
@@ -269,12 +287,6 @@
      "2026-10-14"
     ],
     [
-     "83ae0915",
-     1,
-     "Last Prize Series S4 #4",
-     "2026-10-13"
-    ],
-    [
      "9face610",
      1,
      "CHALLENGE OF DOOM! I will.....",
@@ -293,6 +305,12 @@
      "2026-10-10"
     ],
     [
+     "606c468a",
+     1,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-10-08"
+    ],
+    [
      "db3cf7c0",
      1,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
@@ -309,53 +327,35 @@
      1,
      "SEASAC League Challenge #27 (SEASON 5) [50 CODES]",
      "2026-10-07"
-    ],
-    [
-     "f090013c",
-     1,
-     "SEASAC League Challenge #26 (SEASON 5) [50 CODES]",
-     "2026-10-06"
-    ],
-    [
-     "3a272caa",
-     1,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-05"
-    ],
-    [
-     "c8f27c8b",
-     1,
-     "Monster Collectibles After Hours Season 2 #3",
-     "2026-10-04"
     ]
    ],
    "place": {
     "online": [
-     1885,
-     1011894,
-     716710,
-     209,
-     381,
-     278
+     2293,
+     1227246,
+     867018,
+     254,
+     471,
+     337
     ]
    },
    "cur": {
-    "lists": 125,
+    "lists": 344,
     "rec": {
      "online": [
-      266,
-      211,
-      1
+      700,
+      539,
+      2
      ]
     },
     "place": {
      "online": [
-      92,
-      44065,
-      29628,
-      5,
-      13,
-      9
+      267,
+      138959,
+      97185,
+      24,
+      44,
+      39
      ]
     }
    }
@@ -364,7 +364,7 @@
    "id": "basic-box-m",
    "name": "Basic Box",
    "share": 5.9,
-   "lists": 1380,
+   "lists": 1631,
    "sig": [
     [
      "Mega Kangaskhan ex",
@@ -373,7 +373,7 @@
     ],
     [
      "Meowth ex",
-     2.9,
+     2.8,
      1
     ],
     [
@@ -413,78 +413,78 @@
     ],
     [
      "Raging Bolt ex",
-     0.8,
+     0.9,
      0.85
     ]
    ],
    "rec": {
     "online": [
-     2751,
-     2386,
+     3232,
+     2793,
      1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      38,
-      27,
+      54,
+      50,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      406,
-      316,
+      466,
+      376,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      149,
-      151,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      98,
-      146,
+      168,
+      174,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      77,
-      126,
+      88,
+      152,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      161,
-      100,
-      1
+      114,
+      163,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      14,
+      12,
+      0
      ]
     },
     "other": {
      "online": [
-      74,
-      17,
+      97,
+      26,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      30,
       36,
+      42,
       0
      ]
     },
     "n-zoroark": {
      "online": [
+      168,
       150,
-      134,
       0
      ]
     }
@@ -497,10 +497,22 @@
      "2026-10-23"
     ],
     [
+     "62b0266e",
+     1,
+     "TOURNAMENT OF DOOM! BIRDS! BIRDS! BIRDS!",
+     "2026-11-14"
+    ],
+    [
      "ef2d4b64",
      1,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-11-09"
+    ],
+    [
+     "b2a2b0a1",
+     1,
+     "SEASAC League Challenge #15 (SEASON 6) [50 CODES]",
+     "2026-10-29"
     ],
     [
      "1db1720e",
@@ -563,6 +575,12 @@
      "2026-11-07"
     ],
     [
+     "c89c3fb9",
+     2,
+     "SEASAC League Challenge #22 (SEASON 6) [50 CODES]",
+     "2026-11-05"
+    ],
+    [
      "048e2328",
      2,
      "Sunny's Weekly #279 This is Halloween! (In Sparta)",
@@ -599,6 +617,12 @@
      "2026-09-18"
     ],
     [
+     "0d6f776d",
+     3,
+     "TOURNAMENT OF DOOM! BIRDS! BIRDS! BIRDS!",
+     "2026-11-14"
+    ],
+    [
      "6a57fe4e",
      3,
      "Sunny's Weekly #281 My Friend Rayquaza :D",
@@ -609,59 +633,35 @@
      3,
      "RCC 2000 MEMBERS | $50 USD PRIZE | NO ENTRY FEE",
      "2026-10-26"
-    ],
-    [
-     "0f139b11",
-     3,
-     "Sunny's Weekly #277 Judge Appreciation Week!",
-     "2026-10-12"
-    ],
-    [
-     "554a5aab",
-     3,
-     "REFINE Autumn Series Session 3: Maple (No 30th)",
-     "2026-09-16"
-    ],
-    [
-     "037672e0",
-     4,
-     "🪎Vault Of Games #9🪙|REGIONAL FORMAT🏆|WEEKLY📅",
-     "2026-11-01"
-    ],
-    [
-     "c099c0ad",
-     4,
-     "Pumpkaweekly",
-     "2026-10-19"
     ]
    ],
    "place": {
     "online": [
-     947,
-     508513,
-     355383,
-     77,
-     161,
-     117
+     1128,
+     604404,
+     423183,
+     102,
+     202,
+     141
     ]
    },
    "cur": {
-    "lists": 105,
+    "lists": 221,
     "rec": {
      "online": [
-      237,
-      213,
+      459,
+      407,
       0
      ]
     },
     "place": {
      "online": [
-      75,
-      42732,
-      29385,
-      3,
-      10,
-      6
+      158,
+      85083,
+      59533,
+      11,
+      24,
+      17
      ]
     }
    }
@@ -669,8 +669,8 @@
   {
    "id": "slowking-scr",
    "name": "Slowking",
-   "share": 5.1,
-   "lists": 1177,
+   "share": 5,
+   "lists": 1386,
    "sig": [
     [
      "Slowpoke",
@@ -703,6 +703,11 @@
      0.99
     ],
     [
+     "Lillie's Clefairy ex",
+     1,
+     0.98
+    ],
+    [
      "Meowth ex",
      1,
      0.97
@@ -713,89 +718,90 @@
      0.97
     ],
     [
-     "Lillie's Clefairy ex",
-     1,
-     0.97
-    ],
-    [
      "Annihilape",
      0.9,
-     0.72
+     0.71
     ]
    ],
    "rec": {
     "online": [
-     2229,
-     2100,
-     3
+     2599,
+     2473,
+     5
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      17,
-      17,
+      35,
+      33,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      300,
-      273,
-      1
+      349,
+      320,
+      2
      ]
     },
     "basic-box-m": {
      "online": [
-      151,
-      149,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      65,
-      145,
+      174,
+      168,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      61,
-      87,
+      72,
+      106,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      97,
-      124,
+      82,
+      162,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      8,
+      15,
       0
      ]
     },
     "other": {
      "online": [
-      54,
-      27,
+      61,
+      33,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      12,
-      26,
+      19,
+      37,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      99,
-      118,
-      1
+      117,
+      138,
+      2
      ]
     }
    },
    "tops": [
+    [
+     "43051678",
+     16,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-26"
+    ],
     [
      "d3a45b45",
      1,
@@ -831,6 +837,12 @@
      1,
      "⚡ Surge's TCG Vault Winner Takes All Live BO3 #23",
      "2026-09-18"
+    ],
+    [
+     "2d2c55b2",
+     2,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-26"
     ],
     [
      "fe4b979e",
@@ -927,47 +939,35 @@
      3,
      "【CL台風特別編】Rising Poke Japan Cup #Special【BO3】",
      "2026-09-21"
-    ],
-    [
-     "f7594608",
-     3,
-     "Pumpkaweekly",
-     "2026-09-21"
-    ],
-    [
-     "cdafe941",
-     3,
-     "Rare Candy Club Showdown #45 (30TH LEGAL)",
-     "2026-09-21"
     ]
    ],
    "place": {
     "online": [
-     821,
-     429855,
-     294109,
-     63,
-     125,
-     87
+     985,
+     509868,
+     347808,
+     75,
+     156,
+     104
     ]
    },
    "cur": {
-    "lists": 82,
+    "lists": 174,
     "rec": {
      "online": [
-      149,
-      154,
+      299,
+      314,
       0
      ]
     },
     "place": {
      "online": [
-      57,
-      28205,
-      17875,
-      0,
-      5,
-      1
+      124,
+      59706,
+      39573,
+      3,
+      14,
+      8
      ]
     }
    }
@@ -975,8 +975,8 @@
   {
    "id": "n-zoroark",
    "name": "N's Zoroark",
-   "share": 4.9,
-   "lists": 1151,
+   "share": 4.8,
+   "lists": 1331,
    "sig": [
     [
      "N's Zorua",
@@ -991,12 +991,7 @@
     [
      "N's Zekrom",
      1.8,
-     0.99
-    ],
-    [
-     "Pecharunt ex",
-     1,
-     0.98
+     1
     ],
     [
      "Munkidori",
@@ -1004,9 +999,14 @@
      0.97
     ],
     [
+     "Pecharunt ex",
+     1,
+     0.97
+    ],
+    [
      "N's Reshiram",
      0.9,
-     0.86
+     0.85
     ],
     [
      "Fezandipiti ex",
@@ -1016,87 +1016,87 @@
     [
      "Yveltal",
      0.6,
-     0.63
-    ],
-    [
-     "Tatsugiri",
-     0.5,
-     0.49
+     0.64
     ],
     [
      "Budew",
      0.5,
-     0.49
+     0.5
+    ],
+    [
+     "Tatsugiri",
+     0.5,
+     0.48
     ]
    ],
    "rec": {
     "online": [
-     2104,
-     2025,
-     7
+     2414,
+     2331,
+     9
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      9,
-      5,
+      22,
+      14,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      282,
-      289,
-      4
+      323,
+      319,
+      5
      ]
     },
     "basic-box-m": {
      "online": [
-      134,
       150,
+      168,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      118,
-      99,
-      1
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      77,
-      99,
-      0
+      138,
+      117,
+      2
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      56,
-      106,
+      59,
+      125,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      141,
-      58,
+      95,
+      114,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      5,
+      4,
       0
      ]
     },
     "other": {
      "online": [
-      69,
-      22,
+      76,
+      31,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      27,
-      19,
+      32,
+      25,
       0
      ]
     }
@@ -1109,6 +1109,12 @@
      "2026-10-12"
     ],
     [
+     "86746798",
+     11,
+     "SEASAC League Challenge #15 (SEASON 6) [50 CODES]",
+     "2026-10-29"
+    ],
+    [
      "48c9efaa",
      1,
      "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
@@ -1119,6 +1125,12 @@
      1,
      "CHALLENGE OF DOOM! GOODBYE TO 30TH FORMAT!",
      "2026-11-03"
+    ],
+    [
+     "b13b3203",
+     1,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
     ],
     [
      "ef968014",
@@ -1181,6 +1193,30 @@
      "2026-09-19"
     ],
     [
+     "8c36a547",
+     3,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "74350e74",
+     3,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "b408b67c",
+     3,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
+    ],
+    [
+     "e13d62cc",
+     3,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-26"
+    ],
+    [
      "4707a7c8",
      3,
      "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
@@ -1209,71 +1245,35 @@
      3,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-09-24"
-    ],
-    [
-     "45e6f750",
-     3,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-21"
-    ],
-    [
-     "760df473",
-     3,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #23",
-     "2026-09-18"
-    ],
-    [
-     "69466eae",
-     4,
-     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
-     "2026-11-09"
-    ],
-    [
-     "84c02ab9",
-     4,
-     "Pumpkaweekly",
-     "2026-11-09"
-    ],
-    [
-     "f08c4608",
-     4,
-     "Pumpkaweekly",
-     "2026-10-26"
-    ],
-    [
-     "794c4940",
-     4,
-     "SEASAC League Challenge #9 (SEASON 6) [50 CODES]",
-     "2026-10-20"
     ]
    ],
    "place": {
     "online": [
-     815,
-     402855,
-     271624,
-     61,
-     121,
-     87
+     954,
+     472453,
+     317816,
+     73,
+     148,
+     102
     ]
    },
    "cur": {
-    "lists": 41,
+    "lists": 106,
     "rec": {
      "online": [
-      94,
-      75,
+      212,
+      195,
       0
      ]
     },
     "place": {
      "online": [
-      28,
-      15985,
-      11923,
-      4,
-      5,
-      5
+      78,
+      42524,
+      29980,
+      10,
+      14,
+      13
      ]
     }
    }
@@ -1281,8 +1281,8 @@
   {
    "id": "dhelmise-pbl",
    "name": "Dhelmise",
-   "share": 4.8,
-   "lists": 1117,
+   "share": 4.6,
+   "lists": 1289,
    "sig": [
     [
      "Dhelmise",
@@ -1306,7 +1306,7 @@
     ],
     [
      "Poltchageist",
-     3.4,
+     3.5,
      0.97
     ],
     [
@@ -1317,7 +1317,7 @@
     [
      "Latias ex",
      0.7,
-     0.7
+     0.71
     ],
     [
      "Dunsparce",
@@ -1337,72 +1337,79 @@
    ],
    "rec": {
     "online": [
-     2075,
-     1990,
+     2420,
+     2298,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      8,
-      10,
+      12,
+      20,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      288,
-      261,
+      338,
+      286,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      100,
-      161,
+      117,
+      189,
       1
      ]
     },
     "slowking-scr": {
      "online": [
-      124,
-      97,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      98,
-      76,
+      144,
+      113,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      76,
       90,
+      103,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      111,
+      83,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      7,
+      12,
       0
      ]
     },
     "other": {
      "online": [
-      42,
-      42,
+      48,
+      48,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      22,
-      19,
+      33,
+      26,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      58,
-      141,
+      64,
+      160,
       0
      ]
     }
@@ -1425,6 +1432,18 @@
      1,
      "SEASAC League Challenge #11 (SEASON 6) [50 CODES]",
      "2026-10-22"
+    ],
+    [
+     "287b663b",
+     1,
+     "Team Corna Weekly October's #5",
+     "2026-10-21"
+    ],
+    [
+     "7160a211",
+     1,
+     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
+     "2026-10-13"
     ],
     [
      "ca97d54e",
@@ -1475,10 +1494,16 @@
      "2026-10-24"
     ],
     [
-     "7160a211",
+     "2fdc1fa0",
      2,
-     "REFINE Autumn Series Session 8: Spoopy?",
-     "2026-10-21"
+     "ASRcristiano # 196 - 60 codes - Road to Nice!",
+     "2026-10-09"
+    ],
+    [
+     "90e6e360",
+     2,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
+     "2026-09-18"
     ],
     [
      "c941caf5",
@@ -1533,53 +1558,35 @@
      3,
      "TOURNAMENT OF DOOM! LET'S GO!",
      "2026-09-26"
-    ],
-    [
-     "e695ffb5",
-     3,
-     "TOURNAMENT OF DOOM! LEGOS!",
-     "2026-09-19"
-    ],
-    [
-     "77ad1599",
-     4,
-     "REFINE Autumn Series Session 9: Spooky!",
-     "2026-10-28"
-    ],
-    [
-     "9b8d9818",
-     4,
-     "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
-     "2026-10-24"
     ]
    ],
    "place": {
     "online": [
-     780,
-     392691,
-     263050,
-     50,
-     117,
-     78
+     919,
+     465274,
+     313408,
+     66,
+     150,
+     95
     ]
    },
    "cur": {
-    "lists": 50,
+    "lists": 99,
     "rec": {
      "online": [
-      86,
-      100,
+      173,
+      192,
       1
      ]
     },
     "place": {
      "online": [
-      35,
-      17641,
-      11053,
-      2,
+      71,
+      35626,
+      22791,
       3,
-      2
+      6,
+      5
      ]
     }
    }
@@ -1588,7 +1595,7 @@
    "id": "alakazam-dudunsparce",
    "name": "Alakazam Dudunsparce",
    "share": 4.1,
-   "lists": 948,
+   "lists": 1132,
    "sig": [
     [
      "Abra",
@@ -1623,7 +1630,7 @@
     [
      "Genesect",
      1,
-     0.85
+     0.84
     ],
     [
      "Shaymin",
@@ -1633,77 +1640,77 @@
     [
      "Lillie's Clefairy ex",
      0.6,
-     0.4
+     0.41
     ]
    ],
    "rec": {
     "online": [
-     1822,
-     1692,
-     1
+     2125,
+     2023,
+     4
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      19,
-      17,
+      32,
+      30,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      182,
-      258,
+      210,
+      311,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      146,
-      98,
+      163,
+      114,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      145,
-      65,
+      162,
+      82,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      84,
-      46,
+      97,
+      54,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "talonflame-dusknoir": {
      "online": [
-      76,
-      98,
+      9,
+      14,
       0
      ]
     },
     "other": {
      "online": [
-      56,
-      21,
+      65,
+      25,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      12,
-      21,
+      19,
+      29,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      99,
-      77,
+      114,
+      95,
       0
      ]
     }
@@ -1726,6 +1733,12 @@
      6,
      "SEASAC League Challenge #18 (SEASON 5) [50 CODES]",
      "2026-09-28"
+    ],
+    [
+     "86854207",
+     11,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
     ],
     [
      "87200161",
@@ -1758,10 +1771,22 @@
      "2026-10-31"
     ],
     [
+     "f1fe02fb",
+     2,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
+    ],
+    [
      "52b82337",
      2,
      "Team Corna Weekly October's #3",
      "2026-10-14"
+    ],
+    [
+     "e5c5ebe9",
+     2,
+     "Team Corna Weekly October's #2",
+     "2026-10-09"
     ],
     [
      "16dc2fe9",
@@ -1782,6 +1807,12 @@
      "2026-09-22"
     ],
     [
+     "81c0aa29",
+     3,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
+    ],
+    [
      "282d7011",
      3,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
@@ -1798,6 +1829,12 @@
      3,
      "REFINE Autumn Series Session 6: Jack-O-Lantern",
      "2026-10-07"
+    ],
+    [
+     "af79af09",
+     3,
+     "Monster Collectibles After Hours Season 2 #2",
+     "2026-09-20"
     ],
     [
      "196c996f",
@@ -1822,65 +1859,35 @@
      4,
      "SEASAC League Challenge #14 (SEASON 5) [50 CODES]",
      "2026-09-22"
-    ],
-    [
-     "84381aba",
-     4,
-     "PokeMagee Weekly - 30th Celebration",
-     "2026-09-19"
-    ],
-    [
-     "f0db6359",
-     4,
-     "Amyverse PTCG Live Weekly #13 💛 Cash Prize!",
-     "2026-09-16"
-    ],
-    [
-     "f738b828",
-     5,
-     "Pumpkaweekly - delta reign prizing",
-     "2026-11-02"
-    ],
-    [
-     "5102de24",
-     5,
-     "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
-     "2026-10-21"
-    ],
-    [
-     "1dc346fa",
-     5,
-     "TOURNAMENT OF DOOM! DINNER?",
-     "2026-10-17"
     ]
    ],
    "place": {
     "online": [
-     660,
-     345700,
-     235711,
-     41,
-     101,
-     67
+     795,
+     411147,
+     280481,
+     50,
+     122,
+     75
     ]
    },
    "cur": {
-    "lists": 60,
+    "lists": 133,
     "rec": {
      "online": [
-      131,
-      128,
+      252,
+      248,
       1
      ]
     },
     "place": {
      "online": [
-      41,
-      20714,
-      14167,
-      0,
-      4,
-      4
+      102,
+      49090,
+      33145,
+      3,
+      9,
+      8
      ]
     }
    }
@@ -1888,8 +1895,8 @@
   {
    "id": "dragapult-dusknoir",
    "name": "Dragapult Dusknoir",
-   "share": 3.8,
-   "lists": 875,
+   "share": 3.6,
+   "lists": 994,
    "sig": [
     [
      "Dreepy",
@@ -1939,84 +1946,84 @@
     [
      "Munkidori",
      0.7,
-     0.6
+     0.61
     ]
    ],
    "rec": {
     "online": [
-     1520,
-     1559,
+     1743,
+     1754,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      6,
-      4,
+      15,
+      11,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      156,
-      252,
+      185,
+      268,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      92,
-      126,
+      97,
+      143,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      71,
-      88,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      85,
-      57,
+      83,
+      101,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      60,
-      49,
+      70,
+      55,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      64,
-      100,
+      92,
+      62,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      7,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      42,
+      51,
       19,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      5,
-      20,
+      11,
+      24,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      79,
-      97,
+      86,
+      107,
       0
      ]
     }
@@ -2029,10 +2036,22 @@
      "2026-09-19"
     ],
     [
+     "3ad8099f",
+     1,
+     "🇧🇷 Hit Cup #22 | TCG Live",
+     "2026-11-04"
+    ],
+    [
      "659d3ebe",
      1,
      "Last Prize Series S4 #1",
      "2026-09-22"
+    ],
+    [
+     "ed5ab8f0",
+     2,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
     ],
     [
      "07560fd0",
@@ -2071,6 +2090,12 @@
      "2026-09-21"
     ],
     [
+     "da968322",
+     2,
+     "SEASAC League Challenge #11 (SEASON 5) [50 CODES]",
+     "2026-09-18"
+    ],
+    [
      "4cd5ff86",
      2,
      "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
@@ -2095,10 +2120,22 @@
      "2026-10-18"
     ],
     [
+     "0cccc97c",
+     3,
+     "ASRcristiano # 196 - 60 codes - Road to Nice!",
+     "2026-10-09"
+    ],
+    [
      "65bfe612",
      3,
      "SEASAC League Challenge #9 (SEASON 5) [50 CODES]",
      "2026-09-16"
+    ],
+    [
+     "b0a6bd73",
+     4,
+     "SEASAC League Challenge #22 (SEASON 6) [50 CODES]",
+     "2026-11-05"
     ],
     [
      "ca44facf",
@@ -2135,65 +2172,35 @@
      4,
      "TOURNAMENT OF DOOM! LEGOS!",
      "2026-09-19"
-    ],
-    [
-     "a9a39971",
-     5,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-26"
-    ],
-    [
-     "18b7301c",
-     5,
-     "💥Plantel Battle #35 💥​100 CODES ✔️​ TOP 8",
-     "2026-10-22"
-    ],
-    [
-     "13d34c0e",
-     5,
-     "Last Prize Series S4 #4",
-     "2026-10-13"
-    ],
-    [
-     "12d435b3",
-     5,
-     "REFINE Autumn Series Session 6: Jack-O-Lantern",
-     "2026-10-07"
-    ],
-    [
-     "13f72d08",
-     5,
-     "Rare Candy Club Showdown #47 (30TH LEGAL)",
-     "2026-10-05"
     ]
    ],
    "place": {
     "online": [
-     636,
-     312989,
-     209440,
-     54,
-     91,
-     70
+     718,
+     357645,
+     240651,
+     67,
+     107,
+     82
     ]
    },
    "cur": {
-    "lists": 17,
+    "lists": 52,
     "rec": {
      "online": [
-      45,
-      40,
+      114,
+      105,
       0
      ]
     },
     "place": {
      "online": [
-      11,
-      6748,
-      5315,
-      2,
+      33,
+      19149,
+      13822,
       3,
-      1
+      5,
+      3
      ]
     }
    }
@@ -2202,11 +2209,11 @@
    "id": "mega-excadrill-ex",
    "name": "Mega Excadrill",
    "share": 3.4,
-   "lists": 787,
+   "lists": 937,
    "sig": [
     [
      "Drilbur",
-     3.3,
+     3.2,
      1
     ],
     [
@@ -2237,94 +2244,94 @@
     [
      "Fezandipiti ex",
      0.7,
-     0.69
+     0.68
     ],
     [
      "Mega Skarmory ex",
      0.6,
-     0.59
+     0.6
     ],
     [
      "Shaymin",
-     0.5,
-     0.46
+     0.4,
+     0.45
     ]
    ],
    "rec": {
     "online": [
-     1521,
-     1444,
+     1786,
+     1705,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      8,
-      5,
+      21,
+      13,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      206,
-      191,
+      233,
+      223,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      86,
-      82,
+      102,
+      105,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      86,
-      93,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      48,
+      99,
       104,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      49,
-      74,
+      56,
+      89,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      79,
       57,
+      117,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
+      8,
       0
      ]
     },
     "other": {
      "online": [
-      38,
-      17,
+      44,
+      20,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      14,
-      13,
+      20,
+      20,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      104,
-      66,
+      114,
+      72,
       0
      ]
     }
@@ -2349,6 +2356,24 @@
      "2026-09-19"
     ],
     [
+     "1e5f04c7",
+     2,
+     "TOURNAMENT OF DOOM! BIRDS! BIRDS! BIRDS!",
+     "2026-11-14"
+    ],
+    [
+     "2249b9e4",
+     2,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
+    ],
+    [
+     "92157ab5",
+     2,
+     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
+     "2026-10-13"
+    ],
+    [
      "b277338f",
      2,
      "SEASAC League Challenge #14 (SEASON 5) [50 CODES]",
@@ -2359,6 +2384,18 @@
      2,
      "Vault Of Games #3🏆|SEASON 1|WEEKLY",
      "2026-09-20"
+    ],
+    [
+     "ed734858",
+     3,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
+    ],
+    [
+     "eda4a078",
+     3,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
     ],
     [
      "5f648d0c",
@@ -2443,65 +2480,35 @@
      4,
      "Team Corna Weekly September's #6",
      "2026-09-22"
-    ],
-    [
-     "2009acac",
-     5,
-     "🇧🇷 Hit Cup #21 | TCG Live",
-     "2026-10-23"
-    ],
-    [
-     "d7348097",
-     5,
-     "SEASAC League Challenge #9 (SEASON 6) [50 CODES]",
-     "2026-10-20"
-    ],
-    [
-     "dd999d0d",
-     5,
-     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
-     "2026-10-09"
-    ],
-    [
-     "42f056c6",
-     5,
-     "CHALLENGE OF DOOM! WAIT, HOW MANY!?!?!",
-     "2026-09-22"
-    ],
-    [
-     "8a9ec0ba",
-     6,
-     "Sunny's Weekly #281 My Friend Rayquaza :D",
-     "2026-11-09"
     ]
    ],
    "place": {
     "online": [
-     581,
-     302188,
-     206415,
-     43,
-     91,
-     57
+     706,
+     367655,
+     251352,
+     52,
+     114,
+     68
     ]
    },
    "cur": {
-    "lists": 27,
+    "lists": 85,
     "rec": {
      "online": [
-      63,
-      54,
+      180,
+      158,
       0
      ]
     },
     "place": {
      "online": [
-      19,
-      8696,
-      6045,
-      2,
-      4,
-      3
+      71,
+      35930,
+      24665,
+      5,
+      10,
+      8
      ]
     }
    }
@@ -2510,7 +2517,7 @@
    "id": "ogerpon-meganium-hydrapple",
    "name": "Ogerpon Meganium Hydrapple",
    "share": 3.3,
-   "lists": 770,
+   "lists": 918,
    "sig": [
     [
      "Teal Mask Ogerpon ex",
@@ -2554,93 +2561,111 @@
     ],
     [
      "Meowth ex",
-     1.5,
+     1.4,
      0.96
     ],
     [
      "Celebi",
-     1.1,
+     1,
      0.93
     ]
    ],
    "rec": {
     "online": [
-     1570,
-     1418,
-     1
+     1933,
+     1700,
+     2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      10,
-      15,
+      30,
+      24,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      148,
-      256,
-      0
+      183,
+      299,
+      1
      ]
     },
     "basic-box-m": {
      "online": [
-      126,
-      77,
+      152,
+      88,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      87,
-      61,
+      106,
+      72,
       0
      ]
     },
     "alakazam-dudunsparce": {
      "online": [
-      46,
-      84,
+      54,
+      97,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "talonflame-dusknoir": {
      "online": [
-      90,
-      76,
+      11,
+      4,
       0
      ]
     },
     "other": {
      "online": [
-      58,
-      17,
+      67,
+      28,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      13,
-      23,
+      21,
+      30,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      106,
-      56,
+      125,
+      59,
       0
      ]
     }
    },
    "tops": [
     [
+     "29267089",
+     8,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
      "46770081",
      13,
      "ASRcristiano # 194 - 60 codes - Road to Nice!",
      "2026-10-07"
+    ],
+    [
+     "d66b4509",
+     1,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "57dc321a",
+     1,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
     ],
     [
      "a35acbc3",
@@ -2653,6 +2678,12 @@
      1,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-26"
+    ],
+    [
+     "29c76ae4",
+     1,
+     "Team Corna Weekly October's #6",
+     "2026-10-23"
     ],
     [
      "8d032639",
@@ -2685,10 +2716,16 @@
      "2026-10-29"
     ],
     [
+     "50698fe4",
+     2,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
+    ],
+    [
      "5d97297e",
      2,
-     "Sunny's Weekly #276 Carved from Stone",
-     "2026-10-05"
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
     ],
     [
      "59ed7d56",
@@ -2701,6 +2738,12 @@
      2,
      "SEASAC League Challenge #12 (SEASON 5) [50 CODES]",
      "2026-09-20"
+    ],
+    [
+     "0b6063a4",
+     3,
+     "SEASAC League Challenge #15 (SEASON 6) [50 CODES]",
+     "2026-10-29"
     ],
     [
      "136b4ba2",
@@ -2739,75 +2782,39 @@
      "2026-09-28"
     ],
     [
-     "af9d5cf0",
+     "523a8603",
      4,
-     "👑CrownOfSpain 👑 #12 (10€ paypal)",
-     "2026-10-20"
-    ],
-    [
-     "be9d2f40",
-     4,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #26",
-     "2026-10-09"
-    ],
-    [
-     "265f1898",
-     4,
-     "Amyverse PTCG Live Weekly #15 💛 Cash Prize!",
-     "2026-09-30"
-    ],
-    [
-     "7192961c",
-     5,
-     "Sunny's Weekly #281 My Friend Rayquaza :D",
-     "2026-11-09"
-    ],
-    [
-     "ff7f0246",
-     5,
-     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
-     "2026-11-08"
-    ],
-    [
-     "24faa80d",
-     5,
-     "Sunny's Weekly #279 This is Halloween! (In Sparta)",
-     "2026-10-26"
-    ],
-    [
-     "7928cdb5",
-     5,
-     "Pumpkaweekly",
-     "2026-10-12"
+     "SEASAC League Challenge #15 (SEASON 6) [50 CODES]",
+     "2026-10-29"
     ]
    ],
    "place": {
     "online": [
-     548,
-     297296,
-     205981,
-     46,
-     92,
-     68
+     668,
+     368335,
+     258398,
+     64,
+     125,
+     88
     ]
    },
    "cur": {
-    "lists": 57,
+    "lists": 135,
     "rec": {
      "online": [
-      101,
-      99,
-      0
+      287,
+      251,
+      1
      ]
     },
     "place": {
      "online": [
-      39,
-      19230,
-      12998,
-      4,
-      5,
-      6
+      101,
+      56163,
+      39989,
+      8,
+      14,
+      13
      ]
     }
    }
@@ -2815,8 +2822,8 @@
   {
    "id": "sharpedo-toxtricity",
    "name": "Sharpedo Toxtricity",
-   "share": 3,
-   "lists": 699,
+   "share": 2.9,
+   "lists": 806,
    "sig": [
     [
      "Carvanha",
@@ -2860,85 +2867,85 @@
     ],
     [
      "Yveltal",
-     0.8,
-     0.69
+     0.7,
+     0.68
     ]
    ],
    "rec": {
     "online": [
-     1297,
-     1254,
+     1518,
+     1460,
      1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
-      5,
+      14,
+      9,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      154,
-      169,
+      182,
+      194,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      69,
-      97,
+      79,
+      108,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      63,
-      57,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      63,
-      45,
+      74,
+      64,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      26,
-      66,
+      29,
+      78,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      96,
-      35,
+      73,
+      52,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      3,
+      0,
       0
      ]
     },
     "other": {
      "online": [
-      43,
-      10,
+      47,
+      15,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      16,
-      17,
+      20,
+      21,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      87,
-      66,
+      92,
+      82,
       0
      ]
     }
@@ -2999,6 +3006,12 @@
      "2026-10-03"
     ],
     [
+     "185b0d9c",
+     3,
+     "SEASAC League Challenge #22 (SEASON 6) [50 CODES]",
+     "2026-11-05"
+    ],
+    [
      "add6536a",
      3,
      "TOURNAMENT OF DOOM! DINNER?",
@@ -3033,6 +3046,12 @@
      4,
      "Rare Candy Club Blitz #7",
      "2026-10-30"
+    ],
+    [
+     "ecf5e8be",
+     4,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
     ],
     [
      "4591a8d2",
@@ -3075,47 +3094,35 @@
      5,
      "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
      "2026-10-20"
-    ],
-    [
-     "c583df8f",
-     5,
-     "Vault Of Games #5🏆| SEASON 1|WEEKLY",
-     "2026-10-04"
-    ],
-    [
-     "043ee5d0",
-     5,
-     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
-     "2026-09-29"
     ]
    ],
    "place": {
     "online": [
-     484,
-     236966,
-     156937,
-     41,
-     73,
-     56
+     565,
+     281193,
+     187129,
+     48,
+     91,
+     65
     ]
    },
    "cur": {
-    "lists": 24,
+    "lists": 54,
     "rec": {
      "online": [
-      42,
-      46,
+      110,
+      103,
       0
      ]
     },
     "place": {
      "online": [
-      15,
-      6532,
-      4066,
-      2,
+      39,
+      19410,
+      13039,
       3,
-      2
+      7,
+      4
      ]
     }
    }
@@ -3123,8 +3130,8 @@
   {
    "id": "dragapult-blaziken",
    "name": "Dragapult Blaziken",
-   "share": 2.9,
-   "lists": 680,
+   "share": 2.8,
+   "lists": 787,
    "sig": [
     [
      "Dreepy",
@@ -3162,11 +3169,6 @@
      1
     ],
     [
-     "Meowth ex",
-     1,
-     1
-    ],
-    [
      "Munkidori",
      1.9,
      0.99
@@ -3175,83 +3177,88 @@
      "Budew",
      1.1,
      0.99
+    ],
+    [
+     "Meowth ex",
+     1,
+     0.99
     ]
    ],
    "rec": {
     "online": [
-     1498,
-     1232,
-     1
+     1728,
+     1415,
+     3
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      16,
-      11,
+      22,
+      18,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      139,
-      206,
+      167,
+      239,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      93,
-      91,
+      103,
+      100,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      78,
-      87,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      61,
-      47,
+      89,
+      97,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      78,
-      32,
+      88,
+      40,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      71,
-      63,
+      73,
+      53,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
+      3,
       0
      ]
     },
     "other": {
      "online": [
-      47,
-      10,
+      54,
+      13,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      7,
-      13,
-      0
+      10,
+      16,
+      1
      ]
     },
     "n-zoroark": {
      "online": [
-      55,
-      72,
+      58,
+      79,
       0
      ]
     }
@@ -3288,16 +3295,52 @@
      "2026-10-15"
     ],
     [
+     "7b78b231",
+     1,
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
+    ],
+    [
      "70c9ea77",
      1,
      "Pumpkaweekly",
      "2026-09-28"
     ],
     [
+     "51f2bee2",
+     1,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
+    ],
+    [
+     "bab118cd",
+     1,
+     "Monster Collectibles After Hours Season 2 #2",
+     "2026-09-20"
+    ],
+    [
      "7efa9b45",
      1,
      "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
      "2026-09-17"
+    ],
+    [
+     "37120a51",
+     2,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "17bb9e75",
+     2,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ],
+    [
+     "3424b42b",
+     2,
+     "Team Corna Weekly October's #5",
+     "2026-10-21"
     ],
     [
      "1b63cdd7",
@@ -3324,22 +3367,16 @@
      "2026-09-23"
     ],
     [
+     "a256b84d",
+     3,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
+    ],
+    [
      "48522a21",
      3,
      "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
      "2026-10-21"
-    ],
-    [
-     "3424b42b",
-     3,
-     "SEASAC League Challenge #5 (SEASON 6) [50 CODES]",
-     "2026-10-15"
-    ],
-    [
-     "17bb9e75",
-     3,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-01"
     ],
     [
      "a526148f",
@@ -3370,65 +3407,294 @@
      5,
      "🪎Vault Of Games #9🪙|REGIONAL FORMAT🏆|WEEKLY📅",
      "2026-11-01"
-    ],
-    [
-     "116b5706",
-     5,
-     "Rare Candy Club Blitz #7",
-     "2026-10-30"
-    ],
-    [
-     "e9580ece",
-     5,
-     "SEASAC League Challenge #11 (SEASON 6) [50 CODES]",
-     "2026-10-22"
-    ],
-    [
-     "cbbd6c8b",
-     5,
-     "SEASAC League Challenge #28 (SEASON 5) [50 CODES]",
-     "2026-10-08"
-    ],
-    [
-     "86a0ef24",
-     5,
-     "ASRcristiano # 194 - 60 codes - Road to Nice!",
-     "2026-10-07"
-    ],
-    [
-     "7129bda9",
-     5,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-17"
     ]
    ],
    "place": {
     "online": [
-     510,
-     278108,
-     194356,
-     54,
-     102,
-     62
+     598,
+     325986,
+     228309,
+     68,
+     126,
+     78
     ]
    },
    "cur": {
-    "lists": 32,
+    "lists": 63,
     "rec": {
      "online": [
-      80,
-      62,
+      137,
+      113,
       0
      ]
     },
     "place": {
      "online": [
-      22,
-      12257,
-      8548,
-      2,
+      48,
+      25101,
+      17410,
       4,
-      3
+      8,
+      8
+     ]
+    }
+   }
+  },
+  {
+   "id": "other",
+   "name": "Other",
+   "share": 2.8,
+   "lists": 780,
+   "sig": [
+    [
+     "Fezandipiti ex",
+     0.4,
+     0.35
+    ],
+    [
+     "Latias ex",
+     0.5,
+     0.32
+    ],
+    [
+     "Meowth ex",
+     0.4,
+     0.3
+    ]
+   ],
+   "rec": {
+    "online": [
+     704,
+     1485,
+     2
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      15,
+      23,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      65,
+      174,
+      1
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      26,
+      97,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      33,
+      61,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      28,
+      67,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      25,
+      65,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      6,
+      10,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      8,
+      12,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      31,
+      76,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "47751301",
+     7,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "56435697",
+     10,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-09-24"
+    ],
+    [
+     "3807db46",
+     4,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "44c33367",
+     4,
+     "SEASAC League Challenge #1 (SEASON 6) [50 CODES]",
+     "2026-10-11"
+    ],
+    [
+     "4671a64e",
+     7,
+     "RCC 2000 MEMBERS | $50 USD PRIZE | NO ENTRY FEE",
+     "2026-10-26"
+    ],
+    [
+     "99e848e1",
+     8,
+     "TOURNAMENT OF DOOM! BIRDS! BIRDS! BIRDS!",
+     "2026-11-14"
+    ],
+    [
+     "db4005f1",
+     8,
+     "SEASAC League Challenge #27 (SEASON 6) [50 CODES]",
+     "2026-11-12"
+    ],
+    [
+     "9306aeb5",
+     8,
+     "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
+     "2026-10-21"
+    ],
+    [
+     "924549ad",
+     8,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #25",
+     "2026-10-02"
+    ],
+    [
+     "8acf4483",
+     9,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "2d94066b",
+     9,
+     "Amyverse PTCG Live Weekly #21 💛 Cash Prize!",
+     "2026-11-11"
+    ],
+    [
+     "2da63c17",
+     10,
+     "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
+     "2026-10-24"
+    ],
+    [
+     "fd8f79d4",
+     10,
+     "Rare Candy Club Showdown #47 (30TH LEGAL)",
+     "2026-10-05"
+    ],
+    [
+     "be6905f3",
+     11,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "ee69e319",
+     11,
+     "REFINE Autumn Series Session 8: Spoopy?",
+     "2026-10-21"
+    ],
+    [
+     "fac3ea8d",
+     11,
+     "PokeMagee Weekly #16 - Birthday tournament!",
+     "2026-10-03"
+    ],
+    [
+     "a006ec2e",
+     11,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-10-01"
+    ],
+    [
+     "22f727ee",
+     13,
+     "TOURNAMENT OF DOOM! BIRDS! BIRDS! BIRDS!",
+     "2026-11-14"
+    ],
+    [
+     "2dc02cad",
+     13,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-10-05"
+    ],
+    [
+     "8f623e4d",
+     15,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-27"
+    ],
+    [
+     "8f7a57d7",
+     15,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
+     "5afa52a8",
+     16,
+     "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
+     "2026-09-17"
+    ]
+   ],
+   "place": {
+    "online": [
+     517,
+     201904,
+     111070,
+     8,
+     22,
+     16
+    ]
+   },
+   "cur": {
+    "lists": 124,
+    "rec": {
+     "online": [
+      156,
+      228,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      88,
+      37804,
+      22496,
+      4,
+      8,
+      5
      ]
     }
    }
@@ -3436,8 +3702,8 @@
   {
    "id": "alakazam-dusknoir",
    "name": "Alakazam Dusknoir",
-   "share": 2.9,
-   "lists": 674,
+   "share": 2.8,
+   "lists": 774,
    "sig": [
     [
      "Abra",
@@ -3487,79 +3753,79 @@
    ],
    "rec": {
     "online": [
-     1060,
-     1191,
-     0
+     1206,
+     1363,
+     1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
+     "online": [
+      6,
+      7,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      153,
+      229,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      71,
+      74,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      93,
+      30,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      38,
+      48,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      60,
+      50,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
      "online": [
       2,
       4,
       0
      ]
     },
-    "dragapult-ex": {
-     "online": [
-      135,
-      206,
-      0
-     ]
-    },
-    "basic-box-m": {
-     "online": [
-      63,
-      66,
-      0
-     ]
-    },
-    "slowking-scr": {
-     "online": [
-      82,
-      27,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      55,
-      38,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      33,
-      39,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      23,
-      104,
-      0
-     ]
-    },
     "other": {
      "online": [
       35,
-      17,
+      21,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      7,
-      10,
+      9,
+      14,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      50,
-      51,
+      61,
+      55,
       0
      ]
     }
@@ -3576,6 +3842,18 @@
      2,
      "Rare Candy Club Blitz #4 (30TH LEGAL)",
      "2026-10-16"
+    ],
+    [
+     "c95a5f72",
+     2,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
+    ],
+    [
+     "89665be9",
+     3,
+     "Team Corna Weekly October's #2",
+     "2026-10-09"
     ],
     [
      "7dd27416",
@@ -3606,6 +3884,24 @@
      5,
      "REFINE Autumn Series Session 10: Mo-vember",
      "2026-11-05"
+    ],
+    [
+     "3a7535b3",
+     5,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
+    ],
+    [
+     "f29ff1ed",
+     5,
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
+    ],
+    [
+     "6a69e209",
+     5,
+     "ASRcristiano # 196 - 60 codes - Road to Nice!",
+     "2026-10-09"
     ],
     [
      "8088654d",
@@ -3678,265 +3974,35 @@
      10,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-01"
-    ],
-    [
-     "908f130a",
-     11,
-     "Sunny's Weekly #278 Sunny of the Corn!",
-     "2026-10-19"
-    ],
-    [
-     "ca1bef84",
-     11,
-     "💥Plantel Battle #33 💥​100 CODES ✔️​ TOP 8",
-     "2026-09-24"
-    ],
-    [
-     "6a547349",
-     12,
-     "Sunny's Weekly #278 Sunny of the Corn!",
-     "2026-10-19"
-    ],
-    [
-     "1ff806c4",
-     12,
-     "Vault Of Games #6 🏆| SEASON 1|WEEKLY",
-     "2026-10-11"
-    ],
-    [
-     "9d5e4ff2",
-     12,
-     "SEASAC League Cup #3 (SEASON 5) [150 CODES]",
-     "2026-09-27"
     ]
    ],
    "place": {
     "online": [
-     424,
-     195372,
-     124831,
-     20,
-     47,
-     27
+     502,
+     231505,
+     148067,
+     26,
+     59,
+     33
     ]
    },
    "cur": {
-    "lists": 17,
+    "lists": 43,
     "rec": {
      "online": [
-      43,
-      31,
+      80,
+      78,
       0
      ]
     },
     "place": {
      "online": [
-      11,
-      6279,
-      4312,
+      30,
+      15575,
+      9974,
       2,
-      2,
-      2
-     ]
-    }
-   }
-  },
-  {
-   "id": "other",
-   "name": "Other",
-   "share": 2.7,
-   "lists": 636,
-   "sig": [
-    [
-     "Fezandipiti ex",
-     0.3,
-     0.34
-    ],
-    [
-     "Latias ex",
-     0.5,
-     0.31
-    ]
-   ],
-   "rec": {
-    "online": [
-     553,
-     1234,
-     2
-    ]
-   },
-   "vs": {
-    "mega-rayquaza-ex": {
-     "online": [
-      8,
-      11,
-      0
-     ]
-    },
-    "dragapult-ex": {
-     "online": [
-      52,
-      142,
-      1
-     ]
-    },
-    "basic-box-m": {
-     "online": [
-      17,
-      74,
-      0
-     ]
-    },
-    "slowking-scr": {
-     "online": [
-      27,
-      54,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      21,
-      56,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      17,
-      58,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      42,
-      42,
-      0
-     ]
-    },
-    "dragapult-dudunsparce": {
-     "online": [
-      5,
-      7,
-      0
-     ]
-    },
-    "n-zoroark": {
-     "online": [
-      22,
-      69,
-      0
-     ]
-    }
-   },
-   "tops": [
-    [
-     "56435697",
-     10,
-     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
-     "2026-09-24"
-    ],
-    [
-     "44c33367",
-     4,
-     "SEASAC League Challenge #1 (SEASON 6) [50 CODES]",
-     "2026-10-11"
-    ],
-    [
-     "4671a64e",
-     7,
-     "RCC 2000 MEMBERS | $50 USD PRIZE | NO ENTRY FEE",
-     "2026-10-26"
-    ],
-    [
-     "9306aeb5",
-     8,
-     "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
-     "2026-10-21"
-    ],
-    [
-     "924549ad",
-     8,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #25",
-     "2026-10-02"
-    ],
-    [
-     "2da63c17",
-     10,
-     "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
-     "2026-10-24"
-    ],
-    [
-     "fd8f79d4",
-     10,
-     "Rare Candy Club Showdown #47 (30TH LEGAL)",
-     "2026-10-05"
-    ],
-    [
-     "ee69e319",
-     11,
-     "REFINE Autumn Series Session 8: Spoopy?",
-     "2026-10-21"
-    ],
-    [
-     "fac3ea8d",
-     11,
-     "PokeMagee Weekly #16 - Birthday tournament!",
-     "2026-10-03"
-    ],
-    [
-     "a006ec2e",
-     11,
-     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
-     "2026-10-01"
-    ],
-    [
-     "2dc02cad",
-     13,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-05"
-    ],
-    [
-     "8f623e4d",
-     15,
-     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
-     "2026-10-27"
-    ],
-    [
-     "5afa52a8",
-     16,
-     "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
-     "2026-09-17"
-    ]
-   ],
-   "place": {
-    "online": [
-     404,
-     156130,
-     85287,
-     4,
-     13,
-     11
-    ]
-   },
-   "cur": {
-    "lists": 47,
-    "rec": {
-     "online": [
-      44,
-      95,
-      0
-     ]
-    },
-    "place": {
-     "online": [
-      26,
-      9012,
-      4586,
-      0,
-      0,
-      0
+      3,
+      3
      ]
     }
    }
@@ -3945,7 +4011,7 @@
    "id": "lopunny-dudunsparce",
    "name": "Lopunny Dudunsparce",
    "share": 2.5,
-   "lists": 593,
+   "lists": 705,
    "sig": [
     [
      "Dunsparce",
@@ -3975,104 +4041,104 @@
     [
      "Mew ex",
      1.5,
-     0.85
+     0.84
     ],
     [
      "Lillie's Clefairy ex",
      0.8,
-     0.77
+     0.76
     ],
     [
      "Psyduck",
      0.7,
-     0.69
-    ],
-    [
-     "Moltres",
-     0.6,
-     0.54
+     0.66
     ],
     [
      "Meowth ex",
      0.5,
-     0.52
+     0.51
+    ],
+    [
+     "Moltres",
+     0.5,
+     0.51
     ]
    ],
    "rec": {
     "online": [
-     1131,
-     1100,
-     0
+     1363,
+     1303,
+     1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      11,
-      10,
+      21,
+      23,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      119,
-      136,
+      141,
+      159,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      64,
-      70,
+      76,
+      81,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      69,
-      72,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      74,
-      37,
+      79,
+      79,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      34,
-      38,
+      41,
+      48,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      71,
-      35,
+      84,
+      44,
+      1
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      7,
+      8,
       0
      ]
     },
     "other": {
      "online": [
-      38,
-      10,
+      48,
+      14,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      12,
-      9,
+      15,
+      16,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      38,
-      95,
+      43,
+      109,
       0
      ]
     }
@@ -4107,6 +4173,12 @@
      2,
      "Amyverse PTCG Live Weekly #16 💛 Cash Prize!",
      "2026-10-07"
+    ],
+    [
+     "5d1e2216",
+     2,
+     "SEASAC League Challenge #24 (SEASON 5) [50 CODES]",
+     "2026-10-03"
     ],
     [
      "2725d719",
@@ -4211,45 +4283,39 @@
      "2026-09-21"
     ],
     [
-     "33f2f4db",
+     "a930e492",
      6,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "ba14490e",
-     6,
-     "Team Corna Weekly October #1",
-     "2026-10-07"
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
     ]
    ],
    "place": {
     "online": [
-     431,
-     220905,
-     149040,
-     35,
-     65,
-     50
+     519,
+     267417,
+     180233,
+     43,
+     83,
+     59
     ]
    },
    "cur": {
-    "lists": 38,
+    "lists": 96,
     "rec": {
      "online": [
-      87,
-      84,
+      198,
+      190,
       0
      ]
     },
     "place": {
      "online": [
-      24,
-      12950,
-      8702,
-      3,
-      4,
-      2
+      69,
+      36981,
+      24720,
+      6,
+      12,
+      8
      ]
     }
    }
@@ -4257,8 +4323,8 @@
   {
    "id": "lucario-hariyama",
    "name": "Lucario Hariyama",
-   "share": 2.5,
-   "lists": 591,
+   "share": 2.4,
+   "lists": 677,
    "sig": [
     [
      "Riolu",
@@ -4298,79 +4364,79 @@
    ],
    "rec": {
     "online": [
-     1057,
-     1123,
+     1187,
+     1299,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      2,
-      5,
+      4,
+      8,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      122,
-      159,
+      137,
+      186,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      61,
-      94,
+      66,
+      114,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      35,
-      73,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      42,
-      40,
+      39,
+      87,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      36,
-      35,
+      41,
+      40,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      12,
-      114,
+      49,
+      42,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      3,
       0
      ]
     },
     "other": {
      "online": [
-      39,
-      15,
+      48,
+      19,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
       8,
-      3,
+      4,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      71,
-      46,
+      83,
+      50,
       0
      ]
     }
@@ -4411,6 +4477,12 @@
      2,
      "Monster Collectibles After Hours Season 2 #3",
      "2026-10-04"
+    ],
+    [
+     "cfb24360",
+     3,
+     "REFINE Autumn Series Session 11: Glowing Gobbler",
+     "2026-11-12"
     ],
     [
      "53c98263",
@@ -4467,6 +4539,12 @@
      "2026-10-05"
     ],
     [
+     "6f16716c",
+     7,
+     "SEASAC League Challenge #22 (SEASON 6) [50 CODES]",
+     "2026-11-05"
+    ],
+    [
      "e47efafe",
      7,
      "SEASAC League Challenge #19 (SEASON 5) [50 CODES]",
@@ -4507,47 +4585,35 @@
      9,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-22"
-    ],
-    [
-     "9e83e43b",
-     9,
-     "TOURNAMENT OF DOOM! DINNER?",
-     "2026-10-17"
-    ],
-    [
-     "2801e633",
-     9,
-     "Last Prize Series S4 #4",
-     "2026-10-13"
     ]
    ],
    "place": {
     "online": [
-     424,
-     204506,
-     134207,
-     25,
-     54,
-     36
+     477,
+     230163,
+     150134,
+     29,
+     62,
+     40
     ]
    },
    "cur": {
-    "lists": 21,
+    "lists": 45,
     "rec": {
      "online": [
-      35,
-      38,
+      85,
+      87,
       0
      ]
     },
     "place": {
      "online": [
-      11,
-      3716,
-      1862,
-      0,
-      1,
-      0
+      30,
+      14339,
+      8969,
+      2,
+      4,
+      2
      ]
     }
    }
@@ -4556,7 +4622,7 @@
    "id": "festival-lead",
    "name": "Festival Lead",
    "share": 2.3,
-   "lists": 545,
+   "lists": 638,
    "sig": [
     [
      "Applin",
@@ -4591,99 +4657,99 @@
     [
      "Rellor",
      1.1,
-     0.94
+     0.95
     ],
     [
      "Rabsca",
      1,
-     0.94
+     0.95
     ],
     [
      "Shaymin",
      0.7,
-     0.72
+     0.71
     ],
     [
      "Psyduck",
      0.4,
-     0.43
+     0.44
     ]
    ],
    "rec": {
     "online": [
-     1059,
-     979,
+     1230,
+     1121,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      7,
-      9,
+      13,
+      15,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      95,
-      192,
+      111,
+      220,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      61,
-      66,
+      68,
+      76,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      50,
-      47,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      49,
-      41,
+      53,
+      54,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      40,
-      40,
+      44,
+      42,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      63,
-      59,
+      54,
+      48,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      3,
+      5,
       0
      ]
     },
     "other": {
      "online": [
-      25,
+      29,
       15,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      7,
-      15,
+      10,
+      18,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      82,
-      21,
+      93,
+      26,
       0
      ]
     }
@@ -4714,16 +4780,40 @@
      "2026-10-12"
     ],
     [
+     "3e8fcd46",
+     1,
+     "ASRcristiano # 196 - 60 codes - Road to Nice!",
+     "2026-10-09"
+    ],
+    [
+     "66080c05",
+     1,
+     "SEASAC League Challenge #22 (SEASON 5) [50 CODES]",
+     "2026-10-01"
+    ],
+    [
      "653b4ffb",
      1,
      "SEASAC League Challenge #15 (SEASON 5) [50 CODES]",
      "2026-09-23"
     ],
     [
+     "7e32b974",
+     2,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
+    ],
+    [
      "cb654976",
      2,
      "💥Plantel Battle #35 💥​100 CODES ✔️​ TOP 8",
      "2026-10-22"
+    ],
+    [
+     "14312fbc",
+     2,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
     ],
     [
      "ed3fdba8",
@@ -4736,12 +4826,6 @@
      2,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-12"
-    ],
-    [
-     "3e8fcd46",
-     2,
-     "SEASAC League Challenge #26 (SEASON 5) [50 CODES]",
-     "2026-10-06"
     ],
     [
      "d6dbdc74",
@@ -4762,10 +4846,10 @@
      "2026-09-24"
     ],
     [
-     "7e32b974",
-     3,
-     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
-     "2026-11-09"
+     "e7c23ceb",
+     2,
+     "👑CrownOfSpain 👑 #7 (10€ paypal)",
+     "2026-09-17"
     ],
     [
      "f8e39077",
@@ -4792,6 +4876,18 @@
      "2026-10-12"
     ],
     [
+     "68fb3609",
+     4,
+     "👑CrownOfSpain 👑 #7 (10€ paypal)",
+     "2026-09-17"
+    ],
+    [
+     "bb3456bc",
+     5,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-26"
+    ],
+    [
      "1bcd0f3d",
      5,
      "REFINE Autumn Series Session 8: Spoopy?",
@@ -4802,65 +4898,35 @@
      5,
      "Amyverse PTCG Live Weekly #17 💛 Cash Prize!",
      "2026-10-14"
-    ],
-    [
-     "712e3e54",
-     5,
-     "SEASAC League Challenge #3 (SEASON 6) [50 CODES]",
-     "2026-10-13"
-    ],
-    [
-     "eba103cb",
-     5,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-28"
-    ],
-    [
-     "43b906ad",
-     7,
-     "Amyverse PTCG Live Weekly #19 💛 Cash Prize!",
-     "2026-10-28"
-    ],
-    [
-     "93831a6f",
-     8,
-     "SEASAC League Challenge #1 (SEASON 6) [50 CODES]",
-     "2026-10-11"
-    ],
-    [
-     "b9bff475",
-     9,
-     "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
-     "2026-10-21"
     ]
    ],
    "place": {
     "online": [
-     363,
-     183178,
-     123674,
-     29,
-     51,
-     42
+     434,
+     218853,
+     147986,
+     41,
+     65,
+     51
     ]
    },
    "cur": {
-    "lists": 31,
+    "lists": 65,
     "rec": {
      "online": [
-      70,
-      61,
+      130,
+      117,
       0
      ]
     },
     "place": {
      "online": [
-      24,
-      12825,
-      8760,
-      2,
-      3,
-      3
+      53,
+      25821,
+      16974,
+      4,
+      5,
+      5
      ]
     }
    }
@@ -4868,8 +4934,8 @@
   {
    "id": "crustle-dri",
    "name": "Crustle",
-   "share": 2,
-   "lists": 476,
+   "share": 2.1,
+   "lists": 598,
    "sig": [
     [
      "Dwebble",
@@ -4883,90 +4949,108 @@
     ],
     [
      "Mega Kangaskhan ex",
-     3.7,
+     3.6,
      0.95
     ]
    ],
    "rec": {
     "online": [
-     1088,
-     909,
+     1342,
+     1130,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
-      18,
+      16,
+      32,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      158,
-      77,
+      193,
+      98,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      94,
-      44,
+      101,
+      54,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      38,
-      76,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      59,
-      25,
+      48,
+      91,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      41,
-      36,
+      54,
+      39,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      45,
-      41,
+      76,
+      34,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
+      6,
       0
      ]
     },
     "other": {
      "online": [
-      34,
-      10,
+      47,
+      12,
       1
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      9,
-      12,
+      18,
+      17,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      79,
-      37,
+      93,
+      41,
       0
      ]
     }
    },
    "tops": [
+    [
+     "845296aa",
+     1,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
+    ],
+    [
+     "56a9349d",
+     1,
+     "SEASAC League Challenge #27 (SEASON 6) [50 CODES]",
+     "2026-11-12"
+    ],
+    [
+     "3d60e91d",
+     1,
+     "SEASAC League Challenge #22 (SEASON 6) [50 CODES]",
+     "2026-11-05"
+    ],
     [
      "b9b3cb6f",
      1,
@@ -4980,16 +5064,34 @@
      "2026-11-01"
     ],
     [
+     "d8789c5f",
+     1,
+     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
+     "2026-10-26"
+    ],
+    [
      "9b569993",
      1,
      "REFINE Autumn Series Session 6: Jack-O-Lantern",
      "2026-10-07"
     ],
     [
+     "abfb85b0",
+     1,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
      "e4abb8ed",
      1,
      "REFINE Autumn Series Session 4: Falling Leaves",
      "2026-09-23"
+    ],
+    [
+     "5a24cc27",
+     1,
+     "SEASAC League Challenge #11 (SEASON 5) [50 CODES]",
+     "2026-09-18"
     ],
     [
      "356cf056",
@@ -5016,12 +5118,6 @@
      "2026-09-18"
     ],
     [
-     "abfb85b0",
-     3,
-     "Sunny's Weekly #274 Beans and Frankfurts",
-     "2026-09-21"
-    ],
-    [
      "b7eacec0",
      3,
      "SEASAC League Challenge #10 (SEASON 5) [50 CODES]",
@@ -5034,10 +5130,10 @@
      "2026-11-08"
     ],
     [
-     "3d60e91d",
+     "b066c0d1",
      4,
-     "Pumpkaweekly - delta reign prizing",
-     "2026-11-02"
+     "SEASAC League Challenge #24 (SEASON 5) [50 CODES]",
+     "2026-10-03"
     ],
     [
      "43b884d0",
@@ -5070,75 +5166,45 @@
      "2026-10-14"
     ],
     [
+     "d0bff337",
+     5,
+     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
+     "2026-10-13"
+    ],
+    [
      "3e78a1a7",
      5,
      "Amyverse PTCG Live Weekly #16 💛 Cash Prize!",
      "2026-10-07"
-    ],
-    [
-     "0063bdbd",
-     6,
-     "Sunny's Weekly #279 This is Halloween! (In Sparta)",
-     "2026-10-26"
-    ],
-    [
-     "55b5d23d",
-     6,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-21"
-    ],
-    [
-     "05420d15",
-     7,
-     "SEASAC League Challenge #14 (SEASON 5) [50 CODES]",
-     "2026-09-22"
-    ],
-    [
-     "b096f5c3",
-     7,
-     "👑CrownOfSpain 👑 #8 (10€ paypal)",
-     "2026-09-22"
-    ],
-    [
-     "318bebbd",
-     7,
-     "Rare Candy Club Showdown #45 (30TH LEGAL)",
-     "2026-09-21"
-    ],
-    [
-     "a1751549",
-     8,
-     "👑CrownOfSpain 👑 #11 (10€ paypal)",
-     "2026-10-13"
     ]
    ],
    "place": {
     "online": [
-     359,
-     204530,
-     147870,
-     40,
-     71,
-     59
+     459,
+     259792,
+     187382,
+     51,
+     92,
+     75
     ]
    },
    "cur": {
-    "lists": 38,
+    "lists": 97,
     "rec": {
      "online": [
-      92,
-      85,
+      205,
+      189,
       0
      ]
     },
     "place": {
      "online": [
-      27,
-      15950,
-      11934,
-      1,
-      2,
-      6
+      77,
+      42900,
+      31124,
+      4,
+      9,
+      14
      ]
     }
    }
@@ -5146,8 +5212,8 @@
   {
    "id": "lopunny-dusknoir",
    "name": "Lopunny Dusknoir",
-   "share": 1.7,
-   "lists": 405,
+   "share": 1.6,
+   "lists": 456,
    "sig": [
     [
      "Duskull",
@@ -5177,22 +5243,22 @@
     [
      "Meowth ex",
      1,
-     0.96
+     0.95
     ],
     [
      "Latias ex",
-     1.5,
+     1.4,
      0.93
     ],
     [
      "Bronzor",
-     1.7,
-     0.91
+     1.6,
+     0.9
     ],
     [
      "Bronzong",
-     1.7,
-     0.91
+     1.6,
+     0.9
     ],
     [
      "Mega Kangaskhan ex",
@@ -5202,79 +5268,79 @@
    ],
    "rec": {
     "online": [
-     659,
-     758,
-     0
+     716,
+     851,
+     1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
+      4,
       3,
-      1,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      90,
-      96,
+      97,
+      104,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      21,
-      68,
+      22,
+      73,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      35,
-      42,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      38,
-      28,
+      37,
+      45,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      25,
-      32,
+      27,
+      35,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      18,
-      45,
+      41,
+      31,
+      1
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      0,
       0
      ]
     },
     "other": {
      "online": [
-      20,
-      11,
+      23,
+      12,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      8,
-      6,
+      9,
+      7,
       0
      ]
     },
     "n-zoroark": {
      "online": [
       23,
-      32,
+      39,
       0
      ]
     }
@@ -5347,6 +5413,12 @@
      "2026-09-20"
     ],
     [
+     "576c2502",
+     9,
+     "SEASAC League Challenge #15 (SEASON 6) [50 CODES]",
+     "2026-10-29"
+    ],
+    [
      "626df730",
      9,
      "SEASAC League Challenge #3 (SEASON 6) [50 CODES]",
@@ -5417,38 +5489,32 @@
      13,
      "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
      "2026-09-29"
-    ],
-    [
-     "0af5ae0a",
-     13,
-     "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
-     "2026-09-17"
     ]
    ],
    "place": {
     "online": [
-     283,
-     137856,
-     91210,
+     320,
+     149301,
+     96787,
      15,
-     42,
-     23
+     43,
+     24
     ]
    },
    "cur": {
-    "lists": 10,
+    "lists": 22,
     "rec": {
      "online": [
-      9,
-      17,
+      19,
+      34,
       0
      ]
     },
     "place": {
      "online": [
-      4,
-      752,
-      168,
+      12,
+      2758,
+      948,
       0,
       0,
       0
@@ -5460,7 +5526,7 @@
    "id": "cynthia-garchomp-ex",
    "name": "Cynthia's Garchomp",
    "share": 1.5,
-   "lists": 357,
+   "lists": 417,
    "sig": [
     [
      "Cynthia's Gible",
@@ -5490,7 +5556,7 @@
     [
      "Cynthia's Spiritomb",
      1,
-     0.95
+     0.96
     ],
     [
      "Shaymin",
@@ -5500,65 +5566,65 @@
    ],
    "rec": {
     "online": [
-     712,
-     704,
+     822,
+     823,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
-      4,
+      9,
+      6,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      88,
-      93,
+      99,
+      112,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      36,
-      44,
+      43,
+      53,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      33,
-      52,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      26,
-      22,
+      37,
+      58,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      2,
-      48,
+      5,
+      58,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      36,
       31,
+      24,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      3,
+      1,
       0
      ]
     },
     "other": {
      "online": [
-      23,
-      17,
+      26,
+      18,
       0
      ]
     },
@@ -5571,18 +5637,30 @@
     },
     "n-zoroark": {
      "online": [
-      41,
-      27,
+      45,
+      30,
       0
      ]
     }
    },
    "tops": [
     [
+     "38846273",
+     12,
+     "Rare Candy Club Blitz #3 (30TH LEGAL)",
+     "2026-10-09"
+    ],
+    [
      "de34970f",
      1,
      "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
      "2026-09-24"
+    ],
+    [
+     "cd262e83",
+     1,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
+     "2026-09-18"
     ],
     [
      "6341c9b4",
@@ -5639,6 +5717,12 @@
      "2026-10-05"
     ],
     [
+     "11d8a198",
+     6,
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
+    ],
+    [
      "9050dee0",
      6,
      "Amyverse PTCG Live Weekly #15 💛 Cash Prize!",
@@ -5687,69 +5771,347 @@
      "2026-09-22"
     ],
     [
+     "215235ad",
+     9,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
+    ],
+    [
+     "35b42661",
+     9,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
+    ],
+    [
      "cb24e081",
      9,
      "Monster Collectibles After Hours Season 2 #3",
      "2026-10-04"
-    ],
-    [
-     "cbc2bc1e",
-     10,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-21"
-    ],
-    [
-     "17a278ae",
-     11,
-     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
-     "2026-11-08"
-    ],
-    [
-     "e030a753",
-     11,
-     "Pumpkaweekly",
-     "2026-10-19"
-    ],
-    [
-     "effd57f1",
-     11,
-     "SEASAC League Challenge #9 (SEASON 5) [50 CODES]",
-     "2026-09-16"
-    ],
-    [
-     "09781d00",
-     12,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #27",
-     "2026-10-16"
     ]
    ],
    "place": {
     "online": [
-     262,
-     132939,
-     88631,
-     21,
-     39,
-     28
+     306,
+     157254,
+     105191,
+     23,
+     50,
+     32
     ]
    },
    "cur": {
-    "lists": 21,
+    "lists": 45,
     "rec": {
      "online": [
-      44,
-      34,
+      82,
+      86,
       0
      ]
     },
     "place": {
      "online": [
-      13,
-      7543,
-      5057,
+      34,
+      18520,
+      12022,
       2,
-      3,
-      1
+      5,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-rayquaza-ex",
+   "name": "Mega Rayquaza",
+   "share": 1.5,
+   "lists": 415,
+   "sig": [
+    [
+     "Mega Rayquaza ex",
+     2.2,
+     1
+    ],
+    [
+     "Latias ex",
+     2,
+     0.99
+    ],
+    [
+     "Mega Kangaskhan ex",
+     3.6,
+     0.98
+    ],
+    [
+     "Talonflame ex",
+     2,
+     0.98
+    ],
+    [
+     "Meowth ex",
+     1.7,
+     0.97
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.93
+    ],
+    [
+     "Ethan's Ho-Oh ex",
+     1.8,
+     0.92
+    ],
+    [
+     "Iron Thorns ex",
+     0.6,
+     0.62
+    ]
+   ],
+   "rec": {
+    "online": [
+     678,
+     715,
+     0
+    ]
+   },
+   "vs": {
+    "dragapult-ex": {
+     "online": [
+      45,
+      92,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      50,
+      54,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      33,
+      35,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      24,
+      30,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      30,
+      32,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      36,
+      19,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      23,
+      15,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      21,
+      44,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      14,
+      22,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "20312482",
+     5,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "229ab83d",
+     1,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "1822e22f",
+     1,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
+     "1a304f31",
+     2,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "572ca3f3",
+     2,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "e33f01fc",
+     3,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "88f3befb",
+     5,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "f7f53170",
+     5,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "980b3f83",
+     6,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "d8e3cdb9",
+     8,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
+    ],
+    [
+     "84340e78",
+     8,
+     "Amyverse PTCG Live Weekly #21 💛 Cash Prize!",
+     "2026-11-11"
+    ],
+    [
+     "d61d784c",
+     8,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ],
+    [
+     "368e912b",
+     8,
+     "CHAMPIONSHIP OF DOOM! TEN!",
+     "2026-11-07"
+    ],
+    [
+     "edbeaa4f",
+     9,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-09"
+    ],
+    [
+     "ca14f302",
+     10,
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
+    ],
+    [
+     "ec955769",
+     10,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "d813f37d",
+     11,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "8715df99",
+     11,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ],
+    [
+     "57df798d",
+     12,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "03cd275c",
+     12,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "c8d8baf6",
+     12,
+     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
+     "2026-11-09"
+    ],
+    [
+     "cf5e769a",
+     13,
+     "SEASAC League Challenge #27 (SEASON 6) [50 CODES]",
+     "2026-11-12"
+    ],
+    [
+     "d6acf9ae",
+     13,
+     "Pumpkaweekly",
+     "2026-11-09"
+    ],
+    [
+     "664dbe2b",
+     14,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ]
+   ],
+   "place": {
+    "online": [
+     314,
+     149532,
+     97240,
+     17,
+     34,
+     25
+    ]
+   },
+   "cur": {
+    "lists": 415,
+    "rec": {
+     "online": [
+      678,
+      715,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      314,
+      149532,
+      97240,
+      17,
+      34,
+      25
      ]
     }
    }
@@ -5758,7 +6120,7 @@
    "id": "rockets-honchkrow",
    "name": "Rocket's Honchkrow",
    "share": 1.4,
-   "lists": 320,
+   "lists": 393,
    "sig": [
     [
      "Team Rocket's Murkrow",
@@ -5788,79 +6150,79 @@
    ],
    "rec": {
     "online": [
-     684,
-     617,
+     837,
+     761,
      5
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
+      17,
       9,
-      4,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      60,
-      97,
+      75,
+      120,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      53,
-      29,
+      63,
+      34,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      35,
-      52,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      34,
-      16,
+      45,
+      66,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      17,
-      21,
+      20,
+      32,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      26,
-      33,
-      1
+      42,
+      19,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      9,
+      0
      ]
     },
     "other": {
      "online": [
-      16,
-      11,
+      19,
+      13,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      2,
-      4,
+      6,
+      6,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      41,
-      20,
+      54,
+      26,
       0
      ]
     }
@@ -5883,6 +6245,12 @@
      2,
      "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
      "2026-10-21"
+    ],
+    [
+     "e6830a61",
+     2,
+     "SEASAC League Challenge #22 (SEASON 5) [50 CODES]",
+     "2026-10-01"
     ],
     [
      "d808e424",
@@ -5921,6 +6289,12 @@
      "2026-09-18"
     ],
     [
+     "ab404d9d",
+     7,
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
+    ],
+    [
      "76e90822",
      7,
      "SEASAC League Challenge #11 (SEASON 6) [50 CODES]",
@@ -5937,6 +6311,12 @@
      7,
      "SEASAC League Challenge #9 (SEASON 5) [50 CODES]",
      "2026-09-16"
+    ],
+    [
+     "cbede33f",
+     8,
+     "👑CrownOfSpain 👑 #7 (10€ paypal)",
+     "2026-09-17"
     ],
     [
      "cd821c4d",
@@ -5969,75 +6349,360 @@
      "2026-09-17"
     ],
     [
+     "a4b68428",
+     13,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
      "bcb2454e",
      13,
      "CHALLENGE OF DOOM! GOODBYE TO 30TH FORMAT!",
      "2026-11-03"
     ],
     [
-     "6c1cc488",
+     "9162b589",
      13,
-     "REFINE Autumn Series Session 5: Nor'Easter",
-     "2026-09-30"
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
     ],
     [
-     "98ef2a42",
-     14,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "b028155e",
-     14,
-     "Sunny's Weekly #276 Carved from Stone",
-     "2026-10-05"
-    ],
-    [
-     "813a49ff",
-     14,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #25",
-     "2026-10-02"
-    ],
-    [
-     "5577e225",
-     15,
-     "TOURNAMENT OF DOOM! Did you know...",
+     "3ef90bb6",
+     13,
+     "SEASAC League Challenge #24 (SEASON 5) [50 CODES]",
      "2026-10-03"
-    ],
-    [
-     "5d91cc7f",
-     16,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-01"
     ]
    ],
    "place": {
     "online": [
-     224,
-     121217,
-     85486,
-     14,
-     33,
-     29
+     287,
+     153551,
+     107617,
+     17,
+     46,
+     31
     ]
    },
    "cur": {
-    "lists": 28,
+    "lists": 68,
     "rec": {
      "online": [
-      72,
-      53,
+      158,
+      134,
       1
      ]
     },
     "place": {
      "online": [
-      22,
-      14074,
-      10862,
-      2,
-      5,
-      7
+      58,
+      33722,
+      24803,
+      3,
+      11,
+      8
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-lucario-ex",
+   "name": "Mega Lucario",
+   "share": 1.4,
+   "lists": 385,
+   "sig": [
+    [
+     "Riolu",
+     3.6,
+     1
+    ],
+    [
+     "Mega Lucario ex",
+     3,
+     1
+    ],
+    [
+     "Solrock",
+     2.1,
+     0.95
+    ],
+    [
+     "Lunatone",
+     1.9,
+     0.95
+    ],
+    [
+     "Dunsparce",
+     1.5,
+     0.64
+    ],
+    [
+     "Dudunsparce",
+     1.3,
+     0.63
+    ],
+    [
+     "Dudunsparce ex",
+     0.5,
+     0.5
+    ],
+    [
+     "Meowth ex",
+     0.3,
+     0.34
+    ]
+   ],
+   "rec": {
+    "online": [
+     726,
+     776,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      18,
+      15,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      90,
+      107,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      39,
+      47,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      20,
+      48,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      24,
+      18,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      23,
+      30,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      9,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      27,
+      17,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      9,
+      9,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      41,
+      27,
+      1
+     ]
+    }
+   },
+   "tops": [
+    [
+     "99396664",
+     4,
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
+    ],
+    [
+     "121a5b37",
+     1,
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
+    ],
+    [
+     "d7622d61",
+     2,
+     "REFINE Autumn Series Session 11: Glowing Gobbler",
+     "2026-11-12"
+    ],
+    [
+     "f810d01b",
+     2,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "244e6081",
+     2,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "2ab2f5e5",
+     2,
+     "ASRcristiano # 198 - 60 codes - Road to Gdansk!",
+     "2026-10-22"
+    ],
+    [
+     "9b96664a",
+     2,
+     "Rare Candy Club Showdown #47 (30TH LEGAL)",
+     "2026-10-05"
+    ],
+    [
+     "4d67ebd7",
+     2,
+     "Vault Of Games #5🏆| SEASON 1|WEEKLY",
+     "2026-10-04"
+    ],
+    [
+     "07939e18",
+     4,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-10-05"
+    ],
+    [
+     "ca8c161f",
+     4,
+     "Vault Of Games #4🏆|SEASON 1|WEEKLY",
+     "2026-09-27"
+    ],
+    [
+     "f7c45620",
+     5,
+     "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
+     "2026-10-24"
+    ],
+    [
+     "d690d867",
+     5,
+     "REFINE Autumn Series Session 4: Falling Leaves",
+     "2026-09-23"
+    ],
+    [
+     "75b1ae59",
+     6,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "c9962ca4",
+     6,
+     "REFINE Autumn Series Session 6: Jack-O-Lantern",
+     "2026-10-07"
+    ],
+    [
+     "0e2d5fa0",
+     7,
+     "Amyverse PTCG Live Weekly #18 💛 Cash Prize!",
+     "2026-10-21"
+    ],
+    [
+     "cb0ffa35",
+     8,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "5ee63296",
+     8,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
+    ],
+    [
+     "46ae9f64",
+     8,
+     "👑CrownOfSpain 👑 #8 (10€ paypal)",
+     "2026-09-22"
+    ],
+    [
+     "b1a2d04f",
+     9,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
+     "2a59fa56",
+     10,
+     "REFINE Autumn Series Session 4: Falling Leaves",
+     "2026-09-23"
+    ],
+    [
+     "3f747e98",
+     11,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-02"
+    ],
+    [
+     "bea4fd2c",
+     11,
+     "SEASAC League Challenge #12 (SEASON 5) [50 CODES]",
+     "2026-09-20"
+    ],
+    [
+     "6b1c68a3",
+     13,
+     "SEASAC League Cup #4 (SEASON 5) [150 CODES]",
+     "2026-10-05"
+    ],
+    [
+     "d884b2ed",
+     13,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-09-28"
+    ]
+   ],
+   "place": {
+    "online": [
+     289,
+     143445,
+     95606,
+     20,
+     36,
+     30
+    ]
+   },
+   "cur": {
+    "lists": 75,
+    "rec": {
+     "online": [
+      175,
+      158,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      57,
+      29810,
+      21681,
+      8,
+      11,
+      10
      ]
     }
    }
@@ -6045,8 +6710,8 @@
   {
    "id": "grimmsnarl-froslass",
    "name": "Grimmsnarl Froslass",
-   "share": 1.4,
-   "lists": 315,
+   "share": 1.3,
+   "lists": 369,
    "sig": [
     [
      "Munkidori",
@@ -6081,12 +6746,12 @@
     [
      "Budew",
      1.3,
-     0.97
+     0.98
     ],
     [
      "Yveltal",
      0.9,
-     0.84
+     0.85
     ],
     [
      "Shaymin",
@@ -6096,69 +6761,69 @@
     [
      "Tatsugiri",
      0.3,
-     0.32
+     0.31
     ]
    ],
    "rec": {
     "online": [
-     643,
-     602,
-     1
+     756,
+     701,
+     2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      3,
-      5,
+      12,
+      9,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      79,
-      104,
+      90,
+      116,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      28,
-      43,
+      32,
+      53,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      28,
-      42,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      23,
-      17,
+      35,
+      49,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      20,
-      18,
+      27,
+      23,
       1
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      56,
-      14,
+      26,
+      21,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      13,
+      17,
       1,
       0
      ]
@@ -6166,19 +6831,25 @@
     "dragapult-dudunsparce": {
      "online": [
       8,
-      8,
+      9,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      24,
-      36,
+      29,
+      37,
       0
      ]
     }
    },
    "tops": [
+    [
+     "ee4c2bcc",
+     1,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
+    ],
     [
      "64a7b61f",
      2,
@@ -6190,6 +6861,12 @@
      2,
      "TOURNAMENT OF DOOM! Did you know...",
      "2026-10-03"
+    ],
+    [
+     "49f314ec",
+     2,
+     "Monster Collectibles After Hours Season 2 #2",
+     "2026-09-20"
     ],
     [
      "98e9953a",
@@ -6270,6 +6947,18 @@
      "2026-10-05"
     ],
     [
+     "caac08bc",
+     10,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
+     "37391a43",
+     10,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
+    ],
+    [
      "f74a8174",
      11,
      "Team Corna Weekly October #1",
@@ -6282,69 +6971,51 @@
      "2026-09-22"
     ],
     [
+     "2ef47d95",
+     12,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
+    ],
+    [
      "03b603f2",
      12,
      "Amyverse PTCG Live Weekly #17 💛 Cash Prize!",
      "2026-10-14"
     ],
     [
-     "7907a65b",
+     "d0f1ec5f",
      12,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #25",
-     "2026-10-02"
-    ],
-    [
-     "2ac282e9",
-     13,
-     "SEASAC League Challenge #9 (SEASON 6) [50 CODES]",
-     "2026-10-20"
-    ],
-    [
-     "e993d804",
-     14,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-19"
-    ],
-    [
-     "bdc624fb",
-     14,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-28"
-    ],
-    [
-     "a199b3fb",
-     15,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-22"
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-10-08"
     ]
    ],
    "place": {
     "online": [
-     218,
-     112626,
-     74981,
-     14,
-     28,
-     19
+     262,
+     135745,
+     91206,
+     16,
+     36,
+     23
     ]
    },
    "cur": {
-    "lists": 17,
+    "lists": 42,
     "rec": {
      "online": [
-      37,
-      33,
+      91,
+      83,
       0
      ]
     },
     "place": {
      "online": [
-      12,
-      6525,
-      4097,
+      33,
+      17413,
+      11531,
       1,
-      1,
-      0
+      2,
+      2
      ]
     }
    }
@@ -6353,7 +7024,7 @@
    "id": "mega-greninja-ex",
    "name": "Mega Greninja",
    "share": 1.3,
-   "lists": 314,
+   "lists": 360,
    "sig": [
     [
      "Froakie",
@@ -6368,7 +7039,7 @@
     [
      "Frogadier",
      2.3,
-     0.98
+     0.99
     ],
     [
      "Greninja ex",
@@ -6408,64 +7079,64 @@
    ],
    "rec": {
     "online": [
-     426,
-     570,
-     1
+     499,
+     657,
+     2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      0,
-      8,
+      1,
+      11,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      38,
-      84,
+      48,
+      99,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      31,
-      41,
+      35,
+      43,
       0
      ]
     },
     "slowking-scr": {
      "online": [
       24,
-      31,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      13,
-      26,
+      37,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      11,
       16,
+      18,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      21,
-      19,
+      18,
+      29,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      1,
       0
      ]
     },
     "other": {
      "online": [
-      14,
+      15,
       6,
       0
      ]
@@ -6473,14 +7144,14 @@
     "dragapult-dudunsparce": {
      "online": [
       3,
-      6,
+      7,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      20,
-      31,
+      22,
+      33,
       0
      ]
     }
@@ -6493,10 +7164,28 @@
      "2026-10-08"
     ],
     [
+     "b6749f27",
+     3,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
+     "1ad44e49",
+     4,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
+    ],
+    [
      "649109b2",
      5,
      "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
      "2026-10-01"
+    ],
+    [
+     "a2174980",
+     6,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
     ],
     [
      "05b61fad",
@@ -6505,10 +7194,22 @@
      "2026-09-30"
     ],
     [
+     "695d8345",
+     6,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
+     "2026-09-18"
+    ],
+    [
      "c20e1bce",
      7,
      "TOURNAMENT OF DOOM! SPOOOOOOKY!",
      "2026-10-31"
+    ],
+    [
+     "4315faea",
+     7,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
     ],
     [
      "375909bc",
@@ -6527,6 +7228,12 @@
      9,
      "Amyverse PTCG Live Weekly #18 💛 Cash Prize!",
      "2026-10-21"
+    ],
+    [
+     "5ace308e",
+     10,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
     ],
     [
      "125c921d",
@@ -6567,310 +7274,31 @@
    ],
    "place": {
     "online": [
-     219,
-     90860,
-     54708,
-     6,
-     13,
-     8
+     259,
+     107330,
+     65319,
+     11,
+     21,
+     12
     ]
    },
    "cur": {
-    "lists": 18,
+    "lists": 26,
     "rec": {
      "online": [
-      24,
-      38,
+      42,
+      53,
       0
      ]
     },
     "place": {
      "online": [
-      9,
-      3766,
-      2267,
+      14,
+      5879,
+      3723,
       0,
-      0,
-      1
-     ]
-    }
-   }
-  },
-  {
-   "id": "mega-lucario-ex",
-   "name": "Mega Lucario",
-   "share": 1.3,
-   "lists": 304,
-   "sig": [
-    [
-     "Riolu",
-     3.5,
-     1
-    ],
-    [
-     "Mega Lucario ex",
-     3,
-     1
-    ],
-    [
-     "Solrock",
-     2.1,
-     0.95
-    ],
-    [
-     "Lunatone",
-     1.9,
-     0.95
-    ],
-    [
-     "Dunsparce",
-     1.5,
-     0.63
-    ],
-    [
-     "Dudunsparce",
-     1.2,
-     0.62
-    ],
-    [
-     "Dudunsparce ex",
-     0.5,
-     0.46
-    ],
-    [
-     "Meowth ex",
-     0.3,
-     0.34
-    ]
-   ],
-   "rec": {
-    "online": [
-     560,
-     609,
-     1
-    ]
-   },
-   "vs": {
-    "mega-rayquaza-ex": {
-     "online": [
-      9,
-      6,
-      0
-     ]
-    },
-    "dragapult-ex": {
-     "online": [
-      68,
-      88,
-      0
-     ]
-    },
-    "basic-box-m": {
-     "online": [
-      34,
-      38,
-      0
-     ]
-    },
-    "slowking-scr": {
-     "online": [
-      18,
-      38,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      17,
-      27,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      21,
-      13,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      3,
-      51,
-      0
-     ]
-    },
-    "other": {
-     "online": [
-      18,
-      10,
-      0
-     ]
-    },
-    "dragapult-dudunsparce": {
-     "online": [
-      4,
-      7,
-      0
-     ]
-    },
-    "n-zoroark": {
-     "online": [
-      32,
-      22,
-      1
-     ]
-    }
-   },
-   "tops": [
-    [
-     "244e6081",
-     2,
-     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
-     "2026-11-09"
-    ],
-    [
-     "9b96664a",
-     2,
-     "Rare Candy Club Showdown #47 (30TH LEGAL)",
-     "2026-10-05"
-    ],
-    [
-     "4d67ebd7",
-     2,
-     "Vault Of Games #5🏆| SEASON 1|WEEKLY",
-     "2026-10-04"
-    ],
-    [
-     "121a5b37",
-     3,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "07939e18",
-     4,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-05"
-    ],
-    [
-     "ca8c161f",
-     4,
-     "Vault Of Games #4🏆|SEASON 1|WEEKLY",
-     "2026-09-27"
-    ],
-    [
-     "f7c45620",
-     5,
-     "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
-     "2026-10-24"
-    ],
-    [
-     "d690d867",
-     5,
-     "REFINE Autumn Series Session 4: Falling Leaves",
-     "2026-09-23"
-    ],
-    [
-     "c9962ca4",
-     6,
-     "REFINE Autumn Series Session 6: Jack-O-Lantern",
-     "2026-10-07"
-    ],
-    [
-     "0e2d5fa0",
-     7,
-     "Amyverse PTCG Live Weekly #18 💛 Cash Prize!",
-     "2026-10-21"
-    ],
-    [
-     "46ae9f64",
-     8,
-     "👑CrownOfSpain 👑 #8 (10€ paypal)",
-     "2026-09-22"
-    ],
-    [
-     "2a59fa56",
-     10,
-     "REFINE Autumn Series Session 4: Falling Leaves",
-     "2026-09-23"
-    ],
-    [
-     "3f747e98",
-     11,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-11-02"
-    ],
-    [
-     "bea4fd2c",
-     11,
-     "SEASAC League Challenge #12 (SEASON 5) [50 CODES]",
-     "2026-09-20"
-    ],
-    [
-     "6b1c68a3",
-     13,
-     "SEASAC League Cup #4 (SEASON 5) [150 CODES]",
-     "2026-10-05"
-    ],
-    [
-     "d884b2ed",
-     13,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-09-28"
-    ],
-    [
-     "b4c3d4ec",
-     14,
-     "Sunny's Weekly #275 The Conspiracy",
-     "2026-09-28"
-    ],
-    [
-     "9658bc05",
-     15,
-     "SEASAC League Challenge #9 (SEASON 6) [50 CODES]",
-     "2026-10-20"
-    ],
-    [
-     "894574f2",
-     16,
-     "Pumpkaweekly - delta reign prizing",
-     "2026-11-02"
-    ],
-    [
-     "620f0861",
-     16,
-     "CHALLENGE OF DOOM! I will.....",
-     "2026-10-13"
-    ]
-   ],
-   "place": {
-    "online": [
-     223,
-     109456,
-     72230,
-     12,
-     25,
-     22
-    ]
-   },
-   "cur": {
-    "lists": 25,
-    "rec": {
-     "online": [
-      66,
-      57,
-      0
-     ]
-    },
-    "place": {
-     "online": [
-      16,
-      8706,
-      6889,
-      2,
-      3,
-      5
+      1,
+      2
      ]
     }
    }
@@ -6878,8 +7306,8 @@
   {
    "id": "greninja-ex",
    "name": "Greninja",
-   "share": 1.2,
-   "lists": 278,
+   "share": 1.3,
+   "lists": 348,
    "sig": [
     [
      "Froakie",
@@ -6903,7 +7331,7 @@
     ],
     [
      "Fezandipiti ex",
-     0.9,
+     1,
      0.95
     ],
     [
@@ -6913,7 +7341,7 @@
     ],
     [
      "Dusclops",
-     1.9,
+     1.8,
      0.94
     ],
     [
@@ -6924,7 +7352,7 @@
     [
      "Budew",
      0.9,
-     0.88
+     0.85
     ],
     [
      "Snorunt",
@@ -6934,79 +7362,79 @@
    ],
    "rec": {
     "online": [
-     517,
-     527,
+     614,
+     645,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      8,
-      5,
+      16,
+      14,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      61,
-      86,
+      71,
+      107,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      28,
-      31,
+      34,
+      42,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      29,
-      28,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      24,
-      18,
+      32,
+      34,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      15,
-      18,
+      16,
+      27,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      16,
-      43,
+      27,
+      23,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
+      5,
       0
      ]
     },
     "other": {
      "online": [
-      15,
-      6,
+      16,
+      9,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      4,
-      9,
+      8,
+      11,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      20,
       25,
+      28,
       0
      ]
     }
@@ -7017,6 +7445,12 @@
      15,
      "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
      "2026-11-09"
+    ],
+    [
+     "c82c58fb",
+     2,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
     ],
     [
      "1120d76b",
@@ -7055,6 +7489,12 @@
      "2026-11-02"
     ],
     [
+     "a1be10d8",
+     4,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
+    ],
+    [
      "7dd55e74",
      4,
      "Monster Collectibles After Hours Season 2 #3",
@@ -7071,6 +7511,12 @@
      5,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-05"
+    ],
+    [
+     "39d96cb9",
+     7,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
     ],
     [
      "e19fab30",
@@ -7109,10 +7555,22 @@
      "2026-11-09"
     ],
     [
+     "526b31c7",
+     9,
+     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
+     "2026-10-13"
+    ],
+    [
      "d0ab4bef",
      9,
      "SEASAC League Challenge #9 (SEASON 5) [50 CODES]",
      "2026-09-16"
+    ],
+    [
+     "17ce3172",
+     10,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
     ],
     [
      "6c96fe7b",
@@ -7125,65 +7583,35 @@
      12,
      "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
      "2026-10-20"
-    ],
-    [
-     "40f3bf0f",
-     12,
-     "Amyverse PTCG Live Weekly #14 💛 Cash Prize!",
-     "2026-09-23"
-    ],
-    [
-     "083ef092",
-     14,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-01"
-    ],
-    [
-     "4d4da4a5",
-     15,
-     "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
-     "2026-10-25"
-    ],
-    [
-     "e5a8f3b5",
-     16,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-22"
-    ],
-    [
-     "50ed6871",
-     16,
-     "Amyverse PTCG Live Weekly #15 💛 Cash Prize!",
-     "2026-09-30"
     ]
    ],
    "place": {
     "online": [
-     190,
-     90025,
-     61087,
-     18,
-     30,
-     25
+     243,
+     112956,
+     74884,
+     21,
+     37,
+     27
     ]
    },
    "cur": {
-    "lists": 30,
+    "lists": 70,
     "rec": {
      "online": [
-      54,
-      54,
+      116,
+      124,
       0
      ]
     },
     "place": {
      "online": [
-      17,
-      8120,
-      5726,
-      1,
+      49,
+      22511,
+      14475,
       3,
-      3
+      6,
+      4
      ]
     }
    }
@@ -7191,8 +7619,8 @@
   {
    "id": "dragapult-dudunsparce",
    "name": "Dragapult Dudunsparce",
-   "share": 1,
-   "lists": 224,
+   "share": 1.1,
+   "lists": 313,
    "sig": [
     [
      "Dreepy",
@@ -7226,7 +7654,7 @@
     ],
     [
      "Munkidori",
-     1.9,
+     2,
      0.99
     ],
     [
@@ -7237,82 +7665,82 @@
     [
      "Meowth ex",
      1,
-     0.97
+     0.98
     ],
     [
      "Fezandipiti ex",
      0.9,
-     0.91
+     0.93
     ]
    ],
    "rec": {
     "online": [
-     501,
-     378,
-     0
+     697,
+     543,
+     1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      23,
-      10,
+      44,
+      21,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      51,
       70,
+      100,
       0
      ]
     },
     "basic-box-m": {
      "online": [
+      42,
       36,
-      30,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      26,
-      12,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      21,
-      12,
+      37,
+      19,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      23,
-      13,
+      30,
+      21,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
+      29,
       19,
-      22,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      15,
+      5,
       0
      ]
     },
     "other": {
      "online": [
-      7,
-      5,
+      12,
+      8,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      19,
-      27,
+      25,
+      32,
       0
      ]
     }
@@ -7323,6 +7751,12 @@
      3,
      "SEASAC League Challenge #27 (SEASON 5) [50 CODES]",
      "2026-10-07"
+    ],
+    [
+     "5de08a8c",
+     1,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
     ],
     [
      "cbaa7d21",
@@ -7373,6 +7807,12 @@
      "2026-10-31"
     ],
     [
+     "fe21819d",
+     5,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
      "580989d4",
      5,
      "SEASAC League Challenge #1 (SEASON 6) [50 CODES]",
@@ -7389,6 +7829,12 @@
      5,
      "Amyverse PTCG Live Weekly #15 💛 Cash Prize!",
      "2026-09-30"
+    ],
+    [
+     "0147eff8",
+     6,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
     ],
     [
      "243144e9",
@@ -7409,10 +7855,28 @@
      "2026-09-22"
     ],
     [
+     "535914d9",
+     8,
+     "Team Corna Weekly October's #5",
+     "2026-10-21"
+    ],
+    [
      "9e74e74d",
      9,
      "Pumpkaweekly",
      "2026-10-19"
+    ],
+    [
+     "f12ad88f",
+     11,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
+     "af762e9f",
+     11,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
     ],
     [
      "d6d6f7f3",
@@ -7425,71 +7889,35 @@
      12,
      "Pumpkaweekly - delta reign prizing",
      "2026-11-02"
-    ],
-    [
-     "41d2e12b",
-     12,
-     "Amyverse PTCG Live Weekly #19 💛 Cash Prize!",
-     "2026-10-28"
-    ],
-    [
-     "b73576c5",
-     12,
-     "Pudding Weekly #15 | Daring today aren't we?",
-     "2026-09-30"
-    ],
-    [
-     "452ded27",
-     14,
-     "Pumpkaweekly",
-     "2026-10-05"
-    ],
-    [
-     "1388d9d7",
-     15,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-11-09"
-    ],
-    [
-     "f69cd0e1",
-     15,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #24",
-     "2026-09-25"
-    ],
-    [
-     "6473eb49",
-     16,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-15"
     ]
    ],
    "place": {
     "online": [
-     138,
-     74820,
-     53002,
-     18,
-     28,
-     22
+     207,
+     113818,
+     80526,
+     25,
+     39,
+     31
     ]
    },
    "cur": {
-    "lists": 43,
+    "lists": 112,
     "rec": {
      "online": [
-      124,
-      82,
+      283,
+      204,
       0
      ]
     },
     "place": {
      "online": [
-      31,
-      18642,
-      14361,
-      5,
-      7,
-      8
+      87,
+      50995,
+      37496,
+      11,
+      16,
+      16
      ]
     }
    }
@@ -7498,7 +7926,7 @@
    "id": "ogerpon-meganium-arboliva",
    "name": "Ogerpon Meganium Arboliva",
    "share": 0.9,
-   "lists": 218,
+   "lists": 260,
    "sig": [
     [
      "Teal Mask Ogerpon ex",
@@ -7536,13 +7964,13 @@
      1
     ],
     [
-     "Fezandipiti ex",
-     1,
-     0.98
-    ],
-    [
      "Meowth ex",
      1.5,
+     0.97
+    ],
+    [
+     "Fezandipiti ex",
+     1,
      0.97
     ],
     [
@@ -7553,79 +7981,79 @@
    ],
    "rec": {
     "online": [
-     517,
-     402,
+     599,
+     477,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      11,
-      9,
+      13,
+      12,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      61,
-      66,
+      70,
+      80,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      25,
-      30,
+      29,
+      31,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      27,
-      15,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      21,
-      13,
+      33,
+      20,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      16,
-      22,
+      23,
+      25,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      27,
-      18,
+      26,
+      17,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      3,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      13,
+      14,
       3,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      2,
       4,
+      5,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      38,
-      18,
+      42,
+      21,
       0
      ]
     }
@@ -7642,6 +8070,18 @@
      1,
      "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
      "2026-10-25"
+    ],
+    [
+     "39291d48",
+     1,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
+    ],
+    [
+     "fd4c131a",
+     1,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
     ],
     [
      "bfc17da3",
@@ -7668,16 +8108,34 @@
      "2026-11-08"
     ],
     [
+     "20e31d27",
+     2,
+     "🇧🇷 Hit Cup #22 | TCG Live",
+     "2026-11-04"
+    ],
+    [
      "aaec3a7c",
      2,
      "⚡ Surge's TCG Vault Winner Takes All Live BO3 #27",
      "2026-10-16"
     ],
     [
+     "6cf51209",
+     3,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
+    ],
+    [
      "2ffba825",
      3,
      "👑CrownOfSpain 👑 #8 (10€ paypal)",
      "2026-09-22"
+    ],
+    [
+     "69e1a046",
+     4,
+     "🇧🇷 Hit Cup #22 | TCG Live",
+     "2026-11-04"
     ],
     [
      "19e1dbb5",
@@ -7690,12 +8148,6 @@
      5,
      "【CL台風特別編】Rising Poke Japan Cup #Special【BO3】",
      "2026-09-21"
-    ],
-    [
-     "69e1a046",
-     6,
-     "Last Prize Series S4 #7",
-     "2026-11-04"
     ],
     [
      "18698b7b",
@@ -7750,271 +8202,35 @@
      13,
      "Vault Of Games #4🏆|SEASON 1|WEEKLY",
      "2026-09-27"
-    ],
-    [
-     "312cf84c",
-     14,
-     "👑CrownOfSpain 👑 #12 (10€ paypal)",
-     "2026-10-20"
     ]
    ],
    "place": {
     "online": [
-     151,
-     84349,
-     60498,
-     22,
-     30,
-     30
+     186,
+     102178,
+     72767,
+     29,
+     37,
+     37
     ]
    },
    "cur": {
-    "lists": 17,
+    "lists": 32,
     "rec": {
      "online": [
-      52,
-      38,
+      76,
+      60,
       0
      ]
     },
     "place": {
      "online": [
-      16,
-      10170,
-      7566,
-      2,
-      3,
-      3
-     ]
-    }
-   }
-  },
-  {
-   "id": "mega-rayquaza-ex",
-   "name": "Mega Rayquaza",
-   "share": 0.9,
-   "lists": 211,
-   "sig": [
-    [
-     "Mega Rayquaza ex",
-     2.2,
-     1
-    ],
-    [
-     "Latias ex",
-     2,
-     1
-    ],
-    [
-     "Mega Kangaskhan ex",
-     3.5,
-     0.98
-    ],
-    [
-     "Talonflame ex",
-     2.1,
-     0.98
-    ],
-    [
-     "Meowth ex",
-     1.7,
-     0.97
-    ],
-    [
-     "Fezandipiti ex",
-     0.9,
-     0.92
-    ],
-    [
-     "Ethan's Ho-Oh ex",
-     1.8,
-     0.91
-    ],
-    [
-     "Iron Thorns ex",
-     0.5,
-     0.55
-    ]
-   ],
-   "rec": {
-    "online": [
-     356,
-     370,
-     0
-    ]
-   },
-   "vs": {
-    "dragapult-ex": {
-     "online": [
-      20,
-      39,
-      0
-     ]
-    },
-    "basic-box-m": {
-     "online": [
-      27,
-      38,
-      0
-     ]
-    },
-    "slowking-scr": {
-     "online": [
-      17,
-      17,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      17,
-      19,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      15,
-      10,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      10,
-      8,
-      0
-     ]
-    },
-    "other": {
-     "online": [
-      11,
-      8,
-      0
-     ]
-    },
-    "dragapult-dudunsparce": {
-     "online": [
-      10,
-      23,
-      0
-     ]
-    },
-    "n-zoroark": {
-     "online": [
+      26,
+      15401,
+      11217,
+      4,
       5,
-      9,
-      0
-     ]
-    }
-   },
-   "tops": [
-    [
-     "20312482",
-     5,
-     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
-     "2026-11-09"
-    ],
-    [
-     "229ab83d",
-     1,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "572ca3f3",
-     2,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-11-09"
-    ],
-    [
-     "e33f01fc",
-     3,
-     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
-     "2026-11-08"
-    ],
-    [
-     "f7f53170",
-     5,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "980b3f83",
-     6,
-     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
-     "2026-11-09"
-    ],
-    [
-     "368e912b",
-     8,
-     "CHAMPIONSHIP OF DOOM! TEN!",
-     "2026-11-07"
-    ],
-    [
-     "edbeaa4f",
-     9,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-11-09"
-    ],
-    [
-     "ec955769",
-     10,
-     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
-     "2026-11-09"
-    ],
-    [
-     "c8d8baf6",
-     12,
-     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
-     "2026-11-09"
-    ],
-    [
-     "d6acf9ae",
-     13,
-     "Pumpkaweekly",
-     "2026-11-09"
-    ],
-    [
-     "664dbe2b",
-     14,
-     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
-     "2026-11-09"
-    ],
-    [
-     "f411cb41",
-     16,
-     "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
-     "2026-11-08"
-    ]
-   ],
-   "place": {
-    "online": [
-     148,
-     68751,
-     44009,
-     7,
-     13,
-     11
-    ]
-   },
-   "cur": {
-    "lists": 211,
-    "rec": {
-     "online": [
-      356,
-      370,
-      0
-     ]
-    },
-    "place": {
-     "online": [
-      148,
-      68751,
-      44009,
-      7,
-      13,
-      11
+      5
      ]
     }
    }
@@ -8022,8 +8238,8 @@
   {
    "id": "mew-ex-30c",
    "name": "Mew Box",
-   "share": 0.9,
-   "lists": 210,
+   "share": 0.8,
+   "lists": 235,
    "sig": [
     [
      "Mew ex",
@@ -8038,7 +8254,7 @@
     [
      "Latias ex",
      1.9,
-     1
+     0.99
     ],
     [
      "Meowth ex",
@@ -8046,24 +8262,24 @@
      0.97
     ],
     [
-     "Mega Kangaskhan ex",
-     3.7,
-     0.95
-    ],
-    [
-     "Wellspring Mask Ogerpon ex",
-     1.7,
-     0.95
-    ],
-    [
      "Fezandipiti ex",
      1,
      0.95
     ],
     [
+     "Mega Kangaskhan ex",
+     3.7,
+     0.94
+    ],
+    [
+     "Wellspring Mask Ogerpon ex",
+     1.7,
+     0.93
+    ],
+    [
      "Iron Crown ex",
      0.9,
-     0.92
+     0.91
     ],
     [
      "Unown",
@@ -8073,69 +8289,69 @@
     [
      "Chien-Pao",
      0.9,
-     0.9
+     0.87
     ]
    ],
    "rec": {
     "online": [
-     287,
-     393,
+     318,
+     439,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
-      2,
+      9,
+      3,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      68,
-      38,
+      70,
+      48,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      8,
-      23,
+      10,
+      26,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      13,
-      15,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      5,
-      21,
+      17,
+      16,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
-     "online": [
-      9,
-      18,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
      "online": [
       10,
       24,
       0
      ]
     },
+    "alakazam-dudunsparce": {
+     "online": [
+      6,
+      22,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      3,
+      0
+     ]
+    },
     "other": {
      "online": [
-      12,
+      13,
       7,
       0
      ]
@@ -8143,14 +8359,14 @@
     "dragapult-dudunsparce": {
      "online": [
       0,
-      7,
+      8,
       0
      ]
     },
     "n-zoroark": {
      "online": [
       7,
-      26,
+      29,
       0
      ]
     }
@@ -8163,10 +8379,22 @@
      "2026-10-26"
     ],
     [
+     "8962ed7d",
+     5,
+     "Monster Collectibles After Hours Season 2 #2",
+     "2026-09-20"
+    ],
+    [
      "de1048dc",
      7,
      "SEASAC League Challenge #24 (SEASON 6) [50 CODES]",
      "2026-11-08"
+    ],
+    [
+     "8fcccdf2",
+     8,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
     ],
     [
      "fbc03761",
@@ -8195,30 +8423,30 @@
    ],
    "place": {
     "online": [
-     141,
-     54388,
-     30326,
-     2,
-     7,
+     159,
+     63620,
+     36213,
+     4,
+     9,
      4
     ]
    },
    "cur": {
-    "lists": 12,
+    "lists": 24,
     "rec": {
      "online": [
-      24,
-      29,
+      41,
+      53,
       0
      ]
     },
     "place": {
      "online": [
-      10,
-      5245,
-      3735,
-      1,
-      1,
+      18,
+      8852,
+      5851,
+      2,
+      2,
       1
      ]
     }
@@ -8227,8 +8455,8 @@
   {
    "id": "toucannon-pbl",
    "name": "Toucannon",
-   "share": 0.9,
-   "lists": 200,
+   "share": 0.8,
+   "lists": 232,
    "sig": [
     [
      "Pikipek",
@@ -8253,99 +8481,99 @@
     [
      "Shaymin",
      0.6,
-     0.63
+     0.64
     ],
     [
      "Tatsugiri",
      0.9,
-     0.49
+     0.5
     ],
     [
      "Genesect",
      0.5,
-     0.48
+     0.49
     ],
     [
      "Patrat",
      0.4,
-     0.42
+     0.44
     ]
    ],
    "rec": {
     "online": [
-     296,
-     371,
-     1
+     374,
+     431,
+     4
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      0,
-      6,
+      2,
+      10,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      27,
-      58,
+      31,
+      68,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      15,
-      24,
+      20,
+      27,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      16,
+      17,
       24,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      11,
-      15,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      12,
-      8,
+      15,
+      10,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      17,
-      23,
+      16,
+      16,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      1,
       0
      ]
     },
     "other": {
      "online": [
-      10,
-      7,
+      11,
+      9,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      4,
       5,
+      9,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      16,
-      16,
+      20,
+      19,
       0
      ]
     }
@@ -8362,6 +8590,18 @@
      4,
      "CHALLENGE OF DOOM! I will.....",
      "2026-10-13"
+    ],
+    [
+     "d20c5e61",
+     4,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-10-08"
+    ],
+    [
+     "360db429",
+     7,
+     "Nightshades Monday Cup 2 (75 Codes)",
+     "2026-10-20"
     ],
     [
      "032db694",
@@ -8406,6 +8646,12 @@
      "2026-10-09"
     ],
     [
+     "ef8f4714",
+     13,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
+    ],
+    [
      "4df46e81",
      14,
      "Sunny's Weekly #280 Smoke on the Water!",
@@ -8422,34 +8668,40 @@
      16,
      "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
      "2026-10-25"
+    ],
+    [
+     "85f6a24b",
+     16,
+     "Team Corna Weekly October's #6",
+     "2026-10-23"
     ]
    ],
    "place": {
     "online": [
-     140,
-     61336,
-     38542,
-     3,
-     16,
-     8
+     167,
+     75348,
+     48063,
+     8,
+     25,
+     9
     ]
    },
    "cur": {
-    "lists": 10,
+    "lists": 24,
     "rec": {
      "online": [
-      14,
-      21,
+      42,
+      44,
       0
      ]
     },
     "place": {
      "online": [
-      7,
-      2678,
-      1707,
+      17,
+      7265,
+      4317,
       0,
-      0,
+      2,
       0
      ]
     }
@@ -8459,7 +8711,7 @@
    "id": "beedrill-ex-cri",
    "name": "Beedrill",
    "share": 0.8,
-   "lists": 191,
+   "lists": 225,
    "sig": [
     [
      "Weedle",
@@ -8487,101 +8739,94 @@
      0.95
     ],
     [
-     "Meowth ex",
-     0.8,
-     0.81
-    ],
-    [
      "Fezandipiti ex",
      0.8,
-     0.81
+     0.84
+    ],
+    [
+     "Meowth ex",
+     0.8,
+     0.83
     ],
     [
      "Fan Rotom",
-     0.8,
-     0.76
+     0.9,
+     0.77
     ],
     [
      "Shaymin",
      0.3,
-     0.32
+     0.33
     ]
    ],
    "rec": {
     "online": [
-     326,
-     355,
-     1
+     379,
+     414,
+     3
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      0,
       1,
+      3,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      34,
-      56,
+      40,
+      64,
       0
      ]
     },
     "basic-box-m": {
      "online": [
       21,
-      18,
+      21,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      16,
-      23,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      7,
-      13,
+      19,
+      29,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      8,
+      13,
       14,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      16,
-      18,
+      11,
+      15,
       0
      ]
     },
     "other": {
      "online": [
-      12,
+      14,
       3,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      0,
-      6,
+      1,
+      9,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      19,
-      10,
+      20,
+      12,
       0
      ]
     }
@@ -8600,16 +8845,16 @@
      "2026-10-24"
     ],
     [
+     "d4ab3c78",
+     3,
+     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
+     "2026-10-13"
+    ],
+    [
      "a837ed58",
      3,
      "SEASAC World Championships Qualifiers | $15 PRIZE",
      "2026-10-09"
-    ],
-    [
-     "d4ab3c78",
-     4,
-     "SEASAC League Challenge #5 (SEASON 6) [50 CODES]",
-     "2026-10-15"
     ],
     [
      "3faa6e06",
@@ -8628,6 +8873,12 @@
      6,
      "Monster Collectibles After Hours Season 2 #4",
      "2026-10-11"
+    ],
+    [
+     "ad5846cf",
+     7,
+     "🇧🇷 Hit Cup #22 | TCG Live",
+     "2026-11-04"
     ],
     [
      "08cf9232",
@@ -8700,35 +8951,41 @@
      15,
      "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
      "2026-10-06"
+    ],
+    [
+     "72f8507d",
+     16,
+     "Amyverse PTCG Live Weekly #21 💛 Cash Prize!",
+     "2026-11-11"
     ]
    ],
    "place": {
     "online": [
-     130,
-     63980,
-     41408,
-     11,
-     23,
-     12
+     158,
+     77354,
+     50313,
+     13,
+     26,
+     15
     ]
    },
    "cur": {
-    "lists": 5,
+    "lists": 17,
     "rec": {
      "online": [
-      2,
-      4,
+      21,
+      23,
       0
      ]
     },
     "place": {
      "online": [
-      2,
-      322,
-      53,
+      12,
+      5382,
+      3515,
       0,
-      0,
-      0
+      1,
+      1
      ]
     }
    }
@@ -8736,8 +8993,8 @@
   {
    "id": "igglybuff-30c",
    "name": "Igglybuff",
-   "share": 0.8,
-   "lists": 178,
+   "share": 0.7,
+   "lists": 206,
    "sig": [
     [
      "Igglybuff",
@@ -8750,19 +9007,19 @@
      0.82
     ],
     [
-     "Budew",
+     "Ethan's Pichu",
      2.5,
-     0.8
+     0.77
     ],
     [
-     "Ethan's Pichu",
+     "Budew",
      2.4,
-     0.75
+     0.77
     ],
     [
      "Tyrogue",
-     1.5,
-     0.59
+     1.6,
+     0.61
     ],
     [
      "Misty's Magikarp",
@@ -8772,89 +9029,84 @@
     [
      "Shaymin",
      0.4,
-     0.36
-    ],
-    [
-     "Patrat",
-     0.3,
-     0.31
+     0.35
     ]
    ],
    "rec": {
     "online": [
-     188,
-     365,
+     223,
+     433,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      1,
       2,
+      5,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      15,
-      42,
+      16,
+      50,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      5,
-      23,
+      6,
+      29,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      6,
-      18,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      14,
-      7,
+      8,
+      21,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      7,
-      9,
+      8,
+      11,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      7,
-      23,
+      16,
+      8,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      2,
       0
      ]
     },
     "other": {
      "online": [
       12,
-      18,
+      20,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
       0,
-      3,
+      4,
       0
      ]
     },
     "n-zoroark": {
      "online": [
       6,
-      27,
+      29,
       0
      ]
     }
@@ -8865,6 +9117,12 @@
      1,
      "($115 PRIZE POOL) OCTOBER COOKOFF CHALLENGE",
      "2026-10-24"
+    ],
+    [
+     "4b9763cb",
+     4,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
     ],
     [
      "da1f2f93",
@@ -8885,6 +9143,12 @@
      "2026-09-23"
     ],
     [
+     "beceec3b",
+     13,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
      "a0f510fe",
      13,
      "PokeMagee Weekly - 30th Celebration",
@@ -8893,30 +9157,30 @@
    ],
    "place": {
     "online": [
-     133,
-     52775,
-     30749,
-     2,
-     5,
-     4
+     159,
+     62397,
+     35766,
+     3,
+     7,
+     5
     ]
    },
    "cur": {
-    "lists": 6,
+    "lists": 17,
     "rec": {
      "online": [
-      9,
-      12,
+      26,
+      43,
       0
      ]
     },
     "place": {
      "online": [
-      6,
-      2089,
-      1005,
+      16,
+      5806,
+      2768,
       0,
-      0,
+      1,
       0
      ]
     }
@@ -8926,16 +9190,16 @@
    "id": "mega-starmie-ex",
    "name": "Mega Starmie",
    "share": 0.7,
-   "lists": 172,
+   "lists": 205,
    "sig": [
     [
      "Staryu",
-     3.3,
+     3.2,
      1
     ],
     [
      "Mega Starmie ex",
-     2.6,
+     2.5,
      1
     ],
     [
@@ -8951,94 +9215,100 @@
     [
      "Meowth ex",
      1.2,
-     0.8
+     0.83
     ],
     [
-     "Fezandipiti ex",
-     0.3,
+     "Mew ex",
+     0.6,
      0.3
     ]
    ],
    "rec": {
     "online": [
-     315,
-     364,
+     379,
+     432,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      2,
       3,
+      11,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      24,
-      41,
+      33,
+      46,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      25,
-      25,
+      30,
+      29,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      15,
-      12,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      14,
-      23,
+      21,
+      18,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      10,
-      13,
+      12,
+      15,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
       16,
-      15,
+      26,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      11,
-      9,
+      12,
+      10,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      1,
-      4,
+      3,
+      7,
       0
      ]
     },
     "n-zoroark": {
      "online": [
       13,
-      21,
+      22,
       0
      ]
     }
    },
    "tops": [
+    [
+     "327b340e",
+     1,
+     "Team Corna Weekly October's #2",
+     "2026-10-09"
+    ],
     [
      "a8332a69",
      1,
@@ -9058,6 +9328,12 @@
      "2026-09-30"
     ],
     [
+     "c9ca0490",
+     7,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-12"
+    ],
+    [
      "9f88a5c0",
      7,
      "Rare Candy Club Blitz #7",
@@ -9070,16 +9346,16 @@
      "2026-11-09"
     ],
     [
+     "5cc69069",
+     10,
+     "SEASAC League Challenge #2 (SEASON 6) [50 CODES]",
+     "2026-10-12"
+    ],
+    [
      "ccaa8c2e",
      11,
      "Monster Collectibles After Hours Season 2 #3",
      "2026-10-04"
-    ],
-    [
-     "327b340e",
-     12,
-     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
-     "2026-10-08"
     ],
     [
      "49da03b5",
@@ -9092,6 +9368,12 @@
      14,
      "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
      "2026-10-09"
+    ],
+    [
+     "e4eea757",
+     15,
+     "Vault Of Games | 🌙 NOT SO Midnight Madness #18",
+     "2026-10-20"
     ],
     [
      "05e31f7d",
@@ -9108,31 +9390,31 @@
    ],
    "place": {
     "online": [
-     128,
-     63242,
-     41507,
-     5,
-     12,
-     6
+     153,
+     76050,
+     49533,
+     7,
+     17,
+     8
     ]
    },
    "cur": {
-    "lists": 15,
+    "lists": 31,
     "rec": {
      "online": [
-      18,
-      30,
+      54,
+      70,
       0
      ]
     },
     "place": {
      "online": [
-      9,
-      4618,
-      2999,
-      0,
+      22,
+      11851,
+      7407,
       1,
-      1
+      3,
+      2
      ]
     }
    }
@@ -9141,7 +9423,7 @@
    "id": "rocket-mewtwo-ex",
    "name": "Rocket's Mewtwo",
    "share": 0.7,
-   "lists": 166,
+   "lists": 193,
    "sig": [
     [
      "Team Rocket's Tarountula",
@@ -9161,17 +9443,17 @@
     [
      "Team Rocket's Articuno",
      1.8,
-     0.98
+     0.97
     ],
     [
      "Team Rocket's Mimikyu",
      1.7,
-     0.98
+     0.97
     ],
     [
      "Lillie's Clefairy ex",
      0.9,
-     0.89
+     0.85
     ],
     [
      "Team Rocket's Sneasel",
@@ -9181,8 +9463,8 @@
    ],
    "rec": {
     "online": [
-     263,
-     336,
+     332,
+     392,
      1
     ]
    },
@@ -9190,75 +9472,81 @@
     "mega-rayquaza-ex": {
      "online": [
       1,
-      4,
+      6,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      32,
-      48,
+      34,
+      56,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      11,
-      23,
+      14,
+      27,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      9,
-      19,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      16,
-      6,
+      12,
+      24,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      7,
-      8,
+      10,
+      10,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      15,
-      17,
+      22,
+      7,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      2,
       0
      ]
     },
     "other": {
      "online": [
       6,
-      3,
+      4,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      2,
-      2,
+      3,
+      3,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      17,
-      7,
+      27,
+      8,
       0
      ]
     }
    },
    "tops": [
+    [
+     "83008183",
+     15,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
+    ],
     [
      "e8332167",
      1,
@@ -9270,6 +9558,12 @@
      3,
      "Last Prize Series S4 #1",
      "2026-09-22"
+    ],
+    [
+     "ca0fec4b",
+     5,
+     "🇧🇷 Hit Cup #22 | TCG Live",
+     "2026-11-04"
     ],
     [
      "2cc751ba",
@@ -9284,9 +9578,33 @@
      "2026-10-01"
     ],
     [
+     "b01172a3",
+     8,
+     "SEASAC League Challenge #11 (SEASON 5) [50 CODES]",
+     "2026-09-18"
+    ],
+    [
+     "7a8b667e",
+     9,
+     "Team Corna Weekly October's #2",
+     "2026-10-09"
+    ],
+    [
+     "3621ccc9",
+     9,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
+     "2026-09-18"
+    ],
+    [
      "62edce5f",
      9,
      "🎉30TH LEGAL! | 🟢Jolly Good Weekly #7 | Top Cut!",
+     "2026-09-18"
+    ],
+    [
+     "5ffabfb1",
+     10,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
      "2026-09-18"
     ],
     [
@@ -9322,31 +9640,231 @@
    ],
    "place": {
     "online": [
-     129,
-     60265,
-     36965,
-     4,
-     10,
-     6
+     153,
+     74241,
+     47642,
+     6,
+     17,
+     9
     ]
    },
    "cur": {
-    "lists": 11,
+    "lists": 21,
     "rec": {
      "online": [
-      17,
-      28,
+      31,
+      52,
       0
      ]
     },
     "place": {
      "online": [
-      9,
-      3356,
-      1735,
+      17,
+      6846,
+      4195,
       0,
-      0,
+      1,
       0
+     ]
+    }
+   }
+  },
+  {
+   "id": "ethan-typhlosion",
+   "name": "Ethan's Typhlosion",
+   "share": 0.7,
+   "lists": 187,
+   "sig": [
+    [
+     "Ethan's Cyndaquil",
+     4,
+     1
+    ],
+    [
+     "Ethan's Quilava",
+     3.8,
+     1
+    ],
+    [
+     "Ethan's Typhlosion",
+     3.2,
+     1
+    ],
+    [
+     "Shaymin",
+     0.9,
+     0.91
+    ],
+    [
+     "Victini",
+     1.5,
+     0.89
+    ],
+    [
+     "Fezandipiti ex",
+     0.8,
+     0.75
+    ],
+    [
+     "Dreepy",
+     1.7,
+     0.74
+    ],
+    [
+     "Drakloak",
+     1.7,
+     0.74
+    ],
+    [
+     "Budew",
+     0.5,
+     0.49
+    ]
+   ],
+   "rec": {
+    "online": [
+     292,
+     363,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      4,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      25,
+      51,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      20,
+      14,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      21,
+      10,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      18,
+      5,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      16,
+      22,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      15,
+      6,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      10,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      13,
+      13,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "82850164",
+     4,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$",
+     "2026-09-18"
+    ],
+    [
+     "c21c7682",
+     1,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #26",
+     "2026-10-09"
+    ],
+    [
+     "b1c2cfd0",
+     8,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-10-01"
+    ],
+    [
+     "16f262a6",
+     13,
+     "🇧🇷 Hit Cup #21 | TCG Live",
+     "2026-10-23"
+    ],
+    [
+     "e1c4dffc",
+     14,
+     "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
+     "2026-10-25"
+    ],
+    [
+     "b69c9b36",
+     15,
+     "Vault Of Games #5🏆| SEASON 1|WEEKLY",
+     "2026-10-04"
+    ]
+   ],
+   "place": {
+    "online": [
+     130,
+     61189,
+     38361,
+     3,
+     10,
+     5
+    ]
+   },
+   "cur": {
+    "lists": 25,
+    "rec": {
+     "online": [
+      34,
+      58,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      16,
+      7860,
+      5075,
+      0,
+      1,
+      1
      ]
     }
    }
@@ -9355,7 +9873,7 @@
    "id": "hops-trevenant",
    "name": "Hop's Trevenant",
    "share": 0.7,
-   "lists": 162,
+   "lists": 187,
    "sig": [
     [
      "Hop's Phantump",
@@ -9373,11 +9891,6 @@
      1
     ],
     [
-     "Hop's Cramorant",
-     1.1,
-     0.98
-    ],
-    [
      "Lillie's Clefairy ex",
      1,
      0.98
@@ -9388,101 +9901,99 @@
      0.97
     ],
     [
+     "Hop's Cramorant",
+     1,
+     0.97
+    ],
+    [
      "Hop's Wooloo",
      0.9,
-     0.88
+     0.89
     ],
     [
      "Hop's Dubwool",
      0.9,
-     0.88
+     0.89
     ],
     [
      "Hop's Zacian ex",
      0.3,
-     0.31
+     0.33
     ],
     [
      "Patrat",
      0.3,
-     0.31
+     0.3
     ]
    ],
    "rec": {
     "online": [
-     346,
-     347,
+     395,
+     398,
      2
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      2,
-      4,
+      3,
+      6,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      23,
-      57,
+      29,
+      65,
       0
      ]
     },
     "basic-box-m": {
      "online": [
+      26,
       21,
-      19,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      14,
-      14,
+      15,
+      15,
       1
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      14,
+      9,
+      0
      ]
     },
     "alakazam-dudunsparce": {
      "online": [
-      13,
-      12,
+      14,
+      15,
       0
      ]
     },
-    "ogerpon-meganium-hydrapple": {
+    "other": {
      "online": [
       13,
       8,
       0
      ]
     },
-    "dhelmise-pbl": {
-     "online": [
-      19,
-      20,
-      0
-     ]
-    },
-    "other": {
-     "online": [
-      10,
-      7,
-      0
-     ]
-    },
     "dragapult-dudunsparce": {
      "online": [
       2,
-      5,
+      9,
       0
      ]
     },
     "n-zoroark": {
      "online": [
       7,
-      21,
+      25,
       0
      ]
     }
@@ -9507,10 +10018,22 @@
      "2026-10-05"
     ],
     [
+     "9a137c77",
+     4,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
+    ],
+    [
      "9b4ce49f",
      4,
      "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
      "2026-10-21"
+    ],
+    [
+     "1998c00b",
+     5,
+     "SEASAC League Challenge #27 (SEASON 6) [50 CODES]",
+     "2026-11-12"
     ],
     [
      "f2fa05fa",
@@ -9607,228 +10130,40 @@
      15,
      "🏆Moujii's Dojo🏆 (Late Registration Available!)",
      "2026-10-26"
-    ]
-   ],
-   "place": {
-    "online": [
-     117,
-     63288,
-     42952,
-     10,
-     24,
-     10
-    ]
-   },
-   "cur": {
-    "lists": 7,
-    "rec": {
-     "online": [
-      18,
-      20,
-      0
-     ]
-    },
-    "place": {
-     "online": [
-      5,
-      2709,
-      1582,
-      0,
-      1,
-      0
-     ]
-    }
-   }
-  },
-  {
-   "id": "ethan-typhlosion",
-   "name": "Ethan's Typhlosion",
-   "share": 0.7,
-   "lists": 152,
-   "sig": [
-    [
-     "Ethan's Cyndaquil",
-     4,
-     1
     ],
     [
-     "Ethan's Quilava",
-     3.8,
-     1
-    ],
-    [
-     "Ethan's Typhlosion",
-     3.2,
-     1
-    ],
-    [
-     "Victini",
-     1.5,
-     0.89
-    ],
-    [
-     "Shaymin",
-     0.9,
-     0.89
-    ],
-    [
-     "Fezandipiti ex",
-     0.8,
-     0.76
-    ],
-    [
-     "Dreepy",
-     1.7,
-     0.74
-    ],
-    [
-     "Drakloak",
-     1.7,
-     0.74
-    ],
-    [
-     "Budew",
-     0.5,
-     0.47
-    ]
-   ],
-   "rec": {
-    "online": [
-     238,
-     284,
-     0
-    ]
-   },
-   "vs": {
-    "mega-rayquaza-ex": {
-     "online": [
-      2,
-      3,
-      0
-     ]
-    },
-    "dragapult-ex": {
-     "online": [
-      21,
-      38,
-      0
-     ]
-    },
-    "basic-box-m": {
-     "online": [
-      18,
-      11,
-      0
-     ]
-    },
-    "slowking-scr": {
-     "online": [
-      18,
-      7,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      12,
-      12,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      15,
-      4,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      4,
-      19,
-      0
-     ]
-    },
-    "other": {
-     "online": [
-      11,
-      6,
-      0
-     ]
-    },
-    "dragapult-dudunsparce": {
-     "online": [
-      1,
-      8,
-      0
-     ]
-    },
-    "n-zoroark": {
-     "online": [
-      10,
-      13,
-      0
-     ]
-    }
-   },
-   "tops": [
-    [
-     "c21c7682",
-     1,
-     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #26",
+     "1544dcad",
+     16,
+     "Team Corna Weekly October's #2",
      "2026-10-09"
-    ],
-    [
-     "b1c2cfd0",
-     8,
-     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
-     "2026-10-01"
-    ],
-    [
-     "16f262a6",
-     13,
-     "🇧🇷 Hit Cup #21 | TCG Live",
-     "2026-10-23"
-    ],
-    [
-     "e1c4dffc",
-     14,
-     "SEASAC League Cup #2 (SEASON 6) [150 CODES]",
-     "2026-10-25"
-    ],
-    [
-     "b69c9b36",
-     15,
-     "Vault Of Games #5🏆| SEASON 1|WEEKLY",
-     "2026-10-04"
     ]
    ],
    "place": {
     "online": [
-     101,
-     46344,
-     29197,
-     2,
-     9,
-     4
+     134,
+     72632,
+     49427,
+     12,
+     27,
+     12
     ]
    },
    "cur": {
-    "lists": 12,
+    "lists": 17,
     "rec": {
      "online": [
-      21,
-      31,
+      39,
+      37,
       0
      ]
     },
     "place": {
      "online": [
-      6,
-      3921,
-      2850,
-      0,
+      12,
+      6908,
+      4691,
       1,
+      2,
       1
      ]
     }
@@ -9837,8 +10172,8 @@
   {
    "id": "mega-absol-mega-audino",
    "name": "Absol Audino",
-   "share": 0.6,
-   "lists": 149,
+   "share": 0.7,
+   "lists": 183,
    "sig": [
     [
      "Munkidori",
@@ -9863,7 +10198,7 @@
     [
      "Pecharunt ex",
      1,
-     0.99
+     0.98
     ],
     [
      "Yveltal",
@@ -9873,40 +10208,40 @@
     [
      "Psyduck",
      0.9,
-     0.89
+     0.87
     ],
     [
      "Cornerstone Mask Ogerpon ex",
      0.8,
-     0.8
+     0.81
     ]
    ],
    "rec": {
     "online": [
-     239,
-     256,
+     277,
+     306,
      1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      1,
-      1,
+      3,
+      3,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      26,
-      35,
+      29,
+      37,
       1
      ]
     },
     "basic-box-m": {
      "online": [
-      14,
-      26,
+      15,
+      34,
       0
      ]
     },
@@ -9917,45 +10252,45 @@
       0
      ]
     },
-    "alakazam-dudunsparce": {
-     "online": [
-      10,
-      8,
-      0
-     ]
-    },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      11,
-      16,
+      13,
+      18,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      32,
-      7,
+      12,
+      10,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      1,
       0
      ]
     },
     "other": {
+     "online": [
+      9,
+      4,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
      "online": [
       7,
       3,
       0
      ]
     },
-    "dragapult-dudunsparce": {
-     "online": [
-      5,
-      1,
-      0
-     ]
-    },
     "n-zoroark": {
      "online": [
-      4,
-      13,
+      5,
+      15,
       0
      ]
     }
@@ -10024,28 +10359,28 @@
    ],
    "place": {
     "online": [
-     90,
-     41898,
-     27971,
+     112,
+     50971,
+     33474,
      11,
-     18,
+     20,
      12
     ]
    },
    "cur": {
-    "lists": 8,
+    "lists": 16,
     "rec": {
      "online": [
-      9,
-      12,
+      21,
+      24,
       0
      ]
     },
     "place": {
      "online": [
-      4,
-      1769,
-      1066,
+      11,
+      4416,
+      2762,
       0,
       0,
       0
@@ -10057,7 +10392,7 @@
    "id": "raging-bolt-ogerpon",
    "name": "Raging Bolt Ogerpon",
    "share": 0.6,
-   "lists": 145,
+   "lists": 165,
    "sig": [
     [
      "Teal Mask Ogerpon ex",
@@ -10072,37 +10407,37 @@
     [
      "Latias ex",
      1.8,
-     0.94
+     0.95
     ],
     [
      "Meowth ex",
      2.3,
-     0.91
+     0.92
     ],
     [
      "Fezandipiti ex",
      0.9,
-     0.91
+     0.92
     ],
     [
      "Mega Kangaskhan ex",
-     2.7,
-     0.87
+     2.8,
+     0.88
     ],
     [
      "Lillie's Clefairy ex",
-     1.1,
-     0.79
+     1.2,
+     0.82
     ],
     [
      "Wellspring Mask Ogerpon ex",
      0.8,
-     0.79
+     0.8
     ],
     [
      "Chien-Pao",
      0.8,
-     0.76
+     0.77
     ],
     [
      "Iron Leaves ex",
@@ -10112,8 +10447,8 @@
    ],
    "rec": {
     "online": [
-     261,
-     274,
+     299,
+     312,
      0
     ]
    },
@@ -10121,56 +10456,56 @@
     "mega-rayquaza-ex": {
      "online": [
       3,
-      3,
+      4,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      22,
-      35,
+      27,
+      39,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      15,
-      16,
+      17,
+      17,
       0
      ]
     },
     "slowking-scr": {
      "online": [
+      16,
+      19,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
       12,
-      17,
+      14,
       0
      ]
     },
     "alakazam-dudunsparce": {
      "online": [
       8,
-      16,
+      17,
       0
      ]
     },
-    "ogerpon-meganium-hydrapple": {
+    "talonflame-dusknoir": {
      "online": [
-      10,
-      11,
-      0
-     ]
-    },
-    "dhelmise-pbl": {
-     "online": [
-      13,
-      13,
+      1,
+      0,
       0
      ]
     },
     "other": {
      "online": [
       13,
-      2,
+      3,
       0
      ]
     },
@@ -10183,8 +10518,8 @@
     },
     "n-zoroark": {
      "online": [
-      11,
-      11,
+      12,
+      13,
       0
      ]
     }
@@ -10215,6 +10550,12 @@
      "2026-10-21"
     ],
     [
+     "61e7528f",
+     7,
+     "SEASAC League Challenge #14 (SEASON 6) [50 CODES]",
+     "2026-10-28"
+    ],
+    [
      "0637c69b",
      9,
      "SEASAC League Challenge #18 (SEASON 5) [50 CODES]",
@@ -10239,6 +10580,12 @@
      "2026-09-21"
     ],
     [
+     "e6e75cee",
+     12,
+     "👑CrownOfSpain 👑 #7 (10€ paypal)",
+     "2026-09-17"
+    ],
+    [
      "c7c0408c",
      13,
      "Sunny's Weekly #277 Judge Appreciation Week!",
@@ -10249,12 +10596,6 @@
      13,
      "Team Corna Weekly September's #6",
      "2026-09-22"
-    ],
-    [
-     "61e7528f",
-     14,
-     "SEASAC League Challenge #13 (SEASON 6) [50 CODES]",
-     "2026-10-27"
     ],
     [
      "9fcd85d4",
@@ -10277,28 +10618,28 @@
    ],
    "place": {
     "online": [
-     104,
-     51374,
-     33751,
-     4,
-     14,
-     10
+     122,
+     59084,
+     37970,
+     5,
+     16,
+     11
     ]
    },
    "cur": {
-    "lists": 13,
+    "lists": 19,
     "rec": {
      "online": [
-      30,
-      22,
+      45,
+      33,
       0
      ]
     },
     "place": {
      "online": [
-      9,
-      3842,
-      2843,
+      14,
+      5862,
+      3888,
       1,
       2,
       2
@@ -10310,7 +10651,7 @@
    "id": "seaking-pre",
    "name": "Seaking Festival Lead",
    "share": 0.6,
-   "lists": 134,
+   "lists": 165,
    "sig": [
     [
      "Goldeen",
@@ -10329,94 +10670,89 @@
     ],
     [
      "Seaking",
-     3.1,
+     3.2,
      1
     ],
     [
      "Shaymin",
      0.9,
-     0.87
+     0.85
     ],
     [
      "Psyduck",
      0.7,
-     0.69
+     0.71
     ],
     [
      "Moltres",
      0.6,
-     0.63
+     0.62
     ],
     [
      "Rellor",
      0.6,
-     0.5
+     0.48
     ],
     [
      "Rabsca",
      0.5,
-     0.5
-    ],
-    [
-     "Meowth ex",
-     0.3,
-     0.3
+     0.48
     ]
    ],
    "rec": {
     "online": [
-     254,
-     266,
+     301,
+     323,
      1
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      2,
-      5,
+      4,
+      7,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      23,
       28,
+      36,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      10,
       12,
+      13,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      17,
+      18,
       16,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      13,
-      13,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      9,
+      11,
       7,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      8,
-      16,
+      15,
+      15,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      2,
       0
      ]
     },
@@ -10429,15 +10765,15 @@
     },
     "dragapult-dudunsparce": {
      "online": [
+      4,
       3,
-      2,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      15,
-      9,
+      16,
+      12,
       1
      ]
     }
@@ -10456,6 +10792,12 @@
      "2026-09-22"
     ],
     [
+     "3b1da11c",
+     3,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
      "ebef2eee",
      6,
      "Amyverse PTCG Live Weekly #13 💛 Cash Prize!",
@@ -10466,6 +10808,12 @@
      7,
      "Amyverse PTCG Live Weekly #17 💛 Cash Prize!",
      "2026-10-14"
+    ],
+    [
+     "3f62c7ea",
+     8,
+     "ASRcristiano # 198 - 60 codes - Road to Gdansk!",
+     "2026-10-22"
     ],
     [
      "7a32b153",
@@ -10524,31 +10872,31 @@
    ],
    "place": {
     "online": [
-     92,
-     49247,
-     34056,
-     5,
-     15,
-     8
+     114,
+     58386,
+     39453,
+     7,
+     18,
+     9
     ]
    },
    "cur": {
-    "lists": 9,
+    "lists": 19,
     "rec": {
      "online": [
-      20,
-      24,
+      34,
+      40,
       0
      ]
     },
     "place": {
      "online": [
-      6,
-      3048,
-      1761,
-      0,
-      0,
-      0
+      13,
+      5376,
+      3155,
+      1,
+      1,
+      1
      ]
     }
    }
@@ -10557,7 +10905,7 @@
    "id": "starmie-froslass",
    "name": "Starmie Froslass",
    "share": 0.5,
-   "lists": 125,
+   "lists": 153,
    "sig": [
     [
      "Snorunt",
@@ -10582,7 +10930,7 @@
     [
      "Mega Froslass ex",
      1.6,
-     0.95
+     0.94
     ],
     [
      "Munkidori",
@@ -10592,78 +10940,68 @@
     [
      "Meowth ex",
      1,
-     0.91
+     0.9
     ],
     [
      "Budew",
-     0.9,
-     0.82
-    ],
-    [
-     "Dunsparce",
      0.8,
-     0.31
-    ],
-    [
-     "Dudunsparce",
-     0.6,
-     0.31
+     0.79
     ]
    ],
    "rec": {
     "online": [
-     238,
-     208,
+     287,
+     257,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
+      3,
       1,
-      0,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      22,
-      26,
+      27,
+      32,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      18,
-      13,
+      19,
+      15,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      6,
       9,
+      11,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      9,
+      10,
       0
      ]
     },
     "alakazam-dudunsparce": {
      "online": [
       12,
-      7,
-      0
-     ]
-    },
-    "ogerpon-meganium-hydrapple": {
-     "online": [
-      5,
       8,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "talonflame-dusknoir": {
      "online": [
-      7,
-      13,
+      1,
+      0,
       0
      ]
     },
@@ -10684,7 +11022,7 @@
     "n-zoroark": {
      "online": [
       9,
-      6,
+      11,
       0
      ]
     }
@@ -10733,6 +11071,12 @@
      "2026-10-26"
     ],
     [
+     "4deeb011",
+     7,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
+    ],
+    [
      "b7e7396b",
      10,
      "Rare Candy Club Showdown #48 (30TH LEGAL)",
@@ -10749,32 +11093,38 @@
      15,
      "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
      "2026-10-09"
+    ],
+    [
+     "504773ce",
+     16,
+     "SEASAC League Challenge #7 (SEASON 6) [50 CODES]",
+     "2026-10-18"
     ]
    ],
    "place": {
     "online": [
-     97,
-     48554,
-     32963,
-     7,
-     10,
-     9
+     121,
+     59266,
+     39576,
+     8,
+     13,
+     10
     ]
    },
    "cur": {
-    "lists": 5,
+    "lists": 12,
     "rec": {
      "online": [
-      10,
-      12,
+      21,
+      24,
       0
      ]
     },
     "place": {
      "online": [
-      2,
-      821,
-      342,
+      6,
+      2425,
+      1017,
       0,
       0,
       0
@@ -10783,61 +11133,66 @@
    }
   },
   {
-   "id": "mega-chandelure-ex",
-   "name": "Mega Chandelure",
+   "id": "mega-venusaur-ex",
+   "name": "Mega Venusaur",
    "share": 0.5,
-   "lists": 119,
+   "lists": 137,
    "sig": [
     [
-     "Litwick",
-     3.9,
+     "Teal Mask Ogerpon ex",
+     3.6,
      1
     ],
     [
-     "Lampent",
-     3.8,
+     "Bulbasaur",
+     2.2,
      1
     ],
     [
-     "Mega Chandelure ex",
-     3.1,
+     "Mega Venusaur ex",
+     2.2,
      1
     ],
     [
-     "Chandelure",
-     3.2,
-     0.83
+     "Ivysaur",
+     2.1,
+     0.99
     ],
     [
-     "Elgyem",
+     "Chikorita",
+     2.1,
+     0.88
+    ],
+    [
+     "Bayleef",
+     2,
+     0.88
+    ],
+    [
+     "Meganium",
+     1.8,
+     0.88
+    ],
+    [
+     "Fezandipiti ex",
+     0.7,
+     0.73
+    ],
+    [
+     "Meowth ex",
      1,
-     0.77
-    ],
-    [
-     "Comfey",
-     1.1,
      0.72
     ],
     [
-     "Shaymin",
-     0.6,
-     0.63
-    ],
-    [
-     "Lillie's Clefairy ex",
-     0.4,
-     0.42
-    ],
-    [
-     "Psyduck",
-     0.4,
-     0.41
+     "Celebi",
+     0.7,
+     0.64
     ]
    ],
    "rec": {
     "online": [
-     190,
-     219,
+     227,
+     258,
      0
     ]
    },
@@ -10845,151 +11200,169 @@
     "mega-rayquaza-ex": {
      "online": [
       0,
-      2,
+      4,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      22,
-      18,
+      24,
+      36,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      6,
+      16,
       16,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      6,
-      12,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      8,
-      16,
+      13,
+      18,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      8,
-      10,
+      9,
+      9,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      9,
-      13,
+      5,
+      12,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      1,
       0
      ]
     },
     "other": {
      "online": [
-      6,
+      10,
       5,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      4,
       1,
+      4,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      7,
-      13,
+      12,
+      8,
       0
      ]
     }
    },
    "tops": [
     [
-     "7d817d31",
+     "435b1895",
      2,
-     "SEASAC League Challenge #23 (SEASON 5) [50 CODES]",
-     "2026-10-02"
+     "Pumpkaweekly - delta reign prizing",
+     "2026-11-02"
     ],
     [
-     "8c81cdf1",
-     4,
-     "Pudding Weekly #14 | What's faster sound or light?",
-     "2026-09-23"
+     "696524e3",
+     5,
+     "Rare Candy Club Showdown #49 (30TH LEGAL)",
+     "2026-10-19"
     ],
     [
-     "74a3686a",
+     "a36e97b8",
+     6,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
+    ],
+    [
+     "e26b2a30",
+     6,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-09"
+    ],
+    [
+     "42bb6529",
+     7,
+     "🪎Vault Of Games #8🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-10-25"
+    ],
+    [
+     "a1c78441",
      8,
-     "⚡ Surge's TCG Vault Winner Takes All - 50 Codes",
-     "2026-09-29"
+     "PokeMagee Weekly #16 - Birthday tournament!",
+     "2026-10-03"
     ],
     [
-     "08d507f5",
-     11,
-     "Rare Candy Club Showdown #51 DELTA REIGN LEGAL",
-     "2026-11-09"
-    ],
-    [
-     "ba0c95e9",
-     11,
-     "SEASAC League Challenge #28 (SEASON 5) [50 CODES]",
+     "df367116",
+     9,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
      "2026-10-08"
     ],
     [
-     "f0e06714",
+     "3a3a3b23",
      12,
-     "SEASAC League Challenge #19 (SEASON 5) [50 CODES]",
-     "2026-09-29"
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
     ],
     [
-     "4ac424f1",
-     14,
-     "SEASAC League Challenge #10 (SEASON 6) [50 CODES]",
-     "2026-10-21"
+     "a4ad62d0",
+     12,
+     "SEASAC League Challenge #17 (SEASON 5) [50 CODES]",
+     "2026-09-26"
     ],
     [
-     "0a22c4d2",
-     14,
-     "Vault Of Games #4🏆|SEASON 1|WEEKLY",
-     "2026-09-27"
+     "c428e7a2",
+     13,
+     "Pumpkaweekly",
+     "2026-10-12"
+    ],
+    [
+     "c92b3bb1",
+     13,
+     "SEASAC League Challenge #15 (SEASON 5) [50 CODES]",
+     "2026-09-23"
     ]
    ],
    "place": {
     "online": [
-     90,
-     40709,
-     27047,
-     3,
-     8,
-     7
+     100,
+     48703,
+     30837,
+     7,
+     12,
+     5
     ]
    },
    "cur": {
-    "lists": 3,
+    "lists": 16,
     "rec": {
      "online": [
-      5,
-      6,
+      25,
+      29,
       0
      ]
     },
     "place": {
      "online": [
-      2,
-      956,
-      870,
+      12,
+      5855,
+      3796,
       0,
       1,
-      1
+      0
      ]
     }
    }
@@ -10997,8 +11370,8 @@
   {
    "id": "talonflame-dusknoir",
    "name": "Talonflame Dusknoir",
-   "share": 0.2,
-   "lists": 40,
+   "share": 0.4,
+   "lists": 125,
    "sig": [
     [
      "Mega Kangaskhan ex",
@@ -11007,17 +11380,17 @@
     ],
     [
      "Duskull",
-     3.7,
+     3.9,
      1
     ],
     [
      "Dusknoir",
-     3.6,
+     3.8,
      1
     ],
     [
      "Talonflame ex",
-     3.3,
+     3.4,
      1
     ],
     [
@@ -11042,90 +11415,119 @@
     ],
     [
      "Fezandipiti ex",
-     0.5,
-     0.48
+     0.6,
+     0.56
     ]
    ],
    "rec": {
     "online": [
-     77,
-     84,
+     220,
+     239,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      9,
-      16,
+      19,
+      36,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      6,
-      11,
+      20,
+      34,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      6,
-      5,
+      12,
+      14,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      5,
-      5,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      7,
-      6,
+      15,
+      8,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      0,
-      2,
+      4,
+      11,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      5,
-      2,
+      14,
+      9,
       0
      ]
     },
     "other": {
      "online": [
-      5,
-      1,
+      10,
+      6,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      0,
-      6,
+      5,
+      15,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      1,
-      1,
+      4,
+      5,
       0
      ]
     }
    },
    "tops": [
+    [
+     "79f60a61",
+     2,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
+    ],
+    [
+     "c6657bf6",
+     2,
+     "Nightshades Monday Cup 5 (75 Codes)",
+     "2026-11-10"
+    ],
+    [
+     "99534df1",
+     2,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
+     "49c7c7d3",
+     4,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "089d8779",
+     4,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "6fb9c78c",
+     4,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
+    ],
     [
      "2305fd3f",
      6,
@@ -11133,10 +11535,34 @@
      "2026-11-08"
     ],
     [
+     "ce12f855",
+     9,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ],
+    [
+     "0b05dee4",
+     10,
+     "🪎Vault Of Games | 🤯💥Midweek MAYHEM #8 | DELTA",
+     "2026-11-12"
+    ],
+    [
+     "7b05d44c",
+     10,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
+    ],
+    [
      "d584d21b",
      13,
      "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
      "2026-11-09"
+    ],
+    [
+     "fa0fe338",
+     14,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
     ],
     [
      "e37fd228",
@@ -11147,31 +11573,179 @@
    ],
    "place": {
     "online": [
-     24,
-     13064,
-     8653,
-     1,
-     3,
-     2
+     95,
+     45654,
+     29341,
+     7,
+     13,
+     9
     ]
    },
    "cur": {
-    "lists": 40,
+    "lists": 125,
     "rec": {
      "online": [
-      77,
-      84,
+      220,
+      239,
       0
      ]
     },
     "place": {
      "online": [
-      24,
-      13064,
-      8653,
+      95,
+      45654,
+      29341,
+      7,
+      13,
+      9
+     ]
+    }
+   }
+  },
+  {
+   "id": "iron-thorns-ex",
+   "name": "Iron Thorns",
+   "share": 0.2,
+   "lists": 51,
+   "sig": [
+    [
+     "Iron Thorns ex",
+     4,
+     1
+    ]
+   ],
+   "rec": {
+    "online": [
+     72,
+     92,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      12,
+      8,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      8,
+      11,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      12,
+      2,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      6,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      2,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
       1,
       3,
-      2
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "07949863",
+     5,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "8c82bdcb",
+     12,
+     "Rare Candy Club Blitz #9 DELTA REIGN LEGAL",
+     "2026-11-13"
+    ],
+    [
+     "7cbdbd48",
+     13,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
+    ],
+    [
+     "025e5c80",
+     16,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ]
+   ],
+   "place": {
+    "online": [
+     37,
+     15713,
+     9756,
+     1,
+     4,
+     4
+    ]
+   },
+   "cur": {
+    "lists": 49,
+    "rec": {
+     "online": [
+      70,
+      89,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      36,
+      15121,
+      9406,
+      1,
+      4,
+      4
      ]
     }
    }
@@ -11179,85 +11753,261 @@
   {
    "id": "mega-golisopod-ex",
    "name": "Mega Golisopod",
-   "share": 0.1,
-   "lists": 18,
+   "share": 0.2,
+   "lists": 44,
    "sig": [
     [
      "Mega Golisopod ex",
-     2.3,
+     2.5,
      1
     ],
     [
      "Wimpod",
-     2.7,
-     0.94
-    ],
-    [
-     "Budew",
-     1,
-     0.89
+     2.8,
+     0.98
     ],
     [
      "Dunsparce",
      2.3,
-     0.83
-    ],
-    [
-     "Munkidori",
-     1.8,
-     0.78
+     0.8
     ],
     [
      "Dudunsparce",
      1.6,
-     0.78
+     0.77
+    ],
+    [
+     "Budew",
+     0.8,
+     0.7
+    ],
+    [
+     "Munkidori",
+     1.6,
+     0.68
     ],
     [
      "Dudunsparce ex",
-     0.7,
-     0.72
-    ],
-    [
-     "Snorunt",
-     1.2,
-     0.56
-    ],
-    [
-     "Froslass",
-     1.2,
-     0.56
+     0.6,
+     0.59
     ],
     [
      "Meowth ex",
-     0.6,
-     0.5
+     0.5,
+     0.45
+    ],
+    [
+     "Snorunt",
+     1.1,
+     0.43
+    ],
+    [
+     "Froslass",
+     1,
+     0.43
     ]
    ],
    "rec": {
     "online": [
-     18,
-     41,
+     56,
+     89,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
-      4,
+      7,
+      6,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      0,
       1,
+      5,
       0
      ]
     },
     "basic-box-m": {
      "online": [
+      3,
+      6,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
       2,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      2,
+      6,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      7,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      4,
+      1,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "0345ad67",
+     10,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "6e216bf2",
+     13,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
+    ]
+   ],
+   "place": {
+    "online": [
+     36,
+     16001,
+     9336,
+     0,
+     2,
+     1
+    ]
+   },
+   "cur": {
+    "lists": 44,
+    "rec": {
+     "online": [
+      56,
+      89,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      36,
+      16001,
+      9336,
+      0,
+      2,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-malamar-ex",
+   "name": "Mega Malamar",
+   "share": 0.1,
+   "lists": 25,
+   "sig": [
+    [
+     "Inkay",
+     3.6,
+     1
+    ],
+    [
+     "Mega Malamar ex",
+     3,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.92
+    ],
+    [
+     "Meowth ex",
+     0.8,
+     0.84
+    ],
+    [
+     "Toxel",
+     1.5,
+     0.76
+    ],
+    [
+     "Toxtricity",
+     1.5,
+     0.76
+    ],
+    [
+     "Munkidori",
+     1.5,
+     0.76
+    ],
+    [
+     "Sableye",
+     0.8,
+     0.64
+    ],
+    [
+     "Chi-Yu",
+     0.4,
+     0.4
+    ]
+   ],
+   "rec": {
+    "online": [
+     49,
+     62,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      6,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      3,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
       4,
       0
      ]
@@ -11269,63 +12019,90 @@
       0
      ]
     },
-    "alakazam-dudunsparce": {
+    "ogerpon-meganium-hydrapple": {
      "online": [
-      0,
       2,
+      4,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      0,
+      2,
+      1,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      4,
       1,
       0
      ]
     },
     "other": {
      "online": [
-      1,
       3,
+      2,
       0
      ]
     },
     "dragapult-dudunsparce": {
      "online": [
-      0,
       2,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      1,
+      3,
       0
      ]
     }
    },
-   "tops": [],
+   "tops": [
+    [
+     "0d16691a",
+     3,
+     "Last Prize Series S4 #8",
+     "2026-11-10"
+    ],
+    [
+     "5f00e021",
+     6,
+     "SEASAC League Challenge #27 (SEASON 6) [50 CODES]",
+     "2026-11-12"
+    ]
+   ],
    "place": {
     "online": [
-     14,
-     5375,
-     2987,
-     0,
-     0,
-     0
+     19,
+     9697,
+     6346,
+     2,
+     2,
+     2
     ]
    },
    "cur": {
-    "lists": 18,
+    "lists": 25,
     "rec": {
      "online": [
-      18,
-      41,
+      49,
+      62,
       0
      ]
     },
     "place": {
      "online": [
-      14,
-      5375,
-      2987,
-      0,
-      0,
-      0
+      19,
+      9697,
+      6346,
+      2,
+      2,
+      2
      ]
     }
    }
@@ -11334,15 +12111,15 @@
    "id": "mega-charizard-y-ex",
    "name": "Mega Charizard Y",
    "share": 0.1,
-   "lists": 15,
+   "lists": 22,
    "sig": [
     [
-     "Mega Kangaskhan ex",
-     4,
+     "Charmander",
+     3.9,
      1
     ],
     [
-     "Charmander",
+     "Mega Kangaskhan ex",
      3.9,
      1
     ],
@@ -11377,20 +12154,20 @@
      1
     ],
     [
-     "Fezandipiti ex",
+     "Meowth ex",
      1,
      1
     ],
     [
-     "Meowth ex",
+     "Fezandipiti ex",
      1,
-     1
+     0.95
     ]
    ],
    "rec": {
     "online": [
-     22,
-     22,
+     28,
+     33,
      0
     ]
    },
@@ -11398,13 +12175,13 @@
     "mega-rayquaza-ex": {
      "online": [
       5,
-      1,
+      2,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      2,
+      3,
       4,
       0
      ]
@@ -11412,11 +12189,18 @@
     "basic-box-m": {
      "online": [
       1,
-      2,
+      3,
       0
      ]
     },
     "slowking-scr": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
      "online": [
       1,
       1,
@@ -11430,16 +12214,16 @@
       0
      ]
     },
-    "ogerpon-meganium-hydrapple": {
+    "talonflame-dusknoir": {
      "online": [
-      1,
-      0,
+      2,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      2,
+      3,
       1,
       0
      ]
@@ -11447,7 +12231,7 @@
     "dragapult-dudunsparce": {
      "online": [
       1,
-      0,
+      1,
       0
      ]
     },
@@ -11462,28 +12246,28 @@
    "tops": [],
    "place": {
     "online": [
-     10,
-     4122,
-     2347,
+     16,
+     5976,
+     3228,
      0,
      0,
      0
     ]
    },
    "cur": {
-    "lists": 15,
+    "lists": 22,
     "rec": {
      "online": [
-      22,
-      22,
+      28,
+      33,
       0
      ]
     },
     "place": {
      "online": [
-      10,
-      4122,
-      2347,
+      16,
+      5976,
+      3228,
       0,
       0,
       0
@@ -11492,116 +12276,429 @@
    }
   },
   {
-   "id": "iron-thorns-ex",
-   "name": "Iron Thorns",
-   "share": 0.1,
-   "lists": 14,
+   "id": "okidogi-barbaracle",
+   "name": "Okidogi Barbaracle",
+   "share": 0.3,
+   "lists": 83,
    "sig": [
     [
-     "Iron Thorns ex",
-     4,
+     "Okidogi",
+     3.1,
      1
+    ],
+    [
+     "Binacle",
+     2,
+     1
+    ],
+    [
+     "Barbaracle",
+     2,
+     1
+    ],
+    [
+     "Solrock",
+     2.8,
+     0.99
+    ],
+    [
+     "Lunatone",
+     2,
+     0.99
+    ],
+    [
+     "Bloodmoon Ursaluna",
+     1,
+     0.96
+    ],
+    [
+     "Moltres",
+     0.8,
+     0.84
+    ],
+    [
+     "Shaymin",
+     0.8,
+     0.82
+    ],
+    [
+     "Patrat",
+     0.7,
+     0.75
     ]
    ],
    "rec": {
     "online": [
-     23,
-     31,
+     213,
+     176,
      0
     ]
    },
    "vs": {
     "mega-rayquaza-ex": {
      "online": [
-      5,
       4,
+      5,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      1,
-      3,
+      10,
+      38,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      4,
-      0,
+      14,
+      7,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      2,
-      0,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      2,
-      0,
+      13,
+      6,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
+      10,
+      5,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      10,
+      11,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
       0,
+      3,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      7,
       1,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "dragapult-dudunsparce": {
      "online": [
-      0,
-      2,
+      1,
+      5,
       0
      ]
     },
     "n-zoroark": {
      "online": [
-      1,
-      1,
+      4,
+      10,
       0
      ]
     }
    },
    "tops": [
     [
-     "07949863",
+     "31863829",
+     9,
+     "SEASAC League Challenge #1 (SEASON 6) [50 CODES]",
+     "2026-10-11"
+    ],
+    [
+     "b2b05c47",
+     2,
+     "Last Prize Series S4 #2",
+     "2026-09-29"
+    ],
+    [
+     "a07ad827",
      5,
-     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
-     "2026-11-09"
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #29",
+     "2026-11-13"
+    ],
+    [
+     "5d4b5576",
+     5,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
+     "5d27e138",
+     5,
+     "SEASAC League Challenge #21 (SEASON 5) [50 CODES]",
+     "2026-09-30"
+    ],
+    [
+     "7fab057b",
+     5,
+     "⚡ Surge's TCG Vault Winner Takes All - 100 Codes",
+     "2026-09-24"
+    ],
+    [
+     "bb9b5386",
+     6,
+     "👑CrownOfSpain 👑 #13",
+     "2026-11-10"
+    ],
+    [
+     "bf83629f",
+     9,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "a6fe10e3",
+     10,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ],
+    [
+     "b92a1eca",
+     12,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-10-19"
+    ],
+    [
+     "205aec74",
+     13,
+     "ASRcristiano # 196 - 60 codes - Road to Nice!",
+     "2026-10-09"
+    ],
+    [
+     "7d0f7f11",
+     14,
+     "Team Corna Weekly November #1",
+     "2026-11-10"
     ]
    ],
    "place": {
     "online": [
+     68,
+     38678,
+     26757,
      7,
-     4127,
-     2913,
-     1,
-     1,
-     1
+     14,
+     7
     ]
    },
    "cur": {
-    "lists": 12,
+    "lists": 20,
     "rec": {
      "online": [
-      21,
-      28,
+      61,
+      40,
       0
      ]
     },
     "place": {
      "online": [
+      17,
+      10694,
+      7713,
+      3,
       6,
-      3535,
-      2563,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "manectric-eelektrik",
+   "name": "Manectric Eelektrik",
+   "share": 0.4,
+   "lists": 113,
+   "sig": [
+    [
+     "Electrike",
+     3.1,
+     1
+    ],
+    [
+     "Tynamo",
+     3,
+     1
+    ],
+    [
+     "Eelektrik",
+     2.8,
+     1
+    ],
+    [
+     "Mega Manectric ex",
+     2.3,
+     1
+    ],
+    [
+     "Manectric",
+     1.1,
+     0.83
+    ],
+    [
+     "Mega Eelektross ex",
+     0.7,
+     0.62
+    ],
+    [
+     "Shaymin",
+     0.5,
+     0.55
+    ],
+    [
+     "Meowth ex",
+     0.5,
+     0.46
+    ],
+    [
+     "Iono's Wattrel",
+     0.7,
+     0.45
+    ],
+    [
+     "Iono's Kilowattrel",
+     0.7,
+     0.45
+    ]
+   ],
+   "rec": {
+    "online": [
+     148,
+     214,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      7,
+      2,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      12,
+      27,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      18,
+      7,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      13,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      8,
+      11,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      15,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
       1,
       1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      4,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      7,
+      12,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "55671694",
+     14,
+     "ASRcristiano # 194 - 60 codes - Road to Nice!",
+     "2026-10-07"
+    ],
+    [
+     "a7cf85ff",
+     4,
+     "CHALLENGE OF DOOM! WAIT, HOW MANY!?!?!",
+     "2026-09-22"
+    ],
+    [
+     "24b90e88",
+     7,
+     "FULL BENCH FRIDAYS PTCGL $$CASH PRIZE$$#15",
+     "2026-10-23"
+    ],
+    [
+     "dfabf804",
+     16,
+     "🪎Vault Of Games #8🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-10-25"
+    ]
+   ],
+   "place": {
+    "online": [
+     82,
+     33336,
+     19706,
+     2,
+     4,
+     3
+    ]
+   },
+   "cur": {
+    "lists": 20,
+    "rec": {
+     "online": [
+      33,
+      50,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      15,
+      7277,
+      4492,
+      0,
+      0,
       1
      ]
     }
@@ -11611,16 +12708,16 @@
    "id": "froslass-munkidori",
    "name": "Froslass Munkidori",
    "share": 0.2,
-   "lists": 36,
+   "lists": 45,
    "sig": [
     [
      "Munkidori",
-     3.6,
+     3.7,
      1
     ],
     [
      "Snorunt",
-     3.4,
+     3.5,
      1
     ],
     [
@@ -11630,44 +12727,44 @@
     ],
     [
      "Budew",
-     1.9,
-     0.92
+     2,
+     0.93
     ],
     [
      "Shaymin",
-     0.9,
-     0.86
+     0.8,
+     0.84
     ],
     [
      "Yveltal",
      0.8,
-     0.61
+     0.64
     ],
     [
      "Mega Froslass ex",
      0.8,
-     0.47
+     0.51
     ],
     [
      "Eevee",
-     1.1,
-     0.42
+     1,
+     0.38
     ],
     [
      "Espeon",
-     0.7,
-     0.39
+     0.6,
+     0.36
     ],
     [
      "Psyduck",
      0.4,
-     0.39
+     0.36
     ]
    ],
    "rec": {
     "online": [
-     43,
-     60,
+     55,
+     76,
      0
     ]
    },
@@ -11675,55 +12772,55 @@
     "mega-rayquaza-ex": {
      "online": [
       5,
-      3,
+      4,
       0
      ]
     },
     "dragapult-ex": {
      "online": [
-      2,
-      10,
+      3,
+      12,
       0
      ]
     },
     "basic-box-m": {
      "online": [
-      3,
-      3,
+      4,
+      4,
       0
      ]
     },
     "slowking-scr": {
      "online": [
-      2,
-      4,
-      0
-     ]
-    },
-    "alakazam-dudunsparce": {
-     "online": [
-      2,
+      3,
       4,
       0
      ]
     },
     "ogerpon-meganium-hydrapple": {
      "online": [
-      1,
+      2,
       0,
       0
      ]
     },
-    "dhelmise-pbl": {
+    "alakazam-dudunsparce": {
      "online": [
-      1,
+      2,
       6,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      2,
       0
      ]
     },
     "other": {
      "online": [
-      1,
+      2,
       1,
       0
      ]
@@ -11737,8 +12834,8 @@
     },
     "n-zoroark": {
      "online": [
+      4,
       3,
-      1,
       0
      ]
     }
@@ -11753,30 +12850,1298 @@
    ],
    "place": {
     "online": [
-     22,
-     9156,
-     5219,
+     28,
+     12249,
+     7328,
      0,
      1,
      1
     ]
    },
    "cur": {
-    "lists": 10,
+    "lists": 16,
     "rec": {
      "online": [
-      23,
-      18,
+      33,
+      29,
       0
      ]
     },
     "place": {
      "online": [
-      4,
-      2256,
-      1789,
+      9,
+      4797,
+      3593,
       0,
       1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-charizard-x-ex",
+   "name": "Mega Charizard X",
+   "share": 0.2,
+   "lists": 47,
+   "sig": [
+    [
+     "Charmander",
+     3.4,
+     1
+    ],
+    [
+     "Mega Charizard X ex",
+     2.3,
+     1
+    ],
+    [
+     "Oricorio ex",
+     2,
+     0.98
+    ],
+    [
+     "Charmeleon",
+     1.6,
+     0.98
+    ],
+    [
+     "Meowth ex",
+     0.8,
+     0.64
+    ],
+    [
+     "Mega Charizard Y ex",
+     0.6,
+     0.6
+    ],
+    [
+     "Fezandipiti ex",
+     0.6,
+     0.55
+    ],
+    [
+     "Latias ex",
+     0.5,
+     0.32
+    ],
+    [
+     "Mega Kangaskhan ex",
+     1,
+     0.3
+    ]
+   ],
+   "rec": {
+    "online": [
+     44,
+     86,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      4,
+      1,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      9,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
+      6,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      2,
+      6,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      7,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "90d72e14",
+     7,
+     "Pudding Weekly #21 | an IQ too high?",
+     "2026-11-11"
+    ],
+    [
+     "f85ed805",
+     11,
+     "🪎Vault Of Games #10🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-11-08"
+    ]
+   ],
+   "place": {
+    "online": [
+     34,
+     12570,
+     6597,
+     1,
+     2,
+     1
+    ]
+   },
+   "cur": {
+    "lists": 15,
+    "rec": {
+     "online": [
+      26,
+      25,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      12,
+      6088,
+      3848,
+      1,
+      2,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-absol-box",
+   "name": "Mega Absol Box",
+   "share": 0.3,
+   "lists": 76,
+   "sig": [
+    [
+     "Mega Kangaskhan ex",
+     2.4,
+     1
+    ],
+    [
+     "Mega Absol ex",
+     2,
+     1
+    ],
+    [
+     "Munkidori",
+     2.9,
+     0.99
+    ],
+    [
+     "Latias ex",
+     1.1,
+     0.99
+    ],
+    [
+     "Fezandipiti ex",
+     0.9,
+     0.93
+    ],
+    [
+     "Pecharunt ex",
+     0.9,
+     0.91
+    ],
+    [
+     "Yveltal",
+     1.3,
+     0.8
+    ],
+    [
+     "Meowth ex",
+     0.6,
+     0.42
+    ],
+    [
+     "Lillie's Clefairy ex",
+     0.3,
+     0.32
+    ]
+   ],
+   "rec": {
+    "online": [
+     117,
+     124,
+     1
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      5,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      16,
+      14,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      3,
+      10,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      5,
+      8,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      3,
+      5,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      7,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      2,
+      0,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      7,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "61926aed",
+     2,
+     "Rare Candy Club Showdown #49 (30TH LEGAL)",
+     "2026-10-19"
+    ],
+    [
+     "e619488d",
+     3,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #25",
+     "2026-10-02"
+    ],
+    [
+     "380b737c",
+     4,
+     "REFINE Autumn Series Session 5: Nor'Easter",
+     "2026-09-30"
+    ],
+    [
+     "a5847373",
+     6,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ],
+    [
+     "3ea8b7ed",
+     11,
+     "👑CrownOfSpain 👑 #7 (10€ paypal)",
+     "2026-09-17"
+    ],
+    [
+     "372fe1fb",
+     12,
+     "SEASAC League Challenge #18 (SEASON 5) [50 CODES]",
+     "2026-09-28"
+    ]
+   ],
+   "place": {
+    "online": [
+     54,
+     25363,
+     16432,
+     5,
+     8,
+     4
+    ]
+   },
+   "cur": {
+    "lists": 14,
+    "rec": {
+     "online": [
+      18,
+      21,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      10,
+      4181,
+      2566,
+      1,
+      1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "kangaskhan-bouffalant",
+   "name": "Kangaskhan Bouffalant",
+   "share": 0.3,
+   "lists": 80,
+   "sig": [
+    [
+     "Mega Kangaskhan ex",
+     3.4,
+     1
+    ],
+    [
+     "Bouffalant",
+     3.1,
+     1
+    ],
+    [
+     "Munkidori",
+     1.9,
+     0.84
+    ],
+    [
+     "Latias ex",
+     0.9,
+     0.5
+    ],
+    [
+     "Psyduck",
+     0.5,
+     0.46
+    ]
+   ],
+   "rec": {
+    "online": [
+     132,
+     149,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      4,
+      6,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      16,
+      12,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      8,
+      8,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      9,
+      5,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      8,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      7,
+      6,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      7,
+      2,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      5,
+      9,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "45124642",
+     1,
+     "🪎Vault Of Games #8🪙|REGIONAL FORMAT🏆|WEEKLY📅",
+     "2026-10-25"
+    ],
+    [
+     "7ddf4105",
+     3,
+     "ASRcristiano # 204 - 60 codes - Road to Stuttgart!",
+     "2026-11-12"
+    ],
+    [
+     "bee4289d",
+     4,
+     "⚡ Surge's TCG Vault Winner Takes All Live BO3 #24",
+     "2026-09-25"
+    ],
+    [
+     "8527daef",
+     7,
+     "Team Corna Weekly September's #6",
+     "2026-09-22"
+    ]
+   ],
+   "place": {
+    "online": [
+     54,
+     25351,
+     16241,
+     4,
+     5,
+     5
+    ]
+   },
+   "cur": {
+    "lists": 14,
+    "rec": {
+     "online": [
+      19,
+      28,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      9,
+      3409,
+      2041,
+      1,
+      1,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "iono-bellibolt",
+   "name": "Iono's Bellibolt",
+   "share": 0.1,
+   "lists": 29,
+   "sig": [
+    [
+     "Iono's Wattrel",
+     3.1,
+     1
+    ],
+    [
+     "Iono's Tadbulb",
+     3,
+     1
+    ],
+    [
+     "Iono's Bellibolt ex",
+     2.8,
+     1
+    ],
+    [
+     "Iono's Kilowattrel",
+     2.8,
+     1
+    ],
+    [
+     "Iono's Voltorb",
+     2.2,
+     1
+    ],
+    [
+     "Mega Rayquaza ex",
+     0.8,
+     0.38
+    ],
+    [
+     "Shaymin",
+     0.3,
+     0.34
+    ]
+   ],
+   "rec": {
+    "online": [
+     26,
+     55,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      2,
+      11,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      3,
+      0
+     ]
+    },
+    "talonflame-dusknoir": {
+     "online": [
+      1,
+      0,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      0,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [],
+   "place": {
+    "online": [
+     16,
+     5908,
+     3085,
+     0,
+     0,
+     0
+    ]
+   },
+   "cur": {
+    "lists": 14,
+    "rec": {
+     "online": [
+      15,
+      24,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      6,
+      2869,
+      1889,
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-manectric-ex-meg",
+   "name": "Mega Manectric",
+   "share": 0.1,
+   "lists": 22,
+   "sig": [
+    [
+     "Electrike",
+     3.1,
+     1
+    ],
+    [
+     "Mega Manectric ex",
+     2.2,
+     1
+    ],
+    [
+     "Manectric",
+     1.5,
+     0.91
+    ],
+    [
+     "Feebas",
+     2,
+     0.68
+    ],
+    [
+     "Milotic ex",
+     1.4,
+     0.68
+    ],
+    [
+     "Shaymin",
+     0.5,
+     0.5
+    ],
+    [
+     "Munkidori",
+     1.1,
+     0.36
+    ],
+    [
+     "Rotom",
+     0.3,
+     0.32
+    ],
+    [
+     "Psyduck",
+     0.3,
+     0.32
+    ]
+   ],
+   "rec": {
+    "online": [
+     40,
+     42,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      9,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      2,
+      6,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      0,
+      2,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      3,
+      2,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      2,
+      2,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "be257584",
+     7,
+     "SEASAC League Challenge #25 (SEASON 6) [50 CODES]",
+     "2026-11-09"
+    ]
+   ],
+   "place": {
+    "online": [
+     11,
+     5474,
+     3836,
+     1,
+     1,
+     2
+    ]
+   },
+   "cur": {
+    "lists": 13,
+    "rec": {
+     "online": [
+      23,
+      25,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      7,
+      3547,
+      2442,
+      1,
+      1,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "id": "mega-dragonite-ex",
+   "name": "Mega Dragonite",
+   "share": 0.2,
+   "lists": 48,
+   "sig": [
+    [
+     "Dratini",
+     2.9,
+     1
+    ],
+    [
+     "Mega Dragonite ex",
+     2.1,
+     1
+    ],
+    [
+     "Dragonair",
+     2.2,
+     0.98
+    ],
+    [
+     "Meowth ex",
+     0.9,
+     0.88
+    ],
+    [
+     "Torchic",
+     2.4,
+     0.83
+    ],
+    [
+     "Blaziken ex",
+     2.4,
+     0.83
+    ],
+    [
+     "Combusken",
+     1.6,
+     0.83
+    ],
+    [
+     "Tatsugiri",
+     0.8,
+     0.77
+    ],
+    [
+     "Wellspring Mask Ogerpon ex",
+     0.8,
+     0.73
+    ],
+    [
+     "Mega Kangaskhan ex",
+     0.8,
+     0.65
+    ]
+   ],
+   "rec": {
+    "online": [
+     67,
+     78,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      1,
+      5,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      12,
+      4,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      5,
+      3,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      1,
+      3,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      3,
+      3,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      0,
+      4,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      3,
+      0,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      1,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      3,
+      6,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "a89516a2",
+     1,
+     "REFINE Autumn Series Session 5: Nor'Easter",
+     "2026-09-30"
+    ],
+    [
+     "5142613a",
+     6,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-11-02"
+    ],
+    [
+     "ce3b4d50",
+     7,
+     "Pumpkaweekly",
+     "2026-09-28"
+    ]
+   ],
+   "place": {
+    "online": [
+     31,
+     12712,
+     8052,
+     3,
+     3,
+     2
+    ]
+   },
+   "cur": {
+    "lists": 11,
+    "rec": {
+     "online": [
+      13,
+      26,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      6,
+      3046,
+      1943,
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "id": "toxtricity-box",
+   "name": "Toxtricity Box",
+   "share": 0.4,
+   "lists": 116,
+   "sig": [
+    [
+     "Toxel",
+     3.9,
+     1
+    ],
+    [
+     "Toxtricity",
+     3.8,
+     1
+    ],
+    [
+     "Munkidori",
+     2.9,
+     1
+    ],
+    [
+     "Mega Absol ex",
+     1.1,
+     1
+    ],
+    [
+     "Fezandipiti ex",
+     1,
+     0.98
+    ],
+    [
+     "Pecharunt ex",
+     1,
+     0.97
+    ],
+    [
+     "Chi-Yu",
+     1,
+     0.95
+    ],
+    [
+     "Brute Bonnet",
+     1,
+     0.94
+    ],
+    [
+     "Pecharunt",
+     0.9,
+     0.87
+    ],
+    [
+     "Shaymin",
+     0.7,
+     0.69
+    ]
+   ],
+   "rec": {
+    "online": [
+     230,
+     205,
+     0
+    ]
+   },
+   "vs": {
+    "mega-rayquaza-ex": {
+     "online": [
+      3,
+      1,
+      0
+     ]
+    },
+    "dragapult-ex": {
+     "online": [
+      28,
+      34,
+      0
+     ]
+    },
+    "basic-box-m": {
+     "online": [
+      12,
+      9,
+      0
+     ]
+    },
+    "slowking-scr": {
+     "online": [
+      10,
+      11,
+      0
+     ]
+    },
+    "ogerpon-meganium-hydrapple": {
+     "online": [
+      5,
+      10,
+      0
+     ]
+    },
+    "alakazam-dudunsparce": {
+     "online": [
+      8,
+      14,
+      0
+     ]
+    },
+    "other": {
+     "online": [
+      6,
+      1,
+      0
+     ]
+    },
+    "dragapult-dudunsparce": {
+     "online": [
+      1,
+      4,
+      0
+     ]
+    },
+    "n-zoroark": {
+     "online": [
+      9,
+      11,
+      0
+     ]
+    }
+   },
+   "tops": [
+    [
+     "6b8cb73f",
+     1,
+     "Amyverse PTCG Live Weekly #21 💛 Cash Prize!",
+     "2026-11-11"
+    ],
+    [
+     "33b6c24f",
+     1,
+     "Amyverse PTCG Live Weekly #16 💛 Cash Prize!",
+     "2026-10-07"
+    ],
+    [
+     "22ee01d0",
+     1,
+     "Sunny's Weekly #275 The Conspiracy",
+     "2026-09-28"
+    ],
+    [
+     "e52b1775",
+     1,
+     "SEASAC League Cup #3 (SEASON 5) [150 CODES]",
+     "2026-09-27"
+    ],
+    [
+     "af3875e2",
+     2,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-09-28"
+    ],
+    [
+     "65968adf",
+     2,
+     "Rare Candy Club Showdown #45 (30TH LEGAL)",
+     "2026-09-21"
+    ],
+    [
+     "992aefbf",
+     3,
+     "🏆Moujii's Dojo🏆 (Late Registration Available!)",
+     "2026-10-05"
+    ],
+    [
+     "c3b66eb7",
+     11,
+     "ASRcristiano # 189 - 60 codes - Road to Frankfurt!",
+     "2026-09-17"
+    ],
+    [
+     "52e745b9",
+     13,
+     "ASRcristiano # 198 - 60 codes - Road to Gdansk!",
+     "2026-10-22"
+    ],
+    [
+     "8e8b3e84",
+     14,
+     "REFINE Autumn Series Session 11: Glowing Gobbler",
+     "2026-11-12"
+    ],
+    [
+     "df7e190b",
+     14,
+     "SEASAC League Challenge #11 (SEASON 5) [50 CODES]",
+     "2026-09-18"
+    ]
+   ],
+   "place": {
+    "online": [
+     81,
+     40440,
+     26308,
+     7,
+     12,
+     7
+    ]
+   },
+   "cur": {
+    "lists": 11,
+    "rec": {
+     "online": [
+      20,
+      20,
+      0
+     ]
+    },
+    "place": {
+     "online": [
+      6,
+      3270,
+      2383,
+      1,
+      2,
       1
      ]
     }
