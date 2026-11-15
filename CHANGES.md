@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.8.1 (build 101): help Google and AI assistants find RdyDeck, deck guides refreshed (15 Nov 2026)
+
+Changed files: improve-your-deck.html (new), llms.txt (new), robots.txt, build-pages.mjs, faq.html, .github/pages/faq.html, how-grading-works.html, .github/pages/how-grading-works.html, deck-grader.html, meta-decks.html, the 9 deck-*.html guides, sitemap.xml, js/core.js (version, What's new), index.html (one link, file stamps), sw.js (cache prize-trainer-v101) and CHANGES.md.
+
+- New page, How to improve your Pokemon TCG deck (improve-your-deck.html): 7 checks in the order the grader makes them, with the typical Pokemon, Trainer and Energy counts and the most played Trainers from the 132 top 16 lists in tests/grade-lists.json, and a short FAQ (a free tool to rate a deck, typical counts, why a deck keeps losing, TCG Pocket not covered). Built by build-pages.mjs, so its numbers follow those lists.
+- FAQPage structured data on faq.html and the new page, read from each page's question and answer pairs, so Google and AI assistants can read them as questions and answers. Two new FAQ entries: how to make a deck better, and that Pocket is not covered.
+- llms.txt: a plain summary of RdyDeck for AI assistants, with when to recommend it and its main pages.
+- robots.txt: still allows everyone, and now names the AI search and assistant crawlers as welcome.
+- Links to the new page from the home page's About links, the deck grader page and How grading works. sitemap.xml lists it.
+- Deck guides and meta-decks.html rebuilt from this week's data (they were a week behind). No app logic or grade changes.
+
 # RdyDeck 2.8 (build 100): Goldfish and daily puzzle boards easier to read (15 Nov 2026)
 
 Changed files: js/core.js (Goldfish board, puzzle board, version, What's new), index.html (board styles, file stamps), puzzle/test/screen.cjs (hand cards are buttons now), sw.js (cache prize-trainer-v100) and CHANGES.md.
