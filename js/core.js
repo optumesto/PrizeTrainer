@@ -7314,6 +7314,7 @@ const WHATS_NEW = {
   version: 'v2.8.1',
   kind: 'fix',
   items: [
+    { t: 'Changed: easier to read Goldfish and puzzle boards' },
     { t: 'Added: How to improve your deck guide' },
     { t: 'Search and AI assistant updates' },
     { t: 'Deck guides refreshed' }
@@ -10229,7 +10230,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
 const PT_VERSION = 'v2.8.1';
-const PT_BUILD = 101;
+const PT_BUILD = 102;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

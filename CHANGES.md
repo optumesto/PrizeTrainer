@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.8.1 (build 102): What's new also names the 2.8 boards (15 Nov 2026)
+
+Changed files: js/core.js (What's new, build), index.html (file stamps), sw.js (cache prize-trainer-v102) and CHANGES.md.
+
+- Players coming from 2.7.9 see only the 2.8.1 notes, so What's new now also lists the easier to read Goldfish and puzzle boards from 2.8.
+
 # RdyDeck 2.8.1 (build 101): help Google and AI assistants find RdyDeck, deck guides refreshed (15 Nov 2026)
 
 Changed files: improve-your-deck.html (new), llms.txt (new), robots.txt, build-pages.mjs, faq.html, .github/pages/faq.html, how-grading-works.html, .github/pages/how-grading-works.html, deck-grader.html, meta-decks.html, the 9 deck-*.html guides, sitemap.xml, js/core.js (version, What's new), index.html (one link, file stamps), sw.js (cache prize-trainer-v101) and CHANGES.md.
