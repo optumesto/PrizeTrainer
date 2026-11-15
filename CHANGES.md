@@ -4,12 +4,13 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # RdyDeck 2.7.2 (build 92): missing staples lower the grade (15 Nov 2026)
 
-Changed files: index.html, sw.js (cache prize-trainer-v92), tests/grade-builds.json and CHANGES.md.
+Changed files: index.html, sw.js (cache prize-trainer-v92), tests/grade-builds.json, privacy.html, sitemap.xml and CHANGES.md.
 
 - Core cards against winning lists: the Energy check from 2.6.9 now also reads each archetype's core, from meta-cards.json. A card's core count is the most copies that 95% of the archetype's top lists run (Dragapult: 4 Lillie's Determination, 4 Buddy-Buddy Poffin, 3 Ultra Ball and so on). A list matched to the archetype (its own pick, or a match of 0.6 or more) counts the copies it is short. Real top lists swap a few of those copies (one tournament Mega Rayquaza list runs no Energy Switch), so the first 4 copies short are free. Past that, the card grade drops 0.2 per copy (at most 1.2), the list leans less on the archetype's results, and What to fix says "Missing X staples" with the cards. Energy and core together take at most 2.0. The sentence under the grade says why.
 - The saved summary moves to a new key (pt_builds2), so an older copy without the core is not reused.
 - Grade check: 132 tournament lists, none moved. Test lists made from real ones, with their three most played core Trainers cut to 1: Rocket's Honchkrow 7.8 to 6.4, Dragapult Dudunsparce 9.0 to 8.0, Dragapult Blaziken 8.5 to 7.7, Dragapult 8.7 to 8.1, Basic Box 8.7 to 8.3, Slowking 8.2 to 8.0, Mega Rayquaza 7.6 to 7.5; Mega Lucario, Lopunny Dudunsparce and Raging Bolt Ogerpon unchanged (their cut cards are not in 95% of top lists at those counts). Dragapult with 1 Lillie's and 1 Poffin 8.8 to 8.5.
 - Tracking tournament results: unchanged, since no tournament list moved.
+- Privacy policy: the paragraph on buy links and Ko-fi tips is gone (the app has neither), effective date November 15, 2026, and the sitemap date matches.
 
 # RdyDeck 2.7.1 (build 91): unused code removed (15 Nov 2026)
 
