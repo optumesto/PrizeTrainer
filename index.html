@@ -16680,6 +16680,35 @@ function r29Legal(m) { return !!m && m >= ROT29.firstLegal; }
 function r29Rotates(m) { return !!m && ROT29.next.marks.includes(m); }
 function r29Safe(m) { return r29Legal(m) && !r29Rotates(m); }
 
+// 2.7.3: the names of every Trainer and Special Energy that is legal in Standard now, from cards.json (built weekly from
+// pokemon-tcg-data, reprints included). Saved on the device, so the legality check knows a reprinted
+// Trainer before, and without, the online reprint check. Read again once per page load.
+const R273_KEY = 'pt_legal_trainers';
+let r273 = null, r273Tried = false;
+function r273Set(j) {
+  if (!j || !Array.isArray(j.cards) || j.firstLegal !== ROT29.firstLegal) return false;
+  // Trainers and Special Energy: a reprint keeps either legal by name alone.
+  const names = j.cards.filter(c => c && (c.k === 'T' || (c.k === 'E' && !c.be)) && c.n).map(c => r29Key(c.n));
+  if (names.length < 100) return false;
+  r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names) };
+  return true;
+}
+function r273Ready() {
+  if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n) }; } catch (_) {} }
+  if (!r273Tried && typeof fetch === 'function') {
+    r273Tried = true;
+    fetch('cards.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => {
+      const was = r273 && r273.asOf;
+      if (j && r273Set(j)) {
+        safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set] }));
+        if (was !== r273.asOf) { try { _g29Cache.clear(); } catch (_) {} try { if (typeof mu60Rerender === 'function') mu60Rerender(); } catch (_) {} }
+      }
+    }).catch(() => {});
+  }
+  return !!r273;
+}
+function r273Legal(name) { return !!r273 && r273.set.has(r29Key(name)); }
+
 // One row per card name in the list, with what the mark means for it.
 function r29Rows(deck) {
   const cache = (deck.rot29 && deck.rot29.v === ROT29.v && deck.rot29.names) || {};
@@ -16716,6 +16745,14 @@ function r29Rows(deck) {
     r.reprint = rb && rb > (r.mark || '') ? rb : null;
     r.checked = !!rep;
     const best = r.reprint || r.mark;
+    // 2.7.3: a Trainer the online reprint check has not looked at yet is decided from the list of every
+    // Trainer name legal now (cards.json, saved on the device): on the list, an older printing counts
+    // as legal (a reprint keeps it); off the list, it is not legal now. The online check still runs and
+    // has the last word, and Pokemon still wait for it, since a reprint has to match their attacks.
+    if (!r.checked && !r.pkmn && !r29Legal(best) && r273Ready()) {
+      if (r273Legal(r.name)) { r.st = 'safe'; r.listed = true; rows.push(r); return; }
+      if (best && !r.unlisted) { r.st = 'out'; r.listed = true; rows.push(r); return; }
+    }
     // v40: only a confirmed mark counts as safe. A missing mark, a Pokemon mark read
     // from another printing, or a reprint check that has not run yet is unknown.
     if (r29Safe(best) && !(r.other && r.pkmn && !r.reprint)) r.st = 'safe';
@@ -16753,7 +16790,8 @@ async function r52AllPages(get, url) {
 const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
   // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf') && !r.checked);
+  // 2.7.3: a Trainer decided from the saved legal names is still checked online, which has the last word.
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf' || r.listed) && !r.checked);
 }
 var r29CheckReprints;   // set further down
 
@@ -19190,7 +19228,8 @@ const G40_CAP = 4.9;
     const rot = (deck && deck.rot29 && deck.rot29.names) || {};
     return _sig.apply(this, arguments) + '|' + ((deck && deck.format) || '') + '|' +
       (deck.cards || []).map(c => (c.reg && c.reg.mark) || '').join('') + '|' +
-      Object.keys(rot).sort().map(k => k + ':' + ((rot[k] && rot[k].best) || '')).join(',');
+      Object.keys(rot).sort().map(k => k + ':' + ((rot[k] && rot[k].best) || '')).join(',') +
+      '|' + (typeof r273 === 'object' && r273 ? r273.asOf : '');
   };
 })();
 

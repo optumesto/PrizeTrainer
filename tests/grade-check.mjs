@@ -296,6 +296,18 @@ async function resultsReport() {
 // ── main ─────────────────────────────────────────────────────────────────
 const lists = JSON.parse(fs.readFileSync(LISTS, 'utf8'));
 const { w, errors } = await loadApp();
+// 2.7.3: the names of every Trainer legal now (cards.json), as the app saves them on the device, so an
+// old printing of a reprinted Trainer counts as legal before the online reprint check, and a Trainer
+// with no legal printing is not legal now. Checked once here on a made-up list.
+if (w.eval('typeof r273Set') === 'function') {
+  w.__cj = fs.readFileSync(path.join(ROOT, 'cards.json'), 'utf8');
+  if (!w.eval('r273Tried = true, r273Set(JSON.parse(window.__cj))')) { console.error('cards.json did not load as the list of legal Trainers.'); process.exit(1); }
+  const st = JSON.parse(w.eval(`JSON.stringify(r29Rows({ cards: [
+    { name: 'Iono', count: 4, supertype: 'Trainer', reg: { mark: 'G', status: 'out' } },
+    { name: 'Ultra Ball', count: 4, supertype: 'Trainer', reg: { mark: 'G', status: 'out' } },
+    { name: 'Pok\u00e9gear 3.0', count: 1, supertype: 'Trainer', reg: { mark: 'G', status: 'out' } }] }).map(r => r.st))`));
+  if (st.join() !== 'out,safe,safe') { console.error('Legal Trainer list: expected out,safe,safe for Iono, Ultra Ball, Pokegear 3.0 (G printings), got ' + st.join()); process.exit(1); }
+}
 // The grade blends in tournament results from matchups.json (v68). The check uses a pinned copy,
 // tests/grade-matchups.json, so a weekly data refresh cannot move the baseline. RESULTS=off grades
 // from the cards alone.
