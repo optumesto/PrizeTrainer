@@ -22,6 +22,7 @@ PrizeTrainer/
   index.html                           the app
   sw.js                                offline support (cache name shows the version)
   manifest.json                        name and icons for Install app
+  play/                                Google Play app: build steps (BUILD-PLAY.md) and twa-manifest.json
   data.json                            meta, starter decks, rotation, set codes, card fixes
   card-check.md                        the weekly card check report (the job writes it)
   matchups.json                        win rates for Against the meta on the Grade tab (the job writes it)

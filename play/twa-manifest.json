@@ -1,0 +1,47 @@
+{
+  "packageId": "com.rdydeck.app",
+  "host": "rdydeck.com",
+  "name": "RdyDeck",
+  "launcherName": "RdyDeck",
+  "display": "standalone",
+  "themeColor": "#131210",
+  "themeColorDark": "#131210",
+  "navigationColor": "#131210",
+  "navigationColorDark": "#131210",
+  "navigationDividerColor": "#131210",
+  "navigationDividerColorDark": "#131210",
+  "backgroundColor": "#131210",
+  "enableNotifications": false,
+  "startUrl": "/?src=play",
+  "iconUrl": "https://rdydeck.com/icon-512x512.png",
+  "maskableIconUrl": "https://rdydeck.com/icon-maskable-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "my-key-alias"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://rdydeck.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://rdydeck.com/",
+  "minSdkVersion": 21,
+  "orientation": "default",
+  "fingerprints": [
+    {
+      "name": "upload key (PWABuilder, Nov 9)",
+      "value": "DD:C1:74:8B:9D:24:8A:B3:EF:C2:6A:E5:1C:C7:91:46:DC:37:B6:26:95:A3:BF:FA:02:E0:87:F0:CB:AA:6F:DC"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}
