@@ -5538,14 +5538,29 @@ function gfCardHTML(x, on, extra) {
   return `<button class="gf-card${on ? ' on' : ''}" ${extra || ''}><div class="review-card-img">${img}</div><div class="review-card-name">${gfNm(x)}</div></button>`;
 }
 function gfMonHTML(m, isActive) {
-  const top = gfTop(m), on = gf.selMon === m.id;
-  const st = top.card.stage === 'stage2' ? 'Stage 2' : top.card.stage === 'stage1' ? 'Stage 1' : 'Basic';
-  const c = top.card;
+  const top = gfTop(m), on = gf.selMon === m.id, c = top.card;
+  const st = c.stage === 'stage2' ? 'Stage 2' : c.stage === 'stage1' ? 'Stage 1' : 'Basic';
   const img = c.imageUrl ? `<img src="${esc(c.imageUrl)}" alt="" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">` : '';
-  return `<button class="gf-mon${isActive ? ' act' : ''}${on ? ' on' : ''}" onclick="gfSelectMon(${m.id})">
-    <span class="gf-mimg">${img}</span>
-    <span class="gf-mtx"><b>${gfMonNm(m)}</b><span>${st}, ${gfMonInfo(m)}</span></span></button>`;
+  const en = m.energy.map(e => { const t = gfEType(e); return t ? t[0].toUpperCase() + t.slice(1) : lbl23(e.card); });
+  const when = m.turnIn === 0 ? 'In play from the start' : m.turnIn === gf.turn ? 'Came in this turn' : 'Came in turn ' + m.turnIn;
+  return `<button class="mt-mon gf-mon${isActive ? ' act' : ''}${on ? ' on' : ''}" onclick="gfSelectMon(${m.id})">
+    <span class="mt-art">${img}</span>
+    <span class="mt-tx"><span class="mt-nm">${gfMonNm(m)}</span>
+      <span class="mt-sub">${st}${c.hp ? `, ${c.hp} HP` : ''}</span>
+      ${en.length ? `<span class="mt-ens">${mtEnergyHTML(en)}</span>` : '<span class="mt-sub">No Energy</span>'}
+      ${m.tool ? `<span class="mt-tool">${esc(lbl23(m.tool.card))}</span>` : ''}
+      <span class="mt-when">${when}</span>
+    </span></button>`;
 }
+/* 2.8: the playmat look Goldfish and the daily puzzle share. Energy reads as a colored dot and its word. */
+const MT_TYPE = { grass: 'grass', fire: 'fire', water: 'water', lightning: 'electric', psychic: 'psychic', fighting: 'fighting', darkness: 'dark', metal: 'metal', dragon: 'dragon', fairy: 'fairy', colorless: 'text-3' };
+function mtEnergyHTML(words) {
+  const g = new Map(); words.forEach(w => g.set(w, (g.get(w) || 0) + 1));
+  return [...g].map(([w, n]) => { const t = MT_TYPE[String(w).toLowerCase()];
+    return `<span class="mt-en${t ? '' : ' sp'}"${t ? ` style="--t:var(--${t})"` : ''}><i></i>${esc(w)}${n > 1 ? ` <b>×${n}</b>` : ''}</span>`; }).join('');
+}
+function mtPile(label, n) { return `<span class="mt-pile"><b>${n}</b><span>${label}</span></span>`; }
+function mtPrizes(n) { return `<span class="mt-prz" aria-hidden="true">${'<i></i>'.repeat(Math.max(0, Math.min(6, n)))}</span>`; }
 /** The card's own text, plain, under its buttons. */
 function gfShow(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
 function gfTextHTML(t) { return t ? `<div class="gf-txt">${esc(gfShow(t))}</div>` : ''; }
@@ -5608,16 +5623,21 @@ function renderGoldfish() {
     <div class="hp-meta">
       <span class="hp-pill">${gf.first ? 'Going first' : 'Going second'}</span>
       ${gf.mulls ? `<span class="hp-pill warn">${gf.mulls} mulligan${gf.mulls !== 1 ? 's' : ''}</span>` : ''}
-      <span class="hp-pill">Deck ${gf.deck.length}</span><span class="hp-pill">Discard ${gf.discard.length}</span>
       ${t > 0 && !gf.done ? `<span class="hp-pill${gf.used.energy ? ' done' : ''}">Energy ${gf.used.energy ? 'attached' : 'not yet'}</span><span class="hp-pill${gf.used.supporter ? ' done' : ''}">Supporter ${gf.used.supporter ? 'played' : gf.first && t === 1 ? 'not allowed' : 'not yet'}</span>` : ''}
       ${gf.turnOver && !gf.done ? '<span class="hp-pill warn">Turn over</span>' : ''}
     </div>`;
 
-  // Board
-  h += `<div class="hp-lbl">In play</div><div class="gf-board">
-    ${gf.active ? gfMonHTML(gf.active, true) : `<div class="gf-mon empty act"><span class="gf-mtx"><b>Active Spot</b><span>${gf.needActive ? 'Tap a Benched Pokémon to move it here' : 'Empty'}</span></span></div>`}
-    ${gf.bench.map(m => gfMonHTML(m, false)).join('')}
-    ${gf.stadium ? `<button class="gf-mon stad" onclick="if(!gfBusy()){gfClearOffer();gf.selMon=gf.selMon==='stad'?null:'stad';gf.sel=null;renderHand()}"><span class="gf-mtx"><b>${gfNm(gf.stadium)}</b><span>Stadium</span></span></button>` : ''}
+  // Board: a playmat with the Active Spot, the piles beside it and the Bench under it.
+  const open = Math.max(0, 5 - gf.bench.length);
+  h += `<div class="mt-mat gf-mat">
+    <div class="mt-main">
+      <div class="mt-zone mt-actz"><div class="mt-lbl">Active</div>
+        ${gf.active ? gfMonHTML(gf.active, true) : `<div class="mt-empty">${gf.needActive ? 'Tap a Benched Pokémon to move it here' : 'Empty'}</div>`}</div>
+      <div class="mt-piles">${mtPile('Prizes', gf.prizes.length)}${mtPile('Deck', gf.deck.length)}${mtPile('Discard', gf.discard.length)}</div>
+    </div>
+    <div class="mt-zone"><div class="mt-lbl">Bench <span>${gf.bench.length} of 5</span></div>
+      <div class="mt-bench">${gf.bench.map(m => gfMonHTML(m, false)).join('')}${open ? `<div class="mt-open">${open} open</div>` : ''}</div></div>
+    ${gf.stadium ? `<div class="mt-mid"><span class="mt-lbl">Stadium</span><button class="pz-chip mt-stad${gf.selMon === 'stad' ? ' on' : ''}" onclick="if(!gfBusy()){gfClearOffer();gf.selMon=gf.selMon==='stad'?null:'stad';gf.sel=null;renderHand()}">${gfNm(gf.stadium)}</button></div>` : ''}
   </div>`;
   if (gf.needActive) h += `<div class="gf-helper"><div class="gf-ht">Pick a new Active Pokémon</div><div class="gf-acts">${gf.bench.map(m => `<button class="btn btn-sm btn-primary" onclick="gfPromote(${m.id})">${gfMonPick(m)}</button>`).join('')}</div></div>`;
 
@@ -5653,7 +5673,7 @@ function renderGoldfish() {
   if (gf.run && !gf.done) h += gfRunHTML();
 
   // Hand
-  h += `<div class="hp-lbl">Hand (${gf.hand.length})</div><div class="hp-hand gf-hand">${gf.hand.map(x => gfCardHTML(x, gf.sel === x.uid, gf.done || (gfBusy() && !gfManual()) ? 'disabled' : `onclick="gfSelect(${x.uid})"`)).join('') || '<div class="nt-muted">Empty hand.</div>'}</div>`;
+  h += `<div class="hp-lbl mt-handl">Hand (${gf.hand.length})</div><div class="hp-hand gf-hand">${gf.hand.map(x => gfCardHTML(x, gf.sel === x.uid, gf.done || (gfBusy() && !gfManual()) ? 'disabled' : `onclick="gfSelect(${x.uid})"`)).join('') || '<div class="nt-muted">Empty hand.</div>'}</div>`;
   const sel = gf.hand.find(x => x.uid === gf.sel);
   if (sel && !gf.done && (!gfBusy() || gfManual())) {
     const acts = gfActions(sel);
@@ -7508,15 +7528,24 @@ function pzAskText(s) {
   return who + q;
 }
 function pzMonTile(s, m, owner, isActive) {
-  const E = pzS.E, top = E.topOf(m), c = top.card, hp = E.maxHp(s, m), left = Math.max(0, hp - m.dmg);
-  return `<button class="pz-mon${isActive ? ' act' : ''}" onclick="pzCardSheet('${owner}',${m.id})">
-    ${c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="pz-noimg"></span>'}
-    <span class="pz-mtx"><b>${esc(c.name)}</b>
-      <span class="pz-hp${m.dmg ? ' hurt' : ''}">${left} of ${hp} HP${m.dmg ? `, ${m.dmg / 10} damage counters` : ''}</span>
-      ${m.energy.length ? `<span class="pz-en">${pzEnergyText(m.energy)}</span>` : ''}
-      ${m.tool ? `<span class="pz-tool">${esc(m.tool.card.name)}</span>` : ''}
+  const E = pzS.E, top = E.topOf(m), c = top.card, hp = E.maxHp(s, m), left = Math.max(0, hp - m.dmg), pct = hp ? Math.round(left / hp * 100) : 0;
+  return `<button class="mt-mon pz-mon${isActive ? ' act' : ''}" onclick="pzCardSheet('${owner}',${m.id})">
+    <span class="mt-art">${c.img ? `<img src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="pz-noimg"></span>'}${m.dmg ? `<span class="mt-dmg">${m.dmg}</span>` : ''}</span>
+    <span class="mt-tx"><span class="mt-nm">${esc(c.name)}</span>
+      <span class="mt-hp${m.dmg ? ' hurt' : ''}"><b>${left}</b> of ${hp} HP${m.dmg ? `, ${m.dmg / 10} damage counter${m.dmg === 10 ? '' : 's'}` : ''}</span>
+      <span class="mt-bar${pct <= 34 ? ' low' : ''}"><i style="width:${pct}%"></i></span>
+      ${m.energy.length ? `<span class="mt-ens">${mtEnergyHTML(m.energy.map(r => pzEnergyWord(r.card.name)))}</span>` : ''}
+      ${m.tool ? `<span class="mt-tool">${esc(m.tool.card.name)}</span>` : ''}
       ${m.stack.length > 1 ? `<span class="pz-under">Evolved from ${esc(m.stack.slice(0, -1).map(r => r.card.name).join(', '))}</span>` : ''}
     </span></button>`;
+}
+/** Your hand as cards you can read, with a count on repeats. */
+function pzHandHTML(list) {
+  const g = new Map(); let hidden = 0;
+  list.forEach(r => { if (r.card.cat === 'hidden') { hidden++; return; } const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
+  const tiles = [...g.values()].map(x => `<button class="mt-card" onclick="pzKeySheet('${esc(x.c.key)}')"><span class="mt-cimg">${x.c.img ? `<img src="${esc(x.c.img)}" alt="" loading="lazy">` : `<span class="mt-cph">${esc(x.c.name)}</span>`}${x.n > 1 ? `<span class="mt-cnt">×${x.n}</span>` : ''}</span><span class="mt-cnm">${esc(x.c.name)}</span></button>`);
+  if (hidden) tiles.push(`<span class="mt-card off"><span class="mt-cimg mt-back"></span><span class="mt-cnm">${hidden} face down</span></span>`);
+  return tiles.length ? `<div class="mt-hand">${tiles.join('')}</div>` : '<span class="pz-none">Empty</span>';
 }
 function pzCards(list, opts) {
   const g = new Map(); let hidden = 0;
@@ -7527,18 +7556,22 @@ function pzCards(list, opts) {
 }
 function pzSide(s, k) {
   const P = s.players[k], mine = k === s.cur, who = mine ? 'me' : 'opp';
-  let h = `<div class="pz-side ${who}"><div class="pz-sh"><span>${mine ? 'You' : 'Your opponent'}</span>
-    <span class="pz-pr">${P.prizes.length} Prize card${P.prizes.length === 1 ? '' : 's'} left</span></div>`;
-  h += P.active ? pzMonTile(s, P.active, who, true) : `<div class="pz-none">No Active Pokémon</div>`;
-  if (P.bench.length) h += `<div class="pz-bench">${P.bench.map(m => pzMonTile(s, m, who, false)).join('')}</div>`;
-  if (mine) {
-    h += `<div class="pz-zone"><div class="pz-zt">Hand</div>${pzCards(P.hand, { empty: 'Empty' })}</div>`;
-    h += `<details class="pz-zone"><summary>Deck: ${P.deck.length} cards, ${P.deck.filter(r => r.card.cat !== 'hidden').length} you know are there</summary><div>${pzCards(P.deck)}</div></details>`;
-    h += `<details class="pz-zone"><summary>Discard pile: ${P.discard.length}</summary><div>${pzCards(P.discard, { empty: 'Empty' })}</div></details>`;
-  } else {
-    h += `<div class="pz-zone pz-cnt">${P.hand.length} cards in hand, ${P.deck.length} in deck${P.discard.length ? `, ${P.discard.length} in discard` : ''}</div>`;
-  }
-  return h + `</div>`;
+  const head = `<div class="mt-head"><span class="mt-who">${mine ? 'You' : 'Your opponent'}</span>
+    <span class="mt-przw">${mtPrizes(P.prizes.length)}<span class="pz-pr">${P.prizes.length} Prize card${P.prizes.length === 1 ? '' : 's'} left</span></span></div>`;
+  const main = `<div class="mt-main"><div class="mt-zone mt-actz"><div class="mt-lbl">Active</div>
+      ${P.active ? pzMonTile(s, P.active, who, true) : '<div class="mt-empty">No Active Pokémon</div>'}</div>
+    <div class="mt-piles">${mine ? '' : mtPile('Hand', P.hand.length)}${mtPile('Deck', P.deck.length)}${mtPile('Discard', P.discard.length)}</div></div>`;
+  const bench = `<div class="mt-zone"><div class="mt-lbl">Bench <span>${P.bench.length} of 5</span></div>
+    ${P.bench.length ? `<div class="mt-bench pz-bench">${P.bench.map(m => pzMonTile(s, m, who, false)).join('')}</div>` : '<div class="mt-open">Empty</div>'}</div>`;
+  return `<div class="mt-half pz-side ${who}">${head}${mine ? main + bench : bench + main}</div>`;
+}
+/** Below the mat: your hand as cards, then what is in your deck and discard pile. */
+function pzMine(s) {
+  const P = s.players[s.cur];
+  let h = `<div class="pz-zone mt-handw"><div class="pz-zt">Your hand (${P.hand.length})</div>${pzHandHTML(P.hand)}</div>`;
+  h += `<details class="pz-zone"><summary>Deck: ${P.deck.length} cards, ${P.deck.filter(r => r.card.cat !== 'hidden').length} you know are there</summary><div>${pzCards(P.deck)}</div></details>`;
+  h += `<details class="pz-zone"><summary>Discard pile: ${P.discard.length}</summary><div>${pzCards(P.discard, { empty: 'Empty' })}</div></details>`;
+  return h;
 }
 function renderPuzzle() {
   const el = document.getElementById('pz-body');
@@ -7551,9 +7584,10 @@ function renderPuzzle() {
   const pzLeft = (pzS.s0 || s).players[0].prizes.length;
   h += `<div class="pz-goal"><b>Win this turn.</b> Take your last ${pzLeft === 1 ? 'Prize card' : pzLeft + ' Prize cards'} before your turn ends. Tap any card to read it.
     <span>Lists: ${esc(p.from.mine)} against ${esc(p.from.theirs)}${p.from.event ? `, from ${esc(p.from.event)}` : ''}.${R && !pzS.over ? ' Replay: today\'s result is already saved.' : ''}</span></div>`;
-  h += pzSide(s, 1);
-  if (s.stadium) h += `<div class="pz-stadium">Stadium: <button class="pz-chip" onclick="pzKeySheet('${esc(s.stadium.ref.card.key)}')">${esc(s.stadium.ref.card.name)}</button></div>`;
-  h += pzSide(s, 0);
+  h += `<div class="mt-mat pz-mat">${pzSide(s, 1)}
+    <div class="mt-mid">${s.stadium ? `<span class="mt-lbl">Stadium</span><button class="pz-chip mt-stad" onclick="pzKeySheet('${esc(s.stadium.ref.card.key)}')">${esc(s.stadium.ref.card.name)}</button>` : '<span class="mt-lbl">No Stadium in play</span>'}</div>
+    ${pzSide(s, 0)}</div>`;
+  h += pzMine(s);
   h += `<div class="pz-act" id="pz-act">${pzActions()}</div>`;
   if (s.log.length) h += `<details class="pz-zone pz-logw" open><summary>This turn</summary><ol class="pz-log">${s.log.map(t => `<li>${esc(t)}</li>`).join('')}</ol></details>`;
   if (pzS.showAns) h += pzAnswer();

@@ -6,7 +6,7 @@ on:
     branches: [board-look]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write   # pushes the pictures to the board-look-shots branch
 jobs:
   shots:
     runs-on: ubuntu-latest
@@ -30,5 +30,11 @@ jobs:
           cd after/shots
           node shoot.mjs http://localhost:8001 ../../out before
           node shoot.mjs http://localhost:8002 ../../out after
-      - uses: actions/upload-artifact@v4
-        with: { name: board-shots, path: out }
+      - name: Push the pictures to board-look-shots
+        run: |
+          cd out
+          git init -q -b board-look-shots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Board screenshots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" board-look-shots
