@@ -30,6 +30,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import { readAppHtml, staleStamps } from '../app-file.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
@@ -108,7 +109,11 @@ async function fakeFetch(input, init) {
 const FIXED_NOW = Date.parse('2026-11-11T12:00:00Z');
 
 async function loadApp() {
-  const html = fs.readFileSync(HTML ? path.resolve(HTML) : path.join(ROOT, 'index.html'), 'utf8');
+  // The app is index.html plus app.css and js/; readAppHtml puts them back inline, in the order the browser runs them.
+  const htmlPath = HTML ? path.resolve(HTML) : path.join(ROOT, 'index.html');
+  const stale = staleStamps(htmlPath);
+  if (stale.length) { console.error('Problems with the files index.html links (for stamps, run node app-file.mjs --stamp): ' + stale.join(', ')); process.exit(1); }
+  const html = readAppHtml(htmlPath);
   const errors = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', e => errors.push(String(e && e.message || e)));

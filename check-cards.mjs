@@ -17,6 +17,7 @@
 // Politeness: one request at a time with a pause, a hard request budget, and a 429 answer
 // stops the run. A failed run leaves data.json alone and still writes the report.
 import { readFile, writeFile } from 'node:fs/promises';
+import { readAppHtml } from './app-file.mjs';
 
 const FILE = process.argv[2] || 'data.json';
 const REPORT = process.argv[3] || 'card-check.md';
@@ -48,7 +49,8 @@ async function appFixes() {
   const fx = new Map(), sets = {};
   let problem = '';
   try {
-    const html = await readFile(APP, 'utf8');
+    // The app's code lives in js/; readAppHtml puts it back inside the page, so the block reads as before.
+    const html = /index\.html$/.test(APP) ? readAppHtml(APP) : await readFile(APP, 'utf8');
     const block = html.slice(html.indexOf('const FIX37 = {'), html.indexOf('const FIX37_SET_MARKS'));
     for (const m of block.matchAll(/'([a-z0-9.]{2,12}-[A-Za-z0-9]{1,8})'\s*:\s*\{([^}]*)\}/g)) {
       const f = {};

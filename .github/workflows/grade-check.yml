@@ -1,5 +1,5 @@
 # Grade check: grades the top lists in tests/grade-lists.json with this
-# commit's index.html and fails if any grade moved from tests/grade-baseline.json.
+# commit's app (index.html, app.css and js/) and fails if any grade moved from tests/grade-baseline.json.
 # It also runs the daily puzzle tests (puzzle/test/run.js and screen.cjs).
 # Runs on every push that touches the app or the check, and from the Actions tab.
 #
@@ -13,12 +13,18 @@ on:
   push:
     paths:
       - 'index.html'
+      - 'app.css'
+      - 'js/**'
+      - 'app-file.mjs'
       - 'tests/**'
       - 'puzzle/**'
       - '.github/workflows/grade-check.yml'
   pull_request:
     paths:
       - 'index.html'
+      - 'app.css'
+      - 'js/**'
+      - 'app-file.mjs'
       - 'tests/**'
       - 'puzzle/**'
   workflow_dispatch:

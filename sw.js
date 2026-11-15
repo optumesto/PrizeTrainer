@@ -72,10 +72,15 @@ self.addEventListener('install', event => {
       .then(cache => Promise.all([
         // 2.7.4: './' and './index.html' are the same page, so it downloads
         // once and is saved under both addresses (it used to download twice).
+        // The page names its own script files (js/*.js?v=...); those are saved
+        // too, read from the page itself so the list never goes stale.
         fetch(new Request('./index.html', { cache: 'reload' }))
           .then(resp => {
             if (!resp.ok || resp.redirected) throw new Error('index.html');
-            return Promise.all([cache.put('./', resp.clone()), cache.put('./index.html', resp)]);
+            return resp.clone().text().then(html => Promise.all([
+              cache.put('./', resp.clone()), cache.put('./index.html', resp),
+              ...appFiles(html).map(url => saveAppFile(cache, url)),
+            ]));
           })
           .catch(() => Promise.all(['./', './index.html'].map(url =>
             cache.add(new Request(url, { cache: 'reload' })).catch(() => console.warn('[sw] could not cache', url))))),
@@ -89,6 +94,22 @@ self.addEventListener('install', event => {
       .then(() => self.skipWaiting())
   );
 });
+
+// The app's own script files, as the page links them. Each address carries
+// ?v=<hash of the file>, so the same address always means the same content.
+const APP_FILE_RE = /src="(js\/[\w.-]+\.js\?v=[0-9a-z]+)"/g;
+const appFiles = html => [...new Set([...html.matchAll(APP_FILE_RE)].map(m => new URL(m[1], self.registration.scope).href))];
+const isAppFile = url => /\/js\/[\w.-]+\.js$/.test(url.pathname) && url.searchParams.has('v');
+// A file this version still uses at the same ?v= is copied from the old saved copy,
+// so an update downloads only the files that changed. A new one may come from the
+// browser's own cache: the page has usually just downloaded it, and its ?v= means
+// the same address always holds the same file.
+function saveAppFile(cache, url) {
+  return caches.match(url)
+    .then(hit => hit || fetch(url).then(r => { if (!r.ok) throw new Error(url); return r; }))
+    .then(r => cache.put(url, r))
+    .catch(() => console.warn('[sw] could not cache', url));
+}
 
 // On activate: delete any old caches whose name doesn't match this version,
 // then take control of all open clients so they get the new SW without reload.
@@ -179,14 +200,17 @@ self.addEventListener('fetch', event => {
 
   // Cache-first for everything else
   const same = url.origin === self.location.origin;
+  // The app's script files are saved under their full address with ?v=, so a page
+  // that names a newer file never gets an older saved one.
+  const key = same ? (isAppFile(url) ? url.href.split('#')[0] : bare(req.url)) : req;
   event.respondWith(
-    caches.match(same ? bare(req.url) : req).then(cached => {
+    caches.match(key).then(cached => {
       if (cached) return cached;
       return fetch(req).then(resp => {
         // Only cache successful, same-origin responses
         if (resp && resp.status === 200 && same) {
           const copy = resp.clone();
-          caches.open(CACHE_NAME).then(c => c.put(bare(req.url), copy)).catch(() => {});
+          caches.open(CACHE_NAME).then(c => c.put(key, copy)).catch(() => {});
         }
         return resp;
       }).catch(() => Response.error());

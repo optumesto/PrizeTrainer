@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readAppHtml } from '../../app-file.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SRC = join(root, 'index.html');
@@ -61,7 +62,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = makeText;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const html = readFileSync(SRC, 'utf8');
+  const html = readAppHtml(SRC);   // index.html with its js/ files back inline
   const next = build(html);
   if (process.argv.includes('--check')) {
     let cur = '';

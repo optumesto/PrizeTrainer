@@ -19,7 +19,9 @@ PrizeTrainer/
   .github/workflows/watch-sets.yml     twice a day: moves the Prerelease section to the next set
   watch-sets.mjs                       the script it runs (whole card lists only, both databases must agree)
   set-watch.md                         what the set watch found last (the job writes it)
-  index.html                           the app
+  index.html                           the app's page (its markup and styles)
+  js/                                  the app's scripts, one file per part, run in the order index.html lists them
+  app-file.mjs                         stamps each js/ file's ?v= (run --stamp after editing one) and builds the one-file copy
   sw.js                                offline support (cache name shows the version)
   manifest.json                        name and icons for Install app
   data.json                            meta, starter decks, rotation, set codes, card fixes
@@ -59,7 +61,7 @@ In the repo, open each of these, tap the **...** menu at the top right of the fi
 
 1. Unzip `prizetrainer-repo.zip`.
 2. In the repo, **Add file**, then **Upload files**.
-3. Drag in everything from the unzipped folder, folders included: the files at the top level (`index.html`, `sw.js`, `data.json`, `manifest.json`, the icons and the rest) and the `.github`, `puzzle` and `tests` folders. Files with the same name are replaced.
+3. Drag in everything from the unzipped folder, folders included: the files at the top level (`index.html`, `sw.js`, `data.json`, `manifest.json`, the icons and the rest) and the `.github`, `js`, `puzzle` and `tests` folders. Files with the same name are replaced.
 4. **Commit changes.**
 
 Folders and files whose names start with a dot are hidden on most computers. On a Mac press Cmd + Shift + . in Finder to show them; on Windows turn on View, Hidden items. If `.github` still will not upload, make it by hand: **Add file**, **Create new file**, type `.github/workflows/refresh-data.yml` as the name (the slashes make the folders), paste in that file's contents, and commit. Do the same for `refresh-data.mjs` (at the top level, next to index.html) if it is missing, and for `.nojekyll` (an empty file is fine).
@@ -93,8 +95,9 @@ Wait 1 to 3 minutes after the commit, then:
 
 ## Grade check
 
-Before a release, the Grade check on the Actions tab must be green. It runs on every push that changes `index.html` and grades the 128 top lists with that commit's code. If any grade, Synergy or Power moved from `tests/grade-baseline.json`, it fails and lists each move.
+Before a release, the Grade check on the Actions tab must be green. It runs on every push that changes `index.html` or a file in `js/` and grades the 128 top lists with that commit's code. If any grade, Synergy or Power moved from `tests/grade-baseline.json`, it fails and lists each move.
 
+- After editing any file in `js/`, run `node app-file.mjs --stamp` so index.html links the new copy (browsers keep each file until its `?v=` changes). The check fails if a stamp is out of date.
 - A move you meant (a grader fix): run `node tests/grade-check.mjs --update` and commit the new baseline with the fix, so the moves are on record.
 - A move you didn't mean: that's the bug the check is for.
 - To run it on a computer: `npm ci --prefix tests`, then `node tests/grade-check.mjs`. No network needed.
