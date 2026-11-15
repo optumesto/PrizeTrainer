@@ -7294,6 +7294,7 @@ const WHATS_NEW = {
   version: 'v2.7.9',
   kind: 'fix',
   items: [
+    { t: 'Grade vs win rate on the Grade tab' },
     { t: 'Results share counts newest set games three times' }
   ]
 };

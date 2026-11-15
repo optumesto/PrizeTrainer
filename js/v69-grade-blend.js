@@ -281,3 +281,69 @@ function g68Line(R) {
   try { mu60Load(); } catch (_) {}
   try { g88Load(); } catch (_) {}
 })();
+
+// ═══════════ 2.7.9: grade vs win rate ═══════════
+// The card grade and the tournament record side by side, for the deck's archetype: what the cards
+// alone score against a typical top list, the win rate against the whole field's (every match in the
+// data, about 50.6% on 15 Nov 2026), and how the win rate moved since the newest set.
+// G79_TYP is the median card grade of the 130 tournament top lists in tests/grade-lists.json (8.8 on
+// 15 Nov 2026); an average record scores G68_MID on results. The gap line compares the two.
+const G79_TYP = 8.8, G79_GAP = 0.5, G79_MIN = 100, G79_MOVE = 2;
+function g79Section(deck) {
+  const data = mu60Data;
+  if (!data || !deck || deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily) return '';
+  const R = g29Grade(deck);
+  if (!R || R.rawOverall != null) return '';
+  const arch = (R.res && data.decks.find(d => d.id === R.res.id)) || (g68Arch(deck, data) || {}).deck;
+  if (!arch || arch.id === 'other') return '';
+  const st = g68Strength(data)[arch.id];
+  const card = R.res ? R.cardOverall : R.overall;
+  const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2];
+  let W = 0, M = 0;
+  // Every match in the data, the smaller decks grouped as Other included, so this is the whole field.
+  for (const d of data.decks) { const r = mu60Sum(d.rec); W += r[0]; M += r[0] + r[1] + r[2]; }
+  const avg = M ? W / M * 100 : null, n0 = v => v.toLocaleString('en-US'), pct = v => v.toFixed(1) + '%';
+  const day = data.cur && data.cur.since ? d30Nice(data.cur.since) : '';
+  let h = `<div class="g-sec" id="g79-sec"><div class="g-sec-t">Grade vs win rate</div>
+    <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless online tournaments.</div>
+    <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;
+  if (n < G79_MIN || avg == null) {
+    h += `<p class="mu60-p">Win rate: ${n0(n)} ${n === 1 ? 'game' : 'games'} so far, too few to judge.</p>`;
+  } else {
+    const p = all[0] / n * 100;
+    h += `<p class="mu60-p">Win rate: <b>${pct(p)}</b> over ${n0(n)} games, against ${pct(avg)} for all decks in these results.</p>`;
+    const cur = arch.cur ? mu60Sum(arch.cur.rec) : [0, 0, 0], cn = cur[0] + cur[1] + cur[2], pn = n - cn;
+    if (day) {
+      if (cn < G79_MIN) h += `<p class="mu60-p">Since the newest set came out (${day}): ${n0(cn)} ${cn === 1 ? 'game' : 'games'} so far, too few to show a trend.</p>`;
+      else if (pn < G79_MIN) h += `<p class="mu60-p">Since the newest set came out (${day}): all ${n0(cn)} games, so there is no earlier win rate to compare.</p>`;
+      else {
+        const cp = cur[0] / cn * 100, pp = (all[0] - cur[0]) / pn * 100, dv = cp - pp;
+        const how = Math.abs(dv) < G79_MOVE ? `about the same as before (${pct(pp)})` : `${dv > 0 ? 'up' : 'down'} from ${pct(pp)} before`;
+        h += `<p class="mu60-p">Since the newest set came out (${day}): <b>${pct(cp)}</b> over ${n0(cn)} games, ${how}.</p>`;
+      }
+    }
+    if (st) {
+      const gap = (card - G79_TYP) - (st.score - G68_MID);
+      h += `<p class="mu60-p"><b>${gap >= G79_GAP ? 'Cards beat its results.' : gap <= -G79_GAP ? 'Results beat its cards.' : 'Cards and results agree.'}</b> ${gap >= G79_GAP ? `${esc(arch.name)} decks win less than their cards suggest.` : gap <= -G79_GAP ? `${esc(arch.name)} decks win more than their cards suggest.` : 'The cards and the record rank this deck about the same.'}</p>`;
+    }
+  }
+  h += `<p class="mu60-f">Win rates are for all ${esc(arch.name)} lists, not your exact list.</p></div>`;
+  return h;
+}
+(function () {
+  const _rg = renderGrade;
+  renderGrade = function () {
+    const r = _rg.apply(this, arguments);
+    try {
+      const deck = state.decks.find(d => d.id === state.activeDeckId);
+      const el = document.getElementById('grade-body');
+      if (!deck || !el || el.querySelector('#g79-sec')) return r;
+      const h = g79Section(deck);
+      if (!h) return r;
+      const mu = el.querySelector('#mu60-sec');
+      if (mu) mu.insertAdjacentHTML('beforebegin', h);
+      else { const at = el.querySelector('#r29-sec') || el.querySelector('#g29-fix'); if (at) at.insertAdjacentHTML('afterend', h); }
+    } catch (e) { console.warn('[grade vs win rate]', e); }
+    return r;
+  };
+})();
