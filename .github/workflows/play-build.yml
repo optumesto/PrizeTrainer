@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '22'
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -37,6 +37,11 @@ jobs:
 
       - name: Point Bubblewrap at this machine's JDK and Android SDK
         run: |
+          # Bubblewrap looks for sdkmanager under tools/ or bin/; the runner has it under cmdline-tools/latest.
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          sudo ln -sfn "$ANDROID_HOME/cmdline-tools/latest" "$ANDROID_HOME/tools"
+          yes | sudo "$SDKM" --sdk_root="$ANDROID_HOME" "build-tools;36.1.0" "platforms;android-36" > /dev/null
+          sudo chmod -R a+rwX "$ANDROID_HOME/build-tools" "$ANDROID_HOME/platforms"
           mkdir -p ~/.bubblewrap
           printf '{"jdkPath":"%s","androidSdkPath":"%s"}\n' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
 
