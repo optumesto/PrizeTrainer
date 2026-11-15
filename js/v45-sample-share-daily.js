@@ -261,11 +261,14 @@ async function gs45Draw(deck, R, size, info, art) {
   const credit = info.lim && limArt ? 'Deck data and card image from Limitless TCG'
     : info.lim ? 'Deck data from Limitless TCG' : limArt ? 'Card image from Limitless TCG' : '';
   const fs = sq ? 30 : 26;
-  const t1 = credit ? lineY + (sq ? 58 : 44) : lineY + (sq ? 82 : 56);
+  const t1 = credit ? lineY + (sq ? 58 : 40) : lineY + (sq ? 82 : 50);
   x.font = `400 ${fs}px ${B}`; x.fillStyle = GS45.text2;
   const held = R.rawOverall != null ? `Held at ${R.overall.toFixed(1)}: some cards are not Standard legal now. ` : '';
   x.fillText(gs45Fit(x, held + 'Can Your Deck Win?', W - 128 - 260), 64, t1);
-  if (credit) x.fillText(gs45Fit(x, credit, W - 128), 64, t1 + (sq ? 48 : 38));
+  if (credit) x.fillText(gs45Fit(x, credit, W - 128), 64, t1 + (sq ? 48 : 34));
+  // The not-affiliated notice travels with the image wherever it is posted.
+  x.font = `400 ${sq ? 18 : 16}px ${B}`; x.fillStyle = GS45.text2;
+  x.fillText(gs45Fit(x, 'Unofficial fan tool, not affiliated with The Pok\u00e9mon Company or Nintendo. Card images \u00a9 their owners.', W - 128), 64, H - (sq ? 22 : 12));
   x.font = `600 ${fs + 2}px ${B}`; x.fillStyle = GS45.text;
   const site = 'rdydeck.com';
   x.fillText(site, W - 64 - x.measureText(site).width, t1);

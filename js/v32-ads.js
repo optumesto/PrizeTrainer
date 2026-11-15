@@ -133,7 +133,7 @@ function ads32Make(where, place) {
   box.id = 'ad32-' + where; box.className = 'ad32';
   box.style.height = (h + 38) + 'px';
   const tag = age32Tag();
-  box.innerHTML = `<div class="ad32-lbl" style="max-width:${w}px">Advertisement</div><ins class="adsbygoogle" style="display:inline-block;width:${w}px;height:${h}px" data-ad-client="${esc(PT_ADS.client)}" data-ad-slot="${esc(PT_ADS.slots[where])}"${tag ? ` data-tag-for-age-treatment="${tag}"` : ''}></ins>`;
+  box.innerHTML = `<div class="ad32-lbl" style="max-width:${w}px">Advertisements</div><ins class="adsbygoogle" style="display:inline-block;width:${w}px;height:${h}px" data-ad-client="${esc(PT_ADS.client)}" data-ad-slot="${esc(PT_ADS.slots[where])}"${tag ? ` data-tag-for-age-treatment="${tag}"` : ''}></ins>`;
   place.parent.insertBefore(box, place.before || null);
   try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
 }

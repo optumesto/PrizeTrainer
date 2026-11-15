@@ -42,7 +42,7 @@
     var box = document.createElement('div');
     box.className = 'ad47';
     box.style.height = (ht + 38) + 'px';
-    box.innerHTML = '<div class="ad47-lbl" style="max-width:' + w + 'px">Advertisement</div><ins class="adsbygoogle" style="display:inline-block;width:' + w + 'px;height:' + ht + 'px"></ins>';
+    box.innerHTML = '<div class="ad47-lbl" style="max-width:' + w + 'px">Advertisements</div><ins class="adsbygoogle" style="display:inline-block;width:' + w + 'px;height:' + ht + 'px"></ins>';
     var ins = box.querySelector('ins');
     ins.setAttribute('data-ad-client', RD_ADS.client);
     ins.setAttribute('data-ad-slot', slot);

@@ -84,7 +84,7 @@ const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-d
 
 export function footerHtml() {
   return `  <footer>
-    <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
+    <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company. Card names, text and images are &copy; The Pok&eacute;mon Company, Nintendo, Creatures and GAME FREAK.</p>
     <nav>${NAV.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
   </footer>`;
 }
