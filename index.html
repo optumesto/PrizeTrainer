@@ -12191,11 +12191,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.7.1',
+  version: 'v2.7.2',
   kind: 'fix',
   items: [
-    { t: 'Removed unused code', d: 'Old code the app no longer ran is gone, so the page is a little smaller. Nothing you see changes.' },
-    { t: 'Fixed: browsers that block canvas', d: 'Jump links on the Grade tab and Compare now scroll to the right place there too.' }
+    { t: 'Missing staples lower the grade', d: 'A list well short of the cards nearly every winning list of its deck runs now grades a little lower, and What to fix names them.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15065,8 +15064,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.7.1';
-const PT_BUILD = 91;
+const PT_VERSION = 'v2.7.2';
+const PT_BUILD = 92;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -21763,9 +21762,14 @@ function g68Need(d) {
 // (meta-cards.json: the top quarter of each Limitless online event). Every top list in the grade
 // check sits inside the band, so a winning build is never graded down. A list far outside it is, and
 // borrows less of the archetype's results, since those were won with a different build.
-const G88_KEY = 'pt_builds', G88_TOPS = 20, G88_TOL = 3, G88_TOLF = 0.3, G88_PER = 0.25, G88_CAP = 1.5, G88_FIT = 6, G88_MATCH = 0.6;
+// 2.7.2: the same for the cards nearly every winning list runs (the core). A card's core count is the
+// most copies that 95% of the archetype's top lists run. Real top lists sometimes swap a few of those
+// copies for another card, so the first G88_FREE copies short are free and only a list short by more
+// than any top list in the grade check is graded down, gently.
+const G88_KEY = 'pt_builds2', G88_TOPS = 20, G88_TOL = 3, G88_TOLF = 0.3, G88_PER = 0.25, G88_CAP = 1.5, G88_FIT = 6, G88_MATCH = 0.6;
+const G88_CORE = 0.95, G88_FREE = 4, G88_CPER = 0.2, G88_CCAP = 1.2, G88_CFIT = 8, G88_ALL = 2;
 let g88Data = null, g88Busy = false, g88Tried = false;
-/** Read meta-cards.json, or the summary saved from it, into the Energy each archetype's top lists run. */
+/** Read meta-cards.json, or the summary saved from it: per archetype, the Energy its top lists run and its core cards. */
 function g88Set(j) {
   if (!j || typeof j !== 'object') return false;
   let e = j.e;
@@ -21774,8 +21778,18 @@ function g88Set(j) {
     for (const d of j.decks) {
       if (!d || typeof d.id !== 'string' || !Array.isArray(d.cards) || !(d.tops >= G88_TOPS)) continue;
       // Average copies when run, times the share of top lists that run it, summed over the Energy.
-      const n = d.cards.reduce((a, c) => a + (Array.isArray(c) && c[3] === 'E' && c[5] > 0 && c[6] > 0 ? c[5] * c[6] : 0), 0);
-      if (n > 0) e[d.id] = [Math.round(n * 10) / 10, d.tops];
+      let n = 0;
+      const core = [];
+      for (const c of d.cards) {
+        if (!Array.isArray(c) || !(c[6] > 0)) continue;
+        if (c[3] === 'E') { if (c[5] > 0) n += c[5] * c[6]; continue; }
+        if (!Array.isArray(c[7])) continue;
+        // The share of all top lists that run at least k copies, for k from 1 to 4.
+        let k0 = 0;
+        for (let k = 1; k <= 4; k++) if (c[6] * c[7].reduce((a, h) => a + (Array.isArray(h) && h[0] >= k ? +h[1] || 0 : 0), 0) >= G88_CORE) k0 = k;
+        if (k0) core.push([String(c[0]), k0]);
+      }
+      if (n > 0 || core.length) e[d.id] = [Math.round(n * 10) / 10, d.tops, core];
     }
   }
   if (!e || typeof e !== 'object' || Object.keys(e).length < 5) return false;
@@ -21795,21 +21809,53 @@ function g88Load() {
     .catch(() => {})
     .finally(() => { clearTimeout(t); g88Busy = false; g88Tried = true; if (typeof g71Redraw === 'function') g71Redraw(); });
 }
-/** How far the list's Energy is from its archetype's winning lists, and what that costs the grade. */
+/** How far the list is from its archetype's winning lists (Energy and core cards), and what that costs the grade. */
 function g88Check(deck, arch, m) {
   if (!g88Data || !arch || !m || !(m.pick || m.score >= G88_MATCH)) return null;
   const x = g88Data.e[arch.id];
-  if (!Array.isArray(x) || !(x[0] > 0)) return null;
+  if (!Array.isArray(x)) return null;
+  const cards = deck.cards || [];
   let n = 0;
-  for (const c of deck.cards || []) if (cardCategory(c) === 'energy') n += +c.count || 0;
-  if (!n) return null;
-  const exp = x[0], tol = Math.max(G88_TOL, G88_TOLF * exp), off = Math.abs(n - exp) - tol;
-  if (!(off > 0)) return null;
-  const pen = Math.min(G88_CAP, Math.round(G88_PER * off * 10) / 10);
-  if (pen < 0.1) return null;
-  return { n, exp, lo: Math.max(0, Math.ceil(exp - tol)), hi: Math.floor(exp + tol), more: n > exp, pen, fit: gClamp(1 - off / G88_FIT, 0, 1), name: arch.name, tops: x[1] };
+  const have = new Map();
+  for (const c of cards) {
+    const q = +c.count || 0;
+    if (cardCategory(c) === 'energy') n += q;
+    const k = g76Key(c.name);
+    have.set(k, (have.get(k) || 0) + q);
+  }
+  const out = { name: arch.name, tops: x[1], pen: 0, fit: 1 };
+  // Energy, as in 2.6.8.
+  if (n && x[0] > 0) {
+    const exp = x[0], tol = Math.max(G88_TOL, G88_TOLF * exp), off = Math.abs(n - exp) - tol;
+    const pen = off > 0 ? Math.min(G88_CAP, Math.round(G88_PER * off * 10) / 10) : 0;
+    if (pen >= 0.1) {
+      out.energy = { n, exp, lo: Math.max(0, Math.ceil(exp - tol)), hi: Math.floor(exp + tol), more: n > exp, pen };
+      out.pen += pen; out.fit *= gClamp(1 - off / G88_FIT, 0, 1);
+    }
+  }
+  // Core cards: copies short of what 95% of top lists run.
+  const core = Array.isArray(x[2]) ? x[2] : [];
+  if (core.length && cards.length) {
+    const miss = [];
+    let short = 0;
+    for (const r of core) {
+      if (!Array.isArray(r) || !(r[1] > 0)) continue;
+      const h = have.get(g76Key(r[0])) || 0;
+      if (h < r[1]) { short += r[1] - h; miss.push({ name: r[0], want: r[1], have: h }); }
+    }
+    const over = short - G88_FREE;
+    const pen = over > 0 ? Math.min(G88_CCAP, Math.round(G88_CPER * over * 10) / 10) : 0;
+    if (pen >= 0.1) {
+      miss.sort((a, b) => (b.want - b.have) - (a.want - a.have));
+      out.core = { short, miss, pen };
+      out.pen += pen; out.fit *= gClamp(1 - over / G88_CFIT, 0, 1);
+    }
+  }
+  if (!out.energy && !out.core) return null;
+  out.pen = Math.min(G88_ALL, Math.round(out.pen * 10) / 10);
+  return out;
 }
-/** Grade a list down for Energy far from its archetype's winning lists, with a fix for What to fix. */
+/** Grade a list down for Energy or core cards far from its archetype's winning lists, with fixes for What to fix. */
 function g88Apply(R, deck, arch, m) {
   const b = g88Check(deck, arch, m);
   if (!b) return null;
@@ -21818,19 +21864,30 @@ function g88Apply(R, deck, arch, m) {
   R.build = Object.assign(b, { before, after: R.overall });
   const f = R.via && R.via.findings;
   if (Array.isArray(f)) {
-    // The older "Heavy on Energy" check says the same thing with a general range, so this replaces it.
-    for (const o of [R.coh && R.coh.flaws, f]) if (Array.isArray(o)) for (let i = o.length - 1; i >= 0; i--) if (o[i] && o[i].t === 'Heavy on Energy') o.splice(i, 1);
-    f.push({ sev: 'warn', t: `${b.more ? 'Heavy' : 'Light'} on Energy for ${b.name}`,
-      d: `${b.name} lists that finished in the top quarter of recent online tournaments run about ${Math.round(b.exp)} Energy. This list runs ${b.n}, outside the ${b.lo} to ${b.hi} the grade allows. ` +
-        (b.more ? `The extra Energy takes the place of draw and search, so many turns open with Energy you cannot use. Trade some for draw or search cards.`
-          : `With fewer, attackers often miss an attachment and fall behind. Add Energy back.`) });
+    const e = b.energy, c = b.core;
+    if (e) {
+      // The older "Heavy on Energy" check says the same thing with a general range, so this replaces it.
+      for (const o of [R.coh && R.coh.flaws, f]) if (Array.isArray(o)) for (let i = o.length - 1; i >= 0; i--) if (o[i] && o[i].t === 'Heavy on Energy') o.splice(i, 1);
+      f.push({ sev: 'warn', t: `${e.more ? 'Heavy' : 'Light'} on Energy for ${b.name}`,
+        d: `${b.name} lists that finished in the top quarter of recent online tournaments run about ${Math.round(e.exp)} Energy. This list runs ${e.n}, outside the ${e.lo} to ${e.hi} the grade allows. ` +
+          (e.more ? `The extra Energy takes the place of draw and search, so many turns open with Energy you cannot use. Trade some for draw or search cards.`
+            : `With fewer, attackers often miss an attachment and fall behind. Add Energy back.`) });
+    }
+    if (c) {
+      const top = c.miss.slice(0, 4).map(x => `${x.name} (${x.have ? `${x.have} of ${x.want}` : `none of ${x.want}`})`);
+      f.push({ sev: 'warn', t: `Missing ${b.name} staples`,
+        d: `Nearly every ${b.name} list that finished in the top quarter of recent online tournaments runs these, and this one is ${c.short} copies short: ${top.join(', ')}${c.miss.length > 4 ? ` and ${c.miss.length - 4} more` : ''}. A few swaps are normal, so the first ${G88_FREE} copies cost nothing. Add the rest back unless you have a reason not to.` });
+    }
   }
   return b;
 }
-/** One plain sentence on the Energy check, for under the grade. */
+/** One plain sentence on the build check, for under the grade. */
 function g88Line(R) {
   const b = R && R.build; if (!b) return '';
-  return ` The list runs ${b.n} Energy, where ${esc(b.name)} top lists run about ${Math.round(b.exp)}, so the card grade drops ${b.pen.toFixed(1)} to ${b.after.toFixed(1)}${R.res && b.fit < 1 ? ' and leans less on those lists\' results' : ''}.`;
+  const why = [];
+  if (b.energy) why.push(`runs ${b.energy.n} Energy, where ${esc(b.name)} top lists run about ${Math.round(b.energy.exp)}`);
+  if (b.core) why.push(`is ${b.core.short} copies short of the cards nearly every ${esc(b.name)} top list runs`);
+  return ` The list ${why.join(' and ')}, so the card grade drops ${b.pen.toFixed(1)} to ${b.after.toFixed(1)}${R.res && b.fit < 1 ? ' and leans less on those lists\' results' : ''}.`;
 }
 function g68Blend(R, deck) {
   if (!R || !deck || !mu60Data) return R;
@@ -21872,7 +21929,7 @@ function g68Line(R) {
     let pick = '';
     try { pick = mu60Picks()[deck.id] || ''; } catch (_) {}
     // 2.5.1: and when the Trainer data (builder.json) arrives, so a grade made before it is not reused.
-    return _sig.apply(this, arguments) + '|mu' + (mu60Data ? mu60Data.asOf : '') + ':' + pick + '|g76' + (g76Played ? g76N : 0) + '|g88' + (g88Data ? g88Data.asOf : '');
+    return _sig.apply(this, arguments) + '|mu' + (mu60Data ? mu60Data.asOf : '') + ':' + pick + '|g76' + (g76Played ? g76N : 0) + '|g88' + (g88Data ? g88Data.asOf + ':2' : '');
   };
   const _how = g67HowLine;
   g67HowLine = function (R, synV, powV) {
