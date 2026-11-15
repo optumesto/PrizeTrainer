@@ -7,7 +7,7 @@ fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROME || '/usr/bin/google-chrome', args: ['--no-sandbox'] });
 const sizes = [['phone', 390, 844], ['desktop', 1280, 900]];
 const seed = `(() => { let a = 1234567; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();`;
-const hideCss = `.toast, #toast, .modal-overlay.active:not(#xx) { display:none !important; } .bar, .app-bar { position:static !important; }`;
+const hideCss = `.toast, #toast, .modal-overlay.active:not(#xx) { display:none !important; } .review-footer { display:none !important; }`;
 const log = m => console.log(`[${label}] ${m}`);
 async function prep(page, theme) {
   await page.addInitScript(({ theme }) => {
@@ -42,6 +42,7 @@ for (const theme of ['dark', 'light']) {
       await page.evaluate(async () => {
         const wait = ms => new Promise(r => setTimeout(r, ms));
         const clickBtn = re => { const b = [...document.querySelectorAll('#hand-body .gf-hand-acts button:not([disabled])')].find(x => re.test(x.textContent)); if (b) { b.click(); return true; } return false; };
+        for (let k = 0; k < 30 && gf.hand.filter(x => gfIsBasic(x)).length < 3; k++) gfDeal(true);
         for (let k = 0; k < 7; k++) {
           const basics = gf.hand.filter(x => gfIsBasic(x));
           if (!basics.length || gf.bench.length >= 3) break;

@@ -1631,7 +1631,7 @@
   .mt-who { font-family:var(--display); font-weight:800; font-size:var(--fs-lg); color:var(--text); }
   .mt-przw { display:flex; align-items:center; gap:0.45rem; }
   .mt-prz { display:flex; gap:3px; }
-  .mt-prz i { width:11px; height:16px; border-radius:3px; background:linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 50%, var(--surface))); border:1px solid var(--accent-line); }
+  .mt-prz i { width:11px; height:16px; border-radius:3px; background:repeating-linear-gradient(45deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 5px), var(--accent); border:1px solid var(--accent-line); }
   .pz-pr { font-weight:700; font-size:var(--fs-sm); color:var(--text-2); }
   .mt-main { display:flex; gap:0.6rem; align-items:stretch; }
   .mt-zone { display:flex; flex-direction:column; gap:0.35rem; min-width:0; }
@@ -1675,7 +1675,7 @@
   .mt-stad.on { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
   .mt-handw { margin:0 0 0.6rem; }
   .mt-handw .pz-zt { font-family:var(--display); font-size:var(--fs-lg); font-weight:800; }
-  .mt-hand { display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:0.65rem 0.45rem; width:100%; }
+  .pz-zone > .mt-hand, .mt-hand { display:grid; margin-top:0; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:0.65rem 0.45rem; width:100%; }
   .mt-card { display:flex; flex-direction:column; gap:0.3rem; min-width:0; padding:0; border:0; background:none; color:var(--text); font:inherit; text-align:center; cursor:pointer; }
   .mt-card.off { cursor:default; color:var(--text-3); }
   .mt-cimg { position:relative; display:block; aspect-ratio:5/7; border-radius:6px; overflow:hidden; background:var(--surface-3); box-shadow:var(--sh-1); }
@@ -1684,7 +1684,7 @@
   .mt-back { background:repeating-linear-gradient(45deg, var(--accent-soft) 0 6px, transparent 6px 12px), var(--surface-2); border:1px solid var(--accent-line); }
   .mt-cnt { position:absolute; right:4px; top:4px; padding:0.05rem 0.42rem; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-weight:800; font-size:var(--fs-sm); box-shadow:0 1px 3px rgba(0,0,0,0.35); }
   .mt-cnm { font-size:var(--fs-sm); font-weight:600; line-height:1.25; overflow-wrap:anywhere; }
-  .mt-handl { margin-top:0.2rem; }
+  .hp-lbl.mt-handl { margin-top:0.2rem; letter-spacing:0; text-transform:none; font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
   @media (max-width:479px) {
     .pz-wrap { padding-left:0.75rem; padding-right:0.75rem; }
     .mt-mat { padding:0.55rem; }
@@ -3672,7 +3672,7 @@ document.documentElement.classList.add('rd-boot');
      self-contained file: rdAppFile() puts every js/ file back inside the page before it is sent. -->
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=99e465dd"></script>
 
-<script src="js/core.js?v=0a95744e"></script>
+<script src="js/core.js?v=acb193fa"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">

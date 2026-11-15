@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.8 (build 100): Goldfish and daily puzzle boards easier to read (not live yet)
+
+Changed files: js/core.js (Goldfish board, puzzle board, version, What's new), index.html (board styles, file stamps), puzzle/test/screen.cjs (hand cards are buttons now), sw.js (cache prize-trainer-v100) and CHANGES.md.
+
+- Goldfish and the daily puzzle draw the board as a play mat in RdyDeck's own colors and type: the Active Spot large, with Prizes, deck and discard as piles beside it, and the Bench under it (5 spots, open ones shown). The puzzle shows both halves, your opponent's on top, with the Stadium on the line between.
+- Pokemon names and HP are larger. Puzzle Pokemon show an HP bar and their damage on the card. Attached Energy shows as a colored dot and its type for each kind, with a count. Tools show as "Tool: name".
+- Your puzzle hand shows as cards with their names (a count on repeats). Tap one to read it, as before.
+- No game logic or grade changes. Grade check and puzzle tests unchanged.
+
 # RdyDeck 2.7.9 (build 99): grade vs win rate, and the results share counts newest set games three times (15 Nov 2026)
 
 Changed files: js/v69-grade-blend.js, js/core.js (version, What's new), index.html (file stamps), how-grading-works.html, .github/pages/how-grading-works.html, tests/grade-baseline.json, sw.js (cache prize-trainer-v99) and CHANGES.md.
