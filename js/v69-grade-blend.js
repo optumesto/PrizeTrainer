@@ -236,7 +236,9 @@ function g68Blend(R, deck) {
   const card = R.overall;
   // 2.7.8: results and cards count evenly once an archetype has 500 games, and the share rises in a
   // straight line before that (100 games 10%, 250 games 25%), so a few games cannot swing a grade.
-  let w = G68_WMAX * Math.min(1, (st.games || 0) / G68_FULL) * (b ? b.fit : 1);
+  // 2.7.9: games since the newest set count three times here too, as in the results score, so a deck
+  // with a poor record is not lifted just because most of its games came before the newest set.
+  let w = G68_WMAX * Math.min(1, st.n / G68_FULL) * (b ? b.fit : 1);
   if (card < 6) w *= gClamp((card - 4) / 2, 0, 1);
   if (w < 0.01) return R;
   R.cardOverall = card;

@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.9 (build 99): the results share counts newest set games three times (15 Nov 2026)
+
+Changed files: js/v69-grade-blend.js, js/core.js (version, What's new), index.html (file stamps), how-grading-works.html, .github/pages/how-grading-works.html, tests/grade-baseline.json, sw.js (cache prize-trainer-v99) and CHANGES.md.
+
+- 2.7.8 sized the results share by raw games, while the results score counts games since the newest set three times. A deck with a poor record built mostly before the newest set got less weight on that record and rose: Mega Charizard X 8.5 to 8.9 on 153 games at 33% wins. The share now counts games the same way as the score (500 counted games for half).
+- Grade check against 2.7.8: 6 of 132 lists move. Mega Charizard X 8.9 to 8.6, Froslass Munkidori 8.7 to 8.5, Mega Absol Box 8.5 to 8.3, Iron Thorns 7.3 to 7.1, Mega Manectric 8.9 to 8.8, Okidogi Barbaracle 8.5 to 8.6.
+- Tracking: grade as shown +0.84 to +0.85 (all results), +0.75 to +0.76 (since the newest set).
+
 # RdyDeck 2.7.8 (build 98): tournament results count evenly with cards (15 Nov 2026)
 
 Changed files: js/v69-grade-blend.js, js/core.js (version, What's new), js/v29-rotation.js, index.html (file stamps, help text), how-grading-works.html, .github/pages/how-grading-works.html, deck-grader.html, tests/grade-baseline.json, sw.js (cache prize-trainer-v98) and CHANGES.md.
