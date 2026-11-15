@@ -21,6 +21,10 @@ on:
         description: 'Only read earlier tournaments again for the deck builder card data (meta-cards.json); leaves everything else alone'
         type: boolean
         default: false
+      slow:
+        description: 'Only read new tournaments for matchups.json and the card data, 30 seconds apart, 25 a run (about 30 requests per 15 minutes)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write            # lets the job commit data.json back to this repo
@@ -32,7 +36,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 45   # a cards_only run reads about 300 requests 5 seconds apart
+    timeout-minutes: 45   # a cards_only run reads about 300 requests 5 seconds apart; a slow run about 55 requests 30 seconds apart
     steps:
       - uses: actions/checkout@v5
         with:
@@ -43,17 +47,17 @@ jobs:
           node-version: '22'
 
       - name: Refresh data.json
-        if: ${{ !inputs.cards_only }}
+        if: ${{ !inputs.cards_only && !inputs.slow }}
         run: node refresh-data.mjs data.json builder.json
 
       - name: Refresh the deck builder's card list
-        if: ${{ !inputs.cards_only }}
+        if: ${{ !inputs.cards_only && !inputs.slow }}
         # A failed run keeps last week's cards.json; it never blocks the refresh.
         continue-on-error: true
         run: node build-cards.mjs cards.json data.json
 
       - name: Check card facts
-        if: ${{ !inputs.cards_only }}
+        if: ${{ !inputs.cards_only && !inputs.slow }}
         # A failed check never blocks the refresh; card-check.md says what happened.
         continue-on-error: true
         run: node check-cards.mjs data.json card-check.md index.html
@@ -64,10 +68,11 @@ jobs:
         env:
           PT_BACKFILL: ${{ inputs.backfill && '1' || '' }}
           PT_CARDS_ONLY: ${{ inputs.cards_only && '1' || '' }}
+          PT_SLOW: ${{ inputs.slow && '1' || '' }}
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
       - name: Check grades against results
-        if: ${{ !inputs.cards_only }}
+        if: ${{ !inputs.cards_only && !inputs.slow }}
         # Ranks archetypes by grade and by this week's results and writes grade-results.md.
         # A failed run keeps last week's report; it never blocks the refresh.
         continue-on-error: true
@@ -76,7 +81,7 @@ jobs:
           node tests/grade-check.mjs --results=grade-results.md
 
       - name: Update sitemap dates
-        if: ${{ !inputs.cards_only }}
+        if: ${{ !inputs.cards_only && !inputs.slow }}
         # A failed run keeps the old dates; it never blocks the refresh.
         continue-on-error: true
         run: node update-sitemap.mjs sitemap.xml
