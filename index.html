@@ -180,7 +180,6 @@
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   .ic { width:20px; height:20px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .ic-sm { width:16px; height:16px; }
-  .ic-lg { width:24px; height:24px; }
   .num { font-family:var(--display); font-variant-numeric:tabular-nums; }
 
   /* ── Screens ── */
@@ -190,7 +189,7 @@
   .scrollable { overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
 
   /* ── App bars ── */
-  .app-bar, .review-header, .game-header, .ws-header {
+  .review-header, .game-header, .ws-header {
     position:sticky; top:0; z-index:30;
     display:flex; align-items:center; gap:0.75rem;
     min-height:60px; padding:0.5rem var(--bar-x);
@@ -238,7 +237,6 @@
   .btn-grass { background:var(--success); color:#03160b; border-color:transparent; font-weight:700; }
   .btn-grass:hover { background:color-mix(in srgb, var(--success) 88%, white); }
   body[data-theme="light"] .btn-grass { color:#fff; }
-  .btn-water { background:color-mix(in srgb, var(--info) 14%, transparent); color:var(--info); border-color:color-mix(in srgb, var(--info) 40%, transparent); }
   .btn-ghost { background:transparent; border-color:transparent; color:var(--text-2); }
   .btn-ghost:hover { background:var(--surface-2); color:var(--text); }
   .btn-sm { min-height:38px; padding:0 0.85rem; font-size:0.875rem; border-radius:10px; }
@@ -249,7 +247,6 @@
     font-family:var(--font); font-size:var(--fs-lg); font-weight:700; color:var(--text);
     letter-spacing:-0.01em; margin:0 0 0.75rem; line-height:1.3;
   }
-  .overline { font-size:var(--fs-xs); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); }
 
   /* ══════════════════════════════
      HOME
@@ -258,15 +255,6 @@
   .app-header { padding:1.25rem var(--bar-x) 0.25rem; }
   .app-header-inner { display:flex; align-items:center; gap:0.85rem; }
   .brand { display:flex; align-items:center; gap:0.85rem; flex:1; min-width:0; }
-  .pball {
-    width:44px; height:44px; border-radius:50%; flex-shrink:0; position:relative;
-    background:linear-gradient(180deg, var(--accent) 0 46%, #10141c 46% 54%, #f4f1e8 54% 100%);
-    box-shadow:0 0 0 2px #10141c inset, 0 6px 18px -6px rgba(244,182,43,0.6);
-  }
-  .pball::after {
-    content:''; position:absolute; left:50%; top:50%; width:14px; height:14px; transform:translate(-50%,-50%);
-    border-radius:50%; background:#f4f1e8; box-shadow:0 0 0 3px #10141c;
-  }
   .app-title {
     font-family:var(--display); font-weight:900; font-size:1.625rem; line-height:1.1;
     letter-spacing:-0.01em; color:var(--text);
@@ -274,9 +262,6 @@
   .app-title span { color:var(--accent); }
   body[data-theme="light"] .app-title span { color:var(--accent-2); }
   .app-subtitle { font-size:var(--fs-sm); color:var(--text-2); margin-top:0.15rem; }
-  #theme-toggle-btn .ic-sun { display:none; }
-  body[data-theme="light"] #theme-toggle-btn .ic-sun { display:block; }
-  body[data-theme="light"] #theme-toggle-btn .ic-moon { display:none; }
 
   .header-stats { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem; }
   .header-stats:empty { display:none; }
@@ -410,9 +395,6 @@
   }
   body[data-theme="light"] .home-action .ha-ic { background:var(--accent-soft); }
   .home-action .ha-ic .ic { width:18px; height:18px; }
-  .home-footer { display:flex; justify-content:center; margin-top:1.25rem; }
-  .link-danger { font-size:var(--fs-sm); font-weight:600; color:var(--text-3); padding:0.5rem 0.75rem; border-radius:8px; display:inline-flex; gap:0.4rem; align-items:center; }
-  .link-danger:hover { color:var(--danger); background:color-mix(in srgb, var(--danger) 8%, transparent); }
 
   /* ══════════════════════════════
      MODALS AND SHEETS
@@ -445,7 +427,6 @@
     font-family:var(--font); font-size:var(--fs-xl); font-weight:700; letter-spacing:-0.01em;
     color:var(--text); margin-bottom:1rem; line-height:1.25;
   }
-  .modal-sub { font-size:var(--fs-md); color:var(--text-2); margin:-0.6rem 0 1rem; line-height:1.5; }
   label, .field-label { display:block; font-size:var(--fs-sm); font-weight:600; color:var(--text-2); margin-bottom:0.4rem; }
   .field-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; }
   .field-row label { margin-bottom:0; }
@@ -553,7 +534,6 @@
     font-size:var(--fs-xs); color:var(--text-2); text-align:center; line-height:1.3;
     overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   }
-  .picker-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
 
   /* How to play, shortcuts, backup, share */
   .instr-list { display:flex; flex-direction:column; gap:0.9rem; }
@@ -1273,7 +1253,6 @@
     .home-cta .btn-block { width:auto; min-width:280px; }
     .review-cards { grid-template-columns:repeat(6,1fr); gap:1rem 0.8rem; }
     .app-title { font-size:2rem; }
-    .pball { width:52px; height:52px; }
     .app-header { padding-top:2rem; }
 
     .kb-hints {
@@ -1791,7 +1770,6 @@
     .fmt-opt, .mode-opt { min-height:44px; }
     #mode-tournament #mode-tournament-n { min-height:44px; height:44px; }
     .energy-quick-btn { min-height:44px; }
-    .link-danger { min-height:44px; }
     .btn-thumb-edit { width:44px; height:44px; right:-16px; bottom:-16px; background:transparent; border:0; opacity:1; }
     .btn-thumb-edit::before { content:''; position:absolute; width:26px; height:26px; border-radius:50%; background:var(--surface-3); border:2px solid var(--surface); box-sizing:border-box; }
     .btn-thumb-edit .ic { position:relative; }
@@ -1822,10 +1800,10 @@
   @media (prefers-reduced-motion:reduce) { .screen.active { animation:none; } }
 
   /* Solid bars: no blur behind sticky headers, tabs and footers (smoother scrolling on phones) */
-  .app-bar, .review-header, .game-header, .ws-header, .review-footer, .review-tabs {
+  .review-header, .game-header, .ws-header, .review-footer, .review-tabs {
     -webkit-backdrop-filter:none; backdrop-filter:none;
   }
-  .app-bar, .review-header, .game-header, .ws-header, .review-footer { background:var(--bg); }
+  .review-header, .game-header, .ws-header, .review-footer { background:var(--bg); }
   .review-tabs { background:var(--surface-2); box-shadow:none; }
   .modal-overlay, .loading-overlay { -webkit-backdrop-filter:none; backdrop-filter:none; }
   .modal-overlay .modal { overscroll-behavior:contain; }
@@ -1840,10 +1818,10 @@
   .tour-t { font-weight:800; }
 
   /* Labels in sentence case, not shouting */
-  .overline, .fmt-badge, .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl {
+  .fmt-badge, .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl {
     text-transform:none; letter-spacing:0; font-weight:600;
   }
-  .overline, .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl { font-size:var(--fs-xs); }
+  .g-fac .fl, .o-tile .ol, .history-table th, .hp-lbl, .pg-tile .pl { font-size:var(--fs-xs); }
 
   /* No glows: color is for state, not decoration */
   .btn-primary, .deck-play, .play-btn { box-shadow:none; }
@@ -1852,9 +1830,8 @@
   .dc-card { background:var(--surface); border-color:var(--line); box-shadow:none; }
   .dc-ic { background:var(--surface-2); color:var(--accent); }
   .g-hero { box-shadow:none; }
-  .pball { box-shadow:none; }
   .pb-new { animation:none; }
-  [style*="text-shadow"], .celebrate-text, .perfect-text { text-shadow:none; }
+  [style*="text-shadow"] { text-shadow:none; }
 
   /* Format badge: quiet outline instead of a colored pill */
   .fmt-badge { padding:0.1rem 0.45rem; border-radius:var(--r-xs); border:1px solid var(--line-2); background:none; }
@@ -2253,10 +2230,10 @@
   :focus-visible { outline-color:var(--mark); }
 
   /* Bars: flat, ruled, no blur */
-  .app-bar, .review-header, .game-header, .ws-header, .review-footer {
+  .review-header, .game-header, .ws-header, .review-footer {
     -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--bar-bg);
   }
-  .app-bar, .review-header, .game-header, .ws-header { border-bottom:2px solid var(--rule); }
+  .review-header, .game-header, .ws-header { border-bottom:2px solid var(--rule); }
   .review-footer { border-top:2px solid var(--rule); }
   .bar-eyebrow { font-family:var(--mono); font-size:0.6875rem; font-weight:500; text-transform:uppercase; letter-spacing:0.08em; }
   .review-deck-name, .game-deck-name, .ws-title {
@@ -2268,11 +2245,6 @@
   /* Header: a deck box mark and the name set like a tournament header */
   .app-header { padding-top:1.1rem; }
   .app-header-inner { border-bottom:2px solid var(--rule); padding-bottom:0.8rem; }
-  .pball, body[data-theme="light"] .pball {
-    width:26px; height:36px; border-radius:2px; background:transparent; box-shadow:none;
-    border:2px solid var(--text); position:relative; overflow:hidden;
-  }
-  .pball::after { left:0; right:0; top:0; width:auto; height:9px; transform:none; border-radius:0; background:var(--mark); box-shadow:none; }
   .app-title { font-family:var(--display); font-weight:800; font-size:2rem; line-height:0.95; text-transform:uppercase; letter-spacing:0.01em; }
   .app-title span, body[data-theme="light"] .app-title span { color:var(--mark); }
   .app-subtitle { font-family:var(--mono); font-size:0.6875rem; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-3); margin-top:0.3rem; }
@@ -2284,7 +2256,6 @@
   }
   .section-title { font-size:1.125rem; display:flex; align-items:center; gap:0.6rem; }
   .section-title::after { content:''; flex:1; height:1px; background:var(--line-2); }
-  .overline { font-family:var(--mono); font-weight:500; letter-spacing:0.06em; text-transform:uppercase; }
 
   /* Buttons: square, solid, no glow */
   .btn { border-radius:var(--r-sm); font-weight:600; }
@@ -2295,7 +2266,6 @@
   }
   .btn-primary:hover { background:var(--accent); opacity:0.9; }
   .btn-grass { border-radius:var(--r-sm); }
-  .btn-water { background:transparent; }
 
   /* Decks on home: entries on a sheet, not floating cards */
   .deck-list { gap:0 !important; }
@@ -2505,7 +2475,7 @@
   .results-time { background:none; border:0; box-shadow:none; padding:0; border-radius:0; font-family:var(--mono); font-weight:500; color:var(--text-2); }
   .session-rating { border-radius:2px; box-shadow:none; }
   .prize-reveal, .missed-notes, .guess-comparison, .guess-timing, .history-section, .progress-line, #pb-display > * { border-radius:4px; box-shadow:none; }
-  .prize-reveal-grid > *, .prize-reveal-grid .prc, .guess-compare-grid { border-radius:4px; box-shadow:none; }
+  .prize-reveal-grid > *, .guess-compare-grid { border-radius:4px; box-shadow:none; }
   .guess-compare-title { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
   /* v37: save and open decks (backup sheet) */
   .bk37-sec { border-top:2px solid var(--rule, var(--line)); padding-top:0.6rem; margin-top:1rem; }
@@ -2585,7 +2555,6 @@
   #daily-card:not(:empty) { margin-top:1.75rem !important; }
   .home-more { margin-top:2.25rem !important; }
   .home-more .section-title { margin-bottom:0.6rem; }
-  .home-footer { display:none; }
 
   /* About text for search engines and new visitors, kept quiet at the bottom */
   .about38 { margin-top:2.5rem !important; padding-top:1.25rem; border-top:1px solid var(--line-2); color:var(--text-3); font-size:0.875rem; line-height:1.55; }
@@ -2700,7 +2669,7 @@
   html:not(#z) body .deck-info .deck-rot .ic { display:none; }
   html:not(#z) body .deck-meta { display:block; margin:0.15rem 0 0; }
   html:not(#z) body .deck-grade span { font-family:var(--font); font-size:0.875rem; font-weight:600; text-transform:none; letter-spacing:0; color:var(--col, var(--text-2)); }
-  html:not(#z) body :is(.bar-eyebrow, .overline, .ad32-lbl, .review-stat-label, .ol, .ol-turn-lbl, .ol-dl, .deck-act, .review-body th, .r29-lh) {
+  html:not(#z) body :is(.bar-eyebrow, .ad32-lbl, .review-stat-label, .ol, .ol-turn-lbl, .ol-dl, .deck-act, .review-body th, .r29-lh) {
     font-family:var(--display); font-size:0.8125rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-3);
   }
   html:not(#z) body .review-body th.on { color:var(--text); }
@@ -2830,7 +2799,7 @@ const PT_PLAY = (function () {
 </script>
 <style>.pt-play #pwa-install-btn { display:none !important; }
   /* v46: the Android note is for the website only, never inside the Play app. */
-  .pt-play .an46, .pt-play .an61 { display:none !important; }
+  .pt-play .an61 { display:none !important; }
   /* v61: the Android app note sits in the header, where people see it. It becomes the Play link once the app is live. */
   .an61 { display:flex; align-items:center; gap:0.45rem; width:max-content; max-width:100%; margin-top:0.75rem; padding:0.35rem 0.8rem 0.35rem 0.6rem;
     border:1px solid color-mix(in srgb, var(--mark) 55%, var(--line)); border-radius:999px; background:color-mix(in srgb, var(--mark) 8%, var(--surface)); color:var(--text); font-family:var(--font); font-size:0.875rem; line-height:1.3; }
@@ -2855,8 +2824,6 @@ const PT_PLAY = (function () {
     <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></symbol>
     <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
     <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M10 13h4M7 16h10"/></symbol>
-    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></symbol>
-    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
     <symbol id="i-save" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -5833,7 +5800,6 @@ function gCoherence(deck) {
   return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present, parts };
 }
 
-function gBestAtkHP(deck) { let h=0; deck.forEach(e=>{ if(e.card&&e.card.attacks&&e.card.hp>h)h=e.card.hp; }); return h||200; }
 
 /**
  * What one attack reaches. A bonus that waits on the discard pile counts
@@ -7572,76 +7538,8 @@ function showReviewTab(which) {
   if (which==='notes') renderNotes();
 }
 
-function renderGrade() {
-  const el=document.getElementById('grade-body');
-  const deck=state.decks.find(d=>d.id===state.activeDeckId);
-  if (!el||!deck) return;
-
-  const anyData=(deck.cards||[]).some(c=>c.supertype);
-  if (!anyData) {
-    el.innerHTML = `<div class="g-empty">No card data for this deck yet.<br><br>
-      Card roles are read when a deck is imported. Open <b>Edit deck</b> and save it
-      to fetch them, then come back.</div>`;
-    return;
-  }
-
-  const R=gradeDeck(deck);
-  const [band,col]=gBand(R.overall);
-  const cohV=gR1(R.coh.score*10), viaV=gR1(R.via.score*10);
-
-  const gMeter = v => `<div class="g-meter"><span style="width:${Math.max(0, Math.min(100, v * 10))}%;background:${gBand(v)[1]}"></span></div>`;
-  let h=`<div class="g-hero">
-    <div class="g-ring" style="--p:${Math.max(0, Math.min(100, R.overall * 10))};--col:${col}">
-      <div class="g-score" style="color:${col}">${R.overall.toFixed(1)}<small>/10</small></div>
-    </div>
-    <div class="g-band" style="--col:${col}">${band}</div>
-    <div class="g-factors">
-      <div class="g-fac"><div class="fl">Coherence</div>
-        <div class="fv" style="color:${gBand(cohV)[1]}">${cohV.toFixed(1)}</div>
-        ${gMeter(cohV)}<div class="fs">Does it do its thing</div></div>
-      <div class="g-times">×</div>
-      <div class="g-fac"><div class="fl">Viability</div>
-        <div class="fv" style="color:${gBand(viaV)[1]}">${viaV.toFixed(1)}</div>
-        ${gMeter(viaV)}<div class="fs">Can it win a game</div></div>
-    </div>
-  </div>`;
-
-  if (R.unread>0) h+=`<div class="g-sec"><div class="g-item warn">
-    <div class="gt">${R.unread} card${R.unread>1?'s':''} not read</div>
-    <p>Card roles could not be resolved for these, so they contributed nothing to the grade.
-    Opening the deck again while online retries the lookup.</p></div></div>`;
-
-  if (R.coh.synergies.length || (R.plan||[]).length) {
-    h+=`<div class="g-sec"><div class="g-sec-t">How it plays</div>
-      <div class="g-sec-i">The main attacker and the combos the engine found between your own cards. This is what the deck is trying to do.</div>`;
-    (R.plan||[]).concat(R.coh.synergies).forEach(s=>h+=`<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`);
-    h+=`</div>`;
-  }
-
-  const problems=R.coh.flaws.concat(R.via.findings.filter(f=>f.sev!=='ok'));
-  if (problems.length) {
-    h+=`<div class="g-sec"><div class="g-sec-t">What to fix</div>
-      <div class="g-sec-i">Sorted by how badly it hurts. Critical items stop the deck from functioning.</div>`;
-    problems.sort((a,b)=>(a.sev==='crit'?0:1)-(b.sev==='crit'?0:1))
-      .forEach(f=>h+=`<div class="g-item ${f.sev}"><div class="gt">${esc(f.t)}</div><p>${esc(f.d)}</p></div>`);
-    h+=`</div>`;
-  }
-
-  const good=R.via.findings.filter(f=>f.sev==='ok');
-  if (good.length) {
-    h+=`<div class="g-sec"><div class="g-sec-t">Working well</div>`;
-    good.forEach(f=>h+=`<div class="g-item ok"><div class="gt">${esc(f.t)}</div><p>${esc(f.d)}</p></div>`);
-    h+=`</div>`;
-  }
-
-  h+=`<div class="g-wip"><b>Work in progress.</b> This grade runs entirely on your own list:
-    whether the cards support each other, and whether the plan can close a game. The grade itself
-    does not compare you to the current metagame; Against the meta shows how decks like yours have
-    done in recent online tournaments. Card roles are inferred from card text, which is usually right and occasionally
-    not. Read the findings, ignore the decimal places.</div>`;
-
-  el.innerHTML=h;
-}
+// renderGrade: the Grade tab is drawn by the version set further down (2.2 and later).
+var renderGrade;
 
 /* ============================================================
    OPENING ODDS (the Monte Carlo half of MetaForge)
@@ -9260,12 +9158,7 @@ function renderCompare(deck) {
     <div id="cmp-body"></div></div>`;
   return h;
 }
-function openCompare(val) {
-  _cmpSel = val;
-  renderNotes();
-  const s = document.getElementById('cmp-sec');
-  if (s && s.scrollIntoView) s.scrollIntoView({ block: 'start' });
-}
+var openCompare;   // set further down
 function compareOddsRow(label, a, b, higherIsGood) {
   const f = x => x == null ? '?' : oPct1(x);
   let cls = '';
@@ -12298,10 +12191,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.7',
-  kind: 'generation',
+  version: 'v2.7.1',
+  kind: 'fix',
   items: [
-    { t: 'Added: Shareable grade cards', d: 'Share grade makes a wide or square picture with your grade, deck, main attacker and its art, plus a link that opens the list.' }
+    { t: 'Removed unused code', d: 'Old code the app no longer ran is gone, so the page is a little smaller. Nothing you see changes.' },
+    { t: 'Fixed: browsers that block canvas', d: 'Jump links on the Grade tab and Compare now scroll to the right place there too.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -12393,7 +12287,6 @@ function puzzleStats() {
   const all = Object.values(puzzleStore().results);
   return { played: all.length, won: all.filter(r => r.won).length, playRun: puzzleRun(() => true), winRun: puzzleRun(r => r.won) };
 }
-function puzzleStreak() { return puzzleStats().playRun; }
 function puzzleStreakText(st) {
   const bits = [];
   if (st.winRun > 1) bits.push(`${st.winRun} wins in a row`);
@@ -12952,17 +12845,7 @@ async function deleteTlog(id) {
   closeSheet();
   renderTlog();
 }
-function exportTlog() {
-  const list = (state.tlog || []).filter(x => !_tlogDeck || x.deckId === _tlogDeck);
-  const cell = v => { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
-  const rows = [['Date', 'Event', 'Deck', 'Version', 'Opponent', 'Result', 'Prizes taken', 'Prizes given', 'Notes']]
-    .concat(list.map(x => { const d = state.decks.find(z => z.id === x.deckId); return [x.day, x.event, d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.taken, x.given, x.notes]; }));
-  const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = 'rdydeck-tournament-log.csv';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-}
+var exportTlog;   // set further down (tournament log, v28)
 
 // ═══════════ OFFLINE CARD ART (v23) ═══════════
 // When a card picture loads from another site, tell the service worker so it
@@ -14615,13 +14498,11 @@ function goHome() {
   showScreen('home');
   renderHome();
 }
-function confirmQuit() { if (confirm('Quit this session?')) { stopTimer(); goHome(); } }
+var confirmQuit;   // set further down
 
 // ═══════════ THUMBNAIL PICKER ═══════════
-let pickerDeckId = null;
 
 function openThumbPicker(deckId) {
-  pickerDeckId = deckId;
   const deck = state.decks.find(d => d.id === deckId);
   if (!deck) return;
 
@@ -14658,7 +14539,6 @@ function openThumbPicker(deckId) {
 
 function closeThumbPicker() {
   document.getElementById('thumb-picker-modal').classList.remove('active');
-  pickerDeckId = null;
 }
 
 async function selectThumb(deckId, imageUrl) {
@@ -14831,13 +14711,7 @@ function closeModeModal() {
   document.getElementById('mode-modal').classList.remove('active');
 }
 
-async function deleteDeckFromModal() {
-  if (!confirm('Delete this deck and all its history?')) return;
-  closeModeModal();
-  state.decks = state.decks.filter(d => d.id !== modeDeckId);
-  await saveState();
-  renderHome();
-}
+var deleteDeckFromModal;   // set further down (behind the delete confirm)
 
 function setModeOpt(group, val, silent) {
   if (!silent) modeSettings[group] = val;
@@ -14987,22 +14861,9 @@ function openHowToPlay() { document.getElementById('how-to-modal').classList.add
 function closeHowToPlay() { document.getElementById('how-to-modal').classList.remove('active'); }
 function openShortcuts() { document.getElementById('shortcuts-modal').classList.add('active'); }
 function closeShortcuts() { document.getElementById('shortcuts-modal').classList.remove('active'); }
-
-function toggleTheme() {
-  const current = document.body.dataset.theme === 'light' ? 'light' : 'dark';
-  const next = current === 'light' ? 'dark' : 'light';
-  setTheme(next);
-  try { localStorage.setItem('ptcg_theme', next); } catch(e) {}
-}
 function setTheme(t) {
   if (t === 'light') document.body.dataset.theme = 'light';
   else delete document.body.dataset.theme;
-  const btn = document.getElementById('theme-toggle-btn');
-  if (btn) {
-    const lbl = t === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
-    btn.title = lbl;
-    btn.setAttribute('aria-label', lbl);
-  }
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', t === 'light' ? '#f2eee5' : '#131210');
 }
@@ -15015,11 +14876,7 @@ function loadThemePref() {
 }
 
 // ═══════════ BACKUP / RESTORE ═══════════
-function openBackupModal() {
-  const data = JSON.stringify(state, null, 2);
-  document.getElementById('backup-textarea').value = data;
-  document.getElementById('backup-modal').classList.add('active');
-}
+var openBackupModal;   // set further down (backup sheet, v37)
 
 function closeBackupModal() {
   document.getElementById('backup-modal').classList.remove('active');
@@ -15083,7 +14940,6 @@ async function shareApp() {
   document.getElementById('share-modal-overlay').classList.add('active');
 
   // Detect capability
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const canNativeShare = !!(navigator.share);
 
   if (canNativeShare) {
@@ -15209,8 +15065,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.7';
-const PT_BUILD = 90;
+const PT_VERSION = 'v2.7.1';
+const PT_BUILD = 91;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -15399,23 +15255,7 @@ Energy: 15
 ];
 
 function starterLoaded(id) { return state.decks.some(d => d.starter === id); }
-function openStarterPicker() {
-  closeImportModal();
-  const rows = STARTER_DECKS.map(s => {
-    const n = parseDeckList(s.list).reduce((a, c) => a + c.count, 0);
-    const done = starterLoaded(s.id);
-    return `<div class="st-row">
-      <div class="st-tx"><div class="st-t">${esc(s.name)}</div>
-        <div class="st-s">${esc(s.place)}, ${esc(s.event)}, ${esc(s.date)}. Played by ${esc(s.by)}${n !== 60 ? ', ' + n + ' cards' : ''}</div></div>
-      <button class="btn btn-sm ${done ? '' : 'btn-primary'}" onclick="loadStarterDeck('${s.id}')">${done ? 'Open' : 'Load'}</button>
-    </div>`;
-  }).join('');
-  openSheet(`<div class="modal-title">Starter decks</div>
-    <div class="modal-hint" style="margin-bottom:0.9rem">Real Standard lists that placed at recent Regionals. List as of ${STARTER_AS_OF}. Load one to start practicing right away, then edit it to match your own build.</div>
-    <div class="st-list">${rows}</div>
-    <div class="modal-hint" style="margin-top:0.9rem">Lists as posted on Limitless (limitlesstcg.com). The format changes with every new set, so check a list before an event.</div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Close</button><button class="btn" onclick="closeSheet();openImportModal()">${ic23('clipboard')}Paste my own</button></div>`);
-}
+var openStarterPicker;   // set further down
 async function loadStarterDeck(id) {
   const s = STARTER_DECKS.find(x => x.id === id);
   if (!s) return;
@@ -15803,18 +15643,6 @@ loadStarterDeck = async function (id) {
   };
 })();
 
-// A2. "Compare with the original" scrolled the Compare section under the
-// sticky header and tabs, hiding its title and the Compare with menu.
-openCompare = function (val) {
-  _cmpSel = val;
-  renderNotes();
-  const s = document.getElementById('cmp-sec');
-  if (!s) return;
-  const bars = [...document.querySelectorAll('#screen-review .review-header, #screen-review .review-tabs')]
-    .map(e => e.getBoundingClientRect().bottom);
-  const top = bars.length ? Math.max(...bars) : 0;
-  window.scrollBy(0, s.getBoundingClientRect().top - top - 8);
-};
 
 // A3. Editing a logged match whose deck was deleted moved it to whichever
 // deck was first in the list. Keep it on the deleted deck instead.
@@ -16871,58 +16699,7 @@ function r29NeedsCheck(deck, rows) {
   // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
   return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf') && !r.checked);
 }
-async function r29CheckReprints(deck) {
-  if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
-  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
-  const todo = r29NeedsCheck(deck, r29Rows(deck));
-  if (!todo.length) return;
-  _r29Busy.add(deck.id); _r29Tried.add(deck.id);
-  const found = {};
-  const batches = [];
-  for (let i = 0; i < todo.length; i += 4) batches.push(todo.slice(i, i + 4));
-  const get = async url => {
-    for (let a = 0; a < 2; a++) {
-      try {
-        const init = {};
-        if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
-        const r = await fetch(url, init);
-        if (r.ok) return await r.json();
-        if (r.status !== 429 && r.status < 500) return null;
-      } catch (_) {}
-      if (!a) await new Promise(r => setTimeout(r, 1200));
-    }
-    return null;
-  };
-  await Promise.all(batches.map(async b => {
-    const q = '(' + b.map(r => 'name:"' + TCGEnrich.apiName(r.name).replace(/"/g, '') + '"').join(' OR ') + ')';
-    const json = await r52AllPages(get, 'https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) +
-      '&select=id,name,supertype,regulationMark,attacks,abilities&pageSize=250');
-    if (!json || !Array.isArray(json.data)) return;
-    b.forEach(r => {
-      let best = null;
-      json.data.forEach(c => {
-        if (r29Key(c.name) !== r.key || !r29M(c.regulationMark)) return;
-        // A Pokemon only counts as a reprint with the same attacks and Abilities.
-        if (r.pkmn) {
-          const atk = (c.attacks || []).map(a => r29Key(a.name)).filter(Boolean).sort();
-          const abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
-          if (atk.join('|') !== r.atk.join('|') || abil.join('|') !== r.abil.join('|')) return;
-        }
-        if (!best || c.regulationMark > best) best = c.regulationMark;
-      });
-      found[r.key] = { best };
-    });
-  }));
-  _r29Busy.delete(deck.id);
-  if (!Object.keys(found).length) return;
-  if (!deck.rot29 || deck.rot29.v !== ROT29.v) deck.rot29 = { v: ROT29.v, names: {} };
-  Object.assign(deck.rot29.names, found);
-  try { await saveState(); } catch (_) {}
-  if (document.getElementById('screen-home').classList.contains('active')) renderHome();
-  const pane = document.getElementById('grade-body');
-  if (state.activeDeckId === deck.id && pane && pane.style.display !== 'none' &&
-      document.getElementById('screen-review').classList.contains('active')) renderGrade();
-}
+var r29CheckReprints;   // set further down
 
 // ── What the Grade tab shows ──
 function r29Summary(deck) {
@@ -17189,15 +16966,7 @@ function g29Item(f, cls) {
   return `<div class="g-item ${cls}"><div class="gt">${esc(f.t)}${tag ? ' ' + tag : ''}</div><p>${esc(f.d)}</p></div>`;
 }
 
-function g29Jump(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (el.tagName === 'DETAILS') el.open = true;
-  // Land just under the sticky deck tabs, not behind them.
-  const tabs = document.querySelector('.review-tabs');
-  const top = tabs ? Math.max(0, tabs.getBoundingClientRect().bottom) + 8 : 8;
-  window.scrollBy({ top: el.getBoundingClientRect().top - top, behavior: 'smooth' });
-}
+var g29Jump;   // set further down
 
 renderGrade = function () {
   const el = document.getElementById('grade-body');
@@ -17739,7 +17508,6 @@ function td30Rank(id) {
 }
 
 let _td30Failed = false;
-let _td30Last = [], _td30Main = [];
 async function td30Get(path) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -17782,7 +17550,6 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
   let map = null;
   try { map = await _v29FetchDeck.call(TCGEnrich, entries, opts); } catch (_) { map = null; }
   const firstFailed = !map || !!map.partial;
-  _td30Main = map ? [...map.entries()].filter(([, v]) => v && v.resolved).map(([k]) => k) : [];
   const list = (entries || []).filter(e => e && e.name);
   const seen = new Set();
   const missing = list.filter(e => {
@@ -17792,7 +17559,6 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
     const got = map && map.get(k);
     return !got || !got.resolved;
   }).slice(0, TD30_MAX);
-  _td30Last = [];
   if (!missing.length || (typeof navigator !== 'undefined' && navigator.onLine === false)) return map || new Map();
   if (!map) map = new Map();
   _td30Failed = false;
@@ -17817,45 +17583,14 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
   // Old data is kept only when the main source failed and a card is still unread.
   map.partial = firstFailed && [...map.values()].some(x => !x.resolved);
   map.tcgdex = read;
-  _td30Last = read;
   return map;
 };
 
-// Remember which cards came from the backup, so the grade can say so.
+// The first enrichDeckCards, for the wrappers below.
 const _v29EnrichDeck = enrichDeckCards;
-enrichDeckCards = async function (cards) {
-  _td30Last = []; _td30Main = [];
-  const cov = await _v29EnrichDeck.apply(this, arguments);
-  const from = new Set(_td30Last), main = new Set(_td30Main);
-  (cards || []).forEach(c => {
-    const k = String(c.name || '').toLowerCase();
-    if (from.has(k) && c.resolved) c.via = 'tcgdex';
-    else if (main.has(k) || c.resolved === false) delete c.via;
-  });
-  if (cov && from.size) cov.tcgdex = from.size;
-  return cov;
-};
 
-function td30Count(deck) {
-  return (deck && deck.cards || []).filter(c => c.via === 'tcgdex').length;
-}
-
-// A line on the grade when some cards came from the backup source.
+// The Grade tab before the backup line, for the wrapper below.
 const _v29RenderGrade = renderGrade;
-renderGrade = function () {
-  const r = _v29RenderGrade.apply(this, arguments);
-  const deck = typeof findDeck === 'function' ? findDeck(state.activeDeckId) : null;
-  const n = td30Count(deck);
-  const body = document.getElementById('grade-body');
-  if (body && n && !document.getElementById('td30-note')) {
-    const p = document.createElement('div');
-    p.id = 'td30-note';
-    p.className = 'r29-note td30-note';
-    p.textContent = `${n} ${n === 1 ? 'card was' : 'cards were'} read from TCGdex, the backup card database, because the main one did not have ${n === 1 ? 'it' : 'them'} yet.`;
-    body.appendChild(p);
-  }
-  return r;
-};
 
 </script>
 <script>
@@ -19090,6 +18825,9 @@ function openSettings() {
 // Measured on the drawn letters (not the text boxes), so it is exact.
 function rd38Ink(text, font) {
   const c = rd38Ink.c || (rd38Ink.c = document.createElement('canvas').getContext('2d'));
+  // 2.6.8: no canvas (blocked or out of memory) leaves the title at its CSS size,
+  // and the rest of this script still runs.
+  if (!c) return { left: 0, width: 0 };
   c.font = font;
   const m = c.measureText(text);
   return { left: -m.actualBoundingBoxLeft, width: m.actualBoundingBoxLeft + m.actualBoundingBoxRight };
@@ -19411,15 +19149,7 @@ function f40Invalid(id, msg) {
   showToast(msg);
 }
 
-// 3. Missed prize notes: a quiet "Saved" after each autosave.
-function f40Saved(root) {
-  if (!root) return;
-  let s = root.querySelector('.f40-saved');
-  if (!s) { s = document.createElement('div'); s.className = 'f40-saved'; s.setAttribute('role', 'status'); root.appendChild(s); }
-  s.textContent = 'Notes saved';
-  clearTimeout(s._t);
-  s._t = setTimeout(() => { s.textContent = ''; }, 2000);
-}
+var f40Saved;   // set further down
 
 // 4. Sheets: a close button that stays at the top, and the buttons stay at the bottom.
 (function () {
@@ -20006,7 +19736,7 @@ function pre47RenderHome() {
 }
 
 // ── The set's cards ──
-let _pre47Cards = null, _pre47From = '', _pre47Busy = false, _pre47Tried = '', _pre47Failed = false;
+let _pre47Cards = null, _pre47Busy = false, _pre47Tried = '', _pre47Failed = false;
 /** v50: a list counts only when it has every printed number and the set's total. */
 function pre47Whole(cards, official, total) {
   if (!Array.isArray(cards) || !cards.length || !official) return false;
@@ -20022,8 +19752,8 @@ async function pre47LoadCards() {
   const p = PRE47, store = pre47Cache();
   if (_pre47Cards && _pre47Cards.code === p.code) return;
   const hit = store.sets && store.sets[p.code];
-  if (p.cards) { _pre47Cards = { code: p.code, cards: p.cards }; _pre47From = 'checked'; }
-  else if (hit && hit.full && Array.isArray(hit.cards) && hit.cards.length) { _pre47Cards = hit; _pre47From = 'tcgdex'; }
+  if (p.cards) { _pre47Cards = { code: p.code, cards: p.cards }; }
+  else if (hit && hit.full && Array.isArray(hit.cards) && hit.cards.length) { _pre47Cards = hit; }
   // A list from data.json is whole already. A whole TCGdex list read in the last day is fresh enough.
   if (p.cards || !p.tcgdex || _pre47Busy || (typeof navigator !== 'undefined' && navigator.onLine === false)) { _pre47Tried = p.code; return; }
   if (hit && hit.full && Date.now() - (hit.at || 0) < 86400000) { _pre47Tried = p.code; return; }
@@ -20044,7 +19774,6 @@ async function pre47LoadCards() {
       // A partial list is never shown: the set waits until TCGdex has all of it.
       if (pre47Whole(cards, official, want)) {
         _pre47Cards = { code: p.code, cards, official, full: true, at: Date.now() };
-        _pre47From = 'tcgdex';
         store.sets = store.sets || {};
         store.sets[p.code] = _pre47Cards;
         pre47SaveCache(store);

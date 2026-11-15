@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.1 (build 91): unused code removed (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v91) and CHANGES.md.
+
+- Unused code removed, about 15 KB of index.html (1.37 MB to 1.35 MB). Each piece was checked unused: no call, no onclick, no reference in any other file.
+  - 14 old versions of functions that a later version replaced outright before the app starts (renderGrade, openCompare twice, exportTlog, confirmQuit, deleteDeckFromModal, openBackupModal, openStarterPicker, r29CheckReprints, g29Jump, f40Saved, one enrichDeckCards wrapper and one renderGrade wrapper). The originals become a one line var, so the later versions still assign to the same name.
+  - Functions and values nothing reads: gBestAtkHP, puzzleStreak, toggleTheme (the theme switch lives in Settings), isMobile, pickerDeckId, _pre47From, _td30Last, _td30Main, td30Count, and setTheme's lookup of a theme button that no longer exists.
+  - CSS for classes no page uses: .app-bar, .btn-water, .overline, .pball, .home-footer, .link-danger, .modal-sub, .picker-placeholder, .ic-lg, .perfect-text, .celebrate-text, .prc, .an46 and the old theme button; the unused sun and moon icons.
+- Fixed: on a browser that blocks canvas, measuring the title threw an error that stopped the rest of the v38 script, so Grade tab jump links and Compare used older scroll code. The title now keeps its CSS size there and the script runs on.
+- Grade check: 132 tournament lists, none moved. 96 app screens (home, 8 decks across all 7 tabs, Compare, Settings, backup, starter decks, tournament log, deck builder and others) render the same as 2.7.
+
 # RdyDeck 2.7 (build 90): shareable grade cards (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v90), CHANGES.md.
