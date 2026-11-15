@@ -2,6 +2,23 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.3 (build 93): audit fixes (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v93), privacy.html, tests/grade-check.mjs, tests/grade-baseline.json and CHANGES.md.
+
+- Reprinted Trainers count as legal right away. Before the online reprint check runs, a Trainer or Special Energy is now decided from the weekly legal card list (cards.json, saved on the device): a name on it is legal in any printing, a name off it with an old mark is out. Before, those cards waited as "not confirmed", because capping on the printed mark alone held 23 legal top lists at 4.9 (they name old printings like Pokegear 3.0 SVI). Pokemon still wait for the online check, since a reprint has to match their attacks. The online check still runs and has the last word. The grade check now asserts that an old printing of Ultra Ball and Pokegear 3.0 is legal and a rotated Trainer is out.
+- Mew Box: a copied attack counts for 70% when the Pokemon it copies from has only 1 copy in its line, since it is often not in play. Only applies to copy decks (Mew ex's Memory Helix, N's Zoroark ex's Night Joker); lines of 2 or more count in full. Mew Box 8.1 to 7.5.
+- Energy check: Items that search the deck for Basic Energy count as half an Energy each, up to the archetype's low end. Dragapult with 4 Energy and 4 Energy Search no longer reads as light on Energy.
+- New warning when the main attacker's strongest attack can't be paid with the Energy the list runs (for example Phantom Dive with no Psychic Energy), naming the attack and the missing type.
+- Grade explanation names both Synergy numbers when the fit cut does not lower the grade. The Grade tab bar is solid instead of see through.
+- Legendary Pyroduct, which turns off Abilities for both players, now reads as disruption.
+- Cards tab: Trainers and Energy with the same name show as one tile with the copies added up.
+- Prize guessing screen: a Back to menu button beside Reveal prizes. Quit and Reveal keep their confirm box.
+- Privacy policy: the ad lines now say ads are not on yet and what happens once they are. The Cloudflare analytics line is unchanged, since the beacon does load (Cloudflare adds it at the edge).
+- Changelog 2.6.5 now says the sample deck button shows on an empty home screen. The service worker saves data files under their bare address, and a stale build number in a comment is fixed.
+- Grade check: 132 tournament lists, 1 moved: Mew Box 8.1 to 7.5. Tracking tournament results: grade as shown 0.79 to 0.81, newest set 0.52 unchanged, cards alone unchanged.
+- Puzzle 19 (Nov 28): solvable, a 4 play win (Secret Box for Boss's Orders, Boss's Orders on Budew, retreat to the other Grookey, Branch Poke).
+
 # RdyDeck 2.7.2 (build 92): missing staples lower the grade (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v92), tests/grade-builds.json, privacy.html, sitemap.xml and CHANGES.md.

@@ -6227,8 +6227,9 @@ function g37Reach(a, deck, self) {
 /**
  * 2.7.3: how much a copied attack can be counted on, from how thin the line of the Pokemon it
  * copies is. The copy only works while that Pokemon is in play, so a 1-of (or a 1-1 line) is
- * there far less often than a 3-of. The thinnest step of its line counts: 3 or more copies is
- * full credit, 2 is 85%, 1 is 70%. Returns { f, n } with n the thinnest count.
+ * there far less often than a 2-of or more. The thinnest step of its line counts: 2 or more copies
+ * is full credit, 1 is 70%. (2 copies at 85% lowered N's Zoroark, which wins 55.6% since the newest
+ * set, and made grades track results worse.) Returns { f, n } with n the thinnest count.
  */
 function g273SrcF(deck, c) {
   const nk = k => gtNorm(normalizeCardName(k || ''));
@@ -6239,7 +6240,7 @@ function g273SrcF(deck, c) {
     n = Math.min(n, m);
     const nx = deck.find(x => x.card && nk(x.card.key) === nk(cur.from)); cur = nx && nx.card;
   }
-  return { f: n >= 3 ? 1 : n === 2 ? 0.85 : 0.7, n };
+  return { f: n >= 2 ? 1 : 0.7, n };
 }
 /**
  * v60: every attack this Pokemon can use. With an Ability like Mew ex's Memory Helix that is also
@@ -12243,10 +12244,14 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.7.2',
+  version: 'v2.7.3',
   kind: 'fix',
   items: [
-    { t: 'Missing staples lower the grade', d: 'A list well short of the cards nearly every winning list of its deck runs now grades a little lower, and What to fix names them.' }
+    { t: 'Reprinted Trainers count as legal right away' },
+    { t: 'Mew Box: copied attacks count by how thin the line is' },
+    { t: 'Energy search counts in the Energy check' },
+    { t: "Warning when the main attacker's best attack can't be paid" },
+    { t: 'Back to menu button on the prize guessing screen' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15124,8 +15129,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v2.7.2';
-const PT_BUILD = 92;
+const PT_VERSION = 'v2.7.3';
+const PT_BUILD = 93;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
