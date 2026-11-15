@@ -1631,7 +1631,7 @@
   .mt-who { font-family:var(--display); font-weight:800; font-size:var(--fs-lg); color:var(--text); }
   .mt-przw { display:flex; align-items:center; gap:0.45rem; }
   .mt-prz { display:flex; gap:3px; }
-  .mt-prz i { width:11px; height:16px; border-radius:3px; background:repeating-linear-gradient(45deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 5px), var(--accent); border:1px solid var(--accent-line); }
+  .mt-prz i { width:11px; height:16px; border-radius:2px; background:repeating-linear-gradient(45deg, var(--line-2) 0 2px, transparent 2px 5px), var(--surface-3); border:1.5px solid var(--text-2); }
   .pz-pr { font-weight:700; font-size:var(--fs-sm); color:var(--text-2); }
   .mt-main { display:flex; gap:0.6rem; align-items:stretch; }
   .mt-zone { display:flex; flex-direction:column; gap:0.35rem; min-width:0; }
@@ -1640,7 +1640,7 @@
   .mt-lbl span { font-family:var(--font); font-weight:600; letter-spacing:0; text-transform:none; margin-left:0.25rem; }
   .mt-piles { flex:0 0 4.6rem; display:flex; flex-direction:column; gap:0.45rem; justify-content:flex-end; padding:0 4px 4px 0; }
   .mt-pile { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0.3rem 0.2rem; border-radius:var(--r-sm); background:var(--surface-2); border:1px solid var(--line-2); box-shadow:2px 2px 0 var(--surface-3), 4px 4px 0 var(--line-2); line-height:1.15; }
-  .mt-pile b { font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
+  .mt-pile b { font-family:var(--mono); font-size:var(--fs-lg); font-weight:700; color:var(--text); }
   .mt-pile span { font-size:var(--fs-sm); font-weight:600; color:var(--text-2); }
   .mt-mon { display:flex; gap:0.6rem; align-items:flex-start; width:100%; min-width:0; text-align:left; padding:0.5rem; border-radius:var(--r); border:1px solid var(--line-2); background:var(--surface); color:var(--text); cursor:pointer; font:inherit; box-shadow:var(--sh-1); }
   .mt-mon.act { border:1.5px solid var(--accent-line); }
@@ -1684,7 +1684,7 @@
   .mt-back { background:repeating-linear-gradient(45deg, var(--accent-soft) 0 6px, transparent 6px 12px), var(--surface-2); border:1px solid var(--accent-line); }
   .mt-cnt { position:absolute; right:4px; top:4px; padding:0.05rem 0.42rem; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-weight:800; font-size:var(--fs-sm); box-shadow:0 1px 3px rgba(0,0,0,0.35); }
   .mt-cnm { font-size:var(--fs-sm); font-weight:600; line-height:1.25; overflow-wrap:anywhere; }
-  .hp-lbl.mt-handl { margin-top:0.2rem; letter-spacing:0; text-transform:none; font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
+  html:not(#z) body .hp-lbl.mt-handl { margin-top:0.2rem; letter-spacing:0; text-transform:none; font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
   @media (max-width:479px) {
     .pz-wrap { padding-left:0.75rem; padding-right:0.75rem; }
     .mt-mat { padding:0.55rem; }
