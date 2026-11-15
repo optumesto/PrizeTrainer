@@ -6219,8 +6219,26 @@ function g37Reach(a, deck, self) {
       const r0 = gAtkReach(x, deck);
       const r = Object.assign(r0, { conf: r0.escale || r0.pile || r0.mill ? 'est' : (x.conf || 'high'), flip: r0.flip || x.flip || null, atk: x.name, multi: gMultiK(x), fx: x.fx || null, copy: { who: e.name, atk: x.name, via: a.name } });
       r.val = gVal(r, x);
+      const sf = g273SrcF(deck, c); if (sf.f < 1) { r.srcF = sf.f; r.srcN = sf.n; r.val *= sf.f; }
       if (!best || r.val > best.val) best = r; }); });
   return best || { now: 0, top: 0, cond: null, conf: 'high', flip: null };
+}
+/**
+ * 2.7.3: how much a copied attack can be counted on, from how thin the line of the Pokemon it
+ * copies is. The copy only works while that Pokemon is in play, so a 1-of (or a 1-1 line) is
+ * there far less often than a 3-of. The thinnest step of its line counts: 3 or more copies is
+ * full credit, 2 is 85%, 1 is 70%. Returns { f, n } with n the thinnest count.
+ */
+function g273SrcF(deck, c) {
+  const nk = k => gtNorm(normalizeCardName(k || ''));
+  const cnt = k => deck.filter(x => x.card && nk(x.card.key) === nk(k)).reduce((a, x) => a + x.qty, 0);
+  let n = cnt(c.key), cur = c, g = 0;
+  while (cur && cur.from && cur.stage !== 'basic' && !cur.selfBench && g++ < 3) {
+    const m = cnt(cur.from); if (!m) break;
+    n = Math.min(n, m);
+    const nx = deck.find(x => x.card && nk(x.card.key) === nk(cur.from)); cur = nx && nx.card;
+  }
+  return { f: n >= 3 ? 1 : n === 2 ? 0.85 : 0.7, n };
 }
 /**
  * v60: every attack this Pokemon can use. With an Ability like Mew ex's Memory Helix that is also
@@ -6237,6 +6255,7 @@ function gAtkOpts(e, deck, pay, ok) {
     c.attacks.forEach(x => { if (x.copy || !pay(x, e.card)) return;
       const r = g37Reach(x, deck, o); if (r.val == null) r.val = gVal(r, x);
       r.copy = { who: o.name, atk: x.name, via: e.card.bcopy, bench: true }; r.atk = x.name;
+      const sf = g273SrcF(deck, c); if (sf.f < 1) { r.srcF = sf.f; r.srcN = sf.n; r.val *= sf.f; }
       out.push({ a: x, r }); }); });
   return out;
 }
@@ -6473,12 +6492,18 @@ function gViability(deck, coh, main) {
     if (r0 && r0.top>0) { const b=g35Boost(deck, e.card);
       // v62: a booster for the turn or a Tool counts on each of the two attacks.
       if (r0.twice) b.n *= 2;
+      // 2.7.3: in a deck built around copying attacks (its main attacker is Mew ex, with Memory Helix), a thin
+      // line is there as something to copy, and attacking with it directly is just as thin, so its own hit is
+      // counted the same way.
+      if (!r0.srcF && main && main.key !== e.card.key && deck.some(x => x.card && x.card.bcopy && x.card.key === main.key)) { const sf=g273SrcF(deck, e.card); if (sf.f<1) r0=Object.assign({}, r0, { srcF: sf.f, srcN: sf.n, thinSelf: true }); }
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
-  let bestR=null; reach.forEach(r => { if (!bestR || r.eff>bestR.eff || (r.eff===bestR.eff && r.top>bestR.top)) bestR=r; });
+  // 2.7.3: a copied hit from a thin line is compared at what the grade counts of it.
+  const effC = r => r.eff * (r.srcF || 1);
+  let bestR=null; reach.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
   // v53: the main attacker leads when it hits at least as hard. When something
   // else hits harder, the finding says which is which.
   const mainR = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
-  if (mainR && bestR && mainR.eff >= bestR.eff) bestR = mainR;
+  if (mainR && bestR && effC(mainR) >= effC(bestR)) bestR = mainR;
   const lead = main && bestR && bestR !== mainR && main.key !== bestR.name.toLowerCase()
     ? `${gCap(main.name)} is ${main.why === 'pick' ? 'the main attacker you set' : "this deck's main attacker"}, but the hardest hit the grade can count comes from another Pokemon. ` : '';
   const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0, !!(bestR && bestR.twice));
@@ -6493,9 +6518,13 @@ function gViability(deck, coh, main) {
   // (Energy or discard pile scaling) counts halfway between its early and full numbers, and
   // boosts from other cards (a Tool, a Supporter, a partner's Ability) count at half, since a
   // game rarely lines them all up. The full ceiling still shows in the text.
-  const ceOf = r => !r ? 0 : Math.round(((r.cond || (r.escale && r.top > r.now)) ? (r.now + r.top) / 2 : r.top) + (r.boost || 0) / 2);
+  // 2.7.3: a copied hit counts only as often as the Pokemon it copies is in play (g273SrcF).
+  const ceOf = r => !r ? 0 : Math.round((((r.cond || (r.escale && r.top > r.now)) ? (r.now + r.top) / 2 : r.top) + (r.boost || 0) / 2) * (r.srcF || 1));
   const ce = ceOf(bestR);
-  const ceTxt = bestR && ce < eff ? ` The grade counts ${ce}, since the full hit needs ${bestR.boost && bestR.bNames && bestR.bNames.length ? bestR.bNames.join(' and ') : 'time to grow'}${bestR.boost && (bestR.cond || bestR.escale) ? ' and time to grow' : ''}.` : '';
+  const thinTxt = r => r.thinSelf ? `the list runs only ${r.srcN === 1 ? '1 copy of' : r.srcN + ' copies of'} ${gCap(r.name)}${r.srcN === 1 ? '' : ' or its line'}, so it is not always in play`
+    : `${r.srcN === 1 ? 'there is only 1' : 'there are only ' + r.srcN} ${gCap(r.copy.who)}${r.srcN === 1 ? '' : ' or its line'} to copy from, so it is not always in play`;
+  const ceTxt = bestR && ce < eff ? (bestR.srcF && !bestR.boost && !bestR.cond && !bestR.escale ? ` The grade counts ${ce}, since ${thinTxt(bestR)}.`
+    : ` The grade counts ${ce}, since the full hit needs ${bestR.boost && bestR.bNames && bestR.bNames.length ? bestR.bNames.join(' and ') : 'time to grow'}${bestR.boost && (bestR.cond || bestR.escale) ? ' and time to grow' : ''}${bestR.srcF ? ' and ' + thinTxt(bestR) : ''}.`) : '';
   const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
     d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
