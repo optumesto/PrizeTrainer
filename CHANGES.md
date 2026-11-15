@@ -10,6 +10,8 @@ Changed files: index.html, sw.js (cache prize-trainer-v90), CHANGES.md.
 - The card adds the deck's archetype (when the list matches one of the meta decks and its name does not already say it) and its main attacker, as the Grade tab reads them, and the main attacker's card art.
 - The art is read only from an image host that allows a page to read it, and the search gives up after 4 seconds. Without art the card uses a layout made for no art.
 - When the archetype or the art comes from Limitless, the card says so on its last line.
+- The card follows the Main attacker pick from 2.6.2: a picked Pokemon shows as the main attacker with its art, and a deck set as a toolbox reads "Toolbox led by" its hardest hitter.
+- The grade link carries that pick (&a=), so a viewer who opens it and taps Import gets the same pick and the same grade. A pick that is not a Pokemon in the list is ignored.
 - The sheet opens at once and shows the card when it is drawn. Save image, Copy link and Share work as before; the link still holds only the list, so whoever opens it gets the grade worked out on their own device.
 - Not the grade: no grading code changed. Grade check: no grade moved.
 

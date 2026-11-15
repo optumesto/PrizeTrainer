@@ -8817,12 +8817,16 @@ async function nativeShareDeckLink() {
 
 // v45: a link from Share grade ends in &g=1, so the grade opens once the list is imported.
 let _v45GradeAfterImport = false;
+// 2.7: a grade link also carries the deck's Main attacker pick (&a=), so whoever opens it sees the same grade.
+let _gs261Atk = '';
 /** Open a #deck= link: decode it and fill the Import sheet for the player to check. */
 async function handleShareHash() {
   const m = /^#deck=([^&]*)/.exec(location.hash || '');
   if (!m) return;
-  const fromGrade = /&g=1(&|$)/.test(location.hash || '');
+  const hash0 = location.hash || '';
+  const fromGrade = /&g=1(&|$)/.test(hash0);
   _v45GradeAfterImport = false;
+  _gs261Atk = '';
   let raw = '';
   try { raw = decodeURIComponent(m[1]); } catch (_) {}
   const shared = await decodeDeckShare(raw);
@@ -8847,6 +8851,7 @@ async function handleShareHash() {
     : fromGrade ? 'Shared grade from a link. Tap Import to see the grade for this list.'
     : 'Shared deck from a link. Check the list, then tap Import and save.';
   _v45GradeAfterImport = fromGrade;
+  if (fromGrade) { const a = /&a=([^&]*)/.exec(hash0); try { _gs261Atk = a ? decodeURIComponent(a[1]).slice(0, 80) : ''; } catch (_) {} }
   note.style.display = 'block';
 }
 
@@ -19557,10 +19562,15 @@ else setTimeout(v45SampleHash, 400);
 (function () {
   const _imp = importDeck;
   importDeck = async function () {
-    const want = _v45GradeAfterImport, before = state.decks.length;
-    _v45GradeAfterImport = false;
+    const want = _v45GradeAfterImport, atk = _gs261Atk, before = state.decks.length;
+    _v45GradeAfterImport = false; _gs261Atk = '';
     const r = await _imp.apply(this, arguments);
-    if (want && state.decks.length > before) openReview(state.decks[state.decks.length - 1].id);
+    if (want && state.decks.length > before) {
+      const nd = state.decks[state.decks.length - 1];
+      // The sharer's Main attacker pick; the grade ignores a pick that is not a Pokemon in this list.
+      if (atk) { nd.atk = atk; try { saveState(); } catch (_) {} }
+      openReview(nd.id);
+    }
     return r;
   };
 })();
@@ -19599,10 +19609,15 @@ function gs261Info(deck, R) {
       if (!(' ' + mu60Norm(deck.name) + ' ').includes(' ' + mu60Norm(a.deck.name) + ' ')) out.arch = a.deck.name;
     }
   } catch (_) {}
-  let m = null;
-  try { m = gMainAttacker(R.entries || [], R.coh, deck.name); } catch (_) {}
+  // The attacker the Grade tab leads with: the player's Main attacker pick when it counts, else Auto.
+  // A deck set as a toolbox leads with its hardest hitter.
+  const v = (R && R.via) || {};
+  const box = !v.main && (v.boxPick || []).length ? v.boxPick : null;
+  let m = box ? { name: box[0] } : v.main || null;
+  if (!m && !R.via) { try { m = gMainAttacker(R.entries || [], R.coh, gArchName(deck)); } catch (_) {} }
   if (m && m.name) {
     out.main = gCap(m.name);
+    out.box = !!box;
     const k = mu60Norm(m.name);
     const c = (deck.cards || []).find(x => x.imageUrl && mu60Norm(x.apiName || x.name) === k);
     if (c) {
@@ -19709,7 +19724,7 @@ async function gs45Draw(deck, R, size, info, art) {
   // Deck name, then the archetype and main attacker.
   x.font = `600 ${sq ? 52 : 40}px ${B}`; x.fillStyle = GS45.text;
   x.fillText(gs45Fit(x, deck.name || 'My deck', textR - 64), 64, sq ? 212 : 172);
-  const sub = [info.arch, info.main ? 'Main attacker: ' + info.main : ''].filter(Boolean).join('  \u00b7  ');
+  const sub = [info.arch, info.main ? (info.box ? 'Toolbox led by ' : 'Main attacker: ') + info.main : ''].filter(Boolean).join('  \u00b7  ');
   if (sub) {
     x.font = `400 ${sq ? 32 : 28}px ${B}`; x.fillStyle = GS45.text2;
     x.fillText(gs45Fit(x, sub, textR - 64), 64, sq ? 262 : 214);
@@ -19770,7 +19785,7 @@ async function v45ShareGrade() {
   // v57: a list that breaks a deck building rule would share as Tournament-ready, so fix it first.
   if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { showToast('This list breaks a deck building rule. Fix it in Edit deck, then share the grade.'); return; }
   const band = gs45Band(R.overall);
-  const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1';
+  const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1' + (typeof deck.atk === 'string' && deck.atk ? '&a=' + encodeURIComponent(deck.atk) : '');
   const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}. Can Your Deck Win?`;
   if (_gs45 && _gs45.img) { try { URL.revokeObjectURL(_gs45.img); } catch (_) {} }
   const info = gs261Info(deck, R), size = gs261Size();
