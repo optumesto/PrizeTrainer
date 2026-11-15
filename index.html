@@ -602,7 +602,7 @@
     position:sticky; top:68px; z-index:25;
     display:flex; gap:4px; padding:4px;
     width:calc(100% - 2 * var(--pad-x)); max-width:440px; margin:0.75rem auto 0;
-    background:color-mix(in srgb, var(--surface-2) 92%, transparent);
+    background:var(--surface-2);
     -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
     border:1px solid var(--line); border-radius:14px;
     box-shadow:var(--sh-1);
@@ -7080,7 +7080,7 @@ function gtRoles(text, kind) {
   if (/gets \+\d+ hp|is not knocked out|takes 1 fewer prize/.test(t)) r.add('survive');
   if (/do \d+ more damage/.test(t)) r.add('damage');
   if (/heal \d+ damage/.test(t)) r.add('heal');
-  if (/your opponent shuffles|each player shuffles their hand|opponent's active pokemon is now|discard all pokemon tools and special energy|discard a stadium in play|put \d+ damage counters on the attacking/.test(t)) r.add('disrupt');
+  if (/your opponent shuffles|each player shuffles their hand|opponent's active pokemon is now|discard all pokemon tools and special energy|discard a stadium in play|put \d+ damage counters on the attacking|pokemon in play \((?:both yours and your opponent's|yours and your opponent's)\) have no abilities/.test(t)) r.add('disrupt');
   if (/onto your bench/.test(t)) r.add('bench');
   if (/evolve it|skipping the stage 1/.test(t)) r.add('evolve');
   if (/search your deck for up to \d+ cards and discard them/.test(t)) r.add('discard');
@@ -8292,10 +8292,18 @@ function renderReview(deck) {
     });
   }
 
+  // 2.7.3: two printings of the same Trainer or Energy show as one tile with their copies added up,
+  // as the grade counts them. Pokemon printings stay apart, since their attacks can differ.
+  function byName(arr) {
+    const m = new Map();
+    arr.forEach(c => { const k2 = (c.apiName || c.name || '').replace(/\{[a-zA-Z]\}/g, '').trim().toLowerCase();
+      const o = m.get(k2); if (o) o.count += c.count; else m.set(k2, Object.assign({}, c)); });
+    return [...m.values()];
+  }
   const groups = [
     { key: 'pokemon', label: 'Pokémon', cards: sortGroup(pokemon) },
-    { key: 'trainer', label: 'Trainers', cards: sortGroup(trainers) },
-    { key: 'energy', label: 'Energy', cards: sortGroup(energies) },
+    { key: 'trainer', label: 'Trainers', cards: sortGroup(byName(trainers)) },
+    { key: 'energy', label: 'Energy', cards: sortGroup(byName(energies)) },
   ].filter(g => g.cards.length > 0);
 
   const total = deck.cards.reduce((a,c) => a + c.count, 0);
@@ -16961,7 +16969,8 @@ function g67HowLine(R, synV, powV) {
   if (S && S.cohF === 0.06) low += ' Synergy under 0.6 counts as 0.6.';
   if (S && S.viaF === 0.12) low += ' Power under 1.2 counts as 1.2.';
   const sum = `${f(sU)} times ${f(pU)}, divided by 10, is ${raw.toFixed(1)}.`;
-  if (fit) return `The grade is Synergy times Power, divided by 10, except that how tightly the list fits lowers Synergy in full but lowers the grade only when the fit is loose. So the grade uses ${f(sU)} for Synergy here: ${sum}${low}`;
+  // 2.7.3: name both Synergy numbers, so the one the sum uses is not a number seen nowhere else.
+  if (fit) return `The grade is Synergy times Power, divided by 10. Synergy shows ${synV.toFixed(1)} after a cut for how tightly the list fits, but that cut lowers the grade only when the fit is loose, so the grade uses Synergy before the cut, ${f(sU)}: ${sum}${low}`;
   return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${sum}${low}`;
 }
 function g67WhyHtml(R, synV, powV) {
