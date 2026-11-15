@@ -34,6 +34,7 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preload" href="saira.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="saira-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="saira-condensed-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   /* ══════════════════════════════════════════════════════════════
      PrizeTrainer v20 design system
@@ -2796,6 +2797,8 @@ const PT_PLAY = (function () {
   if (on) document.documentElement.classList.add('pt-play');
   return on;
 })();
+// 2.7.x speed: home has not drawn yet (see rd-boot in the styles).
+document.documentElement.classList.add('rd-boot');
 </script>
 <style>.pt-play #pwa-install-btn { display:none !important; }
   /* v46: the Android note is for the website only, never inside the Play app. */
@@ -2807,6 +2810,234 @@ const PT_PLAY = (function () {
   .an61-i { width:18px; height:18px; flex-shrink:0; color:var(--mark); }
   @media (min-width:768px) { .an61 { margin-left:max(0px, calc((100% - 760px) / 2)); } }
   @media (min-width:1100px) { .an61 { margin-left:max(0px, calc((100% - var(--page)) / 2)); } }</style>
+<!-- 2.7.x speed: the style blocks below used to sit in <body> next to their scripts. They load here, in the same order, so the first screen draws with its final styles. -->
+<style>
+  /* v45: sample grade, share grade */
+  .st-empty .st45-sample { margin-top:0.85rem; }
+  .g45-share { margin-top:0.9rem; display:flex; justify-content:center; }
+  .gs45-img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; }
+  .gs45-actions { flex-wrap:wrap; }
+  .gs261-seg { margin:0 0 0.75rem; }
+  .gs261-pic { display:flex; align-items:center; justify-content:center; width:100%; max-height:62vh; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; overflow:hidden; color:var(--text-3); font-size:var(--fs-sm); }
+  .gs261-pic .gs45-img { width:100%; height:100%; object-fit:contain; border:0; border-radius:0; margin:0; }
+
+  /* v47: Prerelease section */
+  .fmt-prerelease { background:color-mix(in srgb, var(--psychic) 16%, transparent); color:var(--psychic); }
+  .fmt-opt.active.prerelease { color:var(--psychic); }
+  .pre47 { display:flex; flex-direction:column; gap:0.2rem; }
+  .pre47-p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; margin:0 0 0.5rem; }
+  .pre47-sec { margin:0.6rem 0 0.4rem; }
+  .pre47-h { font-family:var(--display); font-weight:700; font-size:var(--fs-md); color:var(--text); margin:0 0 0.35rem; }
+  .pre47-h2 { margin-top:1rem; }
+  .pre47-ul { margin:0 0 0.6rem; padding-left:1.1rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.6; }
+  .pre47-tools { display:flex; align-items:center; gap:0.6rem; margin:0.2rem 0 0.7rem; flex-wrap:wrap; }
+  .pre47-q { flex:1 1 160px; min-height:40px; padding:0 0.75rem; border-radius:var(--r-sm, 10px); border:1px solid var(--line); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-sm); }
+  .pre47-sw { display:flex; align-items:center; gap:0.4rem; font-size:var(--fs-sm); color:var(--text-2); cursor:pointer; }
+  .pre47-grid, .pre47-energy { display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:0.6rem; }
+  .pre47-tile, .pre47-en { position:relative; display:flex; flex-direction:column; gap:0.25rem; min-width:0; }
+  .pre47-add { position:relative; display:block; width:100%; aspect-ratio:63/88; padding:0; border:2px solid transparent; border-radius:8px; overflow:hidden; background:var(--surface-2, var(--surface)); cursor:pointer; }
+  .pre47-en .pre47-add { aspect-ratio:63/88; }
+  .pre47-add img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pre47-add .review-placeholder { width:100%; height:100%; }
+  .pre47-tile.on .pre47-add, .pre47-en.on .pre47-add { border-color:var(--accent); }
+  .pre47-c { position:absolute; right:4px; bottom:4px; min-width:26px; height:26px; padding:0 6px; border-radius:13px; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, #fff); font-weight:700; font-size:var(--fs-sm); }
+  .pre47-rm { position:absolute; left:4px; top:4px; width:30px; height:30px; border-radius:15px; border:0; background:rgba(0,0,0,0.65); color:#fff; font-size:1.1rem; line-height:1; cursor:pointer; }
+  .pre47-nm { font-size:var(--fs-xs); color:var(--text-2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pre47-bar { position:sticky; bottom:-1px; display:flex; align-items:center; gap:0.5rem; margin:1rem -0.2rem 0; padding:0.7rem 0.2rem; background:var(--surface); border-top:1px solid var(--line); }
+  .pre47-n { flex:1; font-weight:700; color:var(--text); font-size:var(--fs-md); }
+  .pre47-n.ok { color:var(--grass); }
+  .pre47-n.over { color:var(--fire); }
+</style>
+<style id="bld-css">
+  #screen-build { padding-bottom:0; }
+  .bld-count { flex-shrink:0; font-family:var(--display); font-weight:800; font-size:var(--fs-lg); padding:0.2rem 0.6rem; border:1px solid var(--line-2); border-radius:var(--r); white-space:nowrap; }
+  .bld-count.ok { color:var(--success); border-color:color-mix(in srgb, var(--success) 50%, transparent); }
+  .bld-count.over { color:var(--danger); border-color:color-mix(in srgb, var(--danger) 50%, transparent); }
+  .bld-body { padding:1rem var(--bar-x) 1.5rem; }
+  .bld-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:1.5rem; }
+  @media (min-width:900px) { .bld-grid { grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:start; } .bld-side { position:sticky; top:0; max-height:calc(100dvh - 160px); overflow-y:auto; } }
+  .bld-h { font-family:var(--font); font-size:var(--fs-md); font-weight:700; color:var(--text); margin:0 0 0.5rem; display:flex; align-items:baseline; gap:0.5rem; }
+  .bld-h .bld-n { color:var(--text-3); font-weight:600; font-size:var(--fs-sm); }
+  .bld-sec { margin:0 0 1.25rem; }
+  .bld-small { font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .bld-search { display:flex; gap:0.5rem; margin:0 0 0.5rem; }
+  .bld-search input { flex:1 1 auto; min-width:0; padding:0.6rem 0.75rem; font:inherit; font-size:1rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); outline:none; -webkit-appearance:none; appearance:none; }
+  .bld-search input:focus { border-color:var(--text-2); }
+  .bld-kinds { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.5rem; }
+  .bld-kinds button { flex:1; min-height:34px; border:0; background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:var(--r-sm); cursor:pointer; }
+  .bld-kinds button.active { background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--line-2); }
+  .bld-results { border:1px solid var(--line); border-radius:var(--r); margin:0 0 1.25rem; max-height:420px; overflow-y:auto; background:var(--surface); }
+  .bld-row { display:flex; align-items:center; gap:0.65rem; padding:0.45rem 0.6rem; border-bottom:1px solid var(--line); min-height:56px; }
+  .bld-row:last-child { border-bottom:0; }
+  .bld-th { width:36px; height:50px; flex-shrink:0; border-radius:2px; overflow:hidden; background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:zoom-in; border:0; padding:0; }
+  .bld-th img { width:100%; height:100%; object-fit:cover; display:block; }
+  .bld-th .review-placeholder { font-size:0.9rem; color:var(--text-3); }
+  .bld-tx { flex:1; min-width:0; }
+  .bld-nm { font-size:var(--fs-md); font-weight:600; color:var(--text); line-height:1.25; overflow-wrap:anywhere; }
+  .bld-nm .bld-pr { font-weight:500; color:var(--text-3); font-size:var(--fs-sm); white-space:nowrap; }
+  .bld-sub { font-size:var(--fs-sm); color:var(--text-2); line-height:1.3; margin-top:2px; }
+  .bld-step { display:flex; align-items:center; gap:2px; flex-shrink:0; }
+  .bld-step button, .bld-add { width:36px; height:36px; border-radius:var(--r-sm); border:1px solid var(--line-2); background:var(--surface-2); color:var(--text); font:inherit; font-size:1.15rem; font-weight:700; line-height:1; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  .bld-step button:disabled { opacity:0.35; cursor:not-allowed; }
+  .bld-step b { min-width:1.6rem; text-align:center; font-family:var(--display); font-size:var(--fs-lg); }
+  .bld-add.wide { width:auto; padding:0 0.7rem; font-size:var(--fs-sm); font-weight:600; white-space:nowrap; }
+  .bld-group { border:1px solid var(--line); border-radius:var(--r); background:var(--surface); margin:0 0 0.9rem; }
+  .bld-group > .bld-h { padding:0.6rem 0.6rem 0; margin:0 0 0.25rem; }
+  .bld-checks { list-style:none; margin:0; padding:0; border:1px solid var(--line); border-radius:var(--r); background:var(--surface); }
+  .bld-checks li { display:flex; gap:0.6rem; align-items:flex-start; padding:0.55rem 0.65rem; border-bottom:1px solid var(--line); font-size:var(--fs-sm); color:var(--text); line-height:1.4; }
+  .bld-checks li:last-child { border-bottom:0; }
+  .bld-checks li > span:first-child { flex-shrink:0; width:0.6rem; height:0.6rem; margin-top:0.35rem; border-radius:50%; background:var(--success); }
+  .bld-checks li.warn > span:first-child { background:var(--electric); }
+  .bld-checks li.bad > span:first-child { background:var(--danger); }
+  .bld-checks li > div { flex:1; min-width:0; }
+  .bld-checks li .bld-add { margin-top:0.35rem; }
+  .bld-start { display:grid; grid-template-columns:minmax(0,1fr); gap:0.6rem; margin:0 0 1.25rem; }
+  @media (min-width:600px) { .bld-start { grid-template-columns:1fr 1fr; } }
+  .bld-opt { text-align:left; padding:0.8rem 0.9rem; border:1px solid var(--line-2); border-radius:var(--r); background:var(--surface); color:var(--text); font:inherit; cursor:pointer; }
+  .bld-opt:hover { background:var(--surface-2); }
+  .bld-opt b { display:block; font-size:var(--fs-md); margin-bottom:0.2rem; }
+  .bld-opt span { display:block; font-size:var(--fs-sm); color:var(--text-2); line-height:1.35; }
+  .bld-ref { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin:0 0 0.9rem; font-size:var(--fs-sm); color:var(--text-2); }
+  .bld-ref b { color:var(--text); }
+  .bld-foot { position:sticky; bottom:0; z-index:20; display:flex; gap:0.6rem; justify-content:flex-end; padding:0.75rem var(--bar-x) calc(0.75rem + env(safe-area-inset-bottom,0)); background:var(--bar-bg); border-top:1px solid var(--line); flex-shrink:0; }
+  .bld-foot .btn { flex:1 1 0; max-width:240px; }
+  .bld-big { max-width:100%; width:360px; display:block; margin:0 auto; border-radius:8px; }
+  .bld-list-pick { display:flex; flex-direction:column; }
+  .bld-list-pick .bld-row { cursor:pointer; }
+  .bld-list-pick .bld-row:hover { background:var(--surface-2); }
+  .bld-ta { width:100%; min-height:220px; padding:0.6rem; font-family:var(--mono); font-size:0.9rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); }
+  .bld-in { width:100%; padding:0.6rem 0.75rem; font:inherit; font-size:1rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); }
+  .home-cta-row.bld-3 .bld-cta { grid-column:1 / -1; }
+  @media (min-width:700px) { .home-cta-row.bld-3 { grid-template-columns:1fr 1fr 1fr; } .home-cta-row.bld-3 .bld-cta { grid-column:auto; } }
+  /* v72: the three buttons on home fit their labels, with room at the edges, at every width. In the
+     narrow right column on wide screens, Import a deck takes its own row. */
+  .home-cta.home-cta-row .btn { white-space:normal; text-align:center; line-height:1.15; padding:0.35rem 0.9rem; min-width:0; }
+  @media (min-width:1100px) {
+    .home-content > .home-cta-row.bld-3 { grid-template-columns:1fr 1fr; }
+    .home-content > .home-cta-row.bld-3 .btn-primary { grid-column:1 / -1; }
+  }
+  /* v72: on wide screens the update note and the daily puzzle sit in the right column with the
+     daily challenge. Before, they fell to the bottom of the left column, under every deck. */
+  @media (min-width:1100px) {
+    .home-content { grid-template-rows:repeat(8, auto) 1fr auto auto; }
+    .home-content > .deck-list { grid-row:2 / span 8; }
+    .home-content > #wn-card { grid-column:2; grid-row:3; }
+    .home-content > #daily-card { grid-row:4; }
+    .home-content > #pre47-card { grid-column:2; grid-row:5; }
+    .home-content > #puzzle-card { grid-column:2; grid-row:6; }
+    .home-content > .home-more { grid-row:7; }
+    .home-content > #pwa-install-btn { grid-row:8; }
+    .home-content > .ad32 { grid-row:10; }
+    .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:11; }
+    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty) { margin-top:1.5rem !important; }
+  }
+</style>
+<style id="mc26-css">
+  .mc26-tabs { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.6rem; }
+  .mc26-tabs button { flex:1; min-height:34px; border:0; background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:var(--r-sm); cursor:pointer; }
+  .mc26-tabs button.active { background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--line-2); }
+  .mc26-opps { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 0.6rem; }
+  .mc26-opps button { min-height:32px; padding:0 0.7rem; border:1px solid var(--line-2); background:var(--surface); color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:999px; cursor:pointer; }
+  .mc26-opps button.active { color:var(--text); border-color:var(--text-2); background:var(--surface-2); }
+  .mc26-row { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.6rem; border-bottom:1px solid var(--line); min-height:48px; }
+  .mc26-row:last-child { border-bottom:0; }
+  .mc26-you { flex-shrink:0; font-size:var(--fs-sm); color:var(--text-2); white-space:nowrap; text-align:right; min-width:3.2rem; }
+  .mc26-more { display:block; width:100%; min-height:40px; border:0; border-top:1px solid var(--line); background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; cursor:pointer; border-radius:0 0 var(--r) var(--r); }
+  .mc26-p { margin:0 0 0.6rem; }
+</style>
+<style>
+  /* v71: a dialog is solid from its first frame. Only the dimmed page behind it fades in, so the
+     panel never shows the page through it while it opens. */
+  .modal-overlay.active { animation:v71ScrimIn 0.18s ease-out; }
+  @keyframes v71ScrimIn { from { background-color:transparent; } }
+  /* Moving to a field (Tab, or the keyboard opening on a phone) keeps it clear of a dialog's sticky
+     title and Save bar, and of the deck page's tabs and bottom bar. */
+  .modal, .mode-modal, .picker-modal { scroll-padding-top:5rem; scroll-padding-bottom:6rem; }
+  html:has(#screen-review.active) { scroll-padding-top:8rem; scroll-padding-bottom:9rem; }
+</style>
+<style>
+  /* Upgrades (2.5): card swaps that raise the grade, each checked by grading the new list. */
+  .up75-row { padding:0.6rem 0; border-top:1px solid var(--line, rgba(255,255,255,0.08)); }
+  .up75-row:first-of-type { border-top:0; }
+  .up75-h { display:flex; align-items:baseline; gap:0.6rem; }
+  .up75-n { font-weight:700; color:var(--text); font-size:var(--fs-sm); line-height:1.35; }
+  .up75-g { margin-left:auto; font-family:var(--mono); font-weight:600; font-size:var(--fs-sm); color:var(--success); white-space:nowrap; }
+  .up75-row p { margin:0.2rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .up75-row.all .up75-n { color:var(--text); }
+</style>
+<style>
+  .mu71-ask { margin: 0.5rem 0 0.75rem; padding: 0.75rem; border: 1px solid var(--electric); border-radius: 10px; }
+  /* v71: the deck row's play button says what it starts. */
+  .deck-play { width:58px; height:52px; flex-direction:column; gap:3px; }
+  .deck-play .ic { width:16px; height:16px; margin-left:2px; }
+  .dp71 { font-family:var(--mono); font-size:0.75rem; font-weight:600; line-height:1; text-transform:uppercase; letter-spacing:0.02em; }
+  .mu71-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0; }
+</style>
+<style>
+  /* v2.5: grade history */
+  .gh72-chart { display:block; width:100%; max-width:420px; height:auto; margin:0.25rem 0 0.75rem; overflow:visible; }
+  .gh72-grid { stroke:var(--line-2); stroke-width:1; }
+  .gh72-ax { fill:var(--text-3); font-size:11px; font-family:var(--mono); }
+  .gh72-line { fill:none; stroke:var(--text-2); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .gh72-dm { fill:var(--text); stroke:var(--bg, var(--surface)); stroke-width:2; }
+  .gh72-do { fill:var(--bg, var(--surface)); stroke:var(--text-2); stroke-width:2; }
+  .gh72-list { list-style:none; margin:0; padding:0; }
+  .gh72-row { padding:0.55rem 0; border-top:1px solid var(--line); }
+  .gh72-row:first-child { border-top:0; }
+  .gh72-top { display:flex; align-items:baseline; gap:0.6rem; }
+  .gh72-w { color:var(--text-2); font-size:0.9375rem; flex:1; min-width:0; }
+  .gh72-g { font-family:var(--mono); font-size:1rem; color:var(--text); }
+  .gh72-up, .gh72-dn, .gh72-eq { font-family:var(--mono); font-size:0.875rem; min-width:2.6rem; text-align:right; color:var(--text-3); }
+  .gh72-up { color:var(--green); }
+  .gh72-dn { color:var(--red); }
+  .gh72-row p { margin:0.15rem 0 0; font-size:0.9375rem; color:var(--text-2); line-height:1.45; overflow-wrap:anywhere; }
+  .gh72-not p { color:var(--text-3); }
+  .gh72-note { margin:0.5rem 0 0; font-size:0.875rem; color:var(--text-3); }
+</style>
+<style>
+  /* 2.6.5: Paste and go, Try a sample deck, Top fixes */
+  .ez265-sample-s { display:block; margin-top:0.45rem; font-size:var(--fs-xs, 0.8125rem); color:var(--text-3); }
+  .tour-acts.ez265-acts { flex-wrap:wrap; }
+  .tour-acts.ez265-acts .ez265-tour { flex:1 1 100%; }
+  .tf265 { margin:0.75rem 0 0.25rem; padding:0.6rem 0.75rem 0.5rem; border:1px solid var(--line-2, var(--line)); border-radius:10px; text-align:left; }
+  .tf265-h { font-family:var(--mono); font-size:0.75rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-3); }
+  .tf265 ol { margin:0.25rem 0 0; padding:0 0 0 1.25rem; }
+  .tf265 li { margin:0; padding:0; color:var(--text-2); }
+  .tf265 li::marker { font-family:var(--mono); color:var(--text-3); }
+  .tf265 li.crit::marker { color:var(--red, var(--fire)); }
+  .tf265 li button, .tf265 li > div { display:block; width:100%; min-height:44px; padding:0.45rem 0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+  .tf265 li + li button, .tf265 li + li > div { border-top:1px solid var(--line); }
+  .tf265-t { display:block; color:var(--text); font-size:0.9375rem; line-height:1.35; overflow-wrap:anywhere; }
+  .tf265-n { display:block; margin-top:0.1rem; font-family:var(--mono); font-size:0.8125rem; color:var(--green, var(--grass)); }
+  .tf265-wait { margin:0.3rem 0 0.2rem; font-size:0.875rem; color:var(--text-3); }
+  /* 2.6.5 phone pass: taps of at least 44px on phones and touch screens */
+  @media (max-width:600px), (pointer:coarse) {
+    .deck-more { height:44px; }
+    .about40-faq summary { min-height:44px; }
+    .about38-links { gap:0 1rem; }
+    .about38-links a, .about38-links button { display:inline-flex; align-items:center; min-height:44px; }
+    .ol-k .mode-opt { min-width:44px; min-height:44px; }
+    .bld-kinds button { min-height:44px; }
+    .bld-add { width:44px; height:44px; }
+    .bld-add.wide { width:auto; }
+    .bld-th { width:44px; height:61px; }
+    .about38-links button { min-width:44px; justify-content:center; }
+    .deck-card .deck-name { white-space:normal; overflow-wrap:anywhere; }
+  }
+</style>
+<style>
+  /* 2.7.x speed: room kept for what home adds on its first draw (removed right after it). */
+  html.rd-boot #deck-list .st-empty::after { content:''; display:block; height:108px; }
+  @media (max-width:1099px) {
+    html.rd-boot #daily-card:empty { display:block; min-height:89px; margin-top:1.75rem !important; }
+    html.rd-boot #puzzle-card:empty { display:block; min-height:89px; margin-top:1rem; }
+  }
+  @media (min-width:700px) and (max-width:1099px) { html.rd-boot #daily-card:empty, html.rd-boot #puzzle-card:empty { min-height:72px; } }
+  /* The title and logo start near the size rd38Fit() gives them, which it sets from the fonts. */
+  html.rd-boot #screen-home .app-title { font-size:41.39px; }
+  html.rd-boot #screen-home .rd-mark { width:41.57px; height:59px; }
+  @media (min-width:768px) { html.rd-boot #screen-home .app-title { font-size:46.224px; } html.rd-boot #screen-home .rd-mark { width:45.8px; height:65px; } }
+</style>
 </head>
 <body>
 
@@ -2892,16 +3123,14 @@ const PT_PLAY = (function () {
   </header>
   <div class="home-content scrollable">
     <div class="section-head"><h2 class="section-title">Your decks</h2></div>
-    <div class="deck-list" id="deck-list">
-      <div class="empty-state">
-        <span class="icon"><i class=ph-card></i></span>
-        No decks yet.<br>Paste a list or grab a starter deck.
-      </div>
-    </div>
-    <div class="home-cta home-cta-row">
+    <div class="deck-list" id="deck-list"><div class="empty-state st-empty">
+      <div class="tour-ic"><svg class="ic"><use href="#i-award"/></svg></div>
+      <b>Start by grading a deck</b>
+      <span>Add a deck to see its grade, what to fix first, its odds and which cards rotate. Then practice it with prize games, hands and drills.</span></div></div>
+    <div class="home-cta home-cta-row bld-3">
       <button class="btn btn-primary" onclick="openImportModal()"><svg class="ic"><use href="#i-plus"/></svg>Import a deck</button>
       <button class="btn" onclick="openStarterPicker()"><svg class="ic"><use href="#i-cards"/></svg>Starter decks</button>
-    </div>
+    <button class="btn bld-cta" id="bld-cta" onclick="openBuilder()"><svg class="ic"><use href="#i-edit"/></svg>Build a deck</button></div>
     <div id="wn-card"></div>
     <div id="daily-card"></div>
     <div id="puzzle-card"></div>
@@ -15068,10 +15297,12 @@ function closeShareModal() {
 // ═══════════ PWA SERVICE WORKER + INSTALL ═══════════
 let deferredInstallPrompt = null;
 
+// 2.7.x speed: register once the page has loaded, so the offline copy downloads after the first screen.
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
+  const swGo = () => navigator.serviceWorker.register('./sw.js')
     .then(reg => console.log('SW registered:', reg.scope))
     .catch(err => console.warn('SW registration failed:', err));
+  if (document.readyState === 'complete') swGo(); else window.addEventListener('load', swGo, { once: true });
 }
 
 // Capture the install prompt for use later
@@ -19295,43 +19526,6 @@ if (PT_PLAY) {
   };
 }
 </script>
-<style>
-  /* v45: sample grade, share grade */
-  .st-empty .st45-sample { margin-top:0.85rem; }
-  .g45-share { margin-top:0.9rem; display:flex; justify-content:center; }
-  .gs45-img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; }
-  .gs45-actions { flex-wrap:wrap; }
-  .gs261-seg { margin:0 0 0.75rem; }
-  .gs261-pic { display:flex; align-items:center; justify-content:center; width:100%; max-height:62vh; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; overflow:hidden; color:var(--text-3); font-size:var(--fs-sm); }
-  .gs261-pic .gs45-img { width:100%; height:100%; object-fit:contain; border:0; border-radius:0; margin:0; }
-
-  /* v47: Prerelease section */
-  .fmt-prerelease { background:color-mix(in srgb, var(--psychic) 16%, transparent); color:var(--psychic); }
-  .fmt-opt.active.prerelease { color:var(--psychic); }
-  .pre47 { display:flex; flex-direction:column; gap:0.2rem; }
-  .pre47-p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; margin:0 0 0.5rem; }
-  .pre47-sec { margin:0.6rem 0 0.4rem; }
-  .pre47-h { font-family:var(--display); font-weight:700; font-size:var(--fs-md); color:var(--text); margin:0 0 0.35rem; }
-  .pre47-h2 { margin-top:1rem; }
-  .pre47-ul { margin:0 0 0.6rem; padding-left:1.1rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.6; }
-  .pre47-tools { display:flex; align-items:center; gap:0.6rem; margin:0.2rem 0 0.7rem; flex-wrap:wrap; }
-  .pre47-q { flex:1 1 160px; min-height:40px; padding:0 0.75rem; border-radius:var(--r-sm, 10px); border:1px solid var(--line); background:var(--surface); color:var(--text); font:inherit; font-size:var(--fs-sm); }
-  .pre47-sw { display:flex; align-items:center; gap:0.4rem; font-size:var(--fs-sm); color:var(--text-2); cursor:pointer; }
-  .pre47-grid, .pre47-energy { display:grid; grid-template-columns:repeat(auto-fill, minmax(76px, 1fr)); gap:0.6rem; }
-  .pre47-tile, .pre47-en { position:relative; display:flex; flex-direction:column; gap:0.25rem; min-width:0; }
-  .pre47-add { position:relative; display:block; width:100%; aspect-ratio:63/88; padding:0; border:2px solid transparent; border-radius:8px; overflow:hidden; background:var(--surface-2, var(--surface)); cursor:pointer; }
-  .pre47-en .pre47-add { aspect-ratio:63/88; }
-  .pre47-add img { width:100%; height:100%; object-fit:cover; display:block; }
-  .pre47-add .review-placeholder { width:100%; height:100%; }
-  .pre47-tile.on .pre47-add, .pre47-en.on .pre47-add { border-color:var(--accent); }
-  .pre47-c { position:absolute; right:4px; bottom:4px; min-width:26px; height:26px; padding:0 6px; border-radius:13px; display:flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent, #fff); font-weight:700; font-size:var(--fs-sm); }
-  .pre47-rm { position:absolute; left:4px; top:4px; width:30px; height:30px; border-radius:15px; border:0; background:rgba(0,0,0,0.65); color:#fff; font-size:1.1rem; line-height:1; cursor:pointer; }
-  .pre47-nm { font-size:var(--fs-xs); color:var(--text-2); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .pre47-bar { position:sticky; bottom:-1px; display:flex; align-items:center; gap:0.5rem; margin:1rem -0.2rem 0; padding:0.7rem 0.2rem; background:var(--surface); border-top:1px solid var(--line); }
-  .pre47-n { flex:1; font-weight:700; color:var(--text); font-size:var(--fs-md); }
-  .pre47-n.ok { color:var(--grass); }
-  .pre47-n.over { color:var(--fire); }
-</style>
 <script>
 // ═══════════ v45: sample grade, share grade, numbered daily ═══════════
 
@@ -20824,90 +21018,6 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
 })();
 </script>
 <!-- ═══════════════════════════ DECK BUILDER SCREEN (v68) -->
-<style id="bld-css">
-  #screen-build { padding-bottom:0; }
-  .bld-count { flex-shrink:0; font-family:var(--display); font-weight:800; font-size:var(--fs-lg); padding:0.2rem 0.6rem; border:1px solid var(--line-2); border-radius:var(--r); white-space:nowrap; }
-  .bld-count.ok { color:var(--success); border-color:color-mix(in srgb, var(--success) 50%, transparent); }
-  .bld-count.over { color:var(--danger); border-color:color-mix(in srgb, var(--danger) 50%, transparent); }
-  .bld-body { padding:1rem var(--bar-x) 1.5rem; }
-  .bld-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:1.5rem; }
-  @media (min-width:900px) { .bld-grid { grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:start; } .bld-side { position:sticky; top:0; max-height:calc(100dvh - 160px); overflow-y:auto; } }
-  .bld-h { font-family:var(--font); font-size:var(--fs-md); font-weight:700; color:var(--text); margin:0 0 0.5rem; display:flex; align-items:baseline; gap:0.5rem; }
-  .bld-h .bld-n { color:var(--text-3); font-weight:600; font-size:var(--fs-sm); }
-  .bld-sec { margin:0 0 1.25rem; }
-  .bld-small { font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
-  .bld-search { display:flex; gap:0.5rem; margin:0 0 0.5rem; }
-  .bld-search input { flex:1 1 auto; min-width:0; padding:0.6rem 0.75rem; font:inherit; font-size:1rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); outline:none; -webkit-appearance:none; appearance:none; }
-  .bld-search input:focus { border-color:var(--text-2); }
-  .bld-kinds { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.5rem; }
-  .bld-kinds button { flex:1; min-height:34px; border:0; background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:var(--r-sm); cursor:pointer; }
-  .bld-kinds button.active { background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--line-2); }
-  .bld-results { border:1px solid var(--line); border-radius:var(--r); margin:0 0 1.25rem; max-height:420px; overflow-y:auto; background:var(--surface); }
-  .bld-row { display:flex; align-items:center; gap:0.65rem; padding:0.45rem 0.6rem; border-bottom:1px solid var(--line); min-height:56px; }
-  .bld-row:last-child { border-bottom:0; }
-  .bld-th { width:36px; height:50px; flex-shrink:0; border-radius:2px; overflow:hidden; background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:zoom-in; border:0; padding:0; }
-  .bld-th img { width:100%; height:100%; object-fit:cover; display:block; }
-  .bld-th .review-placeholder { font-size:0.9rem; color:var(--text-3); }
-  .bld-tx { flex:1; min-width:0; }
-  .bld-nm { font-size:var(--fs-md); font-weight:600; color:var(--text); line-height:1.25; overflow-wrap:anywhere; }
-  .bld-nm .bld-pr { font-weight:500; color:var(--text-3); font-size:var(--fs-sm); white-space:nowrap; }
-  .bld-sub { font-size:var(--fs-sm); color:var(--text-2); line-height:1.3; margin-top:2px; }
-  .bld-step { display:flex; align-items:center; gap:2px; flex-shrink:0; }
-  .bld-step button, .bld-add { width:36px; height:36px; border-radius:var(--r-sm); border:1px solid var(--line-2); background:var(--surface-2); color:var(--text); font:inherit; font-size:1.15rem; font-weight:700; line-height:1; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
-  .bld-step button:disabled { opacity:0.35; cursor:not-allowed; }
-  .bld-step b { min-width:1.6rem; text-align:center; font-family:var(--display); font-size:var(--fs-lg); }
-  .bld-add.wide { width:auto; padding:0 0.7rem; font-size:var(--fs-sm); font-weight:600; white-space:nowrap; }
-  .bld-group { border:1px solid var(--line); border-radius:var(--r); background:var(--surface); margin:0 0 0.9rem; }
-  .bld-group > .bld-h { padding:0.6rem 0.6rem 0; margin:0 0 0.25rem; }
-  .bld-checks { list-style:none; margin:0; padding:0; border:1px solid var(--line); border-radius:var(--r); background:var(--surface); }
-  .bld-checks li { display:flex; gap:0.6rem; align-items:flex-start; padding:0.55rem 0.65rem; border-bottom:1px solid var(--line); font-size:var(--fs-sm); color:var(--text); line-height:1.4; }
-  .bld-checks li:last-child { border-bottom:0; }
-  .bld-checks li > span:first-child { flex-shrink:0; width:0.6rem; height:0.6rem; margin-top:0.35rem; border-radius:50%; background:var(--success); }
-  .bld-checks li.warn > span:first-child { background:var(--electric); }
-  .bld-checks li.bad > span:first-child { background:var(--danger); }
-  .bld-checks li > div { flex:1; min-width:0; }
-  .bld-checks li .bld-add { margin-top:0.35rem; }
-  .bld-start { display:grid; grid-template-columns:minmax(0,1fr); gap:0.6rem; margin:0 0 1.25rem; }
-  @media (min-width:600px) { .bld-start { grid-template-columns:1fr 1fr; } }
-  .bld-opt { text-align:left; padding:0.8rem 0.9rem; border:1px solid var(--line-2); border-radius:var(--r); background:var(--surface); color:var(--text); font:inherit; cursor:pointer; }
-  .bld-opt:hover { background:var(--surface-2); }
-  .bld-opt b { display:block; font-size:var(--fs-md); margin-bottom:0.2rem; }
-  .bld-opt span { display:block; font-size:var(--fs-sm); color:var(--text-2); line-height:1.35; }
-  .bld-ref { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin:0 0 0.9rem; font-size:var(--fs-sm); color:var(--text-2); }
-  .bld-ref b { color:var(--text); }
-  .bld-foot { position:sticky; bottom:0; z-index:20; display:flex; gap:0.6rem; justify-content:flex-end; padding:0.75rem var(--bar-x) calc(0.75rem + env(safe-area-inset-bottom,0)); background:var(--bar-bg); border-top:1px solid var(--line); flex-shrink:0; }
-  .bld-foot .btn { flex:1 1 0; max-width:240px; }
-  .bld-big { max-width:100%; width:360px; display:block; margin:0 auto; border-radius:8px; }
-  .bld-list-pick { display:flex; flex-direction:column; }
-  .bld-list-pick .bld-row { cursor:pointer; }
-  .bld-list-pick .bld-row:hover { background:var(--surface-2); }
-  .bld-ta { width:100%; min-height:220px; padding:0.6rem; font-family:var(--mono); font-size:0.9rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); }
-  .bld-in { width:100%; padding:0.6rem 0.75rem; font:inherit; font-size:1rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); }
-  .home-cta-row.bld-3 .bld-cta { grid-column:1 / -1; }
-  @media (min-width:700px) { .home-cta-row.bld-3 { grid-template-columns:1fr 1fr 1fr; } .home-cta-row.bld-3 .bld-cta { grid-column:auto; } }
-  /* v72: the three buttons on home fit their labels, with room at the edges, at every width. In the
-     narrow right column on wide screens, Import a deck takes its own row. */
-  .home-cta.home-cta-row .btn { white-space:normal; text-align:center; line-height:1.15; padding:0.35rem 0.9rem; min-width:0; }
-  @media (min-width:1100px) {
-    .home-content > .home-cta-row.bld-3 { grid-template-columns:1fr 1fr; }
-    .home-content > .home-cta-row.bld-3 .btn-primary { grid-column:1 / -1; }
-  }
-  /* v72: on wide screens the update note and the daily puzzle sit in the right column with the
-     daily challenge. Before, they fell to the bottom of the left column, under every deck. */
-  @media (min-width:1100px) {
-    .home-content { grid-template-rows:repeat(8, auto) 1fr auto auto; }
-    .home-content > .deck-list { grid-row:2 / span 8; }
-    .home-content > #wn-card { grid-column:2; grid-row:3; }
-    .home-content > #daily-card { grid-row:4; }
-    .home-content > #pre47-card { grid-column:2; grid-row:5; }
-    .home-content > #puzzle-card { grid-column:2; grid-row:6; }
-    .home-content > .home-more { grid-row:7; }
-    .home-content > #pwa-install-btn { grid-row:8; }
-    .home-content > .ad32 { grid-row:10; }
-    .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:11; }
-    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty) { margin-top:1.5rem !important; }
-  }
-</style>
 <div id="screen-build" class="screen">
   <div class="ws-header">
     <button class="icon-btn" onclick="bldBack()" aria-label="Back to decks" title="Back"><svg class="ic"><use href="#i-back"/></svg></button>
@@ -21593,19 +21703,6 @@ async function bldSave(update) {
 })();
 </script>
 <!-- ═══════════════════════════ DECK BUILDER: WHAT TOP LISTS RUN (2.6) -->
-<style id="mc26-css">
-  .mc26-tabs { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.6rem; }
-  .mc26-tabs button { flex:1; min-height:34px; border:0; background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:var(--r-sm); cursor:pointer; }
-  .mc26-tabs button.active { background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--line-2); }
-  .mc26-opps { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 0.6rem; }
-  .mc26-opps button { min-height:32px; padding:0 0.7rem; border:1px solid var(--line-2); background:var(--surface); color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; border-radius:999px; cursor:pointer; }
-  .mc26-opps button.active { color:var(--text); border-color:var(--text-2); background:var(--surface-2); }
-  .mc26-row { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.6rem; border-bottom:1px solid var(--line); min-height:48px; }
-  .mc26-row:last-child { border-bottom:0; }
-  .mc26-you { flex-shrink:0; font-size:var(--fs-sm); color:var(--text-2); white-space:nowrap; text-align:right; min-width:3.2rem; }
-  .mc26-more { display:block; width:100%; min-height:40px; border:0; border-top:1px solid var(--line); background:transparent; color:var(--text-2); font:inherit; font-size:var(--fs-sm); font-weight:600; cursor:pointer; border-radius:0 0 var(--r) var(--r); }
-  .mc26-p { margin:0 0 0.6rem; }
-</style>
 <script>
 // ═══════════ 2.6: What top lists run, in the deck builder ═══════════
 // meta-cards.json (built weekly by refresh-matchups.mjs with meta-cards.mjs) holds, per meta deck, what
@@ -22059,16 +22156,6 @@ function g68Line(R) {
   try { g88Load(); } catch (_) {}
 })();
 </script>
-<style>
-  /* v71: a dialog is solid from its first frame. Only the dimmed page behind it fades in, so the
-     panel never shows the page through it while it opens. */
-  .modal-overlay.active { animation:v71ScrimIn 0.18s ease-out; }
-  @keyframes v71ScrimIn { from { background-color:transparent; } }
-  /* Moving to a field (Tab, or the keyboard opening on a phone) keeps it clear of a dialog's sticky
-     title and Save bar, and of the deck page's tabs and bottom bar. */
-  .modal, .mode-modal, .picker-modal { scroll-padding-top:5rem; scroll-padding-bottom:6rem; }
-  html:has(#screen-review.active) { scroll-padding-top:8rem; scroll-padding-bottom:9rem; }
-</style>
 <script>
 // ═══════════ v71 (2.4.2): fixes from the 11 Nov 2026 evening audit ═══════════
 
@@ -22253,16 +22340,6 @@ function mu71Answer(id) {
   };
 })();
 </script>
-<style>
-  /* Upgrades (2.5): card swaps that raise the grade, each checked by grading the new list. */
-  .up75-row { padding:0.6rem 0; border-top:1px solid var(--line, rgba(255,255,255,0.08)); }
-  .up75-row:first-of-type { border-top:0; }
-  .up75-h { display:flex; align-items:baseline; gap:0.6rem; }
-  .up75-n { font-weight:700; color:var(--text); font-size:var(--fs-sm); line-height:1.35; }
-  .up75-g { margin-left:auto; font-family:var(--mono); font-weight:600; font-size:var(--fs-sm); color:var(--success); white-space:nowrap; }
-  .up75-row p { margin:0.2rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
-  .up75-row.all .up75-n { color:var(--text); }
-</style>
 <script>
 // ═══════════ Upgrades (2.5): which cards to change, and the grade each change gives ═══════════
 // Every number here comes from grading the changed list with gradeDeck, the same grade the page
@@ -22556,14 +22633,6 @@ function up75Html(res, hasFix) {
   };
 })();
 </script>
-<style>
-  .mu71-ask { margin: 0.5rem 0 0.75rem; padding: 0.75rem; border: 1px solid var(--electric); border-radius: 10px; }
-  /* v71: the deck row's play button says what it starts. */
-  .deck-play { width:58px; height:52px; flex-direction:column; gap:3px; }
-  .deck-play .ic { width:16px; height:16px; margin-left:2px; }
-  .dp71 { font-family:var(--mono); font-size:0.75rem; font-weight:600; line-height:1; text-transform:uppercase; letter-spacing:0.02em; }
-  .mu71-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0; }
-</style>
 <script>
 // ═══════════ v2.5: grade history ═══════════
 // Each saved deck keeps a short log of its grades on this device: a new entry whenever the list
@@ -22777,27 +22846,6 @@ function gh72Html(deck) {
   };
 })();
 </script>
-<style>
-  /* v2.5: grade history */
-  .gh72-chart { display:block; width:100%; max-width:420px; height:auto; margin:0.25rem 0 0.75rem; overflow:visible; }
-  .gh72-grid { stroke:var(--line-2); stroke-width:1; }
-  .gh72-ax { fill:var(--text-3); font-size:11px; font-family:var(--mono); }
-  .gh72-line { fill:none; stroke:var(--text-2); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
-  .gh72-dm { fill:var(--text); stroke:var(--bg, var(--surface)); stroke-width:2; }
-  .gh72-do { fill:var(--bg, var(--surface)); stroke:var(--text-2); stroke-width:2; }
-  .gh72-list { list-style:none; margin:0; padding:0; }
-  .gh72-row { padding:0.55rem 0; border-top:1px solid var(--line); }
-  .gh72-row:first-child { border-top:0; }
-  .gh72-top { display:flex; align-items:baseline; gap:0.6rem; }
-  .gh72-w { color:var(--text-2); font-size:0.9375rem; flex:1; min-width:0; }
-  .gh72-g { font-family:var(--mono); font-size:1rem; color:var(--text); }
-  .gh72-up, .gh72-dn, .gh72-eq { font-family:var(--mono); font-size:0.875rem; min-width:2.6rem; text-align:right; color:var(--text-3); }
-  .gh72-up { color:var(--green); }
-  .gh72-dn { color:var(--red); }
-  .gh72-row p { margin:0.15rem 0 0; font-size:0.9375rem; color:var(--text-2); line-height:1.45; overflow-wrap:anywhere; }
-  .gh72-not p { color:var(--text-3); }
-  .gh72-note { margin:0.5rem 0 0; font-size:0.875rem; color:var(--text-3); }
-</style>
 <script>
 // ═══════════ 2.6.5: easier first visit ═══════════
 // Paste and go, Try a sample deck, Top fixes on each grade. The phone pass is CSS in the style block below.
@@ -23033,37 +23081,20 @@ function tf265Place() {
   const _uh = up75Html;
   up75Html = function () { const r = _uh.apply(this, arguments); setTimeout(tf265Place, 0); return r; };
 })();
+
+// 2.7.x speed: home has drawn once, so the room kept for it can go.
+(function () {
+  const done = () => {
+    const h = document.documentElement;
+    if (!h.classList.contains('rd-boot')) return;
+    h.classList.remove('rd-boot');
+    // The logo is sized from the title; size it again now the title has its own size.
+    try { if (typeof rd38Fit === 'function') rd38Fit(); } catch (_) {}
+  };
+  const _home = renderHome;
+  renderHome = function () { try { return _home.apply(this, arguments); } finally { done(); } };
+  window.addEventListener('load', () => setTimeout(done, 5000), { once: true });
+})();
 </script>
-<style>
-  /* 2.6.5: Paste and go, Try a sample deck, Top fixes */
-  .ez265-sample-s { display:block; margin-top:0.45rem; font-size:var(--fs-xs, 0.8125rem); color:var(--text-3); }
-  .tour-acts.ez265-acts { flex-wrap:wrap; }
-  .tour-acts.ez265-acts .ez265-tour { flex:1 1 100%; }
-  .tf265 { margin:0.75rem 0 0.25rem; padding:0.6rem 0.75rem 0.5rem; border:1px solid var(--line-2, var(--line)); border-radius:10px; text-align:left; }
-  .tf265-h { font-family:var(--mono); font-size:0.75rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-3); }
-  .tf265 ol { margin:0.25rem 0 0; padding:0 0 0 1.25rem; }
-  .tf265 li { margin:0; padding:0; color:var(--text-2); }
-  .tf265 li::marker { font-family:var(--mono); color:var(--text-3); }
-  .tf265 li.crit::marker { color:var(--red, var(--fire)); }
-  .tf265 li button, .tf265 li > div { display:block; width:100%; min-height:44px; padding:0.45rem 0; border:0; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; }
-  .tf265 li + li button, .tf265 li + li > div { border-top:1px solid var(--line); }
-  .tf265-t { display:block; color:var(--text); font-size:0.9375rem; line-height:1.35; overflow-wrap:anywhere; }
-  .tf265-n { display:block; margin-top:0.1rem; font-family:var(--mono); font-size:0.8125rem; color:var(--green, var(--grass)); }
-  .tf265-wait { margin:0.3rem 0 0.2rem; font-size:0.875rem; color:var(--text-3); }
-  /* 2.6.5 phone pass: taps of at least 44px on phones and touch screens */
-  @media (max-width:600px), (pointer:coarse) {
-    .deck-more { height:44px; }
-    .about40-faq summary { min-height:44px; }
-    .about38-links { gap:0 1rem; }
-    .about38-links a, .about38-links button { display:inline-flex; align-items:center; min-height:44px; }
-    .ol-k .mode-opt { min-width:44px; min-height:44px; }
-    .bld-kinds button { min-height:44px; }
-    .bld-add { width:44px; height:44px; }
-    .bld-add.wide { width:auto; }
-    .bld-th { width:44px; height:61px; }
-    .about38-links button { min-width:44px; justify-content:center; }
-    .deck-card .deck-name { white-space:normal; overflow-wrap:anywhere; }
-  }
-</style>
 </body>
 </html>

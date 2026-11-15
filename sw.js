@@ -69,14 +69,23 @@ const isAppPath = url => { const p = new URL(url).pathname; return p.endsWith('/
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => Promise.all(
-        CORE_ASSETS.map(url =>
+      .then(cache => Promise.all([
+        // 2.7.x speed: './' and './index.html' are the same page, so it downloads
+        // once and is saved under both addresses (it used to download twice).
+        fetch(new Request('./index.html', { cache: 'reload' }))
+          .then(resp => {
+            if (!resp.ok || resp.redirected) throw new Error('index.html');
+            return Promise.all([cache.put('./', resp.clone()), cache.put('./index.html', resp)]);
+          })
+          .catch(() => Promise.all(['./', './index.html'].map(url =>
+            cache.add(new Request(url, { cache: 'reload' })).catch(() => console.warn('[sw] could not cache', url))))),
+        ...CORE_ASSETS.filter(url => url !== './' && url !== './index.html').map(url =>
           cache.add(new Request(url, { cache: 'reload' })).catch(() => {
             // Missing or misnamed asset: skip it, keep the rest of the install.
             console.warn('[sw] could not cache', url);
           })
         )
-      ))
+      ]))
       .then(() => self.skipWaiting())
   );
 });
