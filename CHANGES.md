@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.8 (build 88): card data hunt, card roles and Special Energy (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v88), tests/grade-baseline.json and CHANGES.md.
+
+- Card data hunt: every card in the 132 tournament lists (335 printings) checked against pokemon-tcg-data for name, type, HP, stage, evolves from, Weakness, Retreat, prize count, ex, Tera, ACE SPEC, Trainer kind, regulation mark, Abilities and attack names, costs and damage. No new mismatch: the only differences are ones already fixed on purpose (Adventure Lantern is an Item) and free Retreat read as no number, which every reader treats as 0. Then every Standard card (4,854) run through the role reader and checked for Search, Energy, recovery, draw, switch and gust text it missed.
+- Card roles fixed (general text rules, no card names): a Pokemon found by "look at the top or bottom 7 cards, you may reveal a Pokemon you find there" (Dusk Ball, Great Ball, Bug Catching Set, Bill's Transfer, Drayton); a Stadium that has each player "search their deck" (Lumiose City, Artazon, Spikemuth Gym, not Grand Tree, which only evolves); Basic searches with an owner in the name (Team Rocket's Proton, Hop's Bag, Team Rocket's Great Ball); Energy searched and attached (Janine's Secret Art, Geeta, Misty's Vitality, Energy Coin) or attached from the top of the deck (Electric Generator, Waitress); long "in any combination" recovery (Tarragon, Tulip, Max Rod). Each now counts as a way to find Pokemon, Energy acceleration or recovery.
+- Special Energy in the setup count: "If this card is attached to an Evolution Pokemon" read as "can only be attached to", so Ignition Energy, Prism Energy on an evolved attacker and Neo Upper Energy off a Stage 2 were left out entirely. Now they give Colorless, Neo Upper gives 2 on a Stage 2, and Ignition gives 3 Colorless on an Evolution Pokemon, only on the turn it pays for the attack (it is discarded at the end of the turn).
+- Grade check: 132 tournament lists, 15 moved, all up, Power only (Rocket's Honchkrow, Greninja and Mega Starmie by up to 0.15 from Ignition Energy; Bug Catching Set, Dusk Ball and Janine's Secret Art lists by 0.05 or less). 5 grades up 0.1 (Greninja 8.1 to 8.2, Mega Starmie 7.0 to 7.1, Ogerpon Meganium Arboliva 8.9 to 9.0, Rocket's Honchkrow 8.3 to 8.4 twice). Baseline updated.
+- Tracking tournament results: cards alone 0.21 to 0.22, grade as shown 0.79 and newest set 0.52 unchanged.
+
 # RdyDeck 2.6.7 (build 87): setup speed can reach 10, toolbox decks need their board (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v87), tests/grade-baseline.json and CHANGES.md.

@@ -3955,13 +3955,19 @@ const PROVIDES_RULES = [
   {
     tag: 'search_basic',
     // v55: also "for a Basic Fighting Energy card or a Basic Fighting Pokemon" (Fighting Gong).
-    test: (all) => /search\s+your\s+deck\s+for[^.]{0,50}\bbasic\s+(?:\w+\s+)?pok[eé]mon/.test(all),
+    // 2.6.8: also a Stadium's "search their deck" (Lumiose City, Artazon) and owner names
+    // ("Basic Team Rocket's Pokemon", "Basic Hop's Pokemon"); not a Basic named after another Pokemon (Grand Tree).
+    test: (all) => /search\s+(?:your|their)\s+deck\s+for(?:(?!pok[eé]mon)[^.]){0,50}\bbasic\s+(?:(?!energy\b)[\w'’]+\s+){0,3}pok[eé]mon/.test(all),
   },
   {
     tag: 'search_pokemon',
     // v55: up to 60 letters, but not an Energy search that attaches to a Pokemon (Mega Gardevoir ex's Overflowing Wishes).
     // v65: "a Pokemon Tool card" is not a Pokemon (Secret Box).
-    test: (all) => /search\s+your\s+deck\s+for(?:(?!energy|pok[eé]mon\s+tool)[^.]){0,60}pok[eé]mon(?!\s+tool)/.test(all),
+    // 2.6.8: also a Stadium's "search their deck" (Spikemuth Gym) and "look at the bottom 7 cards of your deck.
+    // You may reveal a Pokemon you find there" (Dusk Ball, Bug Catching Set).
+    test: (all) => /search\s+your\s+deck\s+for(?:(?!energy|pok[eé]mon\s+tool)[^.]){0,60}pok[eé]mon(?!\s+tool)/.test(all) ||
+      /search\s+their\s+deck\s+for(?:(?!energy|pok[eé]mon\s+tool|evolves)[^.]){0,60}pok[eé]mon(?!\s+(?:tool|that\s+evolves))/.test(all) ||
+      /look\s+at\s+the\s+(?:top|bottom)\s+\d+\s+cards\s+of\s+your\s+deck\.\s*you\s+may\s+reveal(?:(?!energy\s+card|supporter|\bitem|trainer)[^.]){0,60}?pok[eé]mon(?!\s+tool)[^.]{0,60}you\s+find\s+there/.test(all),
   },
   {
     tag: 'gust',
@@ -3988,7 +3994,11 @@ const PROVIDES_RULES = [
       /attach[^.]{0,60}energy[^.]{0,40}from\s+your\s+(?:deck|discard\s+pile)/.test(all) ||
       /attach\s+as\s+many[^.]{0,40}energy/.test(all) ||
       /doesn'?t\s+use\s+up\s+your\s+(?:1\s+)?energy\s+(?:card\s+)?attachment/.test(all) ||
-      /attach\s+\d+\s+basic\s+energy[^.]{0,40}from\s+your\s+deck/.test(all),
+      /attach\s+\d+\s+basic\s+energy[^.]{0,40}from\s+your\s+deck/.test(all) ||
+      // 2.6.8: "search your deck for a Basic Darkness Energy card and attach it" (Janine's Secret Art, Geeta)
+      // and "look at the top 5 cards of your deck and attach ... Energy cards you find there" (Electric Generator).
+      /search\s+your\s+deck\s+for[^.]{0,60}energy[^.]{0,40}\band\s+attach\s+(?:it|them)\b/.test(all) ||
+      /look\s+at\s+the\s+top\s+\d+\s+cards\s+of\s+your\s+deck\s+and\s+attach[^.]{0,80}energy[^.]{0,30}you\s+find\s+there/.test(all),
   },
   {
     tag: 'spread_counters',
@@ -4034,7 +4044,7 @@ const PROVIDES_RULES = [
   {
     tag: 'recovery',
     test: (all) =>
-      /put\s+(?:a|\d+|up\s+to\s+\d+)[^.]{0,50}from\s+your\s+discard\s+pile\s+into\s+your\s+hand/.test(all) ||
+      /put\s+(?:a|\d+|up\s+to\s+\d+)[^.]{0,90}from\s+your\s+discard\s+pile\s+into\s+your\s+hand/.test(all) ||
       /shuffle[^.]{0,60}from\s+your\s+discard\s+pile\s+into\s+your\s+deck/.test(all),
   },
   {
@@ -7057,7 +7067,7 @@ function gtRoles(text, kind) {
   if (/\bdraws? (?:\d+ |a )?cards?\b|draws? a card for each|draws? cards until/.test(t.replace(/(?:your opponent|they) draws? \d+ cards?/g, ''))) r.add('draw');
   if (/search your deck for (?!up to \d+ cards and discard)/.test(t) || /you may reveal [^.]+ you find there/.test(t)) r.add('search');
   if (/from your discard pile into your (?:hand|deck)|shuffle [^.]+ from your discard pile into your deck/.test(t)) r.add('recovery');
-  if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|provides every type of energy|costs \d+ energy less/.test(t)) r.add('energy');
+  if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|search your deck for [^.]{0,60}energy[^.]{0,40} and attach (?:it|them)\b|look at the top \d+ cards of your deck and attach [^.]{0,80}energy[^.]{0,30} you find there|provides every type of energy|costs \d+ energy less/.test(t)) r.add('energy');
   if (/gets \+\d+ hp|is not knocked out|takes 1 fewer prize/.test(t)) r.add('survive');
   if (/do \d+ more damage/.test(t)) r.add('damage');
   if (/heal \d+ damage/.test(t)) r.add('heal');
@@ -7968,18 +7978,25 @@ function g80Speed(deck, att, at, board) {
   const stage = att.stage === 'stage2' ? 2 : att.stage === 'stage1' ? 1 : 0;
   const ty = cost.filter(t => t !== 'colorless');
   const stg = { 'basic': 'basic', 'stage 1': 'stage1', 'stage 2': 'stage2' };
-  const fits = ec => { const m = gtNorm(ec.et || '').match(/(?:only be attached to|if this card is attached to) an? ([a-z0-9' ]+?) pokemon/);
-    if (!m) return true; const x = m[1].trim();
-    return stg[x] ? String(att.stage || '').toLowerCase().replace(/\s+/g, '') === stg[x] : gtNorm(att.key || '').startsWith(x); };
+  // Who an Energy names: "Basic", "Stage 2", "Evolution", or an owner like "Team Rocket's".
+  const isX = x => x === 'evolution' ? stage > 0 : stg[x] ? String(att.stage || '').toLowerCase().replace(/\s+/g, '') === stg[x] : gtNorm(att.key || '').startsWith(x);
+  // 2.6.8: only "can only be attached to" keeps an Energy off the attacker (Team Rocket's Energy). "If this card is
+  // attached to an Evolution Pokemon, it provides ... instead" is an upgrade, so without it the card is still Colorless
+  // (Ignition, Prism and Neo Upper Energy were left out of the setup count before).
+  const fits = ec => { const m = gtNorm(ec.et || '').match(/only be attached to an? ([a-z0-9' ]+?) pokemon/); return !m || isX(m[1].trim()); };
+  const up = ec => { const m = gtNorm(ec.et || '').match(/if this card is attached to an? ([a-z0-9' ]+?) pokemon/); return m ? isX(m[1].trim()) : null; };
   // What each card does here.
   const K = [], ids = [];
   deck.forEach(e => { if (!e.card) return;
     const c = e.card, pv = c.provides || [], li = line.findIndex(k => gk(k) === gk(c.key));
     const o = { line: li, basic: c.t === 'pkmn' && (c.stage === 'basic' || !c.from), sup: c.tt === 'supporter' };
     if (c.t === 'energy' && fits(c)) {
-      const ts = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : ['colorless']);
-      o.en = /stage 2 pok.mon, this card provides every type/i.test(c.et || '') && stage !== 2 ? { n: 1, ts: ['colorless'] }
-        : { n: /provides 2\b/i.test(c.et || '') ? 2 : 1, ts }; }
+      const ts = c.etypes && c.etypes.length ? c.etypes : (c.etype ? [c.etype] : ['colorless']), et = gtNorm(c.et || ''), u = up(c);
+      // 2.6.8: Neo Upper Energy gives 2 on a Stage 2, Ignition Energy 3 Colorless on an Evolution Pokemon, and
+      // Ignition is discarded at the end of the turn, so it only counts on the turn the attack is used.
+      o.en = u === false ? { n: 1, ts: ['colorless'] }
+        : { n: /provides 2\b|provides only 2 energy/.test(et) ? 2 : u && /provides (?:colorless){3} energy instead/.test(et) ? 3 : 1, ts,
+            once: /discard it at the end of your turn/.test(et) || undefined }; }
     if (c.t === 'trainer') {
       if (pv.includes('search_pokemon')) o.find = 'any'; else if (pv.includes('search_basic')) o.find = 'basic';
       // 2.6.7: how many Basics a search card puts down at once (Buddy-Buddy Poffin finds 2), for the bench of a toolbox deck.
@@ -8029,11 +8046,17 @@ function g80Speed(deck, att, at, board) {
         const j = pool > 0 ? take(k => k.find) : -1; if (j < 0) break;
         // The search card brings Basics straight to the Bench (Nest Ball, Poffin) or to hand and down the same turn.
         const n = Math.min(pool, K[j].findN || 1, board - 1 - others); others += n; } };
+    let curT = 0;
+    const payable = us => { if (us.length < cost.length) return false; const pool = us.slice();
+      for (const x of ty) { const j = pool.findIndex(u => u.includes(x) || u.includes('any')); if (j < 0) return false; pool.splice(j, 1); } return true; };
     const attachHand = () => { let best = -1, bv = -1;
-      hand.forEach((i, j) => { const e = K[i].en; if (!e) return; const v = e.n * 2 + (e.ts.some(x => ty.includes(x) || x === 'any') ? 1 : 0); if (v > bv) { bv = v; best = j; } });
+      hand.forEach((i, j) => { const e = K[i].en; if (!e || (e.once && curT < T)) return;
+        // Energy that leaves at the end of the turn goes on only when it pays for the attack this turn.
+        const v = e.once ? (payable(units.concat(Array(e.n).fill(e.ts))) ? 100 : -1) : e.n * 2 + (e.ts.some(x => ty.includes(x) || x === 'any') ? 1 : 0); if (v > bv) { bv = v; best = j; } });
       if (best < 0) return false; const e = K[hand.splice(best, 1)[0]].en; for (let q = 0; q < e.n; q++) units.push(e.ts); return true; };
     const short = () => units.length < cost.length;
     for (let t = 1; t <= T; t++) {
+      curT = t;
       draw(1);
       // Energy fetched to hand (Earthen Vessel and the like) comes as soon as it is drawn.
       for (let j; (j = take(k => k.fetch)) >= 0;) for (let q = 0; q < K[j].fetch; q++) hand.push(-1);
@@ -12270,11 +12293,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6.7',
+  version: 'v2.6.8',
   kind: 'fix',
   items: [
-    { t: 'Setup speed can reach 10', d: 'The fastest decks, ready by turn 2 in about 70% of games, now score a 10.' },
-    { t: 'Toolbox decks need their board', d: 'A toolbox deck counts as set up with 5 or 6 Pokemon in play.' }
+    { t: 'Card roles fixed', d: 'Dusk Ball, Bug Catching Set, Lumiose City, Janine\'s Secret Art, Tarragon and more now count for what they do.' },
+    { t: 'Ignition Energy counts', d: 'It gives 3 Energy on an Evolution Pokemon in the setup count; Neo Upper gives 2 on a Stage 2.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15182,8 +15205,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6.7';
-const PT_BUILD = 87;
+const PT_VERSION = 'v2.6.8';
+const PT_BUILD = 88;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
