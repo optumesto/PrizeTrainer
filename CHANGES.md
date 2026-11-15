@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.7 (build 97): privacy policy and terms updated (15 Nov 2026)
+
+Changed files: privacy.html, terms.html, ads.js, js/v32-ads.js, js/v45-sample-share-daily.js, js/core.js, build-pages.mjs, index.html, the page footers (19 pages), sw.js (cache prize-trainer-v97) and CHANGES.md.
+
+- Privacy policy: the Children section, Do Not Track and tracking across sites, web beacons and other ad companies, feedback kept up to 12 months, the Data safety sentence and the copyright line. Effective November 15, 2026.
+- Terms: venue names the Elk County Court of Common Pleas and the Western District of Pennsylvania. Effective November 15, 2026.
+- Ads are labeled "Advertisements", page footers carry a copyright sentence, and the share card says RdyDeck is not affiliated with the Pokemon companies.
+
 # RdyDeck 2.7.6 (build 96): the app in smaller files, so updates download less (15 Nov 2026)
 
 Changed files: index.html, the new js/ folder (31 files), app-file.mjs (new), sw.js (cache prize-trainer-v96), tests/grade-check.mjs, check-cards.mjs, puzzle/tools/sync-text.mjs, .github/workflows/grade-check.yml, README.md and CHANGES.md.
