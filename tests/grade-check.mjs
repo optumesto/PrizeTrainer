@@ -250,6 +250,7 @@ async function resultsReport() {
   w.__live = raw;
   if (!w.eval('!!(mu60Data = mu60Validate(JSON.parse(window.__live)))')) { console.error('matchups.json did not load.'); return; }
   if (w.eval('typeof g76Set') === 'function') { w.__bld = fs.readFileSync(path.join(ROOT, 'builder.json'), 'utf8'); w.eval('g76Set(JSON.parse(window.__bld))'); }
+  if (w.eval('typeof g88Set') === 'function') { w.__mc = fs.readFileSync(path.join(ROOT, 'meta-cards.json'), 'utf8'); w.eval('g88Set(JSON.parse(window.__mc))'); }
   w.__liveData = w.eval('mu60Data');
   const per = {};
   // Test lists (a forced rotated card, an old printing) are not real results, so they stay out.
@@ -313,6 +314,15 @@ if (w.eval('typeof g76Set') === 'function') {
     w.__played = fs.readFileSync(PLAYED, 'utf8');
     if (!w.eval('g76Set(JSON.parse(window.__played))')) { console.error('tests/grade-played.json did not load.'); process.exit(2); }
   } else w.eval('g76Played = null; g76Tried = true;');
+}
+// 2.6.8: the Energy each archetype's top lists run (from meta-cards.json), pinned the same way in
+// tests/grade-builds.json. RESULTS=off leaves it out too.
+const BUILDS = path.join(HERE, 'grade-builds.json');
+if (w.eval('typeof g88Set') === 'function') {
+  if (process.env.RESULTS !== 'off' && fs.existsSync(BUILDS)) {
+    w.__builds = fs.readFileSync(BUILDS, 'utf8');
+    if (!w.eval('g88Set(JSON.parse(window.__builds))')) { console.error('tests/grade-builds.json did not load.'); process.exit(2); }
+  } else w.eval('g88Data = null; g88Tried = true;');
 }
 for (const fn of ['parseDeckList', 'enrichDeckCards', 'gradeDeck']) {
   if (w.eval('typeof ' + fn) !== 'function') {

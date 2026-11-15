@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.9 (build 89): Energy checked against each archetype's winning lists (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v89), tests/grade-check.mjs, tests/grade-builds.json (new) and CHANGES.md.
+
+- Energy against winning lists: when a list matches a meta archetype (its own pick, or a match of 0.6 or more), the grade compares its Energy count with what that archetype's top lists run (meta-cards.json, the top quarter of each Limitless online event; archetypes with 20 or more top lists). The band is the average plus or minus 30% (at least 3). Outside it, the card grade drops 0.25 for each Energy past the band (at most 1.5), the list leans less on the archetype's results (none once 6 past), and What to fix says "Heavy on Energy for X" or "Light on Energy for X" with the numbers. It replaces the older "Heavy on Energy" check (22 or more) when both apply. The sentence under the grade says how much it dropped.
+- Data: the grade reads meta-cards.json once per page load and keeps a small summary (the Energy per archetype), so it works offline. The grade check uses a pinned copy, tests/grade-builds.json.
+- Grade check: 132 tournament lists, none moved (every one sits inside its archetype's band). Test lists made from real ones: Dragapult with 16 Energy 8.8 to 7.8, Basic Box with 23 Energy 8.5 to 7.3, Mega Lucario with 20 Energy 8.2 to 6.9, Mega Rayquaza with 21 Energy 7.8 to 7.6, Dragapult with 4 Energy 8.8 to 8.5. The real Dragapult list stays 8.8.
+- Tracking tournament results: unchanged, since no tournament list moved. Cards alone 0.22, grade as shown 0.79, newest set grade as shown 0.52.
+
 # RdyDeck 2.6.8 (build 88): card data hunt, card roles and Special Energy (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v88), tests/grade-baseline.json and CHANGES.md.
