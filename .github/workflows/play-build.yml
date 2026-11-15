@@ -1,0 +1,67 @@
+# Play build: makes the RdyDeck Android app (a Trusted Web Activity for
+# rdydeck.com) from play/twa-manifest.json with Bubblewrap.
+# It builds UNSIGNED. No keystore, key or password is ever in this repo or
+# this job. Sign the bundle on your own computer (see play/BUILD-PLAY.md).
+# Runs on the play-package branch only, or from the Actions tab.
+name: Play build
+
+on:
+  push:
+    branches: [play-package]
+    paths:
+      - 'play/twa-manifest.json'
+      - '.github/workflows/play-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Bubblewrap
+        run: npm i -g @bubblewrap/cli@1.27.0
+
+      - name: Point Bubblewrap at this machine's JDK and Android SDK
+        run: |
+          mkdir -p ~/.bubblewrap
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}\n' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
+
+      - name: Make the Android project
+        run: |
+          mkdir app
+          # Launcher icon: the Play store icon from play/store-assets, pinned to this commit.
+          jq --arg icon "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/play/store-assets/icon-512.png" \
+            '.iconUrl = $icon' play/twa-manifest.json > app/twa-manifest.json
+          cd app
+          bubblewrap update --skipVersionUpgrade < /dev/null
+
+      - name: Build (unsigned)
+        working-directory: app
+        run: bubblewrap build --skipSigning < /dev/null
+
+      - name: Collect the output
+        run: |
+          mkdir out
+          cp app/app/build/outputs/bundle/release/app-release.aab out/rdydeck-1.0.0-unsigned.aab
+          cp app/twa-manifest.json out/
+          cd out && sha256sum * > SHA256SUMS.txt && ls -la
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rdydeck-play-unsigned
+          path: out/
+          retention-days: 30
