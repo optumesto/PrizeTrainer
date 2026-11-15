@@ -105,7 +105,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   body.querySelector('.pz-mon').click();
   ok(/HP/.test(d.getElementById('x-modal').textContent), 'tapping a Pokémon shows its card');
   w.closeSheet();
-  const chip = body.querySelector('.pz-chip:not(.off)'); if (chip) { chip.click(); ok(d.getElementById('x-modal').classList.contains('active'), 'tapping a hand card shows it'); w.closeSheet(); }
+  const chip = body.querySelector('.mt-card:not(.off)'); if (chip) { chip.click(); ok(d.getElementById('x-modal').classList.contains('active'), 'tapping a hand card shows it'); w.closeSheet(); }
   // Every shipped puzzle: labels for every action along its line, and the line wins.
   let labelled = 0, won = 0;
   const pack = JSON.parse(fs.readFileSync(path.join(ROOT, 'puzzle/daily.json'), 'utf8'));
