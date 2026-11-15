@@ -6732,18 +6732,20 @@ function gViability(deck, coh, main) {
   if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`,
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.`});
   // 2.6.6: setup speed also reads how often the attacker is in play with the Energy its attack needs, from
-  // shuffles of the list (g80Speed), by your second turn. Ready in half of games or more is full marks (9.5),
-  // a quarter is about the usual 8.2. When that reads faster than the rules above, it sets the score; it never
-  // lowers it. Checked against tournament results: this ranks archetypes a little closer to their win rates.
+  // shuffles of the list (g80Speed), by your second turn. A quarter of games is about the usual 8.2, half is 9.5,
+  // and 2.6.7 lets the fastest lists go on to a 10 (g80Clock). When that reads faster than the rules above, it
+  // sets the score; it never lowers it. The rules alone still top out at 9.5: only a measured fast setup gets a 10.
   let speed=null;
   if (bestR && best > 0) { try {
     const sw=deck.find(x=>x.card&&x.name===bestR.name), cw=sw&&sw.card;
     const bench=bestR.copy&&bestR.copy.bench, src=bench?(deck.find(x=>x.card&&x.name===bestR.copy.who)||{}).card:cw;
     const at=src&&(src.attacks||[]).find(x=>x.name===(bestR.copy&&!bench?bestR.copy.via:bestR.atk));
-    const sp=at&&!at.need?g80Speed(deck, cw, at):null;
-    if (sp) { const v=0.7+0.25*Math.min(1, sp.t2/0.5);
-      speed={ ...sp, name:bestR.name, atk:at.name, n:(at.cost||[]).length, v, used:v>clockScore+0.005 };
-      if (speed.used) clockScore=Math.min(0.95, v); } } catch (_) {} }
+    // 2.6.7: a toolbox deck is set up with a board, one Pokemon in play for each attacker it picks from (5 or 6).
+    const board=tb.length>=4 ? Math.min(6, 1+tb.length) : 1;
+    const sp=at&&!at.need?g80Speed(deck, cw, at, board):null;
+    if (sp) { const v=g80Clock(sp.t2);
+      speed={ ...sp, name:bestR.name, atk:at.name, n:(at.cost||[]).length, v, board, used:v>clockScore+0.005 };
+      if (speed.used) clockScore=Math.min(1, v); } } catch (_) {} }
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
   const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce, strat, multiN, pkN, engQ, speed };
@@ -7940,11 +7942,23 @@ function oddsAttacker(S) {
  * else one that draws (counted as 4 new cards). Seeded by the list, so a list always gets the same numbers.
  */
 const G80_TRIALS = 2000, G80_DRAW = 4;
+/**
+ * 2.6.7: setup speed score from how often the deck is ready by its second turn (t2, going first and second
+ * averaged). 25% of games is 8.2, 50% is 9.5, and 70% is a 10: that is where the fastest real tournament
+ * lists sit (Mega Rayquaza ex lists, ready by turn 2 in about 70 to 73% of games). Bad hands still happen
+ * to a 10 deck; a 10 means the deck is ready on time about as often as any list can be.
+ */
+const G80_TOP = 0.7;
+function g80Clock(t2) {
+  const t = Math.max(0, t2 || 0);
+  return t <= 0.5 ? 0.7 + 0.25 * t / 0.5 : Math.min(1, 0.95 + 0.05 * (t - 0.5) / (G80_TOP - 0.5));
+}
 const _g80Cache = new Map();
-function g80Speed(deck, att, at) {
+function g80Speed(deck, att, at, board) {
   if (!att || !at) return null;
+  board = Math.max(1, Math.min(6, board || 1));
   const cost = at.cost || [];
-  const sig = deck.filter(e => e.card).map(e => e.qty + 'x' + e.card.key).join('|') + '#' + att.key + '#' + at.name;
+  const sig = deck.filter(e => e.card).map(e => e.qty + 'x' + e.card.key).join('|') + '#' + att.key + '#' + at.name + (board > 1 ? '#b' + board : '');
   if (_g80Cache.has(sig)) return _g80Cache.get(sig);
   const gk = k => gtNorm(normalizeCardName(k || ''));
   // The attacker's line, Basic first. A missing Stage 1 leaves Basic to Stage 2 by Rare Candy.
@@ -7968,6 +7982,8 @@ function g80Speed(deck, att, at) {
         : { n: /provides 2\b/i.test(c.et || '') ? 2 : 1, ts }; }
     if (c.t === 'trainer') {
       if (pv.includes('search_pokemon')) o.find = 'any'; else if (pv.includes('search_basic')) o.find = 'basic';
+      // 2.6.7: how many Basics a search card puts down at once (Buddy-Buddy Poffin finds 2), for the bench of a toolbox deck.
+      if (o.find) { const fm = gtNorm(c.rt || '').match(/up to (\d+) basic pokemon/); o.findN = fm ? +fm[1] : 1; o.findB = pv.includes('search_basic'); }
       if (pv.includes('evolution_access')) o.candy = true;
       if (pv.includes('draw') && o.sup) o.draw = true;
       const rt = gtNorm(c.rt || '');
@@ -8001,7 +8017,18 @@ function g80Speed(deck, att, at) {
       if (!left(s)) return false;
       const isB = s === 0;
       return take(k => k.find === 'any' || (isB && k.find === 'basic')) >= 0; };
-    let placed = [0, 0, 0].map(() => 0), units = [], abUsed = new Set();
+    let placed = [0, 0, 0].map(() => 0), units = [], abUsed = new Set(), others = 0;
+    // 2.6.7: a toolbox deck is set up once it has its board, not one attacker: other Basics go to the Bench
+    // from hand, or come from the deck with a search card, until board Pokemon are in play.
+    const boardShort = () => board > 1 && (placed[0] ? 1 : 0) + others < board;
+    const bb = k => k.basic && k.line <= 0 && !(k.ab && !k.ab.self);
+    const benchUp = () => { if (!placed[0]) return;
+      while (boardShort()) {
+        if (take(bb) >= 0) { others++; continue; }
+        const pool = ids.filter(i => bb(K[i])).length - inPrize.filter(i => bb(K[i])).length - hand.filter(i => bb(K[i])).length - others - (K.some(k => k.line === 0 && bb(k)) ? 1 : 0);
+        const j = pool > 0 ? take(k => k.find) : -1; if (j < 0) break;
+        // The search card brings Basics straight to the Bench (Nest Ball, Poffin) or to hand and down the same turn.
+        const n = Math.min(pool, K[j].findN || 1, board - 1 - others); others += n; } };
     const attachHand = () => { let best = -1, bv = -1;
       hand.forEach((i, j) => { const e = K[i].en; if (!e) return; const v = e.n * 2 + (e.ts.some(x => ty.includes(x) || x === 'any') ? 1 : 0); if (v > bv) { bv = v; best = j; } });
       if (best < 0) return false; const e = K[hand.splice(best, 1)[0]].en; for (let q = 0; q < e.n; q++) units.push(e.ts); return true; };
@@ -8024,11 +8051,12 @@ function g80Speed(deck, att, at) {
       if (!supUsed && placed[0] && short() && has(k => k.acc && k.sup)) { const j = take(k => k.acc && k.sup); supUsed = true;
         for (let q = 0; q < K[j].acc.n; q++) { if (K[j].acc.hand) attachHand(); else units.push(fromDeck); } }
       // Else a Supporter that draws, when anything is still missing; then try the line again.
-      if (!supUsed && (short() || !placed[top]) && has(k => k.draw)) { take(k => k.draw); supUsed = true; draw(G80_DRAW);
+      if (!supUsed && (short() || !placed[top] || boardShort()) && has(k => k.draw)) { take(k => k.draw); supUsed = true; draw(G80_DRAW);
         if (!placed[0] && get(0)) placed[0] = t;
         if (top === 1 && placed[0] && !placed[1] && can(0) && get(1)) placed[1] = t;
         if (top === 2 && placed[0] && !placed[2] && ((can(1) && get(2)) || (can(0) && has(k => k.candy) && get(2) && take(k => k.candy) >= 0))) placed[2] = t; }
       if (!placed[0]) continue;
+      if (board > 1) benchUp();
       attachHand();
       // Items that attach Energy.
       for (let j; short() && (j = take(k => k.acc && !k.sup)) >= 0;) for (let q = 0; q < K[j].acc.n; q++) { if (K[j].acc.hand) attachHand(); else units.push(fromDeck); }
@@ -8036,13 +8064,15 @@ function g80Speed(deck, att, at) {
       K.forEach((k, i) => { if (!k.ab || !short()) return;
         let on = false;
         if (k.line >= 0) on = !!placed[k.line] && (k.ab.when !== 'evolve' || placed[k.line] === t) && (k.ab.when !== 'play' || placed[k.line] === t);
-        else if (!k.ab.self && k.basic && hand.includes(i)) { hand.splice(hand.indexOf(i), 1); abUsed.add(i); on = true; }
+        else if (!k.ab.self && k.basic && hand.includes(i)) { hand.splice(hand.indexOf(i), 1); abUsed.add(i); on = true; if (board > 1) others++; }
         else if (!k.ab.self && k.basic && abUsed.has(i)) on = k.ab.when === 'turn';
         if (!on || (k.ab.when !== 'turn' && abUsed.has('o' + i))) return;
         if (k.ab.when !== 'turn') abUsed.add('o' + i);
         for (let q = 0; q < k.ab.n && short(); q++) { if (k.ab.hand) { if (!attachHand()) break; } else units.push(fromDeck); } });
+      // Ability Pokemon left in hand go to the Bench too once the attacker has its Energy.
+      if (board > 1) { benchUp(); for (let j; boardShort() && (j = take(k => k.basic && k.line <= 0)) >= 0;) others++; }
     }
-    if (!placed[top] || short()) return false;
+    if (!placed[top] || short() || boardShort()) return false;
     const pool = units.slice();
     for (const x of ty) { const j = pool.findIndex(u => u.includes(x) || u.includes('any')); if (j < 0) return false; pool.splice(j, 1); }
     return true; };
@@ -12240,12 +12270,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.6.6',
+  version: 'v2.6.7',
   kind: 'fix',
   items: [
-    { t: 'Setup speed fix', d: 'Setup speed now counts how often your attacker has the Energy its attack needs by turn 2.' },
-    { t: 'Added: And in Ask the odds', d: 'Pick Every one (and) to ask for two cards together, like Rare Candy and Ultra Ball.' },
-    { t: 'Wording fixes', d: 'No more 100-100% or "All 1 card needs".' }
+    { t: 'Setup speed can reach 10', d: 'The fastest decks, ready by turn 2 in about 70% of games, now score a 10.' },
+    { t: 'Toolbox decks need their board', d: 'A toolbox deck counts as set up with 5 or 6 Pokemon in play.' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15153,8 +15182,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 66 is prize-trainer-v66); it shows only in feedback mail.
-const PT_VERSION = 'v2.6.6';
-const PT_BUILD = 86;
+const PT_VERSION = 'v2.6.7';
+const PT_BUILD = 87;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -17066,7 +17095,7 @@ function g67PowWhy(R) {
   const one = a => a.length ? a.slice(0, 2).join('; ') + '.' : '';
   const sp = P.speed, pc = x => Math.round(100 * x) + '%';
   const clockTxt = sp && sp.used
-    ? `${gCap(sp.name)} is in play with ${sp.n === 1 ? 'the 1 Energy' : `the ${sp.n} Energy`} ${sp.atk} needs by your second turn in ${pc(sp.t2)} of games and by your third in ${pc(sp.t3)}, from shuffles of this list, so it is quick to set up.`
+    ? `${gCap(sp.name)} is in play with ${sp.n === 1 ? 'the 1 Energy' : `the ${sp.n} Energy`} ${sp.atk} needs${sp.board > 1 ? `, with ${sp.board} Pokemon in play,` : ''} by your second turn in ${pc(sp.t2)} of games and by your third in ${pc(sp.t3)}, from shuffles of this list, so it is ${P.clock >= 0.995 ? 'as quick to set up as any list' : 'quick to set up'}.`
     : one(of('clock')) || (P.stage2 ? '' : 'No Stage 2 line to wait on, which is the usual mark for a deck of Basics and Stage 1s.');
   return [
     { k: 'Damage', w: '50%', v: 10 * P.close, t: one(of('close')) || 'How hard the best attacker hits the format\'s biggest threats.' },

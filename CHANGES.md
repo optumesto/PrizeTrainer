@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.6.7 (build 87): setup speed can reach 10, toolbox decks need their board (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v87), tests/grade-baseline.json and CHANGES.md.
+
+- Setup speed can reach 10: the shuffled setup reading (ready by your second turn, going first and second averaged) keeps 25% of games at about 8.2 and 50% at 9.5, then climbs to a 10 at 70%, where the fastest real tournament lists sit (Mega Rayquaza ex lists, about 70 to 73%). The rules alone (Stage 2 lines, Rare Candy, draw Abilities) still top out at 9.5, so only a measured fast setup gets a 10. It still only raises the score, never lowers it.
+- Toolbox decks need their board: a deck with 4 or more attackers that each two-hit the format's big threats counts as set up only with one Pokemon in play for each of them (5 or 6), not one attacker. Other Basics go to the Bench from hand, or come from the deck with a search card (Buddy-Buddy Poffin finds 2). Single attacker decks (Iron Thorns ex) still need only the one attacker with its Energy. By this reading the box decks set up slower, so they stay on the rules score and no grade drops.
+- Grade check: 132 tournament lists, 21 moved, all up (9 by 0.1, 12 by less than 0.05). 8 Mega Rayquaza lists now show a setup speed of 10. Iron Thorns unchanged (7.5, setup 8.5). Baseline updated.
+- Tracking tournament results: about flat. Cards alone 0.22 to 0.21, grade as shown 0.80 to 0.79, newest set grade as shown 0.50 to 0.52.
+
 # RdyDeck 2.6.6 (build 86): setup speed, And in Ask the odds (14 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v86), tests/grade-baseline.json and CHANGES.md.
