@@ -1,0 +1,34 @@
+# Test branch only (remove before merging to main): before and after screenshots
+# of the goldfish and daily puzzle boards, uploaded as a run artifact.
+name: Board screenshots
+on:
+  push:
+    branches: [board-look]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with: { path: after }
+      - uses: actions/checkout@v5
+        with: { ref: main, path: before }
+      - uses: actions/setup-node@v5
+        with: { node-version: '22' }
+      - name: Install playwright-core
+        run: cd after/shots && npm init -y >/dev/null && npm i playwright-core@1.48.2 --no-audit --no-fund
+      - name: Serve both copies
+        run: |
+          (cd before && python3 -m http.server 8001 >/dev/null 2>&1 &)
+          (cd after && python3 -m http.server 8002 >/dev/null 2>&1 &)
+          sleep 2
+      - name: Screenshots
+        run: |
+          cd after/shots
+          node shoot.mjs http://localhost:8001 ../../out before
+          node shoot.mjs http://localhost:8002 ../../out after
+      - uses: actions/upload-artifact@v4
+        with: { name: board-shots, path: out }
