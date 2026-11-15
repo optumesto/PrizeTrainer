@@ -3022,6 +3022,7 @@ const PT_PLAY = (function () {
     </div>
     <div class="guess-feedback" id="guess-feedback"></div>
     <div class="game-actions">
+      <button class="btn" onclick="backToMenu()"><svg class="ic"><use href="#i-back"/></svg>Back to menu</button>
       <button class="btn btn-grass" onclick="revealPrizes()"><svg class="ic"><use href="#i-eye"/></svg>Reveal prizes</button>
     </div>
   </div><!-- /guess-section -->
@@ -14549,6 +14550,14 @@ function goHome() {
   renderHome();
 }
 var confirmQuit;   // set further down
+// 2.7.3: Back to menu, a button on the game screen beside Reveal prizes. It leaves the game the
+// way Quit does (the clock stops, nothing is scored), without the browser's confirm box.
+function backToMenu() {
+  try { stopTimer(); } catch (_) {}
+  try { closeSheet(); } catch (_) {}
+  if (typeof game === 'object' && game) game._reach = null;
+  goHome();
+}
 
 // ═══════════ THUMBNAIL PICKER ═══════════
 
@@ -15836,10 +15845,7 @@ loadStarterDeck = async function (id) {
   // Quitting closes any open question sheet, so it cannot reveal a game you left.
   confirmQuit = function () {
     if (!confirm('Quit this session?')) return;
-    stopTimer();
-    closeSheet();
-    game._reach = null;
-    goHome();
+    backToMenu();
   };
 
   // Leaving the game screen for anything but the results stops the clock,
