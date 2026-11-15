@@ -4,13 +4,14 @@
 // draws into its plan, or how it plays, and on 11 Nov 2026 it ranked archetypes no better than
 // chance against their results. So when the open deck matches an archetype in matchups.json, part
 // of the grade comes from that archetype's win rate and finishes. Results since the newest set count
-// three times. The share grows with the games behind it, to at most 60%, so a deck with few games
+// three times. The share grows with the games behind it, to at most 50% (2.7.8: was 60% in theory,
+// about 35% in practice), so a deck with few games
 // leans on its cards. A list that is broken (a card grade under 6) gets less of it, and a list held
 // at the legality cap gets none.
 // v71: an average record scores 8.0 on results (was 8.5), so an average deck no longer reads as
 // Tournament-ready on its record alone. Checked on the 130 test lists: grades fall 0.1 to 0.3, and
 // the rank match with win rates holds (+0.79 all results, +0.49 since the newest set).
-const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.6, G68_N0 = 400, G68_SLOPE = 0.07, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 500, G68_SLOPE = 0.07, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
@@ -233,7 +234,9 @@ function g68Blend(R, deck) {
   const st = g68Strength(mu60Data)[arch.id];
   if (!st) return R;
   const card = R.overall;
-  let w = G68_WMAX * st.n / (st.n + G68_N0) * (b ? b.fit : 1);
+  // 2.7.8: results and cards count evenly once an archetype has 500 games, and the share rises in a
+  // straight line before that (100 games 10%, 250 games 25%), so a few games cannot swing a grade.
+  let w = G68_WMAX * Math.min(1, (st.games || 0) / G68_FULL) * (b ? b.fit : 1);
   if (card < 6) w *= gClamp((card - 4) / 2, 0, 1);
   if (w < 0.01) return R;
   R.cardOverall = card;

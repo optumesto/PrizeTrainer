@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.8 (build 98): tournament results count evenly with cards (15 Nov 2026)
+
+Changed files: js/v69-grade-blend.js, js/core.js (version, What's new), js/v29-rotation.js, index.html (file stamps, help text), how-grading-works.html, .github/pages/how-grading-works.html, deck-grader.html, tests/grade-baseline.json, sw.js (cache prize-trainer-v98) and CHANGES.md.
+
+- When a list matches an archetype with 500 or more games, its grade is now half card strength and half tournament results (was at most about 40% results for most decks, up to 55% for the most played). Below 500 games the results share rises in a straight line: 10% at 100 games, 25% at 250. It counts real games, so a new deck with a few games since the newest set no longer gets a large share early. The build check still lowers the share for off-plan lists, and broken lists (card grade under 6) still get less.
+- Grade check: 45 of 132 lists move by 0.1 to 0.4 (33 up, 12 down). Biggest: Mega Charizard X 8.5 to 8.9 (153 games at 33% wins now counts 15%, was 24%), Froslass Munkidori 8.5 to 8.7, Raging Bolt Ogerpon 8.5 to 8.3, Mega Venusaur 8.3 to 8.1, Mew Box 7.5 to 7.4.
+- Tracking against this week's results: grade as shown +0.81 to +0.84 (33 archetypes, 300+ games), +0.75 unchanged since the newest set (29 archetypes). Cards alone unchanged (+0.12, +0.33).
+
 # RdyDeck 2.7.7 (build 97): privacy policy and terms updated (15 Nov 2026)
 
 Changed files: privacy.html, terms.html, ads.js, js/v32-ads.js, js/v45-sample-share-daily.js, js/core.js, build-pages.mjs, index.html, the page footers (19 pages), sw.js (cache prize-trainer-v97) and CHANGES.md.

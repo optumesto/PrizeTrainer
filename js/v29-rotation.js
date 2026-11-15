@@ -514,7 +514,7 @@ renderGrade = function () {
     how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.</p>
     <p class="g29-about-p">The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full,
     but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the
-    grade comes from that archetype's win rate and finishes: more of it the more games there are, up to 60%, and none while cards are
+    grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are
     not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and
     sometimes not. Read the findings and do not worry about the decimal place.</p></details>`;
 
