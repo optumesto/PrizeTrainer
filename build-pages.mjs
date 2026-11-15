@@ -89,8 +89,15 @@ export function footerHtml() {
   </footer>`;
 }
 
-function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article' }) {
+// Plain text from a bit of page HTML, for structured data: tags dropped, the entities these pages use decoded.
+const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&eacute;/g, '\u00e9').replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"')
+  .replace(/&#39;|&rsquo;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+// The question and answer pairs (<dt> then <dd>) on a page, so Google and AI assistants can read them as an FAQ.
+const faqPairs = body => [...String(body).matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)].map(m => [plain(m[1]), plain(m[2])]);
+
+function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false }) {
   const url = 'https://rdydeck.com/' + file;
+  const qa = faq ? faqPairs(body) : [];
   const ld = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'WebPage', '@id': url + '#page', url, name: title, inLanguage: 'en',
       isPartOf: { '@type': 'WebSite', '@id': 'https://rdydeck.com/#site', name: 'RdyDeck', url: 'https://rdydeck.com/' },
@@ -100,6 +107,8 @@ function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader
       ...(crumb ? [{ '@type': 'ListItem', position: 2, name: crumb[0], item: 'https://rdydeck.com/' + crumb[1] }] : []),
       { '@type': 'ListItem', position: crumb ? 3 : 2, name: h1.replace(/<[^>]+>/g, '').replace(/&eacute;/g, 'é').replace(/&amp;/g, '&'), item: url },
     ] },
+    ...(qa.length ? [{ '@type': 'FAQPage', '@id': url + '#faq', url, mainEntity: qa.map(([q, a]) => (
+      { '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] : []),
   ] };
   const t = esc(title), d = esc(desc);
   return `<!DOCTYPE html>
@@ -327,6 +336,86 @@ ${rows.join('\n')}
   });
 }
 
+// ── How to improve your deck: the checks the grader makes, written out for a player, with numbers from the top lists ──
+// The numbers come from tests/grade-lists.json, the top 16 lists the grade check uses, so they move when those lists do.
+function improvePage() {
+  if (!lists.length) return null;
+  const n = lists.length, events = new Set(lists.map(l => l.event)).size, decks = new Set(lists.map(l => l.deck)).size;
+  const dates = lists.map(l => l.date).filter(Boolean).sort();
+  const part = (l, p) => l.cards.filter(c => c.part === p).reduce((a, c) => a + c.count, 0);
+  const q = (a, f) => { const s = a.slice().sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(f * s.length))]; };
+  const spread = p => { const a = lists.map(l => part(l, p)); return { med: median(a), lo: q(a, 0.25), hi: q(a, 0.75) }; };
+  const P = spread('pokemon'), T = spread('trainer'), E = spread('energy');
+  const runs = {};
+  for (const l of lists) for (const c of l.cards) if (c.part === 'trainer') (runs[c.name] = runs[c.name] || []).push(c.count);
+  const staples = Object.entries(runs).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])).slice(0, 10);
+  const rows = staples.map(([name, cs]) => `    <tr><td>${esc(name)}</td><td class="n">${cs.length} of ${n}</td><td class="n">${median(cs)}</td></tr>`);
+  const when = dates.length ? `from ${day(dates[0])} to ${day(dates[dates.length - 1])}` : '';
+  const body = `<p class="lead">To improve a Pok&eacute;mon TCG deck, check it in this order: every card is legal, every attacker can pay for its attack and every evolution has what it evolves from, the deck has a steady way to draw and search, its counts sit near what winning lists run, and it has a plan against the decks you will face. RdyDeck, a free deck grader, runs these checks for you: paste your list and it grades the deck out of 10 and names what to fix first.</p>
+<div class="cta-row"><a class="cta" href="./">Grade my deck free</a></div>
+
+<h2>1. Make sure every card is legal</h2>
+<p>A card that is not Standard legal makes the deck unplayable at an event, so fix this first. Check each card's regulation mark. An older printing is still legal when a reprint with the same name, attacks and Abilities is legal now. The <a href="rotation.html">rotation checker</a> marks which cards are legal now and which may rotate next.</p>
+
+<h2>2. Give every card what it needs</h2>
+<p>Every attacker needs the Energy its attacks cost, and every evolution needs the Pok&eacute;mon it evolves from. A Stage 2 line also wants Rare Candy or enough search to find both stages. These gaps are the most common reason a deck stalls, and they are easy to miss when you build from a list of favourite cards.</p>
+
+<h2>3. Build a steady way to draw and search</h2>
+<p>A deck needs to find the same few cards every game: draw Supporters, search Items, or a Pok&eacute;mon with a draw or search Ability. Without one, even strong attackers sit in the deck. A deck with a draw engine but single copies of cards it needs often will still miss them, so run more copies of what you need every game and fewer one of a kind ideas.</p>
+
+<h2>4. Compare your counts with winning lists</h2>
+<p>Across ${n} top 16 lists from ${events} Limitless online tournaments ${when}, covering ${decks} different decks, the typical split was:</p>
+<div class="tw"><table>
+  <thead><tr><th>Part</th><th class="n">Typical count</th><th class="n">Middle half of lists</th></tr></thead>
+  <tbody>
+    <tr><td>Pok&eacute;mon</td><td class="n">${P.med}</td><td class="n">${P.lo} to ${P.hi}</td></tr>
+    <tr><td>Trainers</td><td class="n">${T.med}</td><td class="n">${T.lo} to ${T.hi}</td></tr>
+    <tr><td>Energy</td><td class="n">${E.med}</td><td class="n">${E.lo} to ${E.hi}</td></tr>
+  </tbody>
+</table></div>
+<p>Your deck does not have to match these, since a deck of Basics and a deck with Stage 2 lines play very differently. But if your Trainer count is far below the range, the deck is likely short on draw and search. These were the Trainers the most lists played:</p>
+<div class="tw"><table>
+  <thead><tr><th>Trainer</th><th class="n">Lists that play it</th><th class="n">Usual count</th></tr></thead>
+  <tbody>
+${rows.join('\n')}
+  </tbody>
+</table></div>
+<p>The <a href="meta-decks.html">deck guides</a> show what top lists of each deck run, card by card.</p>
+
+<h2>5. Check your opening odds</h2>
+<p>How often you mulligan, start without your attacker or put a key card in your prizes is just maths on your list. Too few Basic Pok&eacute;mon means more mulligans. One copy of a key card means it is often prized. <a href="opening-odds.html">Opening odds</a> works these out for your exact list.</p>
+
+<h2>6. Plan for the decks you will face</h2>
+<p>A deck that wins the prize race against the most played decks will do well even if it loses to a rare one. Look at which decks are popular now, how your attacker trades against them, and whether a tech card would swing a common matchup. The <a href="meta-decks.html">deck guides</a> list each top deck's record and matchups from real tournament games.</p>
+
+<h2>7. Practice with the deck</h2>
+<p>A better list only helps if you play it well. Knowing which cards went to your prizes changes what you search for. The <a href="prize-trainer.html">prize trainer</a> drills this with your own deck.</p>
+
+<h2>Common questions</h2>
+<dl>
+  <dt>Is there a free tool that rates my Pok&eacute;mon deck?</dt>
+  <dd>Yes. RdyDeck grades a 60 card Pok&eacute;mon TCG deck out of 10 for free, with no account. Paste a list from Pok&eacute;mon TCG Live or Limitless TCG and it scores Synergy and Power, compares the deck with recent tournament results and lists what to fix first.</dd>
+  <dt>How many Pok&eacute;mon, Trainers and Energy should a Pok&eacute;mon deck have?</dt>
+  <dd>A deck has exactly 60 cards. In ${n} recent top 16 lists the typical split was ${P.med} Pok&eacute;mon, ${T.med} Trainers and ${E.med} Energy, with the middle half of lists running ${P.lo} to ${P.hi} Pok&eacute;mon, ${T.lo} to ${T.hi} Trainers and ${E.lo} to ${E.hi} Energy. The right split depends on the deck.</dd>
+  <dt>Why does my Pok&eacute;mon deck keep losing?</dt>
+  <dd>The usual causes are an attacker that cannot pay for its attack, an evolution with nothing to evolve from, no steady way to draw cards, or too few Basic Pok&eacute;mon to start well. A grader like RdyDeck names which of these your list has.</dd>
+  <dt>Does this work for Pok&eacute;mon TCG Pocket?</dt>
+  <dd>No. RdyDeck grades 60 card decks for the Pok&eacute;mon Trading Card Game, played with paper cards or in Pok&eacute;mon TCG Live. Pok&eacute;mon TCG Pocket decks have 20 cards and different rules.</dd>
+</dl>
+
+<h2>Grade your deck now</h2>
+<p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How grading works</a> explains exactly what the grade measures.</p>
+<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>`;
+  return page({
+    file: 'improve-your-deck.html',
+    title: 'How to Improve Your Pokémon TCG Deck: 7 Checks | RdyDeck',
+    desc: 'How to make your Pokémon TCG deck better: the 7 checks to run, with typical counts from recent top 16 lists, and a free deck grader that runs them for you.',
+    kicker: 'Deck building',
+    h1: 'How to improve your Pok&eacute;mon TCG deck',
+    body, faq: true,
+  });
+}
+
 // ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
 function handPages() {
@@ -345,6 +434,7 @@ const out = [
   ['meta-decks.html', indexPage()],
   ...guides.decks.filter(g => mcById[g.id]).map(g => [`deck-${g.slug}.html`, deckPage(g)]),
   ...handPages(),
+  ...(improvePage() ? [['improve-your-deck.html', improvePage()]] : []),
 ];
 const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');
