@@ -119,11 +119,11 @@ self.addEventListener('fetch', event => {
         .then(resp => {
           if (resp && resp.ok) {
             const copy = resp.clone();
-            caches.open(CACHE_NAME).then(c => c.put(req.url, copy)).catch(() => {});
+            caches.open(CACHE_NAME).then(c => c.put(bare(req.url), copy)).catch(() => {});
           }
           return resp;
         })
-        .catch(() => caches.match(req.url).then(r => r || Response.error()))
+        .catch(() => caches.match(bare(req.url)).then(r => r || Response.error()))
     );
     return;
   }
