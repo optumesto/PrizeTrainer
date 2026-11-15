@@ -2,9 +2,9 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# RdyDeck 2.7.x (build NN, number set at push): the app in smaller files, so updates download less (15 Nov 2026)
+# RdyDeck 2.7.6 (build 96): the app in smaller files, so updates download less (15 Nov 2026)
 
-Changed files: index.html, the new js/ folder (31 files), app-file.mjs (new), sw.js (cache prize-trainer-vNN), tests/grade-check.mjs, check-cards.mjs, puzzle/tools/sync-text.mjs, .github/workflows/grade-check.yml, README.md and CHANGES.md.
+Changed files: index.html, the new js/ folder (31 files), app-file.mjs (new), sw.js (cache prize-trainer-v96), tests/grade-check.mjs, check-cards.mjs, puzzle/tools/sync-text.mjs, .github/workflows/grade-check.yml, README.md and CHANGES.md.
 
 - The app's 31 script blocks moved out of index.html into js/, one file each, word for word, linked at the same spots and run the same way and in the same order (plain scripts, not deferred). index.html drops from 1.38 MB to 252 KB (about 350 KB to 48 KB compressed). The styles stay inside the page, so the first screen still draws as soon as the page arrives.
 - Each file is linked as js/name.js?v=<first 8 characters of its SHA-256>. A browser keeps a file until its stamp changes, so after an update it downloads the page and only the files that changed. `node app-file.mjs --stamp` sets the stamps; the grade check fails when one is out of date or a file holds a closing script tag.
@@ -13,7 +13,7 @@ Changed files: index.html, the new js/ folder (31 files), app-file.mjs (new), sw
 - Tools that read the app's code as text (grade check, check-cards.mjs for FIX37, the puzzle's sync-text.mjs) read the page with its files put back inline.
 - Measured on a 412 px phone profile with 4x slower CPU, files sent in the order asked. Typical 4G: ready 0.72 to 0.62 s on a first visit, 0.52 to 0.41 s on a return visit, 0.93 to 0.61 s right after an update. Slow 4G: right after an update the first screen shows at 0.55 s instead of 2.1 s and the app is ready at 1.7 s instead of 2.4 s, downloading 600 KB instead of 1,015 KB; a first visit downloads 888 KB instead of 1,144 KB in all, with the first screen at the same 0.6 s, but is ready about 0.5 s later (2.6 s instead of 2.0 s), because separate files compress a little worse (about 40 KB) and the fonts now arrive before the scripts. No layout shift on any of them.
 - Not done: loading parts only when opened (deck builder, prerelease, odds). Later script blocks wrap earlier functions in order and the page calls many of them from its buttons, so loading them later would change how the app behaves.
-- Grade check: 132 lists, none moved; the results tracking report is identical. Puzzle tests 70 of 70 and the screen test pass. Final screens match 2.7.4 pixel for pixel (home new and returning at 4 widths; 13 app screens at phone and desktop width). Update path tested in a browser: from 2.7.4 to this build and then to a build with one changed file (only that file downloaded); offline reload works after each; the shared file opens from a file:// address with no errors.
+- Grade check against the 2.7.5 tournament data: 132 lists, none moved; the results tracking report is identical. Puzzle tests 70 of 70 and the screen test pass. Final screens match 2.7.4 pixel for pixel (home new and returning at 4 widths; 13 app screens at phone and desktop width). Update path tested in a browser: from 2.7.4 to this build and then to a build with one changed file (only that file downloaded); offline reload works after each; the shared file opens from a file:// address with no errors.
 
 # RdyDeck 2.7.5 (build 95): fresh tournament data (15 Nov 2026)
 
