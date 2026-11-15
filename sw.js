@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v93';
+const CACHE_NAME = 'prize-trainer-v94';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -70,7 +70,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => Promise.all([
-        // 2.7.x speed: './' and './index.html' are the same page, so it downloads
+        // 2.7.4: './' and './index.html' are the same page, so it downloads
         // once and is saved under both addresses (it used to download twice).
         fetch(new Request('./index.html', { cache: 'reload' }))
           .then(resp => {

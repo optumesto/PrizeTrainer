@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.7.4 (build 94): faster, steadier first load on phones (15 Nov 2026)
+
+Changed files: index.html, sw.js (cache prize-trainer-v94) and CHANGES.md.
+
+- Home draws in its final shape. The page used to show a short home first and then jump as the welcome text, the Build a deck button, the sample deck button and the daily challenge and puzzle cards filled in. The first screen now has the welcome text and Build a deck from the start, and keeps room for the rest until home first draws. The title and logo start near their fitted size, and the fit runs again when home has drawn. Layout shift on a slow phone profile (Lighthouse mobile): 0.22 to 0.00 for a new visitor, 0.002 with saved decks. Google counts 0.1 or less as good.
+- The style blocks that sat in the body next to their scripts now load at the end of the head, in the same order, so nothing restyles midway through loading.
+- The 700 weight display font (home buttons, section titles) is preloaded like the other two.
+- Offline copy: the service worker registers after the page has loaded, so its download no longer competes with the first screen, and it downloads the app page once instead of twice (about 370 KB less on a first visit).
+- Load time itself is unchanged: first screen at about 1 second, ready at about 3 seconds on that profile. The app being one 1.36 MB file is what sets that.
+- Grade check: 132 tournament lists, none moved. Final screens match 2.7.3 pixel for pixel on 34 views (home new and returning at 4 widths, also with canvas blocked; 13 app screens at phone and desktop width). Offline reload works.
+
 # RdyDeck 2.7.3 (build 93): audit fixes (15 Nov 2026)
 
 Changed files: index.html, sw.js (cache prize-trainer-v93), privacy.html, tests/grade-check.mjs, tests/grade-baseline.json and CHANGES.md.

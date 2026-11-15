@@ -2797,7 +2797,7 @@ const PT_PLAY = (function () {
   if (on) document.documentElement.classList.add('pt-play');
   return on;
 })();
-// 2.7.x speed: home has not drawn yet (see rd-boot in the styles).
+// 2.7.4: home has not drawn yet (see rd-boot in the styles).
 document.documentElement.classList.add('rd-boot');
 </script>
 <style>.pt-play #pwa-install-btn { display:none !important; }
@@ -2810,7 +2810,7 @@ document.documentElement.classList.add('rd-boot');
   .an61-i { width:18px; height:18px; flex-shrink:0; color:var(--mark); }
   @media (min-width:768px) { .an61 { margin-left:max(0px, calc((100% - 760px) / 2)); } }
   @media (min-width:1100px) { .an61 { margin-left:max(0px, calc((100% - var(--page)) / 2)); } }</style>
-<!-- 2.7.x speed: the style blocks below used to sit in <body> next to their scripts. They load here, in the same order, so the first screen draws with its final styles. -->
+<!-- 2.7.4: the style blocks below used to sit in <body> next to their scripts. They load here, in the same order, so the first screen draws with its final styles. -->
 <style>
   /* v45: sample grade, share grade */
   .st-empty .st45-sample { margin-top:0.85rem; }
@@ -3026,7 +3026,7 @@ document.documentElement.classList.add('rd-boot');
   }
 </style>
 <style>
-  /* 2.7.x speed: room kept for what home adds on its first draw (removed right after it). */
+  /* 2.7.4: room kept for what home adds on its first draw (removed right after it). */
   html.rd-boot #deck-list .st-empty::after { content:''; display:block; height:108px; }
   @media (max-width:1099px) {
     html.rd-boot #daily-card:empty { display:block; min-height:89px; margin-top:1.75rem !important; }
@@ -12473,14 +12473,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.7.3',
+  version: 'v2.7.4',
   kind: 'fix',
   items: [
-    { t: 'Reprinted Trainers count as legal right away' },
-    { t: 'Mew Box: copied attacks count by how thin the line is' },
-    { t: 'Energy search counts in the Energy check' },
-    { t: "Warning when the main attacker's best attack can't be paid" },
-    { t: 'Back to menu button on the prize guessing screen' }
+    { t: 'Home no longer jumps around while it loads' },
+    { t: 'First visit downloads less before the app works offline' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -15297,7 +15294,7 @@ function closeShareModal() {
 // ═══════════ PWA SERVICE WORKER + INSTALL ═══════════
 let deferredInstallPrompt = null;
 
-// 2.7.x speed: register once the page has loaded, so the offline copy downloads after the first screen.
+// 2.7.4: register once the page has loaded, so the offline copy downloads after the first screen.
 if ('serviceWorker' in navigator) {
   const swGo = () => navigator.serviceWorker.register('./sw.js')
     .then(reg => console.log('SW registered:', reg.scope))
@@ -15360,8 +15357,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v2.7.3';
-const PT_BUILD = 93;
+const PT_VERSION = 'v2.7.4';
+const PT_BUILD = 94;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -23082,7 +23079,7 @@ function tf265Place() {
   up75Html = function () { const r = _uh.apply(this, arguments); setTimeout(tf265Place, 0); return r; };
 })();
 
-// 2.7.x speed: home has drawn once, so the room kept for it can go.
+// 2.7.4: home has drawn once, so the room kept for it can go.
 (function () {
   const done = () => {
     const h = document.documentElement;
