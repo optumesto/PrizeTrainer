@@ -2,6 +2,26 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.0 (build 105): Spanish and Portuguese, cards you own, prices, accuracy scoreboard (16 Nov 2026)
+
+Changed files: js/i18n.js, js/report-errors.js, js/grade-flag.js, js/owned-prices.js, js/v80-extras.js (all new), js/upgrades.js, js/matchups.js, js/v69-grade-blend.js, js/v28-ask-odds.js, js/core.js (version, What's new), index.html (scripts, styles, file stamps), sw.js (cache prize-trainer-v105, accuracy.json network first), privacy.html, how-grading-works.html, accuracy.json (new), build-pages.mjs, refresh-data.mjs, refresh-matchups.mjs, .github/workflows/refresh-data.yml, worker/ (new), tests (reports, extras, owned and i18n checks, grade check scoreboard), README.md and CHANGES.md.
+
+- Spanish and Portuguese: a Language row in Settings. App text is translated; card, attack and ability names stay in English. Card data paragraphs, the legal pages and the deck guides stay English for now. Wording to check with a native speaker is listed in i18n-notes.md.
+- Cards you own: mark them on a deck's Cards tab or in the deck builder. Upgrades can suggest owned cards first. Saved on the device only.
+- Card prices from TCGdex (TCGplayer in dollars, Cardmarket in euros where TCGplayer has none), with a list total, the cost of cards you do not own, and a cheapest first order for Upgrades. Switch: PRICES_ON in js/owned-prices.js.
+- How accurate the grades are: the weekly grade check writes accuracy.json, shown as a table on how-grading-works.html and as one line in the Grade tab.
+- This grade looks off?: a button under Share grade with five preset reasons and no typing. Sends the grade, the matched archetype name, the reason and the app version.
+- Anonymous error reports: when a script error happens on rdydeck.com, a short report (scrubbed message, app file lines, version, screen, browser and system family) goes to the site's Worker. No IP, deck, name or id is stored. Settings has a switch.
+- The site's Worker now refuses repo files (scripts, tests, workflows, CHANGES.md, README.md and the like) and serves only site files. README carries the all rights reserved notice.
+- Against the field now: the deck's expected win rate weighted by how much each matchup is played. Display only.
+- Win rates are labeled: the grade's weighted rate next to the plain one over all games.
+- How did it do?: save an event record and placing next to a grade history entry, on the device only.
+- What's next: planned features and a feedback link, from Settings and Help.
+- New set week: a home line for 7 days after a set comes out.
+- Share grade shares the picture in one tap where the phone can, otherwise saves it and copies the link.
+- The Monday Limitless refresh waits 30 seconds between requests (about 30 per 15 minutes).
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 2.8.3 (build 104): how each Trainer works in your deck (16 Nov 2026)
 
 Changed files: js/core.js (In this deck lines, version, What's new), js/v29-rotation.js (Trainers rows), index.html (style, file stamps), sw.js (cache prize-trainer-v104) and CHANGES.md.
