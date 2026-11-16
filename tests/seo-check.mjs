@@ -13,7 +13,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 let bad = 0;
 const fail = m => { bad++; console.log('FAIL ' + m); };
 const SKIP = new Set(['404.html', 'offline.html']);
-const files = [...readdirSync(ROOT).filter(f => f.endsWith('.html')),
+const files = [...readdirSync(ROOT).filter(f => f.endsWith('.html') && !/^google[0-9a-f]+\.html$/.test(f)),
   ...(() => { try { return readdirSync(path.join(ROOT, 'cards')).filter(f => f.endsWith('.html')).map(f => 'cards/' + f); } catch (_) { return []; } })()];
 const descs = new Map();
 const TOOLS = ['deck-grader.html', 'opening-odds.html', 'rotation.html', 'prize-trainer.html', 'rulings.html', 'improve-your-deck.html'];
