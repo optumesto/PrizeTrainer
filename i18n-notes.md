@@ -34,30 +34,46 @@ Add the English and its translation to both `I18N_ES` and `I18N_PT`. For a strin
 
 ## Wording to check with a native speaker
 
-- Prerelease: Presentación / Pré-lançamento
-- ACE SPEC: AS TÁCTICO / ÁS TÁTICO
-- Strong and Fixable: Sólido and Mejorable / Forte and Ajustável
-- Supporter: Partidario / Apoiador
-- Lightning: Rayo / Elétrico (Elétrica as the energy adjective)
-- Darkness: Oscuridad / Escuridão
-- Prize game: Partida de premios / Jogo de prêmios
-- Prize trainer: Entrenador de premios / Treino de prêmios
+Spanish items. The Portuguese ones are under Portuguese (pt-BR) below.
+
+- Prerelease: Presentación
+- ACE SPEC: AS TÁCTICO
+- Strong and Fixable: Sólido and Mejorable
+- Supporter: Partidario
+- Lightning: Rayo
+- Darkness: Oscuridad
+- Prize game: Partida de premios
+- Prize trainer: Entrenador de premios
 - Daily list: Mazo de hoy
 - Welcome: Te damos la bienvenida
-- Under 13 note: mamá o papá / responsável
+- Under 13 note: mamá o papá
 - The date style after "Data as of"
 - Kept in English: Goldfish, Build and Battle Box, Toolbox
-- Grade history (3.0.1): Sube / Baja / Se mantiene en; Subiu / Caiu / Estável em. "Open dots": puntos huecos / pontos vazados
-- Puzzle count: resueltos de ... jugados / resolvidos de ... jogados
-- Ask the odds: "1 de cada una (Cyrano y Judge)" / "1 de cada uma (Cyrano e Judge)", and "¿Cuántas copias de X?" / "Quantas cópias de X?"
-- "pts" (percentage points in Compare lists and the copies tuner) is kept as pts in both languages
-- "All Fire Energy prized" in Compare lists: the Basic Energy type is translated with the same words as elsewhere (Energía Fuego / Energia Fogo, Energía Oscura / Energia Escuridão), with básica for "Basic ... Energy". Other card names stay English: "Rare Candy: todas en premios"
-- Edit log chip notes: new and cut as nueva / fuera and nova / removida
-- Drills: "It is 3." as La respuesta es 3. / A resposta é 3.
-- Missing art: sin imagen / sem imagem
-- Prices switch (3.0.1): "Con No se ocultan y no se consulta ninguno" / "Com Não eles ficam ocultos e nenhum é consultado" (Off shows as No / Não)
-- Offline grade flag: "aviso de calificación" / "aviso de nota" for a grade flag
-- Event record delete: "El historial de calificaciones se queda" / "O histórico de notas continua"
+- Grade history (3.0.1): Sube / Baja / Se mantiene en. "Open dots": puntos huecos
+- Puzzle count: resueltos de ... jugados
+- Ask the odds: "1 de cada una (Cyrano y Judge)" and "¿Cuántas copias de X?"
+- "pts" (percentage points in Compare lists and the copies tuner) is kept as pts
+- "All Fire Energy prized" in Compare lists: the Basic Energy type is translated with the same words as elsewhere (Energía Fuego, Energía Oscura), with básica for "Basic ... Energy". Other card names stay English: "Rare Candy: todas en premios"
+- Edit log chip notes: new and cut as nueva / fuera
+- Drills: "It is 3." as La respuesta es 3.
+- Missing art: sin imagen
+- Prices switch (3.0.1): "Con No se ocultan y no se consulta ninguno" (Off shows as No)
+- Offline grade flag: "aviso de calificación" for a grade flag
+- Event record delete: "El historial de calificaciones se queda"
+
+## Portuguese (pt-BR)
+
+Reviewed screen by screen in 3.0.2. Settled against official Brazilian Portuguese sources (the Play! Pokémon tournament handbook in pt-BR, the Discover Lab explainer in pt-BR and Brazilian card text): cartas de Prêmio (lowercase carta, capital Prêmio), Campo Ativo, Banco, Apoiador, Estádio, Ferramenta Pokémon, Energia Básica, Habilidade (capital H), Nocautear, Estágio 1 and 2, Pokémon Básico, pilha de descarte, contadores de dano, PS for HP, Padrão / Expandido, marca de regulamentação, legal for format legality, Incolor. Basic Energy type words follow the Portuguese card names: Planta, Fogo, Água, Raio, Psíquica, Luta, Escuridão, Metal (so Energia Raio, not Elétrica).
+
+House terms, one per concept: nota (grade), chances (odds, and the Chances tab), treinos (drills, and the Treinos tab), Prática (the Practice tab), confronto (matchup), taxa de vitória (win rate), retrospecto (a match record), melhorias (upgrades), coleção (set), jogando primeiro / em segundo (going first / second).
+
+Still open:
+- deck: official card text says baralho; the app says deck, as Brazilian players do. Switch only if the owner wants the card text word.
+- ACE SPEC as ÁS TÁTICO: from Brazilian cards as remembered, not checked against a scan.
+- Prerelease as Pré-lançamento, and Build and Battle Box kept in English (the Brazilian product name was not checked).
+- "Not legal yet" (a deck that breaks a deck building rule) as Ainda não é legal: correct, but legal also means "cool" in Brazil.
+- puzzle kept as puzzle (Seu puzzle, Modo puzzle).
+- Numbers keep the English decimal point and thousands comma (8.3, 1,597); Brazilian style is 8,3 and 1.597.
 
 "Skip" and "Psychic" are also attack names, so they translate only inside named buttons.
 
