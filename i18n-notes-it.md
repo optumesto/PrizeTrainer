@@ -1,30 +1,20 @@
-# Italian (it): wording for a native speaker to check
+# Italian (it): open questions for a native speaker
 
-Translated from the English, with the Spanish and Portuguese as a guide. Card, attack and Ability names stay English. "Tu" throughout.
+Reviewed in the 3.0.2 audit. "Tu" throughout. Card, attack and Ability names stay English.
 
-## Game terms (check against current Italian cards and rules)
-- Trainer: Allenatore. Supporter: Aiuto. Item: Strumento. Stadium: Stadio. Pokémon Tool: Oggetto Pokémon (check the Scarlet and Violet type line).
-- ACE SPEC: ASSO TATTICO.
-- Basic Pokémon: Pokémon Base. Stage 1 and 2: Fase 1, Fase 2. Basic Energy: Energia base. Special Energy: Energia speciale.
-- Types: Erba, Fuoco, Acqua, Lampo, Psico, Lotta, Oscurità, Metallo, Drago, Incolore, Folletto, written "Energia Fuoco", plural "Energie".
-- Active Spot: Posizione Attiva. Bench: panchina. Retreat: Ritirata. Attach: Assegna. Discard pile: pila degli scarti.
-- Knocked Out: KO, "mettere KO". HP: PS. Damage counters: segnalini danno.
-- Pokémon ex written "Pokémon-ex" in sentences (card names untouched). Check the current spelling.
-- Regulation mark: "simbolo di regolamento" (may officially be "simbolo delle regole" or another term).
-- Sudden Death: Morte Improvvisa.
-- Standard and Expanded kept in English as format names; check that Italian events use them.
-- Prerelease and "Build and Battle Box" kept in English; check the Italian product name.
+## Settled (checked against official Italian card text and pokemon.com/it)
+- Allenatore, Aiuto, Strumento, Oggetto Pokémon, Stadio, Energia base, Energia speciale, "assegnare" for attach, "rimischiare" for shuffling cards back into the deck (all as on current Italian cards).
+- Pokémon-ex in sentences (the Italian rulebook's rule box: "Regola dei Pokémon-ex").
+- Formats: "Standard" and "Esteso" (pokemon.com/it writes "formato standard" and "formato esteso").
+- "posizione attiva" lowercase inside sentences, as printed on cards; "Posizione attiva" as a label. "panchina", "pila degli scarti", "segnalini danno", "carte Premio", PS, KO, ASSO TATTICO.
 
-## App wording choices
-- Grade: "voto" (out of 10, like a school mark); to grade: valutare; deck grader: valutatore di mazzi.
-- Prize game: "partita dei Premi"; Prize trainer: "Allenamento sui Premi" (to avoid "Allenatore", the Trainer card type).
-- Fix first: "Da sistemare". Worth fixing (severity): "Da migliorare". Stops the deck: "Blocca il mazzo".
-- Going first and second: "Inizi tu" / "Inizia l'avversario"; in the match log "Per primo" / "Per secondo"; short table headers "Da 1°" / "Da 2°".
-- Puzzle "plays": "mossa" / "mosse".
-- Player jargon kept in English: goldfish, matchup, mirror, bye, toolbox, meta, top 16, Flex.
-- Grade tiers use masculine forms (agreeing with "mazzo"): Pronto per i tornei, Solido, Migliorabile, Va rivisto, Non funziona.
-- Ordinals as 1°, 2°; "è arrivata 1° a ..." may read better as "1ª".
-- Dates: "il 15 nov 2026", with "l'8" and "l'11", "dall'83%", "ad aprile 2027". Check these read naturally.
-- Numbers keep the app's English format (1,597 and 8.3), as Spanish and Portuguese do. Times like "Oggi, 3:00 PM" also keep the app's format.
-- "Done marking" (owned cards) is just "Fine"; "Open" in Ask the odds is "Mano" (opening hand).
-- Error reports: "segnalazioni di errore"; "This grade looks off?": "Questo voto non ti convince?".
+## Still open
+- Regulation mark: the app says "simbolo di regolamento". The official Italian wording could not be read (the pokemon.com PDFs are not reachable from here); it may be "simbolo di regolamentazione".
+- Prerelease product: "Build and Battle Box" kept in English. Italian shops sell it as "Build & Battle Kit"; check the name on the Italian box.
+- Tournament log result buttons show W, L, T (raw letters from core, no translation hook). V, S, P would be the Italian letters; needs a core scoped entry if wanted.
+- Session history date shows the browser's own locale format (11/12/2026 in an English browser). Fine in an Italian browser.
+- Odds deck tab: "Probabilità" is cut off in the 52 px tab. The Italian file has a scoped "Odds": "Probab." ready; it takes effect once core adds an "Odds" entry to I18N_SCOPED for .rv-tab.
+- Player jargon kept in English: goldfish, matchup, mirror, bye, toolbox, meta, top 16, Flex, round. Check that Italian players use these.
+- "Costruttore di mazzi" for Deck builder: understandable but a calque; "Editor di mazzi" or "Crea mazzo" may read better.
+- Grade tiers in masculine (agreeing with "mazzo"): Pronto per i tornei, Solido, Migliorabile, Va rivisto, Non funziona.
+- Labels that still wrap at 360 px with no natural shorter wording: "Tempo medio" (Avg time), "Nuova mano" (New hand), "Parti da un mazzo del meta", "Tutte nei Premi".
