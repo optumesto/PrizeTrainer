@@ -1655,6 +1655,8 @@
   .mt-nm { font-weight:800; font-size:var(--fs-md); line-height:1.25; color:var(--text); overflow-wrap:anywhere; }
   .mt-mon.act .mt-nm { font-family:var(--display); font-size:var(--fs-lg); }
   .mt-hp, .mt-sub { font-size:var(--fs-sm); color:var(--text-2); line-height:1.35; }
+  /* A long word (German Schadensmarken) breaks with a hyphen instead of running past the card. */
+  .mt-hp { overflow-wrap:break-word; hyphens:auto; -webkit-hyphens:auto; }
   .mt-hp b { font-size:var(--fs-md); font-weight:800; color:var(--text); }
   .mt-hp.hurt b { color:var(--danger); }
   .mt-bar { display:block; height:6px; border-radius:999px; background:var(--surface-3); overflow:hidden; }

@@ -12,7 +12,7 @@ Changed files: js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (all new), js/i18n.js
 - Time per guess on the prize results screen is translated.
 - French, German and Italian were each reviewed screen by screen after the first draft: official card game terms (French HIGH-TECH and Pokémon de base, German ASS-KLASSE and Regelzeichen, Italian Esteso and posizione attiva), one word per idea, plurals, dates and numbers in the language, and shorter labels where the 360 px check showed them running long. Logging a match shows the result letters in each language (French V, D, N; German S, N, U; Italian V, S, P).
 - Rotation counts agree with the number in every language: 1 card gets the singular label, more get the plural (Spanish "1 podría rotar", "11 podrían rotar").
-- German: the matchup line reads "gewann 48.2% aller 1,597 Matches", and the prize read stage buttons put the card count on a second line when the label is long.
+- German: the matchup line reads "gewann 48.2% aller 1,597 Matches", the prize read stage buttons put the card count on a second line when the label is long, and a long word in a puzzle card's HP line breaks with a hyphen instead of running past the card.
 - The i18n check now runs all five languages on 60 screens. Wording for a native speaker to check is in i18n-notes-fr.md, i18n-notes-de.md and i18n-notes-it.md.
 - No grade moves. Grade check: 132 of 132 lists unchanged.
 
