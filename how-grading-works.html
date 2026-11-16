@@ -144,6 +144,16 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <h2>Where the grade can be wrong</h2>
   <p>RdyDeck reads card roles from card text. That is usually right and sometimes not, especially for a card with an unusual effect or one that has just come out. So read the findings, not only the number, and do not worry about the decimal place. If a grade looks wrong for a list you know well, the Send feedback button in the app tells us, and those reports are how the grader gets better.</p>
   <p>We check the grader against real results: it grades a fixed set of 132 top 16 lists from recent events after each change, so a fix for one deck does not quietly break another.</p>
+  <h2 id="accuracy">How accurate the grades are</h2>
+  <p>Every week RdyDeck grades the same 130 top lists from recent events and checks the order it puts their decks in against how those decks actually win in Limitless online tournaments. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
+  <div class="tw"><table>
+  <thead><tr><th>Set</th><th>Dates</th><th class="n">Decks</th><th class="n">Games</th><th class="n">Grade as shown</th><th class="n">Cards alone</th></tr></thead>
+  <tbody>
+    <tr><td>30th Celebration</td><td>16 Sep 2026 to 5 Nov 2026</td><td class="n">31</td><td class="n">49,987</td><td class="n">0.84</td><td class="n">0.10</td></tr>
+    <tr><td>Delta Reign</td><td>6 Nov 2026 to 15 Nov 2026</td><td class="n">29</td><td class="n">7,965</td><td class="n">0.76</td><td class="n">0.33</td></tr>
+  </tbody>
+  </table></div>
+  <p class="note">Grade as shown is the grade the app shows. It counts these same results, so it is partly circular and runs high. Cards alone is the grade from each list's cards with no results, the harder test. A deck is ranked once it has 300 games in a set, or 100 in the newest one. Updated 15 Nov 2026.</p>
 
   <h2>Try it on your deck</h2>
   <p>Paste a list from Pok&eacute;mon TCG Live or Limitless TCG, one card per line with the count, name, set code and number. RdyDeck is free, needs no account and works offline once it has loaded.</p>

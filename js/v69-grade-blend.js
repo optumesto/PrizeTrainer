@@ -245,7 +245,7 @@ function g68Blend(R, deck) {
   R.overall = gR1(card * (1 - w) + st.score * w);
   // v71: wr is the win rate the score was built from (games since the newest set counted three
   // times), and thin follows the share results actually get, not a separate game count.
-  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wrUsed, games: st.games, curGames: st.curGames, curWr: st.curWr,
+  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wrUsed, rawWr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
     since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2 };
   return R;
 }
@@ -254,7 +254,11 @@ function g68Line(R) {
   const r = R && R.res; if (!r) return '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
   const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${wr} wins over ${r.games.toLocaleString('en-US')} games${r.curGames ? ', with games since the newest set counted three times' : ''}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  // 3.0 (Frankfurt test): this win rate counts games since the newest set three times, and the
+  // Grade vs win rate section shows the plain one, so each says which it is.
+  const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
+  const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;
@@ -311,7 +315,10 @@ function g79Section(deck) {
     h += `<p class="mu60-p">Win rate: ${n0(n)} ${n === 1 ? 'game' : 'games'} so far, too few to judge.</p>`;
   } else {
     const p = all[0] / n * 100;
-    h += `<p class="mu60-p">Win rate: <b>${pct(p)}</b> over ${n0(n)} games, against ${pct(avg)} for all decks in these results.</p>`;
+    // 3.0: the plain win rate over every game, and the one the grade uses when the two differ.
+    const used = st && st.wrUsed != null && arch.cur ? st.wrUsed * 100 : null;
+    const also = used != null && used.toFixed(1) !== p.toFixed(1) ? ` The grade counts games since the newest set three times, which makes it ${pct(used)}.` : '';
+    h += `<p class="mu60-p">Win rate: <b>${pct(p)}</b> over all ${n0(n)} games, against ${pct(avg)} for all decks in these results.${also}</p>`;
     const cur = arch.cur ? mu60Sum(arch.cur.rec) : [0, 0, 0], cn = cur[0] + cur[1] + cur[2], pn = n - cn;
     if (day) {
       if (cn < G79_MIN) h += `<p class="mu60-p">Since the newest set came out (${day}): ${n0(cn)} ${cn === 1 ? 'game' : 'games'} so far, too few to show a trend.</p>`;

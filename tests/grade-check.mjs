@@ -15,6 +15,8 @@
 //                                          blended with this week's matchups.json, ranks the
 //                                          archetypes both ways against their results and writes
 //                                          a short report. It never fails and never touches the baseline.
+//   add --board=accuracy.json to also write the public scoreboard, per set (3.0), which
+//                                          build-pages.mjs puts on how-grading-works.html
 //   --record --record-from=<module> records from a local stand-in for the APIs
 //                                          (a module exporting fakeFetch(url)) instead
 //   node tests/grade-check.mjs --record-text
@@ -52,6 +54,8 @@ const ONLY = (args.find(a => a.startsWith('--only=')) || '').slice(7).toLowerCas
 const VERBOSE = args.includes('--verbose');
 const REPORT = (args.find(a => a.startsWith('--results=')) || '').slice(10);
 const HTML = (args.find(a => a.startsWith('--html=')) || '').slice(7);   // grade another build, e.g. the live one
+// 3.0: with --results, --board=<file> also writes the public scoreboard (accuracy.json).
+const BOARD = (args.find(a => a.startsWith('--board=')) || '').slice(8);
 // --record-from=<module>: record from a local stand-in for the card APIs (a module that
 // exports fakeFetch(url)) instead of the live APIs, for example where they are blocked.
 const FROM = (args.find(a => a.startsWith('--record-from=')) || '').slice(14);
@@ -345,6 +349,43 @@ async function resultsReport() {
   for (const r of gap) L.push(`- **${r.name}:** cards ${r.card.toFixed(1)}, shown ${r.blend.toFixed(1)}, wins ${(100 * r.wr).toFixed(1)}% of ${r.n.toLocaleString('en-US')} games. ${r.d > 0 ? 'The cards rate it above its results.' : 'Its results beat what the cards see.'}`);
   fs.writeFileSync(path.resolve(ROOT, REPORT), L.join('\n') + '\n');
   console.log(L.join('\n'));
+  if (BOARD) writeBoard(M, rows);
+}
+
+// 3.0: the public scoreboard (accuracy.json), one row per set window: the set before the newest
+// (every game before the newest set came out) and the newest set. build-pages.mjs writes it into
+// how-grading-works.html and the app shows one line of it under How the grade works. Only the
+// rank match, the deck count and the games are published, nothing about how the grade is tuned.
+const BOARD_MIN = { older: 300, newest: 100 };   // games an archetype needs in a window to be ranked
+function writeBoard(M, rows) {
+  const day = s => { const d = new Date(Date.parse(s + 'T00:00:00Z') - 86400000); return d.toISOString().slice(0, 10); };
+  let mcNew = null;
+  try { mcNew = JSON.parse(fs.readFileSync(path.join(ROOT, 'meta-cards.json'), 'utf8')).newest || null; } catch (_) {}
+  const src = (M.sources || []).find(s => s.id === 'online') || {};
+  const curSince = M.cur && M.cur.since;
+  const sets = [];
+  const one = (name, from, to, min, games, pick) => {
+    const R = rows.map(r => ({ ...r, ...pick(r) })).filter(r => r.g >= min);
+    const wr = R.map(r => r.w);
+    sets.push({ name, from, to, decks: R.length, games, min,
+      shown: spearman(R.map(r => r.blend), wr), cards: spearman(R.map(r => r.card), wr) });
+  };
+  if (curSince) {
+    one(M.window && M.window.from || 'Before ' + curSince, M.since, day(curSince), BOARD_MIN.older, (src.matches || 0) - (M.cur.matches || 0),
+      r => { const g = r.n - r.cn, w = r.wr * r.n - r.cwr * r.cn; return { g, w: g ? w / g : 0 }; });
+    one(mcNew && mcNew.since === curSince && mcNew.name || 'Newest set', curSince, M.until, BOARD_MIN.newest, M.cur.matches || 0,
+      r => ({ g: r.cn, w: r.cwr }));
+  } else {
+    one(M.window && M.window.from || 'Since ' + M.since, M.since, M.until, BOARD_MIN.older, src.matches || 0, r => ({ g: r.n, w: r.wr }));
+  }
+  const out = {
+    schema: 1, asOf: M.asOf,
+    note: 'How closely RdyDeck grades rank decks against their Limitless online win rates, per set. Rank correlation (Spearman): 1 means the grades put the decks in exactly the order of their win rates, 0 means no link. shown is the grade the app shows (it counts these same results, so it runs high), cards is the grade from the cards alone. Written by tests/grade-check.mjs --results --board.',
+    source: 'Limitless online tournaments', lists: lists.filter(l => !l.rotated && !l.oldPrinting).length,
+    sets,
+  };
+  fs.writeFileSync(path.resolve(ROOT, BOARD), JSON.stringify(out, null, 1) + '\n');
+  console.log('\nScoreboard: ' + sets.map(s => `${s.name} ${s.from} to ${s.to}: ${s.decks} decks, ${s.games} games, shown ${s.shown}, cards ${s.cards}`).join('; '));
 }
 
 // ── main ─────────────────────────────────────────────────────────────────

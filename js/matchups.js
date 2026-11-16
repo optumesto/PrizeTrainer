@@ -314,7 +314,7 @@ function mu60Section(deck) {
     if (st) h += `<p class="mu60-p">Strongest right now, by win rate and finishes: ${st._order.slice(0, 3).map(id => esc(data.decks.find(d => d.id === id).name)).join(', ')}.</p>`;
   } else {
     const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2], p = mu60Pct(all);
-    h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of ${n} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
+    h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of all ${n.toLocaleString('en-US')} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
       : `<p class="mu60-p">No matches for ${esc(arch.name)} in these results yet.</p>`;
     // v64: placements, weighed with the win rate into one strength rank.
     const st = mu64Strength(data), sa = st && st[arch.id];

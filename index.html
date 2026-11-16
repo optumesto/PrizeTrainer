@@ -3055,6 +3055,23 @@ document.documentElement.classList.add('rd-boot');
   .gh72-note { margin:0.5rem 0 0; font-size:0.875rem; color:var(--text-3); }
 </style>
 <style>
+  /* 3.0: event record on grade history, What's next, new set week */
+  .ev80-row { display:flex; align-items:center; flex-wrap:wrap; gap:0.25rem 0.75rem; margin:0.3rem 0 0; font-size:0.9375rem; color:var(--text-2); }
+  .ev80-rec b { font-family:var(--mono); color:var(--text); }
+  .ev80-k { color:var(--text-3); font-size:0.875rem; }
+  .ev80-btn { background:none; border:0; padding:0.35rem 0; min-height:32px; font:inherit; font-size:0.875rem; font-weight:600; color:var(--accent); text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+  body[data-theme="light"] .ev80-btn { color:var(--accent-2); }
+  .ev80-form { display:flex; flex-direction:column; gap:0.6rem; }
+  .ev80-f { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; }
+  .ev80-l { font-weight:600; color:var(--text); }
+  .ev80-step { display:flex; align-items:center; gap:0.4rem; }
+  .ev80-step .btn { min-width:44px; min-height:44px; justify-content:center; font-family:var(--mono); font-size:1.1rem; }
+  .ev80-step input[type="number"] { width:5.5rem; text-align:center; font-family:var(--mono); font-size:16px; -moz-appearance:textfield; }
+  .ev80-step input::-webkit-outer-spin-button, .ev80-step input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  #ns80-card .dc-banner span { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
+  #acc80 a { color:var(--text); }
+</style>
+<style>
   /* 2.6.5: Paste and go, Try a sample deck, Top fixes */
   .ez265-sample-s { display:block; margin-top:0.45rem; font-size:var(--fs-xs, 0.8125rem); color:var(--text-3); }
   .tour-acts.ez265-acts { flex-wrap:wrap; }
@@ -3763,7 +3780,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v40-audit-fixes.js?v=f5b59585"></script>
 <script src="js/v45-sample-share-daily.js?v=5f1bc7bb"></script>
 <script src="js/v47-prerelease.js?v=64cb9899"></script>
-<script src="js/matchups.js?v=ce1bce5f"></script>
+<script src="js/matchups.js?v=7d49966a"></script>
 <script src="js/main-attacker.js?v=b5478c10"></script>
 <script src="js/v65-hide-delete.js?v=8172c39e"></script>
 <script src="js/v67-edit-cards.js?v=0a196791"></script>
@@ -3787,12 +3804,13 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v68-deck-builder.js?v=15bd643d"></script>
 <!-- ═══════════════════════════ DECK BUILDER: WHAT TOP LISTS RUN (2.6) -->
 <script src="js/builder-meta.js?v=88ba9d82"></script>
-<script src="js/v69-grade-blend.js?v=132d4c33"></script>
+<script src="js/v69-grade-blend.js?v=6a935d23"></script>
 <script src="js/v71-audit-fixes.js?v=1574f677"></script>
 <script src="js/v71-which-deck.js?v=b6fa22b3"></script>
 <script src="js/grade-flag.js?v=d2327a36"></script>
 <script src="js/upgrades.js?v=78c7a8ba"></script>
 <script src="js/grade-history.js?v=0a93161c"></script>
+<script src="js/v80-extras.js?v=07a92fd1"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 </body>
 </html>
