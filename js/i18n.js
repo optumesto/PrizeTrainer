@@ -47,6 +47,8 @@ const I18N_ES = {
   "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Preguntas frecuentes sobre las reglas, respondidas según el reglamento oficial, cada una con su página. También están en la nueva página Reglas.",
   "Added: Creator kit": "Nuevo: Kit para creadores",
   "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "En Compartir calificación: una tarjeta de calificación para OBS que sigue los resultados más recientes, un código para insertar en tu web y una línea para descripciones de video.",
+  "Future ads limited to the US": "Anuncios futuros solo en EE. UU.",
+  "Privacy policy updated": "Política de privacidad actualizada",
   "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Fecha de las barajas iniciales corregida en español, portugués, francés e italiano",
   // 3.1 creator kit
   "Creator kit: stream card and embed": "Kit para creadores: tarjeta para stream y código para insertar",
@@ -984,6 +986,8 @@ const I18N_PT = {
   "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Perguntas comuns sobre as regras respondidas com o livro de regras oficial, cada uma com sua página. Elas também estão na nova página Regras.",
   "Added: Creator kit": "Novo: Kit para criadores",
   "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "Em Compartilhar nota: um card de nota para o OBS que acompanha os resultados mais recentes, um código de incorporação para o seu site e uma linha para descrições de vídeo.",
+  "Future ads limited to the US": "Anúncios futuros só nos EUA",
+  "Privacy policy updated": "Política de privacidade atualizada",
   "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Data dos decks iniciais corrigida em espanhol, português, francês e italiano",
   // 3.1 creator kit
   "Creator kit: stream card and embed": "Kit para criadores: card para live e código para site",

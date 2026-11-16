@@ -14,7 +14,51 @@ const AGE32_LABEL = { u13: 'Under 13', teen: '13 to 17', adult: '18 or over', sk
 const AD32_GAP = 30000;  // at most one new ad per spot every 30 seconds
 
 // The Play app has no ads at launch, so ads stay off there whatever is set above.
-function ads32Real() { return !PT_PLAY && /^ca-pub-\d{10,20}$/.test(PT_ADS.client); }
+// 3.1.1: ads are for visitors in the United States only. Until rdydeck.com has
+// said this visitor is in the US (ads32Geo true), there is no ad script, no ad
+// spot, no ad label, no age question and no Age setting row.
+function ads32Real() { return !PT_PLAY && /^ca-pub-\d{10,20}$/.test(PT_ADS.client) && ads32Geo === true; }
+
+// ── US only (3.1.1) ──
+// rdydeck.com (our Cloudflare Worker) answers /api/where with {"ads":true}
+// only for a visitor Cloudflare places in the United States. Another country,
+// an unknown country, an error, a slow answer, the github.io copy (no such
+// address) and an older Worker (a 404) all mean no ads. The question is only
+// asked once a real publisher id and a spot are set, never in the Play app and
+// never offline, and the answer is kept for this visit only (sessionStorage).
+const ADS32_WHERE_KEY = 'rd_ads_where';
+let ads32Geo = null;      // null: not known yet, true: US, false: not US
+let ads32Asking = false;
+function ads32Where() {
+  if (ads32Geo !== null || ads32Asking || PT_PLAY) return;
+  if (!/^ca-pub-\d{10,20}$/.test(PT_ADS.client) || !Object.values(PT_ADS.slots).some(Boolean)) return;
+  let kept = null;
+  try { kept = sessionStorage.getItem(ADS32_WHERE_KEY); } catch (e) {}
+  if (kept === '1' || kept === '0') { ads32Geo = kept === '1'; if (ads32Geo) ads32Ready(); return; }
+  if (!age32Online() || typeof fetch !== 'function') return;
+  ads32Asking = true;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const stop = setTimeout(() => { if (ctl) ctl.abort(); }, 5000);
+  fetch('/api/where', { cache: 'no-store', credentials: 'omit', signal: ctl ? ctl.signal : undefined })
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null)
+    .then(d => {
+      clearTimeout(stop);
+      ads32Asking = false;
+      ads32Geo = !!(d && d.ads === true);
+      try { sessionStorage.setItem(ADS32_WHERE_KEY, ads32Geo ? '1' : '0'); } catch (e) {}
+      if (ads32Geo) ads32Ready();
+    });
+}
+// A US visitor: place the spots on the open screen, and ask the age question
+// if its usual moment has already passed.
+function ads32Ready() {
+  if (document.readyState === 'loading') return;
+  ads32Sync();
+  if (typeof performance !== 'undefined' && performance.now() > 2200) setTimeout(age32Boot, 700);
+}
+document.addEventListener('DOMContentLoaded', ads32Where);
+window.addEventListener('online', ads32Where);
 function ads32On(where) { return ads32Real() && (where ? !!PT_ADS.slots[where] : Object.values(PT_ADS.slots).some(Boolean)); }
 function age32Any() { return ads32On(); }
 function age32Get() { const v = safeLocalGet(AGE32_KEY); return /^(u13|teen|adult|skip)$/.test(v || '') ? v : ''; }

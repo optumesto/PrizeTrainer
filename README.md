@@ -44,6 +44,7 @@ PrizeTrainer/
   tests/grade-baseline.json            the grades each list should get
   tests/card-details-check.mjs         taps cards on the Cards tab: full text, rules, five languages, grade unchanged
   tests/creator-kit-check.mjs          the Creator kit and its OBS card (?overlay=1): same grade, no ads, nothing saved
+  tests/ads-where-check.mjs            ads for US visitors only: the Worker's /api/where, and no ad code, spot or age question elsewhere
   tests/package.json, package-lock.json   jsdom, which the check needs to run the app outside a browser
   CHANGES.md, README.md, LICENSE
 ```
@@ -125,6 +126,7 @@ When Pokémon announces the 2027 rotation (expected around January, H mark), edi
 - The guide pages have their own fill-ins at the top of `ads.js`: the same publisher id, `slot` for the first guide spot and `slot2` for the second, also responsive display units.
 - A spot only shows when it is at least one screen height away from another ad on the same screen, so phones can show up to 10 spots across the app and guides, and a computer up to 8.
 - Keep Auto ads off in AdSense. Ads never show in the Play app (?src=play) or offline.
+- Ads are for visitors in the United States only (3.1.1). The app and the guide pages ask rdydeck.com/api/where (the Worker in `worker/`) once a visit; anything but {"ads":true} means no ad code, no spot and no age question. To add a country, add its code to `AD_COUNTRIES` in `worker/rdydeck-worker.js` and update the Privacy Policy first.
 - AdSense gives you an `ads.txt` line. It must sit at the root of the domain. rdydeck.com serves this repo from its root, so `ads.txt` goes in this repo's top folder.
 
 ## Credits

@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v108';
+const CACHE_NAME = 'prize-trainer-v109';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -134,6 +134,10 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(req.url);
   if (isAdHost(url.hostname)) return;
+  // 3.1.1: rdydeck.com's own answers (/api/where, /api/report) always come
+  // from the network and are never saved: /api/where depends on where the
+  // visitor is right now.
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return;
   // Card art from another site: saved copy first, then the network.
   if (req.destination === 'image' && url.origin !== self.location.origin) {
     event.respondWith(

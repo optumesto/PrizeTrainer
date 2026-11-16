@@ -108,6 +108,8 @@ I18N_MORE.de = {
     "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Häufige Regelfragen, beantwortet anhand des offiziellen Regelhefts, jeweils mit Seitenzahl. Sie stehen auch auf der neuen Seite Regeln.",
     "Added: Creator kit": "Neu: Creator-Kit",
     "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "Unter Note teilen: eine Notenkarte für OBS, die sich nach den neuesten Ergebnissen richtet, ein Einbettungscode für deine Website und eine Zeile für Videobeschreibungen.",
+    "Future ads limited to the US": "Künftige Werbung nur in den USA",
+    "Privacy policy updated": "Datenschutzerklärung aktualisiert",
     "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Datum der Starterdecks auf Spanisch, Portugiesisch, Französisch und Italienisch korrigiert",
     // 3.1 creator kit
     "Creator kit: stream card and embed": "Creator-Kit: Stream-Karte und Einbettungscode",

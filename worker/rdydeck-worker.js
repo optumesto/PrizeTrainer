@@ -1,4 +1,4 @@
-// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.0).
+// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.1.1).
 // The app's files stay in the GitHub repo optumesto/PrizeTrainer and keep
 // being served at optumesto.github.io/PrizeTrainer/. This Worker shows those
 // same files at rdydeck.com, so an upload to GitHub (or the weekly data
@@ -21,6 +21,11 @@
 //    secret REPORTS_KEY has been set on this Worker (Settings, Variables and
 //    Secrets). With no secret set, that address is a 404.
 //
+// 3.1.1 adds GET /api/where, which tells the app whether this visitor may
+// see ads: {"ads":true} only when Cloudflare places the request in the United
+// States, {"ads":false} for every other country and when the country is
+// unknown. Only that yes or no is sent back; nothing is stored or logged.
+//
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
 // 10 per 60 s) and optionally the secret REPORTS_KEY. With no DB bound, reports
 // are accepted and dropped, so the site itself never depends on them.
@@ -35,6 +40,14 @@ const BLOCKED = [
   /^\/(package(-lock)?\.json|\.nojekyll|\.gitignore|wrangler\.json)$/i,
 ];
 export const isBlocked = p => BLOCKED.some(re => re.test(p));
+
+// Ads are shown only to visitors in these countries (ISO codes from Cloudflare).
+const AD_COUNTRIES = ['US'];
+export function adsAllowed(request) {
+  // request.cf is set by Cloudflare itself, so a visitor cannot change it.
+  const c = String((request.cf && request.cf.country) || '').toUpperCase();
+  return AD_COUNTRIES.includes(c);
+}
 
 const DAY_CAP = 5000;           // reports kept per day, all kinds together
 const KEEP_DAYS = 90;           // older rows are deleted
@@ -175,6 +188,12 @@ export default {
       const origin = request.headers.get('Origin');
       if (origin && origin !== 'https://' + HOME) return json({ ok: false }, 403);
       try { return await takeReport(request, env, ctx); } catch (_) { return json({ ok: false }, 500); }
+    }
+    if (url.pathname === '/api/where' && (request.method === 'GET' || request.method === 'HEAD')) {
+      // Never cached anywhere: the answer depends on where this visitor is.
+      return new Response(request.method === 'HEAD' ? null : JSON.stringify({ ads: adsAllowed(request) }), {
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store, private', 'X-Robots-Tag': 'noindex' },
+      });
     }
     if (url.pathname === '/api/reports' && request.method === 'GET') {
       const r = await showReports(url, env).catch(() => null);

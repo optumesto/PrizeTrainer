@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.1.1 (build 109): ads for US visitors only (16 Nov 2026)
+
+Changed files: js/v32-ads.js, ads.js, worker/rdydeck-worker.js (/api/where), sw.js (cache prize-trainer-v109, /api/ never saved), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (file stamps), privacy.html, terms.html, README.md, tests/ads-where-check.mjs (new) and CHANGES.md.
+
+- Ads, once switched on, show only to visitors in the United States. The Worker answers /api/where with yes only when Cloudflare places the visitor in the US. The app and the guide pages ask once a visit, and only when a real publisher id and a spot are set, never in the Play app or offline. Any other answer (another country, unknown, an error, no answer in 5 seconds, the github.io copy) means no ad script, no ad spot or label and no age question. The rest of the app is the same everywhere, in all five languages.
+- Privacy Policy: ads are for US visitors only, how the country check works (a yes or no, nothing stored), and a short section for users in Brazil (LGPD: what is processed, why, where, rights, email contact). Terms: ads, if added, show only in the US.
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 3.1 (build 108): card details, official rules and a Creator kit (16 Nov 2026)
 
 Changed files: js/card-details.js and js/creator-kit.js (new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/core.js (version, What's new), index.html (styles, scripts, Rules link, overlay mode, file stamps), rulings.json, rulings.html and rulings-sources.md (new), build-pages.mjs (Rules page), sw.js (cache prize-trainer-v108, rulings files), sitemap.xml, llms.txt, README.md, tests/card-details-check.mjs and tests/creator-kit-check.mjs (new) and CHANGES.md.
