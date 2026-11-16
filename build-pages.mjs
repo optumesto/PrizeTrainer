@@ -423,6 +423,37 @@ ${rows.join('\n')}
   });
 }
 
+// ── 3.1: Official rules, from rulings.json ──────────────────────────────────────────────────
+// Only rules The Pokémon Company International publishes itself, in our own words, each with its
+// document and page. Card by card rulings wait until they can be cited from an official original.
+const rul = existsSync(path.join(ROOT, 'rulings.json')) ? read('rulings.json') : null;
+function rulingsPage() {
+  if (!rul || !Array.isArray(rul.rulings) || !rul.rulings.length) return null;
+  const src = id => (rul.sources || []).find(s => s.id === id) || null;
+  const topics = [...new Set(rul.rulings.map(r => r.topic))];
+  const cite = r => { const s = src(r.src); return s ? `<span class="note">Source: <a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a> (${esc([s.edition, r.where].filter(Boolean).join(', '))})</span>` : ''; };
+  const body = `<p>Common Pok&eacute;mon TCG rules questions, answered from the official rulebook and tournament handbook that The Pok&eacute;mon Company International publishes. Each answer is in our own words and names the document and page it comes from, so you can check it there. RdyDeck shows the matching rules when you tap a card in a deck.</p>
+${topics.map(t => `
+<h2>${esc(t)}</h2>
+<dl>
+${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc(r.q)}</dt>
+  <dd>${esc(r.a)}<br>${cite(r)}</dd>`).join('\n')}
+</dl>`).join('\n')}
+
+<h2>What is not here yet</h2>
+<p>Pok&eacute;mon also rules on how two specific cards work together. Those rulings are not on this page yet: RdyDeck only adds one when it can point to an official document that states it. When a rule here and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
+<p class="note">Rules as of ${day(rul.asOf)}. RdyDeck is an unofficial fan-made app, not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
+<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>`;
+  return page({
+    file: 'rulings.html',
+    title: 'Pokémon TCG Rules: Damage, Prizes, Abilities and More | RdyDeck',
+    desc: 'Common Pokémon TCG rules questions answered from the official rulebook: damage order, Weakness and Resistance, Pokémon ex and Tera, ACE SPEC, evolving and Special Conditions.',
+    kicker: 'Rules',
+    h1: 'Pok&eacute;mon TCG rules, from the official rulebook',
+    body, faq: true,
+  });
+}
+
 // ── 3.0: How accurate the grades are, from accuracy.json ──────────────────────────────────────
 // One row per set: how closely the grades rank decks against their online win rates (Spearman),
 // with the decks ranked and the games played. Only the scoreboard, nothing about how it is tuned.
@@ -470,6 +501,7 @@ const out = [
   ...guides.decks.filter(g => mcById[g.id]).map(g => [`deck-${g.slug}.html`, deckPage(g)]),
   ...handPages(),
   ...(improvePage() ? [['improve-your-deck.html', improvePage()]] : []),
+  ...(rulingsPage() ? [['rulings.html', rulingsPage()]] : []),
 ];
 const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');

@@ -3018,6 +3018,49 @@ document.documentElement.classList.add('rd-boot');
   .mc26-p { margin:0 0 0.6rem; }
 </style>
 <style>
+  /* 3.1: tap a card to read it */
+  #review-body .review-card.cd31-tap { cursor:pointer; border-radius:var(--r-sm); }
+  #review-body .review-card.cd31-tap:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  .cd31 { display:flex; flex-direction:column; gap:0.9rem; }
+  .cd31-img { display:block; width:min(220px, 62%); margin:0 auto; border-radius:10px; }
+  @media (min-width:600px) { .cd31 { flex-direction:row; align-items:flex-start; } .cd31-img { width:220px; flex-shrink:0; margin:0; } }
+  .cd31-body { flex:1; min-width:0; }
+  .cd31-name { margin-bottom:0.35rem; overflow-wrap:anywhere; }
+  .cd31-chips { display:flex; flex-wrap:wrap; gap:0.3rem; margin:0 0 0.6rem; }
+  .cd31-chip { padding:0.1rem 0.55rem; border-radius:999px; border:1px solid var(--line-2); background:var(--surface-2); font-size:0.75rem; font-weight:700; color:var(--text-2); }
+  .cd31-chip.q { color:var(--text); }
+  .cd31-facts { display:flex; flex-wrap:wrap; gap:0.35rem 1.1rem; margin:0.35rem 0 0.5rem; }
+  .cd31-facts.small .cd31-l, .cd31-facts.small .cd31-v { font-size:0.75rem; }
+  .cd31-f { display:flex; align-items:center; gap:0.4rem; min-width:0; }
+  .cd31-l { font-size:var(--fs-sm); color:var(--text-3); }
+  .cd31-v { display:inline-flex; align-items:center; flex-wrap:wrap; gap:0.25rem; font-size:var(--fs-sm); font-weight:600; color:var(--text); }
+  .cd31-v.big { font-family:var(--display); font-size:var(--fs-lg); font-weight:800; }
+  .cd31-e { display:inline-block; width:12px; height:12px; border-radius:50%; background:var(--t, var(--text-3)); vertical-align:-1px; flex-shrink:0; }
+  .cd31-e.c { background:var(--surface-3, var(--line-2)); box-shadow:inset 0 0 0 1px var(--text-3); }
+  .cd31-cost { display:inline-flex; gap:2px; align-items:center; }
+  .cd31-blk { padding:0.55rem 0; border-top:1px solid var(--line); }
+  .cd31-bh { display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap; color:var(--text); }
+  .cd31-bh b { font-weight:700; overflow-wrap:anywhere; }
+  .cd31-dmg { margin-left:auto; font-family:var(--display); font-weight:800; font-size:var(--fs-md); color:var(--text); }
+  .cd31-tag { padding:0.05rem 0.45rem; border-radius:999px; font-size:0.6875rem; font-weight:700; color:var(--danger); background:color-mix(in srgb, var(--danger) 14%, transparent); }
+  .cd31-tx, .cd31-p { margin:0.3rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; }
+  .cd31-facts.wrr { padding-top:0.55rem; border-top:1px solid var(--line); }
+  .cd31-rb { margin:0.4rem 0; padding:0.5rem 0.65rem; border:1px solid var(--line-2); border-radius:var(--r-sm); }
+  .cd31-rbh, .cd31-sh { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-3); display:flex; align-items:center; gap:0.4rem; }
+  .cd31-rb .cd31-tx { margin-top:0.2rem; }
+  .cd31-sec { margin:0.8rem 0 0; padding-top:0.6rem; border-top:1px solid var(--line); }
+  .cd31-sec .t68-tag { margin-left:0; }
+  .cd31-sec p.t68-here { margin:0.3rem 0 0; font-size:var(--fs-sm); color:var(--text); line-height:1.45; }
+  .cd31-sec p.t68-here b { font-weight:700; color:var(--electric); }
+  .cd31-rul { margin:0.45rem 0 0.2rem; }
+  .cd31-q { margin:0; font-size:var(--fs-sm); font-weight:700; color:var(--text); line-height:1.4; }
+  .cd31-a { margin:0.2rem 0 0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; }
+  .cd31-src { margin:0.2rem 0 0; font-size:0.75rem; color:var(--text-3); }
+  .cd31-src a { color:var(--text-2); }
+  .cd31-all { margin-top:0.5rem; }
+  .cd31-note { margin:0.8rem 0 0; font-size:0.75rem; color:var(--text-3); }
+</style>
+<style>
   /* v71: a dialog is solid from its first frame. Only the dimmed page behind it fades in, so the
      panel never shows the page through it while it opens. */
   .modal-overlay.active { animation:v71ScrimIn 0.18s ease-out; }
@@ -3865,8 +3908,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v80-extras.js?v=8c65f5af"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
-<script src="js/i18n.js?v=b0100ff0"></script>
+<script src="js/card-details.js?v=96570a56"></script>
+<script src="js/i18n.js?v=98ab3336"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=09b8424c"></script><script src="js/i18n-de.js?v=23e49e02"></script><script src="js/i18n-it.js?v=fa27b825"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=b7e0fd35"></script><script src="js/i18n-de.js?v=5dd66e7c"></script><script src="js/i18n-it.js?v=5f513d8c"></script></template>
 </body>
 </html>
