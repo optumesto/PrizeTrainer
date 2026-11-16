@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>if (/[?&]overlay=1(&|$)/.test(location.search)) document.documentElement.classList.add('ck31-ov');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
 <meta name="description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
@@ -3061,6 +3062,36 @@ document.documentElement.classList.add('rd-boot');
   .cd31-note { margin:0.8rem 0 0; font-size:0.75rem; color:var(--text-3); }
 </style>
 <style>
+  /* 3.1 Creator kit: the stream card (?overlay=1) on a see-through page, and the kit sheet. */
+  html.ck31-ov, html.ck31-ov body { background:transparent !important; min-height:0; }
+  html.ck31-ov body > *:not(#ck31) { display:none !important; }
+  #ck31 { padding:8px; }
+  .ck31-card { position:relative; display:flex; align-items:center; gap:16px; max-width:544px; min-height:150px; box-sizing:border-box;
+    padding:14px 18px; border-radius:16px; background:rgba(10,14,21,0.86); border:1px solid rgba(244,182,43,0.45);
+    color:#f4f1ea; text-decoration:none; font-family:var(--font); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+  .ck31-card.msg { display:block; min-height:0; }
+  .ck31-card.msg p { margin:0.4rem 0 0; color:#c9c3b6; }
+  .ck31-art { width:96px; height:auto; aspect-ratio:63 / 88; object-fit:cover; border-radius:6px; flex:none; }
+  .ck31-main { flex:1; min-width:0; }
+  .ck31-name { font-family:var(--display); font-weight:800; font-size:1.15rem; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ck31-row { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .ck31-g { font-family:var(--display); font-weight:900; font-size:3rem; line-height:1; color:#f4b62b; font-variant-numeric:tabular-nums; }
+  .ck31-of { font-weight:700; color:#c9c3b6; }
+  .ck31-band { margin-left:4px; font-weight:700; }
+  .ck31-row.small { font-size:0.95rem; color:#c9c3b6; gap:6px; }
+  .ck31-row.small b { color:#f4f1ea; }
+  .ck31-sp { width:10px; }
+  .ck31-brand { position:absolute; right:14px; bottom:10px; font-family:var(--display); font-weight:900; font-size:0.95rem; letter-spacing:0.01em; color:#f4f1ea; }
+  .ck31-card.msg .ck31-brand { position:static; }
+  .ck31-brand span { color:#f4b62b; }
+  .ck31-open { margin-top:0.6rem; width:100%; }
+  .ck31-k { margin:0.9rem 0; }
+  .ck31-kh { display:flex; align-items:center; justify-content:space-between; gap:0.6rem; }
+  .ck31-k .modal-hint { margin:0.25rem 0 0.4rem; }
+  .ck31-code { display:block; font-size:0.78rem; line-height:1.35; padding:0.5rem 0.6rem; border-radius:var(--r-sm); background:var(--surface-2, rgba(255,255,255,0.05));
+    word-break:break-all; max-height:4.2em; overflow:auto; user-select:all; }
+</style>
+<style>
   /* v71: a dialog is solid from its first frame. Only the dimmed page behind it fades in, so the
      panel never shows the page through it while it opens. */
   .modal-overlay.active { animation:v71ScrimIn 0.18s ease-out; }
@@ -3909,8 +3940,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
 <script src="js/card-details.js?v=96570a56"></script>
-<script src="js/i18n.js?v=98ab3336"></script>
+<script src="js/creator-kit.js?v=9ee58fa7"></script>
+<script src="js/i18n.js?v=99fc02ef"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=b7e0fd35"></script><script src="js/i18n-de.js?v=5dd66e7c"></script><script src="js/i18n-it.js?v=5f513d8c"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=9000324e"></script><script src="js/i18n-de.js?v=f826d151"></script><script src="js/i18n-it.js?v=4ce1083b"></script></template>
 </body>
 </html>

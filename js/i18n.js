@@ -39,6 +39,25 @@ const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
 
 /* I18N_DICT_START */
 const I18N_ES = {
+  // 3.1 creator kit
+  "Creator kit: stream card and embed": "Kit para creadores: tarjeta para stream e inserción",
+  "Creator kit": "Kit para creadores",
+  "For your stream or videos. The card shows this list's grade with the RdyDeck name, and grades it again each time it loads, so it follows the newest tournament results.": "Para tu stream o tus videos. La tarjeta muestra la calificación de esta lista con el nombre de RdyDeck y la vuelve a calificar cada vez que carga, así que sigue los resultados de torneo más recientes.",
+  "OBS browser source": "Fuente de navegador de OBS",
+  "In OBS, add a Browser source, paste this as its URL and set its size to 560 by 190. The card grades the list again every hour.": "En OBS, añade una fuente de Navegador, pega esto como su URL y ponle un tamaño de 560 por 190. La tarjeta vuelve a calificar la lista cada hora.",
+  "Embed on a website": "Insertar en un sitio web",
+  "Paste this where your site takes HTML. Tapping the card opens the full grade.": "Pega esto donde tu sitio acepte HTML. Al tocar la tarjeta se abre la calificación completa.",
+  "Video description": "Descripción del video",
+  "One line with the grade and a link that opens this list in RdyDeck.": "Una línea con la calificación y un enlace que abre esta lista en RdyDeck.",
+  "Copied.": "Copiado.",
+  "Could not copy. Press and hold the text to copy it.": "No se pudo copiar. Mantén pulsado el texto para copiarlo.",
+  "Grading…": "Calificando…",
+  "This card needs a deck link. Make one from Share grade, Creator kit.": "Esta tarjeta necesita un enlace de baraja. Créalo desde Compartir calificación, Kit para creadores.",
+  "The cards in this list could not be read just now. Try again later.": "No se pudieron leer las cartas de esta lista ahora. Inténtalo más tarde.",
+  "This list could not be graded.": "No se pudo calificar esta lista.",
+  "Some cards have not been read yet, so there is no final grade. Try again later.": "Algunas cartas aún no se han leído, así que no hay calificación final. Inténtalo más tarde.",
+  "This list breaks a deck building rule, so it has no grade.": "Esta lista rompe una regla de construcción de barajas, así que no tiene calificación.",
+  "Open this grade in RdyDeck": "Abrir esta calificación en RdyDeck",
   // The starter deck hint one sentence at a time, so a new "Lists as of" date still translates.
   "Top finishes for the most played decks at big online tournaments, not Regionals.": "Mejores resultados de las barajas más jugadas en torneos online grandes, no Regionales.",
   "Real Standard lists that placed at recent events.": "Listas reales de Estándar que quedaron bien en eventos recientes.",
@@ -947,6 +966,25 @@ const I18N_ES = {
   "The grade checks the rest when you save.": "La calificación revisa el resto cuando guardas.",
 };
 const I18N_PT = {
+  // 3.1 creator kit
+  "Creator kit: stream card and embed": "Kit para criadores: card para live e incorporação",
+  "Creator kit": "Kit para criadores",
+  "For your stream or videos. The card shows this list's grade with the RdyDeck name, and grades it again each time it loads, so it follows the newest tournament results.": "Para sua live ou seus vídeos. O card mostra a nota desta lista com o nome RdyDeck e dá a nota de novo sempre que carrega, então acompanha os resultados de torneio mais recentes.",
+  "OBS browser source": "Fonte de navegador do OBS",
+  "In OBS, add a Browser source, paste this as its URL and set its size to 560 by 190. The card grades the list again every hour.": "No OBS, adicione uma fonte de Navegador, cole isto como URL e defina o tamanho como 560 por 190. O card dá a nota da lista de novo a cada hora.",
+  "Embed on a website": "Incorporar em um site",
+  "Paste this where your site takes HTML. Tapping the card opens the full grade.": "Cole isto onde seu site aceita HTML. Tocar no card abre a nota completa.",
+  "Video description": "Descrição do vídeo",
+  "One line with the grade and a link that opens this list in RdyDeck.": "Uma linha com a nota e um link que abre esta lista no RdyDeck.",
+  "Copied.": "Copiado.",
+  "Could not copy. Press and hold the text to copy it.": "Não deu para copiar. Toque e segure o texto para copiar.",
+  "Grading…": "Dando a nota…",
+  "This card needs a deck link. Make one from Share grade, Creator kit.": "Este card precisa de um link de deck. Crie um em Compartilhar nota, Kit para criadores.",
+  "The cards in this list could not be read just now. Try again later.": "Não deu para ler as cartas desta lista agora. Tente de novo mais tarde.",
+  "This list could not be graded.": "Não deu para dar nota a esta lista.",
+  "Some cards have not been read yet, so there is no final grade. Try again later.": "Algumas cartas ainda não foram lidas, então não há nota final. Tente de novo mais tarde.",
+  "This list breaks a deck building rule, so it has no grade.": "Esta lista quebra uma regra de montagem de deck, então não tem nota.",
+  "Open this grade in RdyDeck": "Abrir esta nota no RdyDeck",
   // The starter deck hint one sentence at a time, so a new "Lists as of" date still translates.
   "Top finishes for the most played decks at big online tournaments, not Regionals.": "Melhores resultados dos decks mais jogados em grandes torneios online, não Regionais.",
   "Real Standard lists that placed at recent events.": "Listas reais do Padrão que se classificaram em eventos recentes.",

@@ -431,7 +431,7 @@ function rulingsPage() {
   if (!rul || !Array.isArray(rul.rulings) || !rul.rulings.length) return null;
   const src = id => (rul.sources || []).find(s => s.id === id) || null;
   const topics = [...new Set(rul.rulings.map(r => r.topic))];
-  const cite = r => { const s = src(r.src); return s ? `<span class="note">Source: <a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a> (${esc([s.edition, r.where].filter(Boolean).join(', '))})</span>` : ''; };
+  const cite = r => { const s = src(r.src); return s ? `<span class="note">Source: <a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a>, ${esc(s.publisher)} (${esc([s.edition, r.where].filter(Boolean).join(', '))}). Checked ${day(r.checked || s.checked)}.</span>` : ''; };
   const body = `<p>Common Pok&eacute;mon TCG rules questions, answered from the official rulebook and tournament handbook that The Pok&eacute;mon Company International publishes. Each answer is in our own words and names the document and page it comes from, so you can check it there. RdyDeck shows the matching rules when you tap a card in a deck.</p>
 ${topics.map(t => `
 <h2>${esc(t)}</h2>

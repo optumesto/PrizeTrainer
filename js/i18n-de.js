@@ -100,6 +100,25 @@ I18N_MORE.de = {
   },
   // Keyed on the English, like I18N_ES.
   dict: {
+    // 3.1 creator kit
+    "Creator kit: stream card and embed": "Creator-Kit: Stream-Karte und Einbettung",
+    "Creator kit": "Creator-Kit",
+    "For your stream or videos. The card shows this list's grade with the RdyDeck name, and grades it again each time it loads, so it follows the newest tournament results.": "Für deinen Stream oder deine Videos. Die Karte zeigt die Note dieser Liste mit dem Namen RdyDeck und bewertet sie bei jedem Laden neu, so folgt sie den neuesten Turnierergebnissen.",
+    "OBS browser source": "OBS-Browserquelle",
+    "In OBS, add a Browser source, paste this as its URL and set its size to 560 by 190. The card grades the list again every hour.": "Füge in OBS eine Browserquelle hinzu, füge dies als URL ein und stelle die Größe auf 560 mal 190. Die Karte bewertet die Liste jede Stunde neu.",
+    "Embed on a website": "Auf einer Website einbetten",
+    "Paste this where your site takes HTML. Tapping the card opens the full grade.": "Füge dies dort ein, wo deine Website HTML annimmt. Ein Tipp auf die Karte öffnet die ganze Note.",
+    "Video description": "Videobeschreibung",
+    "One line with the grade and a link that opens this list in RdyDeck.": "Eine Zeile mit der Note und einem Link, der diese Liste in RdyDeck öffnet.",
+    "Copied.": "Kopiert.",
+    "Could not copy. Press and hold the text to copy it.": "Kopieren ging nicht. Halte den Text gedrückt, um ihn zu kopieren.",
+    "Grading…": "Wird bewertet…",
+    "This card needs a deck link. Make one from Share grade, Creator kit.": "Diese Karte braucht einen Deck-Link. Erstelle einen über Note teilen, Creator-Kit.",
+    "The cards in this list could not be read just now. Try again later.": "Die Karten dieser Liste konnten gerade nicht gelesen werden. Versuch es später noch einmal.",
+    "This list could not be graded.": "Diese Liste konnte nicht bewertet werden.",
+    "Some cards have not been read yet, so there is no final grade. Try again later.": "Einige Karten wurden noch nicht gelesen, daher gibt es noch keine endgültige Note. Versuch es später noch einmal.",
+    "This list breaks a deck building rule, so it has no grade.": "Diese Liste verstößt gegen eine Deckbau-Regel, daher hat sie keine Note.",
+    "Open this grade in RdyDeck": "Diese Note in RdyDeck öffnen",
     // 3.1 card details
     "Type": "Typ",
     "Evolves from": "Entwickelt sich aus",
