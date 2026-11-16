@@ -713,7 +713,7 @@ function tl28Render() {
   }
   h += `</div>`;
   el.querySelectorAll('.tl-wrap > .hp-lbl').forEach(l => {
-    if (l.closest('.tl28') || l.textContent.trim() !== 'By opponent') return;
+    if (l.closest('.tl28') || (window.rdI18n ? rdI18n.orig(l) : l.textContent).trim() !== 'By opponent') return;
     const t = l.nextElementSibling;
     if (t && t.classList.contains('o-table-wrap')) t.remove();
     l.remove();
