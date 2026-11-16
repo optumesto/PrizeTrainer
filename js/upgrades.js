@@ -209,8 +209,14 @@ async function up75Find(deck) {
     if (pow(s.R) !== pow(R0)) parts.push(`Power ${pow(R0).toFixed(1)} to ${pow(s.R).toFixed(1)}`);
     return (parts.length ? parts.join(', ') + '. ' : '') + u;
   };
-  const swaps = pick.map(s => ({ out: s.o.name, in: s.a.name, from: R0.overall, to: s.R.overall,
-    syn: [syn(R0), syn(s.R)], pow: [pow(R0), pow(s.R)], note: note(s) }));
+  // 3.0: each swap also names the printing of the card it adds, for its price (js/owned-prices.js).
+  const swapOf = s => ({ out: s.o.name, in: s.a.name, from: R0.overall, to: s.R.overall,
+    syn: [syn(R0), syn(s.R)], pow: [pow(R0), pow(s.R)], note: note(s),
+    inSet: (s.a.card && s.a.card.set) || s.a.set || '', inNum: (s.a.card && s.a.card.num) || s.a.num || '' });
+  const swaps = pick.map(swapOf);
+  // 3.0: more of the swaps that raise the grade, best first, so "Suggest cards I own first" and
+  // "Cheapest first" can pick from them. Each keeps its own graded numbers; nothing is graded again.
+  const more = first.slice(0, 40).map(swapOf);
 
   // The best swaps made one after another, each one graded on the list the last one left.
   let all = null;
@@ -225,7 +231,7 @@ async function up75Find(deck) {
     if (steps.length > 1) all = { n: steps.length, from: R0.overall, to: cur.R.overall,
       syn: [syn(R0), syn(cur.R)], pow: [pow(R0), pow(cur.R)], swaps: steps.map(s => ({ out: s.o.name, in: s.a.name })) };
   }
-  return { base: R0.overall, arch: arch && arch.name, swaps, all };
+  return { base: R0.overall, arch: arch && arch.name, swaps, all, more };
 }
 
 function up75Sig(deck) {
@@ -235,6 +241,8 @@ function up75Sig(deck) {
 }
 
 function up75Html(res, hasFix) {
+  // 3.0: the order the player picked (cards they own first, cheapest first). Only which swaps show changes.
+  if (typeof op30UpOrder === 'function') res = op30UpOrder(res);
   const head = n => `<details class="g-sec g29-fold" id="up75-sec"${n ? ' open' : ''}><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
   if (!res || res.busy) return head(0) + `<div class="g-sec-i">Checking which card swaps raise this grade.</div></details>`;
   if (res.why === 'offline') return head(0) + `<div class="g-sec-i">Upgrades need a connection the first time, to read the cards to try.</div></details>`;
@@ -243,7 +251,7 @@ function up75Html(res, hasFix) {
   const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
   const moved = s => s.to > s.from;
   const rows = res.swaps.map(s => `<div class="up75-row"><div class="up75-h"><span class="up75-n">Swap 1 ${esc(s.out)} for 1 ${esc(s.in)}</span>${moved(s) ? `<span class="up75-g">${g(s.from, s.to)}</span>` : ''}</div>
-    ${s.note ? `<p>${esc(s.note)}</p>` : ''}</div>`);
+    ${s.note ? `<p>${esc(s.note)}</p>` : ''}${typeof op30UpTag === 'function' ? op30UpTag(s) : ''}</div>`);
   const best = Math.max(...res.swaps.map(s => s.to));
   if (res.all && (res.all.to > best || res.all.syn[1] > Math.max(...res.swaps.map(s => s.syn[1])) || res.all.pow[1] > Math.max(...res.swaps.map(s => s.pow[1])))) {
     const parts = [];
@@ -255,7 +263,7 @@ function up75Html(res, hasFix) {
   const any = res.swaps.some(moved) || (res.all && moved(res.all));
   const intro = any ? 'Each number comes from grading the list with that swap made.'
     : 'These raise Synergy or Power. The grade itself stays the same, because Synergy lowers the grade only when a list fits loosely. Each number comes from grading the list with that swap made.';
-  return head(res.swaps.length) + `<div class="g-sec-i">${intro}</div>${rows.join('')}</details>`;
+  return head(res.swaps.length) + `<div class="g-sec-i">${intro}</div>${typeof op30UpBar === 'function' ? op30UpBar(res) : ''}${rows.join('')}</details>`;
 }
 
 (function () {

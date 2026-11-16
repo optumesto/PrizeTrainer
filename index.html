@@ -3020,6 +3020,42 @@ document.documentElement.classList.add('rd-boot');
   .up75-row.all .up75-n { color:var(--text); }
 </style>
 <style>
+  /* 3.0: cards you own (saved on this device) and card prices from TCGdex (js/owned-prices.js). */
+  .rv-edit-row { flex-wrap:wrap; gap:0.5rem; }
+  .op30-mark svg { width:16px; height:16px; }
+  .op30-mark.active { background:var(--accent-soft); border-color:var(--accent-line); color:var(--text); }
+  .op30-bar { margin:0 0 0.75rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
+  .op30-bar p { margin:0 0 0.2rem; }
+  .op30-bar b { color:var(--text); font-family:var(--mono); font-weight:600; }
+  .op30-hint { color:var(--text); }
+  .op30-src { font-size:var(--fs-xs); color:var(--text-3); line-height:1.45; }
+  .op30-tick { position:absolute; left:6px; bottom:6px; width:24px; height:24px; border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center; background:var(--success); color:#06210f;
+    box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+  .op30-tick svg { width:14px; height:14px; }
+  .op30-pr { font-family:var(--mono); font-size:var(--fs-xs); color:var(--text-3); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .op30-pr.none { font-family:var(--font); }
+  #review-body.op30-marking .review-group .review-card { cursor:pointer; border-radius:8px; }
+  #review-body.op30-marking .review-group .review-card:not(.op30-own) .review-card-img { opacity:0.55; }
+  #review-body.op30-marking .review-group .review-card:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  .op30-up-bar { display:flex; flex-wrap:wrap; gap:0 1.1rem; margin:-0.3rem 0 0.2rem; }
+  .op30-sw { display:flex; align-items:center; gap:0.5rem; min-height:44px; font-size:var(--fs-sm); color:var(--text-2); cursor:pointer; }
+  .op30-sw input { width:20px; height:20px; margin:0; accent-color:var(--accent); }
+  .op30-up-bar + .op30-src { margin:0 0 0.4rem; }
+  .op30-tags { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.35rem; }
+  .op30-tag { display:inline-flex; align-items:center; gap:0.3rem; padding:0.15rem 0.5rem; border-radius:999px;
+    background:var(--surface-2); color:var(--text-2); font-size:var(--fs-xs); font-family:var(--mono); font-weight:600; }
+  .op30-tag.own { color:var(--success); font-family:var(--font); }
+  .op30-tag.none { font-family:var(--font); font-weight:500; color:var(--text-3); }
+  .op30-tag svg { width:12px; height:12px; }
+  .op30-tg { flex-shrink:0; width:36px; height:36px; padding:0; border-radius:999px; border:1px solid var(--line-2);
+    background:transparent; color:var(--text-3); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+  .op30-tg svg { width:16px; height:16px; }
+  .op30-tg[aria-pressed="true"] { background:var(--success); border-color:var(--success); color:#06210f; }
+  .op30-tg:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  body[data-theme="light"] .op30-tick, body[data-theme="light"] .op30-tg[aria-pressed="true"] { color:#fff; }
+</style>
+<style>
   .mu71-ask { margin: 0.5rem 0 0.75rem; padding: 0.75rem; border: 1px solid var(--electric); border-radius: 10px; }
   /* v71: the deck row's play button says what it starts. */
   .deck-play { width:58px; height:52px; flex-direction:column; gap:3px; }
@@ -3783,7 +3819,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v69-grade-blend.js?v=132d4c33"></script>
 <script src="js/v71-audit-fixes.js?v=1574f677"></script>
 <script src="js/v71-which-deck.js?v=b6fa22b3"></script>
-<script src="js/upgrades.js?v=78c7a8ba"></script>
+<script src="js/upgrades.js?v=b0fb38b0"></script>
+<script src="js/owned-prices.js?v=d749ee0f"></script>
 <script src="js/grade-history.js?v=0a93161c"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 </body>
