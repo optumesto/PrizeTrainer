@@ -2,6 +2,22 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.0.1 (build 106): fixes from the 3.0 audit (16 Nov 2026)
+
+Changed files: js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-settings-home.js, js/v301-fixes.js (new), js/i18n.js, js/core.js (version, What's new), index.html (Prizes button, styles, scripts, file stamps), sw.js (cache prize-trainer-v106), build-pages.mjs, how-grading-works.html, privacy.html, tests (owned, reports, extras and i18n checks) and CHANGES.md.
+
+- Prices: an On/Off row in Settings, saved on the device. Off hides every price and reads none. On by default.
+- Upgrades: the owned first and cheapest first toggles show only when there is more than one suggestion. Owned first is still off by default.
+- How did it do?: an optional event name, and a Delete button on the record row that asks once first. The grade history entry stays.
+- This grade looks off?: a tap made offline waits on the device (at most 10) and is sent when back online. Turning reports off drops it unsent. Still one flag per deck and grade.
+- Spanish and Portuguese: the English left on Settings, Help, the deck view and the prize screens is translated, and the i18n check now fails on any app text left in English. Card, attack and ability names stay English.
+- The Prizes button fits PREMIOS and PRÊMIOS.
+- A Home row no longer stays on Grading... after going back from a deck.
+- The Settings footer shows the build number.
+- how-grading-works.html: one count for the lists (132 graded, 130 on the scoreboard, with why) and a line on what the Decks column counts.
+- Checked and not changed: the grade history count matches its rows (now covered by the extras check).
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 3.0 (build 105): Spanish and Portuguese, cards you own, prices, accuracy scoreboard (16 Nov 2026)
 
 Changed files: js/i18n.js, js/report-errors.js, js/grade-flag.js, js/owned-prices.js, js/v80-extras.js (all new), js/upgrades.js, js/matchups.js, js/v69-grade-blend.js, js/v28-ask-odds.js, js/core.js (version, What's new), index.html (scripts, styles, file stamps), sw.js (cache prize-trainer-v105, accuracy.json network first), privacy.html, how-grading-works.html, accuracy.json (new), build-pages.mjs, refresh-data.mjs, refresh-matchups.mjs, .github/workflows/refresh-data.yml, worker/ (new), tests (reports, extras, owned and i18n checks, grade check scoreboard), README.md and CHANGES.md.

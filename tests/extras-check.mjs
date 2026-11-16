@@ -174,6 +174,7 @@ if (add) {
   w.ev80Step('w', 1); w.ev80Step('w', 1); w.ev80Step('w', 1); w.ev80Step('w', 1); w.ev80Step('w', 1);
   w.ev80Step('l', 1); w.ev80Step('l', 1); w.ev80Step('t', 1); w.ev80Step('t', -1); w.ev80Step('t', -1); w.ev80Step('t', 1);
   d.getElementById('ev80-p').value = '12';
+  d.getElementById('ev80-n').value = '  Toronto <b>Regional</b>  ';
   d.getElementById('ev80-save').click();
   await wait(200);
   const rec = d.querySelector('#gh72-sec .ev80-rec');
@@ -183,10 +184,41 @@ if (add) {
   ok(saved && saved.ev.w === 5 && saved.ev.l === 2 && saved.ev.t === 1 && saved.ev.p === 12, 'the record is kept on its grade history entry');
   const row = rec && rec.closest('.gh72-row, #gh72-sec');
   ok(row && row.textContent.includes(saved.g.toFixed(1)), 'the record sits beside the grade it had then (' + saved.g.toFixed(1) + ')');
-  // Remove it again.
+  // 3.0.1: event name, shown as plain text and never translated.
+  const nm = d.querySelector('#gh72-sec .ev80-nm');
+  ok(saved && typeof saved.ev.n === 'string' && !/[<>]/.test(saved.ev.n) && saved.ev.n === 'Toronto b Regional /b' && saved.ev.n === saved.ev.n.trim(), 'the event name is kept, trimmed and without markup: ' + (saved && saved.ev.n));
+  ok(nm && nm.hasAttribute('data-no-tr') && !nm.querySelector('b') && /Toronto/.test(nm.textContent), 'the event name shows on the row as plain text');
+  // 3.0.1: Delete from the row asks once, Cancel keeps it.
+  const del = [...d.querySelectorAll('#gh72-sec .ev80-btn')].find(x => x.textContent === 'Delete');
+  ok(!!del, 'the record row has a Delete button');
+  del.click();
+  const sheet = (d.querySelector('.modal-overlay.active') || d.body).textContent;
+  ok(/Delete this event record\?/.test(sheet) && /The grade history stays/.test(sheet), 'Delete asks first');
+  w.closeSheet();
+  ok(deck.gradeLog.e.some(x => x.ev), 'Cancel keeps the record');
+  [...d.querySelectorAll('#gh72-sec .ev80-btn')].find(x => x.textContent === 'Delete').click();
+  [...d.querySelectorAll('.modal-overlay.active .btn-danger, #x-modal-inner .btn-danger')].find(x => x.textContent === 'Delete').click();
+  await wait(100);
+  ok(!deck.gradeLog.e.some(x => x.ev) && !d.querySelector('#gh72-sec .ev80-rec'), 'Delete clears the record and keeps the grade history');
+  ok(deck.gradeLog.e.length >= 1, 'grade history entries stay after a delete');
+  // Remove it again from the edit sheet.
+  w.ev80Open(saved.t); w.ev80Step('w', 1); d.getElementById('ev80-save').click(); await wait(100);
   [...d.querySelectorAll('#gh72-sec .ev80-btn')].find(x => x.textContent === 'Edit').click();
+  ok(!d.getElementById('ev80-n').value, 'a record without a name has an empty name box');
   w.ev80Save(true);
   ok(!deck.gradeLog.e.some(x => x.ev) && !d.querySelector('#gh72-sec .ev80-rec'), 'Remove clears the record');
+  // 3.0.1: the history count matches its rows on a deck with several entries.
+  const e0 = deck.gradeLog.e[deck.gradeLog.e.length - 1];
+  const keep = deck.gradeLog.e.slice();
+  deck.gradeLog.e = [0, 1, 2, 3].map(i => Object.assign({}, e0, { t: e0.t - (4 - i) * 86400000, g: Math.round((e0.g - 0.3 * (3 - i)) * 10) / 10, ev: undefined })).concat([e0]);
+  deck.gradeLog.e.forEach(x => { if (!x.ev) delete x.ev; });
+  w.eval(`state.activeDeckId = 'none'`); w.renderGrade(); w.eval(`state.activeDeckId = ${JSON.stringify(deck.id)}`); w.renderGrade(); await wait(200);
+  const hs = d.getElementById('gh72-sec');
+  const nBadge = parseInt(((hs && hs.querySelector('.g29-n')) || {}).textContent, 10);
+  const nRows = hs ? hs.querySelectorAll('.gh72-row').length : 0;
+  const nOver = parseInt(((/over (\d+) versions/.exec(hs ? hs.textContent : '')) || [])[1], 10);
+  ok(deck.gradeLog.e.length === 5 && nBadge === 5 && nRows === 5 && nOver === 5, `grade history count matches its rows (log ${deck.gradeLog.e.length}, badge ${nBadge}, rows ${nRows}, "over ${nOver} versions")`);
+  deck.gradeLog.e = keep; w.renderGrade(); await wait(100);
   const a2 = (d.querySelector('#grade-body .g-score') || {}).textContent || '';
   ok(a2.replace(/\/10.*/, '').trim() === b.score, 'the grade is the same after saving a record');
 }

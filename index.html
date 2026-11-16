@@ -3064,9 +3064,10 @@ document.documentElement.classList.add('rd-boot');
 <style>
   .mu71-ask { margin: 0.5rem 0 0.75rem; padding: 0.75rem; border: 1px solid var(--electric); border-radius: 10px; }
   /* v71: the deck row's play button says what it starts. */
-  .deck-play { width:58px; height:52px; flex-direction:column; gap:3px; }
+  .deck-play { width:auto; min-width:58px; height:52px; padding:0 7px; flex-direction:column; gap:3px; }
   .deck-play .ic { width:16px; height:16px; margin-left:2px; }
-  .dp71 { font-family:var(--mono); font-size:0.75rem; font-weight:600; line-height:1; text-transform:uppercase; letter-spacing:0.02em; }
+  .dp71 { font-family:var(--mono); font-size:0.75rem; font-weight:600; line-height:1; text-transform:uppercase; letter-spacing:0.02em; white-space:nowrap; }
+  /* 3.0.1: the button grows to fit PREMIOS and PRÊMIOS. */
   .mu71-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0; }
 </style>
 <style>
@@ -3094,6 +3095,8 @@ document.documentElement.classList.add('rd-boot');
   /* 3.0: event record on grade history, What's next, new set week */
   .ev80-row { display:flex; align-items:center; flex-wrap:wrap; gap:0.25rem 0.75rem; margin:0.3rem 0 0; font-size:0.9375rem; color:var(--text-2); }
   .ev80-rec b { font-family:var(--mono); color:var(--text); }
+  .ev80-nm { font-weight:700; color:var(--text); overflow-wrap:anywhere; }
+  .ev80-fn input { flex:1; min-width:0; max-width:14rem; min-height:44px; padding:0 0.6rem; font:inherit; color:var(--text); background:var(--surface-2, transparent); border:1px solid var(--line-2); border-radius:var(--r-sm); }
   .ev80-k { color:var(--text-3); font-size:0.875rem; }
   .ev80-btn { background:none; border:0; padding:0.35rem 0; min-height:32px; font:inherit; font-size:0.875rem; font-weight:600; color:var(--accent); text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
   body[data-theme="light"] .ev80-btn { color:var(--accent-2); }
@@ -3734,7 +3737,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=b95517e6"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=99e465dd"></script>
 
-<script src="js/core.js?v=078b2946"></script>
+<script src="js/core.js?v=bf7f5703"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -3812,7 +3815,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v36-reprint-tcgdex.js?v=e5e38d27"></script>
 <script src="js/v37-cards-per-row.js?v=03de74b4"></script>
 <script src="js/v37-save-open.js?v=819d9fe0"></script>
-<script src="js/v38-settings-home.js?v=b03c7bc6"></script>
+<script src="js/v38-settings-home.js?v=e4dd9f1c"></script>
 <script src="js/v40-audit-fixes.js?v=f5b59585"></script>
 <script src="js/v45-sample-share-daily.js?v=5f1bc7bb"></script>
 <script src="js/v47-prerelease.js?v=64cb9899"></script>
@@ -3843,12 +3846,13 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v69-grade-blend.js?v=6a935d23"></script>
 <script src="js/v71-audit-fixes.js?v=1574f677"></script>
 <script src="js/v71-which-deck.js?v=b6fa22b3"></script>
-<script src="js/grade-flag.js?v=d2327a36"></script>
+<script src="js/grade-flag.js?v=a7f435d3"></script>
 <script src="js/upgrades.js?v=b0fb38b0"></script>
-<script src="js/owned-prices.js?v=d749ee0f"></script>
+<script src="js/owned-prices.js?v=787c855b"></script>
 <script src="js/grade-history.js?v=0a93161c"></script>
-<script src="js/v80-extras.js?v=07a92fd1"></script>
+<script src="js/v80-extras.js?v=8c65f5af"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
+<script src="js/v301-fixes.js?v=2065ae81"></script>
 <script src="js/i18n.js?v=5a8f7448"></script>
 </body>
 </html>

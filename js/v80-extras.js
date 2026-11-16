@@ -241,15 +241,16 @@ gs45Share = async function () {
 };
 
 // ── 4. How did it do?: an event record on a grade history entry ──
-// Kept on the entry itself (deck.gradeLog.e[i].ev = { w, l, t, p }), so it stays on this device
-// with the grade history and is never sent anywhere. p (placing) is optional.
-const EV80_MAX = 99, EV80_PMAX = 9999;
+// Kept on the entry itself (deck.gradeLog.e[i].ev = { w, l, t, p, n }), so it stays on this device
+// with the grade history and is never sent anywhere. p (placing) and n (event name, 3.0.1) are optional.
+const EV80_MAX = 99, EV80_PMAX = 9999, EV80_NMAX = 40;
+const ev80Name = x => typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f<>]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, EV80_NMAX) : '';
 function ev80Get(e) {
   const v = e && e.ev;
   const n = (x, m) => Number.isInteger(x) && x >= 0 && x <= m ? x : 0;
   if (!v || typeof v !== 'object') return null;
   const p = Number.isInteger(v.p) && v.p >= 1 && v.p <= EV80_PMAX ? v.p : null;
-  const out = { w: n(v.w, EV80_MAX), l: n(v.l, EV80_MAX), t: n(v.t, EV80_MAX), p };
+  const out = { w: n(v.w, EV80_MAX), l: n(v.l, EV80_MAX), t: n(v.t, EV80_MAX), p, n: ev80Name(v.n) };
   return out.w + out.l + out.t || out.p ? out : null;
 }
 function ev80Text(v) {
@@ -262,7 +263,7 @@ function ev80Entry(deck, t) {
 }
 function ev80Bits(e, mine) {
   const v = ev80Get(e);
-  if (v) return `<div class="ev80-row"><span class="ev80-rec">At the event: <b>${ev80Text(v)}</b> <span class="ev80-k">(wins, losses, ties)</span></span><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">Edit</button></div>`;
+  if (v) return `<div class="ev80-row">${v.n ? `<span class="ev80-nm" data-no-tr>${esc(v.n)}</span>` : ''}<span class="ev80-rec">At the event: <b>${ev80Text(v)}</b> <span class="ev80-k">(wins, losses, ties)</span></span><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">Edit</button><button type="button" class="ev80-btn" onclick="ev80Del(${e.t})">Delete</button></div>`;
   return mine ? `<div class="ev80-row"><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">How did it do?</button></div>` : '';
 }
 /** Adds the records and the buttons to the Grade history section after it is drawn. */
@@ -297,12 +298,14 @@ function ev80Open(t) {
   openSheet(`<div class="modal-title">How did it do?</div>
     <div class="modal-hint" style="margin-bottom:0.9rem">The record from an event you played with this version, graded ${e.g.toFixed(1)}. It stays on this device and is never sent anywhere.</div>
     <div class="ev80-form">
+      <div class="ev80-f ev80-fn"><label class="ev80-l" for="ev80-n">Event name</label>
+        <input type="text" id="ev80-n" maxlength="${EV80_NMAX}" autocomplete="off" value="${esc(v.n || '')}" placeholder="Optional"></div>
       ${step('w', 'Wins', v.w)}${step('l', 'Losses', v.l)}${step('t', 'Ties', v.t)}
       <div class="ev80-f"><label class="ev80-l" for="ev80-p">Placing</label><div class="ev80-step">
         <input type="number" id="ev80-p" inputmode="numeric" min="1" max="${EV80_PMAX}" step="1" value="${v.p || ''}" placeholder="Optional"></div></div>
     </div>
     <div class="modal-actions">
-      ${ev80Get(e) ? `<button class="btn btn-ghost" onclick="ev80Save(true)">Remove</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>`}
+      ${ev80Get(e) ? `<button class="btn btn-ghost" onclick="ev80Save(true)">Delete</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>`}
       <button class="btn btn-primary" id="ev80-save" onclick="ev80Save(false)">Save</button>
     </div>`);
 }
@@ -324,11 +327,24 @@ function ev80Save(remove) {
     const v = { w: ev80Read('w', 0, EV80_MAX) || 0, l: ev80Read('l', 0, EV80_MAX) || 0, t: ev80Read('t', 0, EV80_MAX) || 0 };
     const p = ev80Read('p', 1, EV80_PMAX);
     if (p) v.p = p;
+    const ni = document.getElementById('ev80-n'), nm = ev80Name(ni ? ni.value : '');
+    if (nm) v.n = nm;
     if (v.w + v.l + v.t || v.p) e.ev = v; else delete e.ev;
   }
   closeSheet();
   try { saveState(); } catch (_) {}
   renderGrade();
+}
+
+/** 3.0.1: delete an event record from its row, after one check. */
+function ev80Del(t) {
+  const deck = state.decks.find(d => d.id === state.activeDeckId), e = ev80Entry(deck, t), v = ev80Get(e);
+  if (!v) return;
+  _ev80T = t;
+  openSheet(`<div class="modal-title">Delete this event record?</div>
+    <div class="modal-hint">${v.n ? `<span data-no-tr>${esc(v.n)}</span>: ` : ''}${ev80Text(v)}. The grade history stays.</div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-danger" onclick="ev80Save(true)">Delete</button></div>`);
 }
 
 // ── 6. New set week: one home line in the newest set's first 7 days ──

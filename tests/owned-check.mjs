@@ -93,7 +93,7 @@ const dom = new JSDOM(readAppHtml(), {
 });
 const w = dom.window, d = w.document;
 await sleep(3500);
-ok(w.eval('typeof op30Cards') === 'function' && w.eval('PRICES_ON') === true, 'owned-prices.js loaded, PRICES_ON is true');
+ok(w.eval('typeof op30Cards') === 'function' && w.eval('op30PricesOn()') === true, 'owned-prices.js loaded, prices on by default');
 
 // ── card data ──
 // The saved card data holds the grade check's top lists, read in batches, so a starter deck or the
@@ -276,6 +276,39 @@ if (cheap) {
   ok(gradeText() === G0, 'grade the same with both on: ' + gradeText());
 }
 ok(!/\u2014|\u2013/.test(d.getElementById('review-body').textContent + d.getElementById('grade-body').textContent.replace(/[^]*?(?=Upgrades)/, '')), 'no em or en dashes in the new text');
+
+// ── 3.0.1: the Prices switch in Settings ──
+w.showReviewTab('cards');
+await sleep(100);
+w.openSettings();
+const prRow = d.getElementById('st301-pr');
+ok(!!prRow && /Prices/.test(prRow.textContent), 'Settings has a Prices row');
+ok(!!prRow && prRow.querySelector('[data-p="on"]').getAttribute('aria-pressed') === 'true', 'Prices shows On by default');
+const r1 = priceReads;
+prRow.querySelector('[data-p="off"]').click();
+await sleep(100);
+ok(w.localStorage.getItem('rd_prices_show') === 'off' && prRow.querySelector('[data-p="off"]').getAttribute('aria-pressed') === 'true', 'Off is saved as rd_prices_show = off');
+w.closeSheet();
+w.showReviewTab('grade'); w.showReviewTab('cards'); await sleep(200);
+ok(!/List total|Prices from|no price|\$|€/.test(bar()) && !d.querySelectorAll('#review-body .op30-pr').length, 'prices off: no price on the Cards tab');
+ok(/You own \d+ of/.test(bar()), 'prices off: owned cards still show');
+w.showReviewTab('grade');
+await settle();
+ok(gradeText() === G0, 'grade the same with prices off: ' + gradeText());
+ok(!d.querySelector('#up75-sec .op30-tag:not(.own)') && !d.getElementById('op30-up-cheap') && !/Prices from/.test(upText()), 'prices off: no price, Cheapest first or source line in Upgrades');
+ok(priceReads === r1, 'prices off: no price requests');
+w.openSettings();
+d.querySelector('#st301-pr [data-p="on"]').click();
+w.closeSheet();
+ok(w.localStorage.getItem('rd_prices_show') === null && w.eval('op30PricesOn()') === true, 'On again removes the setting');
+w.showReviewTab('cards'); await sleep(200);
+ok(/List total/.test(bar()), 'prices on again: list total is back');
+
+// ── 3.0.1: one suggestion, no order toggles ──
+const one = w.eval(`(() => { const r = (_up75Cache.get(state.activeDeckId) || {}).res; const s = r.swaps[0]; return op30UpBar(Object.assign({}, r, { swaps: [s], more: [s] })); })()`);
+ok(!/op30-up-own|op30-up-cheap/.test(one), 'one upgrade: no order toggles');
+const two = w.eval(`(() => { const r = (_up75Cache.get(state.activeDeckId) || {}).res; return op30UpBar(r); })()`);
+ok(/op30-up-own/.test(two), 'more than one upgrade: order toggles shown');
 
 // ── Offline, with nothing saved: no prices, no errors ──
 w.navigator.onLine = false;

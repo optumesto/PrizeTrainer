@@ -53,7 +53,7 @@ function openSettings() {
     <div class="st38-sec st38-rows">
       ${row('closeSheet();clearAllData()', 'Clear all data', 'Deletes every deck and score saved in this browser', 'st38-danger')}
     </div>
-    <div class="st38-ver">RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}</div>
+    <div class="st38-ver" data-no-tr>RdyDeck ${PT_VERSION} (build ${PT_BUILD})${PT_PLAY ? ' (Google Play)' : ''}</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
   st38Paint();
 }

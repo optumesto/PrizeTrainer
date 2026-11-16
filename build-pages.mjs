@@ -427,20 +427,26 @@ ${rows.join('\n')}
 // One row per set: how closely the grades rank decks against their online win rates (Spearman),
 // with the decks ranked and the games played. Only the scoreboard, nothing about how it is tuned.
 const rho = v => typeof v === 'number' && isFinite(v) ? v.toFixed(2) : 'Too few';
+// 3.0.1: one count, explained: every list the grade check grades, and how many of them the scoreboard uses.
+function accCount() {
+  const total = Array.isArray(lists) ? lists.length : 0, used = acc.lists || 0, out = total - used;
+  if (!total || out <= 0) return `Every week RdyDeck grades the same ${num(used || total)} top 16 lists from recent events.`;
+  return `Every week RdyDeck grades the same ${num(total)} top 16 lists from recent events. ${num(used)} of them are used here; the other ${num(out)} ${out === 1 ? 'uses' : 'use'} cards that have rotated or older printings.`;
+}
 function accuracyHtml() {
   const sets = acc && Array.isArray(acc.sets) ? acc.sets.filter(x => x && x.name) : [];
   if (!sets.length) return '';
   const a = sets[0].min, b = sets[sets.length - 1].min;
   const mins = a && b && a !== b ? `${num(a)} games in a set, or ${num(b)} in the newest one` : `${num(a || b || 0)} games in a set`;
   return `<h2 id="accuracy">How accurate the grades are</h2>
-<p>Every week RdyDeck grades the same ${num(acc.lists || 0)} top lists from recent events and checks the order it puts their decks in against how those decks actually win in ${esc(acc.source || 'Limitless online tournaments')}. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
+<p>${accCount()} RdyDeck checks the order its grades put those decks in against how the decks actually win in ${esc(acc.source || 'Limitless online tournaments')}. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
 <div class="tw"><table>
   <thead><tr><th>Set</th><th>Dates</th><th class="n">Decks</th><th class="n">Games</th><th class="n">Grade as shown</th><th class="n">Cards alone</th></tr></thead>
   <tbody>
 ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to)}</td><td class="n">${num(x.decks || 0)}</td><td class="n">${num(x.games || 0)}</td><td class="n">${rho(x.shown)}</td><td class="n">${rho(x.cards)}</td></tr>`).join('\n')}
   </tbody>
 </table></div>
-<p class="note">Grade as shown is the grade the app shows. It counts these same results, so it is partly circular and runs high. Cards alone is the grade from each list's cards with no results, the harder test. A deck is ranked once it has ${mins}. Updated ${day(acc.asOf)}.</p>
+<p class="note">Grade as shown is the grade the app shows. It counts these same results, so it is partly circular and runs high. Cards alone is the grade from each list's cards with no results, the harder test. Decks is how many different decks those lists make up that have enough games to rank: a deck is ranked once it has ${mins}. Updated ${day(acc.asOf)}.</p>
 `;
 }
 

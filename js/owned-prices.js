@@ -10,8 +10,10 @@
 // Nothing here reads or changes a grade. Owned cards and prices only change which upgrade swaps
 // show first, and each swap keeps the numbers it was graded with.
 
-// Turn every price display off in one line (the owned cards stay).
-const PRICES_ON = true;
+// 3.0.1: prices show unless the player turns them off in Settings (Prices, saved as rd_prices_show = 'off').
+// Off hides every price and reads none (owned cards stay).
+const OP30_SHOW = 'rd_prices_show';
+function op30PricesOn() { try { return localStorage.getItem(OP30_SHOW) !== 'off'; } catch (_) { return true; } }
 
 const OP30_OWN = 'rd_owned';
 const OP30_PREFS = 'rd_owned_prefs';
@@ -110,7 +112,7 @@ function op30Read(j) {
 }
 /** The saved price of a printing: { u, e, d, t }, or null when it has not been read. */
 function op30Price(set, num) {
-  if (!PRICES_ON) return null;
+  if (!op30PricesOn()) return null;
   const id = op30Id(set, num);
   return id ? op30Prices()[id] || null : null;
 }
@@ -140,7 +142,7 @@ function op30Todo(ids) {
 }
 /** Read the prices of these TCGdex ids, a few at a time. Resolves to how many were read. */
 async function op30Fetch(ids) {
-  if (!PRICES_ON || !op30Online() || Date.now() < _op30Down) return 0;
+  if (!op30PricesOn() || !op30Online() || Date.now() < _op30Down) return 0;
   const todo = op30Todo(ids).slice(0, OP30_MAX);
   const P = op30Prices();
   let got = 0, fails = 0;
@@ -212,7 +214,7 @@ function op30Cards(deck) {
   const ownN = [...keys].filter(k => Object.prototype.hasOwnProperty.call(op30Owned().n, k)).length;
   const lines = [`<p class="op30-own-n">You own ${ownN} of the ${keys.size} different cards in this list.</p>`];
   if (_op30Mark) lines.push('<p class="op30-hint">Tap each card you own. Tap it again to unmark it. Saved on this device only.</p>');
-  if (PRICES_ON) {
+  if (op30PricesOn()) {
     let usd = 0, eur = 0, none = 0, needU = 0, needE = 0, any = false, oldest = null, euro = false, unread = 0;
     deck.cards.forEach(c => {
       const n = c.count || 0, p = op30Price(c.set, c.num), own = op30Has(c.name);
@@ -251,7 +253,7 @@ function op30Cards(deck) {
     row.insertAdjacentElement('afterend', bar);
   } else body.insertBefore(bar, body.firstChild);
 
-  if (PRICES_ON && op30Showing('review-body')) op30CardsFetch(deck);
+  if (op30PricesOn() && op30Showing('review-body')) op30CardsFetch(deck);
 }
 
 function op30CardsFetch(deck) {
@@ -318,7 +320,7 @@ const op30UpPrice = s => op30Price(s.inSet, s.inNum);
  *  Picks from the swaps that raise the grade, each with its own card out and card in, as before. */
 function op30UpOrder(res) {
   if (!res || !Array.isArray(res.swaps) || !res.swaps.length || !Array.isArray(res.more) || !res.more.length) return res;
-  const pf = op30Prefs(), cheap = PRICES_ON && pf.cheap;
+  const pf = op30Prefs(), cheap = op30PricesOn() && pf.cheap;
   if (!pf.own && !cheap) return res;
   const rank = s => { const p = op30UpPrice(s); return p && p.u ? [0, p.u] : p && p.e ? [1, p.e] : [2, 0]; };
   const list = res.more.map((s, i) => ({ s, i, own: pf.own && op30Has(s.in) ? 1 : 0, r: cheap ? rank(s) : [0, 0] }));
@@ -347,11 +349,15 @@ function op30UpTag(s) {
 function op30UpBar(res) {
   if (!res || !Array.isArray(res.swaps) || !res.swaps.length) return '';
   const pf = op30Prefs();
-  let h = `<div class="op30-up-bar" role="group" aria-label="Order of upgrades">
+  let h = '';
+  // 3.0.1: with one suggestion there is nothing to put in order, so the order toggles stay hidden.
+  if ((Array.isArray(res.more) && res.more.length ? res.more : res.swaps).length > 1) {
+    h = `<div class="op30-up-bar" role="group" aria-label="Order of upgrades">
     <label class="op30-sw"><input type="checkbox" id="op30-up-own"${pf.own ? ' checked' : ''} onchange="op30UpSet('own',this.checked)"><span>Suggest cards I own first</span></label>`;
-  if (PRICES_ON) h += `<label class="op30-sw"><input type="checkbox" id="op30-up-cheap"${pf.cheap ? ' checked' : ''} onchange="op30UpSet('cheap',this.checked)"><span>Cheapest first</span></label>`;
-  h += '</div>';
-  if (PRICES_ON) {
+    if (op30PricesOn()) h += `<label class="op30-sw"><input type="checkbox" id="op30-up-cheap"${pf.cheap ? ' checked' : ''} onchange="op30UpSet('cheap',this.checked)"><span>Cheapest first</span></label>`;
+    h += '</div>';
+  }
+  if (op30PricesOn()) {
     // The cards shown, or with Cheapest first on, the cards it picks from.
     const pool = (pf.cheap && res.more ? res.more : res.swaps).slice(0, OP30_UP_MAX);
     const known = res.swaps.map(op30UpPrice).filter(p => p && (p.u || p.e));
@@ -440,3 +446,36 @@ function op30BldTap(b) {
     return _c.apply(this, arguments);
   };
 })();
+
+// ── 3.0.1: Settings, a Prices switch ──
+(function () {
+  const _os = openSettings;
+  openSettings = function () {
+    const r = _os.apply(this, arguments);
+    const rows = document.querySelector('#x-modal-inner .st38-rows') || document.querySelector('.st38-rows');
+    if (rows && !document.getElementById('st301-pr')) {
+      const sec = document.createElement('div');
+      sec.className = 'st38-sec'; sec.id = 'st301-pr';
+      sec.innerHTML = `<div class="st38-h">Prices</div>
+        <p class="st38-p">Card prices on a deck's Cards tab and in Upgrades. Off hides them and reads none.</p>
+        <div class="st38-seg" role="group" aria-label="Prices">
+          <button type="button" data-p="on" onclick="st301Prices(true)">On</button>
+          <button type="button" data-p="off" onclick="st301Prices(false)">Off</button>
+        </div>`;
+      rows.parentNode.insertBefore(sec, rows);
+      st301Paint();
+    }
+    return r;
+  };
+})();
+function st301Prices(on) {
+  try { if (on) localStorage.removeItem(OP30_SHOW); else localStorage.setItem(OP30_SHOW, 'off'); } catch (_) {}
+  st301Paint();
+  // Redraw what is open behind Settings, so the change shows at once.
+  try { if (_op30Deck && document.getElementById('review-body')) op30Cards(_op30Deck); } catch (_) {}
+  try { op30UpRefresh(); } catch (_) {}
+}
+function st301Paint() {
+  const on = op30PricesOn();
+  document.querySelectorAll('#st301-pr button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.p === 'on') === on)));
+}

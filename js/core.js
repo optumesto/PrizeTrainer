@@ -7810,20 +7810,14 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.0',
-  kind: 'generation',
+  version: 'v3.0.1',
+  kind: 'fix',
   items: [
-    { t: "Added: Spanish and Portuguese", d: "Pick your language in Settings. Card names stay in English." },
-    { t: "Added: cards you own", d: "Tick the cards you have, and Upgrades can suggest them first. Saved on your device only." },
-    { t: "Added: card prices", d: "Each card's price and your list's total, from TCGdex, with a cheapest first option." },
-    { t: "Added: how accurate the grades are", d: "Each week, how closely grades rank decks against their real online win rates, per set." },
-    { t: "Added: This grade looks off?", d: "Tell us when a grade seems wrong, with one tap and no typing." },
-    { t: "Added: Against the field now", d: "Your deck's expected win rate against the decks people play most right now." },
-    { t: "Added: How did it do?", d: "Save your record from an event next to the grade your list had then." },
-    { t: "Added: What's next", d: "See what is planned and send us your ideas, from Settings or Help." },
-    { t: "Added: new set week", d: "Home tells you when a new set is out and which decks have cards to check." },
-    { t: "Changed: clearer win rates and one tap share", d: "Both win rates are labeled, and Share grade sends the picture in one tap." },
-    { t: "Added: error reports", d: "When something breaks, a short report with nothing personal in it helps fix it. You can turn it off in Settings." }
+    { t: 'Added: a Prices switch in Settings' },
+    { t: 'Added: event name and delete for How did it do?' },
+    { t: 'Spanish and Portuguese: more of the app translated' },
+    { t: 'Home grade bug fixed' },
+    { t: 'Changed: a grade flag sent offline goes when you are back online' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -10735,8 +10729,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.0';
-const PT_BUILD = 105;
+const PT_VERSION = 'v3.0.1';
+const PT_BUILD = 106;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

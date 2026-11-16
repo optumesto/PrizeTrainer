@@ -15,6 +15,8 @@ const GF80_REASONS = [
   ['other', 'Something else'],
 ];
 const GF80_KEY = 'rd_flags_sent';
+// 3.0.1: a flag tapped offline waits here and is sent when the device is back online.
+const GF80_QUEUE = 'rd_flags_queue', GF80_QMAX = 10;
 
 function gf80Sent() { try { return JSON.parse(localStorage.getItem(GF80_KEY) || '{}') || {}; } catch (_) { return {}; } }
 function gf80Now() {
@@ -42,7 +44,12 @@ async function gf80Send(reason) {
   closeSheet();
   if (!g || !GF80_REASONS.some(r => r[0] === reason)) return;
   if (gf80Sent()[g.key]) { showToast('Thanks, you already flagged this grade.'); return; }
-  if (typeof navigator !== 'undefined' && navigator.onLine === false) { showToast('You are offline. Try again when you are online.'); return; }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    if (typeof rdReportsWanted === 'function' && !rdReportsWanted()) { showToast('Reports are off in Settings, so nothing was sent.'); return; }
+    gf80Queue({ key: g.key, grade: g.grade, arch: g.arch, reason });
+    showToast('You are offline. It will be sent when you are back online.');
+    return;
+  }
   const ok = typeof rdReportPost === 'function' && rdReportsOn() ? await rdReportPost({ kind: 'flag', grade: g.grade, arch: g.arch, reason }) : false;
   if (ok) {
     const s = gf80Sent(); s[g.key] = 1;
@@ -53,6 +60,39 @@ async function gf80Send(reason) {
   } else {
     showToast('Could not send it just now. Try again later.');
   }
+}
+
+function gf80Q() { try { const q = JSON.parse(localStorage.getItem(GF80_QUEUE) || '[]'); return Array.isArray(q) ? q : []; } catch (_) { return []; } }
+function gf80QSave(q) { try { if (q.length) localStorage.setItem(GF80_QUEUE, JSON.stringify(q.slice(-GF80_QMAX))); else localStorage.removeItem(GF80_QUEUE); } catch (_) {} }
+/** Keep a flag for later, and count it as sent so the same grade is not flagged twice. */
+function gf80Queue(f) {
+  const q = gf80Q().filter(x => x && x.key !== f.key);
+  q.push(f); gf80QSave(q);
+  const s = gf80Sent(); s[f.key] = 1;
+  try { localStorage.setItem(GF80_KEY, JSON.stringify(s)); } catch (_) {}
+}
+let _gf80Flush = false;
+/** Send the flags that waited for a connection. With reports off in Settings, they are dropped, never sent. */
+async function gf80Flush() {
+  if (_gf80Flush || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
+  let q = gf80Q();
+  if (!q.length) return;
+  if (typeof rdReportsWanted === 'function' && !rdReportsWanted()) { gf80QSave([]); return; }
+  if (typeof rdReportPost !== 'function') return;
+  _gf80Flush = true;
+  try {
+    const left = [];
+    for (const f of q) {
+      if (!f || !GF80_REASONS.some(r => r[0] === f.reason)) continue;
+      const ok = await rdReportPost({ kind: 'flag', grade: f.grade, arch: f.arch, reason: f.reason });
+      if (!ok) left.push(f);
+    }
+    gf80QSave(left);
+  } finally { _gf80Flush = false; }
+}
+if (typeof addEventListener === 'function') {
+  addEventListener('online', () => setTimeout(gf80Flush, 2000));
+  addEventListener('load', () => setTimeout(gf80Flush, 3000));
 }
 
 (function () {
@@ -92,7 +132,7 @@ async function gf80Send(reason) {
     return r;
   };
 })();
-function st80Rep(yes) { rdReportsSet(yes); st80Paint(); }
+function st80Rep(yes) { rdReportsSet(yes); if (!yes) gf80QSave([]); st80Paint(); }
 function st80Paint() {
   const on = typeof rdReportsWanted !== 'function' || rdReportsWanted();
   document.querySelectorAll('#st80-rep button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.r === 'on') === on)));

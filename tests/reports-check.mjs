@@ -98,6 +98,37 @@ ok(posts.length === before, 'nothing is sent while off');
 w.st80Rep(true);
 ok(w.rdReportsOn(), 'switching on again works');
 
+// Offline flag queue (3.0.1).
+const setOnline = v => Object.defineProperty(w.navigator, 'onLine', { value: v, configurable: true });
+w.eval(`g29Grade = () => ({ overall: 6.12 })`);
+setOnline(false);
+let pq = posts.length; await w.gf80Send('too-high');
+ok(posts.length === pq, 'offline: nothing is sent right away');
+let q = JSON.parse(w.localStorage.getItem('rd_flags_queue') || '[]');
+ok(q.length === 1 && q[0].reason === 'too-high' && q[0].grade === 6.1, 'offline: the flag waits on this device');
+await w.gf80Send('too-low');
+q = JSON.parse(w.localStorage.getItem('rd_flags_queue') || '[]');
+ok(q.length === 1, 'offline: still one flag per deck and grade');
+await w.gf80Flush();
+ok(posts.length === pq, 'nothing is sent while still offline');
+setOnline(true); await w.gf80Flush();
+const qf = posts.slice(pq).filter(x => x.kind === 'flag');
+ok(qf.length === 1 && qf[0].reason === 'too-high' && qf[0].grade === 6.1, 'back online: the waiting flag is sent once');
+ok(qf[0] && Object.keys(qf[0]).sort().join(',') === 'arch,grade,kind,reason,v' && !/secret/.test(JSON.stringify(qf[0])), 'the queued flag carries no deck name or list');
+ok(!w.localStorage.getItem('rd_flags_queue'), 'the queue is empty after sending');
+// Reports off: a waiting flag is dropped, never sent.
+w.eval(`g29Grade = () => ({ overall: 5.55 })`);
+setOnline(false); await w.gf80Send('too-low');
+ok(JSON.parse(w.localStorage.getItem('rd_flags_queue') || '[]').length === 1, 'a second grade queues again');
+w.st80Rep(false);
+ok(!w.localStorage.getItem('rd_flags_queue'), 'switching reports off clears waiting flags');
+w.eval(`g29Grade = () => ({ overall: 4.44 })`);
+await w.gf80Send('too-high');
+ok(!w.localStorage.getItem('rd_flags_queue'), 'offline with reports off: nothing is queued');
+pq = posts.length; setOnline(true); await w.gf80Flush();
+ok(posts.length === pq, 'with reports off nothing is sent when back online');
+w.st80Rep(true);
+
 // The Worker: repo files are refused, site files are served.
 for (const u of ['/CHANGES.md', '/refresh-data.mjs', '/tests/grade-check.mjs', '/.github/workflows/grade-check.yml', '/puzzle/tools/make-daily.mjs', '/puzzle/test/run.js', '/worker/rdydeck-worker.js', '/i18n-notes.md', '/README.md'])
   ok(isBlocked(u), 'Worker refuses ' + u);
