@@ -332,6 +332,7 @@ for (const lang of LANGS) {
   ok(!coll.length, `${Object.keys(dict).length} strings, ${w.rdI18n.pat[lang].length} patterns, no key is a card, attack, set or deck name${coll.length ? ': ' + coll.join(', ') : ''}`);
   const bad = [], english = [];
   let totalLeft = 0, totalKept = 0;
+  let openWord = '';
   for (const [name, fn] of SCREENS) {
     const before = errors.length;
     try { await fn(w); } catch (e) { errors.push(name + ': ' + (e && e.stack || e)); }
@@ -351,8 +352,13 @@ for (const lang of LANGS) {
       console.log(`-- ${name}: ${ui.length} still English, ${left.size - ui.length} card data`);
       for (const [s, c] of left) console.log(`   ${c.keep ? 'kept ' : 'LEFT '}[${c.tag}] ${s}${c.keep ? '   (' + c.keep + ')' : ''}`);
     }
+    if (name === 'odds tab: ask the odds') {
+      const o = d.querySelector('.ol-turn .mode-opt[data-t="0"]');
+      openWord = o ? o.textContent.trim() : '(missing)';
+    }
     if (errors.length > before) console.log('   errors on ' + name + ': ' + errors.slice(before).join(' | ').slice(0, 600));
   }
+  ok(openWord === (lang === 'es' ? 'Mano' : 'Mão'), `Ask the odds: Open (the opening hand) reads ${openWord}, not the verb`);
   ok(!english.length, `no English app text left on any of ${SCREENS.length} screens (${totalKept} card data strings kept)` + (english.length ? ':\n       ' + english.slice(0, 40).join('\n       ') + (english.length > 40 ? `\n       and ${english.length - 40} more` : '') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.

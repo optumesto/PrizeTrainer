@@ -2391,6 +2391,36 @@ Object.assign(I18N_PT, {
   "Some cards in this list have no card data on this device yet, so those odds may show a question mark.": "Algumas cartas desta lista ainda não têm dados neste aparelho, então essas chances podem mostrar um ponto de interrogação.",
   "Some cards in the other list have no card data on this device yet, so those odds may show a question mark.": "Algumas cartas da outra lista ainda não têm dados neste aparelho, então essas chances podem mostrar um ponto de interrogação.",
 });
+// ── 3.0.1: Prices switch, event name and delete, offline grade flags, What's new ──
+Object.assign(I18N_ES, {
+  "Prices": "Precios",
+  "Card prices on a deck's Cards tab and in Upgrades. Off hides them and reads none.": "Precios de las cartas en la pestaña Cartas de un mazo y en Mejoras. Con No se ocultan y no se consulta ninguno.",
+  "Event name": "Nombre del evento",
+  "Delete this event record?": "¿Eliminar este récord del evento?",
+  "You are offline. It will be sent when you are back online.": "No tienes conexión. Se enviará cuando vuelvas a estar en línea.",
+  "Added: a Prices switch in Settings": "Nuevo: un interruptor de Precios en Ajustes",
+  "Added: event name and delete for How did it do?": "Nuevo: nombre del evento y eliminar en ¿Cómo le fue?",
+  "Spanish and Portuguese: more of the app translated": "Español y portugués: más partes de la app traducidas",
+  "Home grade bug fixed": "Error de la calificación en Inicio corregido",
+  "Changed: a grade flag sent offline goes when you are back online": "Cambio: un aviso de calificación enviado sin conexión sale cuando vuelves a estar en línea",
+});
+Object.assign(I18N_PT, {
+  "Prices": "Preços",
+  "Card prices on a deck's Cards tab and in Upgrades. Off hides them and reads none.": "Preços das cartas na aba Cartas de um deck e em Melhorias. Com Não eles ficam ocultos e nenhum é consultado.",
+  "Event name": "Nome do evento",
+  "Delete this event record?": "Excluir este resultado do evento?",
+  "You are offline. It will be sent when you are back online.": "Você está sem conexão. Será enviado quando você voltar a ficar online.",
+  "Added: a Prices switch in Settings": "Novo: um botão de Preços nas Configurações",
+  "Added: event name and delete for How did it do?": "Novo: nome do evento e excluir em Como foi?",
+  "Spanish and Portuguese: more of the app translated": "Espanhol e português: mais partes do app traduzidas",
+  "Home grade bug fixed": "Erro da nota no Início corrigido",
+  "Changed: a grade flag sent offline goes when you are back online": "Mudança: um aviso de nota enviado sem conexão vai quando você voltar a ficar online",
+});
+I18N_PAT.push(
+  [/^(: )?(\d+-\d+-\d+)(?:, (\d+)(?:st|nd|rd|th) place)?\. The grade history stays\.$/,
+    (m, c, r, p) => (c || '') + r + (p ? ', ' + p + '.º lugar' : '') + '. El historial de calificaciones se queda.',
+    (m, c, r, p) => (c || '') + r + (p ? ', ' + p + 'º lugar' : '') + '. O histórico de notas continua.'],
+);
 // A date the app writes with toLocaleDateString in English ("Nov 12", "Oct 8, 2025"), or null.
 const I18N_DATE = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{1,2}(?:, \\d{4})?';
 /** "Today, 3:00 PM", "Yesterday, ..." or a date, as the grade history writes them; null for anything else. */
@@ -2520,6 +2550,8 @@ const I18N_SCOPED = {
   'Other': ['.cmp-t th', 'Otra', 'Outra'],
   'new': ['.el-chip small', 'nueva', 'nova'],
   'cut': ['.el-chip small', 'fuera', 'removida'],
+  // Ask the odds By selector and its table: Open means the opening hand, not the verb.
+  'Open': ['.ol-turn .mode-opt, .ol-tt th', 'Mano', 'Mão'],
 };
 
 const I18N_TYPES = {
@@ -2663,16 +2695,16 @@ const rdI18n = (function () {
     const e = textMap.get(node), v = node.nodeValue;
     if (e && v === e.t) {
       if (cur === 'en') { node.nodeValue = e.o; textMap.delete(node); return; }
-      let r = t(e.o);
-      if (r === e.o) r = scoped(e.o, node.parentElement);
+      let r = scoped(e.o, node.parentElement);
+      if (r === e.o) r = t(e.o);
       if (r === e.o) { node.nodeValue = e.o; textMap.delete(node); return; }
       if (r !== v) { e.t = r; node.nodeValue = r; }
       return;
     }
     if (e) textMap.delete(node);   // the app wrote new text
     if (cur === 'en') return;
-    let r = t(v);
-    if (r === v) r = scoped(v, node.parentElement);
+    let r = scoped(v, node.parentElement);
+    if (r === v) r = t(v);
     if (r !== v) { textMap.set(node, { o: v, t: r }); node.nodeValue = r; }
   }
   function doAttrs(el) {

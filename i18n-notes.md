@@ -53,6 +53,9 @@ Add the English and its translation to both `I18N_ES` and `I18N_PT`. For a strin
 - Edit log chip notes: new and cut as nueva / fuera and nova / removida
 - Drills: "It is 3." as La respuesta es 3. / A resposta é 3.
 - Missing art: sin imagen / sem imagem
+- Prices switch (3.0.1): "Con No se ocultan y no se consulta ninguno" / "Com Não eles ficam ocultos e nenhum é consultado" (Off shows as No / Não)
+- Offline grade flag: "aviso de calificación" / "aviso de nota" for a grade flag
+- Event record delete: "El historial de calificaciones se queda" / "O histórico de notas continua"
 
 "Skip" and "Psychic" are also attack names, so they translate only inside named buttons.
 

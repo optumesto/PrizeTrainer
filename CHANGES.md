@@ -10,7 +10,8 @@ Changed files: js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-se
 - Upgrades: the owned first and cheapest first toggles show only when there is more than one suggestion. Owned first is still off by default.
 - How did it do?: an optional event name, and a Delete button on the record row that asks once first. The grade history entry stays.
 - This grade looks off?: a tap made offline waits on the device (at most 10) and is sent when back online. Turning reports off drops it unsent. Still one flag per deck and grade.
-- Spanish and Portuguese: the English left on Settings, Help, the deck view and the prize screens is translated, and the i18n check now fails on any app text left in English. Card, attack and ability names stay English.
+- Spanish and Portuguese: the English left in grade history, the Home puzzle line, Ask the odds, the drills, Notes compare lists, two Progress tiles and the Hand tab turn 1 line is translated, and dates read the local way. The i18n check now covers 60 screens and fails on any app text left in English. Card, attack and ability names stay English.
+- Ask the odds: Open in the By selector (the opening hand) reads Mano / Mão, not Abrir.
 - The Prizes button fits PREMIOS and PRÊMIOS.
 - A Home row no longer stays on Grading... after going back from a deck.
 - The Settings footer shows the build number.
