@@ -7810,9 +7810,11 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.0.1',
+  version: 'v3.0.2',
   kind: 'fix',
   items: [
+    { t: 'Added: French, German and Italian' },
+    { t: 'Spanish and Portuguese: new set line fixed' },
     { t: 'Added: a Prices switch in Settings' },
     { t: 'Added: event name and delete for How did it do?' },
     { t: 'Spanish and Portuguese: more of the app translated' },
@@ -10729,8 +10731,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.0.1';
-const PT_BUILD = 106;
+const PT_VERSION = 'v3.0.2';
+const PT_BUILD = 107;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

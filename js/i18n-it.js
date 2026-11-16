@@ -73,6 +73,9 @@ I18N_MORE.it = {
     "Open": "Mano",
   },
   dict: {
+    "Added: French, German and Italian": "Nuovo: francese, tedesco e italiano",
+    "Spanish and Portuguese: new set line fixed": "Spagnolo e portoghese: corretta la riga della nuova espansione",
+    "Time per guess": "Tempo per ipotesi",
     "Can Your Deck Win?": "Il tuo mazzo può vincere?",
     "Android app": "App per Android",
     "coming soon to Google Play": "presto su Google Play",

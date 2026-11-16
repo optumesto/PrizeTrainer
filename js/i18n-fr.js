@@ -64,6 +64,9 @@ I18N_MORE.fr = {
     'Open': 'Main',
   },
   dict: {
+    "Added: French, German and Italian": "Nouveau : français, allemand et italien",
+    "Spanish and Portuguese: new set line fixed": "Espagnol et portugais : ligne de nouvelle extension corrigée",
+    "Time per guess": "Temps par essai",
     "Can Your Deck Win?": "Votre deck peut-il gagner ?",
     "Android app": "Appli Android",
     "coming soon to Google Play": "bientôt sur Google Play",

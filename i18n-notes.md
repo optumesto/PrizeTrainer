@@ -1,5 +1,7 @@
 # Spanish and Portuguese (3.0)
 
+French, German and Italian (3.0.2) live in js/i18n-fr.js, js/i18n-de.js and js/i18n-it.js, loaded only when picked. Their native speaker lists are i18n-notes-fr.md, i18n-notes-de.md and i18n-notes-it.md.
+
 The app text can show in English, Spanish (es) or Brazilian Portuguese (pt-BR). Pick it in Settings, Language. The choice is saved on the device as `rd_lang`. Card names, attack names and ability names always stay in English, as printed on the cards players use.
 
 ## How it works

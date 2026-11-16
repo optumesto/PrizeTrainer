@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.0.2 (build 107): French, German and Italian (16 Nov 2026)
+
+Changed files: js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (all new), js/i18n.js, js/core.js (version, What's new), index.html (language files, language row style, file stamps), sw.js (cache prize-trainer-v107), tests/i18n-check.mjs, i18n-notes-fr.md, i18n-notes-de.md, i18n-notes-it.md (new) and CHANGES.md.
+
+- French, German and Italian in the Language row in Settings (now two rows of three). App text is translated; card, attack and Ability names stay English, as in Spanish and Portuguese. French uses vous, German du, Italian tu.
+- Each new language is its own file and downloads only when a player picks it (or when the phone is set to that language), so the app is no heavier for anyone else. The service worker saves them for offline use.
+- Fixed in every language: a pattern could swallow the sentence after it, so the new set week line showed half in English in Spanish and Portuguese.
+- Time per guess on the prize results screen is translated.
+- The i18n check now runs all five languages on 60 screens. Wording for a native speaker to check is in i18n-notes-fr.md, i18n-notes-de.md and i18n-notes-it.md.
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 3.0.1 (build 106): fixes from the 3.0 audit (16 Nov 2026)
 
 Changed files: js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-settings-home.js, js/v301-fixes.js (new), js/i18n.js, js/core.js (version, What's new), index.html (Prizes button, styles, scripts, file stamps), sw.js (cache prize-trainer-v106), build-pages.mjs, how-grading-works.html, privacy.html, tests (owned, reports, extras and i18n checks) and CHANGES.md.

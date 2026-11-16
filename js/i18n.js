@@ -2401,6 +2401,9 @@ Object.assign(I18N_PT, {
 });
 // ── 3.0.1: Prices switch, event name and delete, offline grade flags, What's new ──
 Object.assign(I18N_ES, {
+  "Added: French, German and Italian": "Nuevo: francés, alemán e italiano",
+  "Spanish and Portuguese: new set line fixed": "Español y portugués: línea de expansión nueva corregida",
+  "Time per guess": "Tiempo por intento",
   "Prices": "Precios",
   "Card prices on a deck's Cards tab and in Upgrades. Off hides them and reads none.": "Precios de las cartas en la pestaña Cartas de un mazo y en Mejoras. Con No se ocultan y no se consulta ninguno.",
   "Event name": "Nombre del evento",
@@ -2413,6 +2416,9 @@ Object.assign(I18N_ES, {
   "Changed: a grade flag sent offline goes when you are back online": "Cambio: un aviso de calificación enviado sin conexión sale cuando vuelves a estar en línea",
 });
 Object.assign(I18N_PT, {
+  "Added: French, German and Italian": "Novo: francês, alemão e italiano",
+  "Spanish and Portuguese: new set line fixed": "Espanhol e português: linha de coleção nova corrigida",
+  "Time per guess": "Tempo por palpite",
   "Prices": "Preços",
   "Card prices on a deck's Cards tab and in Upgrades. Off hides them and reads none.": "Preços das cartas na aba Cartas de um deck e em Melhorias. Com Não eles ficam ocultos e nenhum é consultado.",
   "Event name": "Nome do evento",
@@ -2690,6 +2696,9 @@ const rdI18n = (function () {
     for (const p of PAT[lang]) {
       const m = n.match(p[0]);
       if (!m) continue;
+      // 3.0.2: a capture that runs on into another sentence ("Nov 6. Results since then...") would
+      // leave that sentence in English; skip the pattern so the sentences are translated one by one.
+      if (!inner && m.length > 1 && m.slice(1).some(g => typeof g === 'string' && /[a-z0-9)][.!?] [A-Z¿¡]/.test(g))) continue;
       const r = typeof p[1] === 'function' ? p[1](...m) : n.replace(p[0], p[1]);
       if (r != null) return i18nPost(r, lang);
     }

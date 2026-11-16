@@ -89,6 +89,9 @@ I18N_MORE.de = {
   },
   // Keyed on the English, like I18N_ES.
   dict: {
+    "Added: French, German and Italian": "Neu: Französisch, Deutsch und Italienisch",
+    "Spanish and Portuguese: new set line fixed": "Spanisch und Portugiesisch: Zeile zur neuen Erweiterung behoben",
+    "Time per guess": "Zeit pro Tipp",
     'Can Your Deck Win?': 'Kann dein Deck gewinnen?',
     'Android app': 'Android-App',
     'coming soon to Google Play': 'bald bei Google Play',
