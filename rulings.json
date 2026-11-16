@@ -41,6 +41,26 @@
  ],
  "rulings": [
   {
+   "id": "setup",
+   "topic": "Setup",
+   "tags": [],
+   "src": "rb",
+   "where": "p. 8",
+   "q": "How do you set up a game?",
+   "a": "Flip a coin, and the winner decides who goes first. Each player shuffles their 60 card deck and draws 7. Put one Basic Pokémon face down as your Active Pokémon and up to 5 more face down on your Bench. Set the top 6 cards of your deck aside face down as your Prize cards, then both players turn their Pokémon face up and the game starts.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "mulligan",
+   "topic": "Setup",
+   "tags": [],
+   "src": "rb",
+   "where": "pp. 8 and 18",
+   "q": "What happens if my opening hand has no Basic Pokémon?",
+   "a": "That is a mulligan. Show your hand to your opponent, shuffle it back into your deck and draw 7 again, until you have a Basic Pokémon. If both players have none, both show their hands and start over. Otherwise your opponent finishes setting up first, then may draw 1 card for each extra mulligan you took, and may put any Basic Pokémon drawn onto their Bench.",
+   "checked": "2026-11-16"
+  },
+  {
    "id": "damage-order",
    "topic": "Damage",
    "tags": [

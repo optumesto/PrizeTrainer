@@ -26,6 +26,14 @@
 // States, {"ads":false} for every other country and when the country is
 // unknown. Only that yes or no is sent back; nothing is stored or logged.
 //
+// 3.2 adds, for search engines:
+// 1. Pages take out the github.io-only noindex line (MIRROR_NOINDEX), so the
+//    github.io copy leaves search results and rdydeck.com stays in them.
+// 2. Browser cache times by file (cacheFor): a year for ?v= stamped scripts,
+//    5 minutes for pages and data, a week for fonts and icons.
+// 3. http://rdydeck.com redirects straight to https (only reached if Cloudflare's
+//    Always Use HTTPS is off; it is on now).
+//
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
 // 10 per 60 s) and optionally the secret REPORTS_KEY. With no DB bound, reports
 // are accepted and dropped, so the site itself never depends on them.
@@ -47,6 +55,21 @@ export function adsAllowed(request) {
   // request.cf is set by Cloudflare itself, so a visitor cannot change it.
   const c = String((request.cf && request.cf.country) || '').toUpperCase();
   return AD_COUNTRIES.includes(c);
+}
+
+// Every page in the repo carries this line, so the github.io copy stays out of
+// search results. rdydeck.com takes it out, so only rdydeck.com is indexed.
+export const MIRROR_NOINDEX = '<meta name="robots" content="noindex" data-mirror>';
+export const forHome = html => html.split(MIRROR_NOINDEX + '\n').join('').split(MIRROR_NOINDEX).join('');
+
+// How long browsers keep each file. Files the app links with ?v=<hash> change
+// name when they change, so they keep for a year. Pages and data stay short, so
+// a new upload shows within minutes. Fonts and icons keep for a week.
+export function cacheFor(pathname, search) {
+  if (/\.(js|css)$/i.test(pathname) && /[?&]v=[0-9a-f]{6,}/i.test(search)) return 'public, max-age=31536000, immutable';
+  if (/^\/sw\.js$/i.test(pathname)) return 'no-cache';
+  if (/\.(woff2|png|svg|ico)$/i.test(pathname)) return 'public, max-age=604800';
+  return 'public, max-age=300';
 }
 
 const DAY_CAP = 5000;           // reports kept per day, all kinds together
@@ -168,7 +191,7 @@ ${errs.map(r => `<tr><td>${h(r.msg)}<pre>${h(r.stack)}</pre></td><td>${h(r.v)}, 
 
 async function notFound(request) {
   let body = 'Not found';
-  try { const r = await fetch(ORIGIN + '/404.html', { cf: { cacheEverything: true, cacheTtl: 300 } }); if (r.ok) body = r.body; } catch (_) {}
+  try { const r = await fetch(ORIGIN + '/404.html', { cf: { cacheEverything: true, cacheTtl: 300 } }); if (r.ok) body = forHome(await r.text()); } catch (_) {}
   return new Response(request.method === 'HEAD' ? null : body, {
     status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Content-Type-Options': 'nosniff' },
   });
@@ -178,7 +201,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.hostname !== HOME) {
+    if (url.hostname !== HOME || url.protocol === 'http:') {
       return Response.redirect('https://' + HOME + url.pathname + url.search, 301);
     }
 
@@ -226,7 +249,13 @@ export default {
       .forEach(k => headers.delete(k));
     headers.set('X-Content-Type-Options', 'nosniff');
     headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (upstream.status === 200) headers.set('Cache-Control', cacheFor(url.pathname, url.search));
 
+    // Pages: take out the github.io-only noindex line (see MIRROR_NOINDEX).
+    if (/text\/html/i.test(headers.get('Content-Type') || '') && request.method === 'GET' && upstream.status === 200) {
+      headers.delete('Content-Length'); headers.delete('ETag');
+      return new Response(forHome(await upstream.text()), { status: upstream.status, statusText: upstream.statusText, headers });
+    }
     return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers });
   },
 };

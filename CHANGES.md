@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2 (build 110): card guides and search fixes (16 Nov 2026)
+
+Changed files: cards/ (new: 178 card pages and cards/index.html), card-pages-data.mjs and .github/card-pages.json (new), build-pages.mjs, deck-guides.json (a description per deck), rulings.json (setup and mulligan), worker/rdydeck-worker.js, every .html page (github.io-only noindex line), index.html (h1, main, noscript, softwareVersion, file stamps), privacy.html and terms.html (share tags), deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html (titles), .github/pages/faq.html, about.html, how-grading-works.html, app-file.mjs (keeps softwareVersion equal to the app version), js/v38-settings-home.js (title lockup reads only the drawn name), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache prize-trainer-v110), sitemap.xml, llms.txt, README.md, tests/seo-check.mjs (new) and CHANGES.md.
+
+- Card guides: one page per card that top decks play (in at least half the top lists of a guided deck or one of the 20 most played decks), 178 in all. Each has the card's own text, the decks that run it and how often, what it does in those decks (from the deck guides), and the official rules that apply, picked the same way the app picks them. Deck guides and Improve your deck link their cards to these pages. Card text is English, from pokemon-tcg-data. Mew ex (30th Celebration) has no page yet: its text is not in that data.
+- github.io copy: every page carries a noindex line that the Worker takes out on rdydeck.com, so search engines drop optumesto.github.io/PrizeTrainer and keep rdydeck.com. The github.io copy itself was checked: it serves the same build as rdydeck.com.
+- Guide pages: a visible breadcrumb that matches their structured data, a footer row linking the free tools and card guides, Article dates, distinct deck descriptions from each deck's game plan, shorter titles and descriptions, Pokémon written as itself (no &eacute;) in titles.
+- Home page: a descriptive heading for search and screen readers (the logo looks the same; the extra words are translated), a main landmark, and a no JavaScript message with links. softwareVersion now follows the app version.
+- Worker: browser cache times by file (a year for stamped scripts, 5 minutes for pages and data, a week for fonts and icons) and http to https in one step once Cloudflare's own redirect is off.
+- Rules: setup and mulligans, from the rulebook (pp. 8 and 18). FAQ and About now say ads are planned, since none show yet.
+- No grade moves.
+
 # RdyDeck 3.1.1 (build 109): ads for US visitors only (16 Nov 2026)
 
 Changed files: js/v32-ads.js, ads.js, worker/rdydeck-worker.js (/api/where), sw.js (cache prize-trainer-v109, /api/ never saved), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (file stamps), privacy.html, terms.html, README.md, tests/ads-where-check.mjs (new) and CHANGES.md.

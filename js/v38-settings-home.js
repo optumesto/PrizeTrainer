@@ -74,7 +74,9 @@ function rd38Lockup(t, s) {
   if (!t || !s) return;
   t.style.fontSize = ''; s.style.letterSpacing = ''; s.style.marginLeft = ''; t.style.marginLeft = '';
   const ct = getComputedStyle(t), cs = getComputedStyle(s);
-  const title = ct.textTransform === 'uppercase' ? t.textContent.toUpperCase() : t.textContent;
+  // Only the drawn name counts: the h1 also holds a screen reader line (sr-only) since 3.2.
+  const vis = (t.querySelector('[data-no-tr]') || t).textContent;
+  const title = ct.textTransform === 'uppercase' ? vis.toUpperCase() : vis;
   const sub = s.textContent;
   const lsEm = (parseFloat(ct.letterSpacing) || 0) / parseFloat(ct.fontSize);
   // Title ink at 100px, letter spacing included, then scale to the tag line.

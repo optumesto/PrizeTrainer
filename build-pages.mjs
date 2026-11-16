@@ -15,7 +15,7 @@
 //
 // 3.0: how-grading-works.html gets its How accurate the grades are section from accuracy.json,
 // written each week by tests/grade-check.mjs --results --board=accuracy.json.
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -45,6 +45,12 @@ const NAV = [
   ['./', 'RdyDeck'], ['meta-decks.html', 'Deck guides'], ['how-grading-works.html', 'How grading works'],
   ['faq.html', 'FAQ'], ['about.html', 'About'], ['contact.html', 'Contact'],
   ['terms.html', 'Terms of Service'], ['privacy.html', 'Privacy Policy'],
+];
+// The free tools and guides, linked from every guide page so search engines and readers find them.
+const TOOLS = [
+  ['deck-grader.html', 'Deck grader'], ['improve-your-deck.html', 'Improve your deck'], ['opening-odds.html', 'Opening hand odds'],
+  ['rotation.html', 'Rotation check'], ['prize-trainer.html', 'Prize trainer'], ['rulings.html', 'Rules and rulings'],
+  ['cards/', 'Card guides'],
 ];
 const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
   @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
@@ -87,12 +93,18 @@ const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-d
   footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--line); font-size:0.875rem; color:var(--text-3); }
   footer p { color:var(--text-3); margin:0 0 0.6rem; }
   footer nav { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; }
+  footer nav.tools { margin:0 0 1rem; font-weight:600; }
+  .crumbs { font-size:0.875rem; color:var(--text-3); margin:0.8rem 0 0; }
+  .crumbs a { color:var(--text-2); }
+  .crumbs span[aria-hidden] { margin:0 0.4rem; }
   footer a { color:var(--text-2); }`;
 
-export function footerHtml() {
+export function footerHtml(up = '') {
+  const a = ([h, t]) => `<a href="${up}${h}">${t}</a>`;
   return `  <footer>
+    <nav class="tools" aria-label="Free tools">${TOOLS.map(a).join('')}</nav>
     <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company. Card names, text and images are &copy; The Pok&eacute;mon Company, Nintendo, Creatures and GAME FREAK.</p>
-    <nav>${NAV.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
+    <nav aria-label="Site">${NAV.map(a).join('')}</nav>
   </footer>`;
 }
 
@@ -102,26 +114,37 @@ const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&eacute;/g, '\u00e
 // The question and answer pairs (<dt> then <dd>) on a page, so Google and AI assistants can read them as an FAQ.
 const faqPairs = body => [...String(body).matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)].map(m => [plain(m[1]), plain(m[2])]);
 
-function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false }) {
-  const url = 'https://rdydeck.com/' + file;
+function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [] }) {
+  const url = 'https://rdydeck.com/' + file.replace(/(^|\/)index\.html$/, '$1');
+  const up = '../'.repeat(file.split('/').length - 1);
   const qa = faq ? faqPairs(body) : [];
+  const name = plain(h1);
   const ld = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'WebPage', '@id': url + '#page', url, name: title, inLanguage: 'en',
       isPartOf: { '@type': 'WebSite', '@id': 'https://rdydeck.com/#site', name: 'RdyDeck', url: 'https://rdydeck.com/' },
-      about: { '@id': 'https://rdydeck.com/#app' }, primaryImageOfPage: 'https://rdydeck.com/' + og, breadcrumb: { '@id': url + '#crumbs' } },
+      about: { '@id': 'https://rdydeck.com/#app' }, primaryImageOfPage: 'https://rdydeck.com/' + og, breadcrumb: { '@id': url + '#crumbs' },
+      ...(updated ? { dateModified: updated } : {}) },
+    ...(type === 'article' && updated ? [{ '@type': 'Article', '@id': url + '#article', headline: name, description: desc, dateModified: updated,
+      mainEntityOfPage: { '@id': url + '#page' }, image: 'https://rdydeck.com/' + og, inLanguage: 'en',
+      author: { '@type': 'Organization', name: 'RdyDeck', url: 'https://rdydeck.com/' },
+      publisher: { '@type': 'Organization', name: 'Optume Ventures LLC', url: 'https://rdydeck.com/' } }] : []),
     { '@type': 'BreadcrumbList', '@id': url + '#crumbs', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'RdyDeck', item: 'https://rdydeck.com/' },
       ...(crumb ? [{ '@type': 'ListItem', position: 2, name: crumb[0], item: 'https://rdydeck.com/' + crumb[1] }] : []),
-      { '@type': 'ListItem', position: crumb ? 3 : 2, name: h1.replace(/<[^>]+>/g, '').replace(/&eacute;/g, 'é').replace(/&amp;/g, '&'), item: url },
+      { '@type': 'ListItem', position: crumb ? 3 : 2, name, item: url },
     ] },
     ...(qa.length ? [{ '@type': 'FAQPage', '@id': url + '#faq', url, mainEntity: qa.map(([q, a]) => (
       { '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] : []),
+    ...extraLd,
   ] };
+  const crumbs = `<nav class="crumbs" aria-label="Breadcrumb"><a href="${up || './'}">RdyDeck</a><span aria-hidden="true">›</span>${crumb
+    ? `<a href="${up}${crumb[1]}">${esc(crumb[0])}</a><span aria-hidden="true">›</span>` : ''}<span aria-current="page">${esc(name)}</span></nav>`;
   const t = esc(title), d = esc(desc);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex" data-mirror>
 <script>
 // The old GitHub Pages copy of this page sends visitors on to rdydeck.com, the same page.
 if (location.hostname === 'optumesto.github.io') location.replace('https://rdydeck.com/' + location.pathname.replace(/^\\/PrizeTrainer\\/?/i, '') + location.search + location.hash);
@@ -144,29 +167,30 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 <meta name="twitter:description" content="${d}">
 <meta name="twitter:image" content="https://rdydeck.com/${og}">
 <meta name="theme-color" content="#131210">
-<link rel="icon" type="image/svg+xml" href="icon.svg">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="${up}icon.svg">
+<link rel="apple-touch-icon" href="${up}apple-touch-icon.png">
+<link rel="manifest" href="${up}manifest.json">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 <style>
-${STYLE}
+${up ? STYLE.replace(/url\((saira)/g, 'url(' + up + '$1') : STYLE}
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 </head>
 <body>
 <main>
-  <div class="top"><a class="brand" href="./"><span>Rdy</span>Deck</a><a class="open" href="./">Open RdyDeck</a></div>
+  <div class="top"><a class="brand" href="${up || './'}"><span>Rdy</span>Deck</a><a class="open" href="${up || './'}">Open RdyDeck</a></div>
+  ${crumbs}
 
   <p class="kicker">${kicker}</p>
   <h1>${h1}</h1>
 ${body.trim().split('\n').map(l => l ? '  ' + l.replace(/^ {2}/, '') : l).join('\n')}
 
-${footerHtml()}
+${footerHtml(up)}
 </main>
-<script src="ads.js" defer></script>
+<script src="${up}ads.js" defer></script>
 <script>
 // The app's service worker, so this page and the app open with no signal next time.
-if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
+if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('${up}sw.js', { scope: '${up || './'}' }).catch(function () {}); });
 </script>
 </body>
 </html>
@@ -215,7 +239,7 @@ function coreTables(c) {
 <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${esc(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
+${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardLink(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
   </tbody>
 </table></div>
 `;
@@ -225,7 +249,7 @@ ${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${esc(x[0])}</td><td>${es
 <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-${flex.map(x => `    <tr><td class="n">${x[4]}</td><td>${esc(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
+${flex.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardLink(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
   </tbody>
 </table></div>
 `;
@@ -273,7 +297,7 @@ ${g.plan.map(p => `<p>${esc(p)}</p>`).join('\n')}
 
 <h2>Key cards</h2>
 <dl>
-${g.keys.map(([k, v]) => `  <dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('\n')}
+${g.keys.map(([k, v]) => `  <dt>${cardLink(k)}</dt><dd>${esc(v)}</dd>`).join('\n')}
 </dl>
 
 <h2>The core list</h2>
@@ -297,8 +321,10 @@ ${guides.decks.filter(x => x.id !== g.id).map(x => `  <li><a href="deck-${x.slug
 `;
   return page({
     file: `deck-${g.slug}.html`,
-    title: `${g.title} Deck Guide: List, Game Plan and Matchups | RdyDeck`,
-    desc: `How ${g.title} plays in the Pokémon TCG: the core list from top finishes, the game plan, key cards, matchups and how RdyDeck grades it.`,
+    title: [`${g.title} Deck Guide: List, Game Plan and Matchups | RdyDeck`, `${g.title} Deck Guide: List and Matchups | RdyDeck`, `${g.title} Deck Guide | RdyDeck`]
+      .find(t => t.length <= 60) || `${g.title} Deck Guide | RdyDeck`,
+    desc: g.desc || `How ${g.title} plays in the Pokémon TCG: the core list from top finishes, the game plan, key cards, matchups and how RdyDeck grades it.`,
+    updated: mu.asOf,
     crumb: ['Deck guides', 'meta-decks.html'],
     kicker: 'Deck guide',
     h1: `${esc(g.title)} deck guide`,
@@ -337,6 +363,7 @@ ${rows.join('\n')}
     file: 'meta-decks.html',
     title: 'Pokémon TCG Meta Deck Guides: Top Decks and Lists | RdyDeck',
     desc: 'Guides to the top Pokémon TCG decks right now: core lists from tournament top finishes, game plans, matchups and grades.',
+    updated: mu.asOf,
     kicker: 'Deck guides',
     h1: 'Top Pok&eacute;mon TCG decks',
     body,
@@ -356,7 +383,7 @@ function improvePage() {
   const runs = {};
   for (const l of lists) for (const c of l.cards) if (c.part === 'trainer') (runs[c.name] = runs[c.name] || []).push(c.count);
   const staples = Object.entries(runs).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])).slice(0, 10);
-  const rows = staples.map(([name, cs]) => `    <tr><td>${esc(name)}</td><td class="n">${cs.length} of ${n}</td><td class="n">${median(cs)}</td></tr>`);
+  const rows = staples.map(([name, cs]) => `    <tr><td>${cardLink(name)}</td><td class="n">${cs.length} of ${n}</td><td class="n">${median(cs)}</td></tr>`);
   const when = dates.length ? `from ${day(dates[0])} to ${day(dates[dates.length - 1])}` : '';
   const body = `<p class="lead">To improve a Pok&eacute;mon TCG deck, check it in this order: every card is legal, every attacker can pay for its attack and every evolution has what it evolves from, the deck has a steady way to draw and search, its counts sit near what winning lists run, and it has a plan against the decks you will face. RdyDeck, a free deck grader, runs these checks for you: paste your list and it grades the deck out of 10 and names what to fix first.</p>
 <div class="cta-row"><a class="cta" href="./">Grade my deck free</a></div>
@@ -416,7 +443,8 @@ ${rows.join('\n')}
   return page({
     file: 'improve-your-deck.html',
     title: 'How to Improve Your Pokémon TCG Deck: 7 Checks | RdyDeck',
-    desc: 'How to make your Pokémon TCG deck better: the 7 checks to run, with typical counts from recent top 16 lists, and a free deck grader that runs them for you.',
+    desc: 'How to make your Pokémon TCG deck better: 7 checks with typical counts from recent top 16 lists, and a free deck grader that runs them for you.',
+    updated: mu.asOf,
     kicker: 'Deck building',
     h1: 'How to improve your Pok&eacute;mon TCG deck',
     body, faq: true,
@@ -447,7 +475,8 @@ ${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc
   return page({
     file: 'rulings.html',
     title: 'Pokémon TCG Rules: Damage, Prizes, Abilities and More | RdyDeck',
-    desc: 'Common Pokémon TCG rules questions answered from the official rulebook: damage order, Weakness and Resistance, Pokémon ex and Tera, ACE SPEC, evolving and Special Conditions.',
+    desc: 'Pokémon TCG rules answered from the official rulebook: setup and mulligans, damage order, Weakness, Pokémon ex, Tera, ACE SPEC and more.',
+    updated: rul.asOf,
     kicker: 'Rules',
     h1: 'Pok&eacute;mon TCG rules, from the official rulebook',
     body, faq: true,
@@ -483,6 +512,139 @@ ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to
 
 // ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
+// ── 3.2: one guide page per card (cards/*.html), from .github/card-pages.json ──────────────────
+// The text is the card's own, from pokemon-tcg-data (card-pages-data.mjs writes the file). What
+// each deck does with it is from deck-guides.json (our own words) and meta-cards.json (counts).
+const cp = existsSync(path.join(ROOT, '.github/card-pages.json')) ? read('.github/card-pages.json') : { cards: [] };
+const cardByName = Object.fromEntries(cp.cards.map(c => [c.name, c]));
+/** The card's name, linked to its guide page when it has one. up is '../' from inside cards/. */
+const cardLink = (name, up = '') => cardByName[name] ? `<a href="${up}cards/${cardByName[name].slug}.html">${esc(name)}</a>` : esc(name);
+const guideByTitle = Object.fromEntries(guides.decks.map(g => [g.id, g]));
+const ENERGY = { Grass: 'Grass', Fire: 'Fire', Water: 'Water', Lightning: 'Lightning', Psychic: 'Psychic', Fighting: 'Fighting', Darkness: 'Darkness', Metal: 'Metal', Dragon: 'Dragon', Colorless: 'Colorless' };
+function cardKind(c) {
+  const sub = c.subtypes || [];
+  if (c.supertype === 'Pokémon') {
+    const stage = ['Stage 2', 'Stage 1', 'Basic', 'MEGA'].find(x => sub.includes(x)) || 'Basic';
+    return `${stage === 'MEGA' ? 'Mega Evolution' : stage} ${(c.types || []).join(' and ')} Pokémon${sub.includes('ex') ? ' ex' : ''}${sub.includes('Tera') ? ' (Tera)' : ''}`;
+  }
+  if (c.supertype === 'Energy') return sub.includes('Special') ? 'Special Energy' : 'Energy';
+  const kind = ['Supporter', 'Stadium', 'Pokémon Tool', 'Item'].find(x => sub.includes(x)) || 'Trainer';
+  return (sub.includes('ACE SPEC') ? 'ACE SPEC ' : '') + kind;
+}
+// Which rulings.json rules apply, the same way the app picks them when you tap a card (js/card-details.js).
+function cardTags(c) {
+  const t = new Set(), sub = (c.subtypes || []).map(x => x.toLowerCase()), kind = cardKind(c);
+  if (/ ex$/.test(c.name) && !/^mega /i.test(c.name)) t.add('ex');
+  if (sub.includes('tera')) t.add('tera');
+  if (kind.includes('ACE SPEC')) t.add('ace');
+  if (kind.includes('Pokémon Tool')) t.add('tool');
+  if (kind.includes('Stadium')) t.add('stadium');
+  if (kind.includes('Supporter')) t.add('supporter');
+  if (sub.includes('stage 1') || sub.includes('stage 2')) t.add('evolution');
+  if (c.abilities.length) t.add('ability');
+  const text = [...c.abilities.map(a => a.text), ...c.attacks.map(a => a.text), ...(c.supertype === 'Pokémon' ? [] : c.rules)].join(' ');
+  if (/damage counters? on/i.test(text)) t.add('counters');
+  if (/Benched Pok[eé]mon/i.test(text) && /damage/i.test(text)) t.add('bench');
+  if (/\b(Asleep|Burned|Confused|Paralyzed|Poisoned)\b/.test(text)) t.add('condition');
+  if (/\b(more|less) damage\b|damage done to (this|your)/i.test(text)) t.add('modifier');
+  if (/\bRetreat Cost\b|\bswitch\b/i.test(text)) t.add('retreat');
+  if (/during your (opponent's )?next turn/i.test(text)) t.add('lasting');
+  if (/\bup to\b/i.test(text)) t.add('search');
+  return t;
+}
+const nm = n => String(n || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function cardRulings(c) {
+  if (!rul) return [];
+  const tags = cardTags(c);
+  const named = rul.rulings.filter(r => (r.cards || []).some(x => nm(x) === nm(c.name)));
+  return named.concat(rul.rulings.filter(r => !named.includes(r) && (r.tags || []).some(x => tags.has(x)))).slice(0, 4);
+}
+/** Decks whose top lists run the card, most played first: { d, share, count }. */
+function cardDecks(name) {
+  const rows = [];
+  for (const d of mc.decks) {
+    const x = d.cards.find(k => k[0] === name);
+    if (x && x[6] >= 0.25) rows.push({ d, share: x[6], count: x[4] });
+  }
+  return rows.sort((a, b) => b.share * b.d.lists - a.share * a.d.lists);
+}
+const costWords = cost => cost.length ? cost.map(x => ENERGY[x] || x).join(', ') : 'no Energy';
+const dLink = (d, up) => guideByTitle[d.id] ? `<a href="${up}deck-${guideByTitle[d.id].slug}.html">${esc(d.name)}</a>` : esc(d.name);
+
+function cardPage(c) {
+  const up = '../', file = `cards/${c.slug}.html`, kind = cardKind(c), decks = cardDecks(c.name), rules = cardRulings(c);
+  const top = decks[0];
+  const fields = c.supertype === 'Pokémon' ? [
+    ['HP', c.hp], ['Type', (c.types || []).join(', ')], ['Evolves from', c.evolvesFrom ? cardLink(c.evolvesFrom, up) : ''],
+    ['Weakness', c.weak.join(', ') || 'None'], ['Resistance', c.resist.join(', ') || 'None'], ['Retreat Cost', c.retreat],
+  ].filter(([, v]) => v !== '' && v != null) : [];
+  const text = [
+    ...(fields.length ? [`<div class="tw"><table><tbody>
+${fields.map(([k, v]) => `  <tr><th>${k}</th><td>${typeof v === 'string' && v.startsWith('<a') ? v : esc(v)}</td></tr>`).join('\n')}
+</tbody></table></div>`] : []),
+    ...(c.abilities.length || c.attacks.length ? [`<dl>
+${c.abilities.map(a => `  <dt>${esc(a.type || 'Ability')}: ${esc(a.name)}</dt><dd>${esc(a.text)}</dd>`).join('\n')}${c.abilities.length ? '\n' : ''}${c.attacks.map(a => `  <dt>${esc(a.name)}${a.damage ? ` (${esc(a.damage)} damage)` : ''}</dt><dd>Costs ${esc(costWords(a.cost))}.${a.text ? ' ' + esc(a.text) : ''}</dd>`).join('\n')}
+</dl>`] : []),
+    ...c.rules.map(r => `<p>${esc(r)}</p>`),
+  ].join('\n');
+  const used = decks.slice(0, 10).map(r => `  <li>${dLink(r.d, up)}: in ${Math.round(r.share * 100)}% of top lists, usually ${r.count} ${r.count === 1 ? 'copy' : 'copies'}.</li>`).join('\n');
+  const notes = guides.decks.map(g => [g, (g.keys || []).find(([k]) => k === c.name)]).filter(([, k]) => k)
+    .map(([g, k]) => `<h3>In ${esc(g.title)}</h3>\n<p>${esc(k[1])} <a href="${up}deck-${g.slug}.html">Read the ${esc(g.title)} guide</a>.</p>`).join('\n');
+  const cite = r => { const s = (rul.sources || []).find(x => x.id === r.src); return s ? ` <span class="note">Source: <a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a>, ${esc(s.publisher)} (${esc([s.edition, r.where].filter(Boolean).join(', '))}).</span>` : ''; };
+  const lead = `${esc(c.name)} is ${/^[AEIOU]/.test(kind) ? 'an' : 'a'} ${esc(kind)} card from ${esc(c.setName)} (${esc(c.set)} ${esc(c.no)})${c.mark ? `, regulation mark ${esc(c.mark)}` : ''}.`
+    + (top ? ` It is played most in ${esc(top.d.name)}, in ${Math.round(top.share * 100)}% of that deck's top lists${decks.length > 1 ? `, and ${decks.length - 1} other ${decks.length === 2 ? 'deck runs' : 'decks run'} it too` : ''}.` : '');
+  const body = `
+<p class="lead">${lead}</p>
+<div class="cta-row"><a class="cta" href="${up}">Grade a deck with ${esc(c.name)}</a></div>
+
+<h2>Card text</h2>
+${text}
+
+<h2>Decks that play it</h2>
+${decks.length ? `<p>From the top lists of Limitless online tournaments from ${day(mc.since)} to ${day(mc.until)}. A deck is listed when at least a quarter of its top lists run the card${decks.length > 10 ? `. These are the 10 that play it most, of ${decks.length}` : ''}.</p>
+<ul>
+${used}
+</ul>` : `<p>No top deck runs it in at least a quarter of its lists right now.</p>`}
+${notes ? `\n<h2>How it works in these decks</h2>\n${notes}\n` : ''}
+<h2>Official rules for it</h2>
+${rules.length ? `<dl>
+${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a></dt>\n  <dd>${esc(r.a)}${cite(r)}</dd>`).join('\n')}
+</dl>` : `<p>No rule in the <a href="${up}rulings.html">rules list</a> is tied to this card yet.</p>`}
+<p>When a rule and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
+
+<p class="note">Card text from <a href="https://github.com/PokemonTCG/pokemon-tcg-data" rel="noopener">pokemon-tcg-data</a>, as printed on ${esc(c.set)} ${esc(c.no)}. Deck numbers from <a href="${esc(data.meta.src)}">Limitless TCG</a>, as of ${day(mc.asOf)}.</p>
+`;
+  const say = top ? `played most in ${top.d.name}` : 'its official rules';
+  let desc = `${c.name}, ${/^[AEIOU]/.test(kind) ? 'an' : 'a'} ${kind} in the Pokémon TCG: card text, ${say}, decks that run it and the rules for it.`;
+  if ([...desc].length > 155) desc = `${c.name}: card text, the decks that run it and the official rules for this ${kind}.`;
+  if ([...desc].length > 155) desc = `${c.name} in the Pokémon TCG: card text, decks that run it and official rules.`;
+  if ([...desc].length < 70) desc = desc.replace(' in the Pokémon TCG:', ' in the Pokémon TCG, as played today:');
+  return page({
+    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body,
+    title: [`${c.name}: Card Text, Decks and Rulings | RdyDeck`, `${c.name}: Card Text and Decks | RdyDeck`, `${c.name} Card Guide | RdyDeck`].find(t => t.length <= 60) || `${c.name} | RdyDeck`,
+  });
+}
+
+function cardIndexPage() {
+  if (!cp.cards.length) return null;
+  const groups = [['Pokémon', c => c.supertype === 'Pokémon'], ['Trainers', c => c.supertype === 'Trainer'], ['Special Energy', c => c.supertype === 'Energy']];
+  const body = `
+<p class="lead">Guides to the Pok&eacute;mon TCG cards that top decks play right now: each card's text, the decks that run it and how often, what it does in those decks, and the official rules that apply to it.</p>
+<p>A card is here when at least half of the top lists of a guided deck, or of one of the 20 most played decks, run it. Numbers are from Limitless online tournaments from ${day(mc.since)} to ${day(mc.until)}.</p>
+${groups.map(([h, f]) => { const cs = cp.cards.filter(f); return cs.length ? `
+<h2>${h}</h2>
+<ul class="guides">
+${cs.map(c => `  <li><a href="${c.slug}.html">${esc(c.name)}</a></li>`).join('\n')}
+</ul>` : ''; }).join('\n')}
+<div class="cta-row"><a class="cta" href="../">Grade my deck</a></div>
+`;
+  return page({
+    file: 'cards/index.html', title: 'Pokémon TCG Card Guides: Top Meta Cards | RdyDeck', updated: mc.asOf,
+    desc: 'Guides to the Pokémon TCG cards top decks play now: card text, which decks run them and how often, and the official rules that apply.',
+    kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website',
+  });
+}
+
 function handPages() {
   const dir = path.join(ROOT, '.github/pages');
   if (!existsSync(dir)) return [];
@@ -502,6 +664,8 @@ const out = [
   ...handPages(),
   ...(improvePage() ? [['improve-your-deck.html', improvePage()]] : []),
   ...(rulingsPage() ? [['rulings.html', rulingsPage()]] : []),
+  ...(cardIndexPage() ? [['cards/index.html', cardIndexPage()]] : []),
+  ...cp.cards.map(c => [`cards/${c.slug}.html`, cardPage(c)]),
 ];
 const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');
@@ -513,7 +677,22 @@ for (const [file, html] of out) {
   if (existsSync(p) && readFileSync(p, 'utf8') === html) continue;
   changed++;
   if (CHECK) console.log('Would change: ' + file);
-  else writeFileSync(p, html);
+  else { mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, html); }
+}
+// Every built page is in sitemap.xml (a new card page joins with today's date; update-sitemap.mjs keeps dates current).
+{
+  const sm = path.join(ROOT, 'sitemap.xml');
+  let xml = readFileSync(sm, 'utf8');
+  const add = out.map(([f]) => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  if (add.length) {
+    changed++;
+    if (CHECK) console.log('Not in sitemap.xml: ' + add.join(', '));
+    else {
+      const today = new Date().toISOString().slice(0, 10);
+      xml = xml.replace('</urlset>', add.map(f => `  <url><loc>https://rdydeck.com/${f}</loc><lastmod>${today}</lastmod></url>\n`).join('') + '</urlset>');
+      writeFileSync(sm, xml);
+    }
+  }
 }
 console.log(`${out.length} pages, ${changed} ${CHECK ? 'out of date' : 'written'}.`);
 if (CHECK && changed) process.exitCode = 1;

@@ -18,7 +18,36 @@ RdyDeck is an unofficial fan-made app by Optume Ventures LLC, not affiliated wit
 - [Meta deck guides](https://rdydeck.com/meta-decks.html): the top decks now, with field share, win rate and grade
 - [Opening odds](https://rdydeck.com/opening-odds.html): mulligan, prize and setup odds for an exact list
 - [Rotation checker](https://rdydeck.com/rotation.html): which cards are Standard legal now and which may rotate
-- [Pokémon TCG rules](https://rdydeck.com/rulings.html): common rules questions (damage order, Weakness and Resistance, Pokémon ex and Tera, ACE SPEC, evolving, Special Conditions) answered from the official rulebook, each with its page
+- [Pokémon TCG rules](https://rdydeck.com/rulings.html): common rules questions (setup and mulligans, damage order, Weakness and Resistance, Pokémon ex and Tera, ACE SPEC, evolving, Special Conditions) answered from the official rulebook, each with its page
+
+## Cards
+
+- [Card guides](https://rdydeck.com/cards/): one page per card that top decks play now, with its card text, the decks that run it and how often, what it does in those decks, and the official rules for it
+- [Boss's Orders](https://rdydeck.com/cards/bosss-orders.html)
+- [Ultra Ball](https://rdydeck.com/cards/ultra-ball.html)
+- [Night Stretcher](https://rdydeck.com/cards/night-stretcher.html)
+- [Lillie's Determination](https://rdydeck.com/cards/lillies-determination.html)
+- [Poké Pad](https://rdydeck.com/cards/poke-pad.html)
+- [Buddy-Buddy Poffin](https://rdydeck.com/cards/buddy-buddy-poffin.html)
+- [Fezandipiti ex](https://rdydeck.com/cards/fezandipiti-ex.html)
+- [Meowth ex](https://rdydeck.com/cards/meowth-ex.html)
+- [Special Red Card](https://rdydeck.com/cards/special-red-card.html)
+- [Judge](https://rdydeck.com/cards/judge.html)
+- [Unfair Stamp](https://rdydeck.com/cards/unfair-stamp.html)
+- [Budew](https://rdydeck.com/cards/budew.html)
+- [Munkidori](https://rdydeck.com/cards/munkidori.html)
+- [Crispin](https://rdydeck.com/cards/crispin.html)
+- [Lillie's Clefairy ex](https://rdydeck.com/cards/lillies-clefairy-ex.html)
+- [Switch](https://rdydeck.com/cards/switch.html)
+- [Latias ex](https://rdydeck.com/cards/latias-ex.html)
+- [Dunsparce](https://rdydeck.com/cards/dunsparce.html)
+- [Dudunsparce](https://rdydeck.com/cards/dudunsparce.html)
+- [Rare Candy](https://rdydeck.com/cards/rare-candy.html)
+- [Telepathic Psychic Energy](https://rdydeck.com/cards/telepathic-psychic-energy.html)
+- [Team Rocket's Petrel](https://rdydeck.com/cards/team-rockets-petrel.html)
+- [Hilda](https://rdydeck.com/cards/hilda.html)
+- [Drakloak](https://rdydeck.com/cards/drakloak.html)
+- [Dreepy](https://rdydeck.com/cards/dreepy.html)
 
 ## Practice
 

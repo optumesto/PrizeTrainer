@@ -33,6 +33,8 @@ PrizeTrainer/
   rulings.json                         official rules the card details show: each in our own words, with its TPCi document, page and the day it was checked
   rulings.html                         the Rules page, built from rulings.json by build-pages.mjs
   rulings-sources.md                   internal record of each rules citation, how it was read, and card rulings with no public original
+  cards/                               card guide pages (one per card top decks play, and cards/index.html), built by build-pages.mjs
+  card-pages-data.mjs                  writes .github/card-pages.json, the card text those pages use (from pokemon-tcg-data)
   robots.txt, sitemap.xml              for search engines
   saira*.woff2                         the app's fonts (4 files)
   icon*.png, icon.svg, apple-touch-icon.png, og-image.png   icons and the share image
@@ -45,6 +47,7 @@ PrizeTrainer/
   tests/card-details-check.mjs         taps cards on the Cards tab: full text, rules, five languages, grade unchanged
   tests/creator-kit-check.mjs          the Creator kit and its OBS card (?overlay=1): same grade, no ads, nothing saved
   tests/ads-where-check.mjs            ads for US visitors only: the Worker's /api/where, and no ad code, spot or age question elsewhere
+  tests/seo-check.mjs                  search checks: github.io copy noindexed, titles, descriptions, breadcrumbs, tool links, cache times
   tests/package.json, package-lock.json   jsdom, which the check needs to run the app outside a browser
   CHANGES.md, README.md, LICENSE
 ```

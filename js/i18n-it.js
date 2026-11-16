@@ -97,6 +97,10 @@ I18N_MORE.it = {
     "Rules": "Regole",
     // 3.1 What's new
     "Added: card details": "Nuovo: dettagli delle carte",
+    "Added: card guides": "Nuovo: guide alle carte",
+    "A web page for each card top decks play: its text, the decks that run it and its rules": "Una pagina web per ogni carta giocata dai mazzi migliori: il testo, i mazzi che la usano e le regole",
+    "Added: setup and mulligan rules": "Nuovo: regole di preparazione e mulligan",
+    "Easier to find in Google and AI assistants": "Più facile da trovare su Google e negli assistenti IA",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tocca una carta nella scheda Carte per vedere il testo completo, Debolezza, Resistenza e Ritirata, le regole ufficiali che la riguardano e come si inserisce nel mazzo.",
     "Added: official rules": "Nuovo: regole ufficiali",
     "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Domande frequenti sulle regole, con le risposte del regolamento ufficiale e il numero di pagina. Sono anche nella nuova pagina Regole.",
@@ -152,6 +156,7 @@ I18N_MORE.it = {
     "Spanish and Portuguese: new set line fixed": "Spagnolo e portoghese: corretta la riga della nuova espansione",
     "Time per guess": "Tempo per risposta",
     "Can Your Deck Win?": "Il tuo mazzo può vincere?",
+    "Free Pokémon TCG Deck Grader": "Valutatore gratuito di mazzi del GCC Pokémon",
     "Android app": "App per Android",
     "coming soon to Google Play": "presto su Google Play",
     "Your decks": "I tuoi mazzi",

@@ -102,6 +102,10 @@ I18N_MORE.fr = {
     "Rules": "Règles",
     // 3.1 What's new
     "Added: card details": "Nouveau : détails des cartes",
+    "Added: card guides": "Nouveau : guides des cartes",
+    "A web page for each card top decks play: its text, the decks that run it and its rules": "Une page web pour chaque carte jouée par les meilleurs decks : son texte, les decks qui la jouent et ses règles",
+    "Added: setup and mulligan rules": "Nouveau : règles de mise en place et de mulligan",
+    "Easier to find in Google and AI assistants": "Plus facile à trouver sur Google et dans les assistants IA",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Touchez une carte dans l'onglet Cartes pour voir son texte complet, sa Faiblesse, sa Résistance et son Coût de Retraite, les règles officielles qui s'y appliquent et sa place dans le deck.",
     "Added: official rules": "Nouveau : règles officielles",
     "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Les questions de règles fréquentes, avec la réponse du livret de règles officiel et sa page. Elles sont aussi sur la nouvelle page Règles.",
@@ -157,6 +161,7 @@ I18N_MORE.fr = {
     "Spanish and Portuguese: new set line fixed": "Espagnol et portugais : ligne de nouvelle extension corrigée",
     "Time per guess": "Temps par essai",
     "Can Your Deck Win?": "Votre deck peut-il gagner ?",
+    "Free Pokémon TCG Deck Grader": "Outil gratuit pour noter les decks du JCC Pokémon",
     "Android app": "Appli Android",
     "coming soon to Google Play": "bientôt sur Google Play",
     "Your decks": "Vos decks",

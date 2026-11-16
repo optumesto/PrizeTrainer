@@ -1,0 +1,5977 @@
+{
+ "schema": 1,
+ "note": "Card text for the card guide pages, from pokemon-tcg-data. Written by card-pages-data.mjs; read by build-pages.mjs.",
+ "asOf": "2026-11-16",
+ "cards": [
+  {
+   "name": "Abra",
+   "slug": "abra",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "54",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 50,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Teleportation Attack",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "10",
+     "text": "Switch this Pokémon with 1 of your Benched Pokémon."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Academy at Night",
+   "slug": "academy-at-night",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "54",
+   "released": "2024/08/02",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Once during each player's turn, that player may put a card from their hand on top of their deck.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Adventure Lantern",
+   "slug": "adventure-lantern",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "90",
+   "released": "2026/11/06",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a Basic Fire Energy card and a Basic Lightning Energy card, reveal them, and put them into your hand. Then, shuffle your deck."
+   ]
+  },
+  {
+   "name": "Air Balloon",
+   "slug": "air-balloon",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "181",
+   "released": "2026/01/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "The Retreat Cost of the Pokémon this card is attached to is ColorlessColorless less.",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached."
+   ]
+  },
+  {
+   "name": "Alakazam",
+   "slug": "alakazam",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "56",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2"
+   ],
+   "mark": "I",
+   "hp": 140,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Kadabra",
+   "abilities": [
+    {
+     "name": "Psychic Draw",
+     "type": "Ability",
+     "text": "Once during your turn, when you play this Pokémon from your hand to evolve 1 of your Pokémon, you may use this Ability. Draw 3 cards."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Powerful Hand",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "",
+     "text": "Place 2 damage counters on your opponent's Active Pokémon for each card in your hand."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Annihilape",
+   "slug": "annihilape",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "100",
+   "released": "2024/11/08",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2"
+   ],
+   "mark": "H",
+   "hp": 140,
+   "types": [
+    "Fighting"
+   ],
+   "evolvesFrom": "Primeape",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Tantrum",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "130",
+     "text": "This Pokémon is now Confused."
+    },
+    {
+     "name": "Destined Fight",
+     "cost": [
+      "Fighting",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Both Active Pokémon are Knocked Out."
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Applin",
+   "slug": "applin",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "17",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 40,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Tumbling Attack",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "10+",
+     "text": "Flip a coin. If heads, this attack does 20 more damage."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Area Zero Underdepths",
+   "slug": "area-zero-underdepths",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "131",
+   "released": "2024/09/13",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Each player who has any Tera Pokémon in play can have up to 8 Pokémon on their Bench.    If a player no longer has any Tera Pokémon in play, that player discards Pokémon from their Bench until they have 5. When this card leaves play, both players discard Pokémon from their Bench until they have 5, and the player who played this card discards first.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Azurill",
+   "slug": "azurill",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "80",
+   "released": "2026/11/06",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 30,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Bouncy-Bounce Charge",
+     "cost": [],
+     "damage": "",
+     "text": "Search your deck for an Energy card and attach it to 1 of your Benched Pokémon. Then, shuffle your deck."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 0,
+   "rules": []
+  },
+  {
+   "name": "Banette",
+   "slug": "banette",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "34",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "J",
+   "hp": 80,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Shuppet",
+   "abilities": [
+    {
+     "name": "Hide 'n' Sneak",
+     "type": "Ability",
+     "text": "Prevent all effects of your opponent's Pokémon's attacks and Abilities done to this Pokémon. (Damage is not an effect.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Puppet Pull",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "80",
+     "text": "You may search your deck for a card and put it into your hand. Then, shuffle your deck."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Battle Cage",
+   "slug": "battle-cage",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "85",
+   "released": "2025/11/14",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Prevent all damage counters from being placed on Benched Pokémon (both yours and your opponent's) by effects of attacks and Abilities from the opponent's Pokémon. (Damage from attacks is still taken.)",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Bayleef",
+   "slug": "bayleef",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "9",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 110,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Chikorita",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Push Down",
+     "cost": [
+      "Grass",
+      "Colorless"
+     ],
+     "damage": "50",
+     "text": "Switch out your opponent's Active Pokémon to the Bench. (Your opponent chooses the new Active Pokémon.)"
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Beldum",
+   "slug": "beldum",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "113",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Metal"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Dig Claws",
+     "cost": [
+      "Metal"
+     ],
+     "damage": "10",
+     "text": ""
+    },
+    {
+     "name": "Iron Tackle",
+     "cost": [
+      "Metal",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "50",
+     "text": "This Pokémon also does 10 damage to itself."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Binding Mochi",
+   "slug": "binding-mochi",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "95",
+   "released": "2025/01/17",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Attacks used by the Poisoned Pokémon this card is attached to do 40 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance).",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached."
+   ]
+  },
+  {
+   "name": "Black Belt's Training",
+   "slug": "black-belts-training",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "143",
+   "released": "2025/03/28",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "During this turn, attacks used by your Pokémon do 40 more damage to your opponent's Active Pokémon ex (before applying Weakness and Resistance).",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Blaziken ex",
+   "slug": "blaziken-ex",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "24",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 320,
+   "types": [
+    "Fire"
+   ],
+   "evolvesFrom": "Combusken",
+   "abilities": [
+    {
+     "name": "Seething Spirit",
+     "type": "Ability",
+     "text": "Once during your turn, you may attach a Basic Energy card from your discard pile to 1 of your Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Smolder-sault",
+     "cost": [
+      "Fire",
+      "Colorless"
+     ],
+     "damage": "200",
+     "text": "During your next turn, this Pokémon can't attack."
+    }
+   ],
+   "weak": [
+    "Water ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Bloodmoon Ursaluna ex",
+   "slug": "bloodmoon-ursaluna-ex",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "141",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 260,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [
+    {
+     "name": "Seasoned Skill",
+     "type": "Ability",
+     "text": "Blood Moon used by this Pokémon costs Colorless less for each Prize card your opponent has taken."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Blood Moon",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "240",
+     "text": "During your next turn, this Pokémon can't attack."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Boomerang Energy",
+   "slug": "boomerang-energy",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "166",
+   "released": "2024/05/24",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Colorless Energy.    If this card is discarded by an effect of an attack used by the Pokémon this card is attached to, attach this card from your discard pile to that Pokémon after attacking."
+   ]
+  },
+  {
+   "name": "Boss's Orders",
+   "slug": "bosss-orders",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "114",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Switch in 1 of your opponent's Benched Pokémon to the Active Spot.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Brave Bangle",
+   "slug": "brave-bangle",
+   "set": "WHT",
+   "setName": "White Flare",
+   "no": "80",
+   "released": "2025/07/18",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "If the Pokémon this card is attached to doesn't have a Rule Box, the attacks it uses do 30 more damage to your opponent's Active Pokémon ex (before applying Weakness and Resistance). (Pokémon ex, Pokémon V, etc. have Rule Boxes.)",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached.",
+    "Attach a Pokémon Tool to 1 of your Pokémon that doesn't already have a Pokémon Tool attached."
+   ]
+  },
+  {
+   "name": "Briar",
+   "slug": "briar",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "132",
+   "released": "2024/09/13",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if your opponent has exactly 2 Prize cards remaining.    During this turn, if your opponent's Active Pokémon is Knocked Out by damage from an attack used by your Tera Pokémon, take 1 more Prize card.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Brock's Scouting",
+   "slug": "brocks-scouting",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "146",
+   "released": "2025/03/28",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for up to 2 Basic Pokémon or 1 Evolution Pokémon, reveal them, and put them into your hand. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Bronzong",
+   "slug": "bronzong",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "69",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 110,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Bronzor",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Evolution Jammer",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "30",
+     "text": "During your opponent's next turn, they can't play any Pokémon from their hand to evolve their Pokémon."
+    },
+    {
+     "name": "Super Psy Bolt",
+     "cost": [
+      "Psychic",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "100",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Bronzor",
+   "slug": "bronzor",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "68",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 80,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Mirror Attack",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "10+",
+     "text": "If your opponent's Active Pokémon is a Psychic Pokémon, this attack does 30 more damage."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Buddy-Buddy Poffin",
+   "slug": "buddy-buddy-poffin",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "144",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for up to 2 Basic Pokémon with 70 HP or less and put them onto your Bench. Then, shuffle your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Budew",
+   "slug": "budew",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "16",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 30,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Itchy Pollen",
+     "cost": [],
+     "damage": "10",
+     "text": "During your opponent's next turn, they can't play any Item cards from their hand."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 0,
+   "rules": []
+  },
+  {
+   "name": "Bug Catching Set",
+   "slug": "bug-catching-set",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "143",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Look at the top 7 cards of your deck. You may reveal up to 2 in any combination of Grass Pokémon and Basic Grass Energy cards you find there and put them into your hand. Shuffle the other cards back into your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Buneary",
+   "slug": "buneary",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "83",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Run Around",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Switch this Pokémon with 1 of your Benched Pokémon."
+    },
+    {
+     "name": "Kick",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Carvanha",
+   "slug": "carvanha",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "60",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Reckless Charge",
+     "cost": [
+      "Darkness"
+     ],
+     "damage": "30",
+     "text": "This Pokémon also does 10 damage to itself."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Celebi",
+   "slug": "celebi",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "12",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 80,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Traverse Time",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "",
+     "text": "Search your deck for up to 3 in any combination of Grass Pokémon and Stadium cards, reveal them, and put them into your hand. Then, shuffle your deck."
+    },
+    {
+     "name": "Solar Cutter",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Chien-Pao",
+   "slug": "chien-pao",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "56",
+   "released": "2024/11/08",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 120,
+   "types": [
+    "Water"
+   ],
+   "abilities": [
+    {
+     "name": "Snow Sink",
+     "type": "Ability",
+     "text": "When you play this Pokémon from your hand onto your Bench during your turn, you may discard a Stadium in play."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Icicle Loop",
+     "cost": [
+      "Water",
+      "Water",
+      "Colorless"
+     ],
+     "damage": "120",
+     "text": "Put an Energy attached to this Pokémon into your hand."
+    }
+   ],
+   "weak": [
+    "Metal ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Chikorita",
+   "slug": "chikorita",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "8",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 70,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Growl",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "During your opponent's next turn, attacks used by the Defending Pokémon do 20 less damage (before applying Weakness and Resistance)."
+    },
+    {
+     "name": "Seed Bomb",
+     "cost": [
+      "Grass",
+      "Grass"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Ciphermaniac's Codebreaking",
+   "slug": "ciphermaniacs-codebreaking",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "145",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter",
+    "Future"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for 2 cards, shuffle your deck, then put those cards on top of it in any order.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Combusken",
+   "slug": "combusken",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "41",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 100,
+   "types": [
+    "Fire"
+   ],
+   "evolvesFrom": "Torchic",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Combustion",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    },
+    {
+     "name": "Double Kick",
+     "cost": [
+      "Fire",
+      "Colorless"
+     ],
+     "damage": "40×",
+     "text": "Flip 2 coins. This attack does 40 damage for each heads."
+    }
+   ],
+   "weak": [
+    "Water ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Crispin",
+   "slug": "crispin",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "133",
+   "released": "2024/09/13",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for up to 2 Basic Energy cards of different types, reveal them, and put 1 of them into your hand. Attach the other to 1 of your Pokémon. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Crushing Hammer",
+   "slug": "crushing-hammer",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "71",
+   "released": "2026/03/27",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Flip a coin. If heads, discard an Energy from 1 of your opponent's Pokémon.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Crustle",
+   "slug": "crustle",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "12",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 150,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Dwebble",
+   "abilities": [
+    {
+     "name": "Mysterious Rock Inn",
+     "type": "Ability",
+     "text": "Prevent all damage done to this Pokémon by attacks from your opponent's Pokémon ex."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Superb Scissors",
+     "cost": [
+      "Grass",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "120",
+     "text": "This attack's damage isn't affected by any effects on your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Cynthia's Gabite",
+   "slug": "cynthias-gabite",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "103",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 100,
+   "types": [
+    "Fighting"
+   ],
+   "evolvesFrom": "Cynthia's Gible",
+   "abilities": [
+    {
+     "name": "Champion's Call",
+     "type": "Ability",
+     "text": "Once during your turn, you may search your deck for a Cynthia's Pokémon, reveal it, and put it into your hand. Then, shuffle your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Dragonslice",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "40",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Cynthia's Garchomp ex",
+   "slug": "cynthias-garchomp-ex",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "104",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 330,
+   "types": [
+    "Fighting"
+   ],
+   "evolvesFrom": "Cynthia's Gabite",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Corkscrew Dive",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "100",
+     "text": "You may draw cards until you have 6 cards in your hand."
+    },
+    {
+     "name": "Draconic Buster",
+     "cost": [
+      "Fighting",
+      "Fighting"
+     ],
+     "damage": "260",
+     "text": "Discard all Energy from this Pokémon."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Cynthia's Gible",
+   "slug": "cynthias-gible",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "102",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Rock Hurl",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "20",
+     "text": "This attack's damage isn't affected by Resistance."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Cynthia's Power Weight",
+   "slug": "cynthias-power-weight",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "162",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "The Cynthia's Pokémon this card is attached to gets +70 HP.",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached."
+   ]
+  },
+  {
+   "name": "Cynthia's Roselia",
+   "slug": "cynthias-roselia",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "7",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Spike Sting",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Cynthia's Roserade",
+   "slug": "cynthias-roserade",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "8",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 130,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Cynthia's Roselia",
+   "abilities": [
+    {
+     "name": "Cheer On to Glory",
+     "type": "Ability",
+     "text": "Attacks used by your Cynthia's Pokémon do 30 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance)."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Leaf Step",
+     "cost": [
+      "Grass",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "80",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Cynthia's Spiritomb",
+   "slug": "cynthias-spiritomb",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "129",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Raging Curse",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "10×",
+     "text": "This attack does 10 damage for each damage counter on all of your Benched Cynthia's Pokémon. This attack's damage isn't affected by Weakness."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Cyrano",
+   "slug": "cyrano",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "170",
+   "released": "2024/11/08",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for up to 3 Pokémon ex, reveal them, and put them into your hand. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Dawn",
+   "slug": "dawn",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "87",
+   "released": "2025/11/14",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a Basic Pokémon, a Stage 1 Pokémon, and a Stage 2 Pokémon, reveal them, and put them into your hand. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Dhelmise",
+   "slug": "dhelmise",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "39",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 140,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Vengeful Anchor",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "30+",
+     "text": "If you have 4 or more Pokémon that have the Hide 'n' Sneak Ability in your discard pile, this attack does 140 more damage."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Dipplin",
+   "slug": "dipplin",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "18",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 80,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Applin",
+   "abilities": [
+    {
+     "name": "Festival Lead",
+     "type": "Ability",
+     "text": "If Festival Grounds is in play, this Pokémon may use an attack it has twice. If the first attack Knocks Out your opponent's Active Pokémon, you may attack again after your opponent chooses a new Active Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Do the Wave",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "20×",
+     "text": "This attack does 20 damage for each of your Benched Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Dragapult ex",
+   "slug": "dragapult-ex",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "130",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2",
+    "Tera",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 320,
+   "types": [
+    "Dragon"
+   ],
+   "evolvesFrom": "Drakloak",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Jet Headbutt",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "70",
+     "text": ""
+    },
+    {
+     "name": "Phantom Dive",
+     "cost": [
+      "Fire",
+      "Psychic"
+     ],
+     "damage": "200",
+     "text": "Put 6 damage counters on your opponent's Benched Pokémon in any way you like."
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+    "Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+   ]
+  },
+  {
+   "name": "Drakloak",
+   "slug": "drakloak",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "129",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 90,
+   "types": [
+    "Dragon"
+   ],
+   "evolvesFrom": "Dreepy",
+   "abilities": [
+    {
+     "name": "Recon Directive",
+     "type": "Ability",
+     "text": "Once during your turn, you may look at the top 2 cards of your deck and put 1 of them into your hand. Put the other card on the bottom of your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Dragon Headbutt",
+     "cost": [
+      "Fire",
+      "Psychic"
+     ],
+     "damage": "70",
+     "text": ""
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Dreepy",
+   "slug": "dreepy",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "128",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Petty Grudge",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "10",
+     "text": ""
+    },
+    {
+     "name": "Bite",
+     "cost": [
+      "Fire",
+      "Psychic"
+     ],
+     "damage": "40",
+     "text": ""
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Drilbur",
+   "slug": "drilbur",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "46",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 70,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Call for Family",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Search your deck for up to 2 Basic Pokémon and put them onto your Bench. Then, shuffle your deck."
+    },
+    {
+     "name": "Dig Claws",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "50",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Dudunsparce",
+   "slug": "dudunsparce",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "129",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 140,
+   "types": [
+    "Colorless"
+   ],
+   "evolvesFrom": "Dunsparce",
+   "abilities": [
+    {
+     "name": "Run Away Draw",
+     "type": "Ability",
+     "text": "Once during your turn, you may draw 3 cards. If you drew any cards in this way, shuffle this Pokémon and all attached cards into your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Land Crush",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "90",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Dudunsparce ex",
+   "slug": "dudunsparce-ex",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "121",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 270,
+   "types": [
+    "Colorless"
+   ],
+   "evolvesFrom": "Dunsparce",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Tenacious Tail",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "60×",
+     "text": "This attack does 60 damage for each of your opponent's Pokémon ex in play."
+    },
+    {
+     "name": "Destructive Drill",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "150",
+     "text": "This attack's damage isn't affected by any effects on your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Dunsparce",
+   "slug": "dunsparce",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "120",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Trading Places",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Switch this Pokémon with 1 of your Benched Pokémon."
+    },
+    {
+     "name": "Ram",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Dusclops",
+   "slug": "dusclops",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "36",
+   "released": "2025/01/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 90,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Duskull",
+   "abilities": [
+    {
+     "name": "Cursed Blast",
+     "type": "Ability",
+     "text": "Once during your turn, you may put 5 damage counters on 1 of your opponent's Pokémon. If you use this Ability, this Pokémon is Knocked Out."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Will-O-Wisp",
+     "cost": [
+      "Psychic",
+      "Psychic"
+     ],
+     "damage": "50",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Dusknoir",
+   "slug": "dusknoir",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "37",
+   "released": "2025/01/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2"
+   ],
+   "mark": "H",
+   "hp": 160,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Dusclops",
+   "abilities": [
+    {
+     "name": "Cursed Blast",
+     "type": "Ability",
+     "text": "Once during your turn, you may put 13 damage counters on 1 of your opponent's Pokémon. If you use this Ability, this Pokémon is Knocked Out."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Shadow Bind",
+     "cost": [
+      "Psychic",
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "150",
+     "text": "During your opponent's next turn, the Defending Pokémon can't retreat."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Duskull",
+   "slug": "duskull",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "35",
+   "released": "2025/01/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 60,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Come and Get You",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "",
+     "text": "Put up to 3 Duskull from your discard pile onto your Bench."
+    },
+    {
+     "name": "Mumble",
+     "cost": [
+      "Psychic",
+      "Psychic"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Dwebble",
+   "slug": "dwebble",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "11",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Ascension",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Search your deck for a card that evolves from this Pokémon and put it onto this Pokémon to evolve it. Then, shuffle your deck."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Energy Recycler",
+   "slug": "energy-recycler",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "164",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Shuffle up to 5 Basic Energy cards from your discard pile into your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Energy Switch",
+   "slug": "energy-switch",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "115",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Move a Basic Energy from 1 of your Pokémon to another of your Pokémon.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Enriching Energy",
+   "slug": "enriching-energy",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "191",
+   "released": "2024/11/08",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Colorless Energy.  When you attach this card from your hand to a Pokémon, draw 4 cards.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Eri",
+   "slug": "eri",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "146",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Your opponent reveals their hand, and you discard up to 2 Item cards you find there.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Ethan's Ho-Oh ex",
+   "slug": "ethans-ho-oh-ex",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "39",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 230,
+   "types": [
+    "Fire"
+   ],
+   "abilities": [
+    {
+     "name": "Golden Flame",
+     "type": "Ability",
+     "text": "Once during your turn, you may attach up to 2 Basic Fire Energy cards from your hand to 1 of your Benched Ethan's Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Shining Feathers",
+     "cost": [
+      "Fire",
+      "Fire",
+      "Fire",
+      "Fire"
+     ],
+     "damage": "160",
+     "text": "Heal 50 damage from each of your Pokémon."
+    }
+   ],
+   "weak": [
+    "Water ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Explorer's Guidance",
+   "slug": "explorers-guidance",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "147",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter",
+    "Ancient"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Look at the top 6 cards of your deck and put 2 of them into your hand. Discard the other cards.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Fan Rotom",
+   "slug": "fan-rotom",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "118",
+   "released": "2024/09/13",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [
+    {
+     "name": "Fan Call",
+     "type": "Ability",
+     "text": "Once during your first turn, you may search your deck for up to 3 Colorless Pokémon with 100 HP or less, reveal them, and put them into your hand. Then, shuffle your deck. You can't use more than 1 Fan Call Ability during your turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Assault Landing",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "70",
+     "text": "If there is no Stadium in play, this attack does nothing."
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Festival Grounds",
+   "slug": "festival-grounds",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "149",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Each Pokémon that has any Energy attached (both yours and your opponent's) recovers from all Special Conditions and can't be affected by any Special Conditions.",
+    "You may play only 1 Stadium card during your turn. Put it into the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Fezandipiti ex",
+   "slug": "fezandipiti-ex",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "142",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 210,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [
+    {
+     "name": "Flip the Script",
+     "type": "Ability",
+     "text": "Once during your turn, if any of your Pokémon were Knocked Out during your opponent's last turn, you may draw 3 cards. You can't use more than 1 Flip the Script Ability each turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Cruel Arrow",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "This attack does 100 damage to 1 of your opponent's Pokémon. (Don't apply Weakness and Resistance for Benched Pokémon.)"
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Fighting Gong",
+   "slug": "fighting-gong",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "116",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a Basic Fighting Energy card or a Basic Fighting Pokémon, reveal it, and put it into your hand. Then, shuffle your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Forest of Vitality",
+   "slug": "forest-of-vitality",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "117",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Each player's Grass Pokémon can evolve into Grass Pokémon during the turn they play those Pokémon, except during their first turn.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Genesect",
+   "slug": "genesect",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "40",
+   "released": "2024/08/02",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 110,
+   "types": [
+    "Metal"
+   ],
+   "abilities": [
+    {
+     "name": "ACE Nullifier",
+     "type": "Ability",
+     "text": "If this Pokémon has a Pokémon Tool attached, your opponent can't play any ACE SPEC cards from their hand."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Magnetic Blast",
+     "cost": [
+      "Metal",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "100",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Genesect ex",
+   "slug": "genesect-ex",
+   "set": "BLK",
+   "setName": "Black Bolt",
+   "no": "67",
+   "released": "2025/07/18",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 220,
+   "types": [
+    "Metal"
+   ],
+   "abilities": [
+    {
+     "name": "Metallic Signal",
+     "type": "Ability",
+     "text": "Once during your turn, you may search your deck for up to 2 Evolution Metal Pokémon, reveal them, and put them into your hand. Then, shuffle your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Protect Charge",
+     "cost": [
+      "Metal",
+      "Metal",
+      "Colorless"
+     ],
+     "damage": "150",
+     "text": "During your opponent's next turn, this Pokémon takes 30 less damage from attacks (after applying Weakness and Resistance)."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Gladion's Final Battle",
+   "slug": "gladions-final-battle",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "77",
+   "released": "2026/07/17",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only when it is the last card in your hand.\nDuring this turn, attacks used by your Pokémon that don't have a Rule Box do 80 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance). (Pokémon ex, Pokémon V_atk, etc. have Rule Boxes.)"
+   ]
+  },
+  {
+   "name": "Glass Trumpet",
+   "slug": "glass-trumpet",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "135",
+   "released": "2024/09/13",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if you have any Tera Pokémon in play.    Choose up to 2 of your Benched Colorless Pokémon and attach a Basic Energy card from your discard pile to each of them.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Goldeen",
+   "slug": "goldeen",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "44",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 50,
+   "types": [
+    "Water"
+   ],
+   "abilities": [
+    {
+     "name": "Festival Lead",
+     "type": "Ability",
+     "text": "If Festival Grounds is in play, this Pokémon may use an attack it has twice. If the first attack Knocks Out your opponent's Active Pokémon, you may attack again after your opponent chooses a new Active Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Whirlpool",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "10",
+     "text": "Flip a coin. If heads, discard an Energy from your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Gravity Mountain",
+   "slug": "gravity-mountain",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "177",
+   "released": "2024/11/08",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Each Stage 2 Pokémon in play (both yours and your opponent's) gets -30 HP.",
+    "You may play only 1 Stadium card during your turn. Put it into the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Grookey",
+   "slug": "grookey",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "14",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Smash Kick",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "10",
+     "text": ""
+    },
+    {
+     "name": "Branch Poke",
+     "cost": [
+      "Grass",
+      "Grass"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Growing Grass Energy",
+   "slug": "growing-grass-energy",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "86",
+   "released": "2026/03/27",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Grass Energy. The Grass Pokémon this card is attached to gets +20 HP."
+   ]
+  },
+  {
+   "name": "Gwynn",
+   "slug": "gwynn",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "78",
+   "released": "2026/07/17",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Discard up to 2 Pokémon that don't have a Rule Box from your hand, and draw 3 cards for each card you discarded in this way. (Pokémon ex, Pokémon V_atk, etc. have Rule Boxes.)"
+   ]
+  },
+  {
+   "name": "Hariyama",
+   "slug": "hariyama",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "73",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 150,
+   "types": [
+    "Fighting"
+   ],
+   "evolvesFrom": "Makuhita",
+   "abilities": [
+    {
+     "name": "Heave-Ho Catcher",
+     "type": "Ability",
+     "text": "Once during your turn, when you play this Pokémon from your hand to evolve 1 of your Pokémon, you may use this Ability. Switch in 1 of your opponent's Benched Pokémon to the Active Spot."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Wild Press",
+     "cost": [
+      "Fighting",
+      "Fighting",
+      "Fighting"
+     ],
+     "damage": "210",
+     "text": "This Pokémon also does 70 damage to itself."
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Hero's Cape",
+   "slug": "heros-cape",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "152",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "The Pokémon this card is attached to gets +100 HP.",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Hilda",
+   "slug": "hilda",
+   "set": "WHT",
+   "setName": "White Flare",
+   "no": "84",
+   "released": "2025/07/18",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for an Evolution Pokémon and an Energy card, reveal them, and put them into your hand. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Hydrapple ex",
+   "slug": "hydrapple-ex",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "14",
+   "released": "2024/09/13",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 330,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Dipplin",
+   "abilities": [
+    {
+     "name": "Ripening Charge",
+     "type": "Ability",
+     "text": "Once during your turn, you may attach a Basic Grass Energy card from your hand to 1 of your Pokémon. If you attached Energy to a Pokémon in this way, heal 30 damage from that Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Syrup Storm",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "30+",
+     "text": "This attack does 30 more damage for each Grass Energy attached to all of your Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Iron Crown ex",
+   "slug": "iron-crown-ex",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "81",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex",
+    "Future"
+   ],
+   "mark": "H",
+   "hp": 220,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [
+    {
+     "name": "Cobalt Command",
+     "type": "Ability",
+     "text": "Attacks used by your Future Pokémon, except any Iron Crown ex, do 20 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance)."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Twin Shotels",
+     "cost": [
+      "Psychic",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "This attack does 50 damage to 2 of your opponent's Pokémon. This attack's damage isn't affected by Weakness or Resistance, or by any effects on those Pokémon."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Iron Leaves ex",
+   "slug": "iron-leaves-ex",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "25",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex",
+    "Future"
+   ],
+   "mark": "H",
+   "hp": 220,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [
+    {
+     "name": "Rapid Vernier",
+     "type": "Ability",
+     "text": "When you play this Pokémon from your hand onto your Bench during your turn, you may switch it with your Active Pokémon. If you do, you may move any amount of Energy from your other Pokémon to this Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Prism Edge",
+     "cost": [
+      "Grass",
+      "Grass",
+      "Colorless"
+     ],
+     "damage": "180",
+     "text": "During your next turn, this Pokémon can't attack."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Iron Thorns ex",
+   "slug": "iron-thorns-ex",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "77",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex",
+    "Future"
+   ],
+   "mark": "H",
+   "hp": 230,
+   "types": [
+    "Lightning"
+   ],
+   "abilities": [
+    {
+     "name": "Initialization",
+     "type": "Ability",
+     "text": "As long as this Pokémon is in the Active Spot, Pokémon with a Rule Box in play (both yours and your opponent's) have no Abilities, except for Future Pokémon. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Volt Cyclone",
+     "cost": [
+      "Lightning",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "140",
+     "text": "Move an Energy from this Pokémon to 1 of your Benched Pokémon."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 4,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Jamming Tower",
+   "slug": "jamming-tower",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "153",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Pokémon Tools attached to each Pokémon (both yours and your opponent's) have no effect.",
+    "You may play only 1 Stadium card during your turn. Put it into the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Janine's Secret Art",
+   "slug": "janines-secret-art",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "112",
+   "released": "2025/01/17",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Choose up to 2 of your Darkness Pokémon. For each of those Pokémon, search your deck for a Basic Darkness Energy card and attach it to that Pokémon. Then, shuffle your deck. If you attached Energy to your Active Pokémon in this way, it is now Poisoned.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Judge",
+   "slug": "judge",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "76",
+   "released": "2026/03/27",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Each player shuffles their hand into their deck and draws 4 cards.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Jumbo Ice Cream",
+   "slug": "jumbo-ice-cream",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "91",
+   "released": "2025/11/14",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Heal 80 damage from your Active Pokémon that has 3 or more Energy attached.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Kadabra",
+   "slug": "kadabra",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "55",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 80,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Abra",
+   "abilities": [
+    {
+     "name": "Psychic Draw",
+     "type": "Ability",
+     "text": "Once during your turn, when you play this Pokémon from your hand to evolve 1 of your Pokémon, you may use this Ability. Draw 2 cards."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Super Psy Bolt",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Kieran",
+   "slug": "kieran",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "154",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Choose 1:    • Switch your Active Pokémon with 1 of your Benched Pokémon.  • During this turn, attacks used by your Pokémon do 30 more damage to your opponent's Active Pokémon ex and Active Pokémon V (before applying Weakness and Resistance).",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Koraidon ex",
+   "slug": "koraidon-ex",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "121",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "Tera",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 230,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Orichalcum Fang",
+     "cost": [
+      "Fighting",
+      "Colorless"
+     ],
+     "damage": "50+",
+     "text": "If any of your Pokémon were Knocked Out by damage from an attack during your opponent's last turn, this attack does 120 more damage."
+    },
+    {
+     "name": "Impact Blow",
+     "cost": [
+      "Fighting",
+      "Fighting",
+      "Colorless"
+     ],
+     "damage": "200",
+     "text": "During your next turn, this Pokémon can't use Impact Blow."
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": [
+    "As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent’s).",
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Kyurem",
+   "slug": "kyurem",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "47",
+   "released": "2024/08/02",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 130,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [
+    {
+     "name": "Plasma Bane",
+     "type": "Ability",
+     "text": "If your opponent has any cards in their discard pile that have \"Colress\" in the name, this Pokémon can use the Trifrost attack for Colorless."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Trifrost",
+     "cost": [
+      "Water",
+      "Water",
+      "Metal",
+      "Metal",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Discard all Energy from this Pokémon. This attack does 110 damage to 3 of your opponent's Pokémon. (Don't apply Weakness and Resistance for Benched Pokémon.)"
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Lana's Aid",
+   "slug": "lanas-aid",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "155",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Put up to 3 in any combination of Pokémon that don't have a Rule Box and Basic Energy cards from your discard pile into your hand. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Latias ex",
+   "slug": "latias-ex",
+   "set": "SSP",
+   "setName": "Surging Sparks",
+   "no": "76",
+   "released": "2024/11/08",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 210,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [
+    {
+     "name": "Skyliner",
+     "type": "Ability",
+     "text": "Your Basic Pokémon in play have no Retreat Cost."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Eon Blade",
+     "cost": [
+      "Psychic",
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "200",
+     "text": "During your next turn, this Pokémon can't attack."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Legacy Energy",
+   "slug": "legacy-energy",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "167",
+   "released": "2024/05/24",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides every type of Energy but provides only 1 Energy at a time.    If the Pokémon this card is attached to is Knocked Out by damage from an attack from your opponent's Pokémon, that player takes 1 fewer Prize card. This effect of your Legacy Energy can't be applied more than once per game.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Legendary Pyroduct",
+   "slug": "legendary-pyroduct",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "94",
+   "released": "2026/11/06",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Evolution Pokémon in play (both yours and your opponent's) have no Abilities."
+   ]
+  },
+  {
+   "name": "Lillie's Clefairy ex",
+   "slug": "lillies-clefairy-ex",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "56",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 190,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [
+    {
+     "name": "Fairy Zone",
+     "type": "Ability",
+     "text": "The Weakness of each of your opponent's Dragon Pokémon in play is now Psychic. (Apply Weakness as ×2.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Full Moon Rondo",
+     "cost": [
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "20+",
+     "text": "This attack does 20 more damage for each Benched Pokémon (both yours and your opponent's)."
+    }
+   ],
+   "weak": [
+    "Metal ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Lillie's Determination",
+   "slug": "lillies-determination",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "119",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Shuffle your hand into your deck. Then, draw 6 cards. If you have exactly 6 Prize cards remaining, draw 8 cards instead.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Lillie's Pearl",
+   "slug": "lillies-pearl",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "151",
+   "released": "2025/03/28",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "If the Lillie's Pokémon this card is attached to is Knocked Out by damage from an attack from your opponent's Pokémon, that player takes 1 fewer Prize card.",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached."
+   ]
+  },
+  {
+   "name": "Lucky Helmet",
+   "slug": "lucky-helmet",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "158",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Pokémon Tool"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "If the Pokémon this card is attached to is in the Active Spot and is damaged by an attack from your opponent's Pokémon (even if this Pokémon is Knocked Out), draw 2 cards.",
+    "You may attach any number of Pokémon Tools to your Pokémon during your turn. You may attach only 1 Pokémon Tool to each Pokémon, and it stays attached.",
+    "Attach a Pokémon Tool to 1 of your Pokémon that doesn't already have a Pokémon Tool attached."
+   ]
+  },
+  {
+   "name": "Lumiose City",
+   "slug": "lumiose-city",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "77",
+   "released": "2026/03/27",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Once during each player's turn, that player may search their deck for a Basic Pokémon and put it onto their Bench. Then, that player shuffles their deck. If a player searches their deck in this way, their turn ends.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can’t be played."
+   ]
+  },
+  {
+   "name": "Lunatone",
+   "slug": "lunatone",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "74",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 110,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [
+    {
+     "name": "Lunar Cycle",
+     "type": "Ability",
+     "text": "Once during your turn, if you have Solrock in play, you may discard a Basic Fighting Energy card from your hand in order to use this Ability. Draw 3 cards. You can't use more than 1 Lunar Cycle Ability each turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Power Gem",
+     "cost": [
+      "Fighting",
+      "Fighting"
+     ],
+     "damage": "50",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Makuhita",
+   "slug": "makuhita",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "72",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 80,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Corkscrew Punch",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "10",
+     "text": ""
+    },
+    {
+     "name": "Confront",
+     "cost": [
+      "Fighting",
+      "Fighting"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Mega Excadrill ex",
+   "slug": "mega-excadrill-ex",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "65",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 340,
+   "types": [
+    "Metal"
+   ],
+   "evolvesFrom": "Drilbur",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Undermine",
+     "cost": [
+      "Metal",
+      "Metal"
+     ],
+     "damage": "90",
+     "text": "Discard the top 2 cards of your opponent's deck."
+    },
+    {
+     "name": "Maximum Drilling",
+     "cost": [
+      "Metal",
+      "Metal",
+      "Metal"
+     ],
+     "damage": "200+",
+     "text": "If this Pokémon has at least 2 extra Energy attached (in addition to this attack's cost), this attack does 130 more damage."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 4,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Kangaskhan ex",
+   "slug": "mega-kangaskhan-ex",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "104",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 300,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [
+    {
+     "name": "Run Errand",
+     "type": "Ability",
+     "text": "Once during your turn, if this Pokémon is in the Active Spot, you may use this Ability. Draw 2 cards. You can't use more than 1 Run Errand Ability each turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Rapid-Fire Combo",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "200+",
+     "text": "Flip a coin until you get tails. This attack does 50 more damage for each heads."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Lopunny ex",
+   "slug": "mega-lopunny-ex",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "84",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 330,
+   "types": [
+    "Colorless"
+   ],
+   "evolvesFrom": "Buneary",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Gale Thrust",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "60+",
+     "text": "If this Pokémon moved from your Bench to the Active Spot this turn, this attack does 170 more damage."
+    },
+    {
+     "name": "Spiky Hopper",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "160",
+     "text": "This attack's damage isn't affected by any effects on your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Lucario ex",
+   "slug": "mega-lucario-ex",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "77",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 340,
+   "types": [
+    "Fighting"
+   ],
+   "evolvesFrom": "Riolu",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Aura Jab",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "130",
+     "text": "Attach up to 3 Basic Fighting Energy cards from your discard pile to your Benched Pokémon in any way you like."
+    },
+    {
+     "name": "Mega Brave",
+     "cost": [
+      "Fighting",
+      "Fighting"
+     ],
+     "damage": "270",
+     "text": "During your next turn, this Pokémon can't use Mega Brave."
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Rayquaza ex",
+   "slug": "mega-rayquaza-ex",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "84",
+   "released": "2026/11/06",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 280,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [
+    {
+     "name": "Ruler's Roar",
+     "type": "Ability",
+     "text": "Once during your turn, when you play this Pokémon from your hand onto your Bench, you may use this Ability. Look at the top 4 cards of your deck and attach a Basic Energy card you find there to this Pokémon. Shuffle the other cards and put them on the bottom of your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Storm Emerald",
+     "cost": [
+      "Fire",
+      "Lightning",
+      "Colorless"
+     ],
+     "damage": "50×",
+     "text": "This attack does 50 damage for each Fire Energy and each Lightning Energy attached to all of your Pokémon."
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 2,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Sharpedo ex",
+   "slug": "mega-sharpedo-ex",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "61",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 330,
+   "types": [
+    "Darkness"
+   ],
+   "evolvesFrom": "Carvanha",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Greedy Fang",
+     "cost": [
+      "Darkness"
+     ],
+     "damage": "70",
+     "text": "Draw 2 cards."
+    },
+    {
+     "name": "Hungry Jaws",
+     "cost": [
+      "Darkness",
+      "Darkness"
+     ],
+     "damage": "120+",
+     "text": "If this Pokémon has any damage counters on it, this attack does 150 more damage."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Mega Skarmory ex",
+   "slug": "mega-skarmory-ex",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "55",
+   "released": "2026/03/27",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "MEGA",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 260,
+   "types": [
+    "Metal"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Sonic Ripper",
+     "cost": [
+      "Metal",
+      "Metal",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Shuffle all Energy attached to this Pokémon into your deck, and this attack does 220 damage to 1 of your opponent's Pokémon. (Don't apply Weakness and Resistance for Benched Pokémon.)"
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 0,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+    "Mega Evolution ex Rule: When your Mega Evolution Pokémon ex is Knocked Out, your opponent takes 3 Prize cards."
+   ]
+  },
+  {
+   "name": "Meganium",
+   "slug": "meganium",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "10",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2"
+   ],
+   "mark": "I",
+   "hp": 160,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Bayleef",
+   "abilities": [
+    {
+     "name": "Wild Growth",
+     "type": "Ability",
+     "text": "Each Basic Grass Energy attached to all of your Pokémon provides GrassGrass Energy. The effect of Wild Growth doesn't stack."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Solar Beam",
+     "cost": [
+      "Grass",
+      "Grass",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "140",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Meowth ex",
+   "slug": "meowth-ex",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "62",
+   "released": "2026/03/27",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 170,
+   "types": [
+    "Colorless"
+   ],
+   "abilities": [
+    {
+     "name": "Last-Ditch Catch",
+     "type": "Ability",
+     "text": "Once during your turn, when you play this Pokémon from your hand onto your Bench, you may use this Ability. Search your deck for a Supporter card, reveal it, and put it into your hand. Then, shuffle your deck. You can't use more than 1 Ability that has \"Last-Ditch\" in its name each turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Tuck Tail",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "60",
+     "text": "Put this Pokémon and all attached cards into your hand."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Metagross",
+   "slug": "metagross",
+   "set": "CRI",
+   "setName": "Chaos Rising",
+   "no": "61",
+   "released": "2026/05/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2"
+   ],
+   "mark": "J",
+   "hp": 180,
+   "types": [
+    "Metal"
+   ],
+   "evolvesFrom": "Metang",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Bounce Back",
+     "cost": [
+      "Metal"
+     ],
+     "damage": "60",
+     "text": "Switch out your opponent's Active Pokémon to the Bench. (Your opponent chooses the new Active Pokémon.)"
+    },
+    {
+     "name": "Metallic Hammer",
+     "cost": [
+      "Metal",
+      "Metal",
+      "Metal",
+      "Colorless"
+     ],
+     "damage": "150+",
+     "text": "You may discard 3 Metal Energy from this Pokémon and have this attack do 150 more damage."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Metang",
+   "slug": "metang",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "114",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 100,
+   "types": [
+    "Metal"
+   ],
+   "evolvesFrom": "Beldum",
+   "abilities": [
+    {
+     "name": "Metal Maker",
+     "type": "Ability",
+     "text": "Once during your turn, you may look at the top 4 cards of your deck and attach any number of Basic Metal Energy cards you find there to your Pokémon in any way you like. Shuffle the other cards and put them on the bottom of your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Beam",
+     "cost": [
+      "Metal",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "60",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [
+    "Grass -30"
+   ],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Mist Energy",
+   "slug": "mist-energy",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "161",
+   "released": "2024/03/22",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Colorless Energy.    Prevent all effects of attacks used by your opponent's Pokémon done to the Pokémon this card is attached to. (Existing effects are not removed. Damage is not an effect.)"
+   ]
+  },
+  {
+   "name": "Moltres",
+   "slug": "moltres",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "14",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 120,
+   "types": [
+    "Fire"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Fighting Wings",
+     "cost": [
+      "Fire"
+     ],
+     "damage": "20+",
+     "text": "If your opponent's Active Pokémon is a Pokémon ex, this attack does 90 more damage."
+    }
+   ],
+   "weak": [
+    "Water ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Munkidori",
+   "slug": "munkidori",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "95",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 110,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [
+    {
+     "name": "Adrena-Brain",
+     "type": "Ability",
+     "text": "Once during your turn, if this Pokémon has any Darkness Energy attached, you may move up to 3 damage counters from 1 of your Pokémon to 1 of your opponent's Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Mind Bend",
+     "cost": [
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "60",
+     "text": "Your opponent's Active Pokémon is now Confused."
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "N's Castle",
+   "slug": "ns-castle",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "152",
+   "released": "2025/03/28",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "N's Pokémon in play (both yours and your opponent's) have no Retreat Cost.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "N's PP Up",
+   "slug": "ns-pp-up",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "153",
+   "released": "2025/03/28",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Attach a Basic Energy card from your discard pile to 1 of your Benched N's Pokémon.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "N's Reshiram",
+   "slug": "ns-reshiram",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "116",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 130,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Powerful Rage",
+     "cost": [
+      "Fire",
+      "Lightning"
+     ],
+     "damage": "20×",
+     "text": "This attack does 20 damage for each damage counter on this Pokémon."
+    },
+    {
+     "name": "Virtuous Flame",
+     "cost": [
+      "Fire",
+      "Fire",
+      "Lightning",
+      "Colorless"
+     ],
+     "damage": "170",
+     "text": ""
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "N's Zekrom",
+   "slug": "ns-zekrom",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "155",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 130,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Shred",
+     "cost": [
+      "Colorless",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "70",
+     "text": "This attack's damage isn't affected by any effects on your opponent's Active Pokémon."
+    },
+    {
+     "name": "Rampaging Thunder",
+     "cost": [
+      "Fire",
+      "Lightning",
+      "Lightning",
+      "Colorless"
+     ],
+     "damage": "250",
+     "text": "During your next turn, this Pokémon can't use attacks."
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "N's Zoroark ex",
+   "slug": "ns-zoroark-ex",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "98",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1",
+    "ex"
+   ],
+   "mark": "I",
+   "hp": 280,
+   "types": [
+    "Darkness"
+   ],
+   "evolvesFrom": "N's Zorua",
+   "abilities": [
+    {
+     "name": "Trade",
+     "type": "Ability",
+     "text": "You must discard a card from your hand in order to use this Ability. Once during your turn, you may draw 2 cards."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Night Joker",
+     "cost": [
+      "Darkness",
+      "Darkness"
+     ],
+     "damage": "",
+     "text": "Choose 1 of your Benched N's Pokémon's attacks and use it as this attack."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "N's Zorua",
+   "slug": "ns-zorua",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "97",
+   "released": "2025/03/28",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Scratch",
+     "cost": [
+      "Darkness"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Neo Upper Energy",
+   "slug": "neo-upper-energy",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "162",
+   "released": "2024/03/22",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Colorless Energy.  If this card is attached to a Stage 2 Pokémon, this card provides every type of Energy but provides only 2 Energy at a time.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Night Stretcher",
+   "slug": "night-stretcher",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "196",
+   "released": "2026/01/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Put a Pokémon or a Basic Energy card from your discard pile into your hand.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Pecharunt ex",
+   "slug": "pecharunt-ex",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "39",
+   "released": "2024/08/02",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 190,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [
+    {
+     "name": "Subjugating Chains",
+     "type": "Ability",
+     "text": "Once during your turn, you may switch 1 of your Benched Darkness Pokémon, except any Pecharunt ex, with your Active Pokémon. If you do, the new Active Pokémon is now Poisoned. You can't use more than 1 Subjugating Chains Ability each turn."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Irritated Outburst",
+     "cost": [
+      "Darkness",
+      "Darkness"
+     ],
+     "damage": "60×",
+     "text": "This attack does 60 damage for each Prize card your opponent has taken."
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Poké Pad",
+   "slug": "poke-pad",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "81",
+   "released": "2026/03/27",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a Pokémon that doesn't have a Rule Box, reveal it, and put it into your hand. Then, shuffle your deck. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Pokégear 3.0",
+   "slug": "pokegear-30",
+   "set": "SVI",
+   "setName": "Scarlet & Violet",
+   "no": "186",
+   "released": "2023/03/31",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "G",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Look at the top 7 cards of your deck. You may reveal a Supporter card you find there and put it into your hand. Shuffle the other cards back into your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Poltchageist",
+   "slug": "poltchageist",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "5",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 30,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [
+    {
+     "name": "Hide 'n' Sneak",
+     "type": "Ability",
+     "text": "Prevent all effects of your opponent's Pokémon's attacks and Abilities done to this Pokémon. (Damage is not an effect.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Furtive Drop",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Place 1 damage counter on your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 0,
+   "rules": []
+  },
+  {
+   "name": "Premium Power Pro",
+   "slug": "premium-power-pro",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "124",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "During this turn, attacks used by your Fighting Pokémon do 30 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance).",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Prime Catcher",
+   "slug": "prime-catcher",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "157",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Switch in 1 of your opponent's Benched Pokémon to the Active Spot. If you do, switch your Active Pokémon with 1 of your Benched Pokémon.",
+    "You may play any number of Item cards during your turn.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Prism Tower",
+   "slug": "prism-tower",
+   "set": "CRI",
+   "setName": "Chaos Rising",
+   "no": "80",
+   "released": "2026/05/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Once during each player's turn, that player may discard 2 cards from their hand in order to draw a card."
+   ]
+  },
+  {
+   "name": "Psyduck",
+   "slug": "psyduck",
+   "set": "ASC",
+   "setName": "Ascended Heroes",
+   "no": "39",
+   "released": "2026/01/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Water"
+   ],
+   "abilities": [
+    {
+     "name": "Damp",
+     "type": "Ability",
+     "text": "Pokémon in play (both yours and your opponent's) lose any Ability that requires the Pokémon using it to Knock Out itself."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Ram",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Rabsca",
+   "slug": "rabsca",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "24",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Rellor",
+   "abilities": [
+    {
+     "name": "Spherical Shield",
+     "type": "Ability",
+     "text": "Prevent all damage from and effects of attacks from your opponent's Pokémon done to your Benched Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Psychic",
+     "cost": [
+      "Grass"
+     ],
+     "damage": "10+",
+     "text": "This attack does 30 more damage for each Energy attached to your opponent's Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Raging Bolt ex",
+   "slug": "raging-bolt-ex",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "123",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "ex",
+    "Ancient"
+   ],
+   "mark": "H",
+   "hp": 240,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Burst Roar",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Discard your hand and draw 6 cards."
+    },
+    {
+     "name": "Bellowing Thunder",
+     "cost": [
+      "Lightning",
+      "Fighting"
+     ],
+     "damage": "70×",
+     "text": "You may discard any amount of Basic Energy from your Pokémon. This attack does 70 damage for each card you discarded in this way."
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 3,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Rare Candy",
+   "slug": "rare-candy",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "125",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Choose 1 of your Basic Pokémon in play. If you have a Stage 2 card in your hand that evolves from that Pokémon, put that card onto the Basic Pokémon to evolve it, skipping the Stage 1. You can't use this card during your first turn or on a Basic Pokémon that was put into play this turn.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Rellor",
+   "slug": "rellor",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "23",
+   "released": "2024/03/22",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 50,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Slight Intrusion",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "30",
+     "text": "This Pokémon also does 10 damage to itself."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Riolu",
+   "slug": "riolu",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "76",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 80,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Accelerating Stab",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "30",
+     "text": "During your next turn, this Pokémon can't use Accelerating Stab."
+    }
+   ],
+   "weak": [
+    "Psychic ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Risky Ruins",
+   "slug": "risky-ruins",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "127",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Whenever any player puts a Basic non-Darkness Pokémon onto their Bench during their turn, place 2 damage counters on that Pokémon.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Rocky Fighting Energy",
+   "slug": "rocky-fighting-energy",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "87",
+   "released": "2026/03/27",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Fighting Energy. Prevent all effects of attacks used by your opponent's Pokémon done to the Fighting Pokémon this card is attached to. (Existing effects are not removed. Damage is not an effect.)"
+   ]
+  },
+  {
+   "name": "Rosa's Encouragement",
+   "slug": "rosas-encouragement",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "84",
+   "released": "2026/03/27",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if you have more Prize cards remaining than your opponent.  Attach up to 2 Basic Energy cards from your discard pile to 1 of your Stage 2 Pokémon.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Sacred Ash",
+   "slug": "sacred-ash",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "168",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Shuffle up to 5 Pokémon from your discard pile into your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Salvatore",
+   "slug": "salvatore",
+   "set": "TEF",
+   "setName": "Temporal Forces",
+   "no": "160",
+   "released": "2024/03/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a card that has no Abilities and evolves from 1 of your Pokémon, and put it onto that Pokémon to evolve it. Then, shuffle your deck. You can use this card on a Pokémon you put down when you were setting up to play or on a Pokémon that was put into play this turn.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Seaking",
+   "slug": "seaking",
+   "set": "PRE",
+   "setName": "Prismatic Evolutions",
+   "no": "21",
+   "released": "2025/01/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 110,
+   "types": [
+    "Water"
+   ],
+   "evolvesFrom": "Goldeen",
+   "abilities": [
+    {
+     "name": "Festival Lead",
+     "type": "Ability",
+     "text": "If Festival Grounds is in play, this Pokémon may use an attack it has twice. If the first attack Knocks Out your opponent's Active Pokémon, you may attack again after your opponent chooses a new Active Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Rapid Draw",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "60",
+     "text": "Draw 2 cards."
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Secret Box",
+   "slug": "secret-box",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "163",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if you discard 3 other cards from your hand.    Search your deck for an Item card, a Pokémon Tool card, a Supporter card, and a Stadium card, reveal them, and put them into your hand. Then, shuffle your deck.",
+    "You may play any number of Item cards during your turn.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Shaymin",
+   "slug": "shaymin",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "10",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 80,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [
+    {
+     "name": "Flower Curtain",
+     "type": "Ability",
+     "text": "Prevent all damage done to your Benched Pokémon that don't have a Rule Box by attacks from your opponent's Pokémon. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Smash Kick",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Shuppet",
+   "slug": "shuppet",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "33",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "J",
+   "hp": 50,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [
+    {
+     "name": "Hide 'n' Sneak",
+     "type": "Ability",
+     "text": "Prevent all effects of your opponent's Pokémon's attacks and Abilities done to this Pokémon. (Damage is not an effect.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Hang Down",
+     "cost": [
+      "Psychic"
+     ],
+     "damage": "10",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Sinistcha",
+   "slug": "sinistcha",
+   "set": "PBL",
+   "setName": "Pitch Black",
+   "no": "6",
+   "released": "2026/07/17",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "J",
+   "hp": 60,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Poltchageist",
+   "abilities": [
+    {
+     "name": "Hide 'n' Sneak",
+     "type": "Ability",
+     "text": "Prevent all effects of your opponent's Pokémon's attacks and Abilities done to this Pokémon. (Damage is not an effect.)"
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Matcha Spin",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "If you have 6 or more Pokémon that have the Hide 'n' Sneak Ability in your discard pile, place 4 damage counters on each of your opponent's Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Slowking",
+   "slug": "slowking",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "58",
+   "released": "2024/09/13",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 120,
+   "types": [
+    "Psychic"
+   ],
+   "evolvesFrom": "Slowpoke",
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Seek Inspiration",
+     "cost": [
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Discard the top card of your deck, and if that card is a Pokémon that doesn't have a Rule Box, choose 1 of its attacks and use it as this attack. (Pokémon ex, Pokémon V, etc. have Rule Boxes.)"
+    },
+    {
+     "name": "Super Psy Bolt",
+     "cost": [
+      "Psychic",
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "120",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Slowpoke",
+   "slug": "slowpoke",
+   "set": "SCR",
+   "setName": "Stellar Crown",
+   "no": "57",
+   "released": "2024/09/13",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 80,
+   "types": [
+    "Psychic"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Dangle Tail",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Put a Pokémon from your discard pile into your hand."
+    },
+    {
+     "name": "Tackle",
+     "cost": [
+      "Psychic",
+      "Colorless"
+     ],
+     "damage": "30",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Darkness ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Solrock",
+   "slug": "solrock",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "75",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 110,
+   "types": [
+    "Fighting"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Cosmic Beam",
+     "cost": [
+      "Fighting"
+     ],
+     "damage": "70",
+     "text": "If you don't have Lunatone on your Bench, this attack does nothing. This attack's damage isn't affected by Weakness or Resistance."
+    }
+   ],
+   "weak": [
+    "Grass ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Special Red Card",
+   "slug": "special-red-card",
+   "set": "CRI",
+   "setName": "Chaos Rising",
+   "no": "82",
+   "released": "2026/05/22",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if your opponent has 3 or fewer Prize cards remaining.\n\nYour opponent shuffles their hand and puts it on the bottom of their deck. If they put any cards on the bottom of their deck in this way, they draw 3 cards."
+   ]
+  },
+  {
+   "name": "Spiky Energy",
+   "slug": "spiky-energy",
+   "set": "JTG",
+   "setName": "Journey Together",
+   "no": "159",
+   "released": "2025/03/28",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Colorless Energy.  If the Pokémon this card is attached to is in the Active Spot and is damaged by an attack from your opponent's Pokémon (even if this Pokémon is Knocked Out), put 2 damage counters on the Attacking Pokémon."
+   ]
+  },
+  {
+   "name": "Strange Timepiece",
+   "slug": "strange-timepiece",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "128",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Devolve 1 of your evolved Psychic Pokémon by putting any number of Evolution cards on it into your hand. (That Pokémon can't evolve this turn.)",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Switch",
+   "slug": "switch",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "130",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Switch your Active Pokémon with 1 of your Benched Pokémon.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Talonflame ex",
+   "slug": "talonflame-ex",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "88",
+   "released": "2026/11/06",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 2",
+    "ex"
+   ],
+   "mark": "J",
+   "hp": 280,
+   "types": [
+    "Colorless"
+   ],
+   "evolvesFrom": "Fletchinder",
+   "abilities": [
+    {
+     "name": "Excited Dive",
+     "type": "Ability",
+     "text": "Once during your turn, if this Pokémon is in your hand, and if you have any Colorless Mega Evolution Pokémon ex in play, you may use this Ability. Put this Pokémon onto your Bench."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Talon Hunt",
+     "cost": [
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "150",
+     "text": "You may search your deck for up to 2 cards and put them into your hand. Then, shuffle your deck."
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 0,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards."
+   ]
+  },
+  {
+   "name": "Tapu Bulu",
+   "slug": "tapu-bulu",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "6",
+   "released": "2024/08/02",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 140,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Wood Hammer",
+     "cost": [
+      "Grass",
+      "Grass",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "220",
+     "text": "This Pokémon also does 30 damage to itself."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 3,
+   "rules": []
+  },
+  {
+   "name": "Tasty Rice Ball",
+   "slug": "tasty-rice-ball",
+   "set": "DLR",
+   "setName": "Delta Reign",
+   "no": "101",
+   "released": "2026/11/06",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Heal 30 damage from your Active Pokémon. For each Tasty Rice Ball card (not including this card) in your discard pile, heal 30 more damage."
+   ]
+  },
+  {
+   "name": "Tatsugiri",
+   "slug": "tatsugiri",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "131",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "H",
+   "hp": 70,
+   "types": [
+    "Dragon"
+   ],
+   "abilities": [
+    {
+     "name": "Attract Customers",
+     "type": "Ability",
+     "text": "Once during your turn, if this Pokémon is in the Active Spot, you may look at the top 6 cards of your deck, reveal a Supporter card you find there, and put it into your hand. Shuffle the other cards back into your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Surf",
+     "cost": [
+      "Fire",
+      "Water"
+     ],
+     "damage": "50",
+     "text": ""
+    }
+   ],
+   "weak": [],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Teal Mask Ogerpon ex",
+   "slug": "teal-mask-ogerpon-ex",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "25",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "Tera",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 210,
+   "types": [
+    "Grass"
+   ],
+   "abilities": [
+    {
+     "name": "Teal Dance",
+     "type": "Ability",
+     "text": "Once during your turn, you may attach a Basic Grass Energy card from your hand to this Pokémon. If you attached Energy to a Pokémon in this way, draw a card."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Myriad Leaf Shower",
+     "cost": [
+      "Grass",
+      "Grass",
+      "Grass"
+     ],
+     "damage": "30+",
+     "text": "This attack does 30 more damage for each Energy attached to both Active Pokémon."
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+    "Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+   ]
+  },
+  {
+   "name": "Team Rocket's Factory",
+   "slug": "team-rockets-factory",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "173",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Once during each player's turn, if they played a Supporter card that has \"Team Rocket\" in its name from their hand this turn, they may draw 2 cards.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Team Rocket's Petrel",
+   "slug": "team-rockets-petrel",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "176",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Search your deck for a Trainer card, reveal it, and put it into your hand. Then, shuffle your deck.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Team Rocket's Watchtower",
+   "slug": "team-rockets-watchtower",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "180",
+   "released": "2025/05/30",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Colorless Pokémon in play (both yours and your opponent's) have no Abilities.",
+    "You may play only 1 Stadium card during your turn. Put it next to the Active Spot, and discard it if another Stadium comes into play. A Stadium with the same name can't be played."
+   ]
+  },
+  {
+   "name": "Telepathic Psychic Energy",
+   "slug": "telepathic-psychic-energy",
+   "set": "POR",
+   "setName": "Perfect Order",
+   "no": "88",
+   "released": "2026/03/27",
+   "supertype": "Energy",
+   "subtypes": [
+    "Special"
+   ],
+   "mark": "J",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "As long as this card is attached to a Pokémon, it provides Psychic Energy. When you attach this card from your hand to a Psychic Pokémon, search your deck for up to 2 Basic Psychic Pokémon and put them onto your Bench. Then, shuffle your deck."
+   ]
+  },
+  {
+   "name": "Thwackey",
+   "slug": "thwackey",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "15",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "H",
+   "hp": 100,
+   "types": [
+    "Grass"
+   ],
+   "evolvesFrom": "Grookey",
+   "abilities": [
+    {
+     "name": "Boom Boom Groove",
+     "type": "Ability",
+     "text": "Once during your turn, if your Active Pokémon has the Festival Lead Ability, you may search your deck for a card and put it into your hand. Then, shuffle your deck."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Beat",
+     "cost": [
+      "Grass",
+      "Grass"
+     ],
+     "damage": "50",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fire ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Torchic",
+   "slug": "torchic",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "40",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Fire"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Collect",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "",
+     "text": "Draw a card."
+    },
+    {
+     "name": "Combustion",
+     "cost": [
+      "Fire"
+     ],
+     "damage": "10",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Water ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Toxel",
+   "slug": "toxel",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "67",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 70,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Call for Family",
+     "cost": [
+      "Darkness"
+     ],
+     "damage": "",
+     "text": "Search your deck for up to 2 Basic Pokémon and put them onto your Bench. Then, shuffle your deck."
+    },
+    {
+     "name": "Playful Kick",
+     "cost": [
+      "Darkness",
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  },
+  {
+   "name": "Toxtricity",
+   "slug": "toxtricity",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "68",
+   "released": "2025/11/14",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Stage 1"
+   ],
+   "mark": "I",
+   "hp": 140,
+   "types": [
+    "Darkness"
+   ],
+   "evolvesFrom": "Toxel",
+   "abilities": [
+    {
+     "name": "Sinister Surge",
+     "type": "Ability",
+     "text": "Once during your turn, you may use this Ability. Search your deck for a Basic Darkness Energy card and attach it to 1 of your Benched Darkness Pokémon. Then, shuffle your deck. If you attached Energy to a Pokémon in this way, place 2 damage counters on that Pokémon."
+    }
+   ],
+   "attacks": [
+    {
+     "name": "Gentle Slap",
+     "cost": [
+      "Darkness",
+      "Darkness",
+      "Colorless"
+     ],
+     "damage": "100",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 2,
+   "rules": []
+  },
+  {
+   "name": "Ultra Ball",
+   "slug": "ultra-ball",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "131",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if you discard 2 other cards from your hand.  Search your deck for a Pokémon, reveal it, and put it into your hand. Then, shuffle your deck.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Unfair Stamp",
+   "slug": "unfair-stamp",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "165",
+   "released": "2024/05/24",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item",
+    "ACE SPEC"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "You can use this card only if any of your Pokémon were Knocked Out during your opponent's last turn.    Each player shuffles their hand into their deck. Then, you draw 5 cards, and your opponent draws 2 cards.",
+    "You may play any number of Item cards during your turn.",
+    "ACE SPEC: You can't have more than 1 ACE SPEC card in your deck."
+   ]
+  },
+  {
+   "name": "Wally's Compassion",
+   "slug": "wallys-compassion",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "132",
+   "released": "2025/09/26",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Heal all damage from 1 of your Mega Evolution Pokémon ex. If you healed any damage in this way, put all Energy attached to that Pokémon into your hand.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Wellspring Mask Ogerpon ex",
+   "slug": "wellspring-mask-ogerpon-ex",
+   "set": "TWM",
+   "setName": "Twilight Masquerade",
+   "no": "64",
+   "released": "2024/05/24",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic",
+    "Tera",
+    "ex"
+   ],
+   "mark": "H",
+   "hp": 210,
+   "types": [
+    "Water"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Sob",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": "During your opponent's next turn, the Defending Pokémon can't retreat."
+    },
+    {
+     "name": "Torrential Pump",
+     "cost": [
+      "Water",
+      "Colorless",
+      "Colorless"
+     ],
+     "damage": "100",
+     "text": "You may shuffle 3 Energy attached to this Pokémon into your deck. If you do, this attack also does 120 damage to 1 of your opponent's Benched Pokémon. (Don't apply Weakness and Resistance for Benched Pokémon.)"
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": [
+    "Pokémon ex rule: When your Pokémon ex is Knocked Out, your opponent takes 2 Prize cards.",
+    "Tera: As long as this Pokémon is on your Bench, prevent all damage done to this Pokémon by attacks (both yours and your opponent's)."
+   ]
+  },
+  {
+   "name": "Wondrous Patch",
+   "slug": "wondrous-patch",
+   "set": "PFL",
+   "setName": "Phantasmal Flames",
+   "no": "94",
+   "released": "2025/11/14",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Item"
+   ],
+   "mark": "I",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Attach a Basic Psychic Energy card from your discard pile to 1 of your Benched Psychic Pokémon.",
+    "You may play any number of Item cards during your turn."
+   ]
+  },
+  {
+   "name": "Xerosic's Machinations",
+   "slug": "xerosics-machinations",
+   "set": "SFA",
+   "setName": "Shrouded Fable",
+   "no": "64",
+   "released": "2024/08/02",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Supporter"
+   ],
+   "mark": "H",
+   "abilities": [],
+   "attacks": [],
+   "weak": [],
+   "resist": [],
+   "retreat": 0,
+   "rules": [
+    "Your opponent discards cards from their hand until they have 3 cards in their hand.",
+    "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  {
+   "name": "Yveltal",
+   "slug": "yveltal",
+   "set": "MEG",
+   "setName": "Mega Evolution",
+   "no": "88",
+   "released": "2025/09/26",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 110,
+   "types": [
+    "Darkness"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Clutch",
+     "cost": [
+      "Darkness"
+     ],
+     "damage": "20",
+     "text": "During your opponent's next turn, the Defending Pokémon can't retreat."
+    },
+    {
+     "name": "Dark Feather",
+     "cost": [
+      "Darkness",
+      "Darkness",
+      "Colorless"
+     ],
+     "damage": "110",
+     "text": ""
+    }
+   ],
+   "weak": [
+    "Lightning ×2"
+   ],
+   "resist": [
+    "Fighting -30"
+   ],
+   "retreat": 0,
+   "rules": []
+  },
+  {
+   "name": "Zeraora",
+   "slug": "zeraora",
+   "set": "DRI",
+   "setName": "Destined Rivals",
+   "no": "78",
+   "released": "2025/05/30",
+   "supertype": "Pokémon",
+   "subtypes": [
+    "Basic"
+   ],
+   "mark": "I",
+   "hp": 100,
+   "types": [
+    "Lightning"
+   ],
+   "abilities": [],
+   "attacks": [
+    {
+     "name": "Scratch",
+     "cost": [
+      "Colorless"
+     ],
+     "damage": "20",
+     "text": ""
+    },
+    {
+     "name": "Thunder Raid",
+     "cost": [
+      "Lightning",
+      "Lightning",
+      "Lightning"
+     ],
+     "damage": "",
+     "text": "Discard all Energy from this Pokémon, and this attack does 210 damage to 1 of your opponent's Benched Pokémon ex. (Don't apply Weakness and Resistance for Benched Pokémon.)"
+    }
+   ],
+   "weak": [
+    "Fighting ×2"
+   ],
+   "resist": [],
+   "retreat": 1,
+   "rules": []
+  }
+ ]
+}

@@ -103,6 +103,10 @@ I18N_MORE.de = {
     "Rules": "Regeln",
     // 3.1 What's new
     "Added: card details": "Neu: Kartendetails",
+    "Added: card guides": "Neu: Kartenseiten",
+    "A web page for each card top decks play: its text, the decks that run it and its rules": "Eine Webseite für jede Karte, die Top-Decks spielen: ihr Text, die Decks, die sie spielen, und ihre Regeln",
+    "Added: setup and mulligan rules": "Neu: Regeln zu Spielvorbereitung und Mulligan",
+    "Easier to find in Google and AI assistants": "Leichter zu finden bei Google und in KI-Assistenten",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tippe auf dem Tab Karten auf eine Karte, um ihren ganzen Text, Schwäche, Resistenz und Rückzug, die offiziellen Regeln dazu und ihre Rolle im Deck zu sehen.",
     "Added: official rules": "Neu: offizielle Regeln",
     "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Häufige Regelfragen, beantwortet anhand des offiziellen Regelhefts, jeweils mit Seitenzahl. Sie stehen auch auf der neuen Seite Regeln.",
@@ -155,6 +159,7 @@ I18N_MORE.de = {
     "Spanish and Portuguese: new set line fixed": "Spanisch und Portugiesisch: Zeile zur neuen Erweiterung behoben",
     "Time per guess": "Zeit pro Tipp",
     'Can Your Deck Win?': 'Kann dein Deck gewinnen?',
+    'Free Pokémon TCG Deck Grader': 'Kostenloser Deck-Bewerter für das Pokémon-Sammelkartenspiel',
     'Android app': 'Android-App',
     'coming soon to Google Play': 'bald bei Google Play',
     'Your decks': 'Deine Decks',

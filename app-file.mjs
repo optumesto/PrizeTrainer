@@ -52,13 +52,25 @@ export function staleStamps(htmlPath = path.join(ROOT, 'index.html')) {
     else if (hashOf(text) !== v) bad.push(f);
   };
   for (const m of html.matchAll(JS_RE)) look(m[2], m[3]);
+  const v = appVersion(dir), sv = (html.match(/"softwareVersion":"([^"]*)"/) || [])[1];
+  if (v && sv !== v) bad.push(`softwareVersion ${sv || 'missing'}, want ${v}`);
   return bad;
+}
+
+// The version search engines read (softwareVersion in the page's structured data), kept equal to PT_VERSION.
+function appVersion(dir) {
+  const p = path.join(dir, 'js/core.js');
+  const m = existsSync(p) && /const PT_VERSION = 'v?([^']+)'/.exec(readFileSync(p, 'utf8'));
+  return m ? m[1] : '';
 }
 
 function stamp(htmlPath = path.join(ROOT, 'index.html')) {
   const dir = path.dirname(htmlPath), h = f => hashOf(readFileSync(path.join(dir, f), 'utf8'));
   const html = readFileSync(htmlPath, 'utf8');
-  const out = html.replace(JS_RE, (_, attrs, f) => `<script${attrs} src="${f}?v=${h(f)}"></script>`);
+  const v = appVersion(dir);
+  let out = html.replace(JS_RE, (_, attrs, f) => `<script${attrs} src="${f}?v=${h(f)}"></script>`);
+  if (v) out = /"softwareVersion":"[^"]*"/.test(out) ? out.replace(/"softwareVersion":"[^"]*"/, `"softwareVersion":"${v}"`)
+    : out.replace('"applicationCategory":"GameApplication",', `"applicationCategory":"GameApplication","softwareVersion":"${v}",`);
   if (out !== html) writeFileSync(htmlPath, out);
   return out !== html;
 }
