@@ -20,6 +20,13 @@
 
 const I18N_LANGS = [['en', 'English'], ['es', 'Español'], ['pt', 'Português']];
 const I18N_HTML_LANG = { en: 'en', es: 'es', pt: 'pt-BR' };
+// 3.0.2: more languages, each in its own file loaded before this one (js/i18n-fr.js and so on).
+// Each sets I18N_MORE[code] = { name, html, dict, pat: [[regex, replacement]], scoped: { word: text }, mon, mon3, ord }.
+const I18N_ADD = typeof I18N_MORE === 'object' && I18N_MORE ? I18N_MORE : {};
+for (const l of ['fr', 'de', 'it']) {
+  const x = I18N_ADD[l];
+  if (x && x.dict && x.name) { I18N_LANGS.push([l, x.name]); I18N_HTML_LANG[l] = x.html || l; }
+}
 const I18N_KEY = 'rd_lang';
 
 // Elements whose text is card data or the player's own words.
@@ -2576,6 +2583,7 @@ const I18N_MON = {
 const I18N_MON3 = { es: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'], pt: ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'] };
 /** Dates and ordinals inside a translated string, put into the language. */
 function i18nPost(s, l) {
+  if (l !== 'es' && l !== 'pt') return i18nPostMore(s, l);
   const M = I18N_MONTHS.join('|'), S = I18N_MONTHS.map(m => m.slice(0, 3)).join('|');
   const full = m => I18N_MON[l][I18N_MONTHS.indexOf(m)], short = m => I18N_MON3[l][I18N_MONTHS.findIndex(x => x.startsWith(m))];
   return s
@@ -2588,9 +2596,29 @@ function i18nPost(s, l) {
     .replace(/\b(\d+)(?:st|nd|rd|th)\b(?! [A-Z])/g, (m, n) => n + (l === 'es' ? '.º' : 'º'));
 }
 
+/** Dates and ordinals for a language from I18N_MORE: day month year, and its ordinal mark. */
+function i18nPostMore(s, l) {
+  const x = I18N_ADD[l];
+  if (!x || !Array.isArray(x.mon) || !Array.isArray(x.mon3)) return s;
+  const M = I18N_MONTHS.join('|'), S = I18N_MONTHS.map(m => m.slice(0, 3)).join('|');
+  const full = m => x.mon[I18N_MONTHS.indexOf(m)], short = m => x.mon3[I18N_MONTHS.findIndex(y => y.startsWith(m))];
+  const ord = typeof x.ord === 'function' ? x.ord : n => n + '.';
+  return s
+    .replace(new RegExp(`\\b(${S}) (\\d{1,2}), (\\d{4})\\b`, 'g'), (m, mo, d, y) => `${d} ${short(mo)} ${y}`)
+    .replace(new RegExp(`\\b(\\d{1,2}) (${M}) (\\d{4})\\b`, 'g'), (m, d, mo, y) => `${d} ${full(mo)} ${y}`)
+    .replace(new RegExp(`\\b(${M}) (\\d{4})\\b`, 'g'), (m, mo, y) => `${full(mo)} ${y}`)
+    .replace(new RegExp(`\\b(\\d{1,2}) (${S}) (\\d{4})\\b`, 'g'), (m, d, mo, y) => `${d} ${short(mo)} ${y}`)
+    .replace(new RegExp(`\\b(${S}) (\\d{1,2})\\b`, 'g'), (m, mo, d) => `${d} ${short(mo)}`)
+    .replace(/\b(\d+)(?:st|nd|rd|th)\b(?! [A-Z])/g, (m, n) => ord(n));
+}
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
+  for (const l in I18N_ADD) if (I18N_HTML_LANG[l] && l !== 'es' && l !== 'pt' && l !== 'en') {
+    DICT[l] = Object.assign({}, I18N_ADD[l].dict);
+    PAT[l] = (I18N_ADD[l].pat || []).filter(p => p && p[0] instanceof RegExp);
+  }
   const norm = s => String(s).replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
   // Keys are matched after the same squeeze, so a key written with a curly quote still hits.
   for (const l in DICT) {
@@ -2600,7 +2628,8 @@ const rdI18n = (function () {
   }
   const textMap = new WeakMap();   // text node -> { o: English, t: what we wrote }
   const attrMap = new WeakMap();   // element -> { attr: { o, t } }
-  const cache = { es: new Map(), pt: new Map() };
+  const cache = {};
+  for (const l in DICT) cache[l] = new Map();
   const cardNames = new Set();
   let cur = 'en', obs = null, cardsTried = false;
 
@@ -2610,6 +2639,7 @@ const rdI18n = (function () {
       const n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
       if (n.startsWith('es')) return 'es';
       if (n.startsWith('pt')) return 'pt';
+      for (const l in I18N_HTML_LANG) if (l !== 'en' && DICT[l] && n.startsWith(l)) return l;
     } catch (_) {}
     return 'en';
   }
@@ -2688,8 +2718,10 @@ const rdI18n = (function () {
   function scoped(v, el) {
     const k = I18N_SCOPED[norm(v)];
     if (!k || !el || !el.matches || !el.matches(k[0])) return v;
+    const w = cur === 'es' ? k[1] : cur === 'pt' ? k[2] : ((I18N_ADD[cur] || {}).scoped || {})[norm(v)];
+    if (!w) return v;
     const m = String(v).match(/^(\s*)[\s\S]*?(\s*)$/);
-    return m[1] + (cur === 'es' ? k[1] : k[2]) + m[2];
+    return m[1] + w + m[2];
   }
   function doText(node) {
     const e = textMap.get(node), v = node.nodeValue;

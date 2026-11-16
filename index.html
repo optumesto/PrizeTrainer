@@ -2629,6 +2629,11 @@
   .st38-seg button { flex:1; min-height:44px; padding:0 0.6rem; font-family:var(--display); font-weight:600; font-size:1rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text); background:transparent; border:0; border-left:1px solid var(--line); cursor:pointer; }
   .st38-seg button:first-child { border-left:0; }
   .st38-seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); }
+  /* 3.0.2: six languages, in rows of three */
+  #i18n-lang { display:grid; grid-template-columns:repeat(3, 1fr); }
+  #i18n-lang button { font-size:0.85rem; padding:0 0.3rem; border-top:1px solid var(--line); }
+  #i18n-lang button:nth-child(3n+1) { border-left:0; }
+  #i18n-lang button:nth-child(-n+3) { border-top:0; }
   .st38-rows { display:flex; flex-direction:column; }
   .st38-row { display:flex; align-items:center; gap:0.75rem; min-height:48px; padding:0.35rem 0; border:0; border-bottom:1px solid var(--line); background:none; color:var(--text); text-align:left; width:100%; font:inherit; font-weight:600; cursor:pointer; text-decoration:none; }
   .st38-row:last-child { border-bottom:0; }
@@ -3853,6 +3858,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v80-extras.js?v=8c65f5af"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
-<script src="js/i18n.js?v=1442b9b3"></script>
+<script src="js/i18n-fr.js?v=d4386a43"></script>
+<script src="js/i18n-de.js?v=a3c4eee0"></script>
+<script src="js/i18n-it.js?v=b11e2b8b"></script>
+<script src="js/i18n.js?v=28a36a18"></script>
 </body>
 </html>

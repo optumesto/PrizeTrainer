@@ -31,7 +31,10 @@ const { JSDOM, VirtualConsole, ResourceLoader } = require('jsdom');
 const args = process.argv.slice(2);
 const DUMP = args.includes('--dump');
 const ONLY = (args.find(a => a.startsWith('--lang=')) || '').slice(7);
-const LANGS = ONLY ? [ONLY] : ['es', 'pt'];
+const LANGS = ONLY ? [ONLY] : ['es', 'pt', 'fr', 'de', 'it'];
+// 3.0.2: the html lang each language sets, and how Ask the odds says Open (the opening hand).
+const HTML_LANG = { es: 'es', pt: 'pt-BR', fr: 'fr', de: 'de', it: 'it' };
+const OPEN_WORD = { es: 'Mano', pt: 'Mão', fr: 'Main', de: 'Hand', it: 'Mano' };
 const SHOW = (args.find(a => a.startsWith('--show=')) || '').slice(7);   // print what a screen shows, to read it over
 const FIXED_NOW = Date.parse('2026-11-12T15:00:00Z');
 
@@ -323,9 +326,10 @@ const report = {};
 for (const lang of LANGS) {
   console.log(`\n== ${lang} ==`);
   const { w, d, errors } = await load(lang);
-  ok(d.documentElement.lang === (lang === 'pt' ? 'pt-BR' : lang), `html lang is ${d.documentElement.lang}`);
+  ok(d.documentElement.lang === HTML_LANG[lang], `html lang is ${d.documentElement.lang}`);
+  ok(!!w.rdI18n.dict[lang], `${lang} is loaded and offered in Settings`);
   // Dictionary keys must not be card data.
-  const dict = w.rdI18n.dict[lang];
+  const dict = w.rdI18n.dict[lang] || {};
   const coll = Object.keys(dict).filter(k => names.has(norm(k)));
   const sc = Object.keys(w.rdI18n.scoped).filter(k => names.has(norm(k)));
   console.log(`     scoped words that are also card data (translated only in their own buttons): ${sc.join(', ') || 'none'}`);
@@ -358,7 +362,7 @@ for (const lang of LANGS) {
     }
     if (errors.length > before) console.log('   errors on ' + name + ': ' + errors.slice(before).join(' | ').slice(0, 600));
   }
-  ok(openWord === (lang === 'es' ? 'Mano' : 'Mão'), `Ask the odds: Open (the opening hand) reads ${openWord}, not the verb`);
+  ok(openWord === OPEN_WORD[lang], `Ask the odds: Open (the opening hand) reads ${openWord}, not the verb`);
   ok(!english.length, `no English app text left on any of ${SCREENS.length} screens (${totalKept} card data strings kept)` + (english.length ? ':\n       ' + english.slice(0, 40).join('\n       ') + (english.length > 40 ? `\n       and ${english.length - 40} more` : '') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.
