@@ -34,32 +34,7 @@ Add the English and its translation to both `I18N_ES` and `I18N_PT`. For a strin
 
 ## Wording to check with a native speaker
 
-Spanish items. The Portuguese ones are under Portuguese (pt-BR) below.
-
-- Prerelease: Presentación
-- ACE SPEC: AS TÁCTICO
-- Strong and Fixable: Sólido and Mejorable
-- Supporter: Partidario
-- Lightning: Rayo
-- Darkness: Oscuridad
-- Prize game: Partida de premios
-- Prize trainer: Entrenador de premios
-- Daily list: Mazo de hoy
-- Welcome: Te damos la bienvenida
-- Under 13 note: mamá o papá
-- The date style after "Data as of"
-- Kept in English: Goldfish, Build and Battle Box, Toolbox
-- Grade history (3.0.1): Sube / Baja / Se mantiene en. "Open dots": puntos huecos
-- Puzzle count: resueltos de ... jugados
-- Ask the odds: "1 de cada una (Cyrano y Judge)" and "¿Cuántas copias de X?"
-- "pts" (percentage points in Compare lists and the copies tuner) is kept as pts
-- "All Fire Energy prized" in Compare lists: the Basic Energy type is translated with the same words as elsewhere (Energía Fuego, Energía Oscura), with básica for "Basic ... Energy". Other card names stay English: "Rare Candy: todas en premios"
-- Edit log chip notes: new and cut as nueva / fuera
-- Drills: "It is 3." as La respuesta es 3.
-- Missing art: sin imagen
-- Prices switch (3.0.1): "Con No se ocultan y no se consulta ninguno" (Off shows as No)
-- Offline grade flag: "aviso de calificación" for a grade flag
-- Event record delete: "El historial de calificaciones se queda"
+Spanish and Portuguese were both reviewed screen by screen in the 3.0.2 audit. What is settled and what is still open for each is below.
 
 ## Portuguese (pt-BR)
 
@@ -74,6 +49,24 @@ Still open:
 - "Not legal yet" (a deck that breaks a deck building rule) as Ainda não é legal: correct, but legal also means "cool" in Brazil.
 - puzzle kept as puzzle (Seu puzzle, Modo puzzle).
 - Numbers keep the English decimal point and thousands comma (8.3, 1,597); Brazilian style is 8,3 and 1.597.
+
+## Spanish terms (3.0.2 audit)
+
+Checked against the official Spanish rulebook material on pokemon.com (es-es), the Spanish JCC Pokémon Live interface and WikiDex. One word per concept:
+
+- deck: baraja (as on Spanish cards, in the rulebook and in JCC Pokémon Live; "mazo" is gone). Feminine, so Sólida, Lista para torneo, calificada.
+- Prize cards: cartas de Premio in full, premios for short. Active Spot: Puesto Activo. Bench: Banca. Supporter: Partidario. Item: Objeto. Pokémon Tool: Herramienta Pokémon. Stadium: Estadio. ACE SPEC: AS TÁCTICO. Basic / Special Energy: Energía Básica / Especial. Knocked Out: Fuera de Combate (no "K.O."). Ability: Habilidad. Retreat: Retirar, cost: coste. HP: PS. Stage 1/2: Fase 1/2. Evolves from: Evoluciona de. Discard pile: pila de descartes.
+- Energy words: Planta, Fuego, Agua, Rayo, Psíquica, Lucha, Oscura, Metálica, Dragón, Incolora, Hada (the Basic Energy card names, "Energía Oscura Básica").
+- Prerelease: Presentación. Build and Battle Box: Caja de Combina y Combate.
+- grade: calificación (the deck tab says Nota, see below). Score: puntuación. Win rate: porcentaje de victorias (% de victorias in table headers). Matchup: enfrentamiento. Favored / Unfavored: Favorable / Desfavorable. Setup: preparar. Deal: reparto. Dates: "Datos del 15 nov 2026", "hasta el 15 nov 2026".
+- Kept as players say them: Goldfish, Toolbox, top, meta, online, byes, mulligan.
+
+Open questions for a Spanish speaker:
+
+- baraja instead of mazo: official, but many Latin American players say mazo. Revert in one pass if the owner prefers mazo.
+- Deck tabs are about 52 px wide, so they read Nota, Probab. and Entreno (scoped to .rv-tab). Elsewhere the words are Calificación, Probabilidades and Ejercicios.
+- Still long on a 360 px phone, with no natural shorter wording: Barajas iniciales, Compartir calificación, Todas las barajas, Tiempo prom., En premios.
+
 
 "Skip" and "Psychic" are also attack names, so they translate only inside named buttons.
 
