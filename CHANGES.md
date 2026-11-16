@@ -10,12 +10,13 @@ Changed files: js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (all new), js/i18n.js
 - Each new language is its own file and downloads only when a player picks it (or when the phone is set to that language), so the app is no heavier for anyone else. The service worker saves them for offline use.
 - Fixed in every language: a pattern could swallow the sentence after it, so the new set week line showed half in English in Spanish and Portuguese.
 - Time per guess on the prize results screen is translated.
+- French, German and Italian were each reviewed screen by screen after the first draft: official card game terms (French HIGH-TECH and Pokémon de base, German ASS-KLASSE and Regelzeichen, Italian Esteso and posizione attiva), one word per idea, plurals, dates and numbers in the language, and shorter labels where the 360 px check showed them running long. Logging a match shows the result letters in each language (French V, D, N; German S, N, U; Italian V, S, P).
 - The i18n check now runs all five languages on 60 screens. Wording for a native speaker to check is in i18n-notes-fr.md, i18n-notes-de.md and i18n-notes-it.md.
 - No grade moves. Grade check: 132 of 132 lists unchanged.
 
 # RdyDeck 3.0.1 (build 106): fixes from the 3.0 audit (16 Nov 2026)
 
-Changed files: js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-settings-home.js, js/v301-fixes.js (new), js/i18n.js, js/core.js (version, What's new), index.html (Prizes button, styles, scripts, file stamps), sw.js (cache prize-trainer-v106), build-pages.mjs, how-grading-works.html, privacy.html, tests (owned, reports, extras and i18n checks) and CHANGES.md.
+Changed files: i18n-notes.md, js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-settings-home.js, js/v301-fixes.js (new), js/i18n.js, js/core.js (version, What's new), index.html (Prizes button, styles, scripts, file stamps), sw.js (cache prize-trainer-v106), build-pages.mjs, how-grading-works.html, privacy.html, tests (owned, reports, extras and i18n checks) and CHANGES.md.
 
 - Prices: an On/Off row in Settings, saved on the device. Off hides every price and reads none. On by default.
 - Upgrades: the owned first and cheapest first toggles show only when there is more than one suggestion. Owned first is still off by default.
@@ -23,6 +24,9 @@ Changed files: js/owned-prices.js, js/grade-flag.js, js/v80-extras.js, js/v38-se
 - This grade looks off?: a tap made offline waits on the device (at most 10) and is sent when back online. Turning reports off drops it unsent. Still one flag per deck and grade.
 - Spanish and Portuguese: the English left in grade history, the Home puzzle line, Ask the odds, the drills, Notes compare lists, two Progress tiles and the Hand tab turn 1 line is translated, and dates read the local way. The i18n check now covers 60 screens and fails on any app text left in English. Card, attack and ability names stay English.
 - Ask the odds: Open in the By selector (the opening hand) reads Mano / Mão, not Abrir.
+- Spanish and Portuguese, reviewed screen by screen: official card game terms (Spanish baraja, Puesto Activo, cartas de Premio; Portuguese Campo Ativo, cartas de Prêmio, marca de regulamentação), one word per idea, real singular and plural forms, shorter tab and button labels for phones, and dates in the language. The app title no longer translates (it read RdyMazo in Spanish). Open questions for a native speaker are in i18n-notes.md.
+- Logging a match: the W, L and T buttons show V, D and E in Spanish and Portuguese. Discard reads as the verb on the button and as the pile under the play mat.
+- Buttons in a row (the play screen, the deck builder footer) wrap a long translated label inside the button instead of running off the screen.
 - The Prizes button fits PREMIOS and PRÊMIOS.
 - A Home row no longer stays on Grading... after going back from a deck.
 - The Settings footer shows the build number.

@@ -558,7 +558,7 @@ const I18N_ES = {
   "Going first": "Vas primero",
   "Going second": "Vas segundo",
   "Empty": "Vacío",
-  "Discard": "Descarte",
+  "Discard": "Descartar",
   "New deal going second": "Nuevo reparto yendo segundo",
   "New deal going first": "Nuevo reparto yendo primero",
   "New deal": "Nuevo reparto",
@@ -1443,7 +1443,7 @@ const I18N_PT = {
   "Going first": "Jogando primeiro",
   "Going second": "Jogando em segundo",
   "Empty": "Vazio",
-  "Discard": "Descarte",
+  "Discard": "Descartar",
   "New deal going second": "Nova mão, jogando em 2º",
   "New deal going first": "Nova mão, jogando em 1º",
   "New deal": "Embaralhar",
@@ -2583,6 +2583,12 @@ const I18N_SCOPED = {
   'Grade': ['.rv-tab', 'Nota', null],
   'Odds': ['.rv-tab', 'Probab.', null],
   'Drills': ['.rv-tab', 'Entreno', null],
+  // 3.0.2 audit: the win, loss and tie buttons when logging a match show one letter each.
+  'W': ['.tl-seg .mode-opt', 'V', 'V'],
+  'L': ['.tl-seg .mode-opt', 'D', 'D'],
+  'T': ['.tl-seg .mode-opt', 'E', 'E'],
+  // Discard is a button (the verb) and, under the play mat, the pile (the noun).
+  'Discard': ['.mt-pile span', 'Descarte', 'Descarte'],
 };
 
 const I18N_TYPES = {

@@ -86,6 +86,12 @@ I18N_MORE.de = {
     new: 'neu',
     cut: 'raus',
     Open: 'Hand',
+    // Win, loss and tie buttons when logging a match.
+    W: 'S',
+    L: 'N',
+    T: 'U',
+    // The pile under the play mat (the dictionary has the button verb).
+    'Discard': 'Ablage',
   },
   // Keyed on the English, like I18N_ES.
   dict: {
@@ -611,13 +617,13 @@ I18N_MORE.de = {
     'Going first': 'Du beginnst',
     'Going second': 'Du bist Zweiter',
     'Empty': 'Leer',
-    'Discard': 'Ablage',
+    'Discard': 'Ablegen',
     'New deal going second': 'Neu als Zweiter',
     'New deal going first': 'Neu als Erster',
     'New deal': 'Neu austeilen',
     'Start turn 1': 'Zug 1 starten',
     'Goldfish rules.': 'Goldfish-Regeln.',
-    'You draw every turn, one Energy and one Supporter a turn, no Supporter on turn 1 going first, and no evolving on your first turn or onto a Pokémon that came in this turn. Abilities, Items, Supporters and Stadiums do what their card text says, with each card\'s own limits. Effects on your opponent do nothing here. When the app cannot follow a card yet, it shows the text and you use Draw, Search and Discard.': 'Du ziehst jeden Zug, eine Energie und ein Unterstützer pro Zug, kein Unterstützer in Zug 1, wenn du beginnst, und keine Entwicklung in deinem ersten Zug oder auf ein Pokémon, das in diesem Zug kam. Fähigkeiten, Items, Unterstützer und Stadien tun, was ihr Kartentext sagt, mit den Grenzen jeder Karte. Effekte auf den Gegner bewirken hier nichts. Kann die App einer Karte noch nicht folgen, zeigt sie den Text und du nutzt Ziehen, Suchen und Ablage.',
+    'You draw every turn, one Energy and one Supporter a turn, no Supporter on turn 1 going first, and no evolving on your first turn or onto a Pokémon that came in this turn. Abilities, Items, Supporters and Stadiums do what their card text says, with each card\'s own limits. Effects on your opponent do nothing here. When the app cannot follow a card yet, it shows the text and you use Draw, Search and Discard.': 'Du ziehst jeden Zug, eine Energie und ein Unterstützer pro Zug, kein Unterstützer in Zug 1, wenn du beginnst, und keine Entwicklung in deinem ersten Zug oder auf ein Pokémon, das in diesem Zug kam. Fähigkeiten, Items, Unterstützer und Stadien tun, was ihr Kartentext sagt, mit den Grenzen jeder Karte. Effekte auf den Gegner bewirken hier nichts. Kann die App einer Karte noch nicht folgen, zeigt sie den Text und du nutzt Ziehen, Suchen und Ablegen.',
     'Draw': 'Ziehen',
     'Search': 'Suchen',
     'Draw 1': '1 ziehen',
@@ -626,7 +632,7 @@ I18N_MORE.de = {
     'To hand': 'Auf die Hand',
     'No cards here.': 'Hier keine Karten.',
     'Nothing in the deck fits.': 'Nichts im Deck passt.',
-    'The app cannot follow this card\'s text yet. Do it with Draw, Search and Discard below, then tap Done.': 'Die App kann dem Text dieser Karte noch nicht folgen. Mach es unten mit Ziehen, Suchen und Ablage und tippe dann auf Fertig.',
+    'The app cannot follow this card\'s text yet. Do it with Draw, Search and Discard below, then tap Done.': 'Die App kann dem Text dieser Karte noch nicht folgen. Mach es unten mit Ziehen, Suchen und Ablegen und tippe dann auf Fertig.',
     'Both went to your hand. Attach one of them to a Pokémon.': 'Beide kamen auf deine Hand. Lege eine davon an ein Pokémon an.',
     'Switch it into the Active Spot': 'In die Aktive Position wechseln',
     'Stop here': 'Hier aufhören',

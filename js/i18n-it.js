@@ -80,6 +80,12 @@ I18N_MORE.it = {
     "Open": "Mano",
     // Deck tab (.rv-tab) is about 52 px wide in capitals: Probabilità is cut off there.
     "Odds": "Probab.",
+    // Win, loss and tie buttons when logging a match.
+    "W": "V",
+    "L": "S",
+    "T": "P",
+    // The pile under the play mat (the dictionary has the button verb).
+    "Discard": "Scarti",
   },
   dict: {
     "Added: French, German and Italian": "Nuovo: francese, tedesco e italiano",
@@ -604,7 +610,7 @@ I18N_MORE.it = {
     "Going first": "Per primo",
     "Going second": "Per secondo",
     "Empty": "Vuoto",
-    "Discard": "Scarti",
+    "Discard": "Scarta",
     "New deal going second": "Rimischia per secondo",
     "New deal going first": "Rimischia per primo",
     "New deal": "Rimischia",

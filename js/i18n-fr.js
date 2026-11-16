@@ -85,6 +85,12 @@ I18N_MORE.fr = {
     'new': 'nouvelle',
     'cut': 'retirée',
     'Open': 'Main',
+    // Win, loss and tie buttons when logging a match.
+    'W': 'V',
+    'L': 'D',
+    'T': 'N',
+    // The pile under the play mat (the dictionary has the button verb).
+    "Discard": "Défausse",
   },
   dict: {
     "Added: French, German and Italian": "Nouveau : français, allemand et italien",
@@ -609,7 +615,7 @@ I18N_MORE.fr = {
     "Going first": "Vous commencez",
     "Going second": "Vous jouez second",
     "Empty": "Vide",
-    "Discard": "Défausse",
+    "Discard": "Défausser",
     "New deal going second": "Nouvelle donne en jouant second",
     "New deal going first": "Nouvelle donne en commençant",
     "New deal": "Nouvelle donne",
