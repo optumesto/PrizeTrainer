@@ -2117,32 +2117,67 @@ function gtUnmet(entries, coh, text) {
   return miss;
 }
 
-/** The jobs a Trainer or Special Energy does, from its text: what the grade weighs it for. */
+/**
+ * The jobs a Trainer or Special Energy does, from its text: what the grade weighs it for.
+ * 2.8.2: reads every legal Trainer. Energy removal, hand disruption, Tool removal, damage cuts,
+ * attack Tools, Fossils, extra Prizes and the rest each have a job of their own, and Stadium text
+ * ("their deck", "their Bench") reads like your own. A cost in symbols reads as "Colorless" words.
+ */
 function gtRoles(text, kind) {
   const t = gtNorm(text), r = new Set();
-  if (/switch(?: in)? 1 of your opponent's benched pokemon/.test(t)) r.add('gust');
-  if (/switch your active pokemon with 1 of your benched|switch that pokemon with your active pokemon|has no retreat cost|retreat cost is (?:\d+|c+) less|put 1 of your pokemon and all attached cards into your hand/.test(t)) r.add('switch');
-  if (/\bdraws? (?:\d+ |a )?cards?\b|draws? a card for each|draws? cards until/.test(t.replace(/(?:your opponent|they) draws? \d+ cards?/g, ''))) r.add('draw');
-  if (/search your deck for (?!up to \d+ cards and discard)/.test(t) || /you may reveal [^.]+ you find there/.test(t)) r.add('search');
-  if (/from your discard pile into your (?:hand|deck)|shuffle [^.]+ from your discard pile into your deck/.test(t)) r.add('recovery');
-  if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|search your deck for [^.]{0,60}energy[^.]{0,40} and attach (?:it|them)\b|look at the top \d+ cards of your deck and attach [^.]{0,80}energy[^.]{0,30} you find there|provides every type of energy|costs \d+ energy less/.test(t)) r.add('energy');
+  const C = '(?:\\{c\\}|colorless)+';   // "{C}{C}" and "ColorlessColorless" both read as Colorless symbols
+  if (/switch(?: in)? 1 of your opponent's benched (?:[a-z]+ ){0,2}pokemon/.test(t)) r.add('gust');
+  if (/switch (?:your|their) active (?:[a-z]+ )?pokemon with 1 of (?:your|their) benched|switch that pokemon with your active pokemon|(?:has|have) no retreat cost|put 1 of your pokemon and all attached cards into your hand/.test(t)
+    || new RegExp(`retreat cost[^.]{0,90}? is (?:\\d+|c+|${C}) less`).test(t)) r.add('switch');
+  if (/\bdraws? (?:\d+ |a )?cards?\b|draws? a card for each|draws? cards until|look at the top \d+ cards of your deck and put (?:up to )?\d+ (?:of them )?into your hand/.test(t.replace(/(?:your opponent|they) draws? (?:\d+ cards?|that many cards)/g, ''))) r.add('draw');
+  if (/search (?:your|their) deck for (?!up to \d+ cards and discard)/.test(t) || /you may reveal [^.]+ you find there/.test(t)) r.add('search');
+  if (/from (?:your|their) discard pile into (?:your|their) (?:hand|deck)|shuffle [^.]+ from your discard pile into your deck/.test(t)) r.add('recovery');
+  if (/attach [^.]{0,60}energy[^.]{0,40}from your (?:deck|discard pile)|search your deck for [^.]{0,60}energy[^.]{0,40} and attach (?:it|them)\b|look at the top \d+ cards of your deck and attach [^.]{0,80}energy[^.]{0,30} you find there|provides every type of energy|costs \d+ energy less/.test(t)
+    || new RegExp(`cost (?:\\d+ energy|${C}) less`).test(t)) r.add('energy');
+  // Moving Energy between your own Pokemon (Energy Switch, N's Plan, Heavy Baton). Moving it off the Attacking Pokemon is disruption.
+  const mv = t.match(/move (?:a|an|\d+|any amount of|up to \d+) [^.]{0,40}?energy(?: cards?)? from ([^.]{0,30})/);
+  if (mv && !/^(?:the attacking|your opponent's)/.test(mv[1])) r.add('energy');
   if (/gets \+\d+ hp|is not knocked out|takes 1 fewer prize/.test(t)) r.add('survive');
-  if (/do \d+ more damage/.test(t)) r.add('damage');
-  if (/heal \d+ damage/.test(t)) r.add('heal');
-  if (/your opponent shuffles|each player shuffles their hand|opponent's active pokemon is now|discard all pokemon tools and special energy|discard a stadium in play|put \d+ damage counters on the attacking|pokemon in play \((?:both yours and your opponent's|yours and your opponent's)\) have no abilities/.test(t)) r.add('disrupt');
-  if (/onto your bench/.test(t)) r.add('bench');
-  if (/evolve it|skipping the stage 1/.test(t)) r.add('evolve');
-  if (/search your deck for up to \d+ cards and discard them/.test(t)) r.add('discard');
+  if (/takes? \d+ less damage/.test(t)) r.add('reduce');
+  if (/do \d+ more damage|put \d+ damage counters on 1 of your opponent's|put \d+ more damage counters on each poisoned/.test(t)) r.add('damage');
+  if (/take \d+ more prize cards?/.test(t)) r.add('prize');
+  if (/can use the attack on this card/.test(t)) r.add('attack');
+  if (/ignore all results of those coin flips/.test(t)) r.add('coins');
+  if (/heal (?:\d+|all) damage/.test(t)) r.add('heal');
+  if (/double the amount of damage healed/.test(t)) r.add('healup');
+  if (/discard (?:a|an|\d+) (?:special |basic )?energy from (?:1 of )?your opponent's|discard [^.]{0,30}special energy(?: card)? from 1 of your opponent's|put an energy attached to 1 of your opponent's pokemon into their hand/.test(t)) r.add('denial');
+  if (/your opponent reveals their hand, and you (?:discard|choose)|(?:your opponent|each player) discards cards from their hand|your opponent counts the cards in their hand|card from your opponent's hand/.test(t)) r.add('hand');
+  if (/pokemon tools? attached to [^.]{0,80}(?:discard them|have no effect)|discard a pokemon tool [^.]{0,40}from 1 of your opponent's/.test(t)) r.add('tools');
+  if (/your opponent shuffles|each player shuffles their hand|opponent's active pokemon is now|discard all pokemon tools and special energy|discard a stadium in play|(?:put|place) \d+ damage counters on (?:the attacking|that pokemon)|the attacking pokemon is now|pokemon in play \((?:both yours and your opponent's|yours and your opponent's)\) have no abilities/.test(t)
+    || /both active [^.]{0,30}pokemon are now|switch out your opponent's active pokemon|opponent's face-down prize|from the attacking pokemon to 1 of your opponent's|(?:opponent's|their) [^.]{0,30}pokemon can't retreat|gets -\d+ hp|don't recover from that special condition/.test(t)
+    || new RegExp(`retreat cost of both active pokemon is ${C} more|cost ${C} more`).test(t)) r.add('disrupt');
+  if (/onto your bench|and put (?:it|them) onto their bench|up to \d+ pokemon on their bench/.test(t)) r.add('bench');
+  if (/evolve it|skipping the stage 1|can evolve into [^.]{0,40} during the turn they play/.test(t)) r.add('evolve');
+  if (/play this card as if it were a \d+-hp basic/.test(t)) r.add('fossil');
+  if (/in your discard pile[^.]{0,40} and switch it with 1 of your/.test(t)) r.add('swapin');
+  if (/devolve 1 of your/.test(t)) r.add('devolve');
+  if (/search your deck for up to \d+ cards and discard them|discard the top \d+ cards of your deck|look at the top \d+ cards of your deck and discard any number/.test(t)) r.add('discard');
+  if (/put a card from their hand on top of their deck|look at the top \d+ cards of your deck and put them back|look at the top \d+ cards of your deck and discard any number/.test(t)) r.add('order');
+  if (/count your prize cards, shuffle them/.test(t)) r.add('prizes');
   if (/prevent all damage/.test(t)) r.add('protect');
+  if (kind !== 'energy' && /recovers from all special conditions/.test(t)) r.add('cure');
   if (kind === 'energy' && !r.size) r.add('energy');
   return r;
 }
 const GT_ROLE_SAY = { gust: 'pulls up a Benched Pokemon', switch: 'switches your Active Pokemon', draw: 'draws you cards', search: 'finds cards in your deck',
   recovery: 'gets cards back from your discard pile', energy: 'helps pay Energy costs', survive: 'keeps an attacker alive longer', damage: 'adds damage',
-  heal: 'heals', disrupt: 'disrupts your opponent', bench: 'fills your Bench', evolve: 'speeds up evolving', discard: 'fills your discard pile', protect: 'blocks damage' };
+  heal: 'heals', disrupt: 'disrupts your opponent', bench: 'fills your Bench', evolve: 'speeds up evolving', discard: 'fills your discard pile', protect: 'blocks damage',
+  reduce: 'cuts the damage your Pokemon take', prize: 'takes extra Prize cards', attack: 'gives a Pokemon another attack', coins: "lets an attack's coins be flipped again",
+  denial: "removes your opponent's Energy", hand: "disrupts your opponent's hand", tools: 'gets rid of Pokemon Tools', fossil: 'plays as a Basic Pokemon to evolve from',
+  swapin: 'swaps in a Pokemon from your discard pile', devolve: 'devolves your Pokemon to use them again', order: 'sets up the top of your deck',
+  prizes: 'swaps out your Prize cards', cure: 'stops Special Conditions', healup: 'makes healing stronger' };
 const GT_ROLE_DO = { gust: 'pull up a Benched Pokemon', switch: 'switch your Active Pokemon', draw: 'draw you cards', search: 'find your Pokemon',
   recovery: 'get cards back from your discard pile', energy: 'help pay Energy costs', survive: 'keep an attacker alive longer', damage: 'add damage',
-  heal: 'heal', disrupt: 'disrupt your opponent', bench: 'fill your Bench', evolve: 'speed up evolving', discard: 'fill your discard pile', protect: 'block damage' };
+  heal: 'heal', disrupt: 'disrupt your opponent', bench: 'fill your Bench', evolve: 'speed up evolving', discard: 'fill your discard pile', protect: 'block damage',
+  reduce: 'cut the damage your Pokemon take', prize: 'take extra Prize cards', attack: 'give a Pokemon another attack', coins: "let an attack's coins be flipped again",
+  denial: "remove your opponent's Energy", hand: "disrupt your opponent's hand", tools: 'get rid of Pokemon Tools', fossil: 'play as a Basic Pokemon to evolve from',
+  swapin: 'swap in a Pokemon from your discard pile', devolve: 'devolve your Pokemon to use them again', order: 'set up the top of your deck',
+  prizes: 'swap out your Prize cards', cure: 'stop Special Conditions', healup: 'make healing stronger' };
 
 function gtQ(entries, f) { return entries.reduce((a, e) => a + (e.card && f(e.card) ? e.qty : 0), 0); }
 
@@ -2348,10 +2383,7 @@ function gtFit(entries, coh, via, main, ctx) {
   if (!pool.length) return [];
   const text = c => c.t === 'energy' ? (c.et || '') : (c.rt || '');
   const kind = c => c.t === 'energy' ? 'energy' : c.tt;
-  // Moving Energy between your Pokemon (Energy Switch) counts as Energy help here; the grade's own roles stay as they are.
-  const roleOf = new Map(pool.map(e => { const r = new Set(gtRoles(text(e.card), kind(e.card)));
-    if (/move (?:a|an|\d+|any amount of|up to \d+) [^.]{0,40}energy from/.test(gtNorm(text(e.card)))) r.add('energy');
-    return [e.card.key, r]; }));
+  const roleOf = new Map(pool.map(e => [e.card.key, gtRoles(text(e.card), kind(e.card))]));
   // One row per card name, however many printings the list names.
   const one = new Map(); pool.forEach(e => { const o = one.get(e.card.key); if (o) o.qty += e.qty; else one.set(e.card.key, { name: e.name, qty: e.qty, card: e.card }); });
   // Pokemon search counts cards that search for Pokemon, Trainers or Abilities alike, as the grade does.
@@ -2410,7 +2442,9 @@ function gtFit(entries, coh, via, main, ctx) {
         const r = [...roles][0];
         row.why = r ? `${up(GT_ROLE_SAY[r])}${roles.size > 1 ? ` and ${GT_ROLE_SAY[[...roles][1]]}` : ''}${(copies[r] || 0) > e.qty ? `, one of ${copies[r]} cards that do` : ''}.` : '';
         // v71: a card whose job RdyDeck doesn't read gets no label, not Good on its say-so.
-        if (!r) { row.fit = null; row.why = c.tt === 'stadium' ? "RdyDeck can't read what this Stadium does for this list, so it has no label. Playing it does remove a Stadium your opponent has in play." : "RdyDeck can't read what this card does for this list, so it has no label."; }
+        // 2.8.2: RdyDeck reads every legal card now (tests/grade-check.mjs checks), so this is left for a card whose text was not read.
+        if (!r && !tx) { row.fit = null; row.why = "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it."; }
+        else if (!r) { row.fit = null; row.why = c.tt === 'stadium' ? "RdyDeck can't read what this Stadium does for this list, so it has no label. Playing it does remove a Stadium your opponent has in play." : "RdyDeck can't read what this card does for this list, so it has no label."; }
       }
     }
     out.push(row);
@@ -7311,9 +7345,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.8.1',
+  version: 'v2.8.2',
   kind: 'fix',
   items: [
+    { t: 'Every card now gets a label' },
     { t: 'Changed: easier to read Goldfish and puzzle boards' },
     { t: 'Added: How to improve your deck guide' },
     { t: 'Search and AI assistant updates' },
@@ -10229,8 +10264,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v2.8.1';
-const PT_BUILD = 102;
+const PT_VERSION = 'v2.8.2';
+const PT_BUILD = 103;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

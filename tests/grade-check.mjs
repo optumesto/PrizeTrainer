@@ -17,6 +17,15 @@
 //                                          a short report. It never fails and never touches the baseline.
 //   --record --record-from=<module> records from a local stand-in for the APIs
 //                                          (a module exporting fakeFetch(url)) instead
+//   node tests/grade-check.mjs --record-text
+//                                          read the text of every legal Trainer and Special Energy
+//                                          in cards.json again (from pokemon-tcg-data, or from
+//                                          PT_PTCG_DIR laid out as build-cards.mjs reads it) into
+//                                          tests/card-text.json. Run it when cards.json gains cards.
+//
+// 2.8.2: every check also makes sure RdyDeck can read every card. Each Trainer and Special Energy
+// in the top lists must get a fit label and a job, and so must every legal one in cards.json (read
+// from tests/card-text.json with the app's own reader). A card it can't read fails the check.
 //
 // The card data the app reads (pokemontcg.io, TCGdex) is saved in
 // tests/grade-cards.json.gz, so a check gives the same answer every time and
@@ -38,7 +47,7 @@ const require = createRequire(path.join(HERE, 'package.json'));
 const { JSDOM, VirtualConsole } = require('jsdom');
 
 const args = process.argv.slice(2);
-const MODE = args.includes('--record') ? 'record' : args.includes('--update') ? 'update' : 'check';
+const MODE = args.includes('--record-text') ? 'text' : args.includes('--record') ? 'record' : args.includes('--update') ? 'update' : 'check';
 const ONLY = (args.find(a => a.startsWith('--only=')) || '').slice(7).toLowerCase();
 const VERBOSE = args.includes('--verbose');
 const REPORT = (args.find(a => a.startsWith('--results=')) || '').slice(10);
@@ -51,6 +60,36 @@ const upstream = FROM ? (await import(path.resolve(FROM))).fakeFetch : null;
 const LISTS = path.join(HERE, 'grade-lists.json');
 const CARDS = path.join(HERE, 'grade-cards.json.gz');
 const BASE = path.join(HERE, 'grade-baseline.json');
+const TEXT = path.join(HERE, 'card-text.json');
+
+// ── --record-text: the text of every legal Trainer and Special Energy ─────
+if (MODE === 'text') {
+  const PTCG = 'https://raw.githubusercontent.com/PokemonTCG/pokemon-tcg-data/master', DIR = process.env.PT_PTCG_DIR || '';
+  const get = async p => {
+    if (DIR) { try { return JSON.parse(fs.readFileSync(path.join(DIR, p), 'utf8')); } catch (_) { return null; } }
+    await new Promise(r => setTimeout(r, 300));
+    const r = await fetch(`${PTCG}/${p}`, { headers: { 'User-Agent': 'RdyDeck-tests/1.0 (+https://rdydeck.com/)' } });
+    return r.ok ? r.json() : null;
+  };
+  const want = new Map(JSON.parse(fs.readFileSync(path.join(ROOT, 'cards.json'), 'utf8')).cards
+    .filter(c => c.k === 'T' || (c.k === 'E' && !c.be)).map(c => [c.n, c]));
+  const sets = await get('sets/en.json');
+  if (!Array.isArray(sets)) { console.error('Set list unreadable.'); process.exit(2); }
+  const out = {};
+  for (const st of sets.filter(x => /^(sv|zsv|rsv|me|svp$|sve$)/.test(x.id))) {
+    const cards = await get(`cards/en/${st.id}.json`);
+    for (const c of cards || []) {
+      const n = String(c.name || '').replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ').trim();
+      if (!want.has(n) || out[n] || !(c.supertype === 'Trainer' || c.supertype === 'Energy')) continue;
+      out[n] = { kind: c.supertype === 'Energy' ? 'energy' : ({ I: 'item', S: 'supporter', D: 'stadium', O: 'tool' })[want.get(n).tk] || 'item', supertype: c.supertype, subtypes: c.subtypes || [], rules: c.rules || [] };
+    }
+  }
+  const sorted = Object.fromEntries(Object.keys(out).sort().map(k => [k, out[k]]));
+  fs.writeFileSync(TEXT, JSON.stringify({ note: 'Card text of every legal Trainer and Special Energy in cards.json, from pokemon-tcg-data, for the check that RdyDeck reads every card. Written by tests/grade-check.mjs --record-text.', cards: sorted }, null, 1) + '\n');
+  const miss = [...want.keys()].filter(n => !out[n]);
+  console.log(`Saved the text of ${Object.keys(out).length} cards to tests/card-text.json.${miss.length ? ' No text found for: ' + miss.join(', ') : ''}`);
+  process.exit(0);
+}
 
 // ── saved API responses ──────────────────────────────────────────────────
 let cache = {};
@@ -216,12 +255,21 @@ async function gradeList(w, list, i) {
       const m = line.match(/([0-9.]+) times ([0-9.]+), divided by 10, is ([0-9]+[.][0-9])/);
       if (!m || gR1(+m[1] * +m[2] / 10) !== +m[3]) throw new Error('the sum under the grade does not add up: ' + line);
     }
-    return { R, cov };
+    // 2.8.2: every Trainer and Special Energy must get a fit label and a job RdyDeck reads.
+    const tr = R.coh && R.coh.trainers, unread = [];
+    if (tr) (tr.fit || []).forEach(r => { if (!r.fit || !(r.roles || []).length) unread.push(r.name); });
+    for (const c of deck.cards) {
+      if (!c.ace) continue;
+      const kd = c.supertype === 'Energy' ? 'energy' : String(c.ttype || 'item').toLowerCase();
+      const tx = kd === 'energy' ? c.etext : c.rtext;
+      if (tx && !gtRoles(tx, kd).size) unread.push(c.name + ' (ACE SPEC)');
+    }
+    return { R, cov, unread };
   })`);
   grading = true;
   let out;
   try { out = await run(listText(list), list.deckName, list.rotated || null, list.oldPrinting || null); } finally { grading = false; }
-  const { R, cov } = out;
+  const { R, cov, unread } = out;
   return {
     id: String(i + 1).padStart(3, '0'),
     deck: list.deckName, place: list.place, event: list.event,
@@ -233,6 +281,7 @@ async function gradeList(w, list, i) {
     read: cov ? cov.resolved + '/' + cov.total : '?',
     // Held at the legality cap: which cards, so a move to 4.9 explains itself.
     cap: R.rawOverall != null ? String((R.coh.flaws[0] || {}).d || '').split('.')[0] : undefined,
+    unread,
   };
 }
 
@@ -362,6 +411,36 @@ if (MODE === 'record') {
   console.log(`Saved ${Object.keys(cache).length} card data responses to tests/grade-cards.json.gz`);
 }
 
+// 2.8.2: RdyDeck must read every card. Cards in the top lists, as the app read them above:
+const unreadInLists = new Map();
+for (const r of results) for (const n of r.unread || []) unreadInLists.set(n, (unreadInLists.get(n) || 0) + 1);
+// Every legal Trainer and Special Energy, from the saved text, through the app's own reader.
+const unreadLegal = [], noText = [];
+if (!ONLY) {
+  const legal = JSON.parse(fs.readFileSync(path.join(ROOT, 'cards.json'), 'utf8')).cards.filter(c => c.k === 'T' || (c.k === 'E' && !c.be));
+  const saved = fs.existsSync(TEXT) ? JSON.parse(fs.readFileSync(TEXT, 'utf8')).cards : {};
+  w.__ct = JSON.stringify(saved);
+  const jobs = JSON.parse(w.eval(`(function () {
+    const T = JSON.parse(window.__ct), out = {};
+    for (const n of Object.keys(T)) {
+      const c = T[n];
+      // The text the app keeps, read the way the app reads a card from pokemontcg.io.
+      const en = TCGEnrich.enrichCard({ name: n, supertype: c.supertype, subtypes: c.subtypes, rules: c.rules });
+      out[n] = [...gtRoles(c.kind === 'energy' ? en.etext : en.rtext, c.kind)];
+    }
+    return JSON.stringify(out);
+  })()`));
+  for (const c of legal) {
+    if (!jobs[c.n]) noText.push(c.n);
+    else if (!jobs[c.n].length) unreadLegal.push(c.n);
+  }
+  console.log(`Read ${legal.length - noText.length} of ${legal.length} legal Trainers and Special Energy: ${unreadLegal.length} with no job RdyDeck reads.`);
+}
+if (unreadInLists.size) console.log(`${unreadInLists.size} cards in the top lists get no fit label or no job:\n` + [...unreadInLists].map(([n, k]) => `  ${n} (${k} list${k === 1 ? '' : 's'})`).join('\n'));
+if (unreadLegal.length) console.log(`${unreadLegal.length} legal cards RdyDeck can't read (teach gtRoles in js/core.js what they do):\n  ` + unreadLegal.join(', '));
+if (noText.length) console.log(`${noText.length} legal cards have no saved text (run node tests/grade-check.mjs --record-text):\n  ` + noText.join(', '));
+const readFail = unreadInLists.size + unreadLegal.length + noText.length;
+
 const base = fs.existsSync(BASE) ? JSON.parse(fs.readFileSync(BASE, 'utf8')) : { lists: {} };
 const fmt = r => r.error ? 'error' : `${r.grade.toFixed(1)} (Synergy ${r.synergy}, Power ${r.power}, read ${r.read}${r.cap ? ', not legal: ' + r.cap : ''})`;
 const moved = [], broke = results.filter(r => r.error);
@@ -384,7 +463,8 @@ if (moved.length) {
 if (MODE === 'check') {
   const missingBase = results.filter(r => !base.lists[r.id]).length;
   if (missingBase) console.log(`${missingBase} lists have no baseline grade yet. Run --update to set one.`);
-  const fail = moved.length || broke.length || missed.size || missingBase;
+  const fail = moved.length || broke.length || missed.size || missingBase || readFail;
+  if (readFail) console.log('Card read check FAILED: every card must get a label.');
   console.log(fail ? 'Grade check FAILED. If every move above is intended, run: node tests/grade-check.mjs --update' : 'Grade check passed: no grade moved.');
   process.exit(fail ? 1 : 0);
 }

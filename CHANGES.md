@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.8.2 (build 103): every card now gets a label (16 Nov 2026)
+
+Changed files: js/core.js (card jobs, Trainers fit labels, version, What's new), index.html (file stamps), tests/grade-check.mjs (card read check, --record-text), tests/card-text.json (new), sw.js (cache prize-trainer-v103) and CHANGES.md.
+
+- The Trainers section said "RdyDeck can't read what this card does for this list" for 82 of the 261 legal Trainers, 28 of them in the top lists (Crushing Hammer, Xerosic's Machinations, Custom Vest, Enhanced Hammer, Tool Scrapper, Air Balloon, Risky Ruins, Gravity Mountain and more). The card reader now reads every one of them.
+- New jobs: removes your opponent's Energy (Crushing Hammer, Enhanced Hammer, Rust Syndicate Grunt, Chill Teaser Toy), disrupts your opponent's hand (Xerosic's Machinations, Eri, Hand Trimmer, Energy Swatter, Meddling Memo), gets rid of Pokemon Tools (Tool Scrapper, Jamming Tower), cuts the damage your Pokemon take (Custom Vest, the type Berries, Full Metal Lab, Jasmine's Gaze), takes extra Prize cards (Briar), gives a Pokemon another attack (Technical Machine: Fluorite, Core Memory), plays as a Basic Pokemon (the Antique Fossils), sets up the top of your deck (Academy at Night, Deduction Kit), and a few more for single cards.
+- Reading fixes: a cost written as Colorless symbols reads ("ColorlessColorless less", so Air Balloon switches), Stadiums that say "their deck" or "their Bench" read like your own (Lumiose City, Levincia, Surfing Beach), "heal all damage" heals (Wally's Compassion), and looking at the top cards and keeping some draws (Hassel, Explorer's Guidance). Handheld Fan moves your opponent's Energy, so it now disrupts rather than helps your Energy.
+- Labels only: no grade moves. Grade check: 132 of 132 lists unchanged. Some labels shift with the new counts: a few draw and search cards drop from Key to Good where more cards now count for the same job, and Rosa's Encouragement is Key in Dragapult now that Handheld Fan no longer counts as Energy help.
+- The grade check now fails if any Trainer or Special Energy in the top lists gets no label, or if any legal one in cards.json has no job RdyDeck reads (from tests/card-text.json; run --record-text when cards.json gains cards).
+
 # RdyDeck 2.8.1 (build 102): What's new also names the 2.8 boards (15 Nov 2026)
 
 Changed files: js/core.js (What's new, build), index.html (file stamps), sw.js (cache prize-trainer-v102) and CHANGES.md.
