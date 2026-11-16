@@ -2250,11 +2250,276 @@ I18N_PAT.unshift(
   [/^(\d+) of your decks (has|have) cards that are not legal or may rotate\.$/, (m, n, h) => n + ' de tus mazos ' + (h === 'has' ? 'tiene' : 'tienen') + ' cartas que no son legales o pueden rotar.', (m, n, h) => n + ' dos seus decks ' + (h === 'has' ? 'tem' : 'têm') + ' cartas que não são legais ou podem rotacionar.'],
 );
 
+// ── 3.0.1: grade history, puzzle line on Home, Odds tab questions, drills, Notes compare ──
+Object.assign(I18N_ES, {
+  // Grade history
+  "Open dots are changes you did not make, like new tournament results.": "Los puntos huecos son cambios que no hiciste tú, como nuevos resultados de torneos.",
+  "Where your history starts.": "Aquí empieza tu historial.",
+  "You changed card printings or set codes.": "Cambiaste impresiones de cartas o códigos de expansión.",
+  "Tournament results also updated.": "También se actualizaron los resultados de torneos.",
+  "Your list did not change.": "Tu lista no cambió.",
+  "You cleared the deck picked under Against the meta.": "Quitaste el mazo elegido en Contra el meta.",
+  "You changed the format.": "Cambiaste el formato.",
+  "You set it as a toolbox deck under Main attacker.": "Lo marcaste como mazo toolbox en Atacante principal.",
+  "You set the main attacker back to Auto.": "Volviste a poner el atacante principal en Auto.",
+  "A RdyDeck update changed how grades are worked out.": "Una actualización de RdyDeck cambió cómo se calculan las calificaciones.",
+  "Some cards are no longer Standard legal.": "Algunas cartas ya no son legales en Estándar.",
+  "Every card is Standard legal again.": "Todas las cartas vuelven a ser legales en Estándar.",
+  "The card data was read again.": "Se volvieron a leer los datos de las cartas.",
+  "Held at this grade until the list is legal.": "Se queda en esta calificación hasta que la lista sea legal.",
+  // Puzzle line on Home and the puzzle result
+  "Today:": "Hoy:",
+  "Today: you looked at the answer": "Hoy: miraste la respuesta",
+  "no win": "sin victoria",
+  "on your first try": "en tu primer intento",
+  "Replay": "Repetir",
+  "Your first try is the one that counts.": "Tu primer intento es el que cuenta.",
+  "That is the shortest win.": "Es la victoria más corta.",
+  "Practice replay: you looked at the answer today.": "Repetición de práctica: hoy miraste la respuesta.",
+  "Practice replay: today's result stays no win.": "Repetición de práctica: el resultado de hoy sigue sin victoria.",
+  "You both took your last Prize card at the same time.": "Los dos tomaron su última carta de Premio al mismo tiempo.",
+  "That goes to Sudden Death, so it is not a win.": "Eso va a Muerte Súbita, así que no es una victoria.",
+  "You have no Pokémon left in play, so your opponent wins.": "No te quedan Pokémon en juego, así que gana tu rival.",
+  "Your opponent took their last Prize card first, so they win.": "Tu rival tomó primero su última carta de Premio, así que gana.",
+  "The line used a draw, a flip or a card you couldn't see, so it can't count as a sure win.": "La jugada usó un robo, una moneda o una carta que no podías ver, así que no cuenta como victoria segura.",
+  "The line used something RdyDeck can't read yet.": "La jugada usó algo que RdyDeck todavía no sabe leer.",
+  "Your turn ended before you took your last Prize card.": "Tu turno terminó antes de que tomaras tu última carta de Premio.",
+  // Odds tab: Ask the odds
+  "and at least": "y al menos",
+  "of each": "de cada una",
+  "Games where the prizes hold so many copies that hand and deck cannot make this until you take the right prize.": "Partidas donde los premios tienen tantas copias que la mano y el mazo no pueden cumplir esto hasta que tomes el premio correcto.",
+  "Games where the prizes hold so many copies that hand and deck cannot make every line of this question until you take the right prize.": "Partidas donde los premios tienen tantas copias que la mano y el mazo no pueden cumplir cada línea de esta pregunta hasta que tomes el premio correcto.",
+  "The same on every turn.": "Es igual en cada turno.",
+  "Now": "Ahora",
+  "Change cards": "Cambiar cartas",
+  "By when": "Para cuándo",
+  "Remove this row": "Quitar esta fila",
+  "Pick a card": "Elige una carta",
+  // Drills
+  "Right.": "Correcto.",
+  "Prized": "En premios",
+  "Prized?": "¿En premios?",
+  "all shown": "todas mostradas",
+  "No cards read from that list.": "No se leyó ninguna carta de esa lista.",
+  "Fewer": "Menos",
+  "Goldfish on time": "Goldfish a tiempo",
+  // Hand tab: the turn 1 line
+  "In hand:": "En la mano:",
+  "Every piece is in your hand.": "Tienes todas las piezas en la mano.",
+  // Notes: Edit log and Compare lists
+  "Line locked in prizes": "Línea atascada en premios",
+  "any opening hand": "cualquier mano inicial",
+  "same": "igual",
+  "printing": "impresión",
+  "new printing": "nueva impresión",
+  "Since import": "Desde la importación",
+  "Since the log started": "Desde que empezó el registro",
+  "Since duplicating": "Desde que se duplicó",
+  "Compare with the original": "Comparar con la original",
+  "Compare with the start": "Comparar con el inicio",
+  "Changes made before then were not recorded.": "Los cambios hechos antes no se registraron.",
+  "Some cards in this list have no card data on this device yet, so those odds may show a question mark.": "Algunas cartas de esta lista todavía no tienen datos en este dispositivo, así que esas probabilidades pueden mostrar un signo de interrogación.",
+  "Some cards in the other list have no card data on this device yet, so those odds may show a question mark.": "Algunas cartas de la otra lista todavía no tienen datos en este dispositivo, así que esas probabilidades pueden mostrar un signo de interrogación.",
+});
+Object.assign(I18N_PT, {
+  // Grade history
+  "Open dots are changes you did not make, like new tournament results.": "Os pontos vazados são mudanças que você não fez, como novos resultados de torneios.",
+  "Where your history starts.": "Aqui começa seu histórico.",
+  "You changed card printings or set codes.": "Você mudou impressões de cartas ou códigos de coleção.",
+  "Tournament results also updated.": "Os resultados de torneios também foram atualizados.",
+  "Your list did not change.": "Sua lista não mudou.",
+  "You cleared the deck picked under Against the meta.": "Você tirou o deck escolhido em Contra o meta.",
+  "You changed the format.": "Você mudou o formato.",
+  "You set it as a toolbox deck under Main attacker.": "Você marcou como deck toolbox em Atacante principal.",
+  "You set the main attacker back to Auto.": "Você voltou o atacante principal para Auto.",
+  "A RdyDeck update changed how grades are worked out.": "Uma atualização do RdyDeck mudou como as notas são calculadas.",
+  "Some cards are no longer Standard legal.": "Algumas cartas não são mais legais no Padrão.",
+  "Every card is Standard legal again.": "Todas as cartas voltaram a ser legais no Padrão.",
+  "The card data was read again.": "Os dados das cartas foram lidos de novo.",
+  "Held at this grade until the list is legal.": "Fica nesta nota até a lista ser legal.",
+  // Puzzle line on Home and the puzzle result
+  "Today:": "Hoje:",
+  "Today: you looked at the answer": "Hoje: você olhou a resposta",
+  "no win": "sem vitória",
+  "on your first try": "na primeira tentativa",
+  "Replay": "Repetir",
+  "Your first try is the one that counts.": "Sua primeira tentativa é a que conta.",
+  "That is the shortest win.": "É a vitória mais curta.",
+  "Practice replay: you looked at the answer today.": "Repetição de treino: hoje você olhou a resposta.",
+  "Practice replay: today's result stays no win.": "Repetição de treino: o resultado de hoje continua sem vitória.",
+  "You both took your last Prize card at the same time.": "Vocês dois pegaram a última carta de Prêmio ao mesmo tempo.",
+  "That goes to Sudden Death, so it is not a win.": "Isso vai para Morte Súbita, então não é vitória.",
+  "You have no Pokémon left in play, so your opponent wins.": "Você não tem mais Pokémon em jogo, então o oponente vence.",
+  "Your opponent took their last Prize card first, so they win.": "O oponente pegou a última carta de Prêmio primeiro, então ele vence.",
+  "The line used a draw, a flip or a card you couldn't see, so it can't count as a sure win.": "A jogada usou uma compra, uma moeda ou uma carta que você não podia ver, então não conta como vitória certa.",
+  "The line used something RdyDeck can't read yet.": "A jogada usou algo que o RdyDeck ainda não sabe ler.",
+  "Your turn ended before you took your last Prize card.": "Seu turno acabou antes de você pegar a última carta de Prêmio.",
+  // Odds tab: Ask the odds
+  "and at least": "e pelo menos",
+  "of each": "de cada uma",
+  "Games where the prizes hold so many copies that hand and deck cannot make this until you take the right prize.": "Partidas em que os prêmios têm tantas cópias que a mão e o deck não conseguem cumprir isto até você pegar o prêmio certo.",
+  "Games where the prizes hold so many copies that hand and deck cannot make every line of this question until you take the right prize.": "Partidas em que os prêmios têm tantas cópias que a mão e o deck não conseguem cumprir cada linha desta pergunta até você pegar o prêmio certo.",
+  "The same on every turn.": "É igual em todo turno.",
+  "Now": "Agora",
+  "Change cards": "Trocar cartas",
+  "By when": "Até quando",
+  "Remove this row": "Remover esta linha",
+  "Pick a card": "Escolha uma carta",
+  // Drills
+  "Right.": "Certo.",
+  "Prized": "Nos prêmios",
+  "Prized?": "Nos prêmios?",
+  "all shown": "todas mostradas",
+  "No cards read from that list.": "Nenhuma carta foi lida dessa lista.",
+  "Fewer": "Menos",
+  "Goldfish on time": "Goldfish no tempo",
+  // Hand tab: the turn 1 line
+  "In hand:": "Na mão:",
+  "Every piece is in your hand.": "Todas as peças estão na sua mão.",
+  // Notes: Edit log and Compare lists
+  "Line locked in prizes": "Linha presa nos prêmios",
+  "any opening hand": "qualquer mão inicial",
+  "same": "igual",
+  "printing": "impressão",
+  "new printing": "nova impressão",
+  "Since import": "Desde a importação",
+  "Since the log started": "Desde o início do registro",
+  "Since duplicating": "Desde a duplicação",
+  "Compare with the original": "Comparar com a original",
+  "Compare with the start": "Comparar com o início",
+  "Changes made before then were not recorded.": "As mudanças feitas antes disso não foram registradas.",
+  "Some cards in this list have no card data on this device yet, so those odds may show a question mark.": "Algumas cartas desta lista ainda não têm dados neste aparelho, então essas chances podem mostrar um ponto de interrogação.",
+  "Some cards in the other list have no card data on this device yet, so those odds may show a question mark.": "Algumas cartas da outra lista ainda não têm dados neste aparelho, então essas chances podem mostrar um ponto de interrogação.",
+});
+// A date the app writes with toLocaleDateString in English ("Nov 12", "Oct 8, 2025"), or null.
+const I18N_DATE = '(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{1,2}(?:, \\d{4})?';
+/** "Today, 3:00 PM", "Yesterday, ..." or a date, as the grade history writes them; null for anything else. */
+function i18nWhen(w, l) {
+  let m = /^(Today|Yesterday), (.+)$/.exec(w);
+  if (m) return (m[1] === 'Today' ? (l === 'es' ? 'Hoy, ' : 'Hoje, ') : (l === 'es' ? 'Ayer, ' : 'Ontem, ')) + m[2];
+  return new RegExp('^' + I18N_DATE + '$').test(w) ? w : null;
+}
+/** The puzzle streak words: "3 wins in a row, 4 days in a row". */
+function i18nRuns(s, l) {
+  return s.replace(/(\d+) wins in a row/g, l === 'es' ? '$1 victorias seguidas' : '$1 vitórias seguidas')
+    .replace(/(\d+) days in a row/g, l === 'es' ? '$1 días seguidos' : '$1 dias seguidos');
+}
+/** True when every name in "A, B and C" (or "A or B") is a card name the app knows. */
+function i18nAllCards(s) {
+  const c = rdI18n.cardNames;
+  return s.split(/, | and | or /).every(x => c.has(rdI18n.norm(x).toLowerCase()));
+}
+/** "3 solved of 5 played", with the words in the singular for 1. */
+function i18nSolved(a, b, l) {
+  return l === 'es' ? a + (a === '1' ? ' resuelto de ' : ' resueltos de ') + b + (b === '1' ? ' jugado' : ' jugados')
+    : a + (a === '1' ? ' resolvido de ' : ' resolvidos de ') + b + (b === '1' ? ' jogado' : ' jogados');
+}
+/** A row of Ask the odds: "2 Crispin", "1 of Arven or Iono", "1 each of Arven and Iono". */
+function i18nAsk(s, l) {
+  const es = l === 'es';
+  return s.split(/, and (?=\d)/).map(r => {
+    const m = /^(\d+) (each of |of )?(.+)$/.exec(r);
+    if (!m) return r;
+    const list = m[3].replace(/ or ([^,]+)$/, es ? ' o $1' : ' ou $1').replace(/ and ([^,]+)$/, es ? ' y $1' : ' e $1');
+    return m[2] === 'each of ' ? m[1] + (es ? ' de cada una (' : ' de cada uma (') + list + ')' : m[2] ? m[1] + ' de ' + list : m[1] + ' ' + list;
+  }).join(es ? ', y ' : ', e ');
+}
+/** A card group name in the compare table: a Basic Energy says its type in the language, any other name stays. */
+function i18nCardOrEnergy(n, l) {
+  const m = /^(Basic )?(\w+) Energy$/.exec(n);
+  if (!m || !I18N_TYPES[l][m[2]]) return n;
+  return i18nEnergy(m[2], l) + (m[1] ? ' básica' : '');
+}
+I18N_PAT.unshift(
+  // Home: the puzzle card and the deck tile
+  [/^(\d+) solved of (\d+) played(?:, (.+)\.)?$/, (m, a, b, r) => i18nSolved(a, b, 'es') + (r ? ', ' + i18nRuns(r, 'es') + '.' : ''), (m, a, b, r) => i18nSolved(a, b, 'pt') + (r ? ', ' + i18nRuns(r, 'pt') + '.' : '')],
+  [/^(\d+) (wins|days) in a row(?:, (\d+) days in a row)?$/, (m, ...x) => i18nRuns(m, 'es'), (m, ...x) => i18nRuns(m, 'pt')],
+  [/^in (\d+) plays?$/, (m, n) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas'), (m, n) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas')],
+  [/^in (\d+) plays?\. (.+)$/, (m, n, r) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas') + '. ' + i18nRuns(r, 'es'), (m, n, r) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas') + '. ' + i18nRuns(r, 'pt')],
+  [/^(\d+) cards? missing art$/, (m, n) => n + (n === '1' ? ' carta sin imagen' : ' cartas sin imagen'), (m, n) => n + (n === '1' ? ' carta sem imagem' : ' cartas sem imagem')],
+  [/^The shortest win takes (\d+)\.$/, 'La victoria más corta toma $1.', 'A vitória mais curta leva $1.'],
+  [/^Today's result stays a win in (\d+) plays?\.$/, (m, n) => 'El resultado de hoy sigue siendo una victoria en ' + n + (n === '1' ? ' jugada.' : ' jugadas.'), (m, n) => 'O resultado de hoje continua uma vitória em ' + n + (n === '1' ? ' jogada.' : ' jogadas.')],
+  // Grade history
+  [/^(Up|Down) ([\d.]+), from ([\d.]+) to ([\d.]+) over (\d+) versions(?:, (\d+) of them your edits)?\.$/,
+    (m, d, x, a, b, n, e) => (d === 'Up' ? 'Sube ' : 'Baja ') + x + ', de ' + a + ' a ' + b + ' en ' + n + ' versiones' + (e ? ', ' + e + (e === '1' ? ' de ellas es una edición tuya' : ' de ellas son ediciones tuyas') : '') + '.',
+    (m, d, x, a, b, n, e) => (d === 'Up' ? 'Subiu ' : 'Caiu ') + x + ', de ' + a + ' para ' + b + ' em ' + n + ' versões' + (e ? ', ' + e + (e === '1' ? ' delas é edição sua' : ' delas são edições suas') : '') + '.'],
+  [/^Holding at ([\d.]+) over (\d+) versions(?:, (\d+) of them your edits)?\.$/,
+    (m, g, n, e) => 'Se mantiene en ' + g + ' en ' + n + ' versiones' + (e ? ', ' + e + (e === '1' ? ' de ellas es una edición tuya' : ' de ellas son ediciones tuyas') : '') + '.',
+    (m, g, n, e) => 'Estável em ' + g + ' em ' + n + ' versões' + (e ? ', ' + e + (e === '1' ? ' delas é edição sua' : ' delas são edições suas') : '') + '.'],
+  [/^Grade over (\d+) versions, from ([\d.]+) to ([\d.]+)$/, 'Calificación en $1 versiones, de $2 a $3', 'Nota em $1 versões, de $2 para $3'],
+  [/^You changed the list: (.+?)\.( Tournament results also updated\.)?$/, (m, d, r) => 'Cambiaste la lista: ' + d + '.' + (r ? ' También se actualizaron los resultados de torneos.' : ''), (m, d, r) => 'Você mudou a lista: ' + d + '.' + (r ? ' Os resultados de torneios também foram atualizados.' : '')],
+  [/^You set it to compare as (.+) under Against the meta\.$/, (m, n) => 'Elegiste compararlo como ' + (n === 'another deck' ? 'otro mazo' : n) + ' en Contra el meta.', (m, n) => 'Você escolheu comparar como ' + (n === 'another deck' ? 'outro deck' : n) + ' em Contra o meta.'],
+  [/^You set the main attacker to (.+)\.$/, (m, n) => 'Pusiste como atacante principal a ' + (n === 'another Pokemon' ? 'otro Pokémon' : n) + '.', (m, n) => 'Você definiu o atacante principal como ' + (n === 'another Pokemon' ? 'outro Pokémon' : n) + '.'],
+  [/^Tournament results updated(?: \(as of (.+)\))?\.$/, (m, a) => 'Se actualizaron los resultados de torneos' + (a ? ' (al ' + a + ')' : '') + '.', (m, a) => 'Os resultados de torneios foram atualizados' + (a ? ' (em ' + a + ')' : '') + '.'],
+  [/^The first version and the newest (\d+) are kept\.$/, 'Se guardan la primera versión y las $1 más nuevas.', 'Ficam guardadas a primeira versão e as $1 mais novas.'],
+  [/^(.+): (\d+\.\d)$/, (m, w, g) => { const r = i18nWhen(w, 'es'); return r == null ? null : r + ': ' + g; }, (m, w, g) => { const r = i18nWhen(w, 'pt'); return r == null ? null : r + ': ' + g; }],
+  [/^((?:Today|Yesterday), .+)$/, (m, w) => i18nWhen(w, 'es'), (m, w) => i18nWhen(w, 'pt')],
+  [new RegExp('^(' + I18N_DATE + ')$'), m => m, m => m],
+  // Odds tab: Ask the odds
+  [/^Chance of at least (.+) (?:by your turn (\d+) \(your first (\d+) cards\)|(in your opening hand))\.$/,
+    (m, a, t, f, o) => 'Probabilidad de al menos ' + i18nAsk(a, 'es') + (o ? ' en tu mano inicial.' : ' para tu turno ' + t + ' (tus primeras ' + f + ' cartas).'),
+    (m, a, t, f, o) => 'Chance de pelo menos ' + i18nAsk(a, 'pt') + (o ? ' na sua mão inicial.' : ' até o seu turno ' + t + ' (suas primeiras ' + f + ' cartas).')],
+  [/^How many (.+)\?$/, '¿Cuántas copias de $1?', 'Quantas cópias de $1?'],
+  [/^The same question by (?:turn (\d+)|(opening hand)), with more or fewer copies\.$/,
+    (m, t, o) => 'La misma pregunta ' + (o ? 'en la mano inicial' : 'para el turno ' + t) + ', con más o menos copias.',
+    (m, t, o) => 'A mesma pergunta ' + (o ? 'na mão inicial' : 'até o turno ' + t) + ', com mais ou menos cópias.'],
+  [/^Each copy added replaces a card that is not in the question, so the list stays at (\d+)\.$/, 'Cada copia que agregas reemplaza una carta que no está en la pregunta, así que la lista se queda en $1.', 'Cada cópia adicionada substitui uma carta que não está na pergunta, então a lista continua com $1.'],
+  [/^([+−-]?\d+\.\d) pts$/, '$1 pts', '$1 pts'],
+  // Drills
+  [/^(\d+) rounds?, (\d+)% right$/, (m, n, p) => n + (n === '1' ? ' ronda, ' : ' rondas, ') + p + '% de aciertos', (m, n, p) => n + (n === '1' ? ' rodada, ' : ' rodadas, ') + p + '% de acertos'],
+  [/^It is (\d+)\.$/, 'La respuesta es $1.', 'A resposta é $1.'],
+  [/^You run (\d+) and have used (\d+)\.$/, 'Llevas $1 en la lista y usaste $2.', 'Você tem $1 na lista e já usou $2.'],
+  [/^(\d+) shown$/, '$1 mostradas', '$1 mostradas'],
+  [/^(\d+) in deck or hand$/, '$1 en el mazo o la mano', '$1 no deck ou na mão'],
+  [/^(\d+) of 6 named$/, '$1 de 6 nombradas', '$1 de 6 escolhidas'],
+  [/^you said (\d+)$/, 'dijiste $1', 'você disse $1'],
+  [/^(\d+) of 6 prizes read$/, '$1 de 6 premios acertados', '$1 de 6 prêmios acertados'],
+  [/^The (\d+) cards still in their deck or hand were (.+)\.$/, 'Las $1 cartas que seguían en su mazo o su mano eran $2.', 'As $1 cartas que ainda estavam no deck ou na mão dele eram $2.'],
+  [/^Only (\d+) cards read from that list\.$/, 'Solo se leyeron $1 cartas de esa lista.', 'Só $1 cartas foram lidas dessa lista.'],
+  // Hand tab: the turn 1 line ("Stage 2, main attacker, from Dreepy with Rare Candy.")
+  [/^(Basic|Stage 1|Stage 2)(?:, (?:(main attacker)|one of (\d+) attackers))?(?:, from (.+) with Rare Candy)?\.$/,
+    (m, st, ma, n, f) => ({ Basic: 'Básico', 'Stage 1': 'Fase 1', 'Stage 2': 'Fase 2' })[st] + (ma ? ', atacante principal' : n ? ', uno de ' + n + ' atacantes' : '') + (f ? ', desde ' + f + ' con Rare Candy' : '') + '.',
+    (m, st, ma, n, f) => ({ Basic: 'Básico', 'Stage 1': 'Estágio 1', 'Stage 2': 'Estágio 2' })[st] + (ma ? ', atacante principal' : n ? ', um de ' + n + ' atacantes' : '') + (f ? ', a partir de ' + f + ' com Rare Candy' : '') + '.'],
+  [/^Still need: (.+)\.$/, (m, x) => 'Falta: ' + x.replace(/ or /g, ' o ') + '.', (m, x) => 'Falta: ' + x.replace(/ or /g, ' ou ') + '.'],
+  // Notes: Compare lists and Edit log
+  [/^Attacker by T(\d)$/, 'Atacante para T$1', 'Atacante até T$1'],
+  [/^All (.+) prized$/, (m, n) => i18nCardOrEnergy(n, 'es') + ': todas en premios', (m, n) => i18nCardOrEnergy(n, 'pt') + ': todas nos prêmios'],
+  [/^Version (\d+)$/, 'Versión $1', 'Versão $1'],
+  [/^Version (\d+), (.+)$/, 'Versión $1, $2', 'Versão $1, $2'],
+  [/^As imported, (.+)$/, 'Al importar, $1', 'Ao importar, $1'],
+  [/^When the log started, (.+)$/, 'Al empezar el registro, $1', 'No início do registro, $1'],
+  [/^When duplicated, (.+)$/, 'Al duplicar, $1', 'Ao duplicar, $1'],
+  [/^The log started (.+)\.$/, 'El registro empezó el $1.', 'O registro começou em $1.'],
+  [/^Duplicated(?: from (.+))? (\S+ \S+)\.$/, (m, f, d) => 'Duplicado' + (f ? ' de ' + f : '') + ' el ' + d + '.', (m, f, d) => 'Duplicado' + (f ? ' de ' + f : '') + ' em ' + d + '.'],
+  [new RegExp('^(' + I18N_DATE + '), (\\d+) games?$'), (m, d, n) => d + ', ' + n + (n === '1' ? ' partida' : ' partidas'), (m, d, n) => d + ', ' + n + (n === '1' ? ' partida' : ' partidas')],
+);
+// Pushed last, so every string the patterns above already know keeps its own translation.
+I18N_PAT.push(
+  [/^Deck: (.+)$/, 'Mazo: $1', 'Deck: $1'],
+  // The remove buttons that name cards (Ask the odds rows, prize game guesses), read out by screen readers.
+  // Only when every name in it is a known card, so no other "Remove ..." text is half translated.
+  [/^Remove (?!a )(.+)$/, (m, n) => i18nAllCards(n) ? 'Quitar ' + n.replace(/ and ([^,]+)$/, ' y $1').replace(/ or ([^,]+)$/, ' o $1') : null,
+    (m, n) => i18nAllCards(n) ? 'Remover ' + n.replace(/ and ([^,]+)$/, ' e $1').replace(/ or ([^,]+)$/, ' ou $1') : null],
+  // Progress: the List changes and Drills tiles
+  [new RegExp('^Last (' + I18N_DATE + '|\\d{1,2}[ ./-]\\S+)(?:, (\\d+)% since vs (\\d+)% before)?$'),
+    (m, d, a, b) => 'Último: ' + d + (a ? ', ' + a + '% desde entonces vs ' + b + '% antes' : ''),
+    (m, d, a, b) => 'Última: ' + d + (a ? ', ' + a + '% desde então vs ' + b + '% antes' : '')],
+  [/^(?:(?:Resource count|Goldfish on time|Reach check) \d+%(?:, |$))+$/,
+    m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_ES[n] + ' ' + p),
+    m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_PT[n] + ' ' + p)],
+);
+
 // Words that are also attack or Ability names on real cards ("Skip", "Psychic"). They are
 // translated only inside the elements named here, which never show card data.
 const I18N_SCOPED = {
   'Skip': ['.tour-skip, button[onclick^="gfSkip"]', 'Saltar', 'Pular'],
   'Psychic': ['.energy-quick-btn, .mt-en', 'Psíquico', 'Psíquico'],
+  // 3.0.1: short words that are also deck or card names ("Other" is an archetype in the results), or
+  // too short to be safe everywhere. Compare lists headers and the Edit log chip notes only.
+  'This': ['.cmp-t th', 'Esta', 'Esta'],
+  'Other': ['.cmp-t th', 'Otra', 'Outra'],
+  'new': ['.el-chip small', 'nueva', 'nova'],
+  'cut': ['.el-chip small', 'fuera', 'removida'],
 };
 
 const I18N_TYPES = {
@@ -2282,6 +2547,7 @@ function i18nPost(s, l) {
   const M = I18N_MONTHS.join('|'), S = I18N_MONTHS.map(m => m.slice(0, 3)).join('|');
   const full = m => I18N_MON[l][I18N_MONTHS.indexOf(m)], short = m => I18N_MON3[l][I18N_MONTHS.findIndex(x => x.startsWith(m))];
   return s
+    .replace(new RegExp(`\\b(${S}) (\\d{1,2}), (\\d{4})\\b`, 'g'), (m, mo, d, y) => `${d} ${short(mo)} ${y}`)
     .replace(new RegExp(`\\b(\\d{1,2}) (${M}) (\\d{4})\\b`, 'g'), (m, d, mo, y) => `${d} de ${full(mo)} de ${y}`)
     .replace(new RegExp(`\\b(${M}) (\\d{4})\\b`, 'g'), (m, mo, y) => `${full(mo)} de ${y}`)
     .replace(new RegExp(`\\b(\\d{1,2}) (${S}) (\\d{4})\\b`, 'g'), (m, d, mo, y) => `${d} ${short(mo)} ${y}`)

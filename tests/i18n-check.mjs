@@ -4,11 +4,15 @@
 //   - fails when a dictionary key in js/i18n.js is a card, attack, Ability, set or deck name,
 //   - fails when a text node that shows a card or deck name got changed,
 //   - fails when switching back to English leaves any translated text behind,
-//   - prints the English still showing on each screen (a rough report, it never fails on that).
+//   - fails when a screen still shows English app text. English that is card data stays: a text
+//     made only of card, attack and Ability names (with counts, "x2", "vs"), the proper names in
+//     KEEP_NAMES, and text inside the CARD_TEXT blocks that names a card, attack or Ability.
+//     Elements marked data-no-tr or listed in I18N_SKIP are never looked at.
 //
-//   node tests/i18n-check.mjs              the check, with a short report per screen
-//   node tests/i18n-check.mjs --dump       every English string still showing, per screen
+//   node tests/i18n-check.mjs              the check (Spanish, then Portuguese), with a short report per screen
+//   node tests/i18n-check.mjs --dump       every English string still showing, per screen, kept ones marked
 //   node tests/i18n-check.mjs --lang=es    one language only
+//   node tests/i18n-check.mjs --show=grade every text a screen shows (screens whose name starts with it)
 //
 // Needs jsdom: npm install --prefix tests.
 
@@ -61,6 +65,39 @@ for (const k in cardCache) { try { grab(JSON.parse(cardCache[k].b)); } catch (_)
 try { const m = JSON.parse(fs.readFileSync(path.join(ROOT, 'matchups.json'), 'utf8')); Object.keys(m.decks || {}).forEach(k => names.add(norm(k))); } catch (_) {}
 names.delete('');
 
+// ── English that may stay on screen (card data, not app text) ──
+// Proper names: the data sources and the font in Credits, the results site under Against the meta.
+const KEEP_NAMES = new Set(['Limitless TCG', 'TCGdex', 'Pokémon TCG API', '(pokemontcg.io)', 'Saira']);
+// Blocks whose text is built from card text. A string here stays English only when it names a card,
+// attack or Ability; a sentence there with no card name in it is app text and must be translated.
+const CARD_TEXT = [
+  ['#grade-body p, #grade-body .gt, #grade-body .t68-here', 'Grade tab findings and How it plays paragraphs, built from card text'],
+  ['.bld-sub', 'deck builder sub-lines: stage, HP, attack and Ability names'],
+  ['#pz-act, .pz-btns', 'puzzle actions: each names a card, an attack or an Ability'],
+];
+const NAMES_BY_LEN = [...names].filter(n => n.length >= 3).sort((a, b) => b.length - a.length);
+const isLetter = c => !!c && /[\p{L}\p{N}]/u.test(c);
+/** The text with every card, attack and Ability name in it blanked out, and whether it had one. */
+function stripNames(s) {
+  let r = norm(s), hit = false;
+  for (const n of NAMES_BY_LEN) {
+    let i = r.indexOf(n);
+    while (i >= 0) {
+      if (!isLetter(r[i - 1]) && !isLetter(r[i + n.length])) { r = r.slice(0, i) + ' '.repeat(n.length) + r.slice(i + n.length); hit = true; }
+      i = r.indexOf(n, i + 1);
+    }
+  }
+  return { rest: r, hit };
+}
+/** Why an English string may stay, or '' when it is app text that should be translated. */
+function keepWhy(s, el) {
+  if (KEEP_NAMES.has(s)) return 'proper name';
+  const { rest, hit } = stripNames(s);
+  if (hit && !/[a-z]{2}/.test(rest.replace(/\b(?:vs|x\d+|ex|v|vstar|vmax)\b/g, ''))) return 'card names only';
+  if (hit) for (const [sel, why] of CARD_TEXT) if (el.closest(sel)) return why;
+  return '';
+}
+
 // ── load the app ──
 class Local extends ResourceLoader {
   fetch(url) {
@@ -97,6 +134,9 @@ async function load(lang) {
       const RealDate = w.Date;
       class FixedDate extends RealDate { constructor(...a) { if (a.length) super(...a); else super(FIXED_NOW); } static now() { return FIXED_NOW; } }
       w.Date = FixedDate;
+      // Shuffles are seeded, so every run deals the same hands and shows the same text.
+      let seed = 20261112;
+      w.Math.random = () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
       w.fetch = fakeFetch;
       w.Response = Response; w.Request = Request; w.Headers = Headers; w.TextEncoder = TextEncoder; w.TextDecoder = TextDecoder;
       w.AbortSignal.timeout = () => new AbortController().signal;
@@ -134,7 +174,7 @@ function scan(w, roots) {
       if (names.has(k)) continue;              // card data, left English on purpose
       if (/^(rdydeck|rdy|deck|ok|hp|ex|vstar|vmax|ace spec)$/i.test(o.trim()) || /^[A-Z0-9]{2,6} [\w-]+$/.test(o.trim())) continue;   // set code and number
       const key = o.replace(/\s+/g, ' ').trim();
-      if (!left.has(key)) left.set(key, (p.className && String(p.className).split(' ')[0]) || p.tagName.toLowerCase());
+      if (!left.has(key)) left.set(key, { tag: (p.getAttribute('class') || '').split(' ')[0] || p.tagName.toLowerCase(), keep: keepWhy(key, p) });
     }
   }
   return { left, badCards };
@@ -152,6 +192,31 @@ const LIST_TEXT = ['pokemon', 'trainer', 'energy'].map(part => {
 }).filter(Boolean).join('\n\n');
 const shut = w => w.document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
 const id0 = w => w.eval('String(state.decks[0].id)');
+/** Put earlier entries in front of the deck's one real grade history entry. `first` is how far the
+ *  first grade sits below the real one (negative: above), `mids` the entries in between, oldest
+ *  first, and `last` what the real entry is marked as. Days apart: `gap` (in days, from today back). */
+function ghLog(w, first, mids, last, gap = 1) {
+  const deck = w.eval('state.decks[0]'), log = deck.gradeLog, real = Object.assign({}, log.e[log.e.length - 1]);
+  const day = 86400000, n = mids.length + 2, now = FIXED_NOW;
+  const g = i => Math.round((real.g - first + first * i / (n - 1)) * 10) / 10;
+  const at = i => now - (n - 1 - i) * gap * day;
+  const e = [{ t: at(0), g: g(0), s: real.s, p: real.p, k: 'old', w: 's' }];
+  mids.forEach((m, i) => e.push(Object.assign({ t: at(i + 1), g: g(i + 1), s: real.s, p: real.p, k: 'old' + i }, m)));
+  e.push(Object.assign(real, last, { t: real.t }));
+  log.e = e;
+}
+/** Ask the odds: two cards each (and), plus one card on its own, by turn `turn`. */
+function olAsk(w, turn) {
+  w.eval(`(() => { const deck = findDeck(state.activeDeckId), gs = olGroups(deck).filter(g => g.kind !== 'pokemon' && !g.ace && g.qty >= 2);
+    _olState = { deckId: deck.id, rows: [{ keys: [gs[0].key, gs[1].key], k: 1, all: true }, { keys: [gs[2].key], k: 2 }], turn: ${turn} }; olRender(); })()`);
+}
+/** An earlier version of the list: two fewer of one card and two more of another. */
+function oldVersion(w) {
+  w.eval(`(() => { const deck = findDeck(state.activeDeckId), v = ensureVersions(deck), cs = snapCards(deck.cards);
+    const a = cs.find(c => c.count >= 3), b = cs.find(c => c !== a && c.count >= 1 && c.count <= 2);
+    a.count -= 2; b.count += 2;
+    v.unshift({ ts: Date.now() - 5 * 86400000, kind: 'import', cards: cs }); _cmpSel = ''; })()`);
+}
 const SCREENS = [
   ['home (empty)', async w => { w.showScreen('home'); w.renderHome(); }],
   ['settings', async w => { w.openSettings(); }],
@@ -178,15 +243,34 @@ const SCREENS = [
   ['cards tab', async w => { shut(w); await w.openReview(id0(w)); await tick(800); w.showReviewTab('cards'); }],
   ['cards tab: mark owned', async w => { w.op30MarkMode(); await tick(100); }],
   ['grade tab', async w => { w.op30MarkMode(); w.showReviewTab('grade'); await tick(1500); }],
+  // Grade history: the first grade is kept by the screen above. These put earlier entries in front of
+  // it, one of each kind the history can show. The last entry stays the real one, so no grade moves.
+  ['grade history', async w => { ghLog(w, 0.3, [{ w: 'e', d: [[1, 'Ultra Ball'], [-1, 'Nest Ball']] }], { w: 'r', m: '2026-11-15' }); w.renderGrade(); await tick(300); }],
+  ['grade history: every note', async w => {
+    ghLog(w, -0.4, [{ w: 'e', d: [[2, 'Ultra Ball'], [-1, 'Nest Ball'], [-1, 'Switch']], r: 1 }, { w: 'e', d: [] }, { w: 'u', u: 'no-such-deck' }, { w: 'u', u: '' },
+      { w: 'f' }, { w: 'k', ak: 'toolbox' }, { w: 'k', ak: 'x', akn: 'mega rayquaza ex' }, { w: 'k', ak: '' }, { w: 'r', m: '2026-11-01' }, { w: 'r' },
+      { w: 'a' }, { w: 'l', n: 1 }, { w: 'l', n: 0 }, { w: 'c' }, { w: 'q' }], { w: 'a' }, 2);
+    w.renderGrade(); await tick(300);
+  }],
+  ['grade history: holding', async w => { ghLog(w, 0, [], { w: 'c' }, 400); w.renderGrade(); await tick(300); }],
   ['grade looks off', async w => { w.gf80Open(); await tick(60); }],
   ['grade looks off sent', async w => { await w.gf80Send('too-high'); await tick(60); }],
   ['odds tab', async w => { w.showReviewTab('odds'); await tick(300); }],
+  // Ask the odds with two rows: "and at least ... of each", and a one-card row for the copies tuner.
+  ['odds tab: ask the odds', async w => { olAsk(w, 1); await tick(300); }],
+  ['odds tab: opening hand', async w => { olAsk(w, 0); await tick(300); }],
   ['practice tab', async w => { w.showReviewTab('practice'); await tick(300); }],
   ['hand', async w => { w.showReviewTab('hand'); await tick(300); }],
   ['goldfish', async w => { w.setHandMode('gold'); await tick(300); }],
   ['drills', async w => { w.showReviewTab('drills'); await tick(300); }],
   ['resource drill', async w => { w.newResDrill(); await tick(300); }],
+  ['resource drill: checked', async w => { w.resCheck(); await tick(100); }],
+  ['resource drill: 2 rounds', async w => { w.newResDrill(); w.resCheck(); await tick(100); }],
+  ['prize read drill', async w => { w.setOppSrc('d:' + id0(w)); w.newReadDrill(); await tick(100); }],
+  ['prize read drill: checked', async w => { w.eval('readDrill.rows.filter(r => r.listed > r.shown).slice(0, 6).forEach(r => r.guess = 1); readDrill.rows.filter(r => r.listed > r.shown).slice(6).forEach(r => r.guess = 0)'); w.readCheck(); await tick(100); }],
   ['notes', async w => { w.showReviewTab('notes'); await tick(300); }],
+  // An older version with other counts, so Compare lists has card changes and "All ... prized" rows.
+  ['notes: compare', async w => { oldVersion(w); w.showReviewTab('notes'); await tick(300); }],
   ['more menu', async w => { w.dd65Menu(); }],
   ['share deck', async w => { shut(w); await w.openDeckShare(); await tick(200); }],
   ['edit list', async w => { shut(w); w.openEditModal(id0(w)); }],
@@ -204,6 +288,33 @@ const SCREENS = [
   ['builder: meta deck', async w => { w.bldStartMeta(); await tick(400); }],
   ['builder: a list', async w => { w.eval('bldSheetActs[0]()'); await tick(400); shut(w); await tick(600); }],
   ['prerelease', async w => { shut(w); w.showScreen('home'); try { await w.openPre47(); } catch (_) {} await tick(400); }],
+  // Home with puzzles played on earlier days and a deck with cards missing art.
+  ['home: puzzle and missing art', async w => {
+    shut(w); w.showScreen('home');
+    w.eval(`(() => { const R = puzzleStore().results, day = 86400000;
+      R[dailyKey(Date.now() - day)] = { won: true, moves: 3, num: 3, ts: Date.now() - day };
+      R[dailyKey(Date.now() - 2 * day)] = { won: false, moves: 5, num: 2, ts: Date.now() - 2 * day };
+      R[dailyKey(Date.now() - 6 * day)] = { won: true, moves: 2, num: 1, ts: Date.now() - 6 * day }; })()`);
+    const deck = w.eval('state.decks[0]');
+    w._i18nArt = deck.cards.map(c => c.imageUrl);
+    deck.cards.slice(0, 22).forEach(c => { c.imageUrl = ''; });
+    w.renderHome(); await tick(100);
+  }],
+  ['home: 1 missing art', async w => {
+    const deck = w.eval('state.decks[0]');
+    deck.cards.forEach((c, i) => { c.imageUrl = i === 0 ? '' : w._i18nArt[i]; });
+    w.eval(`(() => { const R = puzzleStore().results; for (const k in R) delete R[k]; R[dailyKey(Date.now() - 4 * 86400000)] = { won: true, moves: 3, num: 1, ts: 1 }; })()`);
+    w.renderHome(); await tick(100);
+    deck.cards.forEach((c, i) => { c.imageUrl = w._i18nArt[i]; });
+  }],
+  ['home: puzzle won today', async w => {
+    w.eval(`(() => { const R = puzzleStore().results; R[dailyKey()] = { won: true, moves: 2, num: 2, ts: Date.now() }; R[dailyKey(Date.now() - 86400000)] = { won: true, moves: 4, num: 1, ts: 1 }; })()`);
+    w.renderHome(); await tick(100);
+  }],
+  ['home: puzzle lost today', async w => {
+    w.eval(`(() => { const R = puzzleStore().results; R[dailyKey()] = { won: false, moves: 5, num: 2, ts: Date.now() }; })()`);
+    w.renderHome(); await tick(100);
+  }],
   ["what's new card", async w => { shut(w); w.localStorage.setItem('rd_seen_version', 'v2.0.0'); w.showScreen('home'); w.renderHome(); await tick(100); }],
   ['tour', async w => { shut(w); w.showScreen('home'); w.startTour(true); await tick(300); }],
 ];
@@ -219,27 +330,30 @@ for (const lang of LANGS) {
   const sc = Object.keys(w.rdI18n.scoped).filter(k => names.has(norm(k)));
   console.log(`     scoped words that are also card data (translated only in their own buttons): ${sc.join(', ') || 'none'}`);
   ok(!coll.length, `${Object.keys(dict).length} strings, ${w.rdI18n.pat[lang].length} patterns, no key is a card, attack, set or deck name${coll.length ? ': ' + coll.join(', ') : ''}`);
-  const bad = [];
-  let totalLeft = 0;
+  const bad = [], english = [];
+  let totalLeft = 0, totalKept = 0;
   for (const [name, fn] of SCREENS) {
     const before = errors.length;
     try { await fn(w); } catch (e) { errors.push(name + ': ' + (e && e.stack || e)); }
     await tick(60);
     const { left, badCards } = scan(w, roots(d));
     bad.push(...badCards.map(b => name + ': ' + b));
-    totalLeft += left.size;
-    (report[name] = report[name] || {})[lang] = left.size;
+    const ui = [...left].filter(([, v]) => !v.keep);
+    english.push(...ui.map(([k]) => name + ': ' + k));
+    totalLeft += ui.length; totalKept += left.size - ui.length;
+    (report[name] = report[name] || {})[lang] = ui.length + (left.size > ui.length ? ' (+' + (left.size - ui.length) + ' card data)' : '');
     if (SHOW && name.startsWith(SHOW)) {
       const out = [];
       for (const r of roots(d)) { if (!r) continue; const tw = d.createTreeWalker(r, 4); while (tw.nextNode()) { const t = tw.currentNode.nodeValue.replace(/\s+/g, ' ').trim(); if (t && !tw.currentNode.parentElement.closest('style,script')) out.push(t); } }
       console.log(`-- ${name} (${lang}):\n` + out.join(' | '));
     }
     if (DUMP) {
-      console.log(`-- ${name}: ${left.size} still English`);
-      for (const [s, c] of left) console.log(`   [${c}] ${s}`);
+      console.log(`-- ${name}: ${ui.length} still English, ${left.size - ui.length} card data`);
+      for (const [s, c] of left) console.log(`   ${c.keep ? 'kept ' : 'LEFT '}[${c.tag}] ${s}${c.keep ? '   (' + c.keep + ')' : ''}`);
     }
     if (errors.length > before) console.log('   errors on ' + name + ': ' + errors.slice(before).join(' | ').slice(0, 600));
   }
+  ok(!english.length, `no English app text left on any of ${SCREENS.length} screens (${totalKept} card data strings kept)` + (english.length ? ':\n       ' + english.slice(0, 40).join('\n       ') + (english.length > 40 ? `\n       and ${english.length - 40} more` : '') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.
   w.showScreen('home'); w.renderHome(); w.openSettings();
@@ -252,7 +366,7 @@ for (const lang of LANGS) {
   w.i18nPick(lang); await tick(60);
   ok(w.localStorage.getItem('rd_lang') === lang && w.rdI18n.lang === lang, 'choice saved as rd_lang=' + lang);
   ok(!errors.length, 'no JS errors' + (errors.length ? ': ' + errors.slice(0, 5).join(' | ').slice(0, 1500) : ''));
-  console.log(`     ${totalLeft} English strings still showing over ${SCREENS.length} screens (rough, repeats counted per screen)`);
+  console.log(`     ${totalLeft} English strings still showing over ${SCREENS.length} screens (repeats counted per screen)`);
   w.close();
 }
 // English still loads without errors, and the browser language picks the default.
@@ -263,8 +377,8 @@ for (const lang of LANGS) {
   w.close();
 }
 if (!DUMP) {
-  console.log('\nEnglish left per screen (' + LANGS.join(' / ') + '):');
-  for (const k in report) console.log('  ' + k.padEnd(22) + LANGS.map(l => String(report[k][l] ?? '-')).join(' / '));
+  console.log('\nEnglish app text left per screen (' + LANGS.join(' / ') + '), card data kept in brackets:');
+  for (const k in report) console.log('  ' + k.padEnd(30) + LANGS.map(l => String(report[k][l] ?? '-')).join(' / '));
 }
 console.log(fails ? `\ni18n check failed: ${fails} problem(s).` : '\ni18n check passed.');
 process.exit(fails ? 1 : 0);
