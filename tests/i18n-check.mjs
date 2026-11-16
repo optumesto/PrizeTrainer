@@ -155,6 +155,8 @@ async function load(lang) {
     },
   });
   await new Promise(r => setTimeout(r, 3000));
+  // 3.0.2: French, German and Italian download when picked.
+  if (dom.window.rdI18n) await dom.window.rdI18n.ready;
   return { dom, w: dom.window, d: dom.window.document, errors };
 }
 const tick = (ms = 30) => new Promise(r => setTimeout(r, ms));

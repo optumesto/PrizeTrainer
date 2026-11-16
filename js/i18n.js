@@ -20,13 +20,14 @@
 
 const I18N_LANGS = [['en', 'English'], ['es', 'Español'], ['pt', 'Português']];
 const I18N_HTML_LANG = { en: 'en', es: 'es', pt: 'pt-BR' };
-// 3.0.2: more languages, each in its own file loaded before this one (js/i18n-fr.js and so on).
-// Each sets I18N_MORE[code] = { name, html, dict, pat: [[regex, replacement]], scoped: { word: text }, mon, mon3, ord }.
-const I18N_ADD = typeof I18N_MORE === 'object' && I18N_MORE ? I18N_MORE : {};
-for (const l of ['fr', 'de', 'it']) {
-  const x = I18N_ADD[l];
-  if (x && x.dict && x.name) { I18N_LANGS.push([l, x.name]); I18N_HTML_LANG[l] = x.html || l; }
-}
+// 3.0.2: more languages, each in its own file (js/i18n-fr.js and so on), downloaded only when a
+// player picks it. Each file sets I18N_MORE[code] = { name, html, dict, pat: [[regex, replacement]],
+// scoped: { word: text }, mon, mon3, ord }. index.html lists the files in <template id="i18n-files">,
+// so they carry file stamps and the service worker saves them for offline use.
+const I18N_LAZY = { fr: ['Français', 'fr'], de: ['Deutsch', 'de'], it: ['Italiano', 'it'] };
+for (const l in I18N_LAZY) { I18N_LANGS.push([l, I18N_LAZY[l][0]]); I18N_HTML_LANG[l] = I18N_LAZY[l][1]; }
+/** A downloaded language's data, or undefined. */
+function i18nMore(l) { return typeof I18N_MORE === 'object' && I18N_MORE ? I18N_MORE[l] : undefined; }
 const I18N_KEY = 'rd_lang';
 
 // Elements whose text is card data or the player's own words.
@@ -2598,7 +2599,7 @@ function i18nPost(s, l) {
 
 /** Dates and ordinals for a language from I18N_MORE: day month year, and its ordinal mark. */
 function i18nPostMore(s, l) {
-  const x = I18N_ADD[l];
+  const x = i18nMore(l);
   if (!x || !Array.isArray(x.mon) || !Array.isArray(x.mon3)) return s;
   const M = I18N_MONTHS.join('|'), S = I18N_MONTHS.map(m => m.slice(0, 3)).join('|');
   const full = m => x.mon[I18N_MONTHS.indexOf(m)], short = m => x.mon3[I18N_MONTHS.findIndex(y => y.startsWith(m))];
@@ -2615,10 +2616,6 @@ function i18nPostMore(s, l) {
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
-  for (const l in I18N_ADD) if (I18N_HTML_LANG[l] && l !== 'es' && l !== 'pt' && l !== 'en') {
-    DICT[l] = Object.assign({}, I18N_ADD[l].dict);
-    PAT[l] = (I18N_ADD[l].pat || []).filter(p => p && p[0] instanceof RegExp);
-  }
   const norm = s => String(s).replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
   // Keys are matched after the same squeeze, so a key written with a curly quote still hits.
   for (const l in DICT) {
@@ -2630,6 +2627,32 @@ const rdI18n = (function () {
   const attrMap = new WeakMap();   // element -> { attr: { o, t } }
   const cache = {};
   for (const l in DICT) cache[l] = new Map();
+  /** Take in a downloaded language file's data. */
+  function add(l) {
+    const x = i18nMore(l);
+    if (!I18N_LAZY[l] || !x || !x.dict) return false;
+    const n = {};
+    for (const k in x.dict) n[norm(k)] = x.dict[k];
+    DICT[l] = n;
+    PAT[l] = (x.pat || []).filter(p => p && p[0] instanceof RegExp);
+    cache[l] = new Map();
+    return true;
+  }
+  let want = null, ready = Promise.resolve();
+  /** Download a language file once; resolves true when its data is in. */
+  const loading = {};
+  function fetchLang(l) {
+    if (DICT[l]) return Promise.resolve(true);
+    if (loading[l]) return loading[l];
+    return (loading[l] = new Promise(res => {
+      const t = document.querySelector(`#i18n-files`), tag = t && t.content && t.content.querySelector(`script[src*="i18n-${l}.js"]`);
+      const sc = document.createElement('script');
+      sc.src = tag ? tag.getAttribute('src') : `js/i18n-${l}.js`;
+      sc.onload = () => res(add(l));
+      sc.onerror = () => { delete loading[l]; res(false); };
+      document.head.appendChild(sc);
+    }));
+  }
   const cardNames = new Set();
   let cur = 'en', obs = null, cardsTried = false;
 
@@ -2639,7 +2662,7 @@ const rdI18n = (function () {
       const n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
       if (n.startsWith('es')) return 'es';
       if (n.startsWith('pt')) return 'pt';
-      for (const l in I18N_HTML_LANG) if (l !== 'en' && DICT[l] && n.startsWith(l)) return l;
+      for (const l in I18N_LAZY) if (n.startsWith(l)) return l;
     } catch (_) {}
     return 'en';
   }
@@ -2718,7 +2741,7 @@ const rdI18n = (function () {
   function scoped(v, el) {
     const k = I18N_SCOPED[norm(v)];
     if (!k || !el || !el.matches || !el.matches(k[0])) return v;
-    const w = cur === 'es' ? k[1] : cur === 'pt' ? k[2] : ((I18N_ADD[cur] || {}).scoped || {})[norm(v)];
+    const w = cur === 'es' ? k[1] : cur === 'pt' ? k[2] : ((i18nMore(cur) || {}).scoped || {})[norm(v)];
     if (!w) return v;
     const m = String(v).match(/^(\s*)[\s\S]*?(\s*)$/);
     return m[1] + w + m[2];
@@ -2810,6 +2833,12 @@ const rdI18n = (function () {
   function set(lang, save) {
     if (!I18N_HTML_LANG[lang]) lang = 'en';
     if (save) { try { localStorage.setItem(I18N_KEY, lang); } catch (_) {} }
+    want = lang;
+    if (lang !== 'en' && !DICT[lang]) {
+      // Not downloaded yet: keep the current language until it is, then switch if still wanted.
+      ready = fetchLang(lang).then(ok => { if (ok && want === lang) set(lang, false); else if (!ok && want === lang) { want = cur; paintPick(); } return ok; });
+      return;
+    }
     const was = cur;
     cur = lang;
     document.documentElement.lang = I18N_HTML_LANG[lang];
@@ -2817,6 +2846,10 @@ const rdI18n = (function () {
     if (was !== lang || lang !== 'en') walk(document.body);
     watch(lang !== 'en');
     if (was !== lang) refit();
+    paintPick();
+  }
+  function paintPick() {
+    try { document.querySelectorAll('#i18n-lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.l === cur))); } catch (_) {}
   }
 
   /** The English a node or element showed before translation (for code that reads text back). */
@@ -2828,7 +2861,7 @@ const rdI18n = (function () {
     return s;
   }
 
-  return { set, t, lookup, orig, walk, get lang() { return cur; }, pick, norm, dict: DICT, pat: PAT, scoped: I18N_SCOPED, cardNames, addCardNames, skip: I18N_SKIP };
+  return { set, t, lookup, orig, walk, get lang() { return cur; }, get ready() { return ready; }, add, pick, norm, dict: DICT, pat: PAT, scoped: I18N_SCOPED, cardNames, addCardNames, skip: I18N_SKIP };
 })();
 
 // Dialogs the app opens with confirm() and alert() say the same in the player's language.
