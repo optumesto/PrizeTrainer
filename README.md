@@ -5,6 +5,8 @@ Live at https://rdydeck.com/
 
 The app was called Prize Trainer before v37. The repo name, the saved deck storage and the offline cache names keep the old name on purpose: changing any of them would wipe saved decks or break installed copies. Since v41 the app lives at rdydeck.com (a Cloudflare Worker serves this repo there). The old address, https://optumesto.github.io/PrizeTrainer/, still works: players with saved decks see a banner that moves them over, and everyone else goes straight to rdydeck.com.
 
+Copyright 2026 Optume Ventures LLC. All rights reserved. The code is public so the site can be served and read; it is not licensed for copying or reuse (see LICENSE).
+
 Unofficial fan-made app. Not affiliated with Nintendo or The Pokémon Company.
 
 ## What the repo should look like

@@ -63,7 +63,8 @@ const SLOW = !!process.env.PT_SLOW;
 const NEW_PER_RUN = SLOW ? 25 : BACKFILL ? 50 : 40;   // new events read per run
 const MAX_CALLS = CARDS_ONLY ? 300 : BACKFILL ? 130 : 120;    // requests per run, all told
 const CARDS_AGAIN = CARDS_ONLY ? 150 : 10;  // events read once more for their card data, per run
-const PAUSE = SLOW ? 30000 : CARDS_ONLY ? 5000 : 3000;   // between requests (Limitless answered 429 after about 4 minutes at 1.5 s); the one-off card data run goes slower
+// 3.0: PT_PAUSE_MS overrides the wait; the weekly run sets 30000 (about 30 requests per 15 minutes).
+const PAUSE = Number(process.env.PT_PAUSE_MS) > 0 ? Number(process.env.PT_PAUSE_MS) : SLOW ? 30000 : CARDS_ONLY ? 5000 : 3000;   // between requests (Limitless answered 429 after about 4 minutes at 1.5 s); the one-off card data run goes slower
 const MAX_PAGES = 40;      // tournament list pages, 100 events each
 const MIN_LISTS = 10;      // an archetype needs this many lists to get a row
 const MAX_ROWS = 40;       // plus any deck with MIN_LISTS lists since the newest set

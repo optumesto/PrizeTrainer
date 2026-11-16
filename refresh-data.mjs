@@ -33,10 +33,13 @@ const STARTERS = 6;
 const META_TOP = 12;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// 3.0: PT_PAUSE_MS sets the wait between Limitless requests. The weekly run sets 30000,
+// which is about 30 requests per 15 minutes (Mason's spacing rule, Nov 13 2026).
+const PAUSE = Number(process.env.PT_PAUSE_MS) > 0 ? Number(process.env.PT_PAUSE_MS) : 1500;
 let calls = 0;
 async function getJSON(url) {
   if (calls++ > 40) throw new Error('request budget used up');
-  if (!process.env.PT_NO_PAUSE) await sleep(1500);
+  if (!process.env.PT_NO_PAUSE) await sleep(PAUSE);
   const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: AbortSignal.timeout(20000) });
   if (r.status === 429) throw new Error('rate limited by ' + new URL(url).host + ', stopping for this week');
   if (!r.ok) return null;

@@ -1,0 +1,17 @@
+{
+  "name": "rdydeck",
+  "main": "rdydeck-worker.js",
+  "compatibility_date": "2026-11-09",
+  "routes": [
+    { "pattern": "rdydeck.com", "custom_domain": true },
+    { "pattern": "www.rdydeck.com", "custom_domain": true },
+    { "pattern": "rdydeck.app", "custom_domain": true },
+    { "pattern": "www.rdydeck.app", "custom_domain": true }
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "rdydeck-reports", "database_id": "SET_WHEN_CREATED" }
+  ],
+  "ratelimits": [
+    { "name": "LIMIT", "namespace_id": "1101", "simple": { "limit": 10, "period": 60 } }
+  ]
+}

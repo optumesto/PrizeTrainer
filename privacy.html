@@ -47,7 +47,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 <main>
   <div class="top"><a class="brand" href="./"><span>Rdy</span>Deck</a><a class="back" href="./">Back to RdyDeck</a></div>
   <h1>Privacy Policy</h1>
-  <p class="meta">Effective November 15, 2026</p>
+  <p class="meta">Effective November 16, 2026</p>
 
   <p>RdyDeck is a free Pokémon TCG deck grader and prize trainer run by <strong>Optume Ventures LLC</strong>, a Pennsylvania limited liability company ("we", "us"). This policy explains what information RdyDeck uses, where it goes, and the choices you have. It covers RdyDeck on the web and in the RdyDeck app, including any Google Play version.</p>
 
@@ -58,6 +58,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
     <li>RdyDeck is free and shows no ads yet. When ads are turned on, the website will show a few ads from Google AdSense. The Google Play app shows no ads.</li>
     <li>When ads are on, players under 13, players who skip the age question and players 13 to 17 never get personalized ads.</li>
     <li>The website counts visits with Cloudflare Web Analytics, which uses no cookies and does not track you across sites.</li>
+    <li>When something breaks, or when you tap This grade looks off, RdyDeck sends us a short anonymous report with no name, deck list, address or IP address in it. You can turn error reports off in Settings.</li>
     <li>To show card names, text and pictures, RdyDeck asks public card databases for card data. Those services see your IP address, like any website you visit.</li>
   </ul>
 
@@ -66,7 +67,9 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <ul>
     <li>Deck lists you add, deck names and cover cards</li>
     <li>Prize game results, drill results, tournament log entries and matchup notes</li>
-    <li>Settings such as theme, cards per row and whether you have seen the tour</li>
+    <li>Settings such as theme, language, cards per row and whether you have seen the tour</li>
+    <li>Which cards you marked as owned, and any tournament records you add to your grade history</li>
+    <li>Card prices RdyDeck looked up, kept for a day so they load faster</li>
     <li>Your age group (under 13, 13 to 17, 18 or over, or no answer) if you answer the age question, which RdyDeck asks only once ads are turned on. Only the group is kept, never your age or birth date.</li>
   </ul>
   <p>This information is not sent to us. It stays until you delete it with <strong>Settings, Clear all data</strong>, clear your browser's site data, or uninstall the app. If you use <strong>Save and open decks</strong>, RdyDeck makes a file or text copy that you control; we never receive it.</p>
@@ -85,6 +88,14 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </table>
   <p>Deck share links carry the deck in the part of the address after the # sign. Browsers do not send that part to any server, so sharing a deck does not send its list to us or to the host. Moving your decks from the old address to rdydeck.com works the same way.</p>
   <p>Cloudflare Web Analytics is the only analytics tool RdyDeck uses. RdyDeck loads no advertising service today. When ads are turned on, Google AdSense will be the only one, as described below. If either of those changes, this policy will be updated first.</p>
+
+  <h2>Error reports and grade flags</h2>
+  <p>RdyDeck sends us two kinds of short report, to rdydeck.com itself (our Cloudflare Worker), so we can fix problems and make grades match real results:</p>
+  <ul>
+    <li><strong>Error reports.</strong> When something in the app breaks, it sends the error message (with any quoted text, web addresses, email addresses and long numbers taken out), a short list of the app's own code lines where it happened, the RdyDeck version, which screen was open, and your browser and system family, such as Chrome on Android. At most five a visit.</li>
+    <li><strong>This grade looks off.</strong> When you tap it and pick a reason, it sends the grade, the name of the meta deck the grade matched (from public tournament data, never the name you gave your deck), the reason you picked and the RdyDeck version. There is no text box.</li>
+  </ul>
+  <p>Neither report contains your name, contact details, deck list, deck name, any ID or your IP address, and neither is linked to you or your device. Cloudflare uses your IP address for a moment to stop anyone from sending too many reports, and it is not stored. We count repeats of the same report instead of keeping each one, and delete reports after 90 days. Error reports can be turned off in Settings; while they are off, This grade looks off sends nothing either.</p>
 
   <h2>Feedback by email</h2>
   <p><strong>Send feedback</strong> opens an email to us at <a href="mailto:support@rdydeck.com">support@rdydeck.com</a> in your own email app. The email is filled in with your message, the kind of feedback, the RdyDeck version, the screen you were on, your device type (such as Android or iPhone) and screen width, and your current deck list only if you tick <strong>Include my list</strong>. You can change or delete any of it, and nothing is sent until you press Send. RdyDeck itself sends nothing.</p>
@@ -106,7 +117,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <h2>Children</h2>
   <p>RdyDeck is made for players of all ages, including children under 13. It has no accounts and never asks anyone for a name, email address or other contact details: decks, notes and settings stay on the device.</p>
-  <p><strong>What is collected from children.</strong> Like any website, RdyDeck cannot load without sending the device's IP address and browser details to the services in the table above: the hosts, the card databases and Cloudflare Web Analytics. When ads are on, each ad request also sends Google an ad cookie or similar identifier. These identifiers are the only information RdyDeck lets anyone collect from a child, and children cannot make anything public in RdyDeck.</p>
+  <p><strong>What is collected from children.</strong> Like any website, RdyDeck cannot load without sending the device's IP address and browser details to the services in the table above: the hosts, the card databases and Cloudflare Web Analytics. When ads are on, each ad request also sends Google an ad cookie or similar identifier. These identifiers are the only information RdyDeck lets anyone collect from a child, and children cannot make anything public in RdyDeck. The anonymous error reports and grade flags described above hold no identifier and nothing that could identify a child.</p>
   <p><strong>What it is used for.</strong> For players under 13 and anyone who skips the age question, these identifiers are used only to keep RdyDeck running: to deliver the app and card pictures, to count visits and check that pages load, to keep the site secure and, when ads are on, to show contextual ads (chosen from the page, not from the child), to limit how often an ad repeats and to protect against ad fraud.</p>
   <p><strong>How they are kept from profiling.</strong> Each ad request for these players is marked for child-directed treatment, which tells Google not to show personalized or remarketing ads and not to pass the request to other ad companies. Cloudflare Web Analytics sets no cookies and does not recognize a visitor across sites. We do not use or share these identifiers to contact a child, to show ads based on a child's interests or past visits, or to build a profile.</p>
   <p><strong>How long it is kept.</strong> We hold none of these identifiers ourselves. The hosts and card databases keep short server logs under their own policies, and Google keeps ad data under its own policy. Players under 13 should ask a parent or guardian to send feedback for them. If we learn that a feedback email came from a child under 13, we will reply at most once and then delete it within 30 days.</p>
@@ -119,10 +130,10 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </ul>
 
   <h2>Security and retention</h2>
-  <p>RdyDeck is served over HTTPS. Information saved on your device stays until you delete it. We do not run servers that store your information. Our host may keep short server logs under its own policy.</p>
+  <p>RdyDeck is served over HTTPS. Information saved on your device stays until you delete it. We do not run servers that store your personal information; the only things we store are the anonymous error reports and grade flags described above, deleted after 90 days. Our host may keep short server logs under its own policy.</p>
 
   <h2>Google Play</h2>
-  <p>If RdyDeck is released on Google Play, that version will be the same app in a secure web container, with one difference: it shows no ads and loads no ad code. Its Data safety answers describe the app itself: like the website, it sends your device's IP address and browser details to the hosts, card databases and Cloudflare Web Analytics when it loads, and unlike the website it has no ads.</p>
+  <p>If RdyDeck is released on Google Play, that version will be the same app in a secure web container, with one difference: it shows no ads and loads no ad code. Its Data safety answers describe the app itself: like the website, it sends your device's IP address and browser details to the hosts, card databases and Cloudflare Web Analytics when it loads, it sends the same anonymous error reports and grade flags, and unlike the website it has no ads.</p>
 
   <h2>Changes</h2>
   <p>If we change this policy we will update the date at the top and, for important changes, show a notice in the app.</p>

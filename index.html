@@ -2869,6 +2869,12 @@ document.documentElement.classList.add('rd-boot');
   /* v45: sample grade, share grade */
   .st-empty .st45-sample { margin-top:0.85rem; }
   .g45-share { margin-top:0.9rem; display:flex; justify-content:center; }
+  /* 3.0: This grade looks off */
+  .g45-share { flex-wrap:wrap; gap:0.5rem; }
+  .gf80-btn { color:var(--text-2); }
+  .gf80-hint { margin-bottom:0.9rem; }
+  .gf80-opts { display:flex; flex-direction:column; gap:0.5rem; }
+  .gf80-opt { justify-content:flex-start; text-align:left; }
   .gs45-img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:var(--r); margin:0 0 0.9rem; }
   .gs45-actions { flex-wrap:wrap; }
   .gs261-seg { margin:0 0 0.75rem; }
@@ -3672,6 +3678,7 @@ document.documentElement.classList.add('rd-boot');
      The app's scripts live in js/, each cached on its own, so a return visit after an update downloads
      only this page and the files that changed. Share the app and Download RdyDeck.html still give one
      self-contained file: rdAppFile() puts every js/ file back inside the page before it is sent. -->
+<script src="js/report-errors.js?v=b95517e6"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=99e465dd"></script>
 
 <script src="js/core.js?v=56b9082e"></script>
@@ -3783,6 +3790,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v69-grade-blend.js?v=132d4c33"></script>
 <script src="js/v71-audit-fixes.js?v=1574f677"></script>
 <script src="js/v71-which-deck.js?v=b6fa22b3"></script>
+<script src="js/grade-flag.js?v=d2327a36"></script>
 <script src="js/upgrades.js?v=78c7a8ba"></script>
 <script src="js/grade-history.js?v=0a93161c"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>

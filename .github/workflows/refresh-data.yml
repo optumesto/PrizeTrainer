@@ -36,7 +36,11 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 45   # a cards_only run reads about 300 requests 5 seconds apart; a slow run about 55 requests 30 seconds apart
+    timeout-minutes: 120  # 3.0: Limitless requests go 30 seconds apart (about 30 per 15 minutes), so a full run can take about 70 minutes; a cards_only run reads about 300 requests 5 seconds apart
+    env:
+      # 3.0: every Limitless request waits 30 seconds, about 30 per 15 minutes (Mason, Nov 13 2026).
+      # The one-off cards_only run keeps its own 5 second pace.
+      PT_PAUSE_MS: ${{ inputs.cards_only && '' || '30000' }}
     steps:
       - uses: actions/checkout@v5
         with:
