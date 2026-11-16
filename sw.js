@@ -143,7 +143,7 @@ self.addEventListener('fetch', event => {
   }
 
   // The weekly data files: newest copy first, the saved one with no signal.
-  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/meta-cards.json') || url.pathname.endsWith('/cards.json'))) {
+  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/meta-cards.json') || url.pathname.endsWith('/cards.json') || url.pathname.endsWith('/accuracy.json'))) {
     event.respondWith(
       fetch(req, { cache: 'no-cache' })
         .then(resp => {
