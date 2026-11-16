@@ -1,31 +1,21 @@
-# French (fr): wording for a native speaker to check
+# French (fr): open questions for a native speaker
 
-Game terms (please confirm against current French cards and rules):
-- "Talent" for Ability, "Poste Actif" for Active Spot, "Banc" for Bench, "Défausse" for discard pile.
-- "Niveau 1" / "Niveau 2" for Stage 1 / Stage 2, "De base" for Basic (and "Pokémon de Base").
-- "Énergie de base" / "Énergie spéciale"; type names Plante, Feu, Eau, Électrique, Psy, Combat, Obscurité, Métal, Dragon, Incolore, Fée.
-- "ACE SPEC" kept as in English (Spanish uses "AS TÁCTICO"): is there an official French label?
-- "Pokémon-ex" (with hyphen) used in a few sentences; cards may write it differently.
-- "marque de règlement" for regulation mark: unsure of the official French term.
-- "Attacher" for Attach, "Retraite" for the Retreat button, "Piocher" for Draw, "Chercher" for Search.
-- "Étendu" for Expanded, "Avant-première" for Prerelease, "coffret Construction et Combat" for Build and Battle Box.
-- "K.O." used for knockouts ("mettre K.O.").
+Settled in the 3.0.2 audit (checked against French card text and the official French terms; no need to recheck):
+- Game terms: Talent, Poste Actif, Pokémon Actif, Banc, Défausse, cartes Récompense, Supporter, Objet, Outil Pokémon, Stade, Énergie de base / Énergie spéciale, Niveau 1 / Niveau 2, "Pokémon de base" (lowercase "base", as on cards), Pokémon-ex, K.O., PV, marqueurs de dégâts, Faiblesse, Résistance, Étendu, Mort subite.
+- ACE SPEC is "HIGH-TECH" on French cards ("carte HIGH-TECH" in sentences).
+- Regulation mark is "marque de régulation".
+- Build and Battle Box is the "kit d'Avant-Première".
+- Card copies are "exemplaires" everywhere (the odds table header is "Qté").
+- Deck tabs: "Probas", "Pratique" and "Exos" (the full words are clipped on a 360 px phone). Odds table headers "Au moins 1" / "Tous bloqués"; the practice card tag "Set up" is "Placer".
+- Dates: "1er" for the first of the month, "16 sept.", one full stop after an abbreviated month; times on the 24 hour clock (15:00); thousands with a space (1 597).
+- "$1 n'a rien à faire évoluer" is right: the English means Rare Candy with no Stage 2 in the list.
 
-App words chosen (short, for small buttons):
-- "Note" / "noter" for grade / grading, "Récompenses" for prizes, "match-up" for matchup, "méta" for meta.
-- "Goldfish", "Toolbox", "Flex", "bye" kept in English, as players say them.
-- "Base" for Core (Ask the odds / builder), "Main" for Open (opening hand), required by the test.
-- "OK" for Done, "Plus tard" for Not now, "Journal des modifs" for Edit log.
-- Puzzle "plays" are "coups" ("Gagné en 2 coups").
-
-Register and style:
-- "vous" throughout. Plain spaces before ":" "?" "!" (no non-breaking spaces); decimals keep the English point (8.0, 48.2%), as in Spanish and Portuguese.
-- Ordinals: "1er", "2e"; places use "1re place", "2e place".
-- Dates come out as "15 nov. 2026" and "avril 2027".
-
-Ambiguous strings worth a look:
-- "$1 n'a rien à faire évoluer" (English: "X has nothing to evolve").
-- "$1 libres" for open Bench slots in Goldfish.
-- "Vous ratez [carte] 40% des fois où elle est en Récompenses" (feminine "elle" even when the card is a Pokémon).
-- "Il prend mon deck pour un autre deck" (grade flag reason).
-- "Couldn" is a fragment key (from "Couldn't ..."), translated "Impossible".
+Still open:
+- "Probas" is informal; "Chances" would also fit the tab. Is "Probas" fine for the app's audience?
+- "Pratique" for the Practice tab and "Exos" for Drills: acceptable, or is there a better short word?
+- Still two lines at 360 px, no natural shorter wording found: "Decks de départ", "Enregistrer un fichier" / "Ouvrir un fichier", "Celle-ci" (compare header), "Temps moy.", "Crédits et mentions légales".
+- "Goldfish", "Toolbox", "Flex", "bye", "match-up", "méta" kept as players say them. Confirm.
+- "Ronde" for a tournament round, "Au meilleur des 3" for best of three (players also say "BO3").
+- "Vérif. d'accès" for Reach check ("can you still get it?" before the reveal): is there a clearer short name?
+- "Enregistrer comme nouveau" (Save as new) is long for a button; no shorter natural wording found.
+- Percentages keep the English style (48.2%, no space, decimal point), the same convention as Spanish and Portuguese.
