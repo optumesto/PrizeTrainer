@@ -80,7 +80,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <p class="kicker">Rules</p>
   <h1>Pok&eacute;mon TCG rules, from the official rulebook</h1>
-  <p>Common Pok&eacute;mon TCG rules questions, answered from the official rulebook and tournament handbook that The Pok&eacute;mon Company International publishes. Each answer is in our own words and names the document and page it comes from, so you can check it there. RdyDeck shows the matching rules when you tap a card in a deck.</p>
+  <p>Common Pok&eacute;mon TCG rules questions, answered from the official rulebook, tournament handbook and rules posts that The Pok&eacute;mon Company International publishes. Each answer is in our own words and names the document and the page or section it comes from, so you can check it there. RdyDeck shows the matching rules when you tap a card in a deck.</p>
 
   <h2>Damage</h2>
   <dl>
@@ -101,7 +101,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <dt id="tera">What does Tera do on the Bench?</dt>
   <dd>While a Tera Pokémon ex is on the Bench, attacks do no damage to it, whether they are your opponent's attacks or your own. When it is Knocked Out, your opponent still takes 2 Prize cards.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 25). Checked 16 Nov 2026.</span></dd>
   <dt id="ex-prizes">How many Prize cards is a Pokémon ex worth?</dt>
-  <dd>When a Pokémon ex is Knocked Out, its owner's opponent takes 2 Prize cards instead of 1.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 24). Checked 16 Nov 2026.</span></dd>
+  <dd>When a Pokémon ex is Knocked Out, its owner's opponent takes 2 Prize cards instead of 1. This rulebook edition came out before Mega Evolution Pokémon ex, which carry their own rule on the card: 3 Prize cards.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 24). Checked 16 Nov 2026.</span></dd>
   </dl>
 
   <h2>Deck building</h2>
@@ -120,6 +120,10 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <dd>One per turn.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 12). Checked 16 Nov 2026.</span></dd>
   <dt id="retreat">How often can you retreat?</dt>
   <dd>Once per turn. Discard Energy from the Active Pokémon equal to its Retreat Cost, then switch it with a Benched Pokémon. You can still attack that turn.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 12). Checked 16 Nov 2026.</span></dd>
+  <dt id="up-to">When a card says &quot;up to&quot; a number, can you choose 0?</dt>
+  <dd>For an attack, yes: you can choose any number from 0 to the most it allows. For other effects, like Trainer cards and Abilities, you must choose at least 1, unless nothing can be chosen. An effect that searches for &quot;any&quot; card, without naming a kind, also needs at least 1.<br><span class="note">Source: <a href="https://professorprogram.pokemon.com/news/11473085" rel="noopener">February 2026 Rule Book Updates</a>, The Pokémon Company International (Pokémon Professor Community post, 26 Feb 2026, &quot;Up to&quot; change). Checked 16 Nov 2026.</span></dd>
+  <dt id="effect-order">Who decides the order when several effects happen at the same time?</dt>
+  <dd>During a turn, the player whose turn it is chooses the order. During Pokémon Checkup, the player who takes the next turn chooses. A card's own effects all finish before any other effect starts.<br><span class="note">Source: <a href="https://professorprogram.pokemon.com/news/11473085" rel="noopener">February 2026 Rule Book Updates</a>, The Pokémon Company International (Pokémon Professor Community post, 26 Feb 2026, ordering rules). Checked 16 Nov 2026.</span></dd>
   </dl>
 
   <h2>Evolution</h2>
@@ -152,12 +156,18 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <h2>Winning</h2>
   <dl>
-  <dt id="sudden-death">What if both players win at the same time?</dt>
-  <dd>If one player meets two win conditions and the other meets only one, the player with two wins. Otherwise play Sudden Death: a new game where each player sets out only 1 Prize card.<br><span class="note">Source: <a href="https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf" rel="noopener">Pokémon TCG Rulebook</a>, The Pokémon Company International (Twilight Masquerade edition, 2024, p. 21). Checked 16 Nov 2026.</span></dd>
+  <dt id="tiebreaker">What if both players win at the same time?</dt>
+  <dd>Since the February 2026 update, the rulebook no longer uses Sudden Death. If one player meets more win conditions than the other, that player wins. Otherwise you play a tiebreaker game with the usual 6 Prize cards. Play! Pokémon tournaments already worked this way.<br><span class="note">Source: <a href="https://professorprogram.pokemon.com/news/11473085" rel="noopener">February 2026 Rule Book Updates</a>, The Pokémon Company International (Pokémon Professor Community post, 26 Feb 2026, Sudden Death change). Checked 16 Nov 2026.</span></dd>
+  </dl>
+
+  <h2>Card rulings</h2>
+  <dl>
+  <dt id="nullifying-zero">How does Mega Zygarde ex's Nullifying Zero work against a Benched Tera Pokémon?</dt>
+  <dd>You flip a coin for each of your opponent's Pokémon in play, in any order, and each heads puts 150 damage on that Pokémon. You still flip for a Benched Tera Pokémon, but it takes no damage while it is on the Bench.<br><span class="note">Source: <a href="https://professorprogram.pokemon.com/news/11484373" rel="noopener">ME: Perfect Order FAQ</a>, The Pokémon Company International (Pokémon Professor Community post, 13 Mar 2026, Pokémon Attacks section, entry ME3_47), <a href="https://d21hwc2yj2s6ok.cloudfront.net/shrine_store/uploads/networks/1531/communication_news/11484373/07bb7950bdfc1346ab49ec3744c403d3.pdf" rel="noopener">PDF</a>. Checked 16 Nov 2026.</span></dd>
   </dl>
 
   <h2>What is not here yet</h2>
-  <p>Pok&eacute;mon also rules on how two specific cards work together. Those rulings are not on this page yet: RdyDeck only adds one when it can point to an official document that states it. When a rule here and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
+  <p>Pok&eacute;mon also rules on how two specific cards work together. Most of those rulings are not on this page yet: RdyDeck only adds one when The Pok&eacute;mon Company International has published it where anyone can read it. When a rule here and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
   <p class="note">Rules as of 16 Nov 2026. RdyDeck is an unofficial fan-made app, not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
   <div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
 

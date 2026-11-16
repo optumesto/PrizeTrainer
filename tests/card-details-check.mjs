@@ -189,7 +189,7 @@ const R = JSON.parse(fs.readFileSync(path.join(ROOT, 'rulings.json'), 'utf8'));
 const srcIds = new Set(R.sources.map(s => s.id));
 ok(R.rulings.length >= 10 && R.rulings.every(r => r.id && r.q && r.a && srcIds.has(r.src) && r.where) && new Set(R.rulings.map(r => r.id)).size === R.rulings.length,
   `rulings.json: ${R.rulings.length} rules, each with a source and where`);
-ok(R.sources.every(s => /^https:\/\/www\.pokemon\.com\//.test(s.url) && /Pokémon Company International/.test(s.publisher)), 'every source is an official Pokémon document');
+ok(R.sources.every(s => /^https:\/\/(www|professorprogram)\.pokemon\.com\//.test(s.url) && /Pokémon Company International/.test(s.publisher)), 'every source is an official Pokémon document');
 ok(!/[\u2013\u2014]/.test(JSON.stringify(R)), 'no en or em dash in rulings.json');
 let shownRules = '';
 for (const t of trTiles) {

@@ -32,6 +32,7 @@ PrizeTrainer/
   terms.html, privacy.html             Terms of Service and Privacy Policy
   rulings.json                         official rules the card details show: each in our own words, with its TPCi document, page and the day it was checked
   rulings.html                         the Rules page, built from rulings.json by build-pages.mjs
+  rulings-sources.md                   internal record of each rules citation, how it was read, and card rulings with no public original
   robots.txt, sitemap.xml              for search engines
   saira*.woff2                         the app's fonts (4 files)
   icon*.png, icon.svg, apple-touch-icon.png, og-image.png   icons and the share image

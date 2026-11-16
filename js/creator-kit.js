@@ -107,11 +107,15 @@ async function ck31Open() {
   const code = await encodeDeckShare(deck);
   const tail = '#deck=' + code + (typeof deck.atk === 'string' && deck.atk ? '&a=' + encodeURIComponent(deck.atk) : '');
   const base = shareBaseUrl();
-  const obs = base + '?overlay=1' + tail;
-  const emb = base + '?overlay=1&embed=1' + tail;
+  // The card shows in the player's language: OBS keeps its own storage, so the link carries it.
+  const lg = typeof rdI18n !== 'undefined' && rdI18n.lang && rdI18n.lang !== 'en' ? '&lang=' + rdI18n.lang : '';
+  const tr = x => typeof i18nTr === 'function' ? i18nTr(x) : x;
+  const obs = base + '?overlay=1' + lg + tail;
+  const emb = base + '?overlay=1&embed=1' + lg + tail;
   const full = base + '?ref=grade' + tail.replace(/^#deck=([^&]*)/, '#deck=$1&g=1');
-  const iframe = `<iframe src="${emb}" width="560" height="190" style="border:0;max-width:100%" title="RdyDeck grade" loading="lazy"></iframe>`;
-  const line = `${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 on RdyDeck: ${full}`;
+  const iframe = `<iframe src="${emb}" width="560" height="190" style="border:0;max-width:100%" title="${esc(tr('RdyDeck grade'))}" loading="lazy"></iframe>`;
+  const line = tr('{name} grades {grade} out of 10 on RdyDeck: {link}').replace('{name}', () => cleanSharedText(deck.name, 60).replace(/\n/g, ' '))
+    .replace('{grade}', R.overall.toFixed(1)).replace('{link}', () => full);
   _ck31 = { obs, iframe, line };
   const row = (id, title, hint, val) => `<div class="ck31-k">
       <div class="ck31-kh"><b>${title}</b><button class="btn btn-sm" onclick="ck31Copy('${id}')">${ic23('copy')}Copy</button></div>

@@ -1,7 +1,7 @@
 {
  "schema": 1,
  "asOf": "2026-11-16",
- "note": "Only rules The Pokémon Company International publishes itself, written in our own words. Card by card rulings are not here yet.",
+ "note": "Only rules The Pokémon Company International publishes itself, written in our own words. A card by card ruling is added only when TPCi has published it publicly.",
  "sources": [
   {
    "id": "rb",
@@ -10,7 +10,8 @@
    "publisher": "The Pokémon Company International",
    "url": "https://www.pokemon.com/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf",
    "checked": "2026-11-16",
-   "readFrom": "https://mcdn.pokemon.com/pokemon-prod/raw/upload/v1/live/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf"
+   "readFrom": "https://mcdn.pokemon.com/pokemon-prod/raw/upload/v1/live/static-assets/content-assets/cms2/pdf/trading-card-game/rulebook/twm_rulebook_en.pdf",
+   "note": "The newest edition we could read. TPCi updated the rulebook in February 2026 (see the February 2026 Rule Book Updates source); rules it changed are cited from that post instead."
   },
   {
    "id": "th",
@@ -19,6 +20,23 @@
    "publisher": "The Pokémon Company International",
    "url": "https://www.pokemon.com/static-assets/content-assets/cms2/pdf/play-pokemon/rules/play-pokemon-tcg-tournament-handbook-en.pdf",
    "checked": "2026-11-16"
+  },
+  {
+   "id": "rbu26",
+   "title": "February 2026 Rule Book Updates",
+   "edition": "Pokémon Professor Community post, 26 Feb 2026",
+   "publisher": "The Pokémon Company International",
+   "url": "https://professorprogram.pokemon.com/news/11473085",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "me3faq",
+   "title": "ME: Perfect Order FAQ",
+   "edition": "Pokémon Professor Community post, 13 Mar 2026",
+   "publisher": "The Pokémon Company International",
+   "url": "https://professorprogram.pokemon.com/news/11484373",
+   "checked": "2026-11-16",
+   "pdf": "https://d21hwc2yj2s6ok.cloudfront.net/shrine_store/uploads/networks/1531/communication_news/11484373/07bb7950bdfc1346ab49ec3744c403d3.pdf"
   }
  ],
  "rulings": [
@@ -91,7 +109,7 @@
    "src": "rb",
    "where": "p. 24",
    "q": "How many Prize cards is a Pokémon ex worth?",
-   "a": "When a Pokémon ex is Knocked Out, its owner's opponent takes 2 Prize cards instead of 1.",
+   "a": "When a Pokémon ex is Knocked Out, its owner's opponent takes 2 Prize cards instead of 1. This rulebook edition came out before Mega Evolution Pokémon ex, which carry their own rule on the card: 3 Prize cards.",
    "checked": "2026-11-16"
   },
   {
@@ -227,13 +245,13 @@
    "checked": "2026-11-16"
   },
   {
-   "id": "sudden-death",
+   "id": "tiebreaker",
    "topic": "Winning",
    "tags": [],
-   "src": "rb",
-   "where": "p. 21",
+   "src": "rbu26",
+   "where": "Sudden Death change",
    "q": "What if both players win at the same time?",
-   "a": "If one player meets two win conditions and the other meets only one, the player with two wins. Otherwise play Sudden Death: a new game where each player sets out only 1 Prize card.",
+   "a": "Since the February 2026 update, the rulebook no longer uses Sudden Death. If one player meets more win conditions than the other, that player wins. Otherwise you play a tiebreaker game with the usual 6 Prize cards. Play! Pokémon tournaments already worked this way.",
    "checked": "2026-11-16"
   },
   {
@@ -244,6 +262,45 @@
    "where": "section 4.1.1",
    "q": "Which cards are legal in Standard?",
    "a": "Cards with regulation mark H, I or J. Cards with the G mark are Expanded only.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "up-to",
+   "topic": "Turns",
+   "tags": [
+    "search"
+   ],
+   "src": "rbu26",
+   "where": "\"Up to\" change",
+   "q": "When a card says \"up to\" a number, can you choose 0?",
+   "a": "For an attack, yes: you can choose any number from 0 to the most it allows. For other effects, like Trainer cards and Abilities, you must choose at least 1, unless nothing can be chosen. An effect that searches for \"any\" card, without naming a kind, also needs at least 1.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "effect-order",
+   "topic": "Turns",
+   "tags": [
+    "lasting"
+   ],
+   "src": "rbu26",
+   "where": "ordering rules",
+   "q": "Who decides the order when several effects happen at the same time?",
+   "a": "During a turn, the player whose turn it is chooses the order. During Pokémon Checkup, the player who takes the next turn chooses. A card's own effects all finish before any other effect starts.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "nullifying-zero",
+   "topic": "Card rulings",
+   "tags": [
+    "tera"
+   ],
+   "cards": [
+    "Mega Zygarde ex"
+   ],
+   "src": "me3faq",
+   "where": "Pokémon Attacks section, entry ME3_47",
+   "q": "How does Mega Zygarde ex's Nullifying Zero work against a Benched Tera Pokémon?",
+   "a": "You flip a coin for each of your opponent's Pokémon in play, in any order, and each heads puts 150 damage on that Pokémon. You still flip for a Benched Tera Pokémon, but it takes no damage while it is on the Bench.",
    "checked": "2026-11-16"
   }
  ]
