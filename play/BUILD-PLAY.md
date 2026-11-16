@@ -134,10 +134,15 @@ Cloudflare Web Analytics is added by Cloudflare to every rdydeck.com page, so it
 | Location: Approximate location (country, from the IP address) | Collected. Not shared. Required. Purpose: Analytics (the cautious answer; the IP address itself is not stored) |
 | Personal info: Email address | Collected only if the player sends feedback. Not shared. Optional. Purpose: App functionality (support) |
 | App activity: Other user-generated content (feedback message, deck list if ticked) | Collected only if sent. Not shared. Optional. Purpose: App functionality (support) |
+| App info and performance: Crash logs (3.0 error reports: error message with quoted text removed, app code lines) | Collected. Not shared. Optional (Settings, Error reports, Off). Purpose: Analytics. Processed ephemerally: No (kept up to 90 days) |
+| App info and performance: Diagnostics (3.0 error reports: app version, screen, browser and system family) | Collected. Not shared. Optional (same switch). Purpose: Analytics |
+| App activity: Other actions (3.0 "This grade looks off": the grade, the matched meta deck and a preset reason) | Collected only when the player taps it. Not shared. Optional. Purpose: Analytics |
 | Device or other IDs | Not collected |
 | Sold to anyone? | No (Play has no separate question; "not shared" covers it) |
 
 Why "not shared": Cloudflare processes the analytics for RdyDeck as a service provider, which Play does not count as sharing. Card data and picture requests to TCGdex, the Pokémon TCG API and Limitless send no user data (only a normal web request), so they are not a data type.
+
+What changed in 3.0 (Nov 16 2026): the app now sends anonymous error reports and "This grade looks off" flags to rdydeck.com/api/report (RdyDeck's own Cloudflare Worker, stored in Cloudflare D1, deleted after 90 days). Neither holds a name, contact detail, deck list, deck name, ID or IP address (Cloudflare uses the IP only for rate limiting, never stored), so neither is linked to the user. That adds the three rows above. If Data safety was already filled in before 3.0, update it with these rows before the next review. Owned cards, the language choice and tournament records stay on the device and are not collected. TCGdex price lookups send no user data (a normal web request), like the card data.
 
 Other App content forms:
 - **Target audience:** all ages. Because that includes under 13, Play applies its Families policy: the app must not collect device IDs or precise location from children and any ads SDK must be Families certified. The Play app shows no ads and collects neither, so it fits. Expect Play to ask a few extra questions, and keep the privacy policy's "players of all ages" line as it is.
