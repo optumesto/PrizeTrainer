@@ -6448,7 +6448,7 @@ function renderReadDrill(deck) {
     <label for="opp-src">Their list</label>
     <select id="opp-src" class="x-select" onchange="setOppSrc(this.value)">${srcs.map(s => `<option value="${esc(s.val)}"${s.val === _oppSrc ? ' selected' : ''}>${esc(s.label)}</option>`).join('')}</select>
     ${_oppSrc === 'paste' ? `<textarea id="opp-paste" class="nt-area" maxlength="8000" aria-label="Opponent's deck list" placeholder="Paste their 60 card list. It stays on this device and is not saved as a deck.">${esc(_oppPaste)}</textarea>` : ''}
-    <div class="seg" style="margin:0.6rem 0">
+    <div class="seg read-seg" style="margin:0.6rem 0">
       <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 unseen</small></div>
       <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 unseen</small></div>
     </div>`;

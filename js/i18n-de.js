@@ -90,6 +90,11 @@ I18N_MORE.de = {
     W: 'S',
     L: 'N',
     T: 'U',
+    // Rotation counts of 1 (the dictionary has the plural).
+    'may rotate': 'könnte rotieren',
+    'rotate next': 'rotiert als Nächstes',
+    // Matchups: "Deck gewann 48% aller 1,597 Matches".
+    won: 'gewann',
     // The pile under the play mat (the dictionary has the button verb).
     'Discard': 'Ablage',
   },
@@ -437,8 +442,8 @@ I18N_MORE.de = {
     'Announced': 'Angekündigt',
     'Expected': 'Erwartet',
     'not legal now': 'jetzt nicht legal',
-    'may rotate': 'könnte rotieren',
-    'rotate next': 'rotiert als Nächstes',
+    'may rotate': 'könnten rotieren',
+    'rotate next': 'rotieren als Nächstes',
     'not confirmed': 'nicht bestätigt',
     'safe': 'sicher',
     'Rotation safe': 'Rotationssicher',
@@ -1200,7 +1205,7 @@ I18N_MORE.de = {
     [/^(\d+)% of the grade comes from (.+)'s online tournament results(?: since (.+?))?(?: \(as of (.+?)\))?: ([\d.]+%) wins (?:with games since the newest set counted three times \(([\d.]+%) over all ([\d,]+) games\)|over all ([\d,]+) games)\.$/, (m, p, n, s, a, w, raw, g1, g2) => p + '% der Note stammen aus den Online-Turnierergebnissen von ' + n + (s ? ' seit ' + s : '') + (a ? ' (Stand ' + a + ')' : '') + ': ' + w + ' Siege' + (raw ? ', wobei Spiele seit dem neuesten Set dreifach zählen (' + raw + ' über alle ' + g1 + ' Spiele)' : ' über alle ' + g2 + ' Spiele') + '.'],
     [/^over all ([\d,]+) games, against ([\d.]+%) for all decks in these results\.$/, 'über alle $1 Spiele, gegenüber $2 für alle Decks in diesen Ergebnissen.'],
     [/^The grade counts games since the newest set three times, which makes it ([\d.]+%)\.$/, 'Die Note zählt Spiele seit dem neuesten Set dreifach, das ergibt $1.'],
-    [/^of all ([\d,]+) matches against other decks \((\d+) wins, (\d+) losses, (\d+) ties\)\.$/, 'aus allen $1 Matches gegen andere Decks ($2 Siege, $3 Niederlagen, $4 Unentschieden).'],
+    [/^of all ([\d,]+) matches against other decks \((\d+) wins, (\d+) losses, (\d+) ties\)\.$/, 'aller $1 Matches gegen andere Decks ($2 Siege, $3 Niederlagen, $4 Unentschieden).'],
     [/^expected\. That is its record against the (\d+) most played decks \((\d+)% of play (?:since (.+)|in these results)\), each counted by how often that deck is played, over ([\d,]+) matches\.$/, (m, n, c, s, g) => 'erwartet. Das ist die Bilanz gegen die ' + n + ' meistgespielten Decks (' + c + '% der Spiele ' + (s ? 'seit ' + s : 'in diesen Ergebnissen') + '), jedes gewichtet nach seiner Spielhäufigkeit, über ' + g + ' Matches.'],
     [/^On (.+) results, grades put (\d+) decks in an order that matches their online win rates at ([\d.]+)(?: \(([\d.]+) from the cards alone\))?\.$/, (m, s, n, x, y) => 'Mit den Ergebnissen von ' + s + ' ordnen die Noten ' + n + ' Decks passend zu ihren Online-Siegquoten mit ' + x + (y ? ' (' + y + ' nur aus den Karten)' : '') + '.'],
     [/^On (.+) results, grades put (\d+) decks in an order that matches their online win rates at ([\d.]+)(?: \(([\d.]+) from the cards alone\))?\. 1\.0 means exactly the order of their results\.$/, (m, s, n, x, y) => 'Mit den Ergebnissen von ' + s + ' ordnen die Noten ' + n + ' Decks passend zu ihren Online-Siegquoten mit ' + x + (y ? ' (' + y + ' nur aus den Karten)' : '') + '. 1.0 heißt genau die Reihenfolge ihrer Ergebnisse.'],

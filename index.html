@@ -470,6 +470,8 @@
   .fmt-opt.active.standard { color:var(--water); }
   .fmt-opt.active.expanded { color:var(--fighting); }
   .mode-opt small { font-size:var(--fs-xs); color:var(--text-3); font-weight:600; }
+  /* Prize read stages: a longer translation puts the card count on a second line. */
+  .read-seg .mode-opt { flex-wrap:wrap; row-gap:0; padding:0.3rem 0.5rem; line-height:1.25; }
 
   /* Mode sheet */
   .mode-modal { max-width:480px; }
@@ -3745,7 +3747,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=b95517e6"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=99e465dd"></script>
 
-<script src="js/core.js?v=1fbcae1f"></script>
+<script src="js/core.js?v=7456a0dd"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -3813,7 +3815,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v26-practice.js?v=bcafde86"></script>
 <script src="js/keyboard.js?v=d5a87509"></script>
 <script src="js/v28-ask-odds.js?v=f4e36208"></script>
-<script src="js/v29-rotation.js?v=5a652e46"></script>
+<script src="js/v29-rotation.js?v=dcc0df72"></script>
 <script src="js/v30-live-data.js?v=93a2b96d"></script>
 <script src="js/v31-tcgdex.js?v=eb95af33"></script>
 <script src="js/v32-ads.js?v=95725c4b"></script>
@@ -3861,8 +3863,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v80-extras.js?v=8c65f5af"></script>
 <script src="js/easier-first-visit.js?v=78a70278"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
-<script src="js/i18n.js?v=1be507d4"></script>
+<script src="js/i18n.js?v=b0100ff0"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=dfbfff4f"></script><script src="js/i18n-de.js?v=d57fce57"></script><script src="js/i18n-it.js?v=f341b071"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=09b8424c"></script><script src="js/i18n-de.js?v=23e49e02"></script><script src="js/i18n-it.js?v=fa27b825"></script></template>
 </body>
 </html>

@@ -78,6 +78,12 @@ I18N_MORE.fr = {
   mon3: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
   ord: n => n === '1' ? '1er' : n + 'e',
   scoped: {
+    // Rotation counts of 1 (the dictionary has the plural).
+    'not legal now': 'non légale',
+    'may rotate': 'peut sortir',
+    'rotate next': 'va sortir',
+    'not confirmed': 'non confirmée',
+    'safe': 'sûre',
     'Skip': 'Passer',
     'Psychic': 'Psy',
     'This': 'Celle-ci',

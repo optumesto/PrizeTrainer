@@ -174,7 +174,8 @@ function r29Summary(deck) {
   if (!ann && N.checkBy && Date.now() > Date.parse(N.checkBy)) h += `<div class="g-item warn"><div class="gt">This may be out of date</div>
     <p>Pokémon usually announces rotation in January. If it has, update the app to see the official date.</p></div>`;
 
-  const tile = (cls, v, t, key) => `<div class="r29-c ${cls}" data-k="${key}"><b>${v}</b><span>${t}</span></div>`;
+  // "one" marks a count of 1, so translations can use the singular form of the label.
+  const tile = (cls, v, t, key) => `<div class="r29-c ${cls}${v === 1 ? ' one' : ''}" data-k="${key}"><b>${v}</b><span>${t}</span></div>`;
   h += `<div class="r29-sum">${tile(k.out ? 'bad' : '', k.out, 'not legal now', 'out')}${tile(k.risk ? 'risk' : '', k.risk, ann ? 'rotate next' : 'may rotate', 'risk')}${k.unconf ? tile('unk', k.unconf, 'not confirmed', 'unconf') : ''}${tile('ok', k.safe, 'safe', 'safe')}</div>`;
   if (k.energy) h += `<div class="r29-tot">Plus ${k.energy} Basic Energy, which never rotate${k.energy === 1 ? 's' : ''}. ${k.out + k.risk + k.unconf + k.safe + k.energy} cards in all.</div>`;
 
@@ -221,9 +222,10 @@ function r29Summary(deck) {
   h += `<div class="r29-note">${notes.join(' ')}</div></div>`;
 
   let chip = '', chipTone = 'ok';
-  if (k.out) { chip = `<b>${k.out}</b> not legal now`; chipTone = 'crit'; }
-  else if (k.risk) { chip = `<b>${k.risk}</b> ${ann ? 'rotate next' : 'may rotate'}`; chipTone = 'warn'; }
-  else if (k.unconf) { chip = `<b>${k.unconf}</b> not confirmed`; chipTone = 'warn'; }
+  const lab = (n, t) => n === 1 ? `<span class="r29-one">${t}</span>` : t;
+  if (k.out) { chip = `<b>${k.out}</b> ${lab(k.out, 'not legal now')}`; chipTone = 'crit'; }
+  else if (k.risk) { chip = `<b>${k.risk}</b> ${lab(k.risk, ann ? 'rotate next' : 'may rotate')}`; chipTone = 'warn'; }
+  else if (k.unconf) { chip = `<b>${k.unconf}</b> ${lab(k.unconf, 'not confirmed')}`; chipTone = 'warn'; }
   else if (k.safe) chip = 'Rotation safe';
   return { chip, chipTone, html: h, counts: k };
 }
