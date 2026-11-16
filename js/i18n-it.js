@@ -94,6 +94,15 @@ I18N_MORE.it = {
     "Discard": "Scarti",
   },
   dict: {
+    "Rules": "Regole",
+    // 3.1 What's new
+    "Added: card details": "Nuovo: dettagli delle carte",
+    "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tocca una carta nella scheda Carte per vedere il testo completo, Debolezza, Resistenza e Ritirata, le regole ufficiali che la riguardano e come si inserisce nel mazzo.",
+    "Added: official rules": "Nuovo: regole ufficiali",
+    "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Domande comuni sulle regole con le risposte del regolamento ufficiale, ognuna con la sua pagina. Sono anche nella nuova pagina Regole.",
+    "Added: Creator kit": "Nuovo: Kit per creator",
+    "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "In Condividi il voto: una scheda del voto per OBS che segue i risultati più recenti, un incorporamento per il tuo sito e una riga per le descrizioni dei video.",
+    "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Data dei mazzi iniziali corretta in spagnolo, portoghese, francese e italiano",
     // 3.1 creator kit
     "Creator kit: stream card and embed": "Kit per creator: scheda per lo stream e incorporamento",
     "Creator kit": "Kit per creator",

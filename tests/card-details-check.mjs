@@ -181,7 +181,7 @@ ok(fits >= Math.min(3, trTiles.length), `How it fits this deck on ${fits} Traine
 
 // Every tile opens with no script error, and no dash sneaks into what the sheet adds.
 let dash = '';
-for (const t of tiles()) { await tap(t); const h = inner().innerHTML.replace(/data-no-tr>[^<]*</g, ''); if (/[–—]/.test(h)) dash = t.textContent; }
+for (const t of tiles()) { await tap(t); const h = inner().innerHTML.replace(/data-no-tr>[^<]*</g, ''); if (/[\u2013\u2014]/.test(h)) dash = t.textContent; }
 ok(!dash, 'no en or em dash in the sheet labels' + (dash ? ': ' + dash : ''));
 
 // Official rules: rulings.json is well formed, and a Supporter shows the Supporter rules with their source.

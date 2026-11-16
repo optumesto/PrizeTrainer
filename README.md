@@ -30,6 +30,8 @@ PrizeTrainer/
   card-check.md                        the weekly card check report (the job writes it)
   matchups.json                        win rates for Against the meta on the Grade tab (the job writes it)
   terms.html, privacy.html             Terms of Service and Privacy Policy
+  rulings.json                         official rules the card details show: each in our own words, with its TPCi document, page and the day it was checked
+  rulings.html                         the Rules page, built from rulings.json by build-pages.mjs
   robots.txt, sitemap.xml              for search engines
   saira*.woff2                         the app's fonts (4 files)
   icon*.png, icon.svg, apple-touch-icon.png, og-image.png   icons and the share image
@@ -39,6 +41,8 @@ PrizeTrainer/
   tests/grade-lists.json               the 128 top 16 lists it grades
   tests/grade-cards.json.gz            the card data it reads, saved so every run reads the same cards
   tests/grade-baseline.json            the grades each list should get
+  tests/card-details-check.mjs         taps cards on the Cards tab: full text, rules, five languages, grade unchanged
+  tests/creator-kit-check.mjs          the Creator kit and its OBS card (?overlay=1): same grade, no ads, nothing saved
   tests/package.json, package-lock.json   jsdom, which the check needs to run the app outside a browser
   CHANGES.md, README.md, LICENSE
 ```

@@ -39,6 +39,15 @@ const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
 
 /* I18N_DICT_START */
 const I18N_ES = {
+  "Rules": "Reglas",
+  // 3.1 What's new
+  "Added: card details": "Nuevo: detalles de carta",
+  "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Toca una carta en la pestaña Cartas para ver su texto completo, Debilidad, Resistencia y Retirada, las reglas oficiales que le aplican y cómo encaja en la baraja.",
+  "Added: official rules": "Nuevo: reglas oficiales",
+  "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Preguntas comunes sobre las reglas respondidas con el reglamento oficial, cada una con su página. También están en la nueva página Reglas.",
+  "Added: Creator kit": "Nuevo: Kit para creadores",
+  "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "En Compartir calificación: una tarjeta de calificación para OBS que sigue los resultados más recientes, una inserción para tu sitio y una línea para descripciones de video.",
+  "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Fecha de las barajas iniciales corregida en español, portugués, francés e italiano",
   // 3.1 creator kit
   "Creator kit: stream card and embed": "Kit para creadores: tarjeta para stream e inserción",
   "Creator kit": "Kit para creadores",
@@ -966,6 +975,15 @@ const I18N_ES = {
   "The grade checks the rest when you save.": "La calificación revisa el resto cuando guardas.",
 };
 const I18N_PT = {
+  "Rules": "Regras",
+  // 3.1 What's new
+  "Added: card details": "Novo: detalhes da carta",
+  "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Toque em uma carta na aba Cartas para ver o texto completo, Fraqueza, Resistência e Recuo, as regras oficiais que se aplicam a ela e como se encaixa no deck.",
+  "Added: official rules": "Novo: regras oficiais",
+  "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Perguntas comuns sobre as regras respondidas com o livro de regras oficial, cada uma com sua página. Elas também estão na nova página Regras.",
+  "Added: Creator kit": "Novo: Kit para criadores",
+  "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "Em Compartilhar nota: um card de nota para o OBS que acompanha os resultados mais recentes, uma incorporação para o seu site e uma linha para descrições de vídeo.",
+  "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Data dos decks iniciais corrigida em espanhol, português, francês e italiano",
   // 3.1 creator kit
   "Creator kit: stream card and embed": "Kit para criadores: card para live e incorporação",
   "Creator kit": "Kit para criadores",

@@ -99,6 +99,15 @@ I18N_MORE.fr = {
     "Discard": "Défausse",
   },
   dict: {
+    "Rules": "Règles",
+    // 3.1 What's new
+    "Added: card details": "Nouveau : détails des cartes",
+    "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Touchez une carte dans l'onglet Cartes pour voir son texte complet, sa Faiblesse, sa Résistance et sa Retraite, les règles officielles qui s'y appliquent et sa place dans le deck.",
+    "Added: official rules": "Nouveau : règles officielles",
+    "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Questions de règles courantes, avec les réponses du livret de règles officiel et la page de chacune. Elles sont aussi sur la nouvelle page Règles.",
+    "Added: Creator kit": "Nouveau : Kit créateur",
+    "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "Dans Partager la note : une carte de note pour OBS qui suit les derniers résultats, une intégration pour votre site et une ligne pour les descriptions de vidéos.",
+    "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Date des decks de départ corrigée en espagnol, portugais, français et italien",
     // 3.1 creator kit
     "Creator kit: stream card and embed": "Kit créateur : carte pour stream et intégration",
     "Creator kit": "Kit créateur",

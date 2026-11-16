@@ -100,6 +100,15 @@ I18N_MORE.de = {
   },
   // Keyed on the English, like I18N_ES.
   dict: {
+    "Rules": "Regeln",
+    // 3.1 What's new
+    "Added: card details": "Neu: Kartendetails",
+    "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tippe auf dem Tab Karten auf eine Karte, um ihren ganzen Text, Schwäche, Resistenz und Rückzug, die offiziellen Regeln dazu und ihre Rolle im Deck zu sehen.",
+    "Added: official rules": "Neu: offizielle Regeln",
+    "Common rules questions answered from the official rulebook, each with its page. They are also on the new Rules page.": "Häufige Regelfragen, beantwortet aus dem offiziellen Regelheft, jeweils mit Seitenzahl. Sie stehen auch auf der neuen Seite Regeln.",
+    "Added: Creator kit": "Neu: Creator-Kit",
+    "In Share grade: a grade card for OBS that follows the newest results, an embed for your site and a line for video descriptions.": "In Note teilen: eine Notenkarte für OBS, die den neuesten Ergebnissen folgt, eine Einbettung für deine Website und eine Zeile für Videobeschreibungen.",
+    "Starter decks date fixed in Spanish, Portuguese, French and Italian": "Datum der Starterdecks auf Spanisch, Portugiesisch, Französisch und Italienisch korrigiert",
     // 3.1 creator kit
     "Creator kit: stream card and embed": "Creator-Kit: Stream-Karte und Einbettung",
     "Creator kit": "Creator-Kit",

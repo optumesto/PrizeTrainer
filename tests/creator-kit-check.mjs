@@ -101,7 +101,7 @@ const [obs, iframe, line] = codes;
 ok(/^https:\/\/rdydeck\.com\/\?overlay=1#deck=1[A-Za-z0-9_-]+/.test(obs), 'OBS link opens the app with ?overlay=1 and the deck');
 ok(/^<iframe src="https:\/\/rdydeck\.com\/\?overlay=1&embed=1#deck=/.test(iframe) && /title="RdyDeck grade"/.test(iframe), 'embed code is an iframe of the embed card');
 ok(line.includes(G.toFixed(1) + ' out of 10 on RdyDeck: https://rdydeck.com/?ref=grade#deck=') && /&g=1/.test(line), 'video line has the grade and the grade link');
-ok(!/[–—]/.test(d.getElementById('x-modal-inner').innerHTML), 'no en or em dash in the kit');
+ok(!/[\u2013\u2014]/.test(d.getElementById('x-modal-inner').innerHTML), 'no en or em dash in the kit');
 const saved = {}; for (let i = 0; i < w.localStorage.length; i++) { const k = w.localStorage.key(i); saved[k] = w.localStorage.getItem(k); }
 const nDecks = w.eval('state.decks.length');
 

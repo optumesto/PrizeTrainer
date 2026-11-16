@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.1 (build 108): card details, official rules and a Creator kit (16 Nov 2026)
+
+Changed files: js/card-details.js and js/creator-kit.js (new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/core.js (version, What's new), index.html (styles, scripts, Rules link, overlay mode, file stamps), rulings.json and rulings.html (new), build-pages.mjs (Rules page), sw.js (cache prize-trainer-v108, rulings files), sitemap.xml, llms.txt, README.md, tests/card-details-check.mjs and tests/creator-kit-check.mjs (new) and CHANGES.md.
+
+- Card details: tap a card on a deck's Cards tab to open it. Pokémon show HP, type, what they evolve from, each Ability and attack with its cost, damage and full text, Weakness, Resistance and Retreat. Trainers and Special Energy show their text and How it fits this deck, in the same words as the Grade tab. Every card shows its Rule Box lines, regulation mark and printing. The full text is read from TCGdex once and saved on the device; offline, the sheet shows what the deck already stores and says so. Mark cards you own still marks instead of opening. Labels are in all five languages; card text stays English.
+- Official rules: rulings.json holds 19 rules from the official Pokémon TCG Rulebook (Twilight Masquerade edition, 2024) and the Play! Pokémon Tournament Handbook (revised 21 May 2026), each written in our own words with its document, page and the day it was checked. A card shows up to 4 that apply to it (a Supporter shows the Supporter rules, a Tera Pokémon the Bench rule, and so on). Card by card rulings are not included yet: only rulings with a public official original will be added. The rules text is English in every language for now.
+- Rules page (rulings.html): every rule with its source, linked from About and listed in the sitemap and llms.txt, with FAQ structured data.
+- Creator kit, from Share grade: an OBS browser source link (?overlay=1) that shows only a grade card on a see-through background, grades the list each time it loads and again every hour, never loads an ad and saves nothing; an iframe embed whose card opens the full grade; and a line for video descriptions.
+- Fixed: the starter decks hint showed in English in Spanish, Portuguese, French and Italian once its date changed; it now translates sentence by sentence.
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 3.0.2 (build 107): French, German and Italian (16 Nov 2026)
 
 Changed files: js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (all new), js/i18n.js, js/v29-rotation.js, js/core.js (version, What's new, prize read stages), index.html (language files, language row style, file stamps), sw.js (cache prize-trainer-v107), tests/i18n-check.mjs, i18n-notes-fr.md, i18n-notes-de.md, i18n-notes-it.md (new) and CHANGES.md.
