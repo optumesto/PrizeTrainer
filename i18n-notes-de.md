@@ -1,50 +1,25 @@
-# German (de): wording for a native speaker to check
+# German (de): open questions for a native speaker
 
-The German strings live in `js/i18n-de.js` (same English keys as `I18N_ES`, patterns in the same order as `I18N_PAT`). The player is addressed as "du". Card, attack and Ability names stay English.
+The German strings live in `js/i18n-de.js`. The player is addressed as "du". Card, attack and Ability names stay English.
 
-## Game terms (please confirm against current German cards and rules)
+Settled in the 3.0.2 audit (checked against German card text on Limitless TCG's German card pages, pokewiki.de and pokezentrum.de): Preiskarten, Aktive Position, Aktives Pokémon, Bank, Ablagestapel, Basis-Pokémon, Phase 1 / Phase 2, Unterstützer, Item, Pokémon-Ausrüstung, Stadion, Basis-Energie / Spezial-Energie, Fähigkeit, Attacke, KP, Schadensmarken, kampfunfähig, Schwäche / Resistenz, Standardformat / Erweitert, energy types (Feuer-Energie and so on). ACE SPEC is now `ASS-KLASSE` (was `ASS-SPEC`), regulation mark is `Regelzeichen` (was `Regulierungszeichen`).
 
-- ACE SPEC: `ASS-SPEC`
-- Active Spot: `Aktive Position` (the brief suggested "Aktiver Bereich"; I went with the term I believe the current German rules use)
-- Prize cards: `Preiskarten`. "Prizes" on buttons is also `Preiskarten`, never `Preise`, because `Preise` is the card prices feature
-- Prize game: `Preiskartenspiel`; Prize trainer: `Preiskarten-Trainer`
-- Stage 1 / Stage 2: `Phase 1` / `Phase 2`; Basic: `Basis` / `Basis-Pokémon`
-- Pokémon Tool: `Pokémon-Ausrüstung`; Supporter: `Unterstützer`; Item: `Item`; Stadium: `Stadion`
-- Attach: `Anlegen`; Retreat: `Rückzug`; Evolve: `Entwickeln`
-- Discard (pile label and Goldfish button share one key): `Ablage`; "Discard pile: 4" is `Ablagestapel: 4`
-- HP: `KP`; damage counters: `Schadensmarken`
-- Energy types: Pflanze, Feuer, Wasser, Elektro, Psycho, Kampf, Finsternis, Metall, Drache, Farblos, Fee; in Energy names `Pflanzen-Energie`, `Feen-Energie`, `Drachen-...`
-- Weakness / Resistance: `Schwäche` / `Resistenz`
-- Expanded: `Erweitert`; regulation mark: `Regulierungszeichen`, short `Zeichen` ("Zeichen H")
-- Knocked Out: `kampfunfähig`, and `K.O.` / `K.O.s` in counts
-- Sudden Death: kept as `Sudden Death`
-- Prerelease: kept as `Prerelease`; Build and Battle Box kept in English (as in Spanish and Portuguese)
+## Still open
 
-## App words chosen (could read better)
+- Regelzeichen: pokewiki.de and fan sites use it; the official German rulebook PDF on pokemon.com could not be opened to confirm.
+- Sudden Death, Prerelease and Build and Battle Box are kept in English. Does the German Play! Pokémon material translate any of them?
+- "Erster" / "Zweiter" (going first or second) use the generic masculine, as German game texts usually do. Fine, or should it be neutral?
+- Loan words kept in English: Goldfish, Toolbox, Matchup, Match, Flex, Checks, Upgrades, Credits, Regionals, Byes, Best of Three. Is "Checks" (deck builder tab) better as "Prüfung"?
+- Guess is `Tipp` (noun) and `Raten` (the button); a tap is `Fingertipp`. Puzzle "plays" are `Aktionen`. Turn abbreviations are `Z1` to `Z4`.
+- Numbers keep the English dot and comma ("8.3", "1,597 Spiele"); German would write "8,3" and "1.597". This is an app wide convention.
 
-- Grade: `Note` (school style, 0 to 10); grader: `Bewerter`; grade history: `Notenverlauf`
-- Odds: `Chancen`; Opening odds: `Startchancen`; Ask the odds: `Frag die Chancen`
-- Power: `Stärke`; Synergy: `Synergie`; Fix first: `Zuerst beheben`
-- Win rate: `Siegquote`; record: `Bilanz`; Favored / Unfavored: `Favorisiert` / `Benachteiligt`
-- Drills: `Übungen`; Notes: `Notizen`; Edit log: `Änderungslog`; Tournament log: `Turnier-Log`
-- Kept in English: Goldfish, Toolbox, Matchup, Match, Flex, Checks, Upgrades, Credits, Regionals, Byes, Best of Three
-- Score: `Wertung`; guess: `Tipp` / `Tippen` (a pun risk with tapping, "tippe auf"); please check the prize game screens
-- Reach check: `Erreichbarkeit`; Table check: `Tischcheck`; Resource count: `Ressourcen zählen`
-- Turn abbreviations: `Z1`, `Z2` (for T1, T2)
-- Their list / their game (opponent drills): `Gegnerliste`, `Gegnerspiel austeilen` (avoids a gendered "seine")
-- Scoped words: Skip `Überspringen`, This `Diese`, Other `Andere`, new `neu`, cut `raus`, Open (Ask the odds) `Hand`
-- "Couldn" (a key that is half of "Couldn't"): `Konnte nicht`
-- Staples: `Pflichtkarten` ("Es fehlen Pflichtkarten für X")
+## Needs a change outside js/i18n-de.js
 
-## Formatting
+- The W / L / T buttons in Log a match stay English (single letters are not translated; German would be S / N / U).
+- Explanation sentences inside card blocks on the Grade tab (for example "... give you a draw or search Ability once a turn ...") and builder rows ("Basic, 120 HP, ... 19% of Dragapult lists") stay English in every language, because the check treats them as card data.
+- The prize game history date ("11/12/2026") and the deck tile dates come from the browser's own locale, so a German browser already shows German dates.
 
-- Dates: patterns write "12. Nov. 2026", "6. Nov.", "April 2027"; times become 24 hour ("Heute, 15:00"). Strings the core dates without a pattern use the core form "12 Nov. 2026"
-- Numbers keep the English dot and comma ("8.3", "1,597 Spiele"); German would write "8,3" and "1.597"
-- Ordinals: "1. Platz"
+## Labels still longer than the English
 
-## Possibly too long for small buttons
-
-- `Preiskarten` (Prizes button on a deck tile), `Ø Preiskarten` (Prize avg)
-- `Überspringen` (tour Skip), `Zurück zu den Decks`, `Deck verstecken`, `Versteckte Decks ausblenden`
-- `Neu austeilen als Zweiter`, `Diese Hand im Goldfish spielen`, `Meine Karten zuerst vorschlagen`
-- `Gegner-Preiskarten lesen`, `Preiskarten aufdecken`, `Speichern und Link kopieren`
+- `Preiskarten` (Prizes button on a deck tile), `Ø Preiskarten` (Prize avg): no shorter word, since `Preise` means card prices here
+- `Überspringen` (tour Skip), `Speichern und Link kopieren`, `Speichern und bewerten`, `Gegnerliste einfügen`, `Gegner-Preiskarten lesen`, `Alle in Preiskarten` / `Eine in Preiskarten`
