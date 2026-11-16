@@ -2483,6 +2483,469 @@ function gtFit(entries, coh, via, main, ctx) {
 }
 
 /**
+ * 2.8.3: how each Trainer and Special Energy works in this deck in particular. One short line read
+ * from the card's own text and the list's own Pokemon, attackers and Energy: which Pokemon a Tool
+ * or Special Energy goes on and what it changes there (HP, the damage that Knocks it Out, an
+ * attack's damage, free retreat), which of the list's Pokemon a search card finds, which of your
+ * own Abilities or Tools a Stadium turns off, and what a card can't do in this list. A card whose
+ * text has nothing to say about this list (Boss's Orders, Judge) gets no line rather than filler.
+ * Explain only: nothing here changes a grade or a label.
+ */
+function gtPkFits(c, q) {
+  if (!c || c.t !== 'pkmn') return false;
+  if (!q) return true;
+  const sub = (c.sub || []).map(x => String(x).toLowerCase()), key = gtNorm(c.key);
+  const rule = c.isEx || (c.p || 1) >= 2 || sub.some(x => /\b(ex|mega|radiant|v|vstar|vmax)\b/.test(x));
+  if (q.owner && !key.startsWith(q.owner)) return false;
+  if (q.mega && !(sub.includes('mega') || /^mega /.test(key))) return false;
+  if (q.stage && c.stage !== q.stage) return false;
+  if (q.evo && !(c.stage === 'stage1' || c.stage === 'stage2')) return false;
+  if (q.type && !(c.types || []).map(t => String(t).toLowerCase()).includes(q.type)) return false;
+  if (q.tag && !sub.includes(q.tag)) return false;
+  if (q.ex && !c.isEx) return false;
+  if (q.noRule && rule) return false;
+  if (q.hp && !(c.hp && c.hp <= q.hp)) return false;
+  return true;
+}
+
+function gtHereCtx(entries, coh, via, main, deck) {
+  const raw = new Map();
+  ((deck && deck.cards) || []).forEach(c => { const k = String(c.name || '').toLowerCase(); if (!raw.has(k)) raw.set(k, c); });
+  const reach = (via && via.reach) || [], top = Math.max(0, ...reach.map(r => r.eff || 0));
+  const effOf = new Map(); reach.forEach(r => { const k = String(r.name).toLowerCase(); effOf.set(k, Math.max(effOf.get(k) || 0, r.eff || 0)); });
+  const mainKey = main ? String(main.key || main.name || '').toLowerCase() : '';
+  // One row per Pokemon name, its best attack read from the grade's own attack data.
+  const byName = new Map();
+  entries.forEach(e => {
+    const c = e.card; if (!c || c.t !== 'pkmn') return;
+    const o = byName.get(c.key);
+    if (o) { o.qty += e.qty; return; }
+    const best = (c.attacks || []).filter(a => (a.dmg || 0) > 0).sort((a, b) => (b.dmg || 0) - (a.dmg || 0))[0] || null;
+    const r = raw.get(c.key) || {};
+    byName.set(c.key, { name: e.name, qty: e.qty, c, best, rc: r.retreat != null ? +r.retreat : null,
+      eff: effOf.get(c.key) || 0, atk: top > 0 && (effOf.get(c.key) || 0) * 2 >= top, main: c.key === mainKey,
+      text: [].concat((r.attacks || []).map(a => a.text || ''), (r.atext || []).map(x => x[1] || '')).join(' ') });
+  });
+  // Main attacker first, then the other attackers by damage, then the rest by copies.
+  const P = [...byName.values()].sort((a, b) => (b.main - a.main) || (b.atk - a.atk) || (b.eff - a.eff) || (b.qty - a.qty));
+  const basicE = {};
+  entries.forEach(e => { const c = e.card; if (!c || c.t !== 'energy') return;
+    if ((c.sub || []).map(x => String(x).toLowerCase()).includes('special')) return;
+    (c.etypes && c.etypes.length ? c.etypes : c.etype ? [c.etype] : []).forEach(t => { basicE[t] = (basicE[t] || 0) + e.qty; }); });
+  const T = entries.filter(e => e.card && e.card.t === 'trainer');
+  const total = entries.reduce((a, e) => a + (e.qty || 0), 0);
+  return { P, basicE, T, total, entries, coh, main: P.find(x => x.main) || null };
+}
+
+/** "A", "A or B", "A, B or C", "A, B and 2 more". */
+function gtHereNames(list, conj, max) {
+  const n = [...new Set(list.map(x => x.name))], m = max || 3;
+  if (n.length > m) return n.slice(0, m - 1).join(', ') + (conj === 'or' ? ` or ${n.length - m + 1} others` : ` and ${n.length - m + 1} more`);
+  return n.length < 2 ? (n[0] || '') : n.slice(0, -1).join(', ') + ` ${conj || 'or'} ` + n[n.length - 1];
+}
+const gtHereTy = t => gCap(t);
+const gtHereOne = q => q.k === 'tool' ? 'Pokemon Tool' : q.k === 'stadium' ? 'Stadium' : q.k === 'item' ? 'Item' : q.k === 'supporter' ? (q.name ? `${gtCap(q.name)} Supporter` : 'Supporter') : q.k === 'energy' ? `Basic ${gCap(q.type)} Energy` : gtSay(q);
+/** The chance the top (or bottom) n of a deck of size d holds at least one of k cards. */
+function gtHereOdds(d, k, n) {
+  if (k <= 0 || d <= 0) return 0;
+  let p = 1; for (let i = 0; i < n; i++) p *= Math.max(0, d - k - i) / (d - i);
+  return Math.round(100 * (1 - p));
+}
+
+function gtHere(trn, entries, coh, via, main, deck) {
+  if (!trn) return;
+  let X; try { X = gtHereCtx(entries, coh, via, main, deck); } catch (_) { return; }
+  const cardOf = new Map(entries.filter(e => e.card).map(e => [gtNorm(e.name), e.card]));
+  (trn.fit || []).forEach(r => {
+    const c = cardOf.get(gtNorm(r.name)); if (!c) return;
+    try { const s = gtHereLine(c, X); if (s) r.here = s; } catch (_) {}
+  });
+  if (trn.ace) {
+    const nm = String(trn.ace.link || '').replace(/^ACE SPEC: /, '');
+    const c = cardOf.get(gtNorm(nm));
+    if (c && trn.ace.fit !== 'over') { try { const s = gtHereLine(c, X); if (s) trn.ace.here = s; } catch (_) {} }
+  }
+}
+
+function gtHereLine(card, X) {
+  const raw = card.t === 'energy' ? (card.et || '') : (card.rt || '');
+  if (!raw) return null;
+  const t = gtNorm(raw).replace(/\([^)]*rule box[^)]*\)/g, '').replace(/\((?:existing effects|damage from attacks is still|this includes|that pokemon can't|players can't)[^)]*\)/g, '').replace(/\s+/g, ' ');
+  const both = /\((?:both yours and your opponent's|yours and your opponent's)\)/;
+  const tb = t.replace(/ \((?:both yours and your opponent's|yours and your opponent's)\)/g, '');
+  const P = X.P, A = P.filter(p => p.atk), self = gtNorm(card.key);
+  const fits = q => P.filter(p => gtPkFits(p.c, q));
+  const atkFirst = L => { const a = L.filter(p => p.atk); return a.length ? a : L; };
+  const sayQ = q => q ? gtSay(q) : 'Pokemon';
+  let m;
+
+  // Stadiums and other cards that work on both players
+  if ((m = t.match(/(?:^|\. )([^.]*?)pokemon in play \((?:both yours and your opponent's|yours and your opponent's)\) have no abilities/))) {
+    const q = gtSubject(m[1] + 'pokemon');
+    const own = fits(q).filter(p => (p.c.abil || []).length);
+    if (own.length) return `Also turns off your own ${own.slice(0, 2).map(p => `${p.name}'s ${p.c.abil[0]}`).join(' and ')}${own.length > 2 ? ` and ${own.length - 2} more` : ''}.`;
+    return `None of your own Pokemon lose an Ability to it.`;
+  }
+  if (/prevent all damage counters from being placed on benched pokemon \(both yours/.test(t)) {
+    const own = P.filter(p => /(?:put|place) (?:\d+|that many) damage counters on (?:1 of )?your opponent's (?:benched )?pokemon|damage counters on [^.]*?your opponent's benched/.test(gtNorm(p.text)));
+    return own.length ? `Also stops your own ${gtHereNames(own, 'and', 2)} from placing damage counters on the Bench.` : null;
+  }
+  if (/pokemon tools attached to each pokemon \(both yours/.test(t)) {
+    const own = X.T.filter(e => e.card.tt === 'tool' && gtNorm(e.card.key) !== self);
+    return own.length ? `Also turns off your own ${gtHereNames(own, 'and')}.` : `You run no Pokemon Tools, so it only turns off your opponent's.`;
+  }
+  if ((m = t.match(/each ([^.]*?pokemon) in play \(both yours and your opponent's\) gets -(\d+) hp/))) {
+    const q = gtSubject(m[1]), own = atkFirst(fits(q));
+    if (own.length) return `Your own ${own[0].name} drops to ${own[0].c.hp - +m[2]} HP too.`;
+    return `You run no ${sayQ(q)}, so only your opponent's lose HP.`;
+  }
+  if ((m = t.match(/puts a basic non-(\w+) pokemon onto their bench[^.]*?place (\d+) damage counters/))) {
+    const own = P.filter(p => p.c.stage === 'basic' && !(p.c.types || []).includes(m[1]));
+    return own.length ? `Your own ${gtHereNames(own, 'and')} take ${+m[2] * 10} damage when you Bench them.` : `Your Basic Pokemon are all ${gtHereTy(m[1])}, so it never hits your side.`;
+  }
+  if ((m = t.match(/^([^.]*?pokemon) \(both yours and your opponent's\) take (\d+) less damage/))) {
+    const q = gtSubject(m[1]), own = atkFirst(fits(q));
+    return own.length ? `Your ${gtHereNames(own, 'and')} take ${m[2]} less damage too.` : `You run no ${sayQ(q)}, so it only helps your opponent's.`;
+  }
+  if ((m = t.match(/attacks used by each ([^.]*?pokemon) in play \(both yours and your opponent's\) cost/))) {
+    const q = gtSubject(m[1]), own = atkFirst(fits(q));
+    return own.length ? `Your own ${gtHereNames(own, 'and')} pay more for attacks too.` : `You run no ${sayQ(q)}, so only your opponent pays more.`;
+  }
+  if ((m = t.match(/^([^.]*?pokemon) in play \(both yours and your opponent's\) have no retreat cost/))) {
+    const own = fits(gtSubject(m[1])).filter(p => p.rc > 0);
+    return own.length ? `Lets ${gtHereNames(own, 'and')} retreat for free.` : null;
+  }
+  if ((m = t.match(/switch their active (\w+) pokemon with 1 of their benched \1 pokemon/))) {
+    const own = fits({ k: 'pkmn', type: m[1] });
+    return own.length >= 2 ? `Switches between your ${gtHereNames(own, 'and')} once a turn.` : null;
+  }
+  if ((m = t.match(/each player's (\w+) pokemon can evolve into \1 pokemon during the turn they play/))) {
+    const by = new Map(P.map(p => [p.c.key, p]));
+    const s1 = atkFirst(P.filter(p => p.c.stage === 'stage1' && (p.c.types || []).includes(m[1]) && by.has(p.c.from)))[0];
+    return s1 ? `Lets ${by.get(s1.c.from).name} evolve into ${s1.name} the turn you play it.` : null;
+  }
+  if (/double the amount of damage healed/.test(t)) {
+    const src = [];
+    X.T.forEach(e => { if (gtNorm(e.card.key) === self) return; const h = gtNorm(e.card.rt || '').match(/heal (\d+|all) damage/); if (h) src.push({ name: e.name, n: h[1] }); });
+    P.forEach(p => { const h = gtNorm(p.text).match(/heal (\d+) damage from (?:this pokemon|1 of your|each of your|your)/); if (h) src.push({ name: p.name, n: h[1] }); });
+    if (!src.length) return `Nothing else in your list heals, so only your opponent gets the bonus.`;
+    const s = src[0];
+    return s.n === 'all' ? `Your ${gtHereNames(src, 'and', 2)} heal${src.length > 1 ? '' : 's'} all damage anyway, so it adds little here.`
+      : `Doubles ${s.name}'s healing from ${s.n} to ${+s.n * 2}${src.length > 1 ? `, and ${src[1].name}'s too` : ''}.`;
+  }
+  if ((m = t.match(/if they played a supporter card that has "([^"]+)" in its name/))) {
+    const own = X.T.filter(e => e.card.tt === 'supporter' && e.card.key.includes(m[1].toLowerCase()));
+    const n = own.reduce((a, e) => a + e.qty, 0);
+    const who = own.length && own.every(e => gtNorm(e.name).startsWith(m[1].toLowerCase() + "'s")) ? `${gtCap(m[1])}'s` : `"${gtCap(m[1])}"`;
+    return n ? `Draws 2 after any of your ${n} ${who} Supporter${n === 1 ? '' : 's'}.` : null;
+  }
+  if ((m = t.match(/each player who has any ([^.]*?pokemon) in play can have up to (\d+) pokemon on their bench/))) {
+    const own = fits(gtSubject(m[1]));
+    return own.length ? `Gives you ${m[2]} Bench spots while ${gtHereNames(own, 'or')} is in play.` : null;
+  }
+
+  // Team and count conditions
+  if ((m = t.match(/if all of your pokemon in play are ([^.]*?pokemon), draw cards until you have (\d+)/))) {
+    const q = gtSubject(m[1]), not = P.filter(p => !gtPkFits(p.c, q));
+    return not.length ? `Draws to ${m[2]} only while ${gtHereNames(not, 'and', 2)} stay${not.length === 1 && P.filter(p => !gtPkFits(p.c, q)).length === 1 ? 's' : ''} out of play.` : `Every Pokemon in your list is ${gtSay(q).replace(/ Pokemon$/, '')}, so it draws to ${m[2]}.`;
+  }
+  if ((m = t.match(/discard up to (\d+) ([^.]*?pokemon[^.]*?) from your hand, and draw (\d+) cards for each/))) {
+    const own = fits(gtSubject(m[2])).filter(p => !p.main);
+    return own.length ? `Turns spare Pokemon like ${gtHereNames(own.slice(0, 2), 'or')} into ${m[3]} cards each.` : null;
+  }
+  if ((m = t.match(/attack used by your ([^.]*?pokemon), take 1 more prize/))) {
+    const q = gtSubject(m[1]), own = fits(q).filter(p => p.best);
+    return own.length ? `Works when ${gtHereNames(atkFirst(own), 'or')} takes the Knock Out.` : `None of your attackers is a ${sayQ(q).replace(/ Pokemon$/, '')} Pokemon, so it never adds a Prize.`;
+  }
+
+  // Special Energy
+  if (card.t === 'energy') {
+    if ((m = t.match(/when you attach this card from your hand to a (\w+) pokemon, search your deck for up to (\d+) ([^.]*?pokemon) and put them onto your bench/))) {
+      const to = atkFirst(fits({ k: 'pkmn', type: m[1] })), find = fits(gtSubject(m[3]));
+      if (!to.length || !find.length) return null;
+      return `On a ${gtHereTy(m[1])} Pokemon like ${to[0].name}, it Benches up to ${m[2]} of ${gtHereNames(find, 'and')}.`;
+    }
+    if (/if this card is discarded by an effect of an attack used by the pokemon/.test(t)) {
+      const own = P.filter(p => (p.c.attacks || []).some(a => a.edisc));
+      if (!own.length) return `None of your attacks discards Energy, so it won't come back.`;
+      const a = own[0].c.attacks.find(x => x.edisc);
+      return `Comes back after ${own[0].name}'s ${a.name} discards it.`;
+    }
+    if ((m = t.match(/if this card is attached to (?:a|an) ([^,]*?pokemon), (?:this card )?(?:it |this card )?provides (every type of energy|(?:colorless){2,} energy)(?: instead)?(?! but)|if this card is attached to (?:a|an) ([^,]*?pokemon), (?:it |this card )?provides (every type of energy) but provides only (\d+) energy at a time/))) {
+      const subj = m[1] || m[3], q = gtSubject(subj), own = A.filter(p => gtPkFits(p.c, q) && p.best);
+      if (!own.length) return `None of your attackers is a ${sayQ(q).replace(/ Pokemon$/, '')} Pokemon, so it only gives Colorless.`;
+      const p = own[0], cost = p.best.cost || [];
+      if (m[2] && /colorless/.test(m[2])) {
+        const k = cost.filter(x => x === 'colorless').length;
+        if (!k) return null;
+        return `On ${p.name}, it pays ${k === 1 ? 'the' : Math.min(3, k) + ' of the'} Colorless for ${p.best.name}${/discard it at the end of your turn/.test(t) ? ', for one turn' : ''}.`;
+      }
+      const n = +(m[5] || 1);
+      return n === 1 ? `On a ${sayQ(q).replace(/ Pokemon$/, '')} like ${p.name}, it counts as any type for ${p.best.name}.` : `On ${p.name}, it pays ${n} of the Energy for ${p.best.name}.`;
+    }
+    if ((m = t.match(/can only be attached to an? ([^.]*?pokemon)[^]*?provides (\d+) in any combination of (\w+) energy and (\w+) energy/))) {
+      const q = gtSubject(m[1]), ok = [m[3], m[4], 'colorless'];
+      const own = A.filter(p => gtPkFits(p.c, q) && p.best && (p.best.cost || []).filter(x => ok.includes(x)).length >= 2);
+      return own.length ? `Pays 2 of the Energy for ${own[0].name}'s ${own[0].best.name}.` : null;
+    }
+    const prov = (t.match(/provides (colorless|grass|fire|water|lightning|psychic|fighting|darkness|metal|every type of) energy/) || [])[1];
+    const held = (t.match(/the ((?:[a-z]+ ){0,3}?pokemon) this card is attached to/) || [])[1];
+    const q = held ? gtSubject(held) : null;
+    const fx = /prevent all effects of attacks/.test(t) ? 'Shields' : /recovers from all special conditions/.test(t) ? 'Keeps' : null;
+    if (fx && prov) {
+      let own = A.filter(p => p.best && gtPkFits(p.c, q));
+      if (prov === 'colorless') own = own.filter(p => (p.best.cost || []).includes('colorless'));
+      else if (prov !== 'every type of') own = own.filter(p => (p.best.cost || []).some(x => x === prov || x === 'colorless'));
+      if (!own.length) return prov === 'colorless' ? `None of your attacks has a Colorless in its cost, so it only pays Retreat Costs.` : null;
+      const nm = gtHereNames(own.slice(0, 2), fx === 'Shields' ? 'or' : 'and');
+      return fx === 'Shields' ? `Shields ${nm} from attack effects, like Special Conditions.`
+        : `Keeps ${nm} free of Special Conditions.`;
+    }
+    if (prov === 'colorless' && !/takes? 1 fewer prize|more damage|\+\d+ hp|no retreat cost/.test(t)) {
+      const own = A.filter(p => p.best && (p.best.cost || []).includes('colorless'));
+      return own.length ? `Can pay the Colorless in ${own[0].name}'s ${own[0].best.name}${own[1] ? ` or ${own[1].name}'s ${own[1].best.name}` : ''}.`
+        : `None of your attacks has a Colorless in its cost, so it only pays Retreat Costs.`;
+    }
+  }
+
+  // What a Tool or Special Energy does to the Pokemon it is on
+  if ((m = t.match(/the ((?:[a-z']+ ){0,3}?)pokemon this card is attached to gets \+(\d+) hp/))) {
+    const q = m[1] ? gtSubject(m[1] + 'pokemon') : null, own = atkFirst(fits(q).filter(p => p.c.hp));
+    if (!own.length) return null;
+    const n = +m[2];
+    return `Takes ${own[0].name} from ${own[0].c.hp} to ${own[0].c.hp + n} HP${own[1] ? `, or ${own[1].name} to ${own[1].c.hp + n}` : ''}.`;
+  }
+  if ((m = t.match(/(?:if the pokemon this card is attached to (isn't|is) (?:a |an )?([^,]+?), )?it takes (\d+) less damage from attacks from your opponent's ([^.(]+?pokemon(?: ex)?)/))
+      || (m = t.match(/()()is damaged by an attack from your opponent's ([^.,]*?pokemon(?: ex)?), it takes (\d+) less damage/))) {
+    let n, from, notQ = null;
+    if (m[3] && /^\d+$/.test(m[3])) { n = +m[3]; from = m[4]; if (m[1] === "isn't") notQ = gtSubject(m[2]); }
+    else { from = m[3]; n = +m[4]; }
+    const own = atkFirst(P.filter(p => p.c.hp && !(notQ && gtPkFits(p.c, notQ))));
+    if (!own.length) return notQ ? `Your Pokemon are all ${gtSay(notQ)}, which it doesn't work on.` : null;
+    const p = own[0], tm = from.match(new RegExp('^(' + GT_TY + ') pokemon$'));
+    const who = tm ? `${gtHereTy(tm[1])} attackers` : /^mega evolution pokemon ex$/.test(from) ? 'Mega ex attackers' : gtCap(from).replace(/\bEx\b/g, 'ex');
+    return `On ${p.name}, ${who} need ${p.c.hp + n} damage to Knock it Out, not ${p.c.hp}.`;
+  }
+  if ((m = t.match(/all of your ([^.]*?pokemon) take (\d+) less damage/))) {
+    const own = atkFirst(fits(gtSubject(m[1])));
+    return own.length ? `Your ${gtHereNames(own, 'and')} take ${m[2]} less damage that turn.` : null;
+  }
+  if ((m = t.match(/if the ((?:[a-z']+ ){0,3}?)pokemon this card is attached to is knocked out[^.]*?takes 1 fewer prize/))) {
+    const q = m[1] ? gtSubject(m[1] + 'pokemon') : null, own = atkFirst(fits(q)).filter(p => (p.c.p || 1) >= 2);
+    if (!own.length) return q && !fits(q).length ? null : null;
+    const p = own[0];
+    return `On ${p.name}, your opponent takes ${p.c.p - 1} Prize${p.c.p - 1 === 1 ? '' : 's'} for it, not ${p.c.p}${/once per game/.test(t) ? ', once a game' : ''}.`;
+  }
+  if ((m = t.match(/retreat cost of the pokemon this card is attached to is ((?:colorless)+|\d+) less/))) {
+    const n = /^\d+$/.test(m[1]) ? +m[1] : m[1].length / 9;
+    const free = P.filter(p => p.rc > 0 && p.rc <= n), still = P.filter(p => p.rc > n && (p.atk || p.qty >= 2));
+    if (!free.length) return null;
+    return `Lets ${gtHereNames(free, 'and')} retreat for free${still.length ? `; ${still[0].name} still pays ${still[0].rc - n}` : ''}.`;
+  }
+  if ((m = t.match(/the ((?:[a-z]+ ){0,3}?)pokemon this card is attached to has no retreat cost/))) {
+    const own = fits(m[1] ? gtSubject(m[1] + 'pokemon') : null).filter(p => p.rc > 0).sort((a, b) => b.rc - a.rc);
+    return own.length ? `Lets ${own[0].name} retreat for free (it costs ${own[0].rc} now).` : null;
+  }
+  if ((m = t.match(/has a retreat cost of exactly (\d+)/))) {
+    const own = P.filter(p => p.rc === +m[1]);
+    if (!own.length) return `None of your Pokemon has a Retreat Cost of exactly ${m[1]}, so it never triggers.`;
+    const mv = t.match(/move up to (\d+) basic energy/);
+    return `${mv ? `Saves up to ${mv[1]} Energy when ${gtHereNames(own, 'or')} is Knocked Out` : `Works on ${gtHereNames(own, 'or')}`}, ${own.length > 1 ? 'your Pokemon' : 'the only Pokemon here'} with a Retreat Cost of ${m[1]}.`;
+  }
+
+  // More damage
+  {
+    let q = null, n = 0, vsEx = false, ok = false, poison = false;
+    if ((m = tb.match(/attacks used by (?:the |your |each )?([^.]*?pokemon(?: ex)?(?: that (?:don't|doesn't) have a rule box)?)(?: this card is attached to)?(?: cost [^.]*? and)? do (\d+) more damage(?! for each)( to your opponent's active pokemon ex)?/))) {
+      ok = true; n = +m[2]; vsEx = !!m[3]; poison = /poisoned/.test(m[1]);
+      q = poison ? null : gtSubject(m[1].replace(/^(?:the |your )/, ''));
+      if (/active pokemon ex and active pokemon v/.test(tb)) vsEx = true;
+    } else if ((m = tb.match(/if the pokemon this card is attached to (doesn't have a rule box)[^.]*?the attacks it uses do (\d+) more damage( to your opponent's active pokemon ex)?/))) {
+      ok = true; n = +m[2]; vsEx = !!m[3]; q = { k: 'pkmn', noRule: true };
+    }
+    if (ok) {
+      if (poison) {
+        const src = [].concat(X.T.filter(e => /(?:it|your active pokemon|the new active pokemon) is now poisoned/.test(gtNorm(e.card.rt || '')) && !/opponent's active pokemon is now/.test(gtNorm(e.card.rt || ''))).map(e => e.name),
+          P.filter(p => /(?:the new active pokemon|your active pokemon) is now poisoned/.test(gtNorm(p.text))).map(p => p.name));
+        return src.length ? `Turns on once your own Pokemon is Poisoned, which ${src[0]} does here.` : `Nothing in your list Poisons your own Pokemon, so it never turns on.`;
+      }
+      const own = A.filter(p => p.best && gtPkFits(p.c, q));
+      if (!own.length) return q ? `None of your attackers is ${gtSay(q).replace(/^Pokemon without/, 'without').replace(/ Pokemon$/, '')}, so it adds nothing here.`.replace('is without', 'is free of a Rule Box').replace(/ a Rule Box, so/, ', so') : null;
+      const p = own[0];
+      return `${p.name}'s ${p.best.name} goes from ${p.best.dmg} to ${p.best.dmg + n}${vsEx ? ' against Pokemon ex' : ''}.`;
+    }
+  }
+
+  // Energy onto your Pokemon
+  if (/\battach\b/.test(t) && /energy/.test(t) && !/when you attach this card/.test(t)) {
+    const sm = t.match(/(?:1|one|each|up to \d+|any|2) of your (?:benched )?((?:[a-z'0-9]+ ){0,4}?pokemon(?: ex)?)/);
+    const q = sm ? gtSubject(sm[1]) : null;
+    if (q && q.k === 'pkmn') {
+      const own = fits(q);
+      if (!own.length) return null;
+      const g = gtNeeds(t).gate.filter(x => x.k === 'pkmn'), gn = g.length ? fits(g[0]) : [];
+      const n = +((t.match(/attach up to (\d+) basic/) || [])[1] || 0);
+      const gs = !gn.length ? '' : gn.length > 2 ? `, once a ${gtSay(g[0]).replace(/ Pokemon$/, '')} Pokemon like ${gn[0].name} is in play` : `, once ${gtHereNames(gn, 'or')} is in play`;
+      return `Puts ${n > 1 ? n + ' ' : ''}Energy on ${gtHereNames(atkFirst(own), 'or', 2)}${n > 1 ? ' at once' : ''}${gs}.`;
+    }
+  }
+
+  // Odds for a look at the top or bottom of the deck
+  if ((m = t.match(/look at the (top|bottom) (\d+) cards of your deck\. you may reveal (?:a |an |any number of |up to \d+ in any combination of |up to \d+ )?([^.]+?) you find there/))) {
+    const subs = m[3].split(/ and | or /);
+    let k = 0, say = [];
+    subs.forEach(s => {
+      const q = gtSubject(s), n = gtNorm(s);
+      if (/supporter/.test(n)) { k += X.T.filter(e => e.card.tt === 'supporter').reduce((a, e) => a + e.qty, 0); say.push('Supporters'); }
+      else if (q && q.k === 'energy') { k += X.basicE[q.type] || 0; say.push(`Basic ${gCap(q.type)} Energy`); }
+      else if (/pokemon/.test(n)) { const own = fits(q); k += own.reduce((a, p) => a + p.qty, 0); say.push(q ? gtSay(q) : 'Pokemon'); }
+    });
+    if (!k) return null;
+    const pct = gtHereOdds(X.total || 60, k, +m[2]);
+    return `With ${k} ${say.join(' and ')} in your ${X.total || 60} cards, ${pct >= 99 ? 'it almost always finds one' : `it finds one about ${pct}% of the time`}.`;
+  }
+
+  // Evolving
+  if (/search their deck for a stage 1 pokemon that evolves from 1 of their basic pokemon/.test(t)) {
+    const by = new Map(P.map(p => [p.c.key, p]));
+    const s2 = atkFirst(P.filter(p => p.c.stage === 'stage2')).find(h => { const s1 = by.get(h.c.from); return s1 && by.get(s1.c.from); });
+    if (s2) { const s1 = by.get(s2.c.from), b = by.get(s1.c.from); return `Can turn ${b.name} into ${s2.name} in one go.`; }
+    return null;
+  }
+  if (/search your deck for a card that has no abilities and evolves from 1 of your pokemon/.test(t)) {
+    const own = P.filter(p => (p.c.stage === 'stage1' || p.c.stage === 'stage2') && !(p.c.abil || []).length);
+    return own.length ? `Can evolve straight into ${gtHereNames(atkFirst(own), 'or')}.` : `All your Evolution Pokemon have Abilities, so it finds nothing.`;
+  }
+  if ((m = t.match(/devolve 1 of your evolved ([^.]*?pokemon)/))) {
+    const own = P.filter(p => (p.c.stage === 'stage1' || p.c.stage === 'stage2') && gtPkFits(p.c, gtSubject(m[1])));
+    return own.length ? `Works on ${gtHereNames(own, 'or')}.` : null;
+  }
+
+  // Searching the deck
+  if ((m = t.match(/search (?:your|their) deck for ([^.]+?)(?:,? reveal|,? and put|\.|, (?:shuffle|then)| and attach)/))) {
+    const ph = m[1], combo = /any combination/.test(ph), parts = ph.replace(/^(?:up to \d+ |any number of )?in any combination of /, '').split(/,? and |, or | or (?!less|more)|, (?=a |an )/).map(s => s.trim()).filter(Boolean);
+    const all = !combo && / and /.test(ph) && parts.length >= 2;
+    const bench = /onto (?:your|their) bench/.test(t);
+    const PK = [], E = [], miss = [];
+    let genPk = false, genE = false, diffTypes = /of different types/.test(ph);
+    parts.forEach(s => {
+      const q = gtSubject(s), n = gtNorm(s);
+      if (q && q.k === 'pkmn') { const own = fits(q); PK.push({ q, own }); if (!own.length) miss.push(q); }
+      else if (q && q.k === 'energy') { E.push(q); if (!X.basicE[q.type]) miss.push(q); }
+      else if (q) { if (!X.T.some(e => e.card.tt === q.k && (!q.name || e.card.key.includes(q.name.toLowerCase())))) miss.push(q); else PK.push({ q, own: [] }); }
+      else if (/pokemon/.test(n)) genPk = true;
+      else if (/energy/.test(n)) genE = true;
+    });
+    const types = Object.keys(X.basicE).filter(k => X.basicE[k] > 0);
+    if (all && miss.length && miss.length < parts.length)
+      return `Your list has no ${miss.map(gtHereOne).join(' or ')}, so it finds ${parts.length - miss.length} card${parts.length - miss.length === 1 ? '' : 's'}, not ${parts.length}.`;
+    if (all && !miss.length) {
+      const st2 = PK.find(x => x.q.stage === 'stage2');
+      if (st2 && PK.some(x => x.q.stage === 'basic') && PK.some(x => x.q.stage === 'stage1')) {
+        const by = new Map(P.map(p => [p.c.key, p])), heads = atkFirst(st2.own);
+        for (const h of heads) { const s1 = by.get(h.c.from), b = s1 && by.get(s1.c.from); if (s1 && b) return `Gets a whole ${b.name}, ${s1.name} and ${h.name} line at once.`; }
+        return null;
+      }
+      const tr = [];
+      ['stadium', 'tool'].forEach(k => { if (PK.some(x => x.q.k === k)) { const own = X.T.filter(e => e.card.tt === k && gtNorm(e.card.key) !== self).sort((a, b) => b.qty - a.qty); if (own.length) tr.push(own[0].name); } });
+      const evo = PK.find(x => x.q.k === 'pkmn');
+      if (evo && evo.own.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evo.own), 'or')}${E.length || genE ? ' and an Energy' : ''} together.`;
+      return tr.length ? `Gets your ${tr.join(' and ')}${E.length || genE ? ' and an Energy' : ''} together.` : null;
+    }
+    if (!PK.length && !genPk && (E.length || genE)) {
+      if (diffTypes) {
+        if (types.length === 1) return `Your only Basic Energy is ${gtHereTy(types[0])}, so it finds just 1 card.`;
+        if (types.length === 2) return /attach the other/.test(t) ? `Gets one ${gtHereTy(types[0])} and one ${gtHereTy(types[1])} Energy, one to your hand and one attached.` : `Gets one ${gtHereTy(types[0])} and one ${gtHereTy(types[1])} Energy.`;
+        return types.length === 3 ? `Picks 2 of your ${types.map(gtHereTy).join(', ').replace(/, (\w+)$/, ' and $1')} Energy.` : null;
+      }
+      if (all && miss.length) return null;
+      if (E.length && miss.length && miss.length < E.length) return `Your list runs no Basic ${miss.map(x => gCap(x.type)).join(' or ')} Energy, so it finds only ${E.filter(x => X.basicE[x.type]).map(x => gCap(x.type)).join(' and ')}.`;
+      const up = +((ph.match(/up to (\d+)/) || [])[1] || 0);
+      if (E.length === 1 && up >= 4) { const n = X.basicE[E[0].type] || 0; return n ? `${n <= up ? (n === 1 ? 'Gets your only' : `Can take all ${n}`) : `Takes ${up} of your ${n}`} Basic ${gCap(E[0].type)} Energy at once.` : null; }
+      return null;
+    }
+    const pk = PK.filter(x => x.q.k === 'pkmn');
+    if (pk.length) {
+      const own = [...new Set(pk.flatMap(x => x.own))];
+      if (!own.length) return null;
+      const L = atkFirst(own).concat(own.filter(p => !p.atk)), uniq = [...new Set(L)];
+      const upN = +((ph.match(/^up to (\d+)/) || [])[1] || 0);
+      if (uniq.length === 1 && upN > 1 && !E.length) return `${bench ? 'Benches' : 'Gets'} up to ${Math.min(upN, uniq[0].qty)} ${uniq[0].name} at once.`;
+      if (bench && /^any number of /.test(ph)) return uniq.length >= 2 ? `Can Bench every Basic you run at once, like ${gtHereNames(uniq.slice(0, 2), 'and')}.` : null;
+      if (pk.length >= 2 && uniq.length === P.length && P.length > 3) {
+        const key = [...new Set([X.main, ...P.filter(p => p.atk && !p.main), ...P.filter(p => (p.c.ab || []).some(a => !a.passive))].filter(Boolean))].slice(0, 3);
+        return key.length >= 2 ? `Key targets: ${gtHereNames(key, 'and')}.` : null;
+      }
+      const eS = E.length ? [{ name: `a Basic ${E.map(x => gCap(x.type)).join(' or ')} Energy` }] : [];
+      let s = uniq.length > 3 ? `${bench ? 'Can Bench' : 'Finds'} any of your ${uniq.length} ${pk.length === 1 ? gtSay(pk[0].q) : 'matching Pokemon'}, like ${gtHereNames(uniq.slice(0, 2), 'or')}${eS.length ? `, or ${eS[0].name}` : ''}.`
+        : `${bench ? 'Can Bench' : 'Finds'} ${gtHereNames(uniq.slice(0, eS.length ? 2 : 3).concat(eS), 'or', 4)}.`;
+      const hq = pk.find(x => x.q.hp);
+      if (hq) { const big = P.filter(p => p.c.stage === hq.q.stage && !gtPkFits(p.c, hq.q) && (!hq.q.type || (p.c.types || []).includes(hq.q.type)) && !p.c.isEx && p.qty >= 2);
+        if (big.length) s += ` ${big[0].name} is too big for it (${big[0].c.hp} HP).`; }
+      return s;
+    }
+    const sup = PK.find(x => x.q.k === 'supporter' && x.q.name);
+    if (sup) { const own = X.T.filter(e => e.card.tt === 'supporter' && e.card.key.includes(sup.q.name.toLowerCase())); return own.length ? `Finds ${gtHereNames(own, 'or')}.` : null; }
+    if (combo && PK.some(x => x.q.k === 'stadium')) { const st = X.T.filter(e => e.card.tt === 'stadium').sort((a, b) => b.qty - a.qty); return st.length ? `Can grab your ${st[0].name} along with Supporters.` : null; }
+    if (genPk && /search (?:your|their) deck for (?:a|an|1) pokemon\b/.test(t)) {
+      const key = [];
+      if (X.main) key.push(X.main);
+      P.filter(p => !p.main && (p.c.ab || []).length && !(p.c.ab || []).every(a => a.passive)).sort((a, b) => b.qty - a.qty).forEach(p => key.push(p));
+      P.filter(p => !p.main && p.atk).forEach(p => key.push(p));
+      const k = [...new Set(key)].slice(0, 3);
+      return k.length >= 2 ? `Key targets: ${gtHereNames(k, 'and')}.` : null;
+    }
+    if (/search your deck for a trainer card/.test(t)) {
+      const one = X.T.filter(e => e.qty === 1 && gtNorm(e.card.key) !== self).sort((a, b) => (b.card.ace - a.card.ace) || ((b.card.tt === 'stadium') - (a.card.tt === 'stadium')));
+      return one.length ? `Can fetch a single copy like your ${gtHereNames(one.slice(0, 2), 'or')}.` : null;
+    }
+    return null;
+  }
+
+  // Back from the discard pile
+  if ((m = t.match(/(?:put|shuffle) (?:up to \d+ |a |an )?(?:in any combination of )?([^.]+?) from your discard pile into your (hand|deck)/))) {
+    const parts = m[1].split(/ and | or /), pk = [], E = [];
+    let sup = false;
+    parts.forEach(s => { const n = gtNorm(s), q = gtSubject(s);
+      if (/supporter/.test(n)) sup = true;
+      else if (/energy/.test(n)) E.push(q && q.k === 'energy' ? [q.type] : Object.keys(X.basicE));
+      else if (/pokemon/.test(n)) pk.push(...atkFirst(fits(q && q.k === 'pkmn' ? q : null))); });
+    let et = [...new Set(E.flat())].filter(k => X.basicE[k]);
+    const used = et.filter(k => A.some(p => p.best && (p.best.cost || []).includes(k)));
+    if (used.length) et = used;
+    const eS = !et.length ? '' : et.length > 2 ? 'Basic Energy' : `Basic ${et.map(gtHereTy).join(' or ')} Energy`;
+    const back = m[2] === 'deck' ? 'Shuffles' : 'Gets back', tail = m[2] === 'deck' ? ' back into your deck' : '';
+    if (sup) { const g = X.T.filter(e => e.card.tt === 'supporter' && e.qty <= 2 && gtNorm(e.card.key) !== self).sort((a, b) => a.qty - b.qty); return g.length ? `Can bring back a used ${gtHereNames(g.slice(0, 2), 'or')}.` : null; }
+    const pkL = [...new Set(pk)], pkS = !pkL.length ? '' : (pkL.length > 2 || m[2] === 'deck' || /any combination/.test(m[0]) ? 'Pokemon like ' : '') + gtHereNames(pkL.slice(0, 2), 'or');
+    if (pkS && eS) return /any combination/.test(m[0]) ? `${back} any mix of ${pkS}, and ${eS}${tail}.` : `${back} ${pkS}, or a ${eS}${tail}.`;
+    if (pkS) return `${back} Knocked Out ${pkS.replace(/^Pokemon like /, 'Pokemon like ')}${tail}.`.replace('Knocked Out Pokemon like', 'Knocked Out Pokemon like').replace(/Knocked Out (?!Pokemon like)/, '');
+    if (et.length && X.main && X.main.best && (X.main.best.cost || []).some(x => et.includes(x))) return `${back} ${eS}${tail} for ${X.main.name}'s ${X.main.best.name}.`;
+    return null;
+  }
+
+  // Healing
+  if ((m = t.match(/heal (\d+|all) damage from (?:each of |1 of )?your ([^.]*?pokemon(?: ex)?)(?: that has (\d+) or more energy attached)?/))) {
+    const what = m[2].replace(/^(?:active |benched )/, ''), q = gtSubject(what), need = +(m[3] || 0);
+    const trench = X.T.some(e => /double the amount of damage healed/.test(gtNorm(e.card.rt || ''))) && m[1] !== 'all';
+    let own = atkFirst(fits(q));
+    if (need) {
+      own = A.filter(p => p.best && (p.best.cost || []).length >= need);
+      if (!own.length) return `None of your attackers uses ${need} or more Energy, so it rarely has a target.`;
+      return `Fits ${gtHereNames(own, 'and', 2)}, which ${own.length > 1 ? 'attack' : 'attacks'} with ${need} or more Energy${trench ? `; Legendary Trench makes it ${+m[1] * 2}` : ''}.`;
+    }
+    if (!q) return trench ? `Legendary Trench in your list doubles it to ${+m[1] * 2}.` : null;
+    if (!own.length) return null;
+    return `${m[1] === 'all' ? 'Fully heals' : `Heals ${trench ? +m[1] * 2 : m[1]} from`} ${/each of/.test(m[0]) ? (own.length > 1 ? 'each of ' : 'every ') : ''}${gtHereNames(own, /each of/.test(m[0]) ? 'and' : 'or')}${/each of/.test(m[0]) && own.length === 1 ? ' in play' : ''}${trench ? ' with Legendary Trench' : ''}.`;
+  }
+  if ((m = t.match(/if you moved a ([^.]*?pokemon(?: ex)?) to your bench in this way, heal (\d+) damage/))) {
+    const own = atkFirst(fits(gtSubject(m[1])));
+    return own.length ? `Heals ${m[2]} when it moves ${gtHereNames(own, 'or', 2)} to your Bench.` : null;
+  }
+
+  return null;
+}
+
+/**
  * v65: how tightly the list fits together, for Synergy.
  * Before this, Synergy only asked whether each card's needs were met, so nearly every
  * working list scored a full 10. Now it also asks how much of the list pulls the same way,
@@ -2624,6 +3087,8 @@ function gradeDeck(deck) {
   let trn=null; try { trn=gTrainers(entries, coh, via, main, deck && deck.format); } catch (_) {}
   const steps={ s0:coh.score };
   if (trn) { coh.score=gClamp(coh.score*(1-0.35*(1-trn.score)),0,1); coh.flaws=(coh.flaws||[]).concat(trn.flaws); coh.trainers=trn; }
+  // 2.8.3: how each Trainer and Special Energy works in this list. Explain only: no grade reads it.
+  if (trn) { try { gtHere(trn, entries, coh, via, main, deck); } catch (_) {} }
   // v65: how tightly the list fits together. Synergy shows the full effect; the overall grade only
   // drops once the fit falls below what most winning lists reach, so a focused list is not punished.
   steps.s1=coh.score;
@@ -7345,9 +7810,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v2.8.2',
+  version: 'v2.8.3',
   kind: 'fix',
   items: [
+    { t: 'Added: how each Trainer works in your deck' },
     { t: 'Every card now gets a label' },
     { t: 'Changed: easier to read Goldfish and puzzle boards' },
     { t: 'Added: How to improve your deck guide' },
@@ -10264,7 +10730,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v2.8.2';
+const PT_VERSION = 'v2.8.3';
 const PT_BUILD = 103;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.

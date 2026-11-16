@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 2.8.3 (build 104): how each Trainer works in your deck (16 Nov 2026)
+
+Changed files: js/core.js (In this deck lines, version, What's new), js/v29-rotation.js (Trainers rows), index.html (style, file stamps), sw.js (cache prize-trainer-v104) and CHANGES.md.
+
+- Each Trainer and Special Energy in the Trainers section now gets an "In this deck" line when RdyDeck can say something true about it for that list, read from the card's text and the list's own Pokemon, attacks, HP, Retreat Costs and Energy. Examples: Custom Vest names the Pokemon it protects and the new Knock Out number, Heavy Baton names the Pokemon with a Retreat Cost of exactly 4, Legendary Trench names what it doubles, Buddy-Buddy Poffin names what it can Bench and what is too big, Cyrano and Ultra Ball name the key targets, Night Stretcher names the Energy types the attackers use.
+- When nothing deck-specific is true (Boss's Orders, Judge, Switch and the like), the line is left off rather than filled in.
+- Explain only: no grade moves. Grade check: 132 of 132 lists unchanged. 1089 of 1782 Trainer rows in those lists get a line, and every one of the 261 legal Trainer texts was run against all 132 lists with no errors.
+
 # RdyDeck 2.8.2 (build 103): every card now gets a label (16 Nov 2026)
 
 Changed files: js/core.js (card jobs, Trainers fit labels, version, What's new), index.html (file stamps), tests/grade-check.mjs (card read check, --record-text), tests/card-text.json (new), sw.js (cache prize-trainer-v103) and CHANGES.md.

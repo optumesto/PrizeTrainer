@@ -391,16 +391,18 @@ function t68Html(R) {
   const tr = R && R.coh && R.coh.trainers;
   if (!tr || (!(tr.fit || []).length && !tr.ace)) return '';
   const tag = f => f ? `<span class="t68-tag ${f}">${GT_LABEL[f]}</span>` : '';
+  // 2.8.3: what the card does in this list in particular, from its text and the list's own cards.
+  const here = s => s ? `<p class="t68-here"><b>In this deck:</b> ${esc(s)}</p>` : '';
   const swap = s => s ? `<p class="t68-swap">Swap idea: ${s.more ? 'one more ' : ''}${esc(s.name)}, since ${esc(s.why)}.</p>` : '';
   const rows = [];
   if (tr.ace) {
     const a = tr.ace, f = { covers: 'key', fine: 'good', weak: 'weak', dead: 'dead' }[a.fit] || null;
     const nm = String(a.link || '').replace(/^ACE SPEC: /, '');
     rows.push(`<div class="t68-row ace"><div class="t68-h"><span class="t68-n">${esc(nm)}</span><span class="t68-k">ACE SPEC</span>${tag(f)}</div>
-      <p>${esc(a.p)}</p></div>`);
+      <p>${esc(a.p)}</p>${here(a.here)}</div>`);
   }
   (tr.fit || []).forEach(r => rows.push(`<div class="t68-row"><div class="t68-h"><span class="t68-n">${r.qty} ${esc(r.name)}</span><span class="t68-k">${esc(r.kind)}</span>${tag(r.fit)}</div>
-    <p>${esc(r.why)}</p>${swap(r.swap)}</div>`));
+    <p>${esc(r.why)}</p>${here(r.here)}${swap(r.swap)}</div>`));
   const cnt = k => (tr.fit || []).filter(r => r.fit === k).length;
   // v71: a weak or dead ACE SPEC counts too, and swap ideas are promised only where there are some.
   const aceLow = tr.ace && (tr.ace.fit === 'weak' || tr.ace.fit === 'dead') ? 1 : 0;
