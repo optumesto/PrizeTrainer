@@ -5,7 +5,8 @@
 # writes gap fixes into data.json and a plain report to card-check.md.
 # Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments, and from the
 # same reads meta-cards.json (what each deck's lists run, for the deck builder).
-# Last, checks how well grades track those results and writes grade-results.md.
+# Last, checks how well grades track those results and writes grade-results.md, and the public
+# scoreboard (accuracy.json, shown on how-grading-works.html and in the app).
 name: Refresh data.json
 
 on:
@@ -78,7 +79,14 @@ jobs:
         continue-on-error: true
         run: |
           npm ci --prefix tests --no-audit --no-fund
-          node tests/grade-check.mjs --results=grade-results.md
+          node tests/grade-check.mjs --results=grade-results.md --board=accuracy.json
+
+      - name: Update the accuracy scoreboard page
+        if: ${{ !inputs.cards_only && !inputs.slow }}
+        # Writes accuracy.json's numbers into how-grading-works.html (How accurate the grades are).
+        # A failed run keeps last week's page; it never blocks the refresh.
+        continue-on-error: true
+        run: node build-pages.mjs --only=how-grading-works.html
 
       - name: Update sitemap dates
         if: ${{ !inputs.cards_only && !inputs.slow }}
@@ -88,7 +96,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md"
+          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md accuracy.json how-grading-works.html"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

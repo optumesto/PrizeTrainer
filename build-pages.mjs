@@ -10,6 +10,11 @@
 //
 // Usage: node build-pages.mjs        writes the pages next to this file
 //        node build-pages.mjs --check  fails if a written page would change (nothing written)
+//        node build-pages.mjs --only=how-grading-works.html   writes just that page (the weekly
+//                                      refresh does this after the grade check writes accuracy.json)
+//
+// 3.0: how-grading-works.html gets its How accurate the grades are section from accuracy.json,
+// written each week by tests/grade-check.mjs --results --board=accuracy.json.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -17,6 +22,7 @@ import path from 'node:path';
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const read = f => JSON.parse(readFileSync(path.join(ROOT, f), 'utf8'));
 const CHECK = process.argv.includes('--check');
+const ONLY = (process.argv.find(a => a.startsWith('--only=')) || '').slice(7);
 
 const guides = read('deck-guides.json');
 const data = read('data.json');
@@ -24,6 +30,7 @@ const mc = read('meta-cards.json');
 const mu = read('matchups.json');
 const base = existsSync(path.join(ROOT, 'tests/grade-baseline.json')) ? read('tests/grade-baseline.json').lists : {};
 const lists = existsSync(path.join(ROOT, 'tests/grade-lists.json')) ? read('tests/grade-lists.json') : [];
+const acc = existsSync(path.join(ROOT, 'accuracy.json')) ? read('accuracy.json') : null;
 
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -416,6 +423,27 @@ ${rows.join('\n')}
   });
 }
 
+// ── 3.0: How accurate the grades are, from accuracy.json ──────────────────────────────────────
+// One row per set: how closely the grades rank decks against their online win rates (Spearman),
+// with the decks ranked and the games played. Only the scoreboard, nothing about how it is tuned.
+const rho = v => typeof v === 'number' && isFinite(v) ? v.toFixed(2) : 'Too few';
+function accuracyHtml() {
+  const sets = acc && Array.isArray(acc.sets) ? acc.sets.filter(x => x && x.name) : [];
+  if (!sets.length) return '';
+  const a = sets[0].min, b = sets[sets.length - 1].min;
+  const mins = a && b && a !== b ? `${num(a)} games in a set, or ${num(b)} in the newest one` : `${num(a || b || 0)} games in a set`;
+  return `<h2 id="accuracy">How accurate the grades are</h2>
+<p>Every week RdyDeck grades the same ${num(acc.lists || 0)} top lists from recent events and checks the order it puts their decks in against how those decks actually win in ${esc(acc.source || 'Limitless online tournaments')}. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
+<div class="tw"><table>
+  <thead><tr><th>Set</th><th>Dates</th><th class="n">Decks</th><th class="n">Games</th><th class="n">Grade as shown</th><th class="n">Cards alone</th></tr></thead>
+  <tbody>
+${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to)}</td><td class="n">${num(x.decks || 0)}</td><td class="n">${num(x.games || 0)}</td><td class="n">${rho(x.shown)}</td><td class="n">${rho(x.cards)}</td></tr>`).join('\n')}
+  </tbody>
+</table></div>
+<p class="note">Grade as shown is the grade the app shows. It counts these same results, so it is partly circular and runs high. Cards alone is the grade from each list's cards with no results, the harder test. A deck is ranked once it has ${mins}. Updated ${day(acc.asOf)}.</p>
+`;
+}
+
 // ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
 function handPages() {
@@ -426,7 +454,8 @@ function handPages() {
     const m = /^<!--\s*(\{[\s\S]*?\})\s*-->\n/.exec(src);
     if (!m) throw new Error(`.github/pages/${f}: the first line must be a <!-- {json} --> header`);
     const meta = JSON.parse(m[1]);
-    return [meta.file, page({ ...meta, body: src.slice(m[0].length) })];
+    const body = src.slice(m[0].length).replace(/^<!-- accuracy:[^\n]*-->\n/m, () => accuracyHtml());
+    return [meta.file, page({ ...meta, body })];
   });
 }
 
@@ -440,6 +469,7 @@ const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');
 let changed = 0;
 for (const [file, html] of out) {
+  if (ONLY && file !== ONLY) continue;
   if (/[\u2013\u2014]/.test(html)) throw new Error(`${file} has an en or em dash`);
   const p = path.join(ROOT, file);
   if (existsSync(p) && readFileSync(p, 'utf8') === html) continue;
