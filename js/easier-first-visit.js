@@ -170,7 +170,9 @@ function tf265Up(deck) {
     const hit = _up75Cache.get(deck.id);
     if (!hit || hit.sig !== up75Sig(deck)) return { wait: true };
     if (hit.busy) return { wait: true };
-    return { res: hit.res };
+    // 3.2.8: the same swaps Upgrades shows, in the order the player picked there (cards they own
+    // first, cheapest first), so a top fix never names a different card for the same slot.
+    return { res: typeof op30UpOrder === 'function' ? op30UpOrder(hit.res) : hit.res };
   } catch (_) { return {}; }
 }
 function tf265Keep(R) {

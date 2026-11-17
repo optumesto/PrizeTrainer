@@ -973,7 +973,8 @@ const I18N_ES = {
   "It works with this list.": "Funciona con esta lista.",
   "This explains Synergy and does not change the grade.": "Esto explica Sinergia y no cambia la calificación.",
   "How each Trainer and Special Energy fits this list, ACE SPEC first.": "Cómo encaja cada Entrenador y Energía Especial en esta lista, primero el AS TÁCTICO.",
-  "Every card here works with the list.": "Cada carta aquí funciona con la lista.",
+  "Every Trainer and Special Energy here works with the list.": "Cada Entrenador y Energía especial aquí funciona con la lista.",
+  "It does nothing in this list.": "En esta lista no hace nada.",
   "One card does little here, with a swap idea for each.": "Una carta aporta poco aquí, con una idea de cambio para cada una.",
   "The attacker its meta deck is named for, and how often you can have it ready by your second turn.": "El atacante que le da nombre a su baraja del meta, y qué tan seguido puedes tenerlo listo para tu segundo turno.",
   "Draw Supporters and abilities are not played out.": "No se juegan los Partidarios de robo ni las habilidades.",
@@ -1947,7 +1948,8 @@ const I18N_PT = {
   "It works with this list.": "Funciona com esta lista.",
   "This explains Synergy and does not change the grade.": "Isto explica a Sinergia e não muda a nota.",
   "How each Trainer and Special Energy fits this list, ACE SPEC first.": "Como cada Treinador e Energia Especial se encaixa nesta lista, primeiro o ÁS TÁTICO.",
-  "Every card here works with the list.": "Cada carta aqui funciona com a lista.",
+  "Every Trainer and Special Energy here works with the list.": "Cada Treinador e Energia especial aqui funciona com a lista.",
+  "It does nothing in this list.": "Nesta lista ela não faz nada.",
   "One card does little here, with a swap idea for each.": "Uma carta faz pouco aqui, com uma ideia de troca para cada.",
   "The attacker its meta deck is named for, and how often you can have it ready by your second turn.": "O atacante que dá nome ao deck do meta, e com que frequência você consegue deixá-lo pronto até o seu segundo turno.",
   "Draw Supporters and abilities are not played out.": "Apoiadores de compra e Habilidades não são jogados.",
@@ -2384,6 +2386,7 @@ Object.assign(I18N_ES, {
   "The picture could not be made on this device. The link still works.": "No se pudo crear la imagen en este dispositivo. El enlace sigue funcionando.",
   "How did it do?": "¿Cómo le fue?",
   "At the event:": "En el evento:",
+  "At an event you played:": "En un evento que jugaste:",
   "(wins, losses, ties)": "(victorias, derrotas, empates)",
   "It stays on this device and is never sent anywhere.": "Se queda en este dispositivo y nunca se envía a ningún lado.",
   "Placing": "Posición",
@@ -2502,6 +2505,7 @@ Object.assign(I18N_PT, {
   "The picture could not be made on this device. The link still works.": "Não foi possível criar a imagem neste aparelho. O link continua funcionando.",
   "How did it do?": "Como foi?",
   "At the event:": "No evento:",
+  "At an event you played:": "Num evento que você jogou:",
   "(wins, losses, ties)": "(vitórias, derrotas, empates)",
   "It stays on this device and is never sent anywhere.": "Fica neste aparelho e nunca é enviado a lugar nenhum.",
   "Placing": "Colocação",
@@ -3055,7 +3059,8 @@ function i18nAbilSent(s, l) {
   const L = l === 'es' || l === 'pt' ? I18N_ABIL[l] : (i18nMore(l) || {}).abil;
   if (!L) return null;
   const m0 = String(s).match(/^(.+?'s .+?): (.+?)\.?$/);
-  if (!m0) return null;
+  // 3.2.8: one sentence only; a sentence after it ("It does nothing in this list.") is translated on its own.
+  if (!m0 || /[a-z0-9)][.!?] [A-Z]/.test(m0[2])) return null;
   // Owner and Ability: the owner is a card name the app knows when there is one ("Team Rocket's Spidops"), else the text up to the first "'s ".
   const head = m0[1], cuts = [];
   for (let i = head.indexOf("'s "); i > 0; i = head.indexOf("'s ", i + 1)) cuts.push(i);
@@ -3357,7 +3362,8 @@ const rdI18n = (function () {
     }
     // A title used as a sentence: "No clear attacker." is "No clear attacker" plus the stop.
     const end = n.slice(-1);
-    if (!inner && (end === '.' || end === ':')) { const r = one(n.slice(0, -1), lang, true); if (r != null) return r + end; }
+    // 3.2.8: not for several sentences, which lookup translates one by one.
+    if (!inner && (end === '.' || end === ':') && !/[a-z0-9)][.!?] [A-Z¿¡]/.test(n.slice(0, -1))) { const r = one(n.slice(0, -1), lang, true); if (r != null) return r + end; }
     return null;
   }
   // "A; B." where A and B are each known (finding titles joined in one line).

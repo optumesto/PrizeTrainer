@@ -437,7 +437,7 @@ function t68Html(R) {
   const low = cnt('weak') + cnt('dead') + aceLow;
   const swaps = (tr.fit || []).filter(r => r.swap).length;
   return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></summary>
-    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every card here works with the list.'} This explains Synergy and does not change the grade.</div>
+    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every Trainer and Special Energy here works with the list.'} This explains Synergy and does not change the grade.</div>
     ${rows.join('')}</details>`;
 }
 

@@ -933,7 +933,7 @@ function gCoherence(deck) {
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
       // v57: when its attacks cannot be paid either, the card does nothing at all, so say so.
       const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any));
-      flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
+      flaws.push({sev:'warn', who:c.key, deadAb:x.abil, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
         d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.` +
           (payable ? '' : ` Its attacks need ${gCap(x.type)} Energy too, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${gCap(x.type)} Energy.`)}); }); });
   // 3.2.8: an Ability that only works with some Energy attached (Munkidori's Adrena-Brain) does nothing when the list runs none of it.
@@ -942,13 +942,13 @@ function gCoherence(deck) {
     (c.ahas||[]).filter(x => x.type === 'any' ? !anyE : !energyTypes[x.type] && !energyTypes.any).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
       const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any)) && (anyE || (c.attacks||[]).some(a=>!(a.cost||[]).length));
       const ty = x.type === 'any' ? '' : gCap(x.type) + ' ';
-      flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} never turns on` : `${gCap(e.name)} does nothing as built`,
+      flaws.push({sev:'warn', who:c.key, deadAb:x.abil, t: payable ? `${gCap(e.name)}'s ${x.abil} never turns on` : `${gCap(e.name)} does nothing as built`,
         d:`${x.abil} only works while ${gCap(e.name)} has ${ty}Energy attached, but the list runs no ${ty}Energy, so the Ability does nothing as built.` +
           (payable ? '' : ` Its attacks cannot be paid either, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${ty}Energy.`)}); }); });
   // 3.2.8: an Ability that searches for Evolution Pokemon finds nothing when the list runs none it can find.
   deck.forEach(e => { const c=e.card; if(!c||!c.evoSeek||flaws.some(f=>f.who===c.key)) return;
     const ty=c.evoSeek.type, hit=deck.some(x=>x.card&&x.card.t==='pkmn'&&x.card.stage&&x.card.stage!=='basic'&&(!ty||(x.card.types||[]).some(t=>String(t).toLowerCase()===ty)));
-    if (!hit) flaws.push({sev:'warn', who:c.key, t:`${gCap(e.name)}'s ${c.evoSeek.abil} finds nothing`,
+    if (!hit) flaws.push({sev:'warn', who:c.key, deadAb:c.evoSeek.abil, t:`${gCap(e.name)}'s ${c.evoSeek.abil} finds nothing`,
       d:`${c.evoSeek.abil} searches your deck for ${ty ? gCap(ty) + ' ' : ''}Evolution Pokemon, but the list runs none, so the Ability does nothing as built.`}); });
   // v55: an attacker that cannot attack until enough of a group is in play (Team Rocket's Mewtwo ex's Power Saver).
   deck.forEach(e => { const c=e.card; if(!c||!c.gate) return;
@@ -2054,7 +2054,9 @@ function gViability(deck, coh, main) {
   // separates the decks that win from the ones that only hit hard. A Stage 1 that draws (Drakloak's
   // Recon Directive) makes the long way up to a Stage 2 pay for itself, so that line is on time.
   // Each engine copy adds a little to Setup speed, up to 4 of them; one that works only some turns counts half.
-  const engAb=e=>e.card&&e.card.t==='pkmn'&&canPlay(e.card)&&(e.card.ab||[]).some(a=>/once a turn/.test(a.p||'')&&/^(?:draws|searches|looks at the top)/.test(a.p||''));
+  // 3.2.8: not one Fix first calls dead as built (Metallic Signal with no Evolution Pokemon to find).
+  const abDead=(e,a)=>((coh&&coh.flaws)||[]).some(f=>f.who===e.card.key&&f.deadAb===a.abil);
+  const engAb=e=>e.card&&e.card.t==='pkmn'&&canPlay(e.card)&&(e.card.ab||[]).some(a=>/once a turn/.test(a.p||'')&&/^(?:draws|searches|looks at the top)/.test(a.p||'')&&!abDead(e,a));
   const engHalf=e=>(e.card.ab||[]).every(a=>!/once a turn/.test(a.p||'')||/\(only if|only when|if you have|coin/.test(a.p||''));
   const engs=deck.filter(engAb);
   const engQ=engs.reduce((n,e)=>n+e.qty*(engHalf(e)?0.5:1),0);
@@ -2239,7 +2241,8 @@ function gPlan(entries, coh, via) {
   const sup = entries.filter(x => { const c = x.card;
     if (!c || c.t !== 'pkmn' || c.key === m.key || pre.has(c.key) || !(c.abil || []).length) return false;
     // v60: the Ability itself has to draw or search; attacks add search tags too since v60.
-    if (!(c.ab || []).some(a => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(a.p || ''))) return false;
+    // 3.2.8: and work in this list (Fix first has not called it dead as built).
+    if (!(c.ab || []).some(a => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(a.p || '') && !((coh && coh.flaws) || []).some(f => f.who === c.key && f.deadAb === a.abil))) return false;
     return (c.attacks || []).every(a => (a.cost || []).every(t => t === 'colorless')); });
   const seen = new Set(), names = [];
   sup.forEach(x => { if (seen.has(x.card.key)) return; seen.add(x.card.key); names.push(`${gCap(x.name)} (${x.card.abil.join(', ')})`); });
@@ -2256,6 +2259,8 @@ function gPlan(entries, coh, via) {
     c.ab.forEach(a => { let p = `${gCap(x.name)}'s ${a.abil}: ${a.p}`;
       if (a.x) { const hit = [...new Set(entries.filter(y => y.card && y.card.t === 'pkmn' && (y.card.types || []).map(String).map(z => z.toLowerCase()).includes(a.x.ty) && (y.card.attacks || []).some(k => (k.max || k.dmg) > 0)).map(y => gCap(y.name)))];
         p += hit.length ? ` (${hit.slice(0, 3).join(', ')} in this list)` : `, though no ${gCap(a.x.ty)} attacker is in this list`; }
+      // 3.2.8: an Ability Fix first calls dead as built (Teal Dance with no Grass Energy) is not shown as working.
+      if (((coh && coh.flaws) || []).some(f => f.who === c.key && f.deadAb === a.abil)) p += '. It does nothing in this list';
       abOut.push({ who: gCap(x.name), p }); }); });
   if (abOut.length) out.push({ link: `Abilities: ${[...new Set(abOut.map(z => z.who))].slice(0, 4).join(', ')}${new Set(abOut.map(z => z.who)).size > 4 ? ' and more' : ''}`,
     p: abOut.map(z => z.p).join('. ') + '.' });

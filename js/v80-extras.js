@@ -263,7 +263,7 @@ function ev80Entry(deck, t) {
 }
 function ev80Bits(e, mine) {
   const v = ev80Get(e);
-  if (v) return `<div class="ev80-row">${v.n ? `<span class="ev80-nm" data-no-tr>${esc(v.n)}</span>` : ''}<span class="ev80-rec">At the event: <b>${ev80Text(v)}</b> <span class="ev80-k">(wins, losses, ties)</span></span><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">Edit</button><button type="button" class="ev80-btn" onclick="ev80Del(${e.t})">Delete</button></div>`;
+  if (v) return `<div class="ev80-row">${v.n ? `<span class="ev80-nm" data-no-tr>${esc(v.n)}</span>` : ''}<span class="ev80-rec">${v.n ? 'At the event:' : 'At an event you played:'} <b>${ev80Text(v)}</b> <span class="ev80-k">(wins, losses, ties)</span></span><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">Edit</button><button type="button" class="ev80-btn" onclick="ev80Del(${e.t})">Delete</button></div>`;
   return mine ? `<div class="ev80-row"><button type="button" class="ev80-btn" onclick="ev80Open(${e.t})">How did it do?</button></div>` : '';
 }
 /** Adds the records and the buttons to the Grade history section after it is drawn. */
