@@ -133,6 +133,16 @@
    "checked": "2026-11-16"
   },
   {
+   "id": "deck-size",
+   "topic": "Deck building",
+   "tags": [],
+   "src": "rb",
+   "where": "p. 22",
+   "q": "How many cards go in a deck, and how many copies of a card can it have?",
+   "a": "Exactly 60 cards. It can have no more than 4 cards with the same name, except Basic Energy, which has no limit, and it needs at least 1 Basic Pokémon. Cards with the same name count together even if their attacks are different.",
+   "checked": "2026-11-17"
+  },
+  {
    "id": "ace-spec",
    "topic": "Deck building",
    "tags": [

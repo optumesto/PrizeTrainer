@@ -6,14 +6,14 @@
 <script>if (/[?&]overlay=1(&|$)/.test(location.search)) document.documentElement.classList.add('ck31-ov');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="text-scale" content="scale">
-<title>RdyDeck: Pokémon TCG Deck Grader and Prize Trainer</title>
-<meta name="description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<title>RdyDeck: Rate My Pokémon TCG Deck, Free Deck Checker</title>
+<meta name="description" content="Rate your Pokémon TCG deck out of 10: paste a decklist to see what to fix, opening odds and rotation, then practice prizes. Free, no account.">
 <meta name="google-adsense-account" content="ca-pub-9707407610376267">
 <link rel="canonical" href="https://rdydeck.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RdyDeck">
 <meta property="og:title" content="RdyDeck: Can Your Deck Win?">
-<meta property="og:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<meta property="og:description" content="Rate your Pokémon TCG deck out of 10: paste a decklist to see what to fix, opening odds and rotation, then practice prizes. Free, no account.">
 <meta property="og:url" content="https://rdydeck.com/">
 <meta property="og:image" content="https://rdydeck.com/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -21,10 +21,10 @@
 <meta property="og:image:alt" content="RdyDeck. Can Your Deck Win?">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RdyDeck: Can Your Deck Win?">
-<meta name="twitter:description" content="Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.">
+<meta name="twitter:description" content="Rate your Pokémon TCG deck out of 10: paste a decklist to see what to fix, opening odds and rotation, then practice prizes. Free, no account.">
 <meta name="twitter:image" content="https://rdydeck.com/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":"RdyDeck Pokémon TCG Deck Grader","url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck grader and prize card trainer. Grade a 60 card deck, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.2.7","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck grade out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com"}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.2.8","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com"}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -3327,8 +3327,8 @@ document.documentElement.classList.add('rd-boot');
 </head>
 <body>
 <noscript><div style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;color:#ede8de;background:#131210;line-height:1.6">
-  <p><strong>RdyDeck</strong> is a free Pokémon TCG deck grader. The app needs JavaScript to grade a deck. Turn it on, or read the guides:</p>
-  <p><a href="deck-grader.html" style="color:#ede8de">Deck grader</a> · <a href="improve-your-deck.html" style="color:#ede8de">Improve your deck</a> · <a href="meta-decks.html" style="color:#ede8de">Deck guides</a> · <a href="opening-odds.html" style="color:#ede8de">Opening hand odds</a> · <a href="rotation.html" style="color:#ede8de">Rotation check</a> · <a href="rulings.html" style="color:#ede8de">Rules and rulings</a> · <a href="cards/" style="color:#ede8de">Card guides</a></p>
+  <p><strong>RdyDeck</strong> is a free Pokémon TCG deck checker. The app needs JavaScript to rate a deck. Turn it on, or read the guides:</p>
+  <p><a href="deck-grader.html" style="color:#ede8de">Deck checker</a> · <a href="improve-your-deck.html" style="color:#ede8de">Improve your deck</a> · <a href="meta-decks.html" style="color:#ede8de">Deck guides</a> · <a href="opening-odds.html" style="color:#ede8de">Opening hand odds</a> · <a href="rotation.html" style="color:#ede8de">Rotation check</a> · <a href="rulings.html" style="color:#ede8de">Rules and rulings</a> · <a href="cards/" style="color:#ede8de">Card guides</a></p>
 </div></noscript>
 
 <!-- Icon set: simple line icons drawn once and reused with <use> -->
@@ -3401,7 +3401,7 @@ document.documentElement.classList.add('rd-boot');
       <div class="brand">
         <svg class="rd-mark" viewBox="19 6 62 88" aria-hidden="true" focusable="false"><rect x="23" y="10" width="54" height="80" rx="5" fill="none" stroke="currentColor" stroke-width="7"/><polyline class="rd-check" points="35,52 46,63 66,38" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <div>
-          <h1 class="app-title"><span data-no-tr><span class="rdy">Rdy</span>Deck</span> <span class="sr-only">Free Pokémon TCG Deck Grader</span></h1>
+          <h1 class="app-title"><span data-no-tr><span class="rdy">Rdy</span>Deck</span> <span class="sr-only">Free Pokémon TCG Deck Checker</span></h1>
           <div class="app-subtitle">Can Your Deck Win?</div>
         </div>
       </div>
@@ -3437,7 +3437,7 @@ document.documentElement.classList.add('rd-boot');
     </section>
     <section class="about38" aria-labelledby="about38-h">
       <h2 id="about38-h">About RdyDeck</h2>
-      <p>RdyDeck is a free Pokémon TCG deck grader and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.</p>
+      <p>RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.</p>
       <p>Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.</p>
       <div class="about40-faq">
         <h3>Questions about RdyDeck</h3>
@@ -3449,7 +3449,7 @@ document.documentElement.classList.add('rd-boot');
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
       </div>
       <p>Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company. Card names, text and images are © The Pokémon Company, Nintendo, Creatures and GAME FREAK.</p>
-      <div class="about38-links"><a href="deck-grader.html">Deck grader</a><a href="opening-odds.html">Opening odds</a><a href="prize-trainer.html">Prize trainer</a><a href="rotation.html">Rotation checker</a><a href="rulings.html">Rules</a></div>
+      <div class="about38-links"><a href="deck-grader.html">Deck checker</a><a href="opening-odds.html">Opening odds</a><a href="prize-trainer.html">Prize trainer</a><a href="rotation.html">Rotation checker</a><a href="rulings.html">Rules</a></div>
       <div class="about38-links"><a href="meta-decks.html">Deck guides</a><a href="improve-your-deck.html">Improve your deck</a><a href="how-grading-works.html">How grading works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a></div>
       <div class="about38-links"><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete your data</a><button type="button" onclick="openCredits()">Credits</button></div>
     </section>
@@ -3919,7 +3919,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=9660ffb2"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=f2c2a714"></script>
 
-<script src="js/core.js?v=97636666"></script>
+<script src="js/core.js?v=51f41e8e"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4042,8 +4042,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=f353e309"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=e18dbcf0"></script>
+<script src="js/i18n.js?v=a7069b6b"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=2b1f5093"></script><script src="js/i18n-de.js?v=2e63a9b0"></script><script src="js/i18n-it.js?v=8d6f32c1"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=875f7649"></script><script src="js/i18n-de.js?v=7c674843"></script><script src="js/i18n-it.js?v=8f39e0cd"></script></template>
 </body>
 </html>

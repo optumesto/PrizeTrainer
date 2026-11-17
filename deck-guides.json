@@ -6,7 +6,7 @@
       "desc": "Mega Rayquaza ex deck guide: Storm Emerald does 50 for every Fire and Lightning Energy you have in play. Core list, game plan and matchups.",
       "slug": "mega-rayquaza",
       "title": "Mega Rayquaza",
-      "lead": "Mega Rayquaza ex spreads Fire and Lightning Energy across a board of Basic Pokémon ex, then Storm Emerald does 50 damage for every one of them. It is the most played deck in recent online tournaments.",
+      "lead": "Mega Rayquaza ex spreads Fire and Lightning Energy across a board of Basic Pokémon ex, then Storm Emerald does 50 damage for every one of them. It is one of the most played decks in recent online tournaments.",
       "plan": [
         "Storm Emerald costs Fire, Lightning and Colorless and does 50 damage for each Fire Energy and each Lightning Energy attached to all of your Pokémon, not only to Mega Rayquaza ex. Every Energy you attach anywhere on your board adds 50. Six in play is 300 damage and seven is 350, enough for nearly any Pokémon in the format.",
         "Most of the deck exists to get that Energy into play quickly. Ethan's Ho-Oh ex's Golden Flame attaches up to two Basic Fire Energy from your hand to one of your Benched Ethan's Pokémon once a turn. Mega Rayquaza ex's Ruler's Roar attaches a Basic Energy from the top 4 cards of your deck to itself when you play it onto your Bench. Crispin finds two Basic Energy of different types, puts one in your hand and attaches the other. Energy Switch then moves a Basic Energy to whichever Pokémon is about to attack.",
@@ -28,7 +28,7 @@
       "desc": "Dragapult ex deck guide: Phantom Dive does 200 and spreads 6 damage counters on the Bench. Core list from top finishes, key cards and matchups.",
       "slug": "dragapult",
       "title": "Dragapult",
-      "lead": "Dragapult ex wins by spreading damage. Every Phantom Dive does 200 to the Active Pokémon and puts 6 more damage counters wherever you like on the Bench. Over the last two sets it has the best record of any deck with more than 2,000 games.",
+      "lead": "Dragapult ex wins by spreading damage. Every Phantom Dive does 200 to the Active Pokémon and puts 6 more damage counters wherever you like on the Bench. Over the last two sets it has one of the best records of any widely played deck.",
       "plan": [
         "Dreepy evolves into Drakloak and then Dragapult ex, a Stage 2 line that most lists play without Rare Candy. That sounds slow, but Drakloak's Recon Directive looks at the top 2 cards of your deck and puts 1 into your hand every turn, so each Drakloak is a draw engine on the way up. Buddy-Buddy Poffin puts two Basic Pokémon with 70 HP or less, like Dreepy, onto your Bench at once.",
         "Phantom Dive costs only Fire and Psychic, does 200 damage, and puts 6 damage counters on your opponent's Benched Pokémon in any way you like. Munkidori's Adrena-Brain moves up to 3 damage counters from one of your Pokémon to one of your opponent's each turn while it has Darkness Energy attached, so damage Dragapult takes comes back out onto the other board. Spread damage sets up turns where one attack Knocks Out the Active Pokémon and a damaged Benched Pokémon together.",
@@ -133,7 +133,7 @@
       "desc": "Dragapult Dudunsparce deck guide: Phantom Dive spread plus Dudunsparce ex's Tenacious Tail against Pokémon ex decks. Core list and matchups.",
       "slug": "dragapult-dudunsparce",
       "title": "Dragapult Dudunsparce",
-      "lead": "A Dragapult ex build that adds two kinds of Dudunsparce: the regular one to draw cards and Dudunsparce ex as a second attacker. It has the best online win rate of any deck in RdyDeck's data over the last two sets, from fewer games than the main Dragapult build.",
+      "lead": "A Dragapult ex build that adds two kinds of Dudunsparce: the regular one to draw cards and Dudunsparce ex as a second attacker. It has one of the best online win rates in RdyDeck's data over the last two sets, from fewer games than the main Dragapult build.",
       "plan": [
         "The core is the same as Dragapult: Dreepy, Drakloak and Dragapult ex, with Buddy-Buddy Poffin to bench Dreepy and Drakloak's Recon Directive to draw on the way up. Phantom Dive does 200 and puts 6 damage counters on your opponent's Benched Pokémon in any way you like, and Munkidori's Adrena-Brain moves damage counters from your Pokémon to theirs.",
         "Dudunsparce's Run Away Draw draws 3 cards and then shuffles Dudunsparce back into your deck. Dudunsparce ex evolves from the same Dunsparce and attacks instead: Tenacious Tail does 60 damage for each of your opponent's Pokémon ex in play for a single Colorless Energy, which hits very hard against decks built from Pokémon ex like Mega Rayquaza or Basic Box. Its Destructive Drill does 150 and is not affected by any effects on your opponent's Active Pokémon.",
@@ -147,7 +147,7 @@
         ["Risky Ruins", "Puts 2 damage counters on most Basic Pokémon a player benches, adding to the spread."],
         ["Poké Pad", "Finds any Pokémon without a Rule Box, which is most of this list."]
       ],
-      "grade": "RdyDeck grades this the highest of the top decks. Its cards grade the same way as Dragapult's, with spread counted above the printed 200 and Drakloak keeping Setup speed high, and its online record is the best in the data, which lifts the grade further. The record comes from fewer games than the main build, so the results part counts for a little less."
+      "grade": "RdyDeck grades this among the highest of the top decks. Its cards grade the same way as Dragapult's, with spread counted above the printed 200 and Drakloak keeping Setup speed high, and its online record is among the best in the data, which lifts the grade further. The record comes from fewer games than the main build, so the results part counts for a little less."
     },
     {
       "id": "dhelmise-pbl",
@@ -190,6 +190,132 @@
         ["N's Castle", "Free retreat for every N's Pokémon in play."]
       ],
       "grade": "RdyDeck counts the copied Rampaging Thunder at 290 for Power, since the full 330 needs both Black Belt's Training and Binding Mochi. Synergy reads lower than most top decks because several lines run single copies, but that only lowers the grade when the fit is very loose. Its online record is about even."
+    },
+    {
+      "id": "crustle-dri",
+      "desc": "Crustle deck guide: Mysterious Rock Inn stops all damage from your opponent's Pokémon ex attacks. Core list from top finishes, plan and matchups.",
+      "slug": "crustle",
+      "title": "Crustle",
+      "lead": "Crustle walls Pokémon ex. Its Mysterious Rock Inn prevents all damage done to it by attacks from your opponent's Pokémon ex, so a deck built around them has to find another way to Knock it Out while Crustle keeps attacking.",
+      "plan": [
+        "Dwebble's Ascension costs one Energy and searches your deck for Crustle, evolving Dwebble on the spot. Once Crustle is in the Active Spot, attacks from your opponent's Pokémon ex do no damage to it. It only stops damage, so attacks and Abilities that place damage counters, like Dragapult ex's Phantom Dive or Munkidori's Adrena-Brain, still work on it, and so does any Pokémon without a Rule Box.",
+        "The rest of the list keeps Crustle standing and makes those answers hard to find. Hero's Cape gives it 100 more HP, Growing Grass Energy 20 more, and Jumbo Ice Cream heals 80 from your Active Pokémon once it has 3 or more Energy. Spiky Energy puts 2 damage counters on any Pokémon that damages it in the Active Spot, and Mist Energy prevents the effects of your opponent's attacks on it. Eri discards up to 2 Items from your opponent's hand, and Xerosic's Machinations makes them discard down to 3 cards.",
+        "Superb Scissors does 120 and is not affected by any effects on your opponent's Active Pokémon, so it takes a few turns to Knock Out a big Pokémon. Mega Kangaskhan ex is the other attacker: Run Errand draws 2 cards while it is in the Active Spot, and Rapid-Fire Combo does 200 plus 50 for each heads until you flip tails. It gives up 3 Prize cards when Knocked Out. Team Rocket's Petrel searches for whichever Trainer you need."
+      ],
+      "keys": [
+        ["Crustle", "Mysterious Rock Inn prevents all damage from attacks by your opponent's Pokémon ex. Superb Scissors does 120."],
+        ["Dwebble", "Ascension searches for Crustle and evolves Dwebble for one Energy."],
+        ["Hero's Cape", "The ACE SPEC. 100 more HP on Crustle against everything the wall does not stop."],
+        ["Mist Energy", "Prevents the effects of your opponent's attacks on the Pokémon it is attached to."],
+        ["Spiky Energy", "Puts 2 damage counters on any Pokémon that damages the Active Pokémon it is attached to."],
+        ["Mega Kangaskhan ex", "Draws 2 a turn with Run Errand and attacks for 200 or more with Rapid-Fire Combo."]
+      ],
+      "grade": "Synergy is high, since Dwebble finds its own Crustle and the deck has steady draw. Power is the lower part: Superb Scissors does 120, which takes several hits against the format's biggest Pokémon. Its online record is above even, which lifts the grade a little."
+    },
+    {
+      "id": "festival-lead",
+      "desc": "Festival Lead deck guide: with Festival Grounds in play, Dipplin and Seaking attack twice a turn. Core list from top finishes, game plan and matchups.",
+      "slug": "festival-lead",
+      "title": "Festival Lead",
+      "lead": "Festival Lead decks attack twice a turn. With Festival Grounds in play, Dipplin, Goldeen and Seaking may each use an attack twice, and if the first one Knocks Out the Active Pokémon, the second hits the new one.",
+      "plan": [
+        "Dipplin's Do the Wave costs one Grass Energy and does 20 damage for each of your Benched Pokémon, so a full Bench of 5 makes it 100, twice a turn. Buddy-Buddy Poffin and Poké Pad fill the Bench fast, and Festival Grounds has to stay in play for Festival Lead to work, which is why lists run 3 or 4 of it.",
+        "Grookey evolves into Thwackey, the engine. Boom Boom Groove searches your deck for any card once a turn while your Active Pokémon has the Festival Lead Ability, and each Thwackey in play can use its own. Seaking's Rapid Draw does 60 and draws 2 cards, and with Festival Lead it does both twice. Rellor evolves into Rabsca, whose Spherical Shield prevents all damage and effects of your opponent's attacks on your Benched Pokémon.",
+        "Every bonus to an attack counts twice. Brave Bangle adds 30 damage to each attack against an Active Pokémon ex from a Pokémon without a Rule Box, and Gladion's Final Battle, played as the last card in your hand, adds 80 to each attack that turn. Festival Grounds also keeps any Pokémon with Energy attached, on both sides, free of Special Conditions."
+      ],
+      "keys": [
+        ["Festival Grounds", "Turns on Festival Lead. Without it in play, nothing attacks twice."],
+        ["Dipplin", "Do the Wave does 20 for each Benched Pokémon, twice a turn."],
+        ["Thwackey", "Boom Boom Groove searches for any card every turn while a Festival Lead Pokémon is Active."],
+        ["Seaking", "Rapid Draw does 60 and draws 2, twice with Festival Lead."],
+        ["Brave Bangle", "Adds 30 to each attack against an Active Pokémon ex, up to 60 a turn."],
+        ["Rabsca", "Spherical Shield protects your full Bench from your opponent's attacks."]
+      ],
+      "grade": "Power reads close to the top decks, since two attacks a turn with Brave Bangle or Gladion's Final Battle add up fast. Synergy varies more from list to list, because the deck runs two Stage 1 lines and has to keep Festival Grounds in play. Its online record is a little above even."
+    },
+    {
+      "id": "mega-excadrill-ex",
+      "desc": "Mega Excadrill ex deck guide: Maximum Drilling does 330 with two extra Energy, and Metang attaches Metal Energy every turn. Core list and matchups.",
+      "slug": "mega-excadrill",
+      "title": "Mega Excadrill",
+      "lead": "Mega Excadrill ex hits for 330 once it has two extra Energy attached. Metang's Metal Maker attaches Metal Energy from the top of your deck every turn, so the deck can power it up fast.",
+      "plan": [
+        "Metang's Metal Maker looks at the top 4 cards of your deck once a turn and attaches any Basic Metal Energy there to your Pokémon in any way you like, and each Metang in play can use its own. With about 16 Metal Energy in the deck, a few Metang can load an attacker in one turn. Genesect ex's Metallic Signal searches your deck for up to 2 Evolution Metal Pokémon, like Metang and Mega Excadrill ex.",
+        "Drilbur's Call for Family puts up to 2 Basic Pokémon onto your Bench, then Drilbur evolves into Mega Excadrill ex. Maximum Drilling costs 3 Metal Energy and does 200, or 330 if it has at least 2 more Energy attached, enough for most Pokémon ex in one hit. Mega Excadrill ex has 340 HP, and Jumbo Ice Cream heals 80 from it once it has 3 or more Energy. It gives up 3 Prize cards when Knocked Out.",
+        "Metang also evolves into Metagross, the second big attacker: Metallic Hammer does 150, or 300 if you discard 3 Metal Energy from it. Energy Recycler shuffles up to 5 Basic Energy from your discard pile back into your deck, where Metal Maker can find them again. Team Rocket's Petrel searches for any Trainer you need."
+      ],
+      "keys": [
+        ["Mega Excadrill ex", "Maximum Drilling does 200, or 330 with two extra Energy attached. 340 HP."],
+        ["Metang", "Metal Maker attaches Metal Energy from the top 4 cards every turn."],
+        ["Genesect ex", "Metallic Signal finds 2 Evolution Metal Pokémon at once."],
+        ["Drilbur", "Call for Family fills the Bench and evolves into Mega Excadrill ex."],
+        ["Metagross", "Metallic Hammer does 300 when you discard 3 Metal Energy."],
+        ["Energy Recycler", "Puts 5 Basic Energy back in the deck for Metal Maker to find."]
+      ],
+      "grade": "Power is among the highest of any deck RdyDeck grades, since Maximum Drilling Knocks Out most Pokémon in one hit. Synergy reads lower and varies more between lists. Its online record is close to even."
+    },
+    {
+      "id": "dragapult-dusknoir",
+      "desc": "Dragapult Dusknoir deck guide: Phantom Dive spread plus Dusknoir's Cursed Blast for 13 damage counters. Core list from top finishes and matchups.",
+      "slug": "dragapult-dusknoir",
+      "title": "Dragapult Dusknoir",
+      "lead": "A Dragapult ex build that adds Dusknoir. Dusclops and Dusknoir can Knock themselves Out to put 5 or 13 damage counters on any of your opponent's Pokémon, finishing what Phantom Dive starts.",
+      "plan": [
+        "The core is the same as Dragapult: Dreepy, Drakloak and Dragapult ex, with Buddy-Buddy Poffin to bench Dreepy and Drakloak's Recon Directive to draw on the way up. Phantom Dive does 200 and puts 6 damage counters on your opponent's Benched Pokémon in any way you like, and Dragapult ex takes no damage from attacks while it is on your Bench.",
+        "Duskull evolves into Dusclops and then Dusknoir. Dusclops's Cursed Blast puts 5 damage counters, and Dusknoir's puts 13, on any 1 of your opponent's Pokémon, and then Knocks Out the Pokémon that used it. That gives your opponent a Prize card, so use it when the Knock Out it sets up is worth more. Duskull's Come and Get You puts up to 3 Duskull from your discard pile back onto your Bench, so the line can be used again.",
+        "Budew's Itchy Pollen costs no Energy and stops your opponent from playing Items during their next turn, which buys time while the Stage 2 Pokémon come online. Meowth ex's Last-Ditch Catch finds a Supporter when you put it onto your Bench, and Fezandipiti ex's Flip the Script draws 3 cards on your turn after your opponent Knocked Out one of your Pokémon."
+      ],
+      "keys": [
+        ["Dragapult ex", "Phantom Dive does 200 and spreads 6 damage counters across the Bench."],
+        ["Dusknoir", "Cursed Blast puts 13 damage counters on any of your opponent's Pokémon."],
+        ["Dusclops", "Cursed Blast puts 5 damage counters on any Pokémon, a smaller finisher."],
+        ["Duskull", "Come and Get You brings up to 3 Duskull back onto the Bench."],
+        ["Drakloak", "Recon Directive picks 1 of the top 2 cards every turn."],
+        ["Budew", "Itchy Pollen stops your opponent's Items for a turn, for no Energy."]
+      ],
+      "grade": "Its cards grade about the same as the main Dragapult build's. Its online record is close to even, below the main build's, so its grade comes out a little lower."
+    },
+    {
+      "id": "dragapult-blaziken",
+      "desc": "Dragapult Blaziken deck guide: Blaziken ex's Seething Spirit reattaches Energy every turn for Phantom Dive. Core list from top finishes and matchups.",
+      "slug": "dragapult-blaziken",
+      "title": "Dragapult Blaziken",
+      "lead": "A Dragapult ex build with Blaziken ex. Seething Spirit attaches a Basic Energy from your discard pile every turn, so Dragapult ex can attack again soon after it is Knocked Out.",
+      "plan": [
+        "The core is the same as Dragapult: Dreepy, Drakloak and Dragapult ex, with Buddy-Buddy Poffin to bench Dreepy and Drakloak's Recon Directive to draw on the way up. Phantom Dive costs Fire and Psychic, does 200 and puts 6 damage counters on your opponent's Benched Pokémon in any way you like.",
+        "Blaziken ex's Seething Spirit attaches a Basic Energy card from your discard pile to 1 of your Pokémon once a turn. The deck plays Fire, Psychic and Darkness Energy, so Blaziken ex can pay for Phantom Dive or give Munkidori the Darkness Energy its Adrena-Brain needs to move damage counters. Blaziken ex can attack too: Smolder-sault does 200 for Fire and one more Energy, though it can't attack during your next turn.",
+        "Rare Candy takes Torchic straight to Blaziken ex and Dreepy straight to Dragapult ex, skipping the Stage 1. Dawn finds a Basic, a Stage 1 and a Stage 2 Pokémon at once, and Crispin finds 2 Basic Energy of different types, attaching one and putting the other in your hand. Night Stretcher gets back a Pokémon or a Basic Energy from your discard pile."
+      ],
+      "keys": [
+        ["Blaziken ex", "Seething Spirit attaches a Basic Energy from your discard pile every turn. Smolder-sault does 200."],
+        ["Dragapult ex", "Phantom Dive does 200 and spreads 6 damage counters across the Bench."],
+        ["Munkidori", "Adrena-Brain moves 3 damage counters onto your opponent's Pokémon while it has Darkness Energy."],
+        ["Rare Candy", "Evolves Torchic or Dreepy straight into Stage 2."],
+        ["Dawn", "Finds a Basic, a Stage 1 and a Stage 2 Pokémon in one Supporter."],
+        ["Crispin", "Finds 2 Basic Energy of different types and attaches one."]
+      ],
+      "grade": "It grades level with the main Dragapult build, near the top of RdyDeck's grades. Synergy is high, and its online record is one of the better ones in the data."
+    },
+    {
+      "id": "sharpedo-toxtricity",
+      "desc": "Sharpedo Toxtricity deck guide: Toxtricity damages your own Mega Sharpedo ex so Hungry Jaws does 270. Core list from top finishes, plan and matchups.",
+      "slug": "sharpedo-toxtricity",
+      "title": "Sharpedo Toxtricity",
+      "lead": "Mega Sharpedo ex hits harder once it is damaged: Hungry Jaws does 120, or 270 if Sharpedo has any damage counters on it. Toxtricity puts those damage counters on it on purpose.",
+      "plan": [
+        "Toxtricity's Sinister Surge searches your deck for a Basic Darkness Energy, attaches it to 1 of your Benched Darkness Pokémon and places 2 damage counters on that Pokémon. Used on a Benched Mega Sharpedo ex, one Ability both powers it up and turns on Hungry Jaws' extra 150 damage. Each Toxtricity in play can use it once a turn, and Toxel's Call for Family benches 2 Basic Pokémon to start.",
+        "Pecharunt ex's Subjugating Chains switches one of your Benched Darkness Pokémon, other than a Pecharunt ex, into the Active Spot and makes it Poisoned. Here that helps: Binding Mochi gives the attacks of the Poisoned Pokémon it is attached to 40 more damage against your opponent's Active Pokémon, and Poison adds damage counters between turns, which keeps Hungry Jaws switched on. Mega Sharpedo ex has 330 HP to spare, but it gives up 3 Prize cards when Knocked Out.",
+        "Munkidori's Adrena-Brain moves up to 3 damage counters from one of your Pokémon to one of your opponent's while it has Darkness Energy attached, so damage Sharpedo takes can be passed on. Tatsugiri's Attract Customers finds a Supporter from the top 6 cards while it is in the Active Spot, and Sharpedo's own Greedy Fang does 70 and draws 2 cards for one Energy."
+      ],
+      "keys": [
+        ["Mega Sharpedo ex", "Hungry Jaws does 270 once it has any damage counters on it. 330 HP."],
+        ["Toxtricity", "Sinister Surge attaches Darkness Energy and 2 damage counters, turning Hungry Jaws on."],
+        ["Pecharunt ex", "Subjugating Chains switches in a Darkness Pokémon and Poisons it."],
+        ["Binding Mochi", "Attacks from the Poisoned Pokémon it is attached to do 40 more damage."],
+        ["Munkidori", "Adrena-Brain moves 3 damage counters from your Pokémon to your opponent's."],
+        ["Tatsugiri", "Attract Customers finds a Supporter from the top 6 cards."]
+      ],
+      "grade": "RdyDeck grades it a little below most top decks. Synergy is solid, and Power is the lower part. Its online record is close to even."
     }
   ]
 }

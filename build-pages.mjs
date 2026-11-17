@@ -48,9 +48,9 @@ const NAV = [
 ];
 // The free tools and guides, linked from every guide page so search engines and readers find them.
 const TOOLS = [
-  ['deck-grader.html', 'Deck grader'], ['improve-your-deck.html', 'Improve your deck'], ['opening-odds.html', 'Opening hand odds'],
+  ['deck-grader.html', 'Deck checker'], ['improve-your-deck.html', 'Improve your deck'], ['opening-odds.html', 'Opening hand odds'],
   ['rotation.html', 'Rotation check'], ['prize-trainer.html', 'Prize trainer'], ['rulings.html', 'Rules and rulings'],
-  ['cards/', 'Card guides'],
+  ['cards/', 'Card guides'], ['first-deck.html', 'Your first deck'],
 ];
 const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
   @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
@@ -161,7 +161,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 <meta property="og:image" content="https://rdydeck.com/${og}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="RdyDeck. Pok&eacute;mon TCG deck grader.">
+<meta property="og:image:alt" content="RdyDeck. Pok&eacute;mon TCG deck checker.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${t}">
 <meta name="twitter:description" content="${d}">
@@ -311,7 +311,7 @@ ${matchupTable(g, s)}
 <h2>How RdyDeck grades it</h2>
 ${s.grade ? `<p>RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}. The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
 <p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How grading works</a> explains each part.</p>
-<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 
 <h2>More deck guides</h2>
 <ul class="guides">
@@ -339,7 +339,7 @@ function indexPage() {
   });
   const body = `
 <p class="lead">Guides to the decks winning Pok&eacute;mon TCG tournaments right now: what each one runs, how it plays, what it beats, and how RdyDeck grades it.</p>
-<p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them since ${day(mu.since)}, and the grades from RdyDeck's own grader run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
+<p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them since ${day(mu.since)}, and the grades from RdyDeck's own deck checker run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
 
 <h2>The decks</h2>
 <div class="tw"><table>
@@ -354,9 +354,9 @@ ${rows.join('\n')}
 <p>A win rate a little over 50% is good in a format this crowded: most decks sit between 47% and 53%, and only a handful stay above 55% over thousands of games. A deck with a small share and a high win rate can be a strong pick that few people have found yet, or a deck that has only played a few events, so check the number of games before reading much into it.</p>
 <p>The grade and the record measure different things. The grade reads the cards in a list: do they work together, and can the plan win. The record shows how the deck has actually done. RdyDeck blends the two, and <a href="how-grading-works.html">How grading works</a> explains how much each one counts.</p>
 
-<h2>Grade your own list</h2>
-<p>Paste your list from Pok&eacute;mon TCG Live or Limitless into RdyDeck and it grades it out of 10, matches it to the closest of these decks, and shows what to fix first. It is free, needs no account and works offline.</p>
-<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
+<h2>Rate your own list</h2>
+<p>Paste your list from Pok&eacute;mon TCG Live or Limitless into RdyDeck and it rates it out of 10, matches it to the closest of these decks, and shows what to fix first. It is free, needs no account and works offline.</p>
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 <p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> online tournaments, read once a week and credited to them.</p>
 `;
   return page({
@@ -385,8 +385,8 @@ function improvePage() {
   const staples = Object.entries(runs).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])).slice(0, 10);
   const rows = staples.map(([name, cs]) => `    <tr><td>${cardLink(name)}</td><td class="n">${cs.length} of ${n}</td><td class="n">${median(cs)}</td></tr>`);
   const when = dates.length ? `from ${day(dates[0])} to ${day(dates[dates.length - 1])}` : '';
-  const body = `<p class="lead">To improve a Pok&eacute;mon TCG deck, check it in this order: every card is legal, every attacker can pay for its attack and every evolution has what it evolves from, the deck has a steady way to draw and search, its counts sit near what winning lists run, and it has a plan against the decks you will face. RdyDeck, a free deck grader, runs these checks for you: paste your list and it grades the deck out of 10 and names what to fix first.</p>
-<div class="cta-row"><a class="cta" href="./">Grade my deck free</a></div>
+  const body = `<p class="lead">To improve a Pok&eacute;mon TCG deck, check it in this order: every card is legal, every attacker can pay for its attack and every evolution has what it evolves from, the deck has a steady way to draw and search, its counts sit near what winning lists run, and it has a plan against the decks you will face. RdyDeck, a free deck checker, runs these checks for you: paste your decklist and it rates the deck out of 10 and names what to fix first.</p>
+<div class="cta-row"><a class="cta" href="./">Rate my deck free</a></div>
 
 <h2>1. Make sure every card is legal</h2>
 <p>A card that is not Standard legal makes the deck unplayable at an event, so fix this first. Check each card's regulation mark. An older printing is still legal when a reprint with the same name, attacks and Abilities is legal now. The <a href="rotation.html">rotation checker</a> marks which cards are legal now and which may rotate next.</p>
@@ -428,25 +428,108 @@ ${rows.join('\n')}
 <h2>Common questions</h2>
 <dl>
   <dt>Is there a free tool that rates my Pok&eacute;mon deck?</dt>
-  <dd>Yes. RdyDeck grades a 60 card Pok&eacute;mon TCG deck out of 10 for free, with no account. Paste a list from Pok&eacute;mon TCG Live or Limitless TCG and it scores Synergy and Power, compares the deck with recent tournament results and lists what to fix first.</dd>
+  <dd>Yes. RdyDeck rates a 60 card Pok&eacute;mon TCG deck out of 10 for free, with no account. Paste a list from Pok&eacute;mon TCG Live or Limitless TCG and it scores Synergy and Power, compares the deck with recent tournament results and lists what to fix first.</dd>
   <dt>How many Pok&eacute;mon, Trainers and Energy should a Pok&eacute;mon deck have?</dt>
   <dd>A deck has exactly 60 cards. In ${n} recent top 16 lists the typical split was ${P.med} Pok&eacute;mon, ${T.med} Trainers and ${E.med} Energy, with the middle half of lists running ${P.lo} to ${P.hi} Pok&eacute;mon, ${T.lo} to ${T.hi} Trainers and ${E.lo} to ${E.hi} Energy. The right split depends on the deck.</dd>
   <dt>Why does my Pok&eacute;mon deck keep losing?</dt>
-  <dd>The usual causes are an attacker that cannot pay for its attack, an evolution with nothing to evolve from, no steady way to draw cards, or too few Basic Pok&eacute;mon to start well. A grader like RdyDeck names which of these your list has.</dd>
+  <dd>The usual causes are an attacker that cannot pay for its attack, an evolution with nothing to evolve from, no steady way to draw cards, or too few Basic Pok&eacute;mon to start well. A deck checker like RdyDeck names which of these your list has.</dd>
   <dt>Does this work for Pok&eacute;mon TCG Pocket?</dt>
-  <dd>No. RdyDeck grades 60 card decks for the Pok&eacute;mon Trading Card Game, played with paper cards or in Pok&eacute;mon TCG Live. Pok&eacute;mon TCG Pocket decks have 20 cards and different rules.</dd>
+  <dd>No. RdyDeck rates 60 card decks for the Pok&eacute;mon Trading Card Game, played with paper cards or in Pok&eacute;mon TCG Live. Pok&eacute;mon TCG Pocket decks have 20 cards and different rules.</dd>
 </dl>
 
-<h2>Grade your deck now</h2>
+<h2>Rate your deck now</h2>
 <p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How grading works</a> explains exactly what the grade measures.</p>
-<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>`;
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
     file: 'improve-your-deck.html',
     title: 'How to Improve Your Pokémon TCG Deck: 7 Checks | RdyDeck',
-    desc: 'How to make your Pokémon TCG deck better: 7 checks with typical counts from recent top 16 lists, and a free deck grader that runs them for you.',
+    desc: 'How to make your Pokémon TCG deck better: 7 checks with typical counts from recent top 16 lists, and a free deck checker that runs them for you.',
     updated: mu.asOf,
     kicker: 'Deck building',
     h1: 'How to improve your Pok&eacute;mon TCG deck',
+    body, faq: true,
+  });
+}
+
+// ── Your first deck: the official deck rules with their rulebook pages, then what top lists run ──
+// The rules are cited from rulings.json's rulebook source. The counts come from tests/grade-lists.json, like improvePage.
+function firstDeckPage() {
+  if (!lists.length || !rul) return null;
+  const rb = (rul.sources || []).find(s => s.id === 'rb');
+  if (!rb) return null;
+  const n = lists.length;
+  const part = (l, p) => l.cards.filter(c => c.part === p).reduce((a, c) => a + c.count, 0);
+  const P = median(lists.map(l => part(l, 'pokemon'))), T = median(lists.map(l => part(l, 'trainer'))), E = median(lists.map(l => part(l, 'energy')));
+  const types = lists.map(l => new Set(l.cards.filter(c => c.part === 'energy' && /^(Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal) Energy$/.test(c.name)).map(c => c.name)).size);
+  const twoOrFewer = types.filter(t => t <= 2).length;
+  const runs = {};
+  for (const l of lists) for (const c of new Set(l.cards.filter(c => c.part === 'trainer').map(c => c.name))) runs[c] = (runs[c] || 0) + 1;
+  const staples = Object.entries(runs).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8);
+  const rows = staples.map(([name, k]) => `    <tr><td>${cardLink(name)}</td><td class="n">${Math.round(100 * k / n)}%</td></tr>`);
+  const src = where => `<p class="note">Source: <a href="${esc(rb.url)}" rel="noopener">${esc(rb.title)}</a>, ${esc(rb.publisher)} (${esc([rb.edition, where].join(', '))}).</p>`;
+  const body = `<p class="lead">A Pok&eacute;mon TCG deck has exactly 60 cards, no more than 4 cards with the same name except Basic Energy, and at least 1 Basic Pok&eacute;mon. Inside those rules, a good first deck is built around one main attacker, the Pok&eacute;mon and Energy it needs, and the draw and search cards nearly every winning deck plays.</p>
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
+
+<h2>The deck building rules</h2>
+<ul>
+  <li><strong>Exactly 60 cards.</strong> Not 59 and not 61.</li>
+  <li><strong>No more than 4 cards with the same name,</strong> except Basic Energy, which has no limit. Cards with the same name count together even if their attacks are different.</li>
+  <li><strong>At least 1 Basic Pok&eacute;mon,</strong> since you need one to start the game. Your opening hand needs one too, or you mulligan.</li>
+  <li><strong>Only 1 ACE SPEC card in the whole deck,</strong> not 1 of each.</li>
+</ul>
+${src('pp. 22 and 23')}
+<p>For tournaments, every card also has to be legal in the format you play. In Standard that is set by each card's regulation mark, and the <a href="rotation.html">rotation checker</a> marks which of your cards are legal now. The <a href="rulings.html">rules page</a> answers more rules questions, each with its source.</p>
+
+<h2>Start from a deck that already works</h2>
+<p>The rulebook's own advice is to take a ready-made ex Battle Deck you like and change it, keeping it at exactly 60 cards. You can do the same with a winning list: the <a href="meta-decks.html">deck guides</a> show the cards top players run in each deck, and RdyDeck has starter decks built in, so you can open one and change it card by card.</p>
+
+<h2>Pick one attacker and one or two Energy types</h2>
+<p>Choose the Pok&eacute;mon you want to attack with, then put in its whole evolution line and the Energy its attack costs. The rulebook suggests one or two Energy types at most, and ${twoOrFewer} of the ${n} top 16 lists we test with play two types of Basic Energy or fewer. A second attacker for matchups where the first one struggles is the next thing to add.</p>
+
+<h2>How many Pok&eacute;mon, Trainers and Energy</h2>
+<p>The rulebook's starting point is 12 to 15 Energy and about 20 to 25 Trainer cards, with the rest Pok&eacute;mon. Winning lists today lean further toward Trainers. Across ${n} recent top 16 lists from Limitless online tournaments, the typical deck ran:</p>
+<div class="tw"><table>
+  <thead><tr><th>Part</th><th class="n">Rulebook starting point</th><th class="n">Typical top 16 list</th></tr></thead>
+  <tbody>
+    <tr><td>Pok&eacute;mon</td><td class="n">the rest</td><td class="n">${P}</td></tr>
+    <tr><td>Trainers</td><td class="n">20 to 25</td><td class="n">${T}</td></tr>
+    <tr><td>Energy</td><td class="n">12 to 15</td><td class="n">${E}</td></tr>
+  </tbody>
+</table></div>
+${src('p. 22')}
+<p>The extra Trainers are mostly draw and search, which find your attacker every game. If you are just starting, a few more Energy than the top lists run is fine while you learn the deck.</p>
+
+<h2>The Trainers most decks play</h2>
+<p>These Trainer cards are played in more of those ${n} lists than any others, whatever the deck. They are a good first set of slots to fill:</p>
+<div class="tw"><table>
+  <thead><tr><th>Trainer</th><th class="n">Share of top lists</th></tr></thead>
+  <tbody>
+${rows.join('\n')}
+  </tbody>
+</table></div>
+
+<h2>Check the deck before you play it</h2>
+<p>Paste your list into RdyDeck and it rates the deck out of 10, names what to fix first, such as an attacker that cannot pay for its attack or an evolution with nothing to evolve from, and shows how often you will mulligan. It is free, needs no account and works offline. <a href="improve-your-deck.html">How to improve your deck</a> walks through the same checks by hand.</p>
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
+
+<h2>Common questions</h2>
+<dl>
+  <dt>How many cards are in a Pok&eacute;mon TCG deck?</dt>
+  <dd>Exactly 60. The deck can have no more than 4 cards with the same name, except Basic Energy, and needs at least 1 Basic Pok&eacute;mon.</dd>
+  <dt>How many Energy should a beginner Pok&eacute;mon deck have?</dt>
+  <dd>The official rulebook suggests 12 to 15 Energy in a new 60 card deck. Recent top 16 lists run fewer, ${E} in a typical list, since many of them use Trainers and Abilities that find or attach Energy.</dd>
+  <dt>Can I put more than 4 of a card in my deck?</dt>
+  <dd>Only Basic Energy. Every other card is limited to 4 copies with the same name, and ACE SPEC cards to 1 in the whole deck.</dd>
+  <dt>Is there a free tool to check my first deck?</dt>
+  <dd>Yes. RdyDeck rates a 60 card deck out of 10 for free and lists what to fix first. It checks how the deck plays, not the condition of your cards.</dd>
+</dl>`;
+  return page({
+    file: 'first-deck.html',
+    title: 'How to Build Your First Pokémon TCG Deck | RdyDeck',
+    desc: 'Build your first Pokémon TCG deck: the official 60 card deck rules, how many Pokémon, Trainers and Energy top lists run, and a free deck checker.',
+    updated: rul.asOf,
+    kicker: 'Beginner guide',
+    h1: 'How to build your first Pok&eacute;mon TCG deck',
     body, faq: true,
   });
 }
@@ -471,7 +554,7 @@ ${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc
 <h2>What is not here yet</h2>
 <p>Pok&eacute;mon also rules on how two specific cards work together. Most of those rulings are not on this page yet: RdyDeck only adds one when The Pok&eacute;mon Company International has published it where anyone can read it. When a rule here and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
 <p class="note">Rules as of ${day(rul.asOf)}. RdyDeck is an unofficial fan-made app, not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
-<div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>`;
+<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
     file: 'rulings.html',
     title: 'Pokémon TCG Rules: Damage, Prizes, Abilities and More | RdyDeck',
@@ -663,6 +746,7 @@ const out = [
   ...guides.decks.filter(g => mcById[g.id]).map(g => [`deck-${g.slug}.html`, deckPage(g)]),
   ...handPages(),
   ...(improvePage() ? [['improve-your-deck.html', improvePage()]] : []),
+  ...(firstDeckPage() ? [['first-deck.html', firstDeckPage()]] : []),
   ...(rulingsPage() ? [['rulings.html', rulingsPage()]] : []),
   ...(cardIndexPage() ? [['cards/index.html', cardIndexPage()]] : []),
   ...cp.cards.map(c => [`cards/${c.slug}.html`, cardPage(c)]),
