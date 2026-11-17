@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2.1 (build 111): deck links fixed (17 Nov 2026)
+
+Changed files: js/core.js (deck links, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), sw.js (cache prize-trainer-v111) and CHANGES.md.
+
+- A deck link (#deck=) now stays in the address bar until the Import sheet is closed or the list is imported. Before, the app took it out the moment the page opened, so a reload, or Open in Safari from a chat app's own browser, landed on the plain home page with no deck.
+- Every deck link now opens the grade once the list is imported, as Share grade links already did. Before, a Share deck link only added the deck and went back to home. A list the person already has opens straight to its grade.
+- The Import sheet note for a shared deck says to tap Import and save to see the grade, in all five languages (it was English only before).
+- Links stay in the same form, so every link already sent still works. The list still never reaches a server.
+- No grade moves. Grade check: 132 of 132 lists unchanged.
+
 # RdyDeck 3.2 (build 110): card guides and search fixes (16 Nov 2026)
 
 Changed files: cards/ (new: 178 card pages and cards/index.html), card-pages-data.mjs and .github/card-pages.json (new), build-pages.mjs, deck-guides.json (a description per deck), rulings.json (setup and mulligan), worker/rdydeck-worker.js, every .html page (github.io-only noindex line), index.html (h1, main, noscript, softwareVersion, file stamps), privacy.html and terms.html (share tags), deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html (titles), .github/pages/faq.html, about.html, how-grading-works.html, app-file.mjs (keeps softwareVersion equal to the app version), js/v38-settings-home.js (title lockup reads only the drawn name), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache prize-trainer-v110), sitemap.xml, llms.txt, README.md, tests/seo-check.mjs (new) and CHANGES.md.

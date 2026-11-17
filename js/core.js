@@ -4316,7 +4316,16 @@ async function nativeShareDeckLink() {
 let _v45GradeAfterImport = false;
 // 2.7: a grade link also carries the deck's Main attacker pick (&a=), so whoever opens it sees the same grade.
 let _gs261Atk = '';
-/** Open a #deck= link: decode it and fill the Import sheet for the player to check. */
+/** Open a #deck= link: decode it and fill the Import sheet for the player to check.
+ * 3.2.1: the deck stays in the address bar until the sheet is closed or the list is imported,
+ * so "Open in browser" from a chat app's own browser, or a reload, still carries the deck.
+ * Every deck link now opens the grade once the list is imported, not only Share grade links. */
+let _shareHashOpen = false;
+function clearShareHash() {
+  if (!_shareHashOpen) return;
+  _shareHashOpen = false;
+  if (/^#deck=/.test(location.hash || '')) { try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {} }
+}
 async function handleShareHash() {
   const m = /^#deck=([^&]*)/.exec(location.hash || '');
   if (!m) return;
@@ -4327,14 +4336,13 @@ async function handleShareHash() {
   let raw = '';
   try { raw = decodeURIComponent(m[1]); } catch (_) {}
   const shared = await decodeDeckShare(raw);
-  try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
+  _shareHashOpen = true;
+  if (!shared || shared.unsupported) clearShareHash();
   if (!shared) { showToast('That deck link could not be read.'); return; }
   if (shared.unsupported) { showToast('This browser cannot open compressed deck links. Try an up to date browser.'); return; }
   showScreen('home');
-  if (fromGrade) {
-    const have = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
-    if (have) { openReview(have.id); showToast(`You already have this list as "${have.name}".`); return; }
-  }
+  const have = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
+  if (have) { clearShareHash(); openReview(have.id); showToast(`You already have this list as "${have.name}".`); return; }
   openImportModal();
   document.getElementById('import-name').value = shared.name || 'Shared deck';
   const ta = document.getElementById('import-list');
@@ -4342,12 +4350,8 @@ async function handleShareHash() {
   ta.dispatchEvent(new Event('input'));
   setImportFormat(shared.format);
   const note = document.getElementById('import-share-note');
-  const same = state.decks.find(d => deckListText(d.cards) === deckListText(parseDeckList(shared.list)));
-  note.textContent = same
-    ? `Shared deck from a link. You already have this list as "${same.name}". Import it again only if you want a second copy.`
-    : fromGrade ? 'Shared grade from a link. Tap Import to see the grade for this list.'
-    : 'Shared deck from a link. Check the list, then tap Import and save.';
-  _v45GradeAfterImport = fromGrade;
+  note.textContent = 'Shared deck from a link. Tap Import and save to see its grade.';
+  _v45GradeAfterImport = true;
   if (fromGrade) { const a = /&a=([^&]*)/.exec(hash0); try { _gs261Atk = a ? decodeURIComponent(a[1]).slice(0, 80) : ''; } catch (_) {} }
   note.style.display = 'block';
 }
@@ -7810,12 +7814,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.2',
-  kind: 'generation',
+  version: 'v3.2.1',
+  kind: 'small',
   items: [
-    { t: 'Added: card guides', d: 'A web page for each card top decks play: its text, the decks that run it and its rules' },
-    { t: 'Added: setup and mulligan rules' },
-    { t: 'Easier to find in Google and AI assistants' }
+    { t: 'Deck links fixed' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -8873,7 +8875,7 @@ function openImportModal() {
   if (_sn) { _sn.style.display = 'none'; _sn.textContent = ''; }
   setImportFormat('standard');
 }
-function closeImportModal() { document.getElementById('import-modal').classList.remove('active'); }
+function closeImportModal() { document.getElementById('import-modal').classList.remove('active'); clearShareHash(); }
 
 // ═══════════ PASTE FROM CLIPBOARD ═══════════
 async function pasteFromClipboard() {
@@ -10727,8 +10729,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.2';
-const PT_BUILD = 110;
+const PT_VERSION = 'v3.2.1';
+const PT_BUILD = 111;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
