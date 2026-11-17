@@ -393,7 +393,7 @@ function geWhat(p) {
   p = String(p || '').replace(/^(?:up to \d+|any number of|an?|\d+|1 of each)\s+/, '').replace(/\s+cards?$/, '').replace(/\bpokemon\b/g, 'Pokemon').trim();
   return geCap(p).replace(/\bEx\b/g, 'ex').replace(/\bAnd\b/g, 'and').replace(/\bOr\b/g, 'or').replace(/\bOf\b/g, 'of').replace(/\bWith\b/g, 'with').replace(/\bHp\b/g, 'HP').replace(/\bThat\b/g, 'that');
 }
-const GE_LOW = new Set(['a','an','or','and','of','each','up','to','with','in','its','name','that','has','for','your','any','number','the','from','less','more','or','on','its','1','2','3','4','5','6']);
+const GE_LOW = new Set(['a','an','or','and','of','each','up','to','with','in','its','name','that','has','have','their','for','your','any','number','the','from','less','more','or','on','its','1','2','3','4','5','6']);
 /** Card words with their capitals back: "an ethan's adventure card" -> "an Ethan's Adventure". */
 function geTitle(w) {
   // v60: "a card" alone is any card (Pecharunt's Final Chain), not "a".
@@ -412,6 +412,7 @@ function geEffects(text) {
   // What it needs first, and what it costs.
   if ((m = t0.match(/if you have (?:any )?([a-z' -]+?) in play/))) out.need = `needs ${geWhat(m[1])} in play`;
   else if ((m = t0.match(new RegExp('if this pokemon has any (' + GE_TY + ') energy attached')))) out.need = `needs ${geCap(m[1])} Energy attached to it`;
+  else if (/^if this pokemon is in the active spot and is damaged by an attack/.test(t0)) out.need = 'only when it is damaged while Active';
   else if (/(?:if|as long as) this pokemon is in the active spot/.test(t0)) out.need = 'only while it is Active';
   else if (/if any of your pokemon were knocked out during your opponent's last turn/.test(t0)) out.need = 'only after one of your Pokemon was Knocked Out';
   else if (/^if this pokemon is knocked out/.test(t0)) out.need = 'only when it is Knocked Out';
@@ -454,15 +455,15 @@ function geEffects(text) {
       const w = m[1];
       const tag = /energy/.test(w) && !/pokemon/.test(w) ? 'search_energy' : /pokemon/.test(w) || m[2] === 'onto your bench' ? 'search_pokemon' : /supporter/.test(w) ? 'search_supporter' : /\bitem\b/.test(w) ? 'search_item' : /tool|stadium|trainer/.test(w) ? 'search_trainer' : /^(?:a|an|\d+|up to \d+) cards?$/.test(w) ? 'search_card' : 'search_trainer';
       tags.add(tag); if (/\bbasic pokemon\b|\bbasic [a-z]+ pokemon\b/.test(w)) tags.add('search_basic');
-      say.push(`searches your deck for ${geTitle(w)}${tag === 'search_trainer' && !/item|supporter|tool|stadium|trainer/.test(w) ? ' card' : ''}${m[2] === 'onto your bench' ? ' for your Bench' : ''}`); return; }
+      say.push(`searches your deck for ${geTitle(w)}${tag === 'search_trainer' && !/item|supporter|tool|stadium|trainer/.test(w) ? (geNum(w.split(' ').slice(0, /^up to /.test(w) ? 3 : 1).join(' ')) === 1 ? ' card' : ' cards') : ''}${m[2] === 'onto your bench' ? ' for your Bench' : ''}`); return; }
     // Damage counters and damage to the Bench.
     if ((m = s.match(/move (up to )?(\d+|any number of) damage counters? from (?:1 of )?your pokemon to (?:1 of )?your opponent's pokemon/))) {
       tags.add('move_counters'); say.push(`moves ${m[1] ? 'up to ' : ''}${m[2]} damage counters from your Pokemon to your opponent's`); return; }
     if (/move (?:up to \d+ |any number of |\d+ )?damage counters?/.test(s)) { tags.add('move_counters'); say.push('moves damage counters'); return; }
     if ((m = s.match(/(?:choose (\d+) of your opponent's (?:benched )?pokemon and )?(?:put|place) (\d+) damage counters? on (?:each of them|1 of your opponent's (benched )?pokemon|each of your opponent's (benched )?pokemon|your opponent's (benched )?pokemon in any way you like)/))) {
-      const n = +m[2];
-      if (m[1] || /each of your opponent|in any way you like/.test(s)) { tags.add('spread_counters'); say.push(m[1] ? `puts ${n} damage counters on each of ${m[1]} of your opponent's Pokemon` : /in any way/.test(s) ? `puts ${n} damage counters on your opponent's ${m[5] ? 'Benched ' : ''}Pokemon in any way you like` : `puts ${n} damage counters on each of your opponent's ${m[4] ? 'Benched ' : ''}Pokemon`); }
-      else { tags.add('snipe'); say.push(`puts ${n} damage counters on 1 of your opponent's ${m[3] ? 'Benched ' : ''}Pokemon`); }
+      const n = +m[2], dc = n === 1 ? 'damage counter' : 'damage counters';
+      if (m[1] || /each of your opponent|in any way you like/.test(s)) { tags.add('spread_counters'); say.push(m[1] ? `puts ${n} ${dc} on each of ${m[1]} of your opponent's Pokemon` : /in any way/.test(s) ? `puts ${n} ${dc} on your opponent's ${m[5] ? 'Benched ' : ''}Pokemon in any way you like` : `puts ${n} ${dc} on each of your opponent's ${m[4] ? 'Benched ' : ''}Pokemon`); }
+      else { tags.add('snipe'); say.push(`puts ${n} ${dc} on 1 of your opponent's ${m[3] ? 'Benched ' : ''}Pokemon`); }
       return; }
     if ((m = s.match(/does (\d+) damage to (1|2|3|each|each of 2|\d+) of your opponent's (benched )?pokemon/)) || (m = s.match(/does (\d+) damage to (each) of your opponent's (benched )?pokemon/)) || (/for each of your opponent's pokemon, flip/.test(t0) && (m = s.match(/does (\d+) damage to (that) pokemon/)))) {
       const bn = m[3] ? 'Benched ' : '', also = /also does/.test(s) ? 'also does' : 'does';
@@ -479,6 +480,12 @@ function geEffects(text) {
     if (/switch this pokemon with 1 of your benched pokemon/.test(s)) { tags.add('switch_own'); say.push('switches itself out to your Bench'); return; }
     if (/have no retreat cost|has no retreat cost/.test(s) && /your/.test(s)) { tags.add('switch_own'); return; }
     if (/^move (?:an?|any amount of|all|\d+) (?:basic )?(?:[a-z]+ )?energy from (?:1 of )?your benched pokemon to your active pokemon/.test(s)) { tags.add('energy_move'); say.push('moves Energy from your Bench to your Active Pokemon'); return; }
+    // Always-on extra HP and damage cuts for your own Pokemon (Ludicolo's Vibrant Dance, Aurorus's
+    // Tundra Wall). Said in the plan only, with no tag, so no grade moves.
+    if ((m = s.match(/^(?:all of |each of )?your ((?:basic |[a-z]+ )?)pokemon(?: in play)? gets? \+(\d+) hp$/))) {
+      say.push(`gives ${m[1] ? 'each of your ' + geWhat(m[1] + 'pokemon') : 'each of your Pokemon'} in play ${m[2]} more HP`); return; }
+    if ((m = s.match(new RegExp("^(?:all of |each of )?your ((?:basic |" + GE_TY + " )?)pokemon(?: in play)?(?: that ha(?:s|ve) any (" + GE_TY + ") energy attached)? takes? (\\d+) less damage from attacks from your opponent's pokemon$")))) {
+      say.push(`makes each of your ${m[1] ? geWhat(m[1] + 'pokemon') : 'Pokemon'}${m[2] ? ` with ${geCap(m[2])} Energy attached` : ''} take ${m[3]} less damage from your opponent's attacks`); return; }
     // Damage boosts and locks.
     if ((m = s.match(/attacks used by your (.+?)(?:, except [^,]+,)? do (\d+) more damage/))) { tags.add('damage_boost'); say.push(`your ${geWhat(m[1])} do ${m[2]} more damage`); return; }
     // v62: "both yours and your opponent's" sits in parentheses, which are dropped, so "in play" counts too (Iron Thorns ex's Initialization).
@@ -982,25 +989,79 @@ function fix37Td(t) {
  */
 function revive115(text) {
   const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon').replace(/\s+/g, ' ');
-  const lead = '(?:^|[.!,] )(?:you may )?put (up to \\d+|an?|\\d+) ';
-  const m = t.match(new RegExp(lead + '(.*?)pokemon( \\(except [^)]*\\))?( with \\d+ hp or less)?( \\(except [^)]*\\))? from your discard pile onto your bench', 'i'));
-  const cnt = s => /^an?$/i.test(s) ? 1 : parseInt(s.replace(/up to /i, ''), 10);
+  // 3.2.7: a Pokemon that puts itself onto your Bench from your discard pile (Gengar's Netherworld Gate,
+  // Empoleon's Emergency Surfacing) needs no Basic either, once something puts it in the discard pile.
+  if (/if this pokemon is in your discard pile[^.]*?,? you may put (?:it|this pokemon) onto your bench/i.test(t)) return { n: 1, type: null, stage: null, hp: null, not: [], self: true };
+  // 3.2.7: older wordings too, for Expanded: "in order to put", a choice ("Choose 1: Put ..."), "Put 1 Basic
+  // Pokemon card", "Put 3 in any combination of ...", "any number of", and "Search your discard pile for a
+  // Pokemon ... and put it onto your Bench".
+  const lead = "(?:^|[.!,:•] |in order to )(?:you may )?put (up to \\d+|\\d+ in any combination of|any number of|an?|\\d+) ";
+  const cnt = s => /^an?$/i.test(s) ? 1 : /any number/i.test(s) ? 99 : parseInt(s.replace(/up to /i, ''), 10);
+  let m = t.match(new RegExp(lead + "(.*?) from your discard pile onto your bench", 'i'));
   if (!m) {
-    // "Put up to 3 Duskull from your discard pile onto your Bench": a name in place of a kind.
-    const nm = t.match(new RegExp(lead + "([a-z0-9' -]+?) from your discard pile onto your bench", 'i'));
-    return nm && !/\b(?:pokemon|cards?|energy|trainers?|items?|supporters?|tools?|stadiums?)\b/i.test(nm[2])
-      ? { n: cnt(nm[1]), type: null, stage: null, hp: null, not: [], name: nm[2].trim().toLowerCase() } : null;
+    const sr = t.match(/search your discard pile for (up to \d+|an?|\d+) (.*?)(?:,? show (?:it|them) to your opponent,?)? and put (?:it|them) onto your bench/i);
+    if (sr) m = [sr[0], sr[1], sr[2]];
   }
-  let q = m[2].trim().toLowerCase(), type = null, stage = null;
-  const TY = q.match(/\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|fairy|colorless)\b/);
-  if (TY) { type = TY[1]; q = q.replace(TY[0], ' '); }
-  const ST = q.match(/\b(basic|stage 1|stage 2|evolution)\b/);
-  if (ST) { stage = ST[1].replace(' ', ''); q = q.replace(ST[0], ' '); }
-  // A kind this reader does not know (a Pokemon "that has an Ability", a Tera Pokemon) is left unread.
-  if (q.replace(/\s+/g, '')) return null;
-  const hp = m[4] ? parseInt(m[4].match(/\d+/)[0], 10) : null;
-  const not = [m[3], m[5]].filter(Boolean).map(x => x.replace(/^ \(except |\)$/gi, '').trim().toLowerCase());
-  return { n: cnt(m[1]), type, stage, hp, not };
+  if (!m) return null;
+  const n = cnt(m[1]);
+  let q = ' ' + m[2].toLowerCase() + ' ';
+  // A name in place of a kind: "Put up to 3 Duskull from your discard pile onto your Bench".
+  if (!/\bpokemon\b/.test(q)) {
+    const nm = q.trim();
+    return nm && /^[a-z0-9' -]+$/.test(nm) && !/\b(?:cards?|energy|trainers?|items?|supporters?|tools?|stadiums?)\b/.test(nm)
+      ? { n, type: null, stage: null, hp: null, not: [], name: nm } : null;
+  }
+  const not = [], notKind = [];
+  q = q.replace(/\((?:except|excluding) ([^)]*)\)/g, (x, w) => {
+    w.split(/,? or |, | and /).map(y => y.trim().replace(/^an? /, '')).filter(Boolean).forEach(y => {
+      const k = y.match(/^(baby|lv\.?x|legend|break) pokemon$|^pokemon (lv\.?x)$/);
+      if (k) notKind.push((k[1] || k[2]).replace('.', '')); else not.push(y); });
+    return ' '; });
+  let hp = null; q = q.replace(/ with (\d+) hp or less/, (x, h) => { hp = parseInt(h, 10); return ' '; });
+  let noRule = false; q = q.replace(/ that (?:don't|doesn't|do not|does not) have a rule box/, () => { noRule = true; return ' '; });
+  let from = null; q = q.replace(/ that evolves? from ([a-z0-9' -]+?)(?= |$)(?: fossil)?/, (x, f) => { from = (f + (/fossil/.test(x) ? ' fossil' : '')).trim(); return ' '; });
+  q = q.replace(/\bpokemon cards?\b/g, 'pokemon');
+  const alts = [];
+  for (let a of q.split(/ (?:or|and) /)) {
+    a = ' ' + a.trim().replace(/^an? /, '') + ' ';
+    if (!/\bpokemon\b/.test(a)) return null;
+    let type = null, stage = null, kind = null;
+    a = a.replace(/\bpokemon-(gx|ex)\b/, (x, k) => { kind = k; return 'pokemon'; });
+    const TY = a.match(/\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|fairy|colorless)\b/);
+    if (TY) { type = TY[1]; a = a.replace(TY[0], ' '); }
+    const ST = a.match(/\b(basic|stage 1|stage 2|evolution)\b/);
+    if (ST) { stage = ST[1].replace(' ', ''); a = a.replace(ST[0], ' '); }
+    const KD = a.match(/\b(rapid strike|single strike|fusion strike|baby)\b/);
+    if (KD) { kind = KD[1]; a = a.replace(KD[0], ' '); }
+    // A kind this reader does not know (a Pokemon "that has an Ability", a Tera Pokemon) is left unread.
+    if (a.replace(/\bpokemon\b/, '').replace(/\s+/g, '')) return null;
+    alts.push({ type, stage, kind });
+  }
+  if (!alts.length) return null;
+  const r = { n, type: alts.length === 1 ? alts[0].type : null, stage: alts.length === 1 ? alts[0].stage : null, hp, not };
+  if (alts.length > 1 || alts[0].kind) r.alts = alts;
+  if (noRule) r.noRule = true;
+  if (from) r.from = from;
+  if (notKind.length) r.notKind = notKind;
+  return r;
+}
+/**
+ * 3.2.7: does this text put cards from your own hand or deck into your discard pile? 'deck' when you
+ * pick them from your deck (Brilliant Blender), 'mill' for the top of your deck, 'hand' for a cost or
+ * an effect that discards from your hand (Ultra Ball, Earthen Vessel's "another card", Professor's
+ * Research). null otherwise, and for a discard that is your opponent's to make.
+ */
+function outlet115(text) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon').replace(/\s+/g, ' ');
+  let k = null;
+  for (const s of t.split(/(?<=[.!?])\s+/)) {
+    if (/search your deck for (?:up to )?\d+ cards? and discard (?:them|it)/i.test(s)) return 'deck';
+    if (/discard the top (?:\d+ cards|card) of your deck|look at the top \d+ cards of your deck and discard|discard the other cards/i.test(s)) { k = k || 'mill'; continue; }
+    // "Your opponent discards a card from their hand" is not yours to use.
+    if (/\bopponent\b/i.test(s) && /their hand/i.test(s)) continue;
+    if (/discard (?:\d+ |a |an |another |up to \d+ |any number of )?(?:other )?(?:cards?|pokemon)\b[^.]{0,30} from (?:your|their) hand|discard your hand|discard all (?:the )?cards (?:from|in) your hand/i.test(s)) k = 'hand';
+  }
+  return k;
 }
 function copy37(text) {
   const m = String(text || '').replace(/[‘’]/g, "'")
@@ -1284,6 +1345,8 @@ function enrichCard(apiCard, opts) {
       copy: copy37(a.text),
       // 3.2.5: Pokemon it puts onto your Bench from your discard pile (Kingdra ex's King's Order).
       rev: revive115(a.text),
+      // 3.2.7: an attack that discards from your hand or deck (Salamence ex's Dragon Pulse) fills the discard pile.
+      disc: outlet115(a.text),
       // v60: what the attack does besides damage, in plain words (Phantom Dive's damage counters on the Bench).
       fx: (fx => fx.length ? fx.slice(0, 2) : null)(geEffects(a.text).say),
       // v60: an attack that Knocks Out the opponent's Active Pokemon outright (Mega Absol ex's Terminal Period).
@@ -1583,7 +1646,7 @@ return {
   parseHP, parseDamage, parseCost, parseStage, parsePrizeValue,
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
-  findOverride, enrichCard, fetchDeckCards, coverage, ctl63, revive115,
+  findOverride, enrichCard, fetchDeckCards, coverage, ctl63, revive115, outlet115,
 };
 });
 

@@ -16,10 +16,15 @@ function rot35Mark(deck) {
   if (!body || !deck) return;
   const old = document.getElementById('rot35-key');
   if (old) old.remove();
+  const oldOut = document.getElementById('rot35-out-key');
+  if (oldOut) oldOut.remove();
   body.querySelectorAll('.rot35').forEach(x => x.remove());
   if (deck.format === 'expanded' || !(deck.cards || []).some(c => c.supertype)) return;
   const rows = r29Rows(deck);
   const risk = new Set(rows.filter(r => r.st === 'risk').map(r => r.key));
+  // 3.2.7: a card that is not Standard legal now (an Expanded or older card) keeps its place in the list, with its own mark.
+  const out = new Set(rows.filter(r => r.st === 'out').map(r => r.key));
+  if (out.size) rot35Out(deck, body, out);
   if (!risk.size) return;
   // The grid shows the API name where there is one, so map both names.
   const shown = new Map();
@@ -66,3 +71,31 @@ r29CheckReprints = async function (deck) {
   } catch (_) {}
   return r;
 };
+
+/** 3.2.7: marks the cards in a Standard deck that are not Standard legal now, with a key above the grid. */
+function rot35Out(deck, body, out) {
+  const shown = new Map();
+  (deck.cards || []).forEach(c => {
+    const k = r29Key(c.name);
+    if (!out.has(k)) return;
+    shown.set(rot35Key(c.apiName || c.name), k); shown.set(rot35Key(c.name), k);
+  });
+  const label = 'Not legal in Standard now';
+  let n = 0;
+  body.querySelectorAll('.review-card').forEach(el => {
+    const nm = el.querySelector('.review-card-name'), img = el.querySelector('.review-card-img');
+    if (!nm || !img || !shown.has(rot35Key(nm.textContent))) return;
+    const q = el.querySelector('.review-card-qty');
+    n += q ? (parseInt(q.textContent.replace(/\D/g, ''), 10) || 0) : 0;
+    const b = document.createElement('span');
+    b.className = 'rot35 rot35-out'; b.setAttribute('role', 'img'); b.setAttribute('aria-label', label); b.title = label;
+    b.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>';
+    img.appendChild(b);
+  });
+  if (!n) return;
+  const key = document.createElement('div');
+  key.id = 'rot35-out-key'; key.className = 'rot35-key';
+  key.innerHTML = `<span class="rot35 rot35-in rot35-out" aria-hidden="true"><svg class="ic"><use href="#i-alert"/></svg></span>
+    <span>${n} card${n > 1 ? 's are' : ' is'} not legal in Standard now. ${n > 1 ? 'They stay' : 'It stays'} in the list, and the grade counts ${n > 1 ? 'them' : 'it'} as not legal.</span>`;
+  body.insertBefore(key, body.firstChild);
+}

@@ -41,7 +41,8 @@ function fakePricing(id) {
     tcgplayer: { updated: '2026-11-10T20:00:00.000Z', unit: 'USD', normal: { productId: 1, lowPrice: 0.1, midPrice: 1, highPrice: 5, marketPrice: 0.25 + (h % 400) / 100, directLowPrice: null } },
   } };
 }
-const expectPrice = id => { const p = fakePricing(id).pricing; if (!p) return null; return p.tcgplayer ? { u: p.tcgplayer.normal.marketPrice } : { e: p.cardmarket.trend }; };
+// 3.2.7: US dollars only. A card with only a Cardmarket (euro) price counts as no price.
+const expectPrice = id => { const p = fakePricing(id).pricing; return p && p.tcgplayer ? { u: p.tcgplayer.normal.marketPrice } : null; };
 
 let priceMode = true, priceReads = 0, maxAtOnce = 0, atOnce = 0;
 async function fakeFetch(input, init) {
@@ -237,18 +238,19 @@ ok(firstRow() === before, 'owned first off: the usual order is back');
 w.showReviewTab('cards');
 for (let i = 0; i < 80 && !/List total/.test(bar()); i++) await sleep(100);
 await sleep(300);
-let usd = 0, eur = 0, none = 0, needU = 0, needE = 0;
+let usd = 0, none = 0, needU = 0;
 for (const c of deck.cards) {
   const id = w.td30CardId(c.set, c.num), p = id ? expectPrice(id) : null, mine = w.op30Has(c.name);
   if (!p) { none += c.count; continue; }
-  if (p.u) { usd += p.u * c.count; if (!mine) needU += p.u * c.count; } else { eur += p.e * c.count; if (!mine) needE += p.e * c.count; }
+  usd += p.u * c.count; if (!mine) needU += p.u * c.count;
 }
-const money = (u, e) => [u > 0 ? '$' + u.toFixed(2) : '', e > 0 ? '€' + e.toFixed(2) : ''].filter(Boolean).join(' and ');
+const money = u => '$' + u.toFixed(2);
 console.log('     ' + bar());
-ok(bar().includes('List total: ' + money(usd, eur) + '.'), 'list total ' + money(usd, eur));
-ok(bar().includes('Cards you do not own: ' + money(needU, needE) + '.'), 'still to get ' + money(needU, needE));
+ok(bar().includes('List total: ' + money(usd) + '.'), 'list total ' + money(usd));
+ok(bar().includes('Cards you do not own: ' + money(needU) + '.'), 'still to get ' + money(needU));
 ok(!none || bar().includes(none === 1 ? '1 card has no price' : none + ' cards have no price'), none + ' cards with no price are named, not counted');
-ok(/Prices from TCGdex \(TCGplayer and Cardmarket\), as of \d+ \w{3} 2026\./.test(bar()), 'source line with date');
+ok(/TCGplayer market prices in US dollars, from TCGdex, as of \d+ \w{3} 2026\./.test(bar()), 'source line with date');
+ok(!/€|Cardmarket/.test(d.getElementById('review-body').textContent), 'no euro price or Cardmarket anywhere on the Cards tab');
 ok(!/\$0\.00|€0\.00/.test(d.getElementById('review-body').textContent), 'no price ever shows as 0');
 ok(d.querySelectorAll('#review-body .op30-pr').length === tiles().length, 'every tile shows a price or "no price"');
 ok(maxAtOnce <= 3, 'at most 3 price requests at once (' + maxAtOnce + '), ' + priceReads + ' read');
@@ -290,12 +292,12 @@ await sleep(100);
 ok(w.localStorage.getItem('rd_prices_show') === 'off' && prRow.querySelector('[data-p="off"]').getAttribute('aria-pressed') === 'true', 'Off is saved as rd_prices_show = off');
 w.closeSheet();
 w.showReviewTab('grade'); w.showReviewTab('cards'); await sleep(200);
-ok(!/List total|Prices from|no price|\$|€/.test(bar()) && !d.querySelectorAll('#review-body .op30-pr').length, 'prices off: no price on the Cards tab');
+ok(!/List total|TCGplayer market prices|no price|\$|€/.test(bar()) && !d.querySelectorAll('#review-body .op30-pr').length, 'prices off: no price on the Cards tab');
 ok(/You own \d+ of/.test(bar()), 'prices off: owned cards still show');
 w.showReviewTab('grade');
 await settle();
 ok(gradeText() === G0, 'grade the same with prices off: ' + gradeText());
-ok(!d.querySelector('#up75-sec .op30-tag:not(.own)') && !d.getElementById('op30-up-cheap') && !/Prices from/.test(upText()), 'prices off: no price, Cheapest first or source line in Upgrades');
+ok(!d.querySelector('#up75-sec .op30-tag:not(.own)') && !d.getElementById('op30-up-cheap') && !/TCGplayer market prices/.test(upText()), 'prices off: no price, Cheapest first or source line in Upgrades');
 ok(priceReads === r1, 'prices off: no price requests');
 w.openSettings();
 d.querySelector('#st301-pr [data-p="on"]').click();

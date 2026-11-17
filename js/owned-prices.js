@@ -7,6 +7,10 @@
 // Prices: read from TCGdex (the same card source the app reads card data from), one request per
 // printing in the open deck or in its upgrade suggestions, a few at a time, saved on this device
 // for 24 hours. Offline, or with no price, a card shows "no price", never $0.
+// 3.2.7: US dollars only (TCGplayer market price). A card TCGplayer has no price for counts as
+// "no price"; Cardmarket's euro prices are no longer read or shown. A read that failed (offline,
+// no answer) is tried again as soon as the device is back online, and until then those cards are
+// counted apart from the cards that have no price.
 // Nothing here reads or changes a grade. Owned cards and prices only change which upgrade swaps
 // show first, and each swap keeps the numbers it was graded with.
 
@@ -89,12 +93,12 @@ function op30PSave() {
 function op30Id(set, num) {
   try { return typeof td30CardId === 'function' ? td30CardId(set, num) : null; } catch (_) { return null; }
 }
-/** What TCGdex's pricing says: TCGplayer market price in US dollars, or else Cardmarket trend in euros. */
+/** What TCGdex's pricing says: TCGplayer market price in US dollars, or null. */
 function op30Read(j) {
   const pr = j && typeof j === 'object' && j.pricing && typeof j.pricing === 'object' ? j.pricing : null;
   const num = v => typeof v === 'number' && isFinite(v) && v > 0 ? Math.round(v * 100) / 100 : null;
   const when = v => { const t = typeof v === 'string' ? Date.parse(v) : NaN; return isFinite(t) ? t : null; };
-  let u = null, e = null, d = null;
+  let u = null, d = null;
   const tp = pr && pr.tcgplayer;
   if (tp && typeof tp === 'object' && (!tp.unit || tp.unit === 'USD')) {
     for (const k of ['normal', 'holofoil', 'reverse-holofoil'].concat(Object.keys(tp))) {
@@ -103,25 +107,20 @@ function op30Read(j) {
     }
     if (u) d = when(tp.updated);
   }
-  const cm = pr && pr.cardmarket;
-  if (cm && typeof cm === 'object' && (!cm.unit || cm.unit === 'EUR')) {
-    e = num(cm.trend) || num(cm['trend-holo']);
-    if (!u && e) d = when(cm.updated);
-  }
-  return { u, e, d };
+  return { u, d };
 }
-/** The saved price of a printing: { u, e, d, t }, or null when it has not been read. */
+/** The saved price of a printing: { u, d, t }, or null when it has not been read.
+ *  A price saved by an older version may also hold a euro price (e); it is never shown. */
 function op30Price(set, num) {
   if (!op30PricesOn()) return null;
   const id = op30Id(set, num);
   return id ? op30Prices()[id] || null : null;
 }
-const op30Money = (v, cur) => (cur === 'e' ? '€' : '$') + v.toFixed(2);
-/** "$1.25", "€0.80", "no price", or '' when not read yet. */
+const op30Money = v => '$' + v.toFixed(2);
+/** "$1.25", "no price", or '' when not read yet. */
 function op30PriceText(p) {
   if (!p) return '';
-  if (p.u) return op30Money(p.u, 'u');
-  if (p.e) return op30Money(p.e, 'e');
+  if (p.u) return op30Money(p.u);
   return 'no price';
 }
 function op30Date(t) { const d = new Date(t); return d.getDate() + ' ' + OP30_MON[d.getMonth()] + ' ' + d.getFullYear(); }
@@ -156,7 +155,7 @@ async function op30Fetch(ids) {
         if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
         const r = await fetch(TD30_API + '/cards/' + encodeURIComponent(id), init);
         if (r.ok) { P[id] = Object.assign({ t: Date.now() }, op30Read(await r.json())); got++; }
-        else if (r.status === 404) { P[id] = { t: Date.now(), u: null, e: null, d: null }; got++; }
+        else if (r.status === 404) { P[id] = { t: Date.now(), u: null, d: null }; got++; }
         else { fails++; _op30Fail.set(id, Date.now()); }
       } catch (_) { fails++; _op30Fail.set(id, Date.now()); }
     }));
@@ -215,27 +214,31 @@ function op30Cards(deck) {
   const lines = [`<p class="op30-own-n">You own ${ownN} of the ${keys.size} different cards in this list.</p>`];
   if (_op30Mark) lines.push('<p class="op30-hint">Tap each card you own. Tap it again to unmark it. Saved on this device only.</p>');
   if (op30PricesOn()) {
-    let usd = 0, eur = 0, none = 0, needU = 0, needE = 0, any = false, oldest = null, euro = false, unread = 0;
+    let usd = 0, none = 0, needU = 0, any = false, oldest = null, unread = 0;
     deck.cards.forEach(c => {
       const n = c.count || 0, p = op30Price(c.set, c.num), own = op30Has(c.name);
       if (!p) { if (op30Id(c.set, c.num)) unread += n; else none += n; return; }
-      const when = p.d || p.t;
-      if (p.u) { usd += p.u * n; if (!own) needU += p.u * n; }
-      else if (p.e) { eur += p.e * n; euro = true; if (!own) needE += p.e * n; }
-      else { none += n; return; }
+      if (!p.u) { none += n; return; }
+      usd += p.u * n; if (!own) needU += p.u * n;
       any = true;
+      const when = p.d || p.t;
       if (oldest == null || when < oldest) oldest = when;
     });
-    const sum = (u, e) => [u > 0 ? op30Money(u, 'u') : '', e > 0 ? op30Money(e, 'e') : ''].filter(Boolean).join(' and ');
+    // Prices still being read, as opposed to prices a read could not get (offline, no answer).
+    const reading = unread > 0 && op30Online() && Date.now() >= _op30Down &&
+      deck.cards.some(c => { const id = op30Id(c.set, c.num); return id && (_op30Busy.has(id) || op30Todo([id]).length); });
     if (any) {
-      lines.push(`<p class="op30-total">List total: <b>${sum(usd, eur)}</b>.</p>`);
-      if (ownN && (needU > 0 || needE > 0)) lines.push(`<p>Cards you do not own: <b>${sum(needU, needE)}</b>.</p>`);
+      lines.push(`<p class="op30-total">List total: <b>${op30Money(usd)}</b>.</p>`);
+      if (ownN && needU > 0) lines.push(`<p>Cards you do not own: <b>${op30Money(needU)}</b>.</p>`);
       else if (ownN) lines.push('<p>You own every card with a price.</p>');
-      const miss = none + unread;
-      if (miss) lines.push(`<p>${miss === 1 ? '1 card has no price and is not counted.' : miss + ' cards have no price and are not counted.'}</p>`);
-      lines.push(`<p class="op30-src">Prices from TCGdex (TCGplayer and Cardmarket), as of ${op30Date(oldest)}.${euro ? ' Prices in € are from Cardmarket, where TCGplayer has none.' : ''}</p>`);
-    } else if (unread && op30Online() && deck.cards.some(c => { const id = op30Id(c.set, c.num); return id && (_op30Busy.has(id) || op30Todo([id]).length); })) {
+      if (none) lines.push(`<p>${none === 1 ? '1 card has no price and is not counted.' : none + ' cards have no price and are not counted.'}</p>`);
+      if (unread && reading) lines.push('<p>Reading prices…</p>');
+      else if (unread) lines.push(`<p>${unread === 1 ? 'The price of 1 card could not be read yet, so it is not counted.' : 'The prices of ' + unread + ' cards could not be read yet, so they are not counted.'}</p>`);
+      lines.push(`<p class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(oldest)}.</p>`);
+    } else if (unread && reading) {
       lines.push('<p class="op30-src">Reading prices…</p>');
+    } else if (unread && !op30Online()) {
+      lines.push('<p class="op30-src">Prices are read when you are back online.</p>');
     }
   }
   const bar = document.createElement('div');
@@ -322,7 +325,7 @@ function op30UpOrder(res) {
   if (!res || !Array.isArray(res.swaps) || !res.swaps.length || !Array.isArray(res.more) || !res.more.length) return res;
   const pf = op30Prefs(), cheap = op30PricesOn() && pf.cheap;
   if (!pf.own && !cheap) return res;
-  const rank = s => { const p = op30UpPrice(s); return p && p.u ? [0, p.u] : p && p.e ? [1, p.e] : [2, 0]; };
+  const rank = s => { const p = op30UpPrice(s); return p && p.u ? [0, p.u] : [1, 0]; };
   const list = res.more.map((s, i) => ({ s, i, own: pf.own && op30Has(s.in) ? 1 : 0, r: cheap ? rank(s) : [0, 0] }));
   list.sort((a, b) => (b.own - a.own) || (a.r[0] - b.r[0]) || (a.r[1] - b.r[1]) || (a.i - b.i));
   const usedO = new Set(), usedI = new Set(), pick = [];
@@ -360,10 +363,10 @@ function op30UpBar(res) {
   if (op30PricesOn()) {
     // The cards shown, or with Cheapest first on, the cards it picks from.
     const pool = (pf.cheap && res.more ? res.more : res.swaps).slice(0, OP30_UP_MAX);
-    const known = res.swaps.map(op30UpPrice).filter(p => p && (p.u || p.e));
+    const known = res.swaps.map(op30UpPrice).filter(p => p && p.u);
     if (known.length) {
       const oldest = Math.min(...known.map(p => p.d || p.t));
-      h += `<div class="op30-src">Prices from TCGdex (TCGplayer and Cardmarket), as of ${op30Date(oldest)}.</div>`;
+      h += `<div class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(oldest)}.</div>`;
     }
     const ids = pool.map(s => op30Id(s.inSet, s.inNum));
     if (op30Todo(ids).length && op30Online()) setTimeout(() => {
@@ -479,3 +482,15 @@ function st301Paint() {
   const on = op30PricesOn();
   document.querySelectorAll('#st301-pr button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.p === 'on') === on)));
 }
+
+// 3.2.7: back online, the prices a read could not get (offline, no answer) are read again at once,
+// rather than after the ten minute wait a failed read otherwise gets. Going offline redraws the lines.
+(function () {
+  if (typeof window === 'undefined' || !window.addEventListener) return;
+  const redraw = () => {
+    try { if (_op30Deck && op30Showing('review-body')) op30Cards(_op30Deck); } catch (_) {}
+    try { if (op30Showing('grade-body')) op30UpRefresh(); } catch (_) {}
+  };
+  window.addEventListener('online', () => { _op30Fail.clear(); _op30Down = 0; redraw(); });
+  window.addEventListener('offline', redraw);
+})();

@@ -7,6 +7,9 @@
 // Import tap, no tap on the deck. Only a paste (or the Paste button) starts it, never typing,
 // and only when every line was read and the count is right (60, or 40 for Prerelease).
 // Anything else waits for Import and save, as before.
+// 3.2.7: it waits 2.5 seconds, not 0.7, and a tap on the name box stops it, so a deck can still be
+// named before it is graded (a phone needs more than a moment to reach the name box after a paste).
+const EZ265_WAIT = 2500;
 let _ez265Timer = null;
 function ez265Stop() { if (_ez265Timer) { clearTimeout(_ez265Timer); _ez265Timer = null; } }
 function ez265Check() {
@@ -21,13 +24,13 @@ function ez265Check() {
   const want = importFormat === 'prerelease' ? 40 : 60;
   if (!parsed.length || parsePreviewText(parsed, want).warn) return;
   pv.classList.remove('warn');
-  pv.textContent = `${want} cards read. Grading it now…`;
+  pv.textContent = `${want} cards read. Grading it in a moment. Tap the name box to name it first.`;
   const snap = ta.value;
   _ez265Timer = setTimeout(() => {
     _ez265Timer = null;
     if (!modal.classList.contains('active') || ta.value !== snap) return;
     importDeck();
-  }, 700);
+  }, EZ265_WAIT);
 }
 (function () {
   const ta = document.getElementById('import-list');
@@ -38,12 +41,13 @@ function ez265Check() {
     if (t === 'insertFromPaste' || t === 'insertFromDrop') setTimeout(ez265Check, 0);
   });
   const nm = document.getElementById('import-name');
-  // Typing a name stops the automatic grade; Import and save takes it from there.
-  if (nm) nm.addEventListener('input', () => {
+  // Tapping or typing in the name box stops the automatic grade; Import and save takes it from there.
+  const hold = () => {
     if (!_ez265Timer) return;
     ez265Stop();
     if (ta) ta.dispatchEvent(new Event('input'));
-  });
+  };
+  if (nm) ['input', 'focus', 'pointerdown'].forEach(ev => nm.addEventListener(ev, hold));
   const _paste = pasteFromClipboard;
   pasteFromClipboard = async function () {
     const r = await _paste.apply(this, arguments);

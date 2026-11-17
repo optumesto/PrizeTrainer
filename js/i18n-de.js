@@ -112,6 +112,18 @@ I18N_MORE.de = {
     "Rules page fix in the Play app": "Regelseite in der Google-Play-App korrigiert",
     "Added: page to delete your data": "Neu: Seite zum Löschen deiner Daten",
     "Grade fix: Kingdra ex and other discard pile decks": "Notenkorrektur: Kingdra ex und andere Ablagestapel-Decks",
+    "Prices now in dollars only": "Preise jetzt nur in Dollar",
+    "Starter decks work offline": "Starterdecks funktionieren offline",
+    "Added: swipe between cards": "Neu: zwischen Karten wischen",
+    "Landscape layout fixed": "Querformat behoben",
+    "Added: in-app dialogs": "Neu: eigene App-Dialoge",
+    "Added: fold sections": "Neu: einklappbare Abschnitte",
+    "Text follows your phone's text size": "Text folgt der Schriftgröße deines Handys",
+    "Fixed: naming a pasted deck": "Behoben: Benennen eines eingefügten Decks",
+    "Grade fix: discard pile revival": "Notenkorrektur: Zurückholen aus dem Ablagestapel",
+    "How it plays: Abilities explained": "So spielt es sich: Fähigkeiten erklärt",
+    "Grade waits for all card data": "Die Note wartet auf alle Kartendaten",
+    "Expanded: older revivers read": "Erweitert: ältere Wiederbelebungskarten werden gelesen",
     "Shared deck from a link. Tap Import and save to see its grade.": "Per Link geteiltes Deck. Tippe auf Importieren, um seine Note zu sehen.",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tippe auf dem Tab Karten auf eine Karte, um ihren ganzen Text, Schwäche, Resistenz und Rückzug, die offiziellen Regeln dazu und ihre Rolle im Deck zu sehen.",
     "Added: official rules": "Neu: offizielle Regeln",
@@ -219,6 +231,18 @@ I18N_MORE.de = {
     'Not graded yet': 'Noch nicht bewertet',
     'Grading…': 'Wird bewertet…',
     'Grading': 'Wird bewertet',
+    "Reading card data…": "Kartendaten werden gelesen…",
+    "Reading card data for this deck…": "Die Kartendaten dieses Decks werden gelesen…",
+    "Not final.": "Vorläufig.",
+    "Not final": "Vorläufig",
+    "RdyDeck could not read every card in this list yet, so this grade may change.": "RdyDeck konnte noch nicht jede Karte dieser Liste lesen, daher kann sich diese Note ändern.",
+    "Read the cards again": "Karten erneut lesen",
+    "Not legal in Standard now": "Jetzt nicht Standard-legal",
+    "Expanded.": "Erweitert.",
+    "This deck is graded as an Expanded deck, so Standard rotation, tournament results and matchups are left out.": "Dieses Deck wird als Erweitert-Deck bewertet, daher bleiben Rotation, Turnierergebnisse und Matchups aus dem Standardformat außen vor.",
+    "Reading the card data for this deck. The grade shows once it is done, so it will not change while you look at it.": "Die Kartendaten dieses Decks werden gelesen. Die Note erscheint, sobald das fertig ist, und ändert sich dann nicht, während du sie ansiehst.",
+    "Checking which cards are Standard legal now. The grade shows once it is done, so it will not change while you look at it.": "Es wird geprüft, welche Karten jetzt Standard-legal sind. Die Note erscheint, sobald das fertig ist, und ändert sich dann nicht, während du sie ansiehst.",
+    "Loading recent tournament results. The grade shows once it is done, so it will not change while you look at it.": "Aktuelle Turnierergebnisse werden geladen. Die Note erscheint, sobald das fertig ist, und ändert sich dann nicht, während du sie ansiehst.",
     'Prize avg': 'Ø Preiskarten',
     'Avg': 'Ø',
     'Prizes': 'Preiskarten',
@@ -1107,8 +1131,36 @@ I18N_MORE.de = {
     'Cards you do not own:': 'Karten, die du nicht hast:',
     'You own every card with a price.': 'Du hast jede Karte mit Preis.',
     '1 card has no price and is not counted.': '1 Karte hat keinen Preis und zählt nicht mit.',
-    'Prices in € are from Cardmarket, where TCGplayer has none.': 'Preise in € stammen von Cardmarket, wo TCGplayer keine hat.',
+    'The price of 1 card could not be read yet, so it is not counted.': 'Der Preis von 1 Karte konnte noch nicht gelesen werden und zählt daher nicht mit.',
+    'Prices are read when you are back online.': 'Die Preise werden gelesen, sobald du wieder online bist.',
     'Reading prices…': 'Preise werden gelesen…',
+    'Previous card': 'Vorherige Karte',
+    'Next card': 'Nächste Karte',
+    "You're offline. This starter deck loads once you're back online.": 'Du bist offline. Dieses Starterdeck lädt, sobald du wieder online bist.',
+    "Quit this game?": "Dieses Spiel beenden?",
+    "Keep playing": "Weiterspielen",
+    '1 line was not read.': '1 Zeile wurde nicht gelesen.',
+    'Check it against the list.': 'Prüfe sie anhand der Liste.',
+    'Check them against the list.': 'Prüfe sie anhand der Liste.',
+    'Grading it in a moment.': 'Gleich wird es bewertet.',
+    'Tap the name box to name it first.': 'Tippe zuerst auf das Namensfeld, um es zu benennen.',
+    "Delete all decks and history?": "Alle Decks und den Verlauf löschen?",
+    "This cannot be undone.": "Das lässt sich nicht rückgängig machen.",
+    "Delete all": "Alles löschen",
+    "Delete this matchup note?": "Diese Matchup-Notiz löschen?",
+    "Delete this match from the log?": "Dieses Match aus dem Turnier-Log löschen?",
+    "Reveal the prizes?": "Preiskarten aufdecken?",
+    "Reveal": "Aufdecken",
+    "Keep guessing": "Weiter tippen",
+    "Replace all your data?": "Alle deine Daten ersetzen?",
+    "This backup replaces all decks and history on this device.": "Dieses Backup ersetzt alle Decks und den Verlauf auf diesem Gerät.",
+    "Replace": "Ersetzen",
+    "You already have a note for this matchup.": "Du hast schon eine Notiz für dieses Matchup.",
+    "Clear this prerelease deck?": "Dieses Prerelease-Deck leeren?",
+    "Save this prerelease deck anyway?": "Dieses Prerelease-Deck trotzdem speichern?",
+    "Save anyway": "Trotzdem speichern",
+    "OK": "OK",
+    "You're offline. Card data loads once you're back online, so your list stays here until then.": "Du bist offline. Die Kartendaten laden, sobald du wieder online bist. Bis dahin bleibt deine Liste hier.",
     'no price': 'kein Preis',
     'No price': 'Kein Preis',
     'Order of upgrades': 'Reihenfolge der Upgrades',
@@ -1273,9 +1325,18 @@ I18N_MORE.de = {
     [/^On (.+) results, grades put (\d+) decks in an order that matches their online win rates at ([\d.]+)(?: \(([\d.]+) from the cards alone\))?\. 1\.0 means exactly the order of their results\.$/, (m, s, n, x, y) => 'Mit den Ergebnissen von ' + s + ' ordnen die Noten ' + n + ' Decks passend zu ihren Online-Siegquoten mit ' + x + (y ? ' (' + y + ' nur aus den Karten)' : '') + '. 1.0 heißt genau die Reihenfolge ihrer Ergebnisse.'],
     [/^You own (\d+) of the (\d+) different cards in this list\.$/, 'Du hast $1 der $2 verschiedenen Karten dieser Liste.'],
     [/^(\d+) cards have no price and are not counted\.$/, '$1 Karten haben keinen Preis und zählen nicht mit.'],
-    [/^Prices from TCGdex \(TCGplayer and Cardmarket\), as of (.+?)\.( Prices in € are from Cardmarket, where TCGplayer has none\.)?$/, (m, d, e) => 'Preise von TCGdex (TCGplayer und Cardmarket), Stand ' + d + '.' + (e ? ' Preise in € stammen von Cardmarket, wo TCGplayer keine hat.' : '')],
-    [/^([$€][\d.,]+) each$/, '$1 pro Stück'],
-    [/^([$€][\d.,]+) and ([$€][\d.,]+)$/, '$1 und $2'],
+    [/^The prices of (\d+) cards could not be read yet, so they are not counted\.$/, 'Die Preise von $1 Karten konnten noch nicht gelesen werden und zählen daher nicht mit.'],
+    [/^You have guessed (\d+) of (\d+)\.$/, 'Tipps abgegeben: $1 von $2.'],
+    [/^Parsed (\d+) unique cards, (\d+) total\.$/, '$1 verschiedene Karten gelesen, $2 insgesamt.'],
+    [/^(\d+) cards, ready\.$/, '$1 Karten, fertig.'],
+    [/^Expected (\d+)\.$/, 'Erwartet: $1.'],
+    [/^(\d+) lines were not read\.$/, '$1 Zeilen wurden nicht gelesen.'],
+    [/^(\d+) cards read\.$/, '$1 Karten gelesen.'],
+    [/^Added "(.+)"\. Rename it any time in Edit deck\.$/, '"$1" hinzugefügt. Umbenennen kannst du es jederzeit unter Deck bearbeiten.'],
+    [/^Replace your note for (.+)\?$/, 'Deine Notiz für $1 ersetzen?'],
+    [/^It has (\d+) cards\. A prerelease deck is exactly 40\.$/, 'Es hat $1 Karten. Ein Prerelease-Deck hat genau 40.'],
+    [/^TCGplayer market prices in US dollars, from TCGdex, as of (.+?)\.$/, (m, d) => 'TCGplayer-Marktpreise in US-Dollar, von TCGdex, Stand ' + d + '.'],
+    [/^(\$[\d.,]+) each$/, '$1 pro Stück'],
     [/^You own (.+)$/, 'Du hast $1'],
     [/^I own (.+)$/, 'Ich habe $1'],
     [/^(\d+-\d+-\d+), (\d+)(?:st|nd|rd|th) place$/, '$1, $2. Platz'],
@@ -1488,6 +1549,14 @@ I18N_MORE.de = {
     [/^(.+?) (gets|get) (it|them) into your discard pile\.$/, (m, o, g, p) => o.replace(/ and /g, ' und ') + (g === 'get' ? ' legen ' : ' legt ') + (p === 'it' ? 'es' : 'sie') + ' in deinen Ablagestapel.'],
     [/^Nothing puts (.+) in your discard pile$/, (m, l) => 'Nichts legt ' + l.replace(/ and /g, ' und ') + ' in deinen Ablagestapel'],
     [/^(.+?) can only reach the board when (.+?) brings (it|them) back from your discard pile(?: with (.+?))?, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender\.$/, (m, l, r, p, v) => l.replace(/ and /g, ' und ') + (p === 'it' ? ' kann' : ' können') + ' nur ins Spiel kommen, wenn ' + r + (p === 'it' ? ' es' : ' sie') + (v ? ' mit ' + v : '') + ' aus deinem Ablagestapel zurückholt, aber nichts in der Liste legt Karten aus deiner Hand oder deinem Deck ab, wie Ultra Ball oder Brilliant Blender.'],
+    // 3.2.7: the card data note above a grade read from part of the list.
+    [/^(\d+) cards? (?:are|is) not legal in Standard now\. (?:They stay|It stays) in the list, and the grade counts (?:them|it) as not legal\.$/, (m, n) => n + (n === '1' ? ' Karte ist jetzt nicht Standard-legal. Sie bleibt in der Liste, und die Bewertung zählt sie als nicht legal.' : ' Karten sind jetzt nicht Standard-legal. Sie bleiben in der Liste, und die Bewertung zählt sie als nicht legal.')],
+    [/^⚠ Card data read for (\d+)\/(\d+) entries\. (Cards are grouped by your list's sections|Grouping for the rest is based on card names)\.$/, (m, a, b, k) => '\u26A0 Kartendaten für ' + a + '/' + b + ' Einträge gelesen. ' + (k[0] === 'C' ? 'Die Karten sind nach den Abschnitten deiner Liste gruppiert.' : 'Der Rest ist nach Kartennamen gruppiert.')],
+    [/^⚠ RdyDeck could not find (.+)\. Check the spelling in Edit deck, because the grade cannot read what (these cards do|this card does)\.$/, (m, n, k) => '\u26A0 RdyDeck hat ' + n + ' nicht gefunden. Prüfe die Schreibweise unter Deck bearbeiten, denn die Note kann nicht lesen, was ' + (k === 'these cards do' ? 'diese Karten tun.' : 'diese Karte tut.')],
+    // 3.2.7: a discard pile revival line that rarely comes together, and the cap on lists with cards not Standard legal now.
+    [/^(.+?) rarely reaches the board$/, (m, x) => x + ' kommt selten ins Spiel'],
+    [/^(.+?) can only reach the board when (.+?) brings it back from your discard pile(?: with (.+?))?, and that comes together in only about 1 game in (\d+)\.$/, (m, x, r, v, n) => x + ' kann nur ins Spiel kommen, wenn ' + r + ' es' + (v ? ' mit ' + v : '') + ' aus deinem Ablagestapel zurückholt, und das klappt nur in etwa 1 von ' + n + ' Spielen.'],
+    [/^(.+?)\. (These|It) cannot be played in Standard, so the grade (is held at|can go no higher than) ([\d.]+) until (?:they are|it is) swapped for legal cards\.(?: The list alone would score ([\d.]+)\.)?$/, (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'Diese Karten können' : 'Diese Karte kann') + ' im Standardformat nicht gespielt werden, daher ' + (h === 'is held at' ? 'bleibt die Note bei ' + c : 'kann die Note nicht über ' + c + ' steigen') + ', bis ' + (p === 'These' ? 'sie gegen legale Karten getauscht werden' : 'sie gegen eine legale Karte getauscht wird') + '.' + (a ? ' Die Liste allein käme auf ' + a + '.' : '')],
     [/^Its attack needs (\w+) Energy, but there is none in the deck\. As built it cannot actually fire\.$/, (m, t) => 'Seine Attacke braucht ' + deI18nEnergy(t) + ', aber im Deck ist keine. So gebaut kann es nicht angreifen.'],
     [/^(\d+) top lists$/, '$1 Top-Listen'],
     [/^(\d+) cards?$/, (m, n) => n + (n === '1' ? ' Karte' : ' Karten')],
@@ -1522,3 +1591,163 @@ I18N_MORE.de = {
     [/^(?:(?:Resource count|Goldfish on time|Reach check) \d+%(?:, |$))+$/, m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_MORE.de.dict[n] + ' ' + p)],
   ].map(p => [p[0], deI18nWrap(p[1])]),
 };
+// 3.2.7: the German words for the Abilities part of How it plays, read by i18nAbilSent in js/i18n.js.
+// A finite act is { v, r }: the verb, then the rest, so "einmal pro Zug" can stand right after the verb
+// ("zieht einmal pro Zug 2 Karten") and a separable prefix stays at the end ("legt ... an").
+// After a cost the act is an infinitive ("um 3 Karten zu ziehen"), or { damit } when the subject changes.
+I18N_MORE.de.abil = (function () {
+  const T = deI18nTypes;
+  const typ = t => ' vom Typ ' + T[t];
+  // A noun with its gender (f or n) and both numbers.
+  const noun = x => {
+    const fp = (s, p) => ({ g: 'f', s, p: p || s + 'n' });
+    switch (x.k) {
+      case 'energy': {
+        if (!x.ty) return fp(x.basic ? 'Basis-Energie' : 'Energie');
+        const b = x.basic ? 'Basis-' : '';
+        return { g: 'f', s: b + deI18nEnergy(x.ty, 1), p: b + deI18nEnergy(x.ty, 2) };
+      }
+      case 'card': return fp('Karte');
+      case 'supporter': return fp('Unterstützerkarte');
+      case 'trainer': return fp('Trainerkarte');
+      case 'stadium': return fp('Stadionkarte');
+      case 'tool': return fp('Pokémon-Ausrüstung', 'Pokémon-Ausrüstungen');
+      case 'item': return fp('Itemkarte');
+      case 'named': { const w = `Pokémon mit „${x.name}“ im Namen`; return { g: 'n', s: w, p: w }; }
+      case 'cardName': return / /.test(x.name) ? fp(`Karte „${x.name}“`, `Karten „${x.name}“`) : fp(x.name + '-Karte');
+      case 'name': return { g: 'n', s: x.name, p: x.name };
+      case 'pk': {
+        const st = { Basic: 'Basis-', Evolution: 'Entwicklungs-', Future: 'Zukunfts-', Ancient: 'Antik-' }[x.stage] || '';
+        const own = !x.owner ? '' : ' von ' + x.owner;
+        const w = st + 'Pokémon' + (x.ty ? typ(x.ty) : '') + own;
+        return { g: 'n', s: w, p: w };
+      }
+    }
+    throw 0;
+  };
+  // c is the case: 'a' (accusative) or 'd' (dative).
+  const art = (g, c) => g === 'f' ? (c === 'd' ? 'einer ' : 'eine ') : (c === 'd' ? 'einem ' : 'ein ');
+  const np = (x, c) => {
+    if (x.k === 'or') return np(x.a, c) + ' oder ' + np(x.b, c);
+    if (x.k === 'each') return np(x.a, c) + ', ' + np(x.b, c) + (c === 'd' ? ' oder je einer von beiden' : ' oder je eine von beiden');
+    if (x.q === 'any') return c === 'd' ? 'einer beliebigen Karte' : 'eine beliebige Karte';
+    const z = noun(x);
+    if (x.q === 'one') return art(z.g, c) + z.s;
+    if (x.q === 'n') return x.n + ' ' + (x.n === 1 ? z.s : z.p);
+    if (x.q === 'upto') return 'bis zu ' + x.n + ' ' + (x.n > 1 ? z.p : z.s);
+    if (x.q === 'anyNum') return 'beliebig viele ' + z.p;
+    return z.s;
+  };
+  const many = x => x.k === 'each' || (x.q !== 'one' && x.q !== 'any');
+  // "und legt es auf deine Bank", "und legt sie an": the found card as the object.
+  const pro = x => many(x) || noun(x.k === 'or' ? x.a : x).g === 'f' ? 'sie' : 'es';
+  // Plural groups after "deiner" or "jedem deiner": "Pokémon vom Typ Pflanze und Feuer".
+  const grp = x => {
+    if (x.k === 'and') {
+      if (x.a.k === 'pk' && x.b.k === 'pk' && !x.a.stage && !x.b.stage && !x.a.owner && !x.b.owner && x.a.ty && x.b.ty) return 'Pokémon vom Typ ' + T[x.a.ty] + ' und ' + T[x.b.ty];
+      return grp(x.a) + ' und ' + grp(x.b);
+    }
+    return noun(x).p;
+  };
+  const dc = n => n === 1 ? '1 Schadensmarke' : n + ' Schadensmarken';
+  // F: finite { v, r }; I: the infinitive with zu, for after "um".
+  const A = (m, v, r, inf) => m === 'fin' ? { v, r } : inf;
+  const from = a => a.from === 'hand' ? ' aus deiner Hand' : a.from === 'discard' ? ' aus deinem Ablagestapel' : a.from === 'top' ? ` von den obersten ${a.top} Karten deines Decks` : '';
+  const onto = a => a.to === 'self' ? ' an dieses Pokémon' : a.to === 'pk' ? ' an deine Pokémon' : a.to ? ' an ' + np(a.to, 'a') : '';
+  const act = {
+    draw: (a, m) => { const k = a.n === 1 ? 'eine Karte' : a.n + ' Karten'; return A(m, 'zieht', k, k + ' zu ziehen'); },
+    drawTo: (a, m) => A(m, 'zieht', `Karten, bis du ${a.n} Karten auf der Hand hast`, `Karten zu ziehen, bis du ${a.n} Karten auf der Hand hast`),
+    handDraw: (a, m) => A(m, 'legt', `deine Hand ab und zieht ${a.n} Karten`, `deine Hand abzulegen und ${a.n} Karten zu ziehen`),
+    search: (a, m) => {
+      const tail = (a.bench ? ' und legt ' + pro(a.np) + ' auf deine Bank' : '') + (a.to ? ' und legt ' + pro(a.np) + (a.to === 'self' ? ' an dieses Pokémon an' : ' an deine Pokémon an') : '');
+      const tailI = (a.bench ? ' und ' + pro(a.np) + ' auf deine Bank zu legen' : '') + (a.to ? ' und ' + pro(a.np) + (a.to === 'self' ? ' an dieses Pokémon anzulegen' : ' an deine Pokémon anzulegen') : '');
+      const r = 'dein Deck nach ' + np(a.np, 'd');
+      return A(m, 'durchsucht', r + tail, r + ' zu durchsuchen' + tailI);
+    },
+    lookPut: (a, m) => { const k = a.k === 1 ? 'eine' : a.k;
+      return A(m, 'sieht sich', `die obersten ${a.n} Karten deines Decks an und nimmt ${k} davon auf die Hand`, `sich die obersten ${a.n} Karten deines Decks anzusehen und ${k} davon auf die Hand zu nehmen`); },
+    lookFor: (a, m) => A(m, 'durchsucht', `die obersten ${a.n} Karten deines Decks nach ${np(a.np, 'd')}`, `die obersten ${a.n} Karten deines Decks nach ${np(a.np, 'd')} zu durchsuchen`),
+    attach: (a, m) => { const r = np(a.np, 'a') + from(a) + onto(a); return A(m, 'legt', r + ' an', r + ' anzulegen'); },
+    extraEnergy: (a, m) => A(m, 'legt', 'zusätzliche Energie an', 'zusätzliche Energie anzulegen'),
+    gust: (a, m) => A(m, 'tauscht', 'ein Pokémon auf der Bank deines Gegners gegen sein Aktives Pokémon aus', 'ein Pokémon auf der Bank deines Gegners gegen sein Aktives Pokémon auszutauschen'),
+    switchIn: (a, m) => A(m, 'wechselt', 'in die Aktive Position', 'in die Aktive Position zu wechseln'),
+    switchInOut: (a, m) => A(m, 'wechselt', 'in die Aktive Position oder aus ihr heraus', 'in die Aktive Position oder aus ihr heraus zu wechseln'),
+    switchOut: (a, m) => A(m, 'wechselt', 'auf die Bank', 'auf die Bank zu wechseln'),
+    switchBench: (a, m) => { const r = (a.np ? np(a.np, 'a') : 'ein Pokémon') + ' auf deiner Bank gegen dein Aktives Pokémon'; return A(m, 'tauscht', r + ' aus', r + ' auszutauschen'); },
+    moveToSelf: (a, m) => A(m, 'verschiebt', 'beliebig viel Energie von deinen anderen Pokémon auf dieses Pokémon', 'beliebig viel Energie von deinen anderen Pokémon auf dieses Pokémon zu verschieben'),
+    moveBench: (a, m) => A(m, 'verschiebt', 'Energie von deiner Bank auf dein Aktives Pokémon', 'Energie von deiner Bank auf dein Aktives Pokémon zu verschieben'),
+    moveCounters: (a, m) => { const r = a.n ? `${a.upto ? 'bis zu ' : ''}${dc(a.n)} von deinen Pokémon auf die deines Gegners` : 'Schadensmarken'; return A(m, 'verschiebt', r, r + ' zu verschieben'); },
+    discardStadium: (a, m) => A(m, 'legt', 'eine Stadionkarte im Spiel ab', 'eine Stadionkarte im Spiel abzulegen'),
+    energyDenial: (a, m) => A(m, 'legt', 'Energie von den Pokémon deines Gegners ab', 'Energie von den Pokémon deines Gegners abzulegen'),
+    disrupt: (a, m) => A(m, 'stört', 'die Hand deines Gegners', 'die Hand deines Gegners zu stören'),
+    stack: (a, m) => A(m, 'legt', 'eine beliebige Karte aus deinem Deck oben auf dein Deck', 'eine beliebige Karte aus deinem Deck oben auf dein Deck zu legen'),
+    counters: (a, m) => {
+      const who = a.bench ? 'Pokémon auf der Bank deines Gegners' : 'Pokémon deines Gegners';
+      const on = a.on === 'one' ? 'auf eines der ' + who : a.on === 'eachOf' ? `auf jedes von ${a.k} ${who}` : a.on === 'each' ? 'auf jedes ' + who : 'beliebig verteilt auf die ' + who;
+      const r = dc(a.n) + ' ' + on;
+      return A(m, 'legt', r, r + ' zu legen'); },
+    countersAll: (a, m) => { const r = (a.checkup ? 'zwischen den Zügen ' : '') + (a.n === 1 ? 'eine Schadensmarke' : dc(a.n)) + ' auf jedes Pokémon ' + (a.abil ? 'mit einer Fähigkeit' : 'im Spiel');
+      return A(m, 'legt', r, r + ' zu legen'); },
+    boost: (a, m) => m === 'fin' ? `die Attacken deiner ${grp(a.grp)} fügen ${a.n} Schadenspunkte mehr zu` : { damit: `die Attacken deiner ${grp(a.grp)} ${a.n} Schadenspunkte mehr zufügen` },
+    hp: (a, m) => A(m, 'gibt', `jedem deiner ${grp(a.grp)} im Spiel ${a.n} KP mehr`, `jedem deiner ${grp(a.grp)} im Spiel ${a.n} KP mehr zu geben`),
+    reduce: (a, m) => { const r = `den Schaden durch Attacken deines Gegners an jedem deiner ${grp(a.grp)}${a.ty ? ' mit angelegter ' + deI18nEnergy(a.ty) : ''} um ${a.n}`;
+      return A(m, 'verringert', r, r + ' zu verringern'); },
+    lockRule: (a, m) => A(m, 'schaltet', 'die Fähigkeiten aller Pokémon mit Regelfeld auf beiden Seiten aus', 'die Fähigkeiten aller Pokémon mit Regelfeld auf beiden Seiten auszuschalten'),
+    lockOpp: (a, m) => A(m, 'schaltet', 'die Fähigkeiten deines Gegners aus', 'die Fähigkeiten deines Gegners auszuschalten'),
+    lockAll: (a, m) => A(m, 'schaltet', 'die Fähigkeiten beider Spieler aus', 'die Fähigkeiten beider Spieler auszuschalten'),
+    itemLock: (a, m) => A(m, 'hindert', 'deinen Gegner daran, Itemkarten zu spielen', 'deinen Gegner daran zu hindern, Itemkarten zu spielen'),
+    aceLock: (a, m) => A(m, 'hindert', 'deinen Gegner daran, ASS-KLASSE-Karten zu spielen', 'deinen Gegner daran zu hindern, ASS-KLASSE-Karten zu spielen'),
+    noRetreat: () => 'deine Basis-Pokémon haben keine Rückzugskosten, du kannst Angreifer also kostenlos wechseln',
+    weak: a => `die Pokémon${typ(a.vs)} deines Gegners erhalten eine Schwäche gegen ${T[a.ty]}, deine Angreifer${typ(a.ty)} fügen ihnen also doppelten Schaden zu`,
+    evolveDeck: (a, m) => A(m, 'entwickelt', 'ein Pokémon direkt aus deinem Deck', 'ein Pokémon direkt aus deinem Deck zu entwickeln'),
+  };
+  // Timing: an adverb right after the verb, or a clause at the end.
+  const adv = { once: 'einmal pro Zug', onceActive: 'einmal pro Zug', many: 'beliebig oft', first: 'in deinem ersten Zug' };
+  const clause = { bench: ', wenn du es auf deine Bank legst', evolve: ', wenn du es aus deiner Hand spielst, um ein Pokémon zu entwickeln',
+    ko: ', wenn es kampfunfähig wird', active: ', solange es in der Aktiven Position ist', onceActive: ', solange es in der Aktiven Position ist' };
+  const names = s => i18nAbNames(s, ' und ');
+  const cond = c => {
+    switch (c.k) {
+      case 'needPlay': return `braucht ${names(c.names)} im Spiel`;
+      case 'needEnergy': return `nur mit angelegter ${deI18nEnergy(c.ty)}`;
+      case 'needTool': return 'nur mit angelegter Pokémon-Ausrüstung';
+      case 'afterKo': return 'nur, wenn im letzten Zug deines Gegners eines deiner Pokémon kampfunfähig wurde';
+      case 'hurtActive': return 'nur, wenn es in der Aktiven Position durch eine Attacke Schaden erhält';
+      case 'hasEnergy': return 'nur, wenn an ihm Energie angelegt ist';
+      case 'onBench': return 'nur, wenn es auf deiner Bank ist';
+      case 'emptyHand': return 'nur, wenn du keine Karten auf der Hand hast';
+      case 'played': return `nur, wenn du in diesem Zug ${names(c.names)} aus deiner Hand gespielt hast`;
+      case 'havePlay': return `nur, wenn du ${names(c.names)} im Spiel hast`;
+      case 'prizes': return `nur, wenn dein Gegner noch ${c.n} oder weniger Preiskarten hat`;
+      case 'lowHp': return `nur, wenn es noch ${c.n} KP oder weniger hat`;
+      case 'activeHas': return `nur, wenn dein Aktives Pokémon die Fähigkeit ${c.name} hat`;
+    }
+    throw 0;
+  };
+  const say = (x, acts) => {
+    const ad = adv[x.when] || '', cl = clause[x.when] || '';
+    const join = (s, i) => i ? (x.acts[i].then ? ' und dann ' : ' und ') + s : s;
+    let body;
+    if (x.cost) {
+      const r = np(x.cost.np, 'a') + (x.cost.from === 'self' ? ' von diesem Pokémon' : ' aus deiner Hand');
+      if (acts.length === 1 && acts[0] && acts[0].damit) body = 'legt ' + (ad ? ad + ' ' : '') + r + ' ab, damit ' + acts[0].damit;
+      else { if (acts.some(s => typeof s !== 'string')) throw 0; body = 'legt ' + (ad ? ad + ' ' : '') + r + ' ab, um ' + acts.map(join).join(''); }
+    } else {
+      body = acts.map((s, i) => {
+        if (typeof s === 'string') return join(s + (i === 0 && ad ? ' ' + ad : ''), i);
+        // "und zieht dann eine Karte": dann goes after the verb.
+        if (i && x.acts[i].then) return ' und ' + s.v + ' dann ' + s.r;
+        return join(s.v + (i === 0 && ad ? ' ' + ad : '') + ' ' + s.r, i);
+      }).join('');
+    }
+    return body + cl + (x.cond ? ' (' + cond(x.cond) + ')' : '');
+  };
+  return {
+    act, and2: ', und ', say,
+    tailIn: n => ` (${n} in dieser Liste)`,
+    tailNone: ty => `, auch wenn in dieser Liste kein Angreifer${typ(ty)} ist`,
+    sent: (owner, abil, body) => `${abil} von ${owner}: ${body}`,
+  };
+})();
+// Every Abilities sentence of How it plays; null leaves it to the next pattern.
+I18N_MORE.de.pat.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'de')]);

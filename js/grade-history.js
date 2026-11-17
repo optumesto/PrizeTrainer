@@ -45,6 +45,7 @@ function gh72Final(deck, R) {
   if (typeof g71WaitFor === 'function' && g71WaitFor(deck)) return false;  // still loading
   if (typeof _g71Late !== 'undefined' && _g71Late.has(deck.id)) return false;  // shown before it settled
   if (typeof g71Stale === 'function' && g71Stale(deck)) return false;  // card data from an older reader
+  if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) return false;  // 3.2.7: some cards unread
   return true;
 }
 /** The things around a grade that can move it while the list stays the same. */

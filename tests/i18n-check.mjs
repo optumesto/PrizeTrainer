@@ -260,6 +260,33 @@ const SCREENS = [
   ['grade history: holding', async w => { ghLog(w, 0, [], { w: 'c' }, 400); w.renderGrade(); await tick(300); }],
   ['grade looks off', async w => { w.gf80Open(); await tick(60); }],
   ['grade looks off sent', async w => { await w.gf80Send('too-high'); await tick(60); }],
+  // 3.2.7: a grade read from part of the list (marked Not final, with the card data note), then one
+  // still waiting on the card read. The last step puts the deck back as it was.
+  ['grade: not final', async w => {
+    shut(w); w.showReviewTab('grade');
+    w.eval(`(() => { const d = state.decks[0]; window.__cov327 = d.coverage; _dataTried.add(d.id);
+      d.coverage = { total: 20, resolved: 19, unresolved: 1, pct: 95, partial: true };
+      renderCoverageNote(d); renderGrade(); })()`); await tick(300);
+  }],
+  ['grade: card data note, misspelled', async w => {
+    w.eval(`(() => { const d = state.decks[0]; d.coverage = { total: 20, resolved: 19, unresolved: 1, pct: 95, missing: ['Ultra Bal'] };
+      renderCoverageNote(d); })()`); await tick(100);
+  }],
+  ['grade: reading the cards', async w => {
+    w.eval(`(() => { const d = state.decks[0]; _dataBusy.add(d.id); _g71Late.delete(d.id); _g71Since.delete(d.id); renderGrade(); })()`); await tick(300);
+  }],
+  ['grade: settled again', async w => {
+    w.eval(`(() => { const d = state.decks[0]; _dataBusy.delete(d.id); d.coverage = window.__cov327; _g71Since.delete(d.id);
+      renderCoverageNote(d); renderGrade(); })()`); await tick(300);
+  }],
+  ['grade: expanded deck', async w => {
+    w.eval(`(() => { const d = state.decks[0]; window.__fmt327 = d.format; d.format = 'expanded'; renderGrade(); })()`); await tick(300);
+  }],
+  ['cards tab: not legal in Standard', async w => {
+    w.eval(`(() => { const d = state.decks[0]; d.format = window.__fmt327; renderGrade(); })()`);
+    w.showReviewTab('cards'); await tick(300);
+    w.eval(`(() => { const d = state.decks[0]; rot35Out(d, document.getElementById('review-body'), new Set(d.cards.slice(0, 2).map(c => r29Key(c.name)))); })()`); await tick(100);
+  }],
   ['odds tab', async w => { w.showReviewTab('odds'); await tick(300); }],
   // Ask the odds with two rows: "and at least ... of each", and a one-card row for the copies tuner.
   ['odds tab: ask the odds', async w => { olAsk(w, 1); await tick(300); }],

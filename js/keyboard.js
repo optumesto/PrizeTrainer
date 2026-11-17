@@ -77,8 +77,10 @@
   }, true);
 
   // Quitting closes any open question sheet, so it cannot reveal a game you left.
-  confirmQuit = function () {
-    if (!confirm('Quit this session?')) return;
+  confirmQuit = async function () {
+    if (!(await rdConfirm({ title: 'Quit this game?', yes: 'Quit', no: 'Keep playing' }))) return;
+    // Time may have run out while the question was open; then the results are already showing.
+    if (!document.getElementById('screen-game').classList.contains('active')) return;
     backToMenu();
   };
 

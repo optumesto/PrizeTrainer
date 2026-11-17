@@ -558,6 +558,8 @@ buildDeckCard = function (deck) {
   } else if (R) {
     let [band, col] = gBand(R.overall);
     if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { band = 'Not legal yet'; col = 'var(--red)'; }
+    // 3.2.7: a grade read from part of the list is marked, not shown as final.
+    else if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) { band = 'Not final'; col = 'var(--text-3)'; }
     g = `<div class="deck-grade" style="--col:${col}"><b>${R.overall.toFixed(1)}</b><span>${band}</span></div>`;
   } else {
     g = `<div class="deck-grade none"><span>Not graded yet</span></div>`;

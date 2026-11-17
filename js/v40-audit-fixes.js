@@ -2,6 +2,7 @@
 // ═══════════ v40: fixes from the 9 Nov 2026 audit ═══════════
 
 // 1. A deck with cards that are not Standard legal now cannot grade above 4.9.
+// 3.2.7: a list that grades below 4.9 anyway is told the cap, not that it is held there.
 // The grade still runs on the list as it is, but the cap and a first "fix" say why.
 const G40_CAP = 4.9;
 (function () {
@@ -19,7 +20,7 @@ const G40_CAP = 4.9;
         R.rawOverall = R.overall;
         R.overall = Math.min(R.overall, G40_CAP);
         R.coh.flaws.unshift({ sev: 'crit', t: `${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now`,
-          d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade is held at ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
+          d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade ${R.rawOverall > G40_CAP ? 'is held at' : 'can go no higher than'} ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
             (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') +
             '' });
       }

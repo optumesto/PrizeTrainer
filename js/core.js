@@ -463,7 +463,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 20;  // 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 21;  // 3.2.7: re-read to store attacks that discard cards from your hand or deck (outlets for discard pile revival). 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -571,7 +571,7 @@ function gAbilRead(c) {
   try { list = gfAbilities({ card: c }); } catch (_) { return { tags: [], say: [] }; }
   const tags = new Set(), say = [];
   const cnt = (n, one, many) => n === 1 ? (/^[AEIOU]/i.test(one) ? 'an ' : 'a ') + one : (n >= 99 ? 'any number of ' : n + ' ') + many;
-  const pl = w => /Pokemon$/.test(w) ? w : w + 's';
+  const pl = w => /(?:Pokemon|Energy)$/.test(w) ? w : w + 's';
   const what = F => !F ? 'a card' : F.any ? 'card' : F.cat === 'trainer' ? (F.tk ? (F.tk === 'tool' ? 'Pokemon Tool' : gCap(F.tk)) : 'Trainer')
     : F.cat === 'energy' ? (F.basic ? 'Basic ' : '') + (F.type ? gCap(F.type) + ' ' : '') + 'Energy'
     : F.cat === 'pokemon' ? [F.stage === 'evolution' ? 'Evolution' : F.stage ? gCap(F.stage) : '', F.owner ? gCap(F.owner) : '', F.type ? gCap(F.type) : ''].filter(Boolean).concat('Pokemon').join(' ') : 'card';
@@ -609,7 +609,7 @@ function gAbilRead(c) {
     if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (!ge.say.length) return;
       const base = v => v.replace(/^(\w+?)(?:(ch|sh|x)es|s)\b/, (q, w, e) => w + (e || ''));
       bits.push(...ge.say);
-      if (ge.cost) { pre = ge.cost + ' to '; bits[0] = base(bits[0]); }
+      if (ge.cost) { pre = ge.cost + ' to '; bits[0] = /^your /.test(bits[0]) ? 'make ' + bits[0] : base(bits[0]); }
       if (ge.need && ge.need !== 'only while it is Active') post = ` (${ge.need})`; }
     // v62: a condition printed at the start of the Ability (Thwackey's Boom Boom Groove needs Festival Lead in the Active Spot).
     if (!post) { const cm = gfNorm(A.text).match(/^once during your turn, if ([^,]+), you may/i);
@@ -617,6 +617,9 @@ function gAbilRead(c) {
         post = ` (only if ${cm[1].replace(/\bthis Pok[e\u00e9]mon('s)?/gi, (q, x) => x ? 'its' : 'it').replace(/Pok\u00e9mon/g, 'Pokemon')})`; }
     const when = A.when === 'bench' ? 'when you play it onto your Bench' : A.when === 'evolve' ? 'when you evolve into it from your hand'
       : A.first ? 'on your first turn' : A.many || / as often as you like$/.test(bits[bits.length - 1]) ? (bits[bits.length - 1] = bits[bits.length - 1].replace(/, as often as you like$/, ''), 'as often as you like') : A.active ? 'once a turn while it is Active' : 'once a turn';
+    // Decidueye ex's Total Freedom switches it in from the Bench or out from the Active Spot, not only in.
+    if (bits.length === 1 && bits[0] === 'switches itself into the Active Spot' && /switch it with 1 of your benched pokemon/.test(t) && /switch it with your active pokemon/.test(t)) {
+      say.push({ abil: A.name, p: 'switches itself into or out of the Active Spot once a turn' }); return; }
     say.push({ abil: A.name, p: `${pre}${bits.join(' and ').replace(/ and then /, ', then ')} ${when}${post}` });
   });
   return { tags: [...tags], say };
@@ -663,7 +666,7 @@ function toGradeRows(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null, disc: a.disc || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -725,33 +728,124 @@ function g115Rev(c, t) {
 }
 /** 3.2.5: does this way back fit the Pokemon (its type, stage, HP, name and what it leaves out)? */
 function g115Fits(r, c, name) {
+  if (r.self) return false;
   const k = String(name || '').toLowerCase().replace(/[\u2018\u2019]/g, "'").normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if ((r.not || []).some(x => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === k)) return false;
   if (r.name) return r.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === k;
-  if (r.type && !(c.types || []).includes(r.type)) return false;
-  if (r.stage && (r.stage === 'evolution' ? !['stage1', 'stage2'].includes(c.stage) : c.stage !== r.stage)) return false;
+  // 3.2.7: older wordings, for Expanded: a kind (Pokemon-GX, Rapid Strike, Baby), "that doesn't have a Rule Box",
+  // "that evolves from Unidentified Fossil", "(excluding Baby Pokemon)", and a choice of kinds ("a Baby Pokemon or a Basic Pokemon").
+  const sub = (c.sub || []).map(x => String(x).toLowerCase());
+  if ((r.notKind || []).some(x => sub.includes(x))) return false;
+  if (r.noRule && (c.p > 1 || c.isEx || sub.some(x => G115_RULE.has(x)))) return false;
+  if (r.from && c.from !== r.from) return false;
   if (r.hp && !(c.hp && c.hp <= r.hp)) return false;
-  return true;
+  const one = a => {
+    if (a.type && !(c.types || []).map(x => String(x).toLowerCase()).includes(a.type)) return false;
+    if (a.stage && (a.stage === 'evolution' ? !['stage1', 'stage2'].includes(c.stage) : c.stage !== a.stage)) return false;
+    if (a.kind && !sub.includes(a.kind)) return false;
+    return true;
+  };
+  return r.alts ? r.alts.some(one) : one(r);
 }
+const G115_RULE = new Set(['ex', 'gx', 'v', 'vmax', 'vstar', 'v-union', 'mega', 'break', 'legend', 'prism star', 'radiant', 'tag team', 'lv.x', 'level-up']);
 /** 3.2.5: the card in the list that can put this Pokemon onto your Bench from your discard pile, and how. */
 function g115Reviver(deck, e, energyTypes) {
   const c = e.card;
   if (!c || c.t !== 'pkmn') return null;
+  // 3.2.7: one that puts itself onto your Bench from your discard pile (Gengar's Netherworld Gate).
+  const own = (c.rev || []).find(r => r.self);
+  if (own) return { e, r: own, self: true };
   for (const x of deck) {
     const xc = x.card;
     if (!xc || xc === c || !xc.rev) continue;
+    // 3.2.7: and only one that can reach the board itself (a Stage 2 with no way to evolve brings nothing back).
+    if (!g115Can(deck, x)) continue;
     // An attack counts only when the list's Energy can pay for it.
     const r = xc.rev.find(r => g115Fits(r, c, e.name) && (r.src !== 'attack' || (r.cost || []).every(t => t === 'colorless' || energyTypes[t] || energyTypes.any)));
     if (r) return { e: x, r };
   }
   return null;
 }
+/** 3.2.7: can this card reach the board in this list? Trainers and Basics can; an evolution needs its line
+ *  (Rare Candy may skip the Stage 1), an Ability that benches it, or a way back from the discard pile of its own. */
+function g115Can(deck, x) {
+  const c = x.card;
+  if (!c || c.t !== 'pkmn' || c.stage === 'basic' || !c.from || c.selfBench || c.byName) return true;
+  if ((c.rev || []).some(r => r.self)) return true;
+  const nk = s => normalizeCardName(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const has = n => deck.some(y => y.card && nk(y.name) === nk(n));
+  if (has(c.from)) { const mid = deck.find(y => y.card && nk(y.name) === nk(c.from));
+    return c.stage !== 'stage2' || !mid || !mid.card.from || has(mid.card.from) || !!(mid.card.rev || []).some(r => r.self) || mid.card.selfBench; }
+  if (c.isEx && deck.some(y => y.card && y.card.standIn && nk(y.card.standIn) === nk(c.from))) return true;
+  const candy = deck.some(y => y.card && (y.card.provides || []).includes('evolution_access'));
+  return c.stage === 'stage2' && candy && !!c.base && has(c.base);
+}
+// 3.2.7: how many cards you have seen by the time the line has to come together (your opening 7,
+// a few draws for turn, and what your Supporters and Abilities draw on the way).
+const G115_SEEN = 18;
+/** 3.2.7: the chance of seeing at least one of k cards among the first n of a 60 card deck. */
+function g115See(k, n) {
+  k = Math.min(60, Math.max(0, k)); n = n || G115_SEEN;
+  if (k <= 0) return 0;
+  let p = 1; for (let i = 0; i < n; i++) p *= Math.max(0, 60 - k - i) / (60 - i);
+  return 1 - p;
+}
+/** 3.2.7: copies of a card plus the cards that can fetch it from your deck. */
+function g115Reach(deck, card, qty) {
+  const q = (f) => deck.reduce((a, y) => a + (y.card && y.card !== card && f(y.card) ? y.qty : 0), 0);
+  const has = (c, p) => (c.provides || []).includes(p);
+  let k = qty;
+  // A card that finds only Basics (Nest Ball) tags search_pokemon too, so it counts for Basics alone.
+  if (card.t === 'pkmn') k += q(c => has(c, 'search_card') || (has(c, 'search_basic') ? card.stage === 'basic' : has(c, 'search_pokemon')));
+  else if (card.t === 'trainer') k += q(c => has(c, 'search_card') || (card.tt === 'supporter' ? has(c, 'search_supporter') : has(c, 'search_item') || has(c, 'search_trainer')));
+  return k;
+}
+/**
+ * 3.2.7: the chance a revival line comes together in time: the card that brings the Pokemon back
+ * (with its own line if it evolves), and the Pokemon already in your discard pile, put there by a card
+ * that picks it from your deck (Brilliant Blender) or by drawing it and an outlet that discards it.
+ */
+function g115Odds(deck, v, e, outs) {
+  const qtyOf = n => deck.reduce((a, y) => a + (y.card && normalizeCardName(y.name || '') === normalizeCardName(n || '') ? y.qty : 0), 0);
+  const findE = n => deck.find(y => y.card && normalizeCardName(y.name || '') === normalizeCardName(n || ''));
+  let pRev = 1;
+  if (!v.self) {
+    const rc = v.e.card;
+    pRev = g115See(g115Reach(deck, rc, qtyOf(v.e.name)));
+    if (rc.t === 'pkmn' && rc.stage !== 'basic' && rc.from && !rc.selfBench) {
+      const mid = findE(rc.from), base = rc.stage === 'stage2' ? (mid && mid.card.from ? findE(mid.card.from) : rc.base ? findE(rc.base) : null) : mid;
+      if (base) pRev *= g115See(g115Reach(deck, base.card, qtyOf(base.name)));
+      if (rc.stage === 'stage2') {
+        const candy = deck.reduce((a, y) => a + (y.card && (y.card.provides || []).includes('evolution_access') ? y.qty : 0), 0);
+        pRev *= g115See((mid ? g115Reach(deck, mid.card, qtyOf(mid.name)) : 0) + candy);
+      }
+    }
+  }
+  const reachAll = list => list.reduce((a, o) => a + g115Reach(deck, o.card, o.qty), 0);
+  const pDeck = g115See(reachAll(outs.filter(o => o.okind === 'deck')));
+  const pHand = g115See(reachAll(outs.filter(o => o.okind === 'hand')));
+  const pMill = g115See(reachAll(outs.filter(o => o.okind === 'mill')));
+  const cp = v.self ? e.qty : qtyOf(e.name);
+  const pSee = g115See(g115Reach(deck, e.card, cp));
+  // Milling picks no card: it lands only when a copy is among the few cards it turns over.
+  const pHit = g115See(cp, 6);
+  const p = pRev * (pDeck + (1 - pDeck) * (1 - (1 - pHand * pSee) * (1 - pMill * pHit)));
+  // A line that comes together most games gets full credit; one that rarely does gets almost none.
+  return { p, cr: Math.min(1, p / 0.6) };
+}
 /** 3.2.5: cards that put Pokemon into your discard pile: a cost of discarding from your hand
  *  (Ultra Ball), discarding your hand, or discarding from your deck (Brilliant Blender). */
-function g115Outlets(deck) {
-  const re = /discard (?:\d+ |a |an |up to \d+ |any number of )?(?:other )?(?:cards?|pokemon)\b[^.]{0,30} from your hand|discard your hand|search your deck for up to \d+ cards and discard them|discard the top \d+ cards of your deck|look at the top \d+ cards of your deck and discard/i;
-  return deck.filter(e => e.card && (e.card.t === 'trainer' || e.card.t === 'pkmn') &&
-    re.test(String(e.card.t === 'trainer' ? e.card.rt : e.card.atx || '').replace(/pok[e\u00e9]mon/gi, 'pokemon')));
+function g115Outlets(deck, energyTypes) {
+  const read = t => typeof TCGEnrich !== 'undefined' && typeof TCGEnrich.outlet115 === 'function' ? TCGEnrich.outlet115(t) : null;
+  const out = [];
+  deck.forEach(e => { const c = e.card; if (!c || (c.t !== 'trainer' && c.t !== 'pkmn')) return;
+    let k = read(c.t === 'trainer' ? c.rt : c.atx || '');
+    // 3.2.7: an attack that discards from your hand or deck counts too, when the list can pay for it and play the Pokemon.
+    if (!k && c.t === 'pkmn' && energyTypes && g115Can(deck, e)) {
+      const a = (c.attacks || []).find(a => a.disc && (a.cost || []).every(t => t === 'colorless' || energyTypes[t] || energyTypes.any));
+      if (a) k = a.disc; }
+    if (k) out.push(Object.assign({}, e, { okind: k })); });
+  return out;
 }
 
 function gCoherence(deck) {
@@ -762,10 +856,16 @@ function gCoherence(deck) {
     present[c.key]=(present[c.key]||0)+e.qty; });
   const synergies=[], flaws=[], unmet=[]; let reqTotal=0, reqMet=0;
   // 3.2.5: Pokemon that reach the board from your discard pile (Kingdra ex's King's Order), by the card that brings them back.
-  const rv115=new Map(), out115=g115Outlets(deck);
-  const rvKeep=(v,e)=>{ const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, to:[] }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); };
-  const rvNone=(v,e)=>({sev:'warn', who:e.card.key, rvn:{ by:v.e.name, via:v.r.via, to:e.name }, t:`Nothing puts ${gCap(e.name)} in your discard pile`,
-    d:`${gCap(e.name)} can only reach the board when ${gCap(v.e.name)} brings it back from your discard pile${v.r.via ? ` with ${v.r.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`});
+  const rv115=new Map(), out115=g115Outlets(deck, energyTypes), revived=new Set();
+  // 3.2.7: one that brings itself back is named by its Ability (Gengar's Netherworld Gate).
+  const rvBy=v=>v.self ? { name:v.r.via||gCap(v.e.name), via:'' } : { name:gCap(v.e.name), via:v.r.via };
+  const rvKeep=(v,e)=>{ revived.add(e.card.key); const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, self:!!v.self, to:[] }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); };
+  const rvNone=(v,e)=>{ const b=rvBy(v); return {sev:'warn', who:e.card.key, rvn:{ by:b.name, via:b.via, to:e.name }, t:`Nothing puts ${gCap(e.name)} in your discard pile`,
+    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`}; };
+  // 3.2.7: a line that rarely comes together in time (a 1-of reviver with little to fetch it) earns little credit.
+  const rvThin=(v,e,o)=>{ const b=rvBy(v), n=Math.max(2, Math.round(1/Math.max(o.p,0.01)));
+    return {sev:'warn', who:e.card.key, t:`${gCap(e.name)} rarely reaches the board`,
+    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, and that comes together in only about 1 game in ${n}.`}; };
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
@@ -821,7 +921,8 @@ function gCoherence(deck) {
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
         // 3.2.5: brought back from the discard pile, with something in the list to put it there.
-        else if (rv) { if (out115.length) { reqMet++; rvKeep(rv,e); } else flaws.push(rvNone(rv,e)); }
+        else if (rv) { if (out115.length) { const o=g115Odds(deck,rv,e,out115); reqMet+=o.cr;
+            if (o.cr>=0.5) rvKeep(rv,e); else flaws.push(rvThin(rv,e,o)); } else flaws.push(rvNone(rv,e)); }
         else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.base)} for ${gCap(e.name)}`,
           d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(c.base)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(c.base)} in play, so ${gCap(e.name)} can never reach the board.`});
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
@@ -834,7 +935,7 @@ function gCoherence(deck) {
           d:`${gCap(e.name)} needs ${gHuman(req)} to do its job, and nothing in the deck provides it. A missing piece, or maybe intentional.`});
       }
       // v67: what each unmet need was, for the note on why Synergy is what it is.
-      if (reqMet===m0) unmet.push(flaws.length>f0?flaws[f0].t:`${gCap(e.name)} is missing a piece`); });});
+      if (reqMet-m0<0.5) unmet.push(flaws.length>f0?flaws[f0].t:`${gCap(e.name)} is missing a piece`); });});
   // A Stage 1 whose Basic is not in the list can never reach the board.
   const nk = s => normalizeCardName(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const presentN = new Set(deck.filter(e=>e.card).map(e=>nk(e.name)));
@@ -845,7 +946,11 @@ function gCoherence(deck) {
     if (sub) { synergies.push({link:gCap(sub.name)+' > '+gCap(e.name), p:`${gCap(e.name)} evolves from ${gCap(c.from)}, and ${gCap(sub.name)} can evolve into it, so the line works without a plain ${gCap(c.from)}.`}); return; }
     // 3.2.5: a Stage 1 brought back from the discard pile needs no Basic either.
     const rv = g115Reviver(deck, e, energyTypes);
-    if (rv && out115.length) { rvKeep(rv, e); return; }
+    if (rv && out115.length) { const o = g115Odds(deck, rv, e, out115);
+      // 3.2.7: full credit when the line comes together most games, less when it rarely does.
+      if (o.cr < 1) { reqTotal++; reqMet += o.cr; }
+      if (o.cr >= 0.5) rvKeep(rv, e); else { const f = rvThin(rv, e, o); unmet.push(f.t); flaws.push(f); }
+      return; }
     if (rv) { const f = rvNone(rv, e); reqTotal++; unmet.push(f.t); flaws.push(f); return; }
     reqTotal++; unmet.push(`No ${gCap(c.from)} for ${gCap(e.name)}`);
     flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.from)} for ${gCap(e.name)}`,
@@ -858,11 +963,11 @@ function gCoherence(deck) {
       d:`${list} can only reach the board when ${gCap(r0.by)} brings them back from your discard pile${r0.via ? ` with ${r0.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`});
     rvn.slice(1).forEach(f=>flaws.splice(flaws.indexOf(f),1)); }
   // 3.2.5: one line for each card that brings Pokemon back, naming them and what fills the discard pile.
-  rv115.forEach(g => { const nm=gCap(g.by.name), to=g.to.map(gCap), one=to.length===1;
+  rv115.forEach(g => { const nm=g.self ? (g.r.via||gCap(g.by.name)) : gCap(g.by.name), via=g.self ? '' : g.r.via, to=g.to.map(gCap), one=to.length===1;
     const list=one ? to[0] : to.slice(0,-1).join(', ')+' and '+to[to.length-1];
     const outs=[...new Set(out115.map(x=>gCap(x.name)))].slice(0,2);
-    synergies.push({ link:nm+' > '+to.join(', '), who:g.by.card.key, rev:true,
-      p:`${nm} puts ${list} onto your Bench from your discard pile${g.r.via ? ` with ${g.r.via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` }); });
+    synergies.push({ link:(g.self ? gCap(g.by.name)+': '+nm : nm+' > '+to.join(', ')), who:g.by.card.key, rev:true,
+      p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` }); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
   if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
     d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
@@ -870,7 +975,9 @@ function gCoherence(deck) {
   // and no Supporter that draws or searches runs out of cards once the opening hand is spent.
   const supQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&e.card.tt==='supporter'&&(e.card.provides||[]).some(p=>p==='draw'||p.startsWith('search')))
     .reduce((a,e)=>a+e.qty,0);
-  if (draw && !supQ) {
+  // 3.2.7: not while some Trainers' card data has not loaded, since they may be the Supporters.
+  const supUnk = deck.some(e=>!e.card||(e.card.t==='trainer'&&!e.card.tt));
+  if (draw && !supQ && !supUnk) {
     const via = [...new Set(deck.filter(e=>e.card&&(e.card.provides||[]).includes('draw')).map(e=>gCap(e.name)))];
     flaws.push({sev:'warn', t:'No Supporter to draw with',
       d:`None of your Supporters draws cards or searches your deck, so once your opening hand is spent your only draw is ${via.slice(0,3).join(' and ')}. Most decks run 4 or more Supporters that draw, like Lillie's Determination.`}); }
@@ -917,7 +1024,7 @@ function gCoherence(deck) {
   if (!draw) base*=0.4;
   if (!hasAtk) base*=0.3;
   base -= 0.12*flaws.filter(f=>f.sev==='crit').length;
-  return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present, parts };
+  return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present, parts, revived };
 }
 
 
@@ -1817,7 +1924,8 @@ function gViability(deck, coh, main) {
     d:multiN?`${multiN} of your ${pkN} Pokemon ${multiN>1?'give':'gives'} up two prizes and the rest give up one, so you are not handing over easy multi-prize turns.`:'Every Pokemon here gives up one prize, so the opponent has to take six knockouts.'});
   // v54: only Stage 2 Pokemon the deck leans on: the main attacker, or a line of 2 or more.
   // A single Stage 2 tech (Metagross in Mega Excadrill) does not make the deck slow.
-  const s2=deck.filter(e=>e.card&&e.card.stage==='stage2'&&!e.card.selfBench&&!g37Copier(deck,e.card)&&(e.qty>=2||(main&&e.card.key===main.key)));
+  // 3.2.7: nor a Stage 2 that comes back from the discard pile (Kingdra ex's King's Order), which skips evolving.
+  const s2=deck.filter(e=>e.card&&e.card.stage==='stage2'&&!e.card.selfBench&&!g37Copier(deck,e.card)&&!(coh.revived&&coh.revived.has(e.card.key))&&(e.qty>=2||(main&&e.card.key===main.key)));
   const stage2=s2.reduce((a,e)=>a+e.qty,0);
   const s2Names=[...new Set(s2.map(e=>gCap(e.name)))];
   const candy=coh.provided['evolution_access']||0;
@@ -2312,7 +2420,9 @@ function gTrainers(entries, coh, via, main, fmt) {
   // 2. The engine: Supporters, finding Pokemon, switching and getting cards back.
   const sup = gtQ(entries, c => c.t === 'trainer' && c.tt === 'supporter');
   const anyMon = cards.some(e => e.card.t === 'pkmn');
-  if (anyMon && sup < 7) {
+  // 3.2.7: Trainers whose card data has not loaded yet may be Supporters, so they are not counted as missing.
+  const supUnk = gtQ(entries, c => c.t === 'trainer' && !c.tt) + entries.reduce((a, e) => a + (e.card ? 0 : e.qty), 0);
+  if (anyMon && sup < 7 && sup + supUnk < 7) {
     flaws.push({ sev: 'warn', t: `Only ${sup} Supporter${sup === 1 ? '' : 's'}`,
       d: `You can play one Supporter a turn, and most of your draw and your Boss's Orders style plays come from them. With ${sup}, many turns open with none in hand. Most lists run 9 to 14.` });
     cut.push(sup < 5 ? 0.2 : 0.1); }
@@ -3194,6 +3304,15 @@ function showReviewTab(which) {
     if (btn)  btn.classList.toggle('active', k===which);
     if (pane) pane.style.display = k===which ? '' : 'none';
   });
+  // With large text the tabs scroll sideways: keep the open one in view.
+  try {
+    const on = document.getElementById('rv-tab-' + which), bar = on && on.parentElement;
+    if (bar && bar.scrollWidth > bar.clientWidth + 1) {
+      const l = on.offsetLeft - bar.offsetLeft, r = l + on.offsetWidth;
+      if (l < bar.scrollLeft) bar.scrollLeft = l - 8;
+      else if (r > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = r - bar.clientWidth + 8;
+    }
+  } catch (_) {}
   if (which==='grade') renderGrade();
   if (which==='odds')  renderOdds();
   if (which==='hand')  renderHand();
@@ -4787,7 +4906,7 @@ async function saveMatchup(id) {
 }
 async function deleteMatchup(id) {
   const deck = findDeck(state.activeDeckId);
-  if (!deck || !confirm('Delete this matchup note?')) return;
+  if (!deck || !(await rdConfirm({ title: 'Delete this matchup note?', yes: 'Delete', danger: true }))) return;
   deck.matchups = (deck.matchups || []).filter(x => x.id !== id);
   await saveState();
   closeSheet();
@@ -7886,10 +8005,21 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.2.6',
+  version: 'v3.2.7',
   kind: 'small',
   items: [
-    { t: 'Grade fix: Kingdra ex and other discard pile decks' }
+    { t: 'Prices now in dollars only' },
+    { t: 'Starter decks work offline' },
+    { t: 'Added: swipe between cards' },
+    { t: 'Added: fold sections' },
+    { t: 'Text follows your phone\'s text size' },
+    { t: 'Landscape layout fixed' },
+    { t: 'Added: in-app dialogs' },
+    { t: 'Fixed: naming a pasted deck' },
+    { t: 'Grade fix: discard pile revival' },
+    { t: 'How it plays: Abilities explained' },
+    { t: 'Grade waits for all card data' },
+    { t: 'Expanded: older revivers read' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -8547,7 +8677,7 @@ async function saveTlog(id) {
   showToast('Match saved.');
 }
 async function deleteTlog(id) {
-  if (!confirm('Delete this match from the log?')) return;
+  if (!(await rdConfirm({ title: 'Delete this match from the log?', yes: 'Delete', danger: true }))) return;
   state.tlog = (state.tlog || []).filter(e => e.id !== id);
   await saveState();
   closeSheet();
@@ -8624,9 +8754,11 @@ document.addEventListener('load', e => {
       if (!game._reach) {
         const pc = game.prizeCount || 6;
         if (force !== true && game.guesses.length < pc) {
-          const remaining = pc - game.guesses.length;
-          if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
-        }
+          // The clock keeps running while the question is open: if time runs out first, that reveal wins.
+          const tok = game._rvTok = (game._rvTok || 0) + 1;
+          if (!(await rdConfirm({ title: 'Reveal the prizes?', text: `You have guessed ${game.guesses.length} of ${pc}.`, yes: 'Reveal', no: 'Keep guessing' }))) return;
+          if (game._rvTok !== tok || !document.getElementById('screen-game').classList.contains('active')) return;
+        } else if (force === true) { game._rvTok = (game._rvTok || 0) + 1; if (typeof rdDlgClose === 'function') rdDlgClose(false); }
         stopTimer();
         game._reach = { qs: buildReachQs(), done: false, elapsed: game.elapsed };
         if (game._reach.qs.length) { openReach(); return; }
@@ -9203,7 +9335,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined, rev: a.rev || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined, rev: a.rev || undefined, disc: a.disc || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -9329,8 +9461,8 @@ async function fetchCardImage(card) {
   return { ...card, imageUrl: candidates[0] || '', fallbackUrls: candidates.slice(1), apiName: card.name };
 }
 
-function clearAllData() {
-  if (!confirm('Delete ALL decks and history? This cannot be undone.')) return;
+async function clearAllData() {
+  if (!(await rdConfirm({ title: 'Delete all decks and history?', text: 'This cannot be undone.', yes: 'Delete all', danger: true }))) return;
   clearAllStorage();
 }
 
@@ -9854,9 +9986,11 @@ function formatTime(secs) {
 async function revealPrizes(force) {
   const pc = game.prizeCount || 6;
   if (force !== true && game.guesses.length < pc) {
-    const remaining = pc - game.guesses.length;
-    if (!confirm(`You still have ${remaining} empty slot${remaining !== 1 ? 's' : ''}. Reveal anyway?`)) return;
-  }
+    // The clock keeps running while the question is open: if time runs out first, that reveal wins.
+    const tok = game._rvTok = (game._rvTok || 0) + 1;
+    if (!(await rdConfirm({ title: 'Reveal the prizes?', text: `You have guessed ${game.guesses.length} of ${pc}.`, yes: 'Reveal', no: 'Keep guessing' }))) return;
+    if (game._rvTok !== tok || !document.getElementById('screen-game').classList.contains('active')) return;
+  } else if (force === true) { game._rvTok = (game._rvTok || 0) + 1; if (typeof rdDlgClose === 'function') rdDlgClose(false); }
   stopTimer();
   const elapsed = game.elapsed;
 
@@ -10614,7 +10748,7 @@ async function restoreBackup() {
   try {
     const parsed = JSON.parse(text);
     if (!parsed.decks) { showToast('Invalid backup data.'); return; }
-    if (!confirm('This will replace ALL your current data. Continue?')) return;
+    if (!(await rdConfirm({ title: 'Replace all your data?', text: 'This backup replaces all decks and history on this device.', yes: 'Replace', danger: true }))) return;
     state = parsed;
     await saveState();
     closeBackupModal();
@@ -10801,8 +10935,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.2.6';
-const PT_BUILD = 116;
+const PT_VERSION = 'v3.2.7';
+const PT_BUILD = 117;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

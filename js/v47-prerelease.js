@@ -324,9 +324,9 @@ function pre47Energy(t, d) {
   if (!b.energy[t]) delete b.energy[t];
   pre47SaveBuild(); pre47RenderEnergy(); pre47RenderCount();
 }
-function pre47Clear() {
+async function pre47Clear() {
   if (!pre47Count()) return;
-  if (!confirm('Clear this 40 card build?')) return;
+  if (!(await rdConfirm({ title: 'Clear this prerelease deck?', yes: 'Clear', danger: true }))) return;
   _pre47Build = { code: PRE47.code, picks: {}, energy: {} };
   pre47SaveBuild(); pre47RenderGrid(); pre47RenderEnergy(); pre47RenderCount();
 }
@@ -345,7 +345,7 @@ function pre47ListText() {
 async function pre47SaveDeck() {
   const n = pre47Count();
   if (!n) { showToast('Add some cards first.'); return; }
-  if (n !== 40 && !confirm(`This build has ${n} cards. A prerelease deck is exactly 40. Save it anyway?`)) return;
+  if (n !== 40 && !(await rdConfirm({ title: 'Save this prerelease deck anyway?', text: `It has ${n} cards. A prerelease deck is exactly 40.`, yes: 'Save anyway' }))) return;
   const cards = parseDeckList(pre47ListText());
   if (!cards.length) { showToast('The card list has not loaded yet. Try again in a moment.'); return; }
   const base = PRE47.set + ' prerelease';

@@ -76,7 +76,7 @@
       const k = opp.toLowerCase();
       const other = k && (deck.matchups || []).find(m => m.id !== id && m.opp.toLowerCase() === k);
       if (other) {
-        if (other.plan && !confirm(`You already have a note for ${opp}. Replace it with this one?`)) return;
+        if (other.plan && !(await rdConfirm({ title: `Replace your note for ${opp}?`, text: 'You already have a note for this matchup.', yes: 'Replace', danger: true }))) return;
         deck.matchups = deck.matchups.filter(m => m !== other);
       }
     }
