@@ -3190,6 +3190,203 @@ const I18N_ABIL = { es: i18nAbRom('es'), pt: i18nAbRom('pt') };
 // Every Abilities sentence of How it plays, read and said again in Spanish and Portuguese; null leaves it to the next pattern.
 I18N_PAT.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'es'), m => i18nAbilSent(m, 'pt')]);
 
+// Muse s1/s2: the control (lock, mill, wall, disruption) findings and How it plays lines that gCtlSay and
+// gViability in core.js write, read back into parts and said again from each language's table
+// (I18N_CTL.es and .pt below, I18N_MORE[lang].ctl in the other files). A phrase this cannot read gives
+// null, so the sentence stays English rather than half translated.
+/** True for a card's own name, so a title that only shares a shape ("Only 2 ...") is left to its own pattern. */
+function i18nCtlCard(x) { const c = typeof rdI18n === 'object' && rdI18n.cardNames; return !c || c.has(String(x).toLowerCase()); }
+function i18nCtlTab(l) { return l === 'es' || l === 'pt' ? I18N_CTL[l] : (i18nMore(l) || {}).ctl; }
+/** "Budew's Itchy Pollen" as the language's "Itchy Pollen of Budew"; a Trainer name ("Team Rocket's Watchtower") stays whole. */
+function i18nCtlBy(by, T) {
+  const names = typeof rdI18n === 'object' && rdI18n.cardNames;
+  if (names && names.has(by.toLowerCase())) return by;
+  const cuts = [];
+  for (let i = by.indexOf("'s "); i > 0; i = by.indexOf("'s ", i + 1)) cuts.push(i);
+  if (!cuts.length) return by;
+  let at = cuts[cuts.length - 1];
+  if (names) { const k = cuts.find(i => names.has(by.slice(0, i).toLowerCase())); if (k != null) at = k; }
+  return T.of(by.slice(0, at), by.slice(at + 3));
+}
+/** What one piece does ("your opponent can't play Item cards during their next turn"), or null. */
+function i18nCtlT(t, T) {
+  let m, flip = '', when = '', r = null;
+  if (/ \(on a coin flip\)$/.test(t)) { flip = T.flip; t = t.replace(/ \(on a coin flip\)$/, ''); }
+  if ((m = t.match(/ (while it is in the Active Spot|during their next turn|on your first turn)$/))) { when = m[1]; t = t.slice(0, m.index); }
+  const n = x => x === 'a few' || x === 'a lot' ? null : x;
+  if ((m = t.match(/^your opponent can't play (Item|Supporter|Pokemon Tool|Stadium) cards$/))) r = T.cantPlay(m[1]);
+  else if ((m = t.match(/^(Pokemon with a Rule Box|Pokemon in play|Evolution Pokemon|Basic Pokemon|Colorless Pokemon|the Active Pokemon) ha(?:s|ve) no Abilities$/))) r = T.noAb[m[1]];
+  else if ((m = t.match(/^Pokemon with (\d+|a few) or less Energy attached can't attack$/))) r = T.lowAtk(n(m[1]));
+  else if (t === "the Defending Pokemon can't attack") r = T.noAtk;
+  else if (t === "the Defending Pokemon can't retreat") r = T.noRet;
+  else if ((m = t.match(/^discards the top (card|\d+ cards) of your opponent's deck$/))) r = T.mill(m[1] === 'card' ? 1 : parseInt(m[1], 10));
+  else if ((m = t.match(/^discards (Special )?Energy from your opponent's Pokemon$/))) r = T.energy(!!m[1]);
+  else if (t === "cuts down your opponent's hand") r = T.hand;
+  else if ((m = t.match(/^heals (all|\d+) damage$/))) r = T.heal(m[1]);
+  else if (t === 'your Benched Pokemon take no damage from attacks') r = T.wall('bench', 'all');
+  else if ((m = t.match(/^(it takes|your Pokemon take|Pokemon without a Rule Box take|your Benched Pokemon take) (no|less) damage(?: from (.+))?$/))) {
+    const who = { 'it takes': 'it', 'your Pokemon take': 'team', 'Pokemon without a Rule Box take': 'nonrule', 'your Benched Pokemon take': 'bench' }[m[1]];
+    if (m[2] === 'less') r = m[3] ? null : T.less(who);
+    else if (m[3]) { const f = m[3]; let k = null, x = null, q;
+      if (f === 'attacks by Pokemon ex') k = 'ex'; else if (f === 'attacks by Basic Pokemon ex') k = 'basicex';
+      else if (f === 'attacks by Pokemon with an Ability') k = 'ability'; else if (f === 'attacks by Basic Pokemon') k = 'basic';
+      else if (f === 'attacks') k = 'all';
+      else if ((q = f.match(/^an attack that does (\d+|a lot) or more$/))) { k = 'big'; x = n(q[1]); }
+      else if ((q = f.match(/^Pokemon with (\d+|a few) or less Energy attached$/))) { k = 'low'; x = n(q[1]); }
+      r = k ? T.wall(who, k, x) : null; } }
+  if (r == null) return null;
+  // German puts "during their next turn" after the verb ("kann während ... keine Item-Karten spielen").
+  return (when ? (T.place ? T.place(r, T.when[when]) : r + T.when[when]) : r) + flip;
+}
+/** "4 Crushing Hammer, 3 Enhanced Hammer discard Energy from your opponent's Pokemon", with ", which" inside a sentence. */
+function i18nCtlWho(s, T) {
+  const m = s.match(/^(\d+ .+?)(, which)? (discard Energy from your opponent's Pokemon|cut down your opponent's hand|heal your Pokemon)( on a coin flip)?$/);
+  if (!m || !/^\d+ [^,]+(?:, \d+ [^,]+)*$/.test(m[1])) return null;
+  const k = /^discard/.test(m[3]) ? 'energy' : /^cut/.test(m[3]) ? 'hand' : 'heal';
+  return T.who(m[1], k, !!m[4], !!m[2]);
+}
+/** One piece sentence of the game plan ("Budew's Itchy Pollen: your opponent can't play Item cards."), or null. */
+function i18nCtlPiece(s, l) {
+  const T = i18nCtlTab(l); if (!T) return null;
+  s = String(s).replace(/\.$/, '');
+  const w = i18nCtlWho(s, T); if (w != null) return w + '.';
+  const m = s.match(/^(.+?): (.+)$/); if (!m) return null;
+  const t = i18nCtlT(m[2], T);
+  return t == null ? null : T.piece(i18nCtlBy(m[1], T), t) + '.';
+}
+/** "The biggest piece is Budew's Itchy Pollen, where your opponent can't play Item cards ..." */
+function i18nCtlBig(inner, l) {
+  const T = i18nCtlTab(l); if (!T) return null;
+  let x = i18nCtlWho(inner, T);
+  if (x == null) { const m = inner.match(/^(.+?), (?:where|which) (.+)$/); if (!m) return null;
+    const t = i18nCtlT(m[2], T); if (t == null) return null; x = T.piece(i18nCtlBy(m[1], T), t); }
+  return T.big(x);
+}
+/** "locking and stripping Energy and cards" (or the "locks", "Lock" forms) as the language's words, or null. */
+function i18nCtlList(s, words, T) {
+  const keys = Object.keys(words), re = new RegExp(keys.map(k => k.replace(/ /g, ' ')).sort((a, b) => b.length - a.length).join('|'), 'g');
+  const got = s.match(re) || [];
+  if (!got.length || got.join(' and ') !== s) return null;
+  return got.map(k => words[k]).join(T.and);
+}
+const I18N_CTL_HOW = { 'locking': 'lock', 'milling': 'mill', 'stalling': 'stall', 'stripping Energy and cards': 'denial' };
+const I18N_CTL_ALSO = { 'locks': 'lock', 'mills': 'mill', 'walls': 'stall', 'strips Energy and cards': 'denial' };
+const I18N_CTL_KIND = { 'Lock': 'lock', 'Mill': 'mill', 'Stall': 'stall', 'Disruption': 'denial' };
+/** The control sentences and titles, as [regex, (m, ...) => text in l] pairs; each language gets them through its own pattern list. */
+function i18nCtlPats(l) {
+  const T = () => i18nCtlTab(l);
+  const map = (o, f) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, f(v)]));
+  const how = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_HOW, k => t.how[k]), t); };
+  const also = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_ALSO, k => t.also[k]), t); };
+  const alsoN = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_ALSO, k => (t.alsoN || t.also)[k]), t); };
+  const kind = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_KIND, k => t.kind[k]), t); };
+  const ok = (...a) => a.every(x => x != null);
+  return [
+    [/^Wins by (.+)$/, (m, h) => { const x = how(h); return ok(x) ? T().winsBy(x) : null; }],
+    [/^This deck wins by (.+?), not by trading knockouts, so its damage counts for less\.$/, (m, h) => { const x = how(h); return ok(x) ? T().winsNot(x) : null; }],
+    [/^This deck wins by (.+?) rather than by trading big hits\.$/, (m, h) => { const x = how(h); return ok(x) ? T().winsRather(x) : null; }],
+    [/^Game plan: (.+)$/, (m, h) => { const x = kind(h); return ok(x) ? T().plan(x) : null; }],
+    [/^Also (.+)$/, (m, h) => { const x = alsoN(h); return ok(x) ? T().alsoT(x) : null; }],
+    [/^Besides attacking, this deck (.+?), which wins some games its hits alone would not\.$/, (m, h) => { const x = also(h); return ok(x) ? T().besidesWins(x) : null; }],
+    [/^Besides attacking, this deck (.+?)\.$/, (m, h) => { const x = also(h); return ok(x) ? T().besides(x) : null; }],
+    [/^The biggest piece is (.+)\.$/, (m, x) => i18nCtlBig(x, l)],
+    [/^The game plan lists (\d+) more\.$/, (m, n) => T() && T().lists(n)],
+    [/^Keep (.+) Active$/, (m, x) => T() && i18nCtlCard(x) ? T().keep(x) : null],
+    [/^(.+?'s .+?) only works while it is in the Active Spot\.$/, (m, x) => T() && T().onlyActive(i18nCtlBy(x, T()))],
+    [/^Switching it out or losing it turns the (lock|mill|stall|denial) off, so plan your retreats around it\.$/, (m, k) => T() && T().switchOff(k)],
+    [/^The (lock|mill|stall|denial) rests on (.+?), and the list runs (\d+)\.$/, (m, k, x, n) => T() && T().rests(k, i18nCtlBy(x, T()), n)],
+    [/^Only (\d+) (.+)$/, (m, n, x) => T() && i18nCtlCard(x) ? T().only(n, x) : null],
+    [/^.+$/, m => i18nCtlPiece(m, l)],
+  ];
+}
+const I18N_CTL = {
+  es: {
+    and: ' y ', flip: ' (si sale cara)',
+    when: { 'while it is in the Active Spot': ' mientras está en el Puesto Activo', 'during their next turn': ' durante su próximo turno', 'on your first turn': ' en tu primer turno' },
+    cantPlay: k => 'tu rival no puede jugar cartas de ' + { Item: 'Objeto', Supporter: 'Partidario', 'Pokemon Tool': 'Herramienta Pokémon', Stadium: 'Estadio' }[k],
+    noAb: { 'Pokemon with a Rule Box': 'los Pokémon con Recuadro de regla no tienen Habilidades', 'Pokemon in play': 'los Pokémon en juego no tienen Habilidades',
+      'Evolution Pokemon': 'los Pokémon Evolución no tienen Habilidades', 'Basic Pokemon': 'los Pokémon Básicos no tienen Habilidades',
+      'Colorless Pokemon': 'los Pokémon de tipo Incoloro no tienen Habilidades', 'the Active Pokemon': 'el Pokémon Activo no tiene Habilidades' },
+    lowAtk: n => n ? `los Pokémon con ${n} o menos Energías unidas no pueden atacar` : 'los Pokémon con pocas Energías unidas no pueden atacar',
+    noAtk: 'el Pokémon Defensor no puede atacar', noRet: 'el Pokémon Defensor no puede retirarse',
+    mill: n => n === 1 ? 'descarta la primera carta de la baraja de tu rival' : `descarta las ${n} primeras cartas de la baraja de tu rival`,
+    energy: sp => `descarta Energía${sp ? ' Especial' : ''} de los Pokémon de tu rival`,
+    hand: 'reduce la mano de tu rival',
+    heal: v => v === 'all' ? 'cura todo el daño' : `cura ${v} puntos de daño`,
+    wall: (who, k, n) => ({ it: 'no recibe daño', team: 'tus Pokémon no reciben daño', nonrule: 'los Pokémon sin Recuadro de regla no reciben daño', bench: 'tus Pokémon en Banca no reciben daño' })[who] + ' '
+      + ({ ex: 'de ataques de Pokémon ex', basicex: 'de ataques de Pokémon ex Básicos', ability: 'de ataques de Pokémon con Habilidad', basic: 'de ataques de Pokémon Básicos', all: 'de ataques',
+        big: n ? `de un ataque que hace ${n} o más de daño` : 'de un ataque que hace mucho daño', low: n ? `de Pokémon con ${n} o menos Energías unidas` : 'de Pokémon con pocas Energías unidas' })[k],
+    less: who => ({ it: 'recibe menos daño', team: 'tus Pokémon reciben menos daño', nonrule: 'los Pokémon sin Recuadro de regla reciben menos daño', bench: 'tus Pokémon en Banca reciben menos daño' })[who],
+    who: (list, k, flip, lead) => list + (lead ? ', que ' : ' ') + ({ energy: 'descartan Energía de los Pokémon de tu rival', hand: 'reducen la mano de tu rival', heal: 'curan a tus Pokémon' })[k] + (flip ? ' si sale cara' : ''),
+    of: (owner, what) => `${what} de ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `La pieza más importante es ${x}.`,
+    how: { lock: 'bloqueando', mill: 'descartando la baraja rival', stall: 'aguantando', denial: 'quitando Energía y cartas' },
+    also: { lock: 'bloquea', mill: 'descarta la baraja rival', stall: 'hace de muro', denial: 'quita Energía y cartas' },
+    kind: { lock: 'Bloqueo', mill: 'Descarte de baraja', stall: 'Muro', denial: 'Disrupción' },
+    winsBy: x => 'Gana ' + x, winsNot: x => `Esta baraja gana ${x}, no intercambiando Fuera de Combate, así que su daño cuenta menos.`,
+    winsRather: x => `Esta baraja gana ${x} en vez de intercambiar golpes fuertes.`, plan: x => 'Plan de juego: ' + x,
+    alsoT: x => 'También ' + x, besidesWins: x => `Además de atacar, esta baraja ${x}, y así gana partidas que sus golpes solos no ganarían.`,
+    besides: x => `Además de atacar, esta baraja ${x}.`, lists: n => `El plan de juego enumera ${n} más.`, keep: x => `Mantén ${x} en el Puesto Activo`,
+    onlyActive: x => `${x} solo funciona mientras está en el Puesto Activo.`,
+    switchOff: k => `Cambiarlo o perderlo apaga ${({ lock: 'el bloqueo', mill: 'el descarte', stall: 'el muro', denial: 'la disrupción' })[k]}, así que planea tus retiradas en torno a él.`,
+    rests: (k, x, n) => `${({ lock: 'El bloqueo', mill: 'El descarte', stall: 'El muro', denial: 'La disrupción' })[k]} depende de ${x}, y la lista lleva ${n}.`,
+    only: (n, x) => `Solo ${n} ${x}`,
+  },
+  pt: {
+    and: ' e ', flip: ' (se sair cara)',
+    when: { 'while it is in the Active Spot': ' enquanto está no Campo Ativo', 'during their next turn': ' durante o próximo turno dele', 'on your first turn': ' no seu primeiro turno' },
+    cantPlay: k => 'o oponente não pode jogar cartas de ' + { Item: 'Item', Supporter: 'Apoiador', 'Pokemon Tool': 'Ferramenta Pokémon', Stadium: 'Estádio' }[k],
+    noAb: { 'Pokemon with a Rule Box': 'os Pokémon com Caixa de Regras não têm Habilidades', 'Pokemon in play': 'os Pokémon em jogo não têm Habilidades',
+      'Evolution Pokemon': 'os Pokémon de Evolução não têm Habilidades', 'Basic Pokemon': 'os Pokémon Básicos não têm Habilidades',
+      'Colorless Pokemon': 'os Pokémon do tipo Incolor não têm Habilidades', 'the Active Pokemon': 'o Pokémon Ativo não tem Habilidades' },
+    lowAtk: n => n ? `os Pokémon com ${n} ou menos Energias ligadas não podem atacar` : 'os Pokémon com poucas Energias ligadas não podem atacar',
+    noAtk: 'o Pokémon Defensor não pode atacar', noRet: 'o Pokémon Defensor não pode recuar',
+    mill: n => n === 1 ? 'descarta a carta de cima do deck do oponente' : `descarta as ${n} cartas de cima do deck do oponente`,
+    energy: sp => `descarta Energia${sp ? ' Especial' : ''} dos Pokémon do oponente`,
+    hand: 'diminui a mão do oponente',
+    heal: v => v === 'all' ? 'cura todo o dano' : `cura ${v} pontos de dano`,
+    wall: (who, k, n) => ({ it: 'não recebe dano', team: 'seus Pokémon não recebem dano', nonrule: 'os Pokémon sem Caixa de Regras não recebem dano', bench: 'seus Pokémon no Banco não recebem dano' })[who] + ' '
+      + ({ ex: 'de ataques de Pokémon ex', basicex: 'de ataques de Pokémon ex Básicos', ability: 'de ataques de Pokémon com Habilidade', basic: 'de ataques de Pokémon Básicos', all: 'de ataques',
+        big: n ? `de um ataque que causa ${n} ou mais de dano` : 'de um ataque que causa muito dano', low: n ? `de Pokémon com ${n} ou menos Energias ligadas` : 'de Pokémon com poucas Energias ligadas' })[k],
+    less: who => ({ it: 'recebe menos dano', team: 'seus Pokémon recebem menos dano', nonrule: 'os Pokémon sem Caixa de Regras recebem menos dano', bench: 'seus Pokémon no Banco recebem menos dano' })[who],
+    who: (list, k, flip, lead) => list + (lead ? ', que ' : ' ') + ({ energy: 'descartam Energia dos Pokémon do oponente', hand: 'diminuem a mão do oponente', heal: 'curam seus Pokémon' })[k] + (flip ? ' se sair cara' : ''),
+    of: (owner, what) => `${what} de ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `A peça mais importante é ${x}.`,
+    how: { lock: 'travando', mill: 'descartando o deck do oponente', stall: 'aguentando', denial: 'tirando Energia e cartas' },
+    also: { lock: 'trava', mill: 'descarta o deck do oponente', stall: 'serve de muralha', denial: 'tira Energia e cartas' },
+    kind: { lock: 'Trava', mill: 'Descarte de deck', stall: 'Muralha', denial: 'Disrupção' },
+    winsBy: x => 'Vence ' + x, winsNot: x => `Este deck vence ${x}, não trocando Nocautes, então o dano dele conta menos.`,
+    winsRather: x => `Este deck vence ${x} em vez de trocar golpes fortes.`, plan: x => 'Plano de jogo: ' + x,
+    alsoT: x => 'Também ' + x, besidesWins: x => `Além de atacar, este deck ${x}, e assim vence partidas que só os golpes não venceriam.`,
+    besides: x => `Além de atacar, este deck ${x}.`, lists: n => `O plano de jogo lista mais ${n}.`, keep: x => `Mantenha ${x} no Campo Ativo`,
+    onlyActive: x => `${x} só funciona enquanto está no Campo Ativo.`,
+    switchOff: k => `Trocá-lo ou perdê-lo desliga ${({ lock: 'a trava', mill: 'o descarte', stall: 'a muralha', denial: 'a disrupção' })[k]}, então planeje seus recuos em torno dele.`,
+    rests: (k, x, n) => `${({ lock: 'A trava', mill: 'O descarte', stall: 'A muralha', denial: 'A disrupção' })[k]} depende de ${x}, e a lista usa ${n}.`,
+    only: (n, x) => `Só ${n} ${x}`,
+  },
+};
+Object.assign(I18N_ES, {
+  'Low damage, by design': 'Poco daño, a propósito',
+  'The grade counts what this deck stops more than its damage.': 'La calificación da más peso a lo que esta baraja frena que a su daño.',
+  'With so few copies it is often prized or gone after one knockout.': 'Con tan pocas copias suele quedar en los premios o perderse tras un solo Fuera de Combate.',
+  'Most lists run 3 or 4.': 'La mayoría de las listas lleva 3 o 4.',
+});
+Object.assign(I18N_PT, {
+  'Low damage, by design': 'Pouco dano, de propósito',
+  'The grade counts what this deck stops more than its damage.': 'A nota dá mais peso ao que este deck impede do que ao dano dele.',
+  'With so few copies it is often prized or gone after one knockout.': 'Com tão poucas cópias, ele costuma ficar nos prêmios ou sumir depois de um só Nocaute.',
+  'Most lists run 3 or 4.': 'A maioria das listas usa 3 ou 4.',
+});
+const I18N_CTL_PATS = {};
+/** One sentence or title of the control path in language l, or null. Built on first use, so a language file can load before this one. */
+function i18nCtlSent(s, l) {
+  const ps = I18N_CTL_PATS[l] || (I18N_CTL_PATS[l] = i18nCtlPats(l));
+  // A sentence that runs on into another ("Besides attacking, this deck locks. Budew's ...") is read one sentence at a time.
+  if (/[a-z0-9)][.!?] [A-Z0-9¿¡]/.test(s)) return null;
+  for (const p of ps) { const m = s.match(p[0]); if (m) { const r = p[1](...m); if (r != null) return r; } }
+  return null;
+}
+// After the Abilities pattern, which gives null for these and leaves them here.
+I18N_PAT.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'es'), m => i18nCtlSent(m, 'pt')]);
+
 function i18nTr(s) { const r = rdI18n.lookup(s); return r == null ? s : r; }
 function i18nSentences(s) { return rdI18n.lookup(s); }
 

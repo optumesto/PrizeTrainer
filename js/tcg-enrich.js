@@ -1224,7 +1224,7 @@ function ctl63(text) {
     out.push({ k: 'mill', n, when: 'now', flip: flip || /for each heads/.test(t), cond: /^if /.test(t) || /if you played/.test(t) }); }
   if ((m = t.match(/discard (an?|\d+|all) (special )?energy from (?:1 of )?your opponent's (?:active )?pokemon/)))
     out.push({ k: 'energy', n: /^an?$/.test(m[1]) ? 1 : m[1] === 'all' ? 2 : +m[1], special: !!m[2], when: 'now', flip });
-  if (/each player shuffles their hand into their deck and draws \d|your opponent discards cards from their hand until|you discard up to \d+ (?:item )?cards you find there|your opponent shuffles their hand into their deck|each player shuffles their hand into their deck|each player shuffles their hand and puts it on the bottom of their deck/.test(t))
+  if (/each player shuffles their hand into their deck and draws \d|(?:your opponent|each player) discards cards from their hand until|you discard up to \d+ (?:item )?cards you find there|your opponent shuffles their hand into their deck|each player shuffles their hand into their deck|each player shuffles their hand and puts it on the bottom of their deck/.test(t))
     out.push({ k: 'hand', when: 'now', flip });
   // Damage to your own Pokemon prevented. sc says from what.
   if (/prevent all damage/.test(t) && !/your opponent's (?:active|benched) pokemon/.test(t.split('prevent all damage')[0].slice(-40))) {

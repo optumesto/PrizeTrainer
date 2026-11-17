@@ -1710,3 +1710,49 @@ I18N_MORE.fr.abil = (function () {
 })();
 // Every Abilities sentence of How it plays; null leaves it to the next pattern.
 I18N_MORE.fr.pat.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'fr')]);
+
+// Muse s2 M2: the control path's findings and game plan lines (see i18nCtlPats in i18n.js).
+I18N_MORE.fr.ctl = (function () {
+  const d = o => (/^[aeiouyhàâéèêîïôûAEIOUYHÉÈÊÎÔ]/.test(o) ? "d'" : 'de ') + o;
+  const opp = 'votre adversaire';
+  return {
+    and: ' et ', flip: ' (si la pièce tombe sur face)',
+    when: { 'while it is in the Active Spot': " tant qu'il est au Poste Actif", 'during their next turn': ' pendant son prochain tour', 'on your first turn': ' à votre premier tour' },
+    cantPlay: k => `${opp} ne peut pas jouer de cartes ` + { Item: 'Objet', Supporter: 'Supporter', 'Pokemon Tool': 'Outil Pokémon', Stadium: 'Stade' }[k],
+    noAb: { 'Pokemon with a Rule Box': "les Pokémon avec un Encadré Règle n'ont pas de Talent", 'Pokemon in play': "les Pokémon en jeu n'ont pas de Talent",
+      'Evolution Pokemon': "les Pokémon Évolution n'ont pas de Talent", 'Basic Pokemon': "les Pokémon de base n'ont pas de Talent",
+      'Colorless Pokemon': "les Pokémon Incolores n'ont pas de Talent", 'the Active Pokemon': "le Pokémon Actif n'a pas de Talent" },
+    lowAtk: n => n ? `les Pokémon avec ${n} Énergies ou moins attachées ne peuvent pas attaquer` : "les Pokémon avec peu d'Énergie attachée ne peuvent pas attaquer",
+    noAtk: 'le Pokémon Défenseur ne peut pas attaquer', noRet: 'le Pokémon Défenseur ne peut pas battre en retraite',
+    mill: n => n === 1 ? `défausse la carte du dessus du deck de ${opp}` : `défausse les ${n} cartes du dessus du deck de ${opp}`,
+    energy: sp => `défausse de l'Énergie${sp ? ' spéciale' : ''} des Pokémon de ${opp}`,
+    hand: `réduit la main de ${opp}`,
+    heal: v => v === 'all' ? 'soigne tous les dégâts' : `soigne ${v} dégâts`,
+    wall: (who, k, n) => ({ it: 'il ne subit aucun dégât', team: 'vos Pokémon ne subissent aucun dégât', nonrule: "les Pokémon sans Encadré Règle ne subissent aucun dégât", bench: 'vos Pokémon de Banc ne subissent aucun dégât' })[who] + ' '
+      + ({ ex: 'des attaques des Pokémon-ex', basicex: 'des attaques des Pokémon-ex de base', ability: 'des attaques des Pokémon avec un Talent', basic: 'des attaques des Pokémon de base', all: 'des attaques',
+        big: n ? `d'une attaque qui inflige ${n} dégâts ou plus` : "d'une attaque qui inflige beaucoup de dégâts", low: n ? `des Pokémon avec ${n} Énergies ou moins attachées` : "des Pokémon avec peu d'Énergie attachée" })[k],
+    less: who => ({ it: 'il subit moins de dégâts', team: 'vos Pokémon subissent moins de dégâts', nonrule: 'les Pokémon sans Encadré Règle subissent moins de dégâts', bench: 'vos Pokémon de Banc subissent moins de dégâts' })[who],
+    who: (list, k, flip, lead) => list + (lead ? ', qui ' : ' ') + ({ energy: `défaussent de l'Énergie des Pokémon de ${opp}`, hand: `réduisent la main de ${opp}`, heal: 'soignent vos Pokémon' })[k] + (flip ? ' si la pièce tombe sur face' : ''),
+    of: (owner, what) => `${what} ${d(owner)}`, piece: (by, t) => `${by} : ${t}`, big: x => `La pièce maîtresse est ${x}.`,
+    how: { lock: 'en verrouillant', mill: 'en vidant le deck adverse', stall: 'en tenant le mur', denial: "en retirant de l'Énergie et des cartes" },
+    also: { lock: 'verrouille', mill: 'vide le deck adverse', stall: 'fait le mur', denial: "retire de l'Énergie et des cartes" },
+    alsoN: { lock: 'verrouillage', mill: 'meule', stall: 'mur', denial: 'perturbation' },
+    kind: { lock: 'Verrouillage', mill: 'Meule', stall: 'Mur', denial: 'Perturbation' },
+    winsBy: x => 'Gagne ' + x, winsNot: x => `Ce deck gagne ${x}, pas en échangeant des K.O., donc ses dégâts comptent moins.`,
+    winsRather: x => `Ce deck gagne ${x} plutôt qu'en échangeant de gros coups.`, plan: x => 'Plan de jeu : ' + x,
+    alsoT: x => 'En plus : ' + x,
+    besidesWins: x => `En plus d'attaquer, ce deck ${x}, ce qui lui permet de gagner des parties que ses coups seuls ne gagneraient pas.`,
+    besides: x => `En plus d'attaquer, ce deck ${x}.`, lists: n => `Le plan de jeu en cite ${n} de plus.`, keep: x => `Gardez ${x} au Poste Actif`,
+    onlyActive: x => `${x} ne fonctionne que tant qu'il est au Poste Actif.`,
+    switchOff: k => `Le changer ou le perdre coupe ${({ lock: 'le verrouillage', mill: 'la meule', stall: 'le mur', denial: 'la perturbation' })[k]}, alors prévoyez vos retraites en conséquence.`,
+    rests: (k, x, n) => `${({ lock: 'Le verrouillage', mill: 'La meule', stall: 'Le mur', denial: 'La perturbation' })[k]} repose sur ${x}, et la liste en joue ${n}.`,
+    only: (n, x) => `Seulement ${n} ${x}`,
+  };
+})();
+Object.assign(I18N_MORE.fr.dict, {
+  'Low damage, by design': 'Peu de dégâts, à dessein',
+  'The grade counts what this deck stops more than its damage.': "La note accorde plus de poids à ce que ce deck empêche qu'à ses dégâts.",
+  'With so few copies it is often prized or gone after one knockout.': "Avec si peu d'exemplaires, il est souvent dans les Récompenses ou perdu après un seul K.O.",
+  'Most lists run 3 or 4.': 'La plupart des listes en jouent 3 ou 4.',
+});
+I18N_MORE.fr.pat.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'fr')]);

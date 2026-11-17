@@ -1705,3 +1705,44 @@ I18N_MORE.it.abil = (function () {
 })();
 // Every Abilities sentence of How it plays; null leaves it to the next pattern.
 I18N_MORE.it.pat.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'it')]);
+
+// Muse s2 M2: the control path's findings and game plan lines (see i18nCtlPats in i18n.js).
+I18N_MORE.it.ctl = {
+  and: ' e ', flip: ' (se esce testa)',
+  when: { 'while it is in the Active Spot': ' finché è in posizione attiva', 'during their next turn': ' durante il suo prossimo turno', 'on your first turn': ' nel tuo primo turno' },
+  cantPlay: k => 'il tuo avversario non può giocare carte ' + { Item: 'Strumento', Supporter: 'Aiuto', 'Pokemon Tool': 'Oggetto Pokémon', Stadium: 'Stadio' }[k],
+  noAb: { 'Pokemon with a Rule Box': 'i Pokémon con una Regola speciale non hanno Abilità', 'Pokemon in play': 'i Pokémon in gioco non hanno Abilità',
+    'Evolution Pokemon': 'i Pokémon Evoluzione non hanno Abilità', 'Basic Pokemon': 'i Pokémon Base non hanno Abilità',
+    'Colorless Pokemon': 'i Pokémon Incolore non hanno Abilità', 'the Active Pokemon': 'il Pokémon attivo non ha Abilità' },
+  lowAtk: n => n ? `i Pokémon con ${n} o meno Energie assegnate non possono attaccare` : 'i Pokémon con poche Energie assegnate non possono attaccare',
+  noAtk: 'il Pokémon difensore non può attaccare', noRet: 'il Pokémon difensore non può ritirarsi',
+  mill: n => n === 1 ? 'scarta la prima carta del mazzo del tuo avversario' : `scarta le prime ${n} carte del mazzo del tuo avversario`,
+  energy: sp => `scarta Energia${sp ? ' speciale' : ''} dai Pokémon del tuo avversario`,
+  hand: 'riduce la mano del tuo avversario',
+  heal: v => v === 'all' ? 'cura tutti i danni' : `cura ${v} danni`,
+  wall: (who, k, n) => ({ it: 'non subisce danni', team: 'i tuoi Pokémon non subiscono danni', nonrule: 'i Pokémon senza Regola speciale non subiscono danni', bench: 'i tuoi Pokémon in panchina non subiscono danni' })[who] + ' '
+    + ({ ex: 'dagli attacchi dei Pokémon-ex', basicex: 'dagli attacchi dei Pokémon-ex Base', ability: "dagli attacchi dei Pokémon con un'Abilità", basic: 'dagli attacchi dei Pokémon Base', all: 'dagli attacchi',
+      big: n ? `da un attacco che infligge ${n} danni o più` : 'da un attacco che infligge molti danni', low: n ? `dai Pokémon con ${n} o meno Energie assegnate` : 'dai Pokémon con poche Energie assegnate' })[k],
+  less: who => ({ it: 'subisce meno danni', team: 'i tuoi Pokémon subiscono meno danni', nonrule: 'i Pokémon senza Regola speciale subiscono meno danni', bench: 'i tuoi Pokémon in panchina subiscono meno danni' })[who],
+  who: (list, k, flip, lead) => list + (lead ? ', che ' : ' ') + ({ energy: 'scartano Energia dai Pokémon del tuo avversario', hand: 'riducono la mano del tuo avversario', heal: 'curano i tuoi Pokémon' })[k] + (flip ? ' se esce testa' : ''),
+  of: (owner, what) => `${what} di ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `Il pezzo più importante è ${x}.`,
+  how: { lock: 'bloccando', mill: 'svuotando il mazzo avversario', stall: 'resistendo', denial: 'togliendo Energia e carte' },
+  also: { lock: 'blocca', mill: 'svuota il mazzo avversario', stall: 'fa da muro', denial: 'toglie Energia e carte' },
+  kind: { lock: 'Blocco', mill: 'Svuotamento del mazzo', stall: 'Muro', denial: 'Disturbo' },
+  winsBy: x => 'Vince ' + x, winsNot: x => `Questo mazzo vince ${x}, non scambiando KO, quindi i suoi danni contano meno.`,
+  winsRather: x => `Questo mazzo vince ${x} invece di scambiare colpi pesanti.`, plan: x => 'Piano di gioco: ' + x,
+  alsoT: x => 'Inoltre ' + x,
+  besidesWins: x => `Oltre ad attaccare, questo mazzo ${x}, e così vince alcune partite che i suoi colpi da soli non vincerebbero.`,
+  besides: x => `Oltre ad attaccare, questo mazzo ${x}.`, lists: n => n === '1' ? 'Il piano di gioco ne elenca un altro.' : `Il piano di gioco ne elenca altri ${n}.`, keep: x => `Tieni ${x} in posizione attiva`,
+  onlyActive: x => `${x} funziona solo finché è in posizione attiva.`,
+  switchOff: k => `Cambiarlo o perderlo spegne ${({ lock: 'il blocco', mill: 'lo svuotamento del mazzo', stall: 'il muro', denial: 'il disturbo' })[k]}, quindi pianifica le tue ritirate di conseguenza.`,
+  rests: (k, x, n) => `${({ lock: 'Il blocco', mill: 'Lo svuotamento del mazzo', stall: 'Il muro', denial: 'Il disturbo' })[k]} si regge su ${x}, e la lista ne usa ${n}.`,
+  only: (n, x) => `Solo ${n} ${x}`,
+};
+Object.assign(I18N_MORE.it.dict, {
+  'Low damage, by design': 'Pochi danni, di proposito',
+  'The grade counts what this deck stops more than its damage.': 'Il voto dà più peso a ciò che questo mazzo blocca che ai suoi danni.',
+  'With so few copies it is often prized or gone after one knockout.': 'Con così poche copie è spesso tra i Premi o perso dopo un solo KO.',
+  'Most lists run 3 or 4.': 'La maggior parte delle liste ne usa 3 o 4.',
+});
+I18N_MORE.it.pat.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'it')]);

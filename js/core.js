@@ -1544,6 +1544,8 @@ function gEnablers(deck, c) {
  */
 /** 3.2.8: the share of a support Pokemon's harder hit that the damage ceiling counts (see gViability). */
 const G_SUP_SHARE = 0.5;
+// Muse s2 M2: how much of the games its damage does not close a deck that also mills, walls or locks closes by that.
+const G_CTL_MIX = 0.5;
 function gSupportMon(c, top) {
   if (!c || c.t !== 'pkmn' || !(c.ab || []).some(x => !/\bitself\b/.test(x.p || ''))) return false;
   if (!(c.provides || []).some(t => /^(draw|search(_[a-z]+)?|energy_accel)$/.test(t))) return false;
@@ -1683,6 +1685,7 @@ function gControl(deck, coh, main) {
   const out = [], perCopy = {};
   byKey.forEach(({ e, qty }, key) => { const c = e.card;
     const isMain = key === mk, cf = Math.min(1, qty / 3) * (c.t === 'pkmn' && c.stage === 'stage2' ? 0.85 : 1);
+    let atkCost = 9;
     const add = (p, how, src, atk) => {
       // Trainers that do a little each time they are played (Crushing Hammer, Judge, a heal) count per copy.
       if (p.k === 'energy' || p.k === 'hand' || (p.k === 'heal' && p.when === 'now')) {
@@ -1695,7 +1698,8 @@ function gControl(deck, coh, main) {
         : p.k === 'energy' ? 0.3 : p.k === 'heal' ? 0.15 : p.k === 'hand' ? 0.1 : LOCK[p.k] || 0;
       if (!v) return;
       let m = 1;
-      if (src === 'attack') m = isMain ? 0.85 : 0.4;
+      // A free or 1 Energy attack on a Basic (Budew's Itchy Pollen) can be used every turn from the first, main attacker or not.
+      if (src === 'attack') m = isMain ? 0.85 : c.t === 'pkmn' && c.stage === 'basic' && atkCost <= 1 ? 0.75 : 0.4;
       else if (src === 'ability') m = p.k === 'wall' && !p.team ? (isMain ? 1 : 0.5) : p.when === 'active' ? (isMain ? 1 : 0.8) : 1;
       if (p.flip) m *= 0.5;
       if (p.when === 'once') m *= 0.2;
@@ -1705,7 +1709,7 @@ function gControl(deck, coh, main) {
     const seen = new Set();
     (c.ctl || []).forEach(p => { const id = JSON.stringify([p.k, p.sc, p.when, p.via]); if (seen.has(id)) return; seen.add(id);
       add(p, p.via, p.src === 'ability' ? 'ability' : 'trainer', null); });
-    (c.attacks || []).forEach(a => { if (!pay(a)) return; (a.ctl || []).forEach(p => add(p, a.name, 'attack', a.name)); });
+    (c.attacks || []).forEach(a => { if (!pay(a)) return; atkCost = (a.cost || []).length; (a.ctl || []).forEach(p => add(p, a.name, 'attack', a.name)); });
   });
   Object.entries(perCopy).forEach(([k, x]) => {
     const cap = k === 'energy' ? 0.3 : k === 'hand' ? 0.25 : 0.2;
@@ -1713,20 +1717,26 @@ function gControl(deck, coh, main) {
       p: { k }, v: Math.min(cap, x.v), raw: cap, src: 'trainer', cat: cat({ k, when: 'now' }) });
   });
   const comb = l => 1 - l.reduce((a, x) => a * (1 - Math.min(0.95, x.v)), 1);
-  const core = comb(out.filter(x => x.cat !== 'denial' && !(x.cat === 'stall' && x.p.k === 'heal')));
+  // Muse s1/s2: heals count toward stall when the list also walls (Cornerstone Mask Ogerpon ex with
+  // Shuckle and Pokemon Center Lady), and a full hammer suite (energy denial at its cap, about 6
+  // Hammers) counts as control at three quarters, so Hammer Control is graded on what it stops.
+  const wall = out.some(x => x.p.k === 'wall' && x.v >= 0.15);
+  const ham = out.some(x => x.p.k === 'energy' && !x.key && x.v >= 0.24);
+  const core = comb(out.filter(x => (x.cat !== 'denial' || ham) && !(x.cat === 'stall' && x.p.k === 'heal' && !wall))
+    .map(x => x.cat === 'denial' ? Object.assign({}, x, { v: x.v * 0.75 }) : x));
   if (core < 0.35) return null;
   const P = comb(out);
   const by = {}; out.forEach(x => { by[x.cat] = comb(out.filter(y => y.cat === x.cat)); });
-  const kinds = ['lock', 'mill', 'stall'].filter(k => (by[k] || 0) >= 0.25).sort((a, b) => by[b] - by[a]);
+  const kinds = ['lock', 'mill', 'stall', 'denial'].filter(k => (by[k] || 0) >= 0.25 && (k !== 'denial' || ham)).sort((a, b) => by[b] - by[a]);
   if (!kinds.length) kinds.push(['lock', 'mill', 'stall'].sort((a, b) => (by[b] || 0) - (by[a] || 0))[0]);
   return { pieces: out.sort((a, b) => b.v - a.v), core, P, by, kinds, close: 0.45 + 0.4 * P };
 }
 
 /** v63: one control piece in plain words, from what ctl63 read off the card. */
-function gCtlSay(x) {
+function gCtlSay(x, lead) {
   const p = x.p, opp = "your opponent";
   if (x.who) {
-    const w = x.who.map(y => `${y.qty} ${gCap(y.name)}`).join(', ');
+    const w = x.who.map(y => `${y.qty} ${gCap(y.name)}`).join(', ') + (lead ? ', which' : '');
     return p.k === 'energy' ? `${w} discard Energy from ${opp}'s Pokemon${x.who.every(y => y.p.flip) ? ' on a coin flip' : ''}`
       : p.k === 'hand' ? `${w} cut down ${opp}'s hand` : `${w} heal your Pokemon`;
   }
@@ -1748,7 +1758,8 @@ function gCtlSay(x) {
       ability: `${who} no damage from attacks by Pokemon with an Ability`, big: `${who} no damage from an attack that does ${p.n || 'a lot'} or more`,
       low: `${who} no damage from Pokemon with ${p.n || 'a few'} or less Energy attached`, basic: `${who} no damage from attacks by Basic Pokemon`,
       bench: 'your Benched Pokemon take no damage from attacks', all: `${who} no damage from attacks` })[p.sc] || `${who} less damage`; }
-  return t ? `${by}: ${t}${when}${flip}` : '';
+  // lead: the piece inside a sentence ("The biggest piece is X's Attack, which discards...").
+  return t ? `${by}${lead ? (/^(?:discards|cuts|heals)\b/.test(t) ? ', which ' : ', where ') : ': '}${t}${when}${flip}` : '';
 }
 
 function gViability(deck, coh, main) {
@@ -1958,23 +1969,32 @@ function gViability(deck, coh, main) {
   closeScore=gClamp(closeScore,0,1);
   // v63: a lock, mill or stall deck closes games by stopping the opponent. When that counts for more
   // than its damage, the grade uses it and the damage finding says why low damage is fine here.
-  let ctl=null; try { ctl=gControl(deck, coh, main); } catch (_) {}
+  let ctl=null, ctlMix=null; try { ctl=gControl(deck, coh, main); } catch (_) {}
   if (ctl && ctl.close>closeScore) { closeScore=ctl.close;
-    const word={ lock:'locking', mill:'milling', stall:'stalling' };
+    const word={ lock:'locking', mill:'milling', stall:'stalling', denial:'stripping Energy and cards' };
     const how=ctl.kinds.map(k=>word[k]).join(' and ');
     const dmg=findings.find(f=>f.t==='Damage ceiling is too low'||f.t==='Two hits for the biggest threats'||f.t==='Nothing can reliably attack');
     if (dmg && dmg.t!=='Nothing can reliably attack') { dmg.sev='ok'; dmg.t='Low damage, by design';
       dmg.d=dmg.d.replace(/ You cannot trade up, which usually loses the prize race\.$/, '').replace(/ Fine if you can take the return hit\.$/, '')+` This deck wins by ${how}, not by trading knockouts, so its damage counts for less.`; }
-    const top=ctl.pieces.filter(x=>x.v>=0.04).map(gCtlSay).filter(Boolean);
+    const big=ctl.pieces.filter(x=>x.v>=0.04&&gCtlSay(x)), top=big.map(x=>gCtlSay(x));
     findings.push({sev:'ok', t:`Wins by ${how}`,
-      d:`The grade counts what this deck stops more than its damage. The biggest piece is ${top[0].replace(/: /, ', where ')}.${top.length>1?` The game plan lists ${Math.min(5,top.length)-1} more.`:''}`});
+      d:`The grade counts what this deck stops more than its damage.${big.length?` The biggest piece is ${gCtlSay(big[0],true)}.`:''}${top.length>1?` The game plan lists ${Math.min(5,top.length)-1} more.`:''}`});
     // The piece the plan rests on, when it is one Pokemon: keep it Active, and run enough of it.
     const k=ctl.pieces.find(x=>x.key&&x.src!=='trainer'&&x.cat!=='denial'&&x.p.k!=='heal');
     if (k && k.p.when==='active') findings.push({sev:'ok', t:`Keep ${gCap(k.name)} Active`,
-      d:`${gCap(k.name)}'s ${k.how} only works while it is in the Active Spot. Switching it out or losing it turns the ${ctl.kinds[0]} off, so plan your retreats around it.`});
+      d:`${gCap(k.name)}'s ${k.how} only works while it is in the Active Spot. Switching it out or losing it turns the ${k.cat} off, so plan your retreats around it.`});
     if (k && k.qty<=2 && !(main && k.key===main.key && k.qty===1)) findings.push({sev:'warn', t:`Only ${k.qty} ${gCap(k.name)}`,
-      d:`The ${ctl.kinds[0]} rests on ${gCap(k.name)}${k.how ? `'s ${k.how}` : ''}, and the list runs ${k.qty}. With so few copies it is often prized or gone after one knockout. Most lists run 3 or 4.`}); }
-  else ctl=null;
+      d:`The ${k.cat} rests on ${gCap(k.name)}${k.how ? `'s ${k.how}` : ''}, and the list runs ${k.qty}. With so few copies it is often prized or gone after one knockout. Most lists run 3 or 4.`}); }
+  else if (ctl) {
+    // Muse s2 M2: a deck that attacks and also mills, walls or locks (Hydreigon ex mill, Crustle). Its damage
+    // still leads, and what it stops closes some of the games its hits do not (G_CTL_MIX of the rest).
+    ctlMix=ctl; ctl=null;
+    closeScore=gClamp(closeScore+(1-closeScore)*G_CTL_MIX*ctlMix.P,0,1);
+    const word={ lock:'locks', mill:'mills', stall:'walls', denial:'strips Energy and cards' };
+    const big=ctlMix.pieces.find(x=>x.v>=0.04&&gCtlSay(x));
+    // Crustle already has its own "walls Pokemon ex" finding, so it is not said twice.
+    if (big && !findings.some(f=>/ walls /.test(f.t||'')&&f.t.startsWith(gCap(big.name)))) findings.push({sev:'ok', t:`Also ${ctlMix.kinds.map(k=>word[k]).join(' and ')}`,
+      d:`Besides attacking, this deck ${ctlMix.kinds.map(k=>word[k]).join(' and ')}, which wins some games its hits alone would not. The biggest piece is ${gCtlSay(big,true)}.`}); }
   const pk=deck.filter(e=>e.card&&e.card.t==='pkmn');
   const pkN=pk.reduce((a,e)=>a+e.qty,0)||1;
   const multiN=pk.filter(e=>(e.card.p||1)>=2).reduce((a,e)=>a+e.qty,0);
@@ -2101,7 +2121,7 @@ function gViability(deck, coh, main) {
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
   const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce:ceS, strat, multiN, pkN, engQ, speed };
-  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, parts };
+  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, ctlMix, parts };
 }
 
 /**
@@ -2260,10 +2280,13 @@ function gPlan(entries, coh, via) {
   if (abOut.length) out.push({ link: `Abilities: ${[...new Set(abOut.map(z => z.who))].slice(0, 4).join(', ')}${new Set(abOut.map(z => z.who)).size > 4 ? ' and more' : ''}`,
     p: abOut.map(z => z.p).join('. ') + '.' });
   // v63: a lock, mill or stall deck's plan comes first: what it stops, from the card text.
-  if (via.ctl) { const C = via.ctl, word = { lock: 'Lock', mill: 'Mill', stall: 'Stall' }, verb = { lock: 'locking', mill: 'milling', stall: 'stalling' };
-    const top = C.pieces.filter(x => x.v >= 0.04).slice(0, 5).map(gCtlSay).filter(Boolean);
-    out.unshift({ link: `Game plan: ${C.kinds.map(k => word[k]).join(' and ')}`,
-      p: `This deck wins by ${C.kinds.map(k => verb[k]).join(' and ')} rather than by trading big hits. ${top.join('. ')}.` }); }
+  if (via.ctl || via.ctlMix) { const C = via.ctl || via.ctlMix, word = { lock: 'Lock', mill: 'Mill', stall: 'Stall', denial: 'Disruption' },
+    verb = { lock: 'locking', mill: 'milling', stall: 'stalling', denial: 'stripping Energy and cards' };
+    const top = C.pieces.filter(x => x.v >= 0.04).slice(0, 5).map(x => gCtlSay(x)).filter(Boolean);
+    const also = { lock: 'locks', mill: 'mills', stall: 'walls', denial: 'strips Energy and cards' };
+    if (top.length) out.unshift(via.ctl ? { link: `Game plan: ${C.kinds.map(k => word[k]).join(' and ')}`,
+      p: `This deck wins by ${C.kinds.map(k => verb[k]).join(' and ')} rather than by trading big hits. ${top.join('. ')}.` }
+      : { link: `Also ${C.kinds.map(k => also[k]).join(' and ')}`, p: `Besides attacking, this deck ${C.kinds.map(k => also[k]).join(' and ')}. ${top.join('. ')}.` }); }
   return out;
 }
 

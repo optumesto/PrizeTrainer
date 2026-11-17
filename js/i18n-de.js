@@ -1759,3 +1759,51 @@ I18N_MORE.de.abil = (function () {
 })();
 // Every Abilities sentence of How it plays; null leaves it to the next pattern.
 I18N_MORE.de.pat.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'de')]);
+
+// Muse s2 M2: the control path's findings and game plan lines (see i18nCtlPats in i18n.js).
+I18N_MORE.de.ctl = {
+  and: ' und ', flip: ' (bei Kopf)',
+  when: { 'while it is in the Active Spot': ', solange es in der Aktiven Position ist', 'during their next turn': ' während seines nächsten Zuges', 'on your first turn': ' in deinem ersten Zug' },
+  cantPlay: k => 'dein Gegner kann keine ' + { Item: 'Item-Karten', Supporter: 'Unterstützerkarten', 'Pokemon Tool': 'Pokémon-Ausrüstungen', Stadium: 'Stadionkarten' }[k] + ' spielen',
+  noAb: { 'Pokemon with a Rule Box': 'Pokémon mit Regelfeld haben keine Fähigkeiten', 'Pokemon in play': 'Pokémon im Spiel haben keine Fähigkeiten',
+    'Evolution Pokemon': 'Entwicklungs-Pokémon haben keine Fähigkeiten', 'Basic Pokemon': 'Basis-Pokémon haben keine Fähigkeiten',
+    'Colorless Pokemon': 'farblose Pokémon haben keine Fähigkeiten', 'the Active Pokemon': 'das Aktive Pokémon hat keine Fähigkeiten' },
+  lowAtk: n => n ? `Pokémon mit ${n} oder weniger angelegten Energien können nicht angreifen` : 'Pokémon mit wenig angelegter Energie können nicht angreifen',
+  noAtk: 'das Verteidigende Pokémon kann nicht angreifen', noRet: 'das Verteidigende Pokémon kann sich nicht zurückziehen',
+  mill: n => n === 1 ? 'legt die oberste Karte vom Deck deines Gegners ab' : `legt die obersten ${n} Karten vom Deck deines Gegners ab`,
+  energy: sp => `legt ${sp ? 'Spezial-Energie' : 'Energie'} von den Pokémon deines Gegners ab`,
+  hand: 'verkleinert die Hand deines Gegners',
+  heal: v => v === 'all' ? 'heilt allen Schaden' : `heilt ${v} Schadenspunkte`,
+  wall: (who, k, n) => ({ it: 'es erhält keinen Schaden', team: 'deine Pokémon erhalten keinen Schaden', nonrule: 'Pokémon ohne Regelfeld erhalten keinen Schaden', bench: 'deine Pokémon auf der Bank erhalten keinen Schaden' })[who] + ' '
+    + ({ ex: 'durch Attacken von Pokémon-ex', basicex: 'durch Attacken von Basis-Pokémon-ex', ability: 'durch Attacken von Pokémon mit Fähigkeit', basic: 'durch Attacken von Basis-Pokémon', all: 'durch Attacken',
+      big: n ? `durch eine Attacke mit ${n} oder mehr Schaden` : 'durch eine Attacke mit viel Schaden', low: n ? `durch Pokémon mit ${n} oder weniger angelegten Energien` : 'durch Pokémon mit wenig angelegter Energie' })[k],
+  less: who => ({ it: 'es erhält weniger Schaden', team: 'deine Pokémon erhalten weniger Schaden', nonrule: 'Pokémon ohne Regelfeld erhalten weniger Schaden', bench: 'deine Pokémon auf der Bank erhalten weniger Schaden' })[who],
+  who: (list, k, flip, lead) => { const f = flip ? 'bei Kopf ' : '';
+    return list + (lead ? ({ energy: `, die ${f}Energie von den Pokémon deines Gegners ablegen`, hand: `, die ${f}die Hand deines Gegners verkleinern`, heal: `, die ${f}deine Pokémon heilen` })[k]
+      : ({ energy: ` legen ${f}Energie von den Pokémon deines Gegners ab`, hand: ` verkleinern ${f}die Hand deines Gegners`, heal: ` heilen ${f}deine Pokémon` })[k]); },
+  of: (owner, what) => `${what} von ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `Der wichtigste Baustein ist ${x}.`,
+  how: { lock: 'Sperren', mill: 'Deckabbau', stall: 'Hinhalten', denial: 'das Entfernen von Energie und Karten' },
+  also: { lock: 'sperrt', mill: 'leert das gegnerische Deck', stall: 'mauert', denial: 'entfernt Energie und Karten' },
+  alsoN: { lock: 'Sperre', mill: 'Deckabbau', stall: 'Mauer', denial: 'Störung' },
+  kind: { lock: 'Sperre', mill: 'Deckabbau', stall: 'Mauer', denial: 'Störung' },
+  winsBy: x => 'Gewinnt durch ' + x, winsNot: x => `Dieses Deck gewinnt durch ${x}, nicht durch einen Schlagabtausch, daher zählt sein Schaden weniger.`,
+  winsRather: x => `Dieses Deck gewinnt durch ${x} statt durch einen Schlagabtausch mit großen Treffern.`, plan: x => 'Spielplan: ' + x,
+  alsoT: x => 'Zusätzlich: ' + x,
+  besidesWins: x => `Dieses Deck greift nicht nur an, sondern ${x} auch, und gewinnt so manche Spiele, die seine Treffer allein nicht gewinnen würden.`,
+  besides: x => `Dieses Deck greift nicht nur an, sondern ${x} auch.`, lists: n => n === '1' ? 'Der Spielplan nennt einen weiteren.' : `Der Spielplan nennt ${n} weitere.`, keep: x => `Halte ${x} in der Aktiven Position`,
+  onlyActive: x => `${x} wirkt nur, solange es in der Aktiven Position ist.`,
+  switchOff: k => `Wird es ausgewechselt oder geht es verloren, fällt ${({ lock: 'die Sperre', mill: 'der Deckabbau', stall: 'die Mauer', denial: 'die Störung' })[k]} weg, also plane deine Rückzüge darum herum.`,
+  rests: (k, x, n) => `${({ lock: 'Die Sperre', mill: 'Der Deckabbau', stall: 'Die Mauer', denial: 'Die Störung' })[k]} hängt an ${x}, und die Liste spielt ${n}.`,
+  only: (n, x) => `Nur ${n} ${x}`,
+  // A time phrase goes after the first verb; a clause with a comma stays at the end.
+  place: (r, w) => { if (/^,/.test(w)) return r + w;
+    const m = r.match(/^(.*?\b(?:kann|können|hat|haben|erhält|erhalten|legt|heilt|verkleinert)(?: sich)?) (.+)$/);
+    return m ? `${m[1]}${w} ${m[2]}` : r + w; },
+};
+Object.assign(I18N_MORE.de.dict, {
+  'Low damage, by design': 'Wenig Schaden, mit Absicht',
+  'The grade counts what this deck stops more than its damage.': 'Die Note gewichtet, was dieses Deck verhindert, stärker als seinen Schaden.',
+  'With so few copies it is often prized or gone after one knockout.': 'Mit so wenigen Kopien liegt es oft in den Preiskarten oder ist weg, sobald es einmal kampfunfähig ist.',
+  'Most lists run 3 or 4.': 'Die meisten Listen spielen 3 oder 4.',
+});
+I18N_MORE.de.pat.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'de')]);
