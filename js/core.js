@@ -1864,7 +1864,8 @@ function gViability(deck, coh, main) {
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
     closeScore=0.6+0.3*(ceS-hi/2)/(FMT.ohkoTarget-hi/2);
     // 3.2.8: only a one-prize Pokemon that attacks counts, not an engine (Metagross for Metal Maker).
-    const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi && (r===bestR || r===mainR || !sidePre(r))).map(r=>gCap(r.name)))];
+    // 3.2.8 (Muse L3): the main attacker is named first, so a Cinccino deck is not summed up by its Metagross.
+    const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi && (r===bestR || r===mainR || !sidePre(r))).sort((a,b)=>(b===mainR)-(a===mainR)).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
     d:`${lead}${g35Hit(bestR)}${ceTxt}${hitsC}${supTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
