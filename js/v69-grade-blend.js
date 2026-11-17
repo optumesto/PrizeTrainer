@@ -260,11 +260,13 @@ function g68Blend(R, deck) {
   if (deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily || R.rawOverall != null) return R;
   if (!(deck.cards || []).some(c => c.supertype)) return R;
   const m = g68Arch(deck, mu60Data, R);
-  if (!m) return R;
+  // 3.2.8 (Muse M1): no tournament results match this deck, so the grade is the cards alone. It says so
+  // and is never called Tournament-ready (gBand), since a tidy list that loses grades like a winning one.
+  if (!m) { R.noRes = true; return R; }
   const arch = m.deck;
   const b = g88Apply(R, deck, arch, m);
   const st = g68Strength(mu60Data)[arch.id];
-  if (!st) return R;
+  if (!st) { R.noRes = true; return R; }
   const card = R.overall;
   // 2.7.8: results and cards count evenly once an archetype has 500 games, and the share rises in a
   // straight line before that (100 games 10%, 250 games 25%), so a few games cannot swing a grade.
@@ -283,7 +285,8 @@ function g68Blend(R, deck) {
 }
 /** One plain sentence on the results part, for under the grade. */
 function g68Line(R) {
-  const r = R && R.res; if (!r) return '';
+  const r = R && R.res;
+  if (!r) return R && R.noRes ? ' No online tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.' : '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
   const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
   // 3.0 (Frankfurt test): this win rate counts games since the newest set three times, and the

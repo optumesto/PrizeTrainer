@@ -3391,8 +3391,10 @@ function gradeDeck(deck) {
   return { overall, coh, via, unread, entries, plan, steps };
 }
 
-function gBand(v) {
-  if (v>=8.5) return ['Tournament-ready','var(--green)'];
+/** 3.2.8: noRes is true when no tournament results match the deck (R.noRes): its grade reads the cards
+ *  alone, so it is never called Tournament-ready, however high the number. */
+function gBand(v, noRes) {
+  if (v>=8.5&&!noRes) return ['Tournament-ready','var(--green)'];
   if (v>=7)   return ['Strong','var(--water)'];
   if (v>=5)   return ['Fixable','var(--electric)'];
   if (v>=3)   return ['Needs work','var(--fire)'];

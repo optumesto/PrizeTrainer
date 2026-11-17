@@ -437,12 +437,12 @@ renderGrade = function () {
   }
 
   const R = g29Grade(deck) || gradeDeck(deck);
-  let [band, col] = gBand(R.overall);
+  let [band, col] = gBand(R.overall, R.noRes);
   // v57: a list that breaks a deck building rule is never called ready for an event.
   const brk = typeof rules34Breaches === 'function' ? rules34Breaches(deck) : [];
   if (brk.length) band = 'Not legal yet';
   const synV = gR1(R.coh.score * 10), powV = gR1(R.via.score * 10);
-  const means = (G29_BANDS.find(b => R.overall >= b[0]) || G29_BANDS[G29_BANDS.length - 1])[1];
+  const means = (G29_BANDS.find(b => R.overall >= b[0] && !(R.noRes && b[0] >= 8.5)) || G29_BANDS[G29_BANDS.length - 1])[1];
   const probs = g29Problems(R);
   const good = R.via.findings.filter(f => f.sev === 'ok');
   const syn = R.coh.synergies;
@@ -556,7 +556,7 @@ buildDeckCard = function (deck) {
     g = `<div class="deck-grade none g71-wait"><span>Grading\u2026</span></div>`;
     if (typeof g71Kick === 'function') setTimeout(() => g71Kick(deck), 0);
   } else if (R) {
-    let [band, col] = gBand(R.overall);
+    let [band, col] = gBand(R.overall, R.noRes);
     if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { band = 'Not legal yet'; col = 'var(--red)'; }
     // 3.2.7: a grade read from part of the list is marked, not shown as final.
     else if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) { band = 'Not final'; col = 'var(--text-3)'; }
