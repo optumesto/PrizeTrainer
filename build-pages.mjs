@@ -104,7 +104,7 @@ export function footerHtml(up = '') {
   return `  <footer>
     <nav class="tools" aria-label="Free tools">${TOOLS.map(a).join('')}</nav>
     <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company. Card names, text and images are &copy; The Pok&eacute;mon Company, Nintendo, Creatures and GAME FREAK.</p>
-    <nav aria-label="Site">${NAV.map(a).join('')}</nav>
+    <nav aria-label="Site">${NAV.map(a).join('')}<a class="rd-social" href="https://www.instagram.com/rdydeck/" rel="me noopener" target="_blank">Instagram</a></nav>
   </footer>`;
 }
 
@@ -175,6 +175,15 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 ${up ? STYLE.replace(/url\((saira)/g, 'url(' + up + '$1') : STYLE}
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
+<style>.rd-nosocial .rd-social { display:none !important; }</style>
+<script>
+// 3.2.8: Instagram and YouTube are for ages 13 and up. Their links stay hidden for anyone who told
+// RdyDeck they are under 13, and in the Google Play app for anyone who has not said they are 13 or older.
+try { (function () { var r = String(document.referrer || ''), rp = false; try { var u = new URL(r); rp = u.origin === location.origin && u.searchParams.get('src') === 'play'; } catch (e) {}
+  var play = new URLSearchParams(location.search).get('src') === 'play' || r.indexOf('android-app://com.rdydeck.app') === 0 || rp || sessionStorage.getItem('pt_channel') === 'play';
+  var age = localStorage.getItem('pt_age_v32') || '';
+  if (age === 'u13' || (play && age !== 'teen' && age !== 'adult')) document.documentElement.classList.add('rd-nosocial'); })(); } catch (e) { document.documentElement.classList.add('rd-nosocial'); }
+</script>
 </head>
 <body>
 <main>

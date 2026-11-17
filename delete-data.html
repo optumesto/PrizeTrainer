@@ -58,6 +58,15 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   ol li, ul li { margin:0.25rem 0; }
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
+<style>.rd-nosocial .rd-social { display:none !important; }</style>
+<script>
+// 3.2.8: Instagram and YouTube are for ages 13 and up. Their links stay hidden for anyone who told
+// RdyDeck they are under 13, and in the Google Play app for anyone who has not said they are 13 or older.
+try { (function () { var r = String(document.referrer || ''), rp = false; try { var u = new URL(r); rp = u.origin === location.origin && u.searchParams.get('src') === 'play'; } catch (e) {}
+  var play = new URLSearchParams(location.search).get('src') === 'play' || r.indexOf('android-app://com.rdydeck.app') === 0 || rp || sessionStorage.getItem('pt_channel') === 'play';
+  var age = localStorage.getItem('pt_age_v32') || '';
+  if (age === 'u13' || (play && age !== 'teen' && age !== 'adult')) document.documentElement.classList.add('rd-nosocial'); })(); } catch (e) { document.documentElement.classList.add('rd-nosocial'); }
+</script>
 </head>
 <body>
 <main>
@@ -155,7 +164,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </section>
 
   <p class="meta" style="margin-top:2rem">RdyDeck is an unofficial fan-made app. It is not produced, endorsed, supported or affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company. Card names, text and images are © The Pokémon Company, Nintendo, Creatures and GAME FREAK.</p>
-  <footer><a href="./">RdyDeck</a><a href="meta-decks.html">Deck guides</a><a href="how-grading-works.html">How grading works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete your data</a></footer>
+  <footer><a href="./">RdyDeck</a><a href="meta-decks.html">Deck guides</a><a href="how-grading-works.html">How grading works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete your data</a><a class="rd-social" href="https://www.instagram.com/rdydeck/" rel="me noopener" target="_blank">Instagram</a></footer>
 </main>
 <script>
 // Shows the page in the language picked in RdyDeck (or the browser's), English otherwise.
