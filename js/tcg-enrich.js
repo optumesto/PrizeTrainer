@@ -479,6 +479,12 @@ function geEffects(text) {
     if (/switch this pokemon with 1 of your benched pokemon/.test(s)) { tags.add('switch_own'); say.push('switches itself out to your Bench'); return; }
     if (/have no retreat cost|has no retreat cost/.test(s) && /your/.test(s)) { tags.add('switch_own'); return; }
     if (/^move (?:an?|any amount of|all|\d+) (?:basic )?(?:[a-z]+ )?energy from (?:1 of )?your benched pokemon to your active pokemon/.test(s)) { tags.add('energy_move'); say.push('moves Energy from your Bench to your Active Pokemon'); return; }
+    // Always-on extra HP and damage cuts for your own Pokemon (Ludicolo's Vibrant Dance, Aurorus's
+    // Tundra Wall). Said in the plan only, with no tag, so no grade moves.
+    if ((m = s.match(/^(?:all of |each of )?your ((?:basic |[a-z]+ )?)pokemon(?: in play)? gets? \+(\d+) hp$/))) {
+      say.push(`gives ${m[1] ? 'each of your ' + geWhat(m[1] + 'pokemon') : 'each of your Pokemon'} in play ${m[2]} more HP`); return; }
+    if ((m = s.match(new RegExp("^(?:all of |each of )?your ((?:basic |" + GE_TY + " )?)pokemon(?: in play)?(?: that ha(?:s|ve) any (" + GE_TY + ") energy attached)? takes? (\\d+) less damage from attacks from your opponent's pokemon$")))) {
+      say.push(`makes each of your ${m[1] ? geWhat(m[1] + 'pokemon') : 'Pokemon'}${m[2] ? ` with ${geCap(m[2])} Energy attached` : ''} take ${m[3]} less damage from your opponent's attacks`); return; }
     // Damage boosts and locks.
     if ((m = s.match(/attacks used by your (.+?)(?:, except [^,]+,)? do (\d+) more damage/))) { tags.add('damage_boost'); say.push(`your ${geWhat(m[1])} do ${m[2]} more damage`); return; }
     // v62: "both yours and your opponent's" sits in parentheses, which are dropped, so "in play" counts too (Iron Thorns ex's Initialization).
