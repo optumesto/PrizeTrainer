@@ -55,14 +55,90 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   footer a { color:var(--text-2); }
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
-<style>.rd-nosocial .rd-social { display:none !important; }</style>
+<style>.rd-nosocial .rd-social { display:none !important; }
+.rd-age { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:1rem; background:rgba(0,0,0,0.6); }
+.rd-age form { width:100%; max-width:22rem; background:var(--bg); color:var(--text); border:2px solid var(--rule); padding:1.2rem; font-family:var(--font); }
+.rd-age h2 { margin:0 0 0.8rem; padding:0; border:0; font-size:1.2rem; }
+.rd-age .row { display:flex; gap:0.6rem; }
+.rd-age select, .rd-age input { flex:1; min-width:0; min-height:44px; font:inherit; color:var(--text); background:transparent; border:1px solid var(--line); padding:0 0.6rem; }
+.rd-age select option { color:#1a1814; background:#f2eee5; }
+.rd-age p { margin:0.7rem 0 0; font-size:0.875rem; }
+.rd-age .btns { display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1rem; }
+.rd-age button { min-height:44px; padding:0 1rem; font:inherit; color:var(--text); background:transparent; border:1px solid var(--line); cursor:pointer; }
+.rd-age button[type=submit] { background:var(--mark); border-color:var(--mark); color:#fff; }
+.rd-age button:disabled { opacity:0.45; cursor:default; }</style>
 <script>
 // 3.2.8: Instagram and YouTube are for ages 13 and up. Their links stay hidden for anyone who told
-// RdyDeck they are under 13, and in the Google Play app for anyone who has not said they are 13 or older.
-try { (function () { var r = String(document.referrer || ''), rp = false; try { var u = new URL(r); rp = u.origin === location.origin && u.searchParams.get('src') === 'play'; } catch (e) {}
-  var play = new URLSearchParams(location.search).get('src') === 'play' || r.indexOf('android-app://com.rdydeck.app') === 0 || rp || sessionStorage.getItem('pt_channel') === 'play';
-  var age = localStorage.getItem('pt_age_v32') || '';
-  if (age === 'u13' || (play && age !== 'teen' && age !== 'adult')) document.documentElement.classList.add('rd-nosocial'); })(); } catch (e) { document.documentElement.classList.add('rd-nosocial'); }
+// RdyDeck they are under 13. In the Google Play app, someone who has not given an age is asked a
+// neutral question (birth month and year, no default, no hint of an age limit) when they tap one.
+// 13 or older opens the link; under 13 does not, and the links stay hidden from then on. Only the
+// age group is kept, on this device, under the same key as the app's own age question.
+(function () {
+  var KEY = 'pt_age_v32', mode = '';
+  try {
+    var r = String(document.referrer || ''), rp = false;
+    try { var u = new URL(r); rp = u.origin === location.origin && u.searchParams.get('src') === 'play'; } catch (e) {}
+    var play = new URLSearchParams(location.search).get('src') === 'play' || r.indexOf('android-app://com.rdydeck.app') === 0 || rp || sessionStorage.getItem('pt_channel') === 'play';
+    var age = localStorage.getItem(KEY) || '';
+    mode = age === 'u13' ? 'hide' : (play && age !== 'teen' && age !== 'adult') ? 'ask' : '';
+  } catch (e) { mode = 'hide'; }
+  var root = document.documentElement;
+  if (mode === 'hide') { root.classList.add('rd-nosocial'); return; }
+  if (mode !== 'ask') return;
+  var T = {
+    en: ['When were you born?', 'Month', 'Year', 'Your answer stays on this device.', 'Cancel', 'Continue'],
+    es: ['¿Cuándo naciste?', 'Mes', 'Año', 'Tu respuesta se queda en este dispositivo.', 'Cancelar', 'Continuar'],
+    pt: ['Quando você nasceu?', 'Mês', 'Ano', 'Sua resposta fica neste aparelho.', 'Cancelar', 'Continuar'],
+    fr: ['Mois et année de naissance', 'Mois', 'Année', 'Votre réponse reste sur cet appareil.', 'Annuler', 'Continuer'],
+    de: ['Wann bist du geboren?', 'Monat', 'Jahr', 'Deine Antwort bleibt auf diesem Gerät.', 'Abbrechen', 'Weiter'],
+    it: ['Mese e anno di nascita', 'Mese', 'Anno', 'La tua risposta resta su questo dispositivo.', 'Annulla', 'Continua']
+  };
+  function lang() {
+    var l = ''; try { l = localStorage.getItem('rd_lang') || ''; } catch (e) {}
+    if (!T[l]) { var n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase().slice(0, 2); l = T[n] ? n : 'en'; }
+    return l;
+  }
+  function ask(href) {
+    if (document.querySelector('.rd-age')) return;
+    var l = lang(), t = T[l], now = new Date(), Y = now.getFullYear(), M = now.getMonth() + 1, opts = '<option value="" selected disabled>' + t[1] + '</option>';
+    var name = function (m) { try { return new Intl.DateTimeFormat(l === 'pt' ? 'pt-BR' : l, { month: 'long' }).format(new Date(2000, m - 1, 15)); } catch (e) { return String(m); } };
+    for (var m = 1; m <= 12; m++) opts += '<option value="' + m + '">' + name(m) + '</option>';
+    var w = document.createElement('div');
+    w.className = 'rd-age';
+    w.innerHTML = '<form role="dialog" aria-modal="true" aria-labelledby="rd-age-h"><h2 id="rd-age-h">' + t[0] + '</h2><div class="row"><select aria-label="' + t[1] + '">' + opts +
+      '</select><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="' + t[2] + '" aria-label="' + t[2] + '"></div><p>' + t[3] +
+      '</p><div class="btns"><button type="button">' + t[4] + '</button><button type="submit" disabled>' + t[5] + '</button></div></form>';
+    document.body.appendChild(w);
+    var f = w.querySelector('form'), s = w.querySelector('select'), y = w.querySelector('input'), go = w.querySelector('button[type=submit]');
+    function val() { var yr = +y.value, mo = +s.value; return mo && /^\d{4}$/.test(y.value) && yr >= Y - 120 && (yr < Y || (yr === Y && mo <= M)) ? [yr, mo] : null; }
+    function close() { w.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    s.addEventListener('change', function () { go.disabled = !val(); });
+    y.addEventListener('input', function () { y.value = y.value.replace(/\D/g, ''); go.disabled = !val(); });
+    w.querySelector('button[type=button]').addEventListener('click', close);
+    w.addEventListener('click', function (e) { if (e.target === w) close(); });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = val(); if (!v) return;
+      // The youngest they can be: a birthday in this month counts as not yet reached.
+      var a = Y - v[0] - (v[1] >= M ? 1 : 0), band = a < 13 ? 'u13' : a < 18 ? 'teen' : 'adult';
+      try { localStorage.setItem(KEY, band); } catch (x) {}
+      close();
+      if (band === 'u13') { mode = 'hide'; root.classList.add('rd-nosocial'); return; }
+      mode = '';
+      window.open(href, '_blank', 'noopener');
+    });
+    s.focus();
+  }
+  document.addEventListener('click', function (e) {
+    if (!mode || !e.target.closest) return;
+    var a = e.target.closest('a.rd-social, .rd-social a');
+    if (!a) return;
+    e.preventDefault();
+    if (mode === 'ask') ask(a.href);
+  }, true);
+})();
 </script>
 </head>
 <body>
