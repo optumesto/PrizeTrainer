@@ -1,8 +1,13 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.rdydeck.app",
-        "sha256_cert_fingerprints": ["DD:C1:74:8B:9D:24:8A:B3:EF:C2:6A:E5:1C:C7:91:46:DC:37:B6:26:95:A3:BF:FA:02:E0:87:F0:CB:AA:6F:DC"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.rdydeck.app",
+    "sha256_cert_fingerprints": [
+      "DD:C1:74:8B:9D:24:8A:B3:EF:C2:6A:E5:1C:C7:91:46:DC:37:B6:26:95:A3:BF:FA:02:E0:87:F0:CB:AA:6F:DC",
+      "ED:FF:CE:76:C4:E2:A5:5E:BB:5E:B7:4E:B6:FF:3B:AA:D2:F6:91:0E:D4:A6:00:02:C1:DB:79:B6:EF:C5:7E:6E",
+      "A0:FD:29:89:E2:5B:6E:7D:CB:A3:36:16:0C:71:9E:5B:27:B9:9F:39:6D:71:B3:00:27:C5:D7:28:BD:07:25:C8",
+      "97:AB:0F:C4:B0:87:24:6A:B3:73:76:46:18:2B:3A:98:37:F2:EC:4A:3F:46:2E:64:04:5A:E5:20:60:39:EC:1C"
+    ]
+  }
+}]
