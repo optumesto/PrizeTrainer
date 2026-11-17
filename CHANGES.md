@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Muse section 1 grade fixes (branch muse-s1-fixes, not numbered yet: give it the next number at release, after 3.2.8 if that goes first)
+
+Changed files: js/core.js, js/v69-grade-blend.js, js/v45-sample-share-daily.js, js/v29-rotation.js, js/creator-kit.js, js/upgrades.js, js/grade-flag.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (file stamps), tests/grade-baseline.json and CHANGES.md. Version, sw.js cache and What's new are left for the release.
+
+- Cinderace and other Pokemon with a setup Ability (put it face down in the Active Spot when setting up) count as reachable without their Basic. Credit scales with the odds it is in the opening hand (G_SETUP_FULL in core.js gives full credit instead). A thin line gets a "rarely reaches the board" warning with the odds.
+- Support Pokemon (Basic Pokemon with a draw, search or switch Ability, and others kept for an Ability) are not picked as the main attacker and no longer set the damage ceiling or the one-prize note. Their damage is mentioned at half weight (G_SUP_SHARE), and the 3-prize finding says to use them and move them out.
+- The main card is read from the list's plan (the thickest attacking line), so Latias ex, Kangaskhan and the like are never main in control or toolbox lists.
+- When a list is built around a Pokemon with no tournament results of its own, the results come from the closest archetype that has them and the grade sentence says they are borrowed. A list that matches no archetype says the grade reads the cards alone and is never called Tournament-ready (grade screen, home card, share text and creator kit).
+- The one-prize sentence names the main attacker first.
+- Grade check: 7 of 132 lists moved: Crustle 078 8.6 to 8.3 and 100 8.5 to 8.2 (Kangaskhan no longer sets the ceiling), Starmie Dusknoir 120 8.1 to 7.9, Talonflame Dusknoir 062 8.2 to 8.1; Talonflame Dusknoir 102 and 125 and Dhelmise 091 change Power only, grade the same. Baseline updated on this branch.
+
 # RdyDeck 3.2.7 (build 117): dollar prices, offline starter decks, swipe, folds, phone text size, landscape, in-app dialogs, Muse audit of 3.2.6, grades wait for card data, Expanded revivers (17 Nov 2026)
 
 Changed files: js/owned-prices.js (dollars only), js/offline-starters.js (new), js/card-swipe.js (new), js/app-dialog.js (new), js/fold-sections.js (new), js/easier-first-visit.js (time to name a pasted deck), js/core.js, js/tcg-enrich.js, js/v40-audit-fixes.js, js/v71-audit-fixes.js, js/v29-rotation.js, js/v35-rotation-marks.js, js/grade-history.js, js/keyboard.js, js/v26-practice.js and js/v47-prerelease.js (in-app dialogs, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (text-scale meta tag, no fixed root size, landscape, large text, dialog and fold styles, softwareVersion, file stamps), sw.js (cache prize-trainer-v117), tests/owned-check.mjs, tests/i18n-check.mjs and CHANGES.md.
