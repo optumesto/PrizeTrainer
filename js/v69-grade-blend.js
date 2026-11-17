@@ -55,8 +55,7 @@ function g68Arch(deck, data, ctx) {
   try { const pick = mu60Picks()[deck.id]; const d = pick && data.decks.find(x => x.id === pick); if (d) return { deck: d, score: 1, pick: true }; } catch (_) {}
   // The grade only borrows results from an archetype whose named Pokemon the deck plays, so an
   // Archaludon list never takes Mega Excadrill's record just because they share support cards.
-  const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
-  const need = d => g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' ')));
+  const need = g68Plays(deck);
   const best = mu60Best(deck, data, need);
   if (!best || best.score < G68_MATCH) return null;
   // 3.2.8: a list built around another Pokemon than the one the archetype is named for (3 Palafin ex and
@@ -68,6 +67,29 @@ function g68Arch(deck, data, ctx) {
   const on = ' ' + mu60Norm(own.name) + ' ';
   const alt = mu60Best(deck, data, d => need(d) && g68Named(d.name).some(p => on.includes(' ' + p + ' ')));
   return alt && alt.score >= G68_MATCH ? alt : Object.assign({}, best, { own: own.name });
+}
+/** Whether a deck plays every Pokemon an archetype asks for (g68Need), as a test for mu60Best. */
+function g68Plays(deck) {
+  const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
+  return d => g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' ')));
+}
+/** 3.2.8 (Muse section 4 M10): the archetype named for this list's main attacker, when the grade borrows
+ *  another one's results (a Raging Bolt Ogerpon list whose cards sit closest to Basic Box). Empty when the
+ *  borrowed archetype names the main attacker, or no archetype the list plays does. */
+function g68Alt(R, deck, m) {
+  try {
+    const mn = R && R.via && R.via.main && (R.via.main.name || R.via.main.key);
+    if (!mn || !m || m.pick || m.own) return '';
+    const on = ' ' + mu60Norm(mn) + ' ';
+    const names = d => g68Named(d.name).some(p => on.includes(' ' + p + ' '));
+    if (names(m.deck)) return '';
+    // Only an archetype named first for the main attacker counts as built around it, so a Basic Box list
+    // led by Teal Mask Ogerpon ex is not told it belongs with Raging Bolt Ogerpon.
+    const leads = d => { const n = g68Named(d.name); return !!n.length && on.includes(' ' + n[0] + ' '); };
+    const need = g68Plays(deck);
+    const alt = mu60Best(deck, mu60Data, d => d.id !== m.deck.id && need(d) && leads(d));
+    return alt ? alt.deck.name : '';
+  } catch (_) { return ''; }
 }
 /** 3.2.8: how much thicker the deck's own main line must be than the archetype's named Pokemon. */
 const G68_OWN = 1.5;
@@ -280,7 +302,8 @@ function g68Blend(R, deck) {
   // v71: wr is the win rate the score was built from (games since the newest set counted three
   // times), and thin follows the share results actually get, not a separate game count.
   R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, own: m.own || '', w, score: st.score, idx: st.idx, wr: st.wrUsed, rawWr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
-    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2 };
+    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2,
+    alt: g68Alt(R, deck, m), main: R.via && R.via.main ? (R.via.main.name || '') : '' };
   return R;
 }
 /** One plain sentence on the results part, for under the grade. */
@@ -293,7 +316,7 @@ function g68Line(R) {
   // Grade vs win rate section shows the plain one, so each says which it is.
   const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
   const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;

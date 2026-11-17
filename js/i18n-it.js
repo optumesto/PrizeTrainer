@@ -1527,7 +1527,6 @@ I18N_MORE.it = {
     [/^Your ACE SPEC, (.+), has nothing to work with$/, "Il tuo ASSO TATTICO, $1, non ha niente con cui funzionare"],
     [/^The list runs (\d+) Energy\. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn\. Trade some for draw or search cards\.$/, "La lista usa $1 Energie. La maggior parte dei mazzi ne usa da 8 a 16, quindi molte tue pescate sono Energie che non puoi usare in quel turno. Scambiane alcune con carte di pesca o di ricerca."],
     [/^None of your Supporters draws cards or searches your deck, so once your opening hand is spent your only draw is (.+)\. Most decks run 4 or more Supporters that draw, like Lillie's Determination\.$/, (m, a) => 'Nessuno dei tuoi Aiuti pesca carte o cerca nel tuo mazzo, quindi finita la mano iniziale la tua unica pesca è ' + a.replace(/ and /g, ' e ') + ". La maggior parte dei mazzi usa 4 o più Aiuti che pescano, come Lillie's Determination."],
-    [/^([^;()]+?) hits for (\d+) with (\d+) (.+) attached and (\d+) once (\d+) are in play\. Your list runs (\d+), so the full hit is a mid game plan, not a turn 2 one\.$/, (m, n, a, e, w, b, t, h) => n + ' fa ' + a + ' danni con ' + e + ' ' + itI18nEnergy(w, e) + (e === '1' ? ' assegnata e ' : ' assegnate e ') + b + ' quando ce ne sono ' + t + ' in gioco. La tua lista ne usa ' + h + ', quindi il colpo pieno è un piano da metà partita, non da turno 2.'],
     [/^([^;()]+?) (is|are) risky at 3 prizes( each)?, yet you hit hard enough to justify the trade\.$/, (m, n, v, e) => n + (v === 'are' ? ' sono rischiosi da 3 Premi' : ' è rischioso da 3 Premi') + (e ? ' ciascuno' : '') + ', ma colpisci abbastanza forte da giustificare lo scambio.'],
     [/^(\d+) of your (\d+) Pokemon give up two prizes, so most knockouts cost you two\. Send in your one-prize Pokemon when you can\.$/, "$1 dei tuoi $2 Pokémon concedono due Premi, quindi quasi ogni KO te ne costa due. Manda avanti i tuoi Pokémon da un Premio quando puoi."],
     [/^([^;()]+?) evolves from (.+), which is not in the list, so it can never reach the board\.$/, "$1 si evolve da $2, che non è nella lista, quindi non può mai arrivare in gioco."],
@@ -1746,3 +1745,148 @@ Object.assign(I18N_MORE.it.dict, {
   'Most lists run 3 or 4.': 'La maggior parte delle liste ne usa 3 o 4.',
 });
 I18N_MORE.it.pat.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'it')]);
+// The Power findings' damage text, read by i18nDmgSent in js/i18n.js.
+I18N_MORE.it.dmg = (function () {
+  const n1 = n => +n === 1, pl = (p, a, b) => p ? b : a;
+  const own = x => String(x).replace(/'s$/, '');
+  const opp = 'il tuo avversario';
+  const cs = (n, k) => ({ moved: n1(n) ? 'carta che lo porta in posizione attiva o ti fa ritirare gratis' : 'carte che lo portano in posizione attiva o ti fanno ritirare gratis',
+    oppdmg: n1(n) ? 'carta che gli mette prima segnalini danno' : 'carte che gli mettono prima segnalini danno',
+    xenergy: n1(n) ? 'carta che assegna Energia in più' : 'carte che assegnano Energia in più' })[k];
+  const KIND = { Item: 'Strumento', Supporter: 'Aiuto', Trainer: 'Allenatore', Stadium: 'Stadio', 'Pokemon Tool': 'Oggetto Pokémon' };
+  const STG = { Basic: 'Pokémon Base', 'Stage 1': 'Pokémon di Fase 1', 'Stage 2': 'Pokémon di Fase 2' };
+  const E = (t, n) => t ? itI18nEnergy(t + ' Energy', n) : (n1(n) ? 'Energia' : 'Energie');
+  const T = {
+    and: ' e ', of: (o, w) => `${w} di ${o}`,
+    en: (ts, basic, n, cards) => { const k = cards ? 1 : n;
+      let e = ts.length ? itI18nEnergy(ts.join(' and ') + ' Energy', k) : (n1(k) ? 'Energia' : 'Energie');
+      if (basic) e += n1(k) ? ' base' : ' base';
+      return cards ? (n1(n) ? 'carta ' : 'carte ') + e : e; },
+    pile: (p, m) => p.k === 'kindHas' ? `${m ? 'carte' : 'carta'} ${KIND[p.kind]} con ${p.has} nel nome` : p.k === 'kind' ? `${m ? 'carte' : 'carta'} ${KIND[p.kind]}`
+      : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage] : p.k === 'pre' ? `Pokémon di ${own(p.pre)}` : p.k === 'atk' ? `Pokémon con ${p.atk}`
+      : p.k === 'name' ? `${m ? 'carte' : 'carta'} ${p.name}` : p.names.join(' o '),
+    selfB: (a, e) => `${a} con ${e} assegnata`, from: (a, w, n) => `${a} di ${n ? n + ' ' : ''}${w}`,
+    hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg ? 'infligge in media' : 'infligge al massimo';
+      const C = { ex: 'contro un Pokémon-ex', poison: 'mentre è Avvelenato', behind: 'quando sei indietro nei Premi', last: 'quando quell\'Aiuto è l\'ultima carta che hai in mano' };
+      return b ? `${s} ${v} ${b.eff} danni con ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' e ') : ''} (${top} senza), senza contare la Debolezza.` : `${s} ${v} ${top} danni, senza contare la Debolezza.`; },
+    koUse: x => `Usarlo mette KO ${x}, e questo dà un Premio al tuo avversario.`,
+    need: (a, full, w, base) => { const W = { moved: `in un turno in cui ${w.nm} passa dalla tua panchina in posizione attiva`, selfdmg: `quando ${w.nm} ha segnalini danno`,
+        oppdmg: 'contro un Pokémon attivo che ha già segnalini danno', deck: `quando nel tuo mazzo restano ${w.n} carte o meno`,
+        xenergy: `con ${w.n} ${n1(w.n) ? 'Energia in più assegnata' : 'Energie in più assegnate'}`, stadium: 'mentre hai uno Stadio in gioco',
+        btype: `con un Pokémon di tipo ${itI18nTypes[w.t]} in panchina`, bnames: `con ${i18nDmgNames(w.names, T)} in panchina`,
+        ko: 'nel turno dopo che uno dei tuoi Pokémon è stato messo KO', next: 'se ha usato lo stesso attacco nel turno precedente',
+        energy: `con ${E(w.t, 1)} assegnata a ${w.nm}`, supname: `in un turno in cui giochi un Aiuto di ${own(w.x)}`,
+        prize6: 'finché hai ancora tutte e 6 le carte Premio', evolved: `nel turno in cui si evolve da ${w.x}`,
+        inplay: `con ${w.n} ${E(w.t, w.n)} in gioco`, discab: `con ${w.n} Pokémon con ${w.a} nella pila degli scarti` }[w.k];
+      return W && `${a} infligge ${full} danni solo ${W}, altrimenti ${base}.`; },
+    hasCards: (n, k, full) => `La tua lista ha ${n} ${cs(n, k)}, quindi il voto conta ${full}.`,
+    afterHit: 'Il colpo pieno arriva dopo che ha subito un colpo, non al suo primo attacco.',
+    afterKo: 'Il colpo pieno arriva dopo che hai perso un Pokémon, non al tuo primo attacco.',
+    canSet: n => `La tua lista può prepararlo, quindi il voto conta ${n}.`,
+    since: (n, w) => `Il voto conta ${n}, perché ${w}.`,
+    why: {
+      evolved: () => 'attacchi nel turno in cui si evolve', next: b => `può continuare ad attaccare turno dopo turno, ma il primo uso infligge ${b}`,
+      only: (n, k) => `la tua lista ha solo ${n} ${cs(n, k)}`, noCounters: () => 'niente nella tua lista gli mette segnalini danno prima che tu attacchi',
+      endGame: () => 'succede solo alla fine della partita', prize6: () => 'vale solo prima che tu prenda il primo Premio', notAll: () => 'la tua lista non li usa tutti',
+      stadiums: n => `la tua lista ha solo ${n} ${n1(n) ? 'Stadio' : 'Stadi'}`, typeMon: (n, t) => `la tua lista ha solo ${n} Pokémon di tipo ${itI18nTypes[t]}`,
+      energy: (n, e) => `la tua lista ha solo ${n} ${e}`, supname: (n, x) => `la tua lista ha solo ${n} ${n1(n) ? 'Aiuto' : 'Aiuti'} di ${own(x)}`,
+      discab: (n, a) => `la tua lista ha solo ${n} Pokémon con ${a}`,
+      thinSelf: (n, x, line) => `la lista usa solo ${n1(n) ? '1 copia' : n + ' copie'} di ${x}${line ? ' o della sua linea' : ''}, quindi non è sempre in gioco`,
+      thinCopy: (n, x, line) => `ci ${n1(n) ? 'è solo 1' : 'sono solo ' + n} ${x}${line ? ' o Pokémon della sua linea' : ''} da copiare, quindi non è sempre in gioco`,
+      needs: (b, grow, th) => 'il colpo pieno richiede ' + [b, grow && 'tempo per crescere'].filter(Boolean).join(' e ') + (th ? ', e ' + th : ''),
+    },
+    twice: (a, st, one, all, eff, b) => `${a} gli permette di attaccare due volte per turno${st ? ` mentre ${st} è in gioco` : ''}, quindi il voto conta due colpi da ${one}, ${all} in tutto${eff ? `, o ${eff} con ${b} su entrambi` : ''}.`,
+    tails: 'Lancia monete finché non esce croce, quindi può capitare un colpo più forte, ma non è qualcosa su cui contare.',
+    flipAvg: 'I lanci di moneta vengono contati con la loro media.',
+    millAvg: (n, p) => `È la media per le carte in cima al mazzo: la tua lista usa ${n} ${p}, quindi un colpo più forte o più debole dipende dalla fortuna.`,
+    hand: (t, n, f) => `Conta le carte che hai in mano, quindi ${t} è la stima dell'app per circa ${n} carte${f ? ', con le Abilità di pescata della lista che riempiono la mano' : ''}, non un numero stampato.`,
+    lowConf: t => `I suoi danni dipendono dal campo, quindi ${t} è la stima dell'app, non un numero stampato.`,
+    escBoth: (x, b, p) => `${x} infligge ${b ? b + ' più ' : ''}${p} per ogni Energia assegnata a entrambi i Pokémon attivi.`,
+    appCounts: (n, w, t) => `L'app ne conta ${n} su di lui${w ? `, ognuna doppia con ${w}` : ''}, e 2 sul Pokémon attivo del tuo avversario, quindi ${t} è la sua stima, non un numero stampato.`,
+    escDisc: (x, e, p) => `${x} scarta ${e} dai tuoi Pokémon e infligge ${p} per ognuna scartata.`,
+    escPer: (x, b, p, e, sc) => `${x} infligge ${b ? b + ' più ' : ''}${p} per ogni ${e} assegnata a ${sc === 'it' ? 'lui' : 'tutti i tuoi Pokémon'}.`,
+    x2: (x, t) => `${x} fa contare doppia ogni ${itI18nEnergy(t + ' Energy', 1)} base.`,
+    takes: (a, t, lo, b, hi) => `Servono ${a}${t ? ' carte ' + itI18nEnergy(t + ' Energy', 1) + ' base' : ''} per mettere KO con un colpo un Pokémon da ${lo} PS e ${b} per uno da ${hi} PS, senza contare la Debolezza.`,
+    listRuns: n => `La tua lista ne usa ${n}.`,
+    adds: (b, p, n, ex) => `${b} ${pl(p, 'aggiunge', 'aggiungono')} ${n} in più${ex ? ' contro un Pokémon-ex' : ''}.`,
+    koxCounters: (x, b, n) => `${x} mette KO il Pokémon attivo${b ? ' Base' : ''} del tuo avversario quando ha esattamente ${n} segnalini danno, e questa lista può metterglieli per prepararlo, quindi il voto lo conta come un colpo che mette KO qualsiasi Pokémon.`,
+    koxFlip: (x, b, n, t) => `${x} mette KO il Pokémon attivo${b ? ' Base' : ''} del tuo avversario con un lancio di moneta, ${n === '2' ? 'una volta su due' : 'una volta su ' + n}, quindi il voto lo conta come ${t}.`,
+    koxOut: (x, b) => `${x} mette KO direttamente il Pokémon attivo${b ? ' Base' : ''} del tuo avversario, quindi il voto lo conta come un colpo che mette KO qualsiasi Pokémon.`,
+    oneTurn: (lo, hi) => `Questo mette KO in un solo turno le minacce del formato da ${lo} a ${hi} PS.`,
+    oneShots: (lo, hi) => `Questo mette KO con un colpo le minacce del formato da ${lo} a ${hi} PS.`,
+    takeEach: (lo, hi, n, t) => `Le minacce del formato da ${lo} a ${hi} PS richiedono ${n} ${t ? 'turni' : 'colpi'} ciascuna.`,
+    takeTwo: (lo, a, hi, b, t) => { const u = n => n1(n) ? (t ? 'un turno' : 'un colpo') : `${n} ${t ? 'turni' : 'colpi'}`;
+      return `Le minacce da ${lo} PS richiedono ${u(a)} e quelle da ${hi} PS ${u(b)}.`; },
+    lead: (x, w) => `${x} è ${w === 'pick' ? "l'attaccante principale che hai scelto" : "l'attaccante principale di questo mazzo" + (w === 'list' ? ', perché la lista usa più carte della sua linea' : w === 'name' ? ', perché il mazzo porta il suo nome' : '')}, ma il colpo più forte che il voto può contare viene da un altro Pokémon.`,
+    oneTail: (x, p) => `${x} ${pl(p, 'cede', 'cedono')} un solo Premio per KO, quindi servire due colpi contro una minaccia da due Premi mantiene comunque in pari la corsa ai Premi.`,
+    cantTrade: 'Non puoi vincere lo scambio, e di solito questo fa perdere la corsa ai Premi.',
+    spread: x => `Questo mazzo vince distribuendo danni: ${x} colpisce tutto il campo e i tuoi Pokémon che spostano i segnalini li concentrano.`,
+    undersells: (n, lo, hi) => `Il numero di un solo colpo (${n}) sottovaluta la sua portata contro le minacce da ${lo} a ${hi} PS.`,
+    undersellsIt: 'Il numero di un solo colpo lo sottovaluta.',
+    grows: (x, now, n, e, top, nt) => `${x} infligge ${now} danni con ${n} ${e} ${n1(n) ? 'assegnata' : 'assegnate'} e ${top} quando ce ne sono ${nt} in gioco.`,
+    growsMid: n => `La tua lista ne usa ${n}, quindi il colpo pieno è un piano di metà partita, non del turno 2.`,
+    growsPile: (x, now, p, w, top, n) => `${x} infligge ${now} danni con 2 ${p} ${({ 'in your discard pile': 'nella pila degli scarti', 'on your Bench': 'in panchina', 'in play': 'in gioco' })[w]} e ${top} quando ne hai ${n}.`,
+    growsEarly: (x, now, top, n, p) => `${x} infligge ${now} danni all'inizio e ${top} quando hai ${n} ${p} nella pila degli scarti.`,
+    growsHave: (n, there, late) => `${there ? `La tua lista può averne ${n} lì allo stesso tempo` : `La tua lista ha ${n} di quelle carte`}, quindi il colpo pieno è ${late ? 'un piano di fine partita che ne richiede molte nella pila' : 'un piano di metà partita, non del turno 2'}.`,
+    protect: (n, k, x) => `${n} dei tuoi Pokémon hanno Abilità che ${({ effects: 'bloccano gli effetti degli attacchi o delle Abilità del tuo avversario', damage: 'evitano i danni di alcuni attacchi del tuo avversario', both: 'bloccano i danni o gli effetti di alcuni attacchi del tuo avversario' })[k]} (${x}).`,
+    dmgThrough: 'I danni passano comunque, quindi questo ferma blocchi e disturbo, non i KO.',
+    readEach: 'Leggi ogni carta per sapere quando si applica.',
+    wallsEx: x => `${x} evita tutti i danni inflitti dagli attacchi dei Pokémon-ex del tuo avversario, quindi un mazzo di ex deve trovare un altro modo per metterlo KO.`,
+    noRuleBox: 'I Pokémon senza Regola speciale gli infliggono comunque danni normalmente.',
+    payNone: e => `${e}, che questa lista non usa`, payFew: (n, e, h) => `${n} ${e}, e questa lista ne usa solo ${h}`,
+    cantPay: (x, ps) => `${x} richiede ${ps.join('; richiede anche ')}.`,
+    instead: (a, n) => `Il voto conta invece ${a} (${n}).`,
+    millCopy: x => `${x} usa un attacco della carta che esce dalla cima del tuo mazzo, quindi il voto non conta i suoi danni.`,
+    copyHow: (a, b) => `${a}, copiando ${b},`,
+    multi: (how, k, top, n, hp) => `${how} colpisce ${k ? k + ' dei Pokémon del tuo avversario per ' + top + ' ciascuno' : 'ogni Pokémon del tuo avversario per ' + top}, quindi due usi possono mettere KO ${n ? n + ' dei suoi Pokémon' : 'tutti i suoi Pokémon'} con ${hp} PS o meno.`,
+    fewE: (a, need, x) => `${a} richiede ${i18nDmgJoin(need, T)}, e la lista usa poche Energie che ${x} può usare per questo, quindi spesso non è pronto ad attaccare.`,
+    hardest: (x, one) => `Il tuo colpo più forte viene da ${x}, e la lista ${one ? 'può metterne in gioco solo uno' : 'può metterne in gioco pochi'}, senza un altro attaccante che gli si avvicini.`,
+    drops: 'Quando è nei Premi o viene messo KO, i tuoi danni calano molto.',
+    itsAb: a => `la sua Abilità ${a}`, theirAb: x => x,
+    engine3: (x, p, r) => `${x} ${pl(p, 'cede', 'cedono')} 3 Premi quando ${pl(p, 'cade', 'cadono')}, ma ${pl(p, 'è', 'sono')} qui per ${r}, non per scambiare colpi.`,
+    ways: (n, x) => `I tuoi ${n} modi per scambiare o ritirarti${x ? `, come ${x},` : ''} ti permettono di usarlo e poi toglierlo prima che il tuo avversario possa metterlo KO.`,
+    useRetreat: 'Usalo, poi ritiralo o scambialo prima del turno del tuo avversario, e tienilo fuori dalla panchina quando può colpire la panchina.',
+    side3: (x, p, y) => `${x} ${pl(p, 'cede', 'cedono')} 3 Premi quando ${pl(p, 'cade', 'cadono')}, metà partita in un solo KO, mentre ${y} ne cede uno.`,
+    putOnly: p => p ? 'Mettili in gioco solo quando ti servono.' : 'Mettilo in gioco solo quando ti serve.',
+    give3: (x, p) => `${x} ${pl(p, 'cede', 'cedono')} 3 Premi quando ${pl(p, 'cade', 'cadono')}.`,
+    cantBack: (x, p) => `${x} ${pl(p, 'cede', 'cedono')} 3 Premi quando ${pl(p, 'cade', 'cadono')}, ma non puoi rispondere in modo affidabile con un KO in un colpo.`,
+    bestHit: n => `Il tuo colpo migliore (${n}) mette KO con un colpo i Pokémon con ${n} PS o meno, ma le minacce più grandi richiedono due colpi, quindi quegli scambi costano più a te che al tuo avversario.`,
+    losing: 'È uno scambio in perdita, a meno che tu non regoli i danni.',
+    allTwo: 'Ogni Pokémon qui cede due Premi, quindi al tuo avversario bastano tre KO.',
+    normalEx: 'È normale per un mazzo basato sui Pokémon-ex, quindi ognuno deve ottenere da solo più di un KO.',
+    mostTwo: (a, b) => `${a} dei tuoi ${b} Pokémon cedono due Premi, quindi la maggior parte dei KO te ne costa due.`,
+    sendOne: 'Quando puoi, manda in campo come attaccanti i tuoi Pokémon da un Premio.',
+    restOne: (a, b) => `${a} dei tuoi ${b} Pokémon ${n1(a) ? 'cede' : 'cedono'} due Premi e il resto uno, quindi non regali turni facili da più Premi.`,
+    longWay: (x, mids, c) => `I tuoi Pokémon di Fase 2 (${x}) si evolvono passando da ${mids}${c ? ', con 1 Rare Candy come scorciatoia' : ' senza Rare Candy'}, quindi conta di attaccare con loro dal tuo terzo turno.`,
+    faster: n => `I mazzi più veloci iniziano a colpire dal turno ${n}, quindi i tuoi primi Pokémon devono reggere fino ad allora.`,
+    midEng: (x, n, mid, a, ab) => `I tuoi Pokémon di Fase 2 (${x}) si evolvono passando da ${n} ${mid}, e in ogni turno della salita ${a} ${ab}, quindi la linea lenta è comunque pronta in tempo.`,
+    lean: (x, n) => `Punti su Pokémon di Fase 2 (${x}) ${n ? 'con solo ' + n + ' Rare Candy' : 'senza Rare Candy'}.`,
+    slow: n => `In un formato che inizia a colpire dal turno ${n}, una preparazione lenta può farti perdere la partita prima che tu sia pronto.`,
+    engs: (x, p) => `${x} ti ${pl(p, 'dà', 'danno')} un'Abilità di pescata o ricerca una volta per turno, così il mazzo trova i suoi pezzi senza spendere un Aiuto per questo.`,
+    toolbox: (n, hp, x, more) => `${n} Pokémon diversi della lista infliggono ${hp} o più: ${x}${more ? ` e altri ${more}` : ''}.`,
+    pick: n => `Scegli l'attaccante adatto a ogni turno${n ? `, ${n1(n) ? 'incluso 1 che cede' : `inclusi ${n} che cedono`} un solo Premio` : ''}, quindi il tuo avversario non può pianificare contro una sola minaccia.`,
+    oneCopy: 'La lista usa una sola copia del suo attaccante principale.',
+    prizedIn: 'Finisce nei tuoi Premi circa 1 partita su 10, e una volta messo KO il mazzo non ha nessuno che porti avanti il piano.',
+    mostRun: (a, b) => `La maggior parte delle liste ne usa da ${a} a ${b}.`,
+    archE: (a, n) => `Le liste di ${a} arrivate nel quarto più alto dei tornei online recenti usano circa ${n} Energie.`,
+    outside: (raw, s, plus, n, lo, hi) => `Questa lista ne usa ${raw}${s ? `, e ${n1(s) ? 'la sua carta Strumento di ricerca Energia conta' : `le sue ${s} carte Strumento di ricerca Energia contano`} come altre ${plus}, quindi ${n}` : ''}, fuori dall'intervallo da ${lo} a ${hi} che il voto ammette.`,
+    extraE: "L'Energia in più prende il posto di pescata e ricerca, quindi molti turni iniziano con Energia che non puoi usare.",
+    tradeSome: 'Sostituiscine alcune con carte di pescata o ricerca.',
+    fewerE: 'Con meno, gli attaccanti spesso saltano un\'assegnazione e restano indietro.',
+    addBack: 'Rimetti Energia.',
+    coreItem: (x, h, w) => h === '0' ? `${x} (nessuna di ${w})` : `${x} (${h} di ${w})`,
+    core: (a, n, items, more) => `Quasi tutte le liste di ${a} arrivate nel quarto più alto dei tornei online recenti usano queste carte, e a questa mancano ${n} copie: ${items}${more ? ` e altre ${more}` : ''}.`,
+    swaps: n => `Qualche cambio è normale, quindi le prime ${n} copie non costano niente.`,
+    restBack: 'Rimetti il resto, a meno che tu non abbia un motivo per non farlo.',
+    blend: (a, b, x) => `Le carte di questa lista sono più vicine a ${a}, quindi il voto usa i suoi risultati, non quelli di ${b}, il mazzo costruito attorno a ${x}.`,
+    tLongDraw: 'Si evolve per la via lunga, pescando lungo la strada',
+    tEngine: x => `${x}: un motore da tre Premi`,
+    tCantPay: (x, a) => `${x} non può pagare ${a}`,
+    tOnlyHit: (n, x) => n === '0' ? `Nessun ${x} con cui attaccare` : `Solo ${n} ${x} con cui attaccare`,
+  };
+  return T;
+})();
+// After the ctl catch-all, which gives null for these and leaves them here.
+I18N_MORE.it.pat.push([/^[\s\S]+$/, m => i18nDmgSent(m, 'it')]);
+// Ahead of the "Only 1 X" pattern, which would read "Only 1 X to hit with" word for word.
+I18N_MORE.it.pat.unshift([/^Only (?:\d+(?:\.\d+)?|no) .+? to hit with$/, m => i18nDmgSent(m, 'it')]);

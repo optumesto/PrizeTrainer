@@ -1766,7 +1766,10 @@ function gViability(deck, coh, main) {
   // v65: a Pokemon counts as an attacker only when it can reach the board: every Pokemon it evolves
   // from is in the list (Rare Candy may skip the middle of a Stage 2), or it puts itself in play.
   const gk=k=>gtNorm(normalizeCardName(k||''));
-  const canPlay=(c,g=0)=>{ if(!c.from||c.stage==='basic'||c.selfBench||c.byName||(g===0&&c.setupPut)||g>3) return true;
+  // Muse section 4 S2: card data read from another printing (byName) no longer counts as playable by itself.
+  // Every printing of a Pokemon evolves from the same Pokemon, so its line is checked like any other, and a
+  // Stage 2 with no way onto the board stops adding to Power.
+  const canPlay=(c,g=0)=>{ if(!c.from||c.stage==='basic'||c.selfBench||(g===0&&c.setupPut)||g>3) return true;
     const mid=deck.find(x=>x.card&&gk(x.card.key)===gk(c.from));
     if (mid) return canPlay(mid.card,g+1);
     if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
@@ -1831,7 +1834,8 @@ function gViability(deck, coh, main) {
   const mainR = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
   if (mainR && bestR && effC(mainR) >= effC(bestR)) bestR = mainR;
   const lead = main && bestR && bestR !== mainR && main.key !== bestR.name.toLowerCase()
-    ? `${gCap(main.name)} is ${main.why === 'pick' ? 'the main attacker you set' : "this deck's main attacker"}, but the hardest hit the grade can count comes from another Pokemon. ` : '';
+    // Muse section 4 L3: say why it is the main attacker, so a 4 copy Shelgon line is not read as the hardest hitter.
+    ? `${gCap(main.name)} is ${main.why === 'pick' ? 'the main attacker you set' : "this deck's main attacker" + (main.why === 'list' ? ', since the list plays the most of its line' : main.why === 'name' ? ', since the deck is named for it' : '')}, but the hardest hit the grade can count comes from another Pokemon. ` : '';
   const hitsTxt = bestR && ((bestR.escale && bestR.escale.scope !== 'both') || (bestR.kox && !bestR.copy)) ? '' : ' ' + g37Hits(bestR ? bestR.eff : 0, !!(bestR && bestR.twice));
   const best=bestR?bestR.top:0, bestName=bestR?bestR.name:'';
   // v65: the spread engine counts only from cards that can reach the board.
@@ -1860,7 +1864,11 @@ function gViability(deck, coh, main) {
   const hitsT = supTxt ? '' : hitsTxt;
   // 3.2.8: under a one-shot, the hit count follows what the grade counts, after the reason it counts less,
   // so a "Two hits" finding never says the deck one-shots.
-  const hitsC = supTxt || !hitsTxt ? '' : ' ' + g37Hits(ce, !!(bestR && bestR.twice));
+  // A Pokemon that attacks twice a turn (Festival Lead) keeps the full count: its two hits land in one turn,
+  // which is what the "Two hits" heading means, so that sentence stays where it was, before the counted hit.
+  const twC = !!(bestR && bestR.twice);
+  const hitsP = twC && !supTxt ? hitsTxt : '';
+  const hitsC = twC || supTxt || !hitsTxt ? '' : ' ' + g37Hits(ce, false);
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
     d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
   else if (spreadEngine) { strat='spread'; eff=Math.round(best*1.5)+boost; closeScore=0.9;
@@ -1878,11 +1886,15 @@ function gViability(deck, coh, main) {
     // 3.2.8 (Muse L3): the main attacker is named first, so a Cinccino deck is not summed up by its Metagross.
     const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi && (r===bestR || r===mainR || !sidePre(r))).sort((a,b)=>(b===mainR)-(a===mainR)).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
+    // Muse section 4 L1: the closing sentence names only the Pokemon this finding is about (the hardest hitter
+    // or the main attacker) when it gives up one prize, or no Pokemon at all, so a Greninja deck is never
+    // summed up by its Frogadier. The score above still counts every one-prize attacker, as before.
+    const oneT=[...new Set([mainR, bestR].filter(r=>r && r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${lead}${g35Hit(bestR)}${ceTxt}${hitsC}${supTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt}${oneT.length?` ${oneT.join(' and ')} ${oneT.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
   else { strat='weak'; closeScore=0.15+0.45*ceS/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${lead}${g35Hit(bestR)}${ceTxt}${hitsC}${supTxt} You cannot trade up, which usually loses the prize race.`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt} You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.escale && bestR.top > bestR.now) { const e = bestR.escale;
     const what = e.x2 ? `Basic ${gCap(e.x2.type)} Energy cards` : (e.types.length ? e.types.map(gCap).join(' and ') + ' ' : '') + 'Energy';
     findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
