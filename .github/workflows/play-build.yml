@@ -7,7 +7,7 @@ name: Play build
 
 on:
   push:
-    branches: [play-package]
+    branches: [play-package, play-cutout]
     paths:
       - 'play/twa-manifest.json'
       - '.github/workflows/play-build.yml'
@@ -54,6 +54,29 @@ jobs:
           cd app
           bubblewrap update --skipVersionUpgrade < /dev/null
 
+      - name: Fill the screen in landscape (draw into the camera cutout)
+        run: |
+          # androidbrowserhelper has no setting for the cutout, so override getDisplayMode()
+          # in the generated LauncherActivity: immersive, laid out into the short-edge cutout.
+          F=$(find app/app/src/main/java -name LauncherActivity.java)
+          python3 - "$F" <<'PY'
+          import sys
+          f = sys.argv[1]
+          s = open(f).read()
+          s = s.replace("import android.os.Bundle;", "import android.os.Bundle;\nimport android.view.WindowManager;\nimport androidx.browser.trusted.TrustedWebActivityDisplayMode;", 1)
+          i = s.rindex("}")
+          s = s[:i] + """
+              @Override
+              protected TrustedWebActivityDisplayMode getDisplayMode() {
+                  return new TrustedWebActivityDisplayMode.ImmersiveMode(false,
+                          WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
+              }
+          }
+          """
+          open(f, "w").write(s)
+          PY
+          grep -n "getDisplayMode\|SHORT_EDGES" "$F"
+
       - name: Build (unsigned)
         working-directory: app
         run: bubblewrap build --skipSigning < /dev/null
@@ -61,7 +84,7 @@ jobs:
       - name: Collect the output
         run: |
           mkdir out
-          cp app/app/build/outputs/bundle/release/app-release.aab out/rdydeck-1.0.0-unsigned.aab
+          cp app/app/build/outputs/bundle/release/app-release.aab out/rdydeck-$(jq -r .appVersionName app/twa-manifest.json)-unsigned.aab
           cp app/twa-manifest.json out/
           cd out && sha256sum * > SHA256SUMS.txt && ls -la
 
