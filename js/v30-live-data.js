@@ -264,7 +264,24 @@ function td30CardId(code, num) {
   let n = String(num).trim();
   if (!/^[A-Za-z0-9]{1,8}$/.test(n)) return null;
   if (/^(sv|me|30th)/.test(set) && /^\d+$/.test(n)) n = n.padStart(3, '0');   // 2.5.5: 30th Celebration ids are padded too
+  // 3.2.8: TCGdex pads the later Sword and Shield sets too (Lost Origin's Gengar is swsh11-066).
+  else if (/^swsh(9|1[0-2])$/.test(set) && /^\d+$/.test(n)) n = n.padStart(3, '0');
   return set + '-' + n;
+}
+/** 3.2.8: the same TCGdex id with its number padded the other way, for sets TCGdex numbers both ways. */
+function td30AltId(id) {
+  const m = String(id || '').match(/^((?:swsh|sm)[\d.]+[a-z]?)-(\d+)$/);
+  if (!m) return null;
+  const n = m[2].replace(/^0+(?=\d)/, '');
+  const alt = n === m[2] ? n.padStart(3, '0') : n;
+  return alt === m[2] ? null : m[1] + '-' + alt;
+}
+/** 3.2.8: the printing a TCGdex card is, in words ("Lost Origin 066"), so the Grade tab can name it. */
+function td30Printing(t) {
+  if (!t || typeof t !== 'object') return '';
+  const set = t.set && typeof t.set.name === 'string' ? t.set.name.trim() : '';
+  const num = typeof t.localId === 'string' ? t.localId.trim() : '';
+  return /^[\w .:'&()-]{1,60}$/.test(set) && /^[A-Za-z0-9]{1,8}$/.test(num) ? set + ' ' + num : '';
 }
 
 /** A TCGdex card in the shape pokemontcg.io gives, which enrichCard reads. */
@@ -354,18 +371,39 @@ async function td30Get(path) {
 async function td30Read(e) {
   const id = td30CardId(e.set, e.num);
   // 2.5.5: 30th Classic Collection cards carry the same 30C code as 30th Celebration.
-  for (const tid of id ? [id].concat(/^30th-/.test(id) ? [id.replace(/^30th-/, '30th-c-')] : []) : []) {
+  // 3.2.8: and Sword and Shield ids are tried padded both ways.
+  const ids = id ? [id].concat(/^30th-/.test(id) ? [id.replace(/^30th-/, '30th-c-')] : [], td30AltId(id) || []) : [];
+  for (const tid of ids) {
     const c = await td30Get('/cards/' + encodeURIComponent(tid));
     const shaped = td30Shape(c);
     if (shaped && TCGEnrich.sameCard(e.name, shaped.name)) return { card: shaped, exact: true };
   }
+  const want = td30SetId(e.set), wantNum = String(e.num || '').trim().replace(/^0+(?=\d)/, '').toLowerCase();
+  const own = b => !!want && String(b.id).toLowerCase().startsWith(want.toLowerCase() + '-') &&
+    String(b.localId || String(b.id).split('-').pop()).replace(/^0+(?=\d)/, '').toLowerCase() === wantNum;
   for (const v of [TCGEnrich.apiName(e.name)].concat(/^basic (\w+) energy$/i.test(TCGEnrich.apiName(e.name)) ? [TCGEnrich.apiName(e.name).replace(/^basic /i, '')] : [])) {
     const list = await td30Get('/cards?name=' + encodeURIComponent('eq:' + v));
     const hits = (Array.isArray(list) ? list : []).filter(b => b && typeof b.id === 'string' && TCGEnrich.sameCard(e.name, b.name || ''))
       .sort((a, b) => td30Rank(b.id) - td30Rank(a.id));
+    // 3.2.8: the list line's own printing, when the name search finds it under an id the guess missed.
+    const mine = hits.find(own);
+    if (mine) {
+      const shaped = td30Shape(await td30Get('/cards/' + encodeURIComponent(mine.id)));
+      if (shaped) return { card: shaped, exact: true };
+    }
     for (const b of hits.slice(0, 2)) {
-      const shaped = td30Shape(await td30Get('/cards/' + encodeURIComponent(b.id)));
-      if (shaped) return { card: shaped, exact: false };
+      const raw = await td30Get('/cards/' + encodeURIComponent(b.id));
+      const shaped = td30Shape(raw);
+      if (!shaped) continue;
+      // 3.2.8: some TCGdex records leave out what the card evolves from (30th Classic Collection Gengar).
+      // Every printing of an evolution evolves from the same Pokemon, so take it from another printing.
+      if (!shaped.evolvesFrom && shaped.subtypes.some(x => /^stage [12]$/i.test(x))) {
+        for (const o of hits.filter(h => h !== b).slice(0, 3)) {
+          const ot = await td30Get('/cards/' + encodeURIComponent(o.id));
+          if (ot && typeof ot.evolveFrom === 'string' && ot.evolveFrom) { shaped.evolvesFrom = ot.evolveFrom; break; }
+        }
+      }
+      return { card: shaped, exact: false, printing: td30Printing(raw) };
     }
     if (hits.length) break;
   }
@@ -396,7 +434,7 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
       try { r = await td30Read(e); } catch (_) {}
       if (!r) return;
       const en = TCGEnrich.enrichCard(r.card);
-      if (!r.exact) en.matchedBy = 'name';
+      if (!r.exact) { en.matchedBy = 'name'; if (r.printing) en.printing = r.printing; }
       en.via = 'tcgdex';
       map.set(String(e.name).toLowerCase(), en);
       read.push(String(e.name).toLowerCase());

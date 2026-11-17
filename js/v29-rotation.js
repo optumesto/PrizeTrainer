@@ -46,24 +46,36 @@ function r273Set(j) {
   // Trainers and Special Energy: a reprint keeps either legal by name alone.
   const names = j.cards.filter(c => c && (c.k === 'T' || (c.k === 'E' && !c.be)) && c.n).map(c => r29Key(c.n));
   if (names.length < 100) return false;
-  r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names) };
+  // 3.2.8: and what each Stage 1 evolves from, so a Stage 2 played with Rare Candy knows its Basic.
+  const ef = {};
+  j.cards.forEach(c => { if (c && c.k === 'P' && c.st === 1 && c.n && typeof c.ef === 'string' && c.ef) ef[r29Key(c.n)] = c.ef; });
+  r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names), ef };
   return true;
 }
 function r273Ready() {
-  if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n) }; } catch (_) {} }
+  if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n), ef: d.e && typeof d.e === 'object' ? d.e : {} }; } catch (_) {} }
   if (!r273Tried && typeof fetch === 'function') {
     r273Tried = true;
     fetch('cards.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => {
-      const was = r273 && r273.asOf;
+      const was = r273 && r273.asOf, hadEf = !!(r273 && r273.ef && Object.keys(r273.ef).length);
       if (j && r273Set(j)) {
-        safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set] }));
-        if (was !== r273.asOf) { try { _g29Cache.clear(); } catch (_) {} try { if (typeof mu60Rerender === 'function') mu60Rerender(); } catch (_) {} }
+        safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set], e: r273.ef }));
+        if (was !== r273.asOf || !hadEf) { try { _g29Cache.clear(); } catch (_) {} try { if (typeof mu60Rerender === 'function') mu60Rerender(); } catch (_) {} }
       }
     }).catch(() => {});
   }
   return !!r273;
 }
 function r273Legal(name) { return !!r273 && r273.set.has(r29Key(name)); }
+/** 3.2.8: true for a set code from Sword and Shield or earlier (BRS, LOR), whose cards carry no mark legal now. */
+function r29OldSet(code) {
+  if (typeof TCGEnrich === 'undefined') return false;
+  const k = String(code || '').toUpperCase();
+  const pid = String((TCGEnrich.SET_MAP || {})[k] || (TCGEnrich.LEARNED_SETS || {})[k] || '');
+  return /^(?:swsh|sm|xy|bw|cel25|g1|det1|dv1|hgss|col1|hsp)/.test(pid);
+}
+/** 3.2.8: the Basic a Standard legal Stage 1 evolves from, from cards.json, or ''. */
+function r273From(stage1) { try { r273Ready(); } catch (_) {} return (r273 && r273.ef && r273.ef[r29Key(stage1)]) || ''; }
 
 // One row per card name in the list, with what the mark means for it.
 function r29Rows(deck) {
@@ -86,9 +98,13 @@ function r29Rows(deck) {
     // MEP 38), so its mark came from an older printing. New printings reach the database late,
     // so this card is unconfirmed, never "not legal now".
     // A row with a printing the database does have still counts as read.
-    const unl = !!(c.byName && c.set && c.num);
+    // 3.2.8: but a printing from a Sword and Shield or older set is never Standard legal, whatever mark
+    // another printing carries, so its own mark is not taken from that printing, and the check decides.
+    const old = !!(c.byName && c.set && r.pkmn && String(c.supertype).toLowerCase().startsWith('pok') && r29OldSet(c.set));
+    if (old) r.oldSet = true;
+    const unl = !!(c.byName && c.set && c.num) && !old;
     r.unlisted = (r.unlisted === undefined ? true : r.unlisted) && unl;
-    r.marks.push(r29M(c.reg.mark));
+    r.marks.push(old ? null : r29M(c.reg.mark));
   });
   const rows = [];
   byName.forEach(r => {
@@ -117,6 +133,8 @@ function r29Rows(deck) {
     // Before the check a card stays unconfirmed: lists name old printings of Trainers that were reprinted
     // (Pokegear 3.0 SVI), so capping on the printed mark alone would hold legal decks at 4.9.
     else if (best && r.checked && !r.unlisted) r.st = 'out';
+    // 3.2.8: an old printing with no legal reprint found is not legal now.
+    else if (r.oldSet && r.pkmn && r.checked && !r.marks.some(Boolean)) r.st = 'out';
     else r.st = 'unconf';
     rows.push(r);
   });

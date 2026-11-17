@@ -2154,7 +2154,7 @@ const I18N_PAT = [
   [/^Prized (\d+) times?, missed (\d+)$/, (m, a, b) => 'En premios ' + (a === '1' ? '1 vez' : a + ' veces') + ', fallada ' + (b === '1' ? '1 vez' : b + ' veces'), (m, a, b) => 'Nos prêmios ' + a + (a === '1' ? ' vez' : ' vezes') + ', errada ' + b],
   [/^(\d+)% missed$/, '$1% fallada', '$1% errada'],
   [/^(\d+) matches?$/, (m, n) => n + (n === '1' ? ' partida' : ' partidas'), (m, n) => n + (n === '1' ? ' partida' : ' partidas')],
-  [/^Swap idea: (one more )?(.+), since nothing gets cards back from your discard pile\.$/, (m, o, n) => 'Idea de cambio: ' + (o ? 'una más de ' : '') + n + ', ya que nada recupera cartas de tu pila de descartes.', (m, o, n) => 'Ideia de troca: ' + (o ? 'mais uma ' : '') + n + ', já que nada recupera cartas da sua pilha de descarte.'],
+  [/^Swap idea: (one more )?(.+), since nothing returns cards from your discard pile to your hand or deck\.$/, (m, o, n) => 'Idea de cambio: ' + (o ? 'una más de ' : '') + n + ', ya que nada devuelve cartas de tu pila de descartes a tu mano o a tu baraja.', (m, o, n) => 'Ideia de troca: ' + (o ? 'mais uma ' : '') + n + ', já que nada devolve cartas da sua pilha de descarte para a sua mão ou o seu deck.'],
   [/^([^;()]+?) draws you cards and disrupts your opponent\.$/, '$1 te hace robar cartas y entorpece a tu rival.', '$1 faz você comprar cartas e atrapalha o oponente.'],
   [/^Disrupts your opponent, but (\d+) other cards in the list already do that, more than most winning lists run, so this one adds little\.$/, 'Entorpece a tu rival, pero otras $1 cartas de la lista ya lo hacen, más de lo que llevan la mayoría de las listas ganadoras, así que esta aporta poco.', 'Atrapalha o oponente, mas outras $1 cartas da lista já fazem isso, mais do que a maioria das listas vencedoras usa, então esta acrescenta pouco.'],
   [/^Finds any of your (\d+) Pokemon ex, like (.+) or (.+)\.$/, 'Busca cualquiera de tus $1 Pokémon ex, como $2 o $3.', 'Busca qualquer um dos seus $1 Pokémon ex, como $2 ou $3.'],
@@ -2199,6 +2199,12 @@ const I18N_PAT = [
   // 3.2.7: a discard pile revival line that rarely comes together, and the cap on lists with cards not Standard legal now.
   [/^(.+?) rarely reaches the board$/, (m, x) => x + ' casi nunca llega a la mesa', (m, x) => x + ' quase nunca chega à mesa'],
   [/^(.+?) can only reach the board when (.+?) brings it back from your discard pile(?: with (.+?))?, and that comes together in only about 1 game in (\d+)\.$/, (m, x, r, v, n) => x + ' solo puede llegar a la mesa si ' + r + ' lo trae de vuelta de tu pila de descartes' + (v ? ' con ' + v : '') + ', y eso ocurre solo en aproximadamente 1 de cada ' + n + ' partidas.', (m, x, r, v, n) => x + ' só consegue chegar à mesa quando ' + r + ' o traz de volta da sua pilha de descarte' + (v ? ' com ' + v : '') + ', e isso acontece em apenas cerca de 1 a cada ' + n + ' partidas.'],
+  // 3.2.8: what fills the discard pile, how often the whole revival line comes together, and a card read from another printing.
+  [/^(.+?) (is what puts|are what put) it in your discard pile\.$/, (m, o, v) => o.replace(/ and /g, ' y ') + (v[0] === 'a' ? ' son los que lo ponen' : ' es lo que lo pone') + ' en tu pila de descartes.', (m, o, v) => o.replace(/ and /g, ' e ') + (v[0] === 'a' ? ' são os que o colocam' : ' é o que o coloca') + ' na sua pilha de descarte.'],
+  [/^The whole line comes together in about (\d+) games in 10\.$/, 'Toda la línea se completa en aproximadamente $1 de cada 10 partidas.', 'A linha inteira se completa em cerca de $1 a cada 10 partidas.'],
+  [/^The whole line comes together in only about 1 game in (\d+)\.$/, 'Toda la línea se completa solo en aproximadamente 1 de cada $1 partidas.', 'A linha inteira se completa em apenas cerca de 1 a cada $1 partidas.'],
+  [/^The card text for (.+?) was read from another printing, (.+)\.$/, 'El texto de $1 se leyó de otra impresión, $2.', 'O texto de $1 foi lido de outra impressão, $2.'],
+  [/^(\d+) more cards were read from other printings\.$/, 'Otras $1 cartas se leyeron de otras impresiones.', 'Mais $1 cartas foram lidas de outras impressões.'],
   [/^(.+?)\. (These|It) cannot be played in Standard, so the grade (is held at|can go no higher than) ([\d.]+) until (?:they are|it is) swapped for legal cards\.(?: The list alone would score ([\d.]+)\.)?$/, (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'No se pueden' : 'No se puede') + ' jugar en Estándar, así que la calificación ' + (h === 'is held at' ? 'se queda en ' : 'no puede pasar de ') + c + ' hasta que ' + (p === 'These' ? 'se cambien' : 'se cambie') + ' por cartas legales.' + (a ? ' La lista sola obtendría ' + a + '.' : ''), (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'Não podem ser jogadas' : 'Não pode ser jogada') + ' no Padrão, então a nota ' + (h === 'is held at' ? 'fica em ' : 'não pode passar de ') + c + ' até que ' + (p === 'These' ? 'sejam trocadas' : 'seja trocada') + ' por cartas legais.' + (a ? ' Só pela lista, a nota seria ' + a + '.' : '')],
   [/^Its attack needs (\w+) Energy, but there is none in the deck\. As built it cannot actually fire\.$/, (m, t) => 'Su ataque necesita ' + i18nEnergy(t, 'es') + ', pero no hay en la baraja. Tal como está, no puede atacar.', (m, t) => 'O ataque precisa de ' + i18nEnergy(t, 'pt') + ', mas não há no deck. Do jeito que está, não consegue atacar.'],
   [/^(\d+) top lists$/, '$1 listas top', '$1 listas top'],
@@ -2941,6 +2947,8 @@ function i18nAbAct(s) {
   if (s === 'switches itself into the Active Spot') return { t: 'switchIn' };
   if (s === 'switches itself into or out of the Active Spot') return { t: 'switchInOut' };
   if (s === 'switches itself out to your Bench') return { t: 'switchOut' };
+  // 3.2.8: an Ability that puts the Pokemon itself onto your Bench from your discard pile (Empoleon's Emergency Surfacing).
+  if (s === 'puts itself onto your Bench from your discard pile') return { t: 'selfBench' };
   if (s === 'switches in a Benched Pokemon') return { t: 'switchBench', np: null };
   if ((m = s.match(/^switches an? Benched (.+) into the Active Spot$/))) return { t: 'switchBench', np: i18nAbNp('a ' + m[1]) };
   if (s === 'moves any amount of Energy from your other Pokemon onto it') return { t: 'moveToSelf' };
@@ -3112,6 +3120,7 @@ function i18nAbRom(l) {
     switchIn: (a, m) => es ? V(m, 'pasa', 'pasar') + ' al Puesto Activo' : V(m, 'vai', 'ir') + ' para o Campo Ativo',
     switchInOut: (a, m) => es ? V(m, 'entra o sale', 'entrar o salir') + ' del Puesto Activo' : V(m, 'entra ou sai', 'entrar ou sair') + ' do Campo Ativo',
     switchOut: (a, m) => es ? V(m, 'vuelve', 'volver') + ' a tu Banca' : V(m, 'volta', 'voltar') + ' para o seu Banco',
+    selfBench: (a, m) => es ? V(m, 'se pone', 'ponerse') + ' en tu Banca desde tu pila de descartes' : V(m, 'se coloca', 'se colocar') + ' no seu Banco a partir da sua pilha de descarte',
     switchBench: (a, m) => es ? V(m, 'pasa', 'pasar') + ' ' + (a.np ? np(a.np) : 'un Pokémon') + ' de tu Banca al Puesto Activo' : V(m, 'coloca', 'colocar') + ' ' + (a.np ? np(a.np) : 'um Pokémon') + ' do seu Banco no Campo Ativo',
     moveToSelf: (a, m) => es ? V(m, 'mueve', 'mover') + ' a este Pokémon cualquier cantidad de Energía de tus otros Pokémon' : V(m, 'move', 'mover') + ' para este Pokémon qualquer quantidade de Energia dos seus outros Pokémon',
     moveBench: (a, m) => es ? V(m, 'mueve', 'mover') + ' Energía de tu Banca a tu Pokémon Activo' : V(m, 'move', 'mover') + ' Energia do seu Banco para o seu Pokémon Ativo',

@@ -400,7 +400,17 @@ function ptTagCard(c) {
 /** 2.5.5: the promo codes Pokemon TCG Live writes (PR-SV, PR-ME) to the ones Limitless and the card sources use. */
 function ptCanonSet(set) {
   const s = String(set || '').trim().toUpperCase();
-  return ({ 'PR-SV': 'SVP', 'PR-ME': 'MEP', 'PR-MEP': 'MEP' })[s] || set;
+  return ({ 'PR-SV': 'SVP', 'PR-ME': 'MEP', 'PR-MEP': 'MEP' })[s] || ptSetAlias(set) || set;
+}
+/** 3.2.8: a card database set id (swsh9, sv3pt5, or TCGdex's sv03.5) as the set code lists use (BRS, MEW), or null. */
+function ptSetAlias(id) {
+  const raw = String(id || '').trim();
+  if (!raw || typeof TCGEnrich === 'undefined' || !TCGEnrich.SET_MAP) return null;
+  if (TCGEnrich.SET_MAP[raw.toUpperCase()]) return null;   // already a set code
+  const k = raw.toLowerCase().replace(/^(sv|me)0+(?=\d)/, '$1').replace(/\.5$/, 'pt5');
+  if (!/^[a-z]+\d*(?:pt5)?$/.test(k)) return null;
+  for (const code in TCGEnrich.SET_MAP) if (TCGEnrich.SET_MAP[code] === k) return code;
+  return null;
 }
 function ptCanonDecks(decks) {
   (decks || []).forEach(d => (d && Array.isArray(d.cards) ? d.cards : []).forEach(c => {
@@ -606,15 +616,22 @@ function gAbilRead(c) {
     });
     // v60: what the Goldfish steps cannot follow is read sentence by sentence (Munkidori, Iono's Bellibolt ex, Lunatone).
     let pre = '', post = '';
-    if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (!ge.say.length) return;
+    // 3.2.8: an Ability that puts the Pokemon itself onto your Bench from your discard pile (Empoleon's
+    // Emergency Surfacing, Gengar's Netherworld Gate) says so first, before what it does after.
+    const selfRev = /if this pokemon is in your discard pile[^.]*?,? you may put (?:it|this pokemon) onto your bench/.test(t.replace(/pok[e\u00e9]mon/g, 'pokemon'));
+    if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (!ge.say.length && !selfRev) return;
       const base = v => v.replace(/^(\w+?)(?:(ch|sh|x)es|s)\b/, (q, w, e) => w + (e || ''));
       bits.push(...ge.say);
       if (ge.cost) { pre = ge.cost + ' to '; bits[0] = /^your /.test(bits[0]) ? 'make ' + bits[0] : base(bits[0]); }
       if (ge.need && ge.need !== 'only while it is Active') post = ` (${ge.need})`; }
     // v62: a condition printed at the start of the Ability (Thwackey's Boom Boom Groove needs Festival Lead in the Active Spot).
     if (!post) { const cm = gfNorm(A.text).match(/^once during your turn, if ([^,]+), you may/i);
-      if (cm && !/^this pokemon is in the active spot$/i.test(cm[1].replace(/\u00e9/g, 'e')))
+      // 3.2.8: being in your discard pile is said by "from your discard pile" already.
+      if (cm && selfRev) cm[1] = cm[1].replace(/^this pok[e\u00e9]mon is in your discard pile(?: and )?/i, '');
+      if (cm && cm[1] && !/^this pokemon is in the active spot$/i.test(cm[1].replace(/\u00e9/g, 'e')))
         post = ` (only if ${cm[1].replace(/\bthis Pok[e\u00e9]mon('s)?/gi, (q, x) => x ? 'its' : 'it').replace(/Pok\u00e9mon/g, 'Pokemon')})`; }
+    if (selfRev) { if (bits.length && /^draws /.test(bits[0])) bits[0] = 'then ' + bits[0];
+      bits.unshift('puts itself onto your Bench from your discard pile'); }
     const when = A.when === 'bench' ? 'when you play it onto your Bench' : A.when === 'evolve' ? 'when you evolve into it from your hand'
       : A.first ? 'on your first turn' : A.many || / as often as you like$/.test(bits[bits.length - 1]) ? (bits[bits.length - 1] = bits[bits.length - 1].replace(/, as often as you like$/, ''), 'as often as you like') : A.active ? 'once a turn while it is Active' : 'once a turn';
     // Decidueye ex's Total Freedom switches it in from the Bench or out from the Active Spot, not only in.
@@ -766,6 +783,17 @@ function g115Reviver(deck, e, energyTypes) {
   }
   return null;
 }
+/** 3.2.8: the Basic a Stage 2 starts from: read with the card, else from its Stage 1 in the list,
+ *  else from the saved list of Standard cards. Rare Candy needs it in play. */
+function g116Base(deck, c) {
+  if (!c || c.stage !== 'stage2' || !c.from) return null;
+  if (c.base) return c.base;
+  const nk = s => normalizeCardName(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const mid = (deck || []).find(y => y.card && nk(y.name) === nk(c.from));
+  if (mid && mid.card.from) return mid.card.from;
+  try { if (typeof r273From === 'function') { const b = r273From(c.from); if (b) return String(b).toLowerCase(); } } catch (_) {}
+  return null;
+}
 /** 3.2.7: can this card reach the board in this list? Trainers and Basics can; an evolution needs its line
  *  (Rare Candy may skip the Stage 1), an Ability that benches it, or a way back from the discard pile of its own. */
 function g115Can(deck, x) {
@@ -778,7 +806,8 @@ function g115Can(deck, x) {
     return c.stage !== 'stage2' || !mid || !mid.card.from || has(mid.card.from) || !!(mid.card.rev || []).some(r => r.self) || mid.card.selfBench; }
   if (c.isEx && deck.some(y => y.card && y.card.standIn && nk(y.card.standIn) === nk(c.from))) return true;
   const candy = deck.some(y => y.card && (y.card.provides || []).includes('evolution_access'));
-  return c.stage === 'stage2' && candy && !!c.base && has(c.base);
+  const base = g116Base(deck, c);
+  return c.stage === 'stage2' && candy && !!base && has(base);
 }
 // 3.2.7: how many cards you have seen by the time the line has to come together (your opening 7,
 // a few draws for turn, and what your Supporters and Abilities draw on the way).
@@ -813,7 +842,7 @@ function g115Odds(deck, v, e, outs) {
     const rc = v.e.card;
     pRev = g115See(g115Reach(deck, rc, qtyOf(v.e.name)));
     if (rc.t === 'pkmn' && rc.stage !== 'basic' && rc.from && !rc.selfBench) {
-      const mid = findE(rc.from), base = rc.stage === 'stage2' ? (mid && mid.card.from ? findE(mid.card.from) : rc.base ? findE(rc.base) : null) : mid;
+      const mid = findE(rc.from), base = rc.stage === 'stage2' ? (mid && mid.card.from ? findE(mid.card.from) : g116Base(deck, rc) ? findE(g116Base(deck, rc)) : null) : mid;
       if (base) pRev *= g115See(g115Reach(deck, base.card, qtyOf(base.name)));
       if (rc.stage === 'stage2') {
         const candy = deck.reduce((a, y) => a + (y.card && (y.card.provides || []).includes('evolution_access') ? y.qty : 0), 0);
@@ -830,8 +859,9 @@ function g115Odds(deck, v, e, outs) {
   // Milling picks no card: it lands only when a copy is among the few cards it turns over.
   const pHit = g115See(cp, 6);
   const p = pRev * (pDeck + (1 - pDeck) * (1 - (1 - pHand * pSee) * (1 - pMill * pHit)));
-  // A line that comes together most games gets full credit; one that rarely does gets almost none.
-  return { p, cr: Math.min(1, p / 0.6) };
+  // 3.2.8: the credit follows the odds all the way up: a line that comes together about 1 game in 3
+  // earns about a third, and one that nearly always does earns nearly all of it.
+  return { p, cr: Math.max(0, Math.min(1, p)) };
 }
 /** 3.2.5: cards that put Pokemon into your discard pile: a cost of discarding from your hand
  *  (Ultra Ball), discarding your hand, or discarding from your deck (Brilliant Blender). */
@@ -859,13 +889,20 @@ function gCoherence(deck) {
   const rv115=new Map(), out115=g115Outlets(deck, energyTypes), revived=new Set();
   // 3.2.7: one that brings itself back is named by its Ability (Gengar's Netherworld Gate).
   const rvBy=v=>v.self ? { name:v.r.via||gCap(v.e.name), via:'' } : { name:gCap(v.e.name), via:v.r.via };
-  const rvKeep=(v,e)=>{ revived.add(e.card.key); const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, self:!!v.self, to:[] }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); };
+  const rvKeep=(v,e,o)=>{ if (!o || o.p>=RV_THIN) revived.add(e.card.key); const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, self:!!v.self, to:[], p:1 }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); if (o) g.p=Math.min(g.p,o.p); };
+  // 3.2.8: the cards that put the Pokemon in your discard pile, the ones the list runs most of first.
+  const rvOuts=()=>{ const m=new Map(); out115.forEach(x=>{ const k=gCap(x.name); m.set(k,(m.get(k)||0)+g115Reach(deck,x.card,x.qty)); });
+    return [...m.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,2); };
+  // 3.2.8: how often the line comes together, said under full strength: "about 6 games in 10", "only about 1 game in 4".
+  const rvOdds=p=>p>=0.9 ? '' : p>=0.45 ? `about ${Math.max(5,Math.min(9,Math.round(p*10)))} games in 10` : `only about 1 game in ${Math.max(2,Math.round(1/Math.max(p,0.01)))}`;
+  const RV_THIN=0.3;
   const rvNone=(v,e)=>{ const b=rvBy(v); return {sev:'warn', who:e.card.key, rvn:{ by:b.name, via:b.via, to:e.name }, t:`Nothing puts ${gCap(e.name)} in your discard pile`,
     d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`}; };
   // 3.2.7: a line that rarely comes together in time (a 1-of reviver with little to fetch it) earns little credit.
-  const rvThin=(v,e,o)=>{ const b=rvBy(v), n=Math.max(2, Math.round(1/Math.max(o.p,0.01)));
+  const rvThin=(v,e,o)=>{ const b=rvBy(v), n=Math.max(2, Math.round(1/Math.max(o.p,0.01))), outs=rvOuts();
     return {sev:'warn', who:e.card.key, t:`${gCap(e.name)} rarely reaches the board`,
-    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, and that comes together in only about 1 game in ${n}.`}; };
+    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, and that comes together in only about 1 game in ${n}.` +
+      (outs.length ? ` ${outs.join(' and ')} ${outs.length>1 ? 'are what put' : 'is what puts'} it in your discard pile.` : '')}; };
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
@@ -912,7 +949,7 @@ function gCoherence(deck) {
         // v66: Rare Candy skips the Stage 1, not the Basic, so with no Stage 1 in the list the Basic has to be.
         const bk=s=>normalizeCardName(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
         const pre=c.from&&present[c.from]>0;
-        const noBase=!pre&&c.base&&!deck.some(x=>x.card&&bk(x.name)===bk(c.base));
+        const cb=g116Base(deck,c), noBase=!pre&&cb&&!deck.some(x=>x.card&&bk(x.name)===bk(cb));
         const candy=provided['evolution_access']>0&&!noBase;
         const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
         const rv=!own&&!candy&&!pre&&!copied&&g115Reviver(deck,e,energyTypes);
@@ -921,10 +958,11 @@ function gCoherence(deck) {
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
         // 3.2.5: brought back from the discard pile, with something in the list to put it there.
+        // 3.2.8: the line is always shown, with how often it comes together, and a warning when that is rare.
         else if (rv) { if (out115.length) { const o=g115Odds(deck,rv,e,out115); reqMet+=o.cr;
-            if (o.cr>=0.5) rvKeep(rv,e); else flaws.push(rvThin(rv,e,o)); } else flaws.push(rvNone(rv,e)); }
-        else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.base)} for ${gCap(e.name)}`,
-          d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(c.base)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(c.base)} in play, so ${gCap(e.name)} can never reach the board.`});
+            rvKeep(rv,e,o); if (o.p<RV_THIN) flaws.push(rvThin(rv,e,o)); } else flaws.push(rvNone(rv,e)); }
+        else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(cb)} for ${gCap(e.name)}`,
+          d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(cb)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(cb)} in play, so ${gCap(e.name)} can never reach the board.`});
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
           d:`It is a Stage 2 with no Rare Candy and no ${gCap(c.from||'pre-evolution')} in the deck, so there is no realistic way to evolve into it.`});
       } else {
@@ -947,9 +985,9 @@ function gCoherence(deck) {
     // 3.2.5: a Stage 1 brought back from the discard pile needs no Basic either.
     const rv = g115Reviver(deck, e, energyTypes);
     if (rv && out115.length) { const o = g115Odds(deck, rv, e, out115);
-      // 3.2.7: full credit when the line comes together most games, less when it rarely does.
+      // 3.2.8: credit as often as the line comes together, and a warning when that is rare.
       if (o.cr < 1) { reqTotal++; reqMet += o.cr; }
-      if (o.cr >= 0.5) rvKeep(rv, e); else { const f = rvThin(rv, e, o); unmet.push(f.t); flaws.push(f); }
+      rvKeep(rv, e, o); if (o.p < RV_THIN) { const f = rvThin(rv, e, o); unmet.push(f.t); flaws.push(f); }
       return; }
     if (rv) { const f = rvNone(rv, e); reqTotal++; unmet.push(f.t); flaws.push(f); return; }
     reqTotal++; unmet.push(`No ${gCap(c.from)} for ${gCap(e.name)}`);
@@ -965,9 +1003,10 @@ function gCoherence(deck) {
   // 3.2.5: one line for each card that brings Pokemon back, naming them and what fills the discard pile.
   rv115.forEach(g => { const nm=g.self ? (g.r.via||gCap(g.by.name)) : gCap(g.by.name), via=g.self ? '' : g.r.via, to=g.to.map(gCap), one=to.length===1;
     const list=one ? to[0] : to.slice(0,-1).join(', ')+' and '+to[to.length-1];
-    const outs=[...new Set(out115.map(x=>gCap(x.name)))].slice(0,2);
+    const outs=rvOuts(), odds=rvOdds(g.p);
     synergies.push({ link:(g.self ? gCap(g.by.name)+': '+nm : nm+' > '+to.join(', ')), who:g.by.card.key, rev:true,
-      p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` }); });
+      p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` +
+        (odds ? ` The whole line comes together in ${odds}.` : '') }); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
   if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
     d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
@@ -1694,7 +1733,7 @@ function gViability(deck, coh, main) {
     if (mid) return canPlay(mid.card,g+1);
     if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
     // With the Stage 1 missing, Rare Candy has to carry the whole line, so it takes 2 or more.
-    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2&&(!c.base||deck.some(x=>x.card&&gk(x.card.key)===gk(c.base))); };
+    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2&&(b=>!b||deck.some(x=>x.card&&gk(x.card.key)===gk(b)))(g116Base(deck,c)); };
   const attackers=deck.filter(e=>e.card&&e.card.attacks&&canPlay(e.card)), findings=[];
   // v65: and an attack counts only when the list runs as many Energy of each type as it asks for
   // (2 Grass in the cost needs 2 or more Grass Energy cards, not just one).
@@ -1846,7 +1885,7 @@ function gViability(deck, coh, main) {
     const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
       while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
         if (!m) { if (c2.stage==='stage2') { q=Math.min(q,cand/2); // v67: 1 Rare Candy is half a line here, not none, so Power agrees with Synergy that it can be played
-            if (c2.base) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(c2.base)).reduce((n,x)=>n+x.qty,0)); } break; }
+            const b2=g116Base(deck,c2); if (b2) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(b2)).reduce((n,x)=>n+x.qty,0)); } break; }
         q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
       return q; };
     const av=n=>n>=3?1:n>=2?0.97+0.03*(n-2):n>=1?0.75+0.22*(n-1):0.5+0.25*n;
@@ -2637,7 +2676,7 @@ function gtFit(entries, coh, via, main, ctx) {
   if (!via.ctl && (k.gustQ || 0) < 2) thin.push({ role: 'gust', v: 2 - (k.gustQ || 0), say: (k.gustQ ? `only ${k.gustQ} card pulls` : 'nothing pulls') + ' up a Benched Pokemon' });
   if (evo && (k.find || 0) < 7) thin.push({ role: 'search', v: (7 - (k.find || 0)) / 3.5, say: k.find ? `only ${k.find} ${k.find === 1 ? 'card finds' : 'cards find'} Pokemon` : 'nothing in the list finds Pokemon' });
   if (!via.ctl && (k.drawQ || 0) + (k.abilQ || 0) < 8) thin.push({ role: 'draw', v: (8 - (k.drawQ || 0) - (k.abilQ || 0)) / 4, say: (k.drawQ || 0) + (k.abilQ || 0) ? `only ${(k.drawQ || 0) + (k.abilQ || 0)} ${(k.drawQ || 0) + (k.abilQ || 0) === 1 ? 'card draws' : 'cards draw'}` : 'nothing in the list draws cards' });
-  if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing gets cards back from your discard pile' });
+  if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing returns cards from your discard pile to your hand or deck' });
   thin.sort((a, b) => b.v - a.v);
   const inList = new Set(cards.map(e => e.card.key));
   // Each card to swap takes the next job the list is short on, so the ideas do not all name one card.
@@ -3031,7 +3070,10 @@ function gtHereLine(card, X) {
       const tr = [];
       ['stadium', 'tool'].forEach(k => { if (PK.some(x => x.q.k === k)) { const own = X.T.filter(e => e.card.tt === k && gtNorm(e.card.key) !== self).sort((a, b) => b.qty - a.qty); if (own.length) tr.push(own[0].name); } });
       const evo = PK.find(x => x.q.k === 'pkmn');
-      if (evo && evo.own.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evo.own), 'or')}${E.length || genE ? ' and an Energy' : ''} together.`;
+      // 3.2.8: only name what can reach the board, so the note never sells a Pokemon the list cannot evolve into.
+      const evoOk = evo ? evo.own.filter(p => g115Can(X.entries, { card: p.c })) : [];
+      if (evo && evo.own.length && !evoOk.length && !tr.length) return null;
+      if (evo && evoOk.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evoOk), 'or')}${E.length || genE ? ' and an Energy' : ''} together.`;
       return tr.length ? `Gets your ${tr.join(' and ')}${E.length || genE ? ' and an Energy' : ''} together.` : null;
     }
     if (!PK.length && !genPk && (E.length || genE)) {
@@ -9210,6 +9252,10 @@ function parseLine(line) {
   line = line.replace(/\s*\(\s*([A-Za-z0-9-]+)\s*\)\s*(\d+[a-zA-Z]*)$/, ' $1 $2')
              .replace(/\s*\(\s*([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)\s*\)$/, ' $1 $2');
 
+  // 3.2.8: a card database id in place of set and number ("2 Piplup swsh9-35") reads as "2 Piplup BRS 35".
+  const id = line.match(/^(\d+\s+.+?)\s+([a-z]+\d*(?:pt5|\.5)?)-(\d+[a-zA-Z]*)$/i);
+  if (id && ptSetAlias(id[2])) line = id[1] + ' ' + ptSetAlias(id[2]) + ' ' + id[3].replace(/^0+(?=\d)/, '');
+
   // Format 1: "4 Charizard ex OBF 125" (standard with set + number)
   const m = line.match(/^(\d+)\s+(.+?)\s+([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)$/);
   if (m) return { count: parseInt(m[1]), name: m[2].trim(), set: m[3].toUpperCase(), num: m[4] };
@@ -9244,7 +9290,12 @@ const LIMITLESS_TO_PTCGIO = TCGEnrich.SET_MAP;
  */
 /** True when a card read by name is still the same printing as the list line. */
 function sameCardNumber(c, e) {
-  return !!(e.id && c.set && c.num && TCGEnrich.toCardId(c.set, c.num) === e.id);
+  if (!(e.id && c.set && c.num)) return false;
+  // 3.2.8: TCGdex ids pad the number (swsh11-066) and name sets their own way (sv08), so compare both styles.
+  const norm = id => String(id || '').toLowerCase().replace(/-0+(?=[0-9])/, '-');
+  const ids = [TCGEnrich.toCardId(c.set, c.num)];
+  try { if (typeof td30CardId === 'function') ids.push(td30CardId(c.set, c.num)); } catch (_) {}
+  return ids.some(id => id && norm(id) === norm(e.id));
 }
 
 async function enrichDeckCards(cards) {
@@ -9271,7 +9322,7 @@ async function enrichDeckCards(cards) {
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
         // Every override is a Trainer, and its role is known without the API.
@@ -9295,7 +9346,7 @@ async function enrichDeckCards(cards) {
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
     }
@@ -9328,6 +9379,8 @@ async function enrichDeckCards(cards) {
     c.tx = 1;
     // Read by name from another printing: its costs may not match the card in the list.
     c.byName      = e.matchedBy === 'name' && !sameCardNumber(c, e) ? true : undefined;
+    // 3.2.8: which printing the text was read from, so the Grade tab can name it.
+    c.readPrint   = c.byName && e.printing ? e.printing : undefined;
     // Store parsed damage numbers only. The raw attack text is what makes
     // the payload big, and inference already ran, so it is dead weight in
     // IndexedDB once parsed.

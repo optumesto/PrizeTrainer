@@ -35,7 +35,7 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
         try { r = await td30Read(e); } catch (_) {}
         if (!r) return;
         const en = TCGEnrich.enrichCard(r.card);
-        if (!r.exact) en.matchedBy = 'name';
+        if (!r.exact) { en.matchedBy = 'name'; if (r.printing) en.printing = r.printing; }
         const k = String(e.name).toLowerCase();
         map.set(k, en);
         tdRead.push(k);
@@ -87,10 +87,13 @@ async function td66Bases(map, list) {
   const found = new Map();
   await Promise.all([...want.values()].map(async w => {
     const hits = await td30Get('/cards?name=' + encodeURIComponent('eq:' + TCGEnrich.apiName(w.name)));
-    const b = (Array.isArray(hits) ? hits : []).filter(h => h && typeof h.id === 'string' && TCGEnrich.sameCard(w.name, h.name || ''))
-      .sort((x, y) => td30Rank(y.id) - td30Rank(x.id))[0];
-    const c = b ? await td30Get('/cards/' + encodeURIComponent(b.id)) : null;
-    if (c && typeof c.evolveFrom === 'string' && c.evolveFrom) found.set(TCGEnrich.nameKey(w.name), c.evolveFrom); }));
+    const bs = (Array.isArray(hits) ? hits : []).filter(h => h && typeof h.id === 'string' && TCGEnrich.sameCard(w.name, h.name || ''))
+      .sort((x, y) => td30Rank(y.id) - td30Rank(x.id));
+    // 3.2.8: some TCGdex records leave out what the card evolves from, so try the next printings too.
+    for (const b of bs.slice(0, 3)) {
+      const c = await td30Get('/cards/' + encodeURIComponent(b.id));
+      if (c && typeof c.evolveFrom === 'string' && c.evolveFrom) { found.set(TCGEnrich.nameKey(w.name), c.evolveFrom); break; }
+    } }));
   const rest = [...want.values()].filter(w => !found.has(TCGEnrich.nameKey(w.name)));
   if (rest.length) {
     const q = rest.map(w => 'name:"' + TCGEnrich.apiName(w.name).replace(/"/g, '') + '"').join(' OR ');
@@ -102,6 +105,8 @@ async function td66Bases(map, list) {
         if (want.has(k) && !found.has(k) && c.evolvesFrom) found.set(k, c.evolvesFrom); });
     } catch (_) {}
   }
+  // 3.2.8: last, the saved list of Standard cards, which knows every legal Stage 1's Basic.
+  want.forEach((w, k) => { if (!found.has(k) && typeof r273From === 'function') { const b = r273From(w.name); if (b) found.set(k, b); } });
   want.forEach((w, k) => { if (found.has(k)) w.cards.forEach(v => { v.base = found.get(k); }); });
 }
 
@@ -126,7 +131,7 @@ enrichDeckCards = async function (cards) {
 // A layer that cannot read a line keeps the data its first printing got.
 const _v256EnrichDeck = enrichDeckCards;
 const _v256Fields = ['resolved','supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','retreat','provides',
-  'requires','reg','ace','dataSource','abilities','ttype','atext','rtext','etext','sub','tx','byName','attacks','via'];
+  'requires','reg','ace','dataSource','abilities','ttype','atext','rtext','etext','sub','tx','byName','readPrint','attacks','via'];
 enrichDeckCards = async function (cards) {
   const list = Array.isArray(cards) ? cards : [];
   const print = c => String(c.set || '').trim().toUpperCase() + ' ' + String(c.num || '').trim().replace(/^0+(?=\d)/, '').toUpperCase();
@@ -168,8 +173,23 @@ renderGrade = function () {
     p.textContent = `${n} ${n === 1 ? 'card was' : 'cards were'} read from pokemontcg.io, the backup card database, because TCGdex could not read ${n === 1 ? 'it' : 'them'}.`;
     body.appendChild(p);
   }
+  // 3.2.8: a card whose own printing could not be read names the printing its text came from.
+  const note = g116PrintNote(deck);
+  if (body && note && !document.getElementById('td116-note')) {
+    const p = document.createElement('div');
+    p.id = 'td116-note';
+    p.className = 'r29-note td30-note';
+    p.textContent = note;
+    body.appendChild(p);
+  }
   return r;
 };
+/** 3.2.8: one sentence for each card whose text came from another printing, naming that printing, or ''. */
+function g116PrintNote(deck) {
+  const other = (deck && deck.cards || []).filter((c, i, a) => c.byName && c.readPrint && a.findIndex(x => x.name === c.name) === i);
+  return other.slice(0, 5).map(c => `The card text for ${c.name} was read from another printing, ${c.readPrint}.`).join(' ') +
+    (other.length > 5 ? ` ${other.length - 5} more cards were read from other printings.` : '');
+}
 
 // Card art: TCGdex's picture is one more fallback after Limitless and pokemontcg.io.
 function td31Art(card) {
