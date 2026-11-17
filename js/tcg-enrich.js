@@ -1387,6 +1387,8 @@ function enrichCard(apiCard, opts) {
     // v54: a "put this onto your Bench" Ability that needs a Mega Evolution Pokemon ex in play (Talonflame ex's Excited Dive).
     bmega: (m => m ? (m[1] || 'any').toLowerCase() : undefined)((x.text || '').match(/put this pok[e\u00e9]mon onto your bench/i) && (x.text || '').match(/if you have any (?:(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|colorless) )?mega evolution pok[e\u00e9]mon ex in play/i)),
     aneed: ((x.text || '').match(/attach (?:a|an|up to \d+|\d+) basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy cards? from your hand/i) || [])[1]?.toLowerCase(),
+    // 3.2.8: an Ability that only works while this Pokemon has some Energy attached (Munkidori's Adrena-Brain needs Darkness).
+    ahas: (m => m ? (m[1] || 'any').toLowerCase() : undefined)((x.text || '').match(/^\s*(?:once during your turn, )?if this pok[e\u00e9]mon has any (?:(grass|fire|water|lightning|psychic|fighting|darkness|metal) )?energy attached/i)),
   }));
 
   const supertype = String(card.supertype || '').toLowerCase();

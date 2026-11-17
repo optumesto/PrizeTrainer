@@ -366,6 +366,10 @@ function ptCanonName(name) {
   let s = String(name || '')
     .replace(/[\u2018\u2019\u02bc\u0060\u00b4\u2032]/g, "'")
     .replace(/\{([a-z])\}/gi, (m, ch) => PT_SYM_WORD[ch.toLowerCase()] || m)
+    // 3.2.8: markup pasted around a name ("<b>Fezandipiti ex</b>") is not part of it either.
+    .replace(/<\/?[a-z][^<>]*>/gi, '')
+    // 3.2.8: emoji ("\ud83d\udd25 Fezandipiti ex") are not part of a card's name, but the female and male signs are.
+    .replace(/(?![\u2640\u2642])\p{Extended_Pictographic}|[\ufe0f\u200d\u20e3]|\p{Regional_Indicator}|[\u{1f3fb}-\u{1f3ff}]/gu, '')
     .replace(/\s+/g, ' ').replace(/ ([\u2640\u2642])/g, '$1').trim();   // 2.5.5: "Nidoran \u2640" is "Nidoran\u2640"
   const b = s.match(/^basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy$/i);
   if (b) s = b[1].charAt(0).toUpperCase() + b[1].slice(1).toLowerCase() + ' Energy';
@@ -430,10 +434,15 @@ function parseDeckList(raw) {
     if (/^\s*total\b/i.test(line)) return;
     const c = parseLine(line);
     // 2.5.1: count the lines that could not be read (and "0 Card" lines), so the import box can say so.
-    if (!c || !(c.count > 0)) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
+    // 3.2.8: and lines with more copies than a whole deck holds ("999 Zzz"), which no list means.
+    if (!c || !(c.count > 0) || c.count > 60) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
     c.name = ptCanonName(c.name);   // 2.5.3
+    if (!c.name) { skipped++; return; }
     if (c.set) c.set = ptCanonSet(c.set);   // 2.5.5
     if (section) c.section = section;
+    // 3.2.8: the same card on two lines is one entry ("1 Poké Pad POR 81" twice reads as 2).
+    const same = cards.find(x => x.name.toLowerCase() === c.name.toLowerCase() && x.set === c.set && x.num === c.num && x.section === c.section);
+    if (same) { same.count += c.count; return; }
     cards.push(c);
   });
   Object.defineProperty(cards, 'skipped', { value: skipped });
@@ -443,7 +452,19 @@ function parseDeckList(raw) {
 function parsePreviewText(parsed, want) {
   const total = parsed.reduce((a, c) => a + c.count, 0), n = parsed.skipped || 0;
   const skip = n ? ` ${n} line${n === 1 ? ' was' : 's were'} not read. Check ${n === 1 ? 'it' : 'them'} against the list.` : '';
-  return { warn: !!n || total !== want, t: `Parsed ${parsed.length} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}${skip}` };
+  // 3.2.8: unique cards by name, and what the rules flag before any card is read: more than 4 with one name,
+  // and cards from sets that are no longer legal (Sword and Shield or earlier, or TCG Pocket).
+  const key = c => (typeof rules34Key === 'function' ? rules34Key(c.name) : String(c.name).toLowerCase());
+  const byName = new Map();
+  parsed.forEach(c => { const k = key(c), r = byName.get(k) || { name: c.name, n: 0, be: false }; r.n += c.count;
+    if (typeof rules34IsBasicEnergy === 'function' && rules34IsBasicEnergy(c)) r.be = true; byName.set(k, r); });
+  const over = [...byName.values()].filter(r => !r.be && r.n > 4);
+  const overT = over.slice(0, 2).map(r => ` There are ${r.n} ${r.name}, and the most allowed is 4.`).join('');
+  const old = parsed.filter(c => c.set && ((typeof r29OldSet === 'function' && r29OldSet(c.set)) || (typeof r29PocketSet === 'function' && r29PocketSet(c.set))))
+    .reduce((a, c) => a + c.count, 0);
+  const oldT = old ? ` ${old} card${old === 1 ? ' is' : 's are'} from a set that is not Standard legal now.` : '';
+  return { warn: !!n || total !== want || !!over.length || !!old,
+    t: `Parsed ${byName.size} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}${overT}${oldT}${skip}` };
 }
 
 /** Deck list text grouped under section headers, for the edit box. */
@@ -709,6 +730,10 @@ function toGradeRows(deck) {
       bcopy: ((c.atext||[]).find(x => /can use the attacks of (?:any of )?your benched pok/i.test(String(x[1]||''))) || [])[0] || null,
       pex: (c.abilities||[]).filter(x => x.pex).map(x => x.name),
       aneed: (c.abilities||[]).filter(x => x.aneed).map(x => ({ abil: x.name, type: x.aneed })),
+      ahas: (c.abilities||[]).filter(x => x.ahas).map(x => ({ abil: x.name, type: x.ahas })),
+      // 3.2.8: an Ability that searches for Evolution Pokemon of one type (Genesect ex's Metallic Signal).
+      evoSeek: (x => x ? { abil: x[0], type: ((String(x[1]||'').match(/search your deck for (?:up to \d+ |an? )?evolution (grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|colorless) pok/i) || [])[1] || '').toLowerCase() } : null)(
+        (c.atext||[]).find(x => /search your deck for (?:up to \d+ |an? )?evolution (?:[a-z]+ )?pok[e\u00e9]mon/i.test(String(x[1]||'')))),
       abBoost: (c.abilities||[]).filter(x => x.boost).map(x => Object.assign({ abil: x.name }, x.boost)),
       sboost: (x => x ? Object.assign({ abil: x.name }, x.sboost) : null)((c.abilities||[]).find(x => x.sboost)),
       gate: ((c.abilities||[]).filter(x => x.gate).map(x => Object.assign({ abil: x.name }, x.gate)))[0] || null,
@@ -911,6 +936,20 @@ function gCoherence(deck) {
       flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
         d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.` +
           (payable ? '' : ` Its attacks need ${gCap(x.type)} Energy too, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${gCap(x.type)} Energy.`)}); }); });
+  // 3.2.8: an Ability that only works with some Energy attached (Munkidori's Adrena-Brain) does nothing when the list runs none of it.
+  const anyE = Object.keys(energyTypes).some(k => energyTypes[k]);
+  deck.forEach(e => { const c=e.card; if(!c) return;
+    (c.ahas||[]).filter(x => x.type === 'any' ? !anyE : !energyTypes[x.type] && !energyTypes.any).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
+      const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any)) && (anyE || (c.attacks||[]).some(a=>!(a.cost||[]).length));
+      const ty = x.type === 'any' ? '' : gCap(x.type) + ' ';
+      flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} never turns on` : `${gCap(e.name)} does nothing as built`,
+        d:`${x.abil} only works while ${gCap(e.name)} has ${ty}Energy attached, but the list runs no ${ty}Energy, so the Ability does nothing as built.` +
+          (payable ? '' : ` Its attacks cannot be paid either, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${ty}Energy.`)}); }); });
+  // 3.2.8: an Ability that searches for Evolution Pokemon finds nothing when the list runs none it can find.
+  deck.forEach(e => { const c=e.card; if(!c||!c.evoSeek||flaws.some(f=>f.who===c.key)) return;
+    const ty=c.evoSeek.type, hit=deck.some(x=>x.card&&x.card.t==='pkmn'&&x.card.stage&&x.card.stage!=='basic'&&(!ty||(x.card.types||[]).some(t=>String(t).toLowerCase()===ty)));
+    if (!hit) flaws.push({sev:'warn', who:c.key, t:`${gCap(e.name)}'s ${c.evoSeek.abil} finds nothing`,
+      d:`${c.evoSeek.abil} searches your deck for ${ty ? gCap(ty) + ' ' : ''}Evolution Pokemon, but the list runs none, so the Ability does nothing as built.`}); });
   // v55: an attacker that cannot attack until enough of a group is in play (Team Rocket's Mewtwo ex's Power Saver).
   deck.forEach(e => { const c=e.card; if(!c||!c.gate) return;
     const g=c.gate, n=deck.filter(x=>x.card&&x.card.t==='pkmn'&&x.card.key.startsWith(g.pre)).reduce((k,x)=>k+x.qty,0);
@@ -931,8 +970,12 @@ function gCoherence(deck) {
               : `${gCap(cp.name)} copies ${gCap(e.name)}'s attacks with ${via}, paying only its own cost, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.` }); }
         // v55: a Pokemon the list evolves (Dreepy into Drakloak) is there to evolve, not to attack.
         else if (deck.some(x => x.card && x.card.t==='pkmn' && x.card.from===c.key)) reqMet++;
-        else if (c.abil && c.abil.length && !(c.aneed||[]).some(x => !energyTypes[x.type])) { reqMet++;
-          if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '),
+        // 3.2.8: nor is an Ability that needs Energy the list does not run (Munkidori without Darkness).
+        else if (c.abil && c.abil.length && !(c.aneed||[]).some(x => !energyTypes[x.type]) && !(c.ahas||[]).some(x => x.type === 'any' ? !Object.keys(energyTypes).some(k => energyTypes[k]) : !energyTypes[x.type] && !energyTypes.any)) { reqMet++;
+          // 3.2.8: one line per card, naming each type its attack needs (Tatsugiri's Surf needs Fire and Water).
+          const was = synergies.find(s=>s.who===c.key&&s.abx);
+          if (was) { was.abx.push(gCap(ty)); was.p = `${gCap(e.name)} is here for its Ability, so its attack needing ${was.abx.join(' and ')} Energy does not matter.`; }
+          else if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '), abx:[gCap(ty)],
             p:`${gCap(e.name)} is here for its Ability, so its attack needing ${gCap(ty)} Energy does not matter.`, who:c.key}); }
         else if (c.byName) { reqMet++;
           flaws.push({sev:'warn', who:c.key, t:`Check ${gCap(e.name)}'s attack cost`,
@@ -1026,6 +1069,14 @@ function gCoherence(deck) {
   const eScale = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.escale||a.edisc||(a.pile&&a.pile.kind==='energy')||(a.mill&&a.mill.kind==='energy')));
   if (eQ >= 22 && !eScale) flaws.push({sev:'warn', t:'Heavy on Energy',
     d:`The list runs ${eQ} Energy. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
+  // 3.2.8: attacks that use Energy still want it attached, not stuck in hand: past 24 even those lists draw too much of it.
+  else if (eQ >= 24) flaws.push({sev:'warn', t:'Heavy on Energy',
+    d:`The list runs ${eQ} Energy. Even decks whose attacks use up Energy rarely run more than 20, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
+  // 3.2.8: too little Energy to attack with. Text only: the attacks it cannot pay already count for nothing in the grade.
+  const eAtk = deck.filter(e=>e.card&&e.card.t==='pkmn'&&(e.card.attacks||[]).some(a=>(a.cost||[]).length));
+  if (hasAtk && eAtk.length && eQ <= 1) flaws.push({sev:'warn', t: eQ ? 'Only 1 Energy' : 'No Energy in the list',
+    d: eQ ? 'The list runs 1 Energy card, so it is rarely in your hand when you need it, and attacks that cost Energy will almost never be used. Most decks run 8 to 16.'
+      : 'The list runs no Energy cards, so no attack that costs Energy can ever be used. Most decks run 8 to 16.'});
   // v59: Rare Candy with no Stage 2 in the list can never be played.
   const hasS2 = deck.some(e=>e.card&&e.card.t==='pkmn'&&e.card.stage==='stage2');
   const candyQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&(e.card.provides||[]).includes('evolution_access'));
@@ -1327,6 +1378,9 @@ function g35Boost(deck, atk) {
   // Pokemon is Active helps only that Pokemon.
   deck.forEach(e => (e.card && e.card.abDmg || []).forEach(x => {
     if (x.active && e.card.key !== key) return;
+    // 3.2.8: an Ability that Knocks Out its own Pokemon (Cursed Blast) is not added to that Pokemon's own attack:
+    // Dusknoir cannot use Cursed Blast and then attack. Another Pokemon's attack still counts it (Fezandipiti ex).
+    if (x.selfKO && e.card.key === key) return;
     if (!best.ability || x.n > best.ability.n)
       best.ability = { n: x.n, cat: 'ability', name: `${gCap(e.name)}'s ${x.abil}`, who: gCap(e.name), selfKO: !!x.selfKO }; }));
   // v55: an Ability that boosts the attacks of a group of your Pokemon (Cynthia's Roserade's
@@ -1744,7 +1798,11 @@ function gViability(deck, coh, main) {
     if (!m||!c) return true; const x=m[1].trim();
     return stg[x] ? String(c.stage||'').toLowerCase().replace(/\s+/g,'')===stg[x] : gtNorm(c.key||'').startsWith(x); };
   const EN=deck.filter(x=>x.card&&x.card.t==='energy');
+  // 3.2.8: and the list runs enough Energy cards in all to cover the whole cost, Colorless included
+  // (a Special Energy may count for two), so a list with no Energy has no paid attack.
+  const eUnits=EN.reduce((n,x)=>n+x.qty*((x.card.sub||[]).some(s=>/special/i.test(s))?2:1),0);
   const pay=(a,who)=>{ const need={}; (a.cost||[]).forEach(ty=>{ if(ty!=='colorless') need[ty]=(need[ty]||0)+1; });
+    if ((a.cost||[]).length>eUnits) return false;
     return Object.keys(need).every(ty=>EN.reduce((n,x)=>{ const ts=x.card.etypes&&x.card.etypes.length?x.card.etypes:[x.card.etype];
       return n+((ts.includes(ty)||ts.includes('any'))&&fits(x.card,who)?x.qty:0); },0)>=need[ty]); };
   // Best payable hit per attacker: its ceiling, and what it does early.
@@ -1764,6 +1822,13 @@ function gViability(deck, coh, main) {
       // counted the same way.
       if (!r0.srcF && main && main.key !== e.card.key && deck.some(x => x.card && x.card.bcopy && x.card.key === main.key)) { const sf=g273SrcF(deck, e.card); if (sf.f<1) r0=Object.assign({}, r0, { srcF: sf.f, srcN: sf.n, thinSelf: true }); }
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
+  // 3.2.8: a main attacker whose every attack costs more Energy than the list runs in all.
+  const mainK = main && (deck.find(x=>x.card&&x.card.key===main.key)||{}).card;
+  const eQv = EN.reduce((n,x)=>n+x.qty,0);
+  if (mainK && eQv > 1 && (mainK.attacks||[]).length && mainK.attacks.every(a=>(a.cost||[]).length>eUnits)) {
+    const least = Math.min(...mainK.attacks.map(a=>(a.cost||[]).length));
+    findings.push({sev:'warn', t:'Too little Energy for the main attacker',
+      d:`${gCap(main.name)}'s cheapest attack needs ${least} Energy, but the list runs only ${eQv} Energy cards, so it can never attack. Add Energy or pick another main attacker.`}); }
   // 2.7.3: a copied hit from a thin line is compared at what the grade counts of it.
   const effC = r => r.eff * (r.srcF || 1);
   let bestR=null; reach.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
@@ -2617,6 +2682,10 @@ function gtFit(entries, coh, via, main, ctx) {
   const s2 = mainSt2 || st2.sort((a, b) => b.qty - a.qty)[0];
   const nm = gCap, up = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
   const deadSet = new Set(ctx.dead || []);
+  // 3.2.8: how much Energy the list runs, and whether the main attacker's attacks all cost nothing (Igglybuff).
+  const eCards = entries.filter(e => e.card && e.card.t === 'energy').reduce((a, e) => a + e.qty, 0);
+  const mainC = main && (entries.find(e => e.card && e.card.key === main.key) || {}).card;
+  const mainFree = !!(mainC && (mainC.attacks || []).length && mainC.attacks.every(a => !(a.cost || []).length));
   const out = [];
   one.forEach(e => {
     const c = e.card, roles = roleOf.get(c.key), tx = text(c);
@@ -2626,6 +2695,17 @@ function gtFit(entries, coh, via, main, ctx) {
       const miss = gtUnmet(entries, coh, tx);
       row.fit = 'dead';
       row.why = `Needs ${[...new Set(miss.map(gtSay))].join(' or ')}, and the list runs none.`;
+    } else if (!st2.length && roles.has('evolve') && /skipping the stage 1/.test(gtNorm(tx))) {
+      // 3.2.8: as Fix first says, Rare Candy with no Stage 2 in the list cannot be played.
+      row.fit = 'dead';
+      row.why = 'The list has no Stage 2 Pokemon, so it cannot be played.';
+    } else if (roles.size && [...roles].every(r => r === 'energy') && !eCards) {
+      // 3.2.8: a card whose only job is Energy does nothing in a list with no Energy.
+      row.fit = 'dead';
+      row.why = 'Its only job is Energy, and the list runs no Energy.';
+    } else if (roles.size && [...roles].every(r => r === 'energy') && mainFree) {
+      row.fit = 'weak';
+      row.why = `Helps pay Energy costs, but ${nm(main.name)}'s attacks cost no Energy.`;
     } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx)) && (() => {
       // v71: Rare Candy needs the line's Basic in the list, or it has nothing to go on.
       const s1 = P.find(x => x.card.key === s2.card.from);
@@ -3073,8 +3153,10 @@ function gtHereLine(card, X) {
       // 3.2.8: only name what can reach the board, so the note never sells a Pokemon the list cannot evolve into.
       const evoOk = evo ? evo.own.filter(p => g115Can(X.entries, { card: p.c })) : [];
       if (evo && evo.own.length && !evoOk.length && !tr.length) return null;
-      if (evo && evoOk.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evoOk), 'or')}${E.length || genE ? ' and an Energy' : ''} together.`;
-      return tr.length ? `Gets your ${tr.join(' and ')}${E.length || genE ? ' and an Energy' : ''} together.` : null;
+      // 3.2.8: and no Energy is named when the list runs none to find.
+      const andE = (E.length || genE) && X.entries.some(x => x.card && x.card.t === 'energy') ? ' and an Energy' : '';
+      if (evo && evoOk.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evoOk), 'or')}${andE} together.`;
+      return tr.length ? `Gets your ${tr.join(' and ')}${andE} together.` : null;
     }
     if (!PK.length && !genPk && (E.length || genE)) {
       if (diffTypes) {
@@ -4081,8 +4163,15 @@ function renderReview(deck) {
       const o = m.get(k2); if (o) o.count += c.count; else m.set(k2, Object.assign({}, c)); });
     return [...m.values()];
   }
+  // 3.2.8: the same Pokemon printing on two lines is still one tile, with its copies added up.
+  function byPrint(arr) {
+    const m = new Map();
+    arr.forEach(c => { const k2 = [(c.apiName || c.name || '').trim().toLowerCase(), String(c.set || '').toUpperCase(), String(c.num || '')].join('|');
+      const o = m.get(k2); if (o) o.count += c.count; else m.set(k2, Object.assign({}, c)); });
+    return [...m.values()];
+  }
   const groups = [
-    { key: 'pokemon', label: 'Pokémon', cards: sortGroup(pokemon) },
+    { key: 'pokemon', label: 'Pokémon', cards: sortGroup(byPrint(pokemon)) },
     { key: 'trainer', label: 'Trainers', cards: sortGroup(byName(trainers)) },
     { key: 'energy', label: 'Energy', cards: sortGroup(byName(energies)) },
   ].filter(g => g.cards.length > 0);
@@ -9246,7 +9335,8 @@ function parseLine(line) {
   line = line.trim();
   if (!line || line.startsWith('//') || line.startsWith('#')) return null;
   // v59: "4x Ultra Ball", "4 x Ultra Ball" and a bullet "- 4 Ultra Ball" read as 4 Ultra Ball.
-  line = line.replace(/^[-*\u2022]\s+(?=[x\u00d7]?\d)/i, '').replace(/^(\d+)\s*[x\u00d7]\s+/i, '$1 ')
+  // 3.2.8: but "2 X Speed" is 2 X Speed: a spaced capital X starts a card name.
+  line = line.replace(/^[-*\u2022]\s+(?=[x\u00d7]?\d)/i, '').replace(/^(\d+)(?:[xX\u00d7]|\s+[x\u00d7])\s+/, '$1 ')
     .replace(/^[x\u00d7]\s*(\d+)\s+/i, '$1 ');  // 2.5.1: "x3 Ultra Ball" reads as 3 Ultra Ball
   // v59: "Ultra Ball (MEG) 131" and "Ultra Ball (MEG 131)" read as "Ultra Ball MEG 131".
   line = line.replace(/\s*\(\s*([A-Za-z0-9-]+)\s*\)\s*(\d+[a-zA-Z]*)$/, ' $1 $2')
@@ -9322,7 +9412,7 @@ async function enrichDeckCards(cards) {
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','pocket','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
         // Every override is a Trainer, and its role is known without the API.
@@ -9340,13 +9430,15 @@ async function enrichDeckCards(cards) {
     const dataCat = categoryFromSupertype(e.supertype);
     // 2.5.1: read by its own set and number (the name was checked too), so the
     // card data is right and the section header above it was misplaced.
-    if (c.section && dataCat && dataCat !== c.section && sameCardNumber(c, e)) delete c.section;
+    // 3.2.8: a read by name matched the name too, so it is the same card and the header is what was misplaced
+    // (Energy Switch listed under Energy:). The same list grades the same in any format.
+    if (c.section && dataCat && dataCat !== c.section && (sameCardNumber(c, e) || e.matchedBy === 'name')) delete c.section;
     if (c.section && dataCat && dataCat !== c.section) {
       // The list says one thing and the lookup read another: the read is
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','pocket','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
     }
@@ -9381,6 +9473,7 @@ async function enrichDeckCards(cards) {
     c.byName      = e.matchedBy === 'name' && !sameCardNumber(c, e) ? true : undefined;
     // 3.2.8: which printing the text was read from, so the Grade tab can name it.
     c.readPrint   = c.byName && e.printing ? e.printing : undefined;
+    c.pocket      = e.pocket ? true : undefined;
     // Store parsed damage numbers only. The raw attack text is what makes
     // the payload big, and inference already ran, so it is dead weight in
     // IndexedDB once parsed.

@@ -368,6 +368,8 @@ async function td30Get(path) {
 }
 
 /** Read one list line from TCGdex: its own printing first, then the newest printing with that name. */
+/** 3.2.8: a TCGdex id from Pokemon TCG Pocket (A1-225, A2b-010, P-A-002), not the card game. */
+function td30Pocket(id) { return /^(?:[AB]\d+[a-z]?|P-[AB])-/.test(String(id || '')); }
 async function td30Read(e) {
   const id = td30CardId(e.set, e.num);
   // 2.5.5: 30th Classic Collection cards carry the same 30C code as 30th Celebration.
@@ -376,7 +378,7 @@ async function td30Read(e) {
   for (const tid of ids) {
     const c = await td30Get('/cards/' + encodeURIComponent(tid));
     const shaped = td30Shape(c);
-    if (shaped && TCGEnrich.sameCard(e.name, shaped.name)) return { card: shaped, exact: true };
+    if (shaped && TCGEnrich.sameCard(e.name, shaped.name)) return td30Pocket(tid) ? { card: shaped, exact: true, pocket: true } : { card: shaped, exact: true };
   }
   const want = td30SetId(e.set), wantNum = String(e.num || '').trim().replace(/^0+(?=\d)/, '').toLowerCase();
   const own = b => !!want && String(b.id).toLowerCase().startsWith(want.toLowerCase() + '-') &&
@@ -385,20 +387,27 @@ async function td30Read(e) {
     const list = await td30Get('/cards?name=' + encodeURIComponent('eq:' + v));
     const hits = (Array.isArray(list) ? list : []).filter(b => b && typeof b.id === 'string' && TCGEnrich.sameCard(e.name, b.name || ''))
       .sort((a, b) => td30Rank(b.id) - td30Rank(a.id));
+    // 3.2.8: TCGdex also lists Pokemon TCG Pocket cards. A name printed only for Pocket is not a card game card,
+    // so it is read for what it does and marked, and the legality check counts it as not legal.
+    const game = hits.filter(h => !td30Pocket(h.id));
+    if (!game.length && hits.length) {
+      const raw = await td30Get('/cards/' + encodeURIComponent(hits[0].id)), shaped = td30Shape(raw);
+      if (shaped) return { card: shaped, exact: false, pocket: true, printing: td30Printing(raw) };
+    }
     // 3.2.8: the list line's own printing, when the name search finds it under an id the guess missed.
-    const mine = hits.find(own);
+    const mine = game.find(own);
     if (mine) {
       const shaped = td30Shape(await td30Get('/cards/' + encodeURIComponent(mine.id)));
       if (shaped) return { card: shaped, exact: true };
     }
-    for (const b of hits.slice(0, 2)) {
+    for (const b of game.slice(0, 2)) {
       const raw = await td30Get('/cards/' + encodeURIComponent(b.id));
       const shaped = td30Shape(raw);
       if (!shaped) continue;
       // 3.2.8: some TCGdex records leave out what the card evolves from (30th Classic Collection Gengar).
       // Every printing of an evolution evolves from the same Pokemon, so take it from another printing.
       if (!shaped.evolvesFrom && shaped.subtypes.some(x => /^stage [12]$/i.test(x))) {
-        for (const o of hits.filter(h => h !== b).slice(0, 3)) {
+        for (const o of game.filter(h => h !== b).slice(0, 3)) {
           const ot = await td30Get('/cards/' + encodeURIComponent(o.id));
           if (ot && typeof ot.evolveFrom === 'string' && ot.evolveFrom) { shaped.evolvesFrom = ot.evolveFrom; break; }
         }
@@ -435,6 +444,7 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
       if (!r) return;
       const en = TCGEnrich.enrichCard(r.card);
       if (!r.exact) { en.matchedBy = 'name'; if (r.printing) en.printing = r.printing; }
+      if (r.pocket) en.pocket = true;
       en.via = 'tcgdex';
       map.set(String(e.name).toLowerCase(), en);
       read.push(String(e.name).toLowerCase());

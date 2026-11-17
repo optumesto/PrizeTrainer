@@ -68,6 +68,8 @@ function r273Ready() {
 }
 function r273Legal(name) { return !!r273 && r273.set.has(r29Key(name)); }
 /** 3.2.8: true for a set code from Sword and Shield or earlier (BRS, LOR), whose cards carry no mark legal now. */
+/** 3.2.8: a Pokemon TCG Pocket set code (A1, A2b, P-A), never a card game set. */
+function r29PocketSet(code) { return /^(?:[AB]\d+[a-z]?|P-?[AB])$/i.test(String(code || '')); }
 function r29OldSet(code) {
   if (typeof TCGEnrich === 'undefined') return false;
   const k = String(code || '').toUpperCase();
@@ -94,6 +96,9 @@ function r29Rows(deck) {
       if (!r.abil.length) r.abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
     }
     if (c.byName) r.other = true;
+    // 3.2.8: a printing from Pokemon TCG Pocket (X Speed, Sabrina, or a list line with a Pocket set code) is never legal in the card game.
+    const pk = !!(c.pocket || (c.byName && r29PocketSet(c.set)));
+    r.pocket = (r.pocket === undefined ? true : r.pocket) && pk;
     // v68: the list names a set and number the card database does not have (a new promo like
     // MEP 38), so its mark came from an older printing. New printings reach the database late,
     // so this card is unconfirmed, never "not legal now".
@@ -116,6 +121,8 @@ function r29Rows(deck) {
     const rb = rep && r29M(rep.best);
     r.reprint = rb && rb > (r.mark || '') ? rb : null;
     r.checked = !!rep;
+    // 3.2.8: every line of this name is a Pocket printing, so no mark or reprint makes it legal.
+    if (r.pocket) { r.st = 'out'; rows.push(r); return; }
     const best = r.reprint || r.mark;
     // 2.7.3: a Trainer the online reprint check has not looked at yet is decided from the list of every
     // Trainer name legal now (cards.json, saved on the device): on the list, an older printing counts
@@ -165,7 +172,7 @@ const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
   // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
   // 2.7.3: a Trainer decided from the saved legal names is still checked online, which has the last word.
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf' || r.listed) && !r.checked);
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf' || r.listed) && !r.checked && !r.pocket);
 }
 var r29CheckReprints;   // set further down
 
@@ -201,6 +208,7 @@ function r29Summary(deck) {
   const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m">${r.reprint || r.mark || '?'}</span></div>`;
   const sub = r => {
     if (r.reprint && r.st === 'safe') return `Kept legal by a reprint with the ${r.reprint} mark`;
+    if (r.pocket) return 'This printing is from Pokemon TCG Pocket, not the card game';
     if (r.st === 'nomark') return 'No mark on this printing in the card database';
     const bits = [];
     if (r.reprint) bits.push(`Newest reprint has the ${r.reprint} mark`);
@@ -263,7 +271,7 @@ function r29HomeLine(deck) {
   const open = r29NeedsCheck(deck, rows).length;
   if (open && !_r29Busy.has(deck.id) && !_r29Tried.has(deck.id)) setTimeout(() => r29CheckReprints(deck), 0);
   // Until reprints are checked, an old mark may still be legal.
-  const upTo = open && rows.some(r => (r.st === 'out' || r.st === 'nomark') && !r.checked) ? 'Up to ' : '';
+  const upTo = open && rows.some(r => (r.st === 'out' || r.st === 'nomark') && !r.checked && !r.pocket) ? 'Up to ' : '';
   if (k.out) return `<div class="deck-rot crit"><svg class="ic"><use href="#i-alert"/></svg>${upTo}${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now</div>`;
   if (k.risk) return `<div class="deck-rot"><svg class="ic"><use href="#i-calendar"/></svg>${k.risk} card${k.risk > 1 ? 's' : ''} ${ROT29.next.announced ? 'rotate' : 'expected to rotate'} in ${ROT29.next.when}</div>`;
   if (k.unconf && !open) return `<div class="deck-rot"><svg class="ic"><use href="#i-alert"/></svg>${k.unconf} card${k.unconf > 1 ? 's' : ''} not confirmed Standard legal</div>`;

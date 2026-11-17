@@ -36,6 +36,7 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
         if (!r) return;
         const en = TCGEnrich.enrichCard(r.card);
         if (!r.exact) { en.matchedBy = 'name'; if (r.printing) en.printing = r.printing; }
+        if (r.pocket) en.pocket = true;
         const k = String(e.name).toLowerCase();
         map.set(k, en);
         tdRead.push(k);
@@ -131,7 +132,7 @@ enrichDeckCards = async function (cards) {
 // A layer that cannot read a line keeps the data its first printing got.
 const _v256EnrichDeck = enrichDeckCards;
 const _v256Fields = ['resolved','supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','retreat','provides',
-  'requires','reg','ace','dataSource','abilities','ttype','atext','rtext','etext','sub','tx','byName','readPrint','attacks','via'];
+  'requires','reg','ace','dataSource','abilities','ttype','atext','rtext','etext','sub','tx','byName','readPrint','pocket','attacks','via'];
 enrichDeckCards = async function (cards) {
   const list = Array.isArray(cards) ? cards : [];
   const print = c => String(c.set || '').trim().toUpperCase() + ' ' + String(c.num || '').trim().replace(/^0+(?=\d)/, '').toUpperCase();
