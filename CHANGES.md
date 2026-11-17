@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2.6 (build 116): grades for decks that bench Pokemon from the discard pile (17 Nov 2026)
+
+Changed files: js/tcg-enrich.js (reads attacks, Abilities and Trainers that put Pokemon from your discard pile onto your Bench), js/core.js (ENRICH_VER 20, grader, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), sw.js (cache prize-trainer-v116) and CHANGES.md. Numbered 3.2.6 because the dollar prices and offline starters update is 3.2.5; if this goes live first, renumber.
+
+- The grader now reads card text that puts Pokemon from your discard pile onto your Bench, like Kingdra ex's King's Order (up to 3 Water Pokemon). It notes how many, which type, Stage, HP limit, name and exceptions, and skips "each player" effects. Card data is read again once (ENRICH_VER 20) to store this for decks already saved.
+- A Stage 1 or Stage 2 with no Pokemon to evolve from, Rare Candy or other way in no longer counts as unplayable when a card in the list can put it onto the Bench from the discard pile, the attack's Energy fits the list, and something in the list fills the discard pile (Ultra Ball, Brilliant Blender, a discard your hand Supporter and the like). The plan shows one line for each such card, naming what it brings back and what fills the discard pile. With nothing to fill the discard pile it is one warning, not a critical flaw. Without the reviver, or for a Pokemon of the wrong type, the old critical flaw stays.
+- Mason's Kingdra ex and Mega Greninja ex list: 3.3 to 7.4 (Synergy 2.8 to 6.8, Power 8.1 unchanged).
+- No other grade moves: grade check passed (132 of 132 lists), and every starter deck grades the same.
+
 # RdyDeck 3.2.4 (build 114): page to delete your data (17 Nov 2026)
 
 Changed files: delete-data.html (new), privacy.html (link), every page's footer (link), build-pages.mjs (footer link for built pages), sitemap.xml, sw.js (cache prize-trainer-v114, saves the new page for offline), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps) and CHANGES.md.

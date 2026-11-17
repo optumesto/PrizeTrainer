@@ -970,6 +970,38 @@ function fix37Td(t) {
   return o;
 }
 /** "Choose 1 of your Benched N's Pokemon's attacks and use it as this attack": the name start it copies from. */
+/**
+ * 3.2.5: a card that puts Pokemon from your discard pile straight onto your Bench (Kingdra ex's
+ * King's Order, Salamence ex's Booming Call, Rabsca's Revival Blessing, Duskull's Come and Get You).
+ * A Pokemon it can bring back reaches the board without evolving, so its Basic and Stage 1 need not
+ * be in the list. Read from its text: "Put up to 3 Water Pokemon from your discard pile onto your
+ * Bench" gives { n: 3, type: 'water' }. Also stage ('basic', 'stage1', 'stage2', 'evolution'),
+ * name (a Pokemon named in place of a kind), hp (a cap on HP) and not (names it leaves out).
+ * Returns null when the text puts nothing from the discard pile onto your own Bench, or when it
+ * names a kind this reader does not know, so an unread card never counts as a way into play.
+ */
+function revive115(text) {
+  const t = String(text || '').replace(/[\u2018\u2019]/g, "'").replace(/pok[e\u00e9]mon/gi, 'pokemon').replace(/\s+/g, ' ');
+  const lead = '(?:^|[.!,] )(?:you may )?put (up to \\d+|an?|\\d+) ';
+  const m = t.match(new RegExp(lead + '(.*?)pokemon( \\(except [^)]*\\))?( with \\d+ hp or less)?( \\(except [^)]*\\))? from your discard pile onto your bench', 'i'));
+  const cnt = s => /^an?$/i.test(s) ? 1 : parseInt(s.replace(/up to /i, ''), 10);
+  if (!m) {
+    // "Put up to 3 Duskull from your discard pile onto your Bench": a name in place of a kind.
+    const nm = t.match(new RegExp(lead + "([a-z0-9' -]+?) from your discard pile onto your bench", 'i'));
+    return nm && !/\b(?:pokemon|cards?|energy|trainers?|items?|supporters?|tools?|stadiums?)\b/i.test(nm[2])
+      ? { n: cnt(nm[1]), type: null, stage: null, hp: null, not: [], name: nm[2].trim().toLowerCase() } : null;
+  }
+  let q = m[2].trim().toLowerCase(), type = null, stage = null;
+  const TY = q.match(/\b(grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|fairy|colorless)\b/);
+  if (TY) { type = TY[1]; q = q.replace(TY[0], ' '); }
+  const ST = q.match(/\b(basic|stage 1|stage 2|evolution)\b/);
+  if (ST) { stage = ST[1].replace(' ', ''); q = q.replace(ST[0], ' '); }
+  // A kind this reader does not know (a Pokemon "that has an Ability", a Tera Pokemon) is left unread.
+  if (q.replace(/\s+/g, '')) return null;
+  const hp = m[4] ? parseInt(m[4].match(/\d+/)[0], 10) : null;
+  const not = [m[3], m[5]].filter(Boolean).map(x => x.replace(/^ \(except |\)$/gi, '').trim().toLowerCase());
+  return { n: cnt(m[1]), type, stage, hp, not };
+}
 function copy37(text) {
   const m = String(text || '').replace(/[‘’]/g, "'")
     .match(/choose 1 of your benched (.*?)pok[eé]mon'?s? attacks and use it as this attack/i);
@@ -1250,6 +1282,8 @@ function enrichCard(apiCard, opts) {
       early: dmg.kind === 'plus' && cond ? dmg.base : dmg.typical,
       flip: dmg.flip || null,
       copy: copy37(a.text),
+      // 3.2.5: Pokemon it puts onto your Bench from your discard pile (Kingdra ex's King's Order).
+      rev: revive115(a.text),
       // v60: what the attack does besides damage, in plain words (Phantom Dive's damage counters on the Bench).
       fx: (fx => fx.length ? fx.slice(0, 2) : null)(geEffects(a.text).say),
       // v60: an attack that Knocks Out the opponent's Active Pokemon outright (Mega Absol ex's Terminal Period).
@@ -1549,7 +1583,7 @@ return {
   parseHP, parseDamage, parseCost, parseStage, parsePrizeValue,
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
-  findOverride, enrichCard, fetchDeckCards, coverage, ctl63,
+  findOverride, enrichCard, fetchDeckCards, coverage, ctl63, revive115,
 };
 });
 

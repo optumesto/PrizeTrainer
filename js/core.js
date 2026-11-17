@@ -463,7 +463,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 19;  // 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 20;  // 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 
@@ -663,7 +663,7 @@ function toGradeRows(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -702,9 +702,56 @@ function toGradeRows(deck) {
       ace: !!c.ace,
       // v65: printed text the Trainer check reads (Trainer rules, Special Energy text).
       rt: t==='trainer' ? (c.rtext || '') : '', et: t==='energy' ? (c.etext || '') : '',
-      atx: (c.atext||[]).map(x => String(x[1]||'')).join(' ')
+      atx: (c.atext||[]).map(x => String(x[1]||'')).join(' '),
+      // 3.2.5: what it can put onto your Bench straight from your discard pile (Kingdra ex's King's Order).
+      rev: g115Rev(c, t)
     }};
   });
+}
+
+/**
+ * 3.2.5: the ways a card puts Pokemon from your discard pile straight onto your Bench, from its
+ * attack, Ability or Trainer text (TCGEnrich.revive115). A Pokemon one of them can bring back
+ * reaches the board without evolving, so the list need not run its Basic or Stage 1.
+ */
+function g115Rev(c, t) {
+  if (typeof TCGEnrich === 'undefined' || typeof TCGEnrich.revive115 !== 'function' || !c) return null;
+  const out = [];
+  if (t === 'pkmn') {
+    (c.attacks || []).forEach(a => { const r = a.rev || TCGEnrich.revive115(a.text); if (r) out.push(Object.assign({}, r, { via: a.name || '', src: 'attack', cost: a.cost || [] })); });
+    (c.atext || []).forEach(x => { const r = TCGEnrich.revive115(x[1]); if (r) out.push(Object.assign({}, r, { via: x[0] || '', src: 'ability' })); });
+  } else if (t === 'trainer') { const r = TCGEnrich.revive115(c.rtext); if (r) out.push(Object.assign(r, { via: '', src: 'trainer' })); }
+  return out.length ? out : null;
+}
+/** 3.2.5: does this way back fit the Pokemon (its type, stage, HP, name and what it leaves out)? */
+function g115Fits(r, c, name) {
+  const k = String(name || '').toLowerCase().replace(/[\u2018\u2019]/g, "'").normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if ((r.not || []).some(x => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === k)) return false;
+  if (r.name) return r.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === k;
+  if (r.type && !(c.types || []).includes(r.type)) return false;
+  if (r.stage && (r.stage === 'evolution' ? !['stage1', 'stage2'].includes(c.stage) : c.stage !== r.stage)) return false;
+  if (r.hp && !(c.hp && c.hp <= r.hp)) return false;
+  return true;
+}
+/** 3.2.5: the card in the list that can put this Pokemon onto your Bench from your discard pile, and how. */
+function g115Reviver(deck, e, energyTypes) {
+  const c = e.card;
+  if (!c || c.t !== 'pkmn') return null;
+  for (const x of deck) {
+    const xc = x.card;
+    if (!xc || xc === c || !xc.rev) continue;
+    // An attack counts only when the list's Energy can pay for it.
+    const r = xc.rev.find(r => g115Fits(r, c, e.name) && (r.src !== 'attack' || (r.cost || []).every(t => t === 'colorless' || energyTypes[t] || energyTypes.any)));
+    if (r) return { e: x, r };
+  }
+  return null;
+}
+/** 3.2.5: cards that put Pokemon into your discard pile: a cost of discarding from your hand
+ *  (Ultra Ball), discarding your hand, or discarding from your deck (Brilliant Blender). */
+function g115Outlets(deck) {
+  const re = /discard (?:\d+ |a |an |up to \d+ |any number of )?(?:other )?(?:cards?|pokemon)\b[^.]{0,30} from your hand|discard your hand|search your deck for up to \d+ cards and discard them|discard the top \d+ cards of your deck|look at the top \d+ cards of your deck and discard/i;
+  return deck.filter(e => e.card && (e.card.t === 'trainer' || e.card.t === 'pkmn') &&
+    re.test(String(e.card.t === 'trainer' ? e.card.rt : e.card.atx || '').replace(/pok[e\u00e9]mon/gi, 'pokemon')));
 }
 
 function gCoherence(deck) {
@@ -714,6 +761,11 @@ function gCoherence(deck) {
     if (c.t==='energy') (c.etypes||(c.etype?[c.etype]:[])).forEach(ty => energyTypes[ty]=(energyTypes[ty]||0)+e.qty);
     present[c.key]=(present[c.key]||0)+e.qty; });
   const synergies=[], flaws=[], unmet=[]; let reqTotal=0, reqMet=0;
+  // 3.2.5: Pokemon that reach the board from your discard pile (Kingdra ex's King's Order), by the card that brings them back.
+  const rv115=new Map(), out115=g115Outlets(deck);
+  const rvKeep=(v,e)=>{ const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, to:[] }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); };
+  const rvNone=(v,e)=>({sev:'warn', who:e.card.key, rvn:{ by:v.e.name, via:v.r.via, to:e.name }, t:`Nothing puts ${gCap(e.name)} in your discard pile`,
+    d:`${gCap(e.name)} can only reach the board when ${gCap(v.e.name)} brings it back from your discard pile${v.r.via ? ` with ${v.r.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`});
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
@@ -763,10 +815,13 @@ function gCoherence(deck) {
         const noBase=!pre&&c.base&&!deck.some(x=>x.card&&bk(x.name)===bk(c.base));
         const candy=provided['evolution_access']>0&&!noBase;
         const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
+        const rv=!own&&!candy&&!pre&&!copied&&g115Reviver(deck,e,energyTypes);
         if (candy||pre||own||copied) { reqMet++;
           if (own) synergies.push({link:gCap(e.name)+': '+(c.abil[0]||'Ability'), who:c.key,
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
+        // 3.2.5: brought back from the discard pile, with something in the list to put it there.
+        else if (rv) { if (out115.length) { reqMet++; rvKeep(rv,e); } else flaws.push(rvNone(rv,e)); }
         else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.base)} for ${gCap(e.name)}`,
           d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(c.base)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(c.base)} in play, so ${gCap(e.name)} can never reach the board.`});
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
@@ -788,9 +843,26 @@ function gCoherence(deck) {
     // v65: a Pokemon ex can also evolve from a card that stands in for its Basic (Eevee ex for Jolteon ex).
     const sub = c.isEx && deck.find(x => x.card && x.card.standIn && nk(x.card.standIn) === nk(c.from));
     if (sub) { synergies.push({link:gCap(sub.name)+' > '+gCap(e.name), p:`${gCap(e.name)} evolves from ${gCap(c.from)}, and ${gCap(sub.name)} can evolve into it, so the line works without a plain ${gCap(c.from)}.`}); return; }
+    // 3.2.5: a Stage 1 brought back from the discard pile needs no Basic either.
+    const rv = g115Reviver(deck, e, energyTypes);
+    if (rv && out115.length) { rvKeep(rv, e); return; }
+    if (rv) { const f = rvNone(rv, e); reqTotal++; unmet.push(f.t); flaws.push(f); return; }
     reqTotal++; unmet.push(`No ${gCap(c.from)} for ${gCap(e.name)}`);
     flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.from)} for ${gCap(e.name)}`,
       d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which is not in the list, so it can never reach the board.`}); });
+  // 3.2.5: with nothing to fill the discard pile, one warning names every Pokemon left waiting there.
+  const rvn=flaws.filter(f=>f.rvn);
+  if (rvn.length>1) { const to=rvn.map(f=>gCap(f.rvn.to)), list=to.slice(0,-1).join(', ')+' and '+to[to.length-1], r0=rvn[0].rvn;
+    const at=flaws.indexOf(rvn[0]);
+    flaws.splice(at,1,{sev:'warn', who:rvn[0].who, t:`Nothing puts ${list} in your discard pile`,
+      d:`${list} can only reach the board when ${gCap(r0.by)} brings them back from your discard pile${r0.via ? ` with ${r0.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`});
+    rvn.slice(1).forEach(f=>flaws.splice(flaws.indexOf(f),1)); }
+  // 3.2.5: one line for each card that brings Pokemon back, naming them and what fills the discard pile.
+  rv115.forEach(g => { const nm=gCap(g.by.name), to=g.to.map(gCap), one=to.length===1;
+    const list=one ? to[0] : to.slice(0,-1).join(', ')+' and '+to[to.length-1];
+    const outs=[...new Set(out115.map(x=>gCap(x.name)))].slice(0,2);
+    synergies.push({ link:nm+' > '+to.join(', '), who:g.by.card.key, rev:true,
+      p:`${nm} puts ${list} onto your Bench from your discard pile${g.r.via ? ` with ${g.r.via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` }); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
   if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
     d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
@@ -7814,11 +7886,10 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.2.4',
+  version: 'v3.2.6',
   kind: 'small',
   items: [
-    { t: 'Rules page fix in the Play app' },
-    { t: 'Added: page to delete your data' }
+    { t: 'Grade fix: Kingdra ex and other discard pile decks' }
   ]
 };
 const WN_KEY = 'rd_seen_version';
@@ -9132,7 +9203,7 @@ async function enrichDeckCards(cards) {
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
       early: a.early, cond: a.cond || undefined,
-      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined,
+      flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined, rev: a.rev || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
     }));
   });
@@ -10730,8 +10801,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.2.4';
-const PT_BUILD = 114;
+const PT_VERSION = 'v3.2.6';
+const PT_BUILD = 116;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
