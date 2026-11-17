@@ -139,7 +139,7 @@ const off = await openApp({ answer: 'US', online: false });
 ok(off.asked === 0 && !off.script, 'offline: not asked, no ads');
 
 // ── The guide pages (ads.js) ──
-async function openGuide(answer) {
+async function openGuide(answer, { url = 'https://rdydeck.com/deck-slowking.html', referrer } = {}) {
   const asked = [];
   let js = fs.readFileSync(path.join(ROOT, 'ads.js'), 'utf8')
     .replace("client: 'ca-pub-XXXXXXXXXXXXXXXX',", `client: '${FAKE_ID}',`)
@@ -147,11 +147,11 @@ async function openGuide(answer) {
   const html = `<!doctype html><html><head></head><body><main><h1>Guide</h1>
     <h2>One</h2><p>a</p><h2>Two</h2><p>b</p><h2>Three</h2><p>c</p><h2>Four</h2><p>d</p></main></body></html>`;
   const dom = new JSDOM(html, {
-    url: 'https://rdydeck.com/deck-slowking.html', runScripts: 'dangerously', pretendToBeVisual: true,
+    url, referrer, runScripts: 'dangerously', pretendToBeVisual: true,
     beforeParse(w) {
       w.fetch = async (input) => {
-        const url = new URL(String(input), 'https://rdydeck.com/');
-        if (url.pathname === '/api/where') { asked.push(1); return new Response(JSON.stringify({ ads: answer === 'US' }), { status: 200 }); }
+        const u = new URL(String(input), 'https://rdydeck.com/');
+        if (u.pathname === '/api/where') { asked.push(1); return new Response(JSON.stringify({ ads: answer === 'US' }), { status: 200 }); }
         return new Response('', { status: 404 });
       };
       w.Response = Response;
@@ -171,6 +171,26 @@ const gUS = await openGuide('US');
 ok(gUS.asked === 1 && gUS.script && gUS.spots > 0, `guide page, US: asked once, ad script and ${gUS.spots} spot`);
 const gBR = await openGuide('BR');
 ok(gBR.asked === 1 && !gBR.script && gBR.spots === 0, 'guide page, Brazil: no ad script, no spot');
+
+// 3.2.3: inside the Play app, a page opened in a new tab (All rules on a card) starts with no
+// sessionStorage, so the Play mark has to come from the address or the opener.
+const gPlayUrl = await openGuide('US', { url: 'https://rdydeck.com/rulings.html?src=play' });
+ok(gPlayUrl.asked === 0 && !gPlayUrl.script && gPlayUrl.spots === 0, 'rules page opened with ?src=play: not asked, no ad script, no spot');
+const gPlayRef = await openGuide('US', { url: 'https://rdydeck.com/rulings.html', referrer: 'https://rdydeck.com/?src=play' });
+ok(gPlayRef.asked === 0 && !gPlayRef.script && gPlayRef.spots === 0, 'page opened from the Play app (new tab, no session mark): not asked, no ad script');
+const gWebRef = await openGuide('US', { url: 'https://rdydeck.com/rulings.html', referrer: 'https://rdydeck.com/' });
+ok(gWebRef.asked === 1 && gWebRef.script, 'page opened from the website: ads as usual');
+const gOtherRef = await openGuide('US', { url: 'https://rdydeck.com/rulings.html', referrer: 'https://example.com/?src=play' });
+ok(gOtherRef.asked === 1 && gOtherRef.script, 'another site linking with ?src=play does not count');
+{
+  // The All rules link carries ?src=play only in the Play app.
+  const src = fs.readFileSync(path.join(ROOT, 'js/card-details.js'), 'utf8');
+  const fn = src.match(/function cd31RulHtml\(list, R\) \{[\s\S]*?\n\}\n/)[0];
+  const make = playOn => new Function('PT_PLAY', 'esc', 'cd31Source', fn + '; return cd31RulHtml;')(playOn, x => String(x), () => null);
+  const list = [{ id: 'r1', q: 'q', a: 'a', src: 's' }];
+  ok(/href="rulings\.html\?src=play#r1"/.test(make(true)(list, {})), 'All rules link in the Play app: rulings.html?src=play');
+  ok(/href="rulings\.html#r1"/.test(make(false)(list, {})), 'All rules link on the website: rulings.html, unchanged');
+}
 
 // The shipped files keep their placeholders.
 ok(/client: 'ca-pub-XXXXXXXXXXXXXXXX'/.test(fs.readFileSync(path.join(ROOT, 'ads.js'), 'utf8')), 'ads.js still has the placeholder id');

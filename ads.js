@@ -13,8 +13,12 @@
   if (navigator.onLine === false) return;
   var age = '', kept = null;
   try {
+    // 3.2.3: also a page opened from a Play app page (a new tab starts with no
+    // sessionStorage; the referrer keeps the opener's ?src=play on rdydeck.com).
+    var ref = String(document.referrer || ''), refPlay = false;
+    try { var ru = new URL(ref); refPlay = ru.origin === location.origin && ru.searchParams.get('src') === 'play'; } catch (e) {}
     var play = new URLSearchParams(location.search).get('src') === 'play' ||
-      String(document.referrer || '').indexOf('android-app://com.rdydeck.app') === 0 ||
+      ref.indexOf('android-app://com.rdydeck.app') === 0 || refPlay ||
       sessionStorage.getItem('pt_channel') === 'play';
     if (play) { sessionStorage.setItem('pt_channel', 'play'); return; }
     age = localStorage.getItem('pt_age_v32') || '';

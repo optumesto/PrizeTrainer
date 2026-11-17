@@ -241,6 +241,8 @@ function cd31HereHtml(x) {
   return `<div class="cd31-sec"><div class="cd31-sh">How it fits this deck ${tag}</div>${x.why ? `<p class="cd31-p">${esc(x.why)}</p>` : ''}${x.here ? `<p class="t68-here"><b>In this deck:</b> ${esc(x.here)}</p>` : ''}</div>`;
 }
 
+// 3.2.3: All rules opens in a new tab, which starts with no sessionStorage, so inside
+// the Play app the link carries ?src=play and the rules page still knows it is the Play app (no ads).
 function cd31RulHtml(list, R) {
   if (!list.length) return '';
   return `<div class="cd31-sec"><div class="cd31-sh">Official rules</div>${list.map(r => {
@@ -248,7 +250,7 @@ function cd31RulHtml(list, R) {
     const where = [s && s.edition, r.where].filter(Boolean).join(', ');
     return `<div class="cd31-rul"><p class="cd31-q" data-no-tr>${esc(r.q)}</p><p class="cd31-a" data-no-tr>${esc(r.a)}</p>
       <p class="cd31-src">${s ? `<a href="${esc(s.url)}" target="_blank" rel="noopener" data-no-tr>${esc(s.title)}</a>` : ''}${where ? ` <span data-no-tr>(${esc(where)})</span>` : ''}</p></div>`;
-  }).join('')}<a class="btn btn-sm cd31-all" href="rulings.html#${esc(list[0].id)}" target="_blank" rel="noopener">All rules</a></div>`;
+  }).join('')}<a class="btn btn-sm cd31-all" href="rulings.html${typeof PT_PLAY !== 'undefined' && PT_PLAY ? '?src=play' : ''}#${esc(list[0].id)}" target="_blank" rel="noopener">All rules</a></div>`;
 }
 
 function cd31Deck() { return state.decks.find(d => String(d.id) === String(state.activeDeckId)) || (typeof _op30Deck !== 'undefined' ? _op30Deck : null); }

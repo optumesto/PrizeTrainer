@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2.3 (build 113): rules page in the Play app (17 Nov 2026)
+
+Changed files: js/card-details.js (All rules link), ads.js (Play app check), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), sw.js (cache prize-trainer-v113), tests/ads-where-check.mjs and CHANGES.md.
+
+- All rules on a card opens the rules page in a new tab, which starts without the Play app mark (kept for one tab only). Inside the Play app the link now carries ?src=play, and the guide pages' ad file also counts a link from a Play app page on rdydeck.com, so the rules page knows it is the Play app and will never load ad code there once ads are turned on. Nothing changes today: no ad code loads anywhere yet.
+- No grade moves.
+
 # RdyDeck 3.2.2 (build 112): security headers (17 Nov 2026)
 
 Changed files: worker/rdydeck-worker.js (security headers), sw.js (cache prize-trainer-v112, framed pages from the network), js/report-errors.js (report-only policy reports), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), privacy.html (one sentence, effective date), tests/headers-check.mjs (new) and CHANGES.md.

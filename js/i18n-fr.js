@@ -108,6 +108,7 @@ I18N_MORE.fr = {
     "Easier to find in Google and AI assistants": "Plus facile à trouver sur Google et dans les assistants IA",
     "Deck links fixed": "Liens de deck corrigés",
     "Security headers added": "En-têtes de sécurité ajoutés",
+    "Rules page fix in the Play app": "Correction de la page des règles dans l'app Google Play",
     "Shared deck from a link. Tap Import and save to see its grade.": "Deck partagé par lien. Touchez Importer et enregistrer pour voir sa note.",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Touchez une carte dans l'onglet Cartes pour voir son texte complet, sa Faiblesse, sa Résistance et son Coût de Retraite, les règles officielles qui s'y appliquent et sa place dans le deck.",
     "Added: official rules": "Nouveau : règles officielles",
