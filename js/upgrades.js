@@ -149,7 +149,7 @@ async function up75Find(deck) {
     // (every attacker the grade leads with when it is set as a toolbox), each with the Pokemon it evolves from.
     const v = R0.via || {};
     let ms = [v.auto, v.main].filter(Boolean);
-    if (!R0.via) { const m = gMainAttacker(R0.entries || [], R0.coh, gArchName(deck)); if (m) ms = [m]; }
+    if (!R0.via) { const m = gMainAttacker(R0.entries || [], R0.coh, gArchName(deck, R0)); if (m) ms = [m]; }
     const line = new Set(ms.map(m => m.key).concat(v.boxPick || []));
     for (let i = 0; i < 3; i++) (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key) && e.card.from) line.add(e.card.from); });
     (R0.entries || []).forEach(e => { if (e.card && line.has(e.card.key)) keep.add(up75Key(e.name)); });

@@ -626,13 +626,14 @@ function gAbilRead(c) {
 }
 
 /** 2.6.1: the name of the meta deck these cards match, for picking the main attacker. Never the player's own name. */
-function gArchName(deck) {
+function gArchName(deck, ctx) {
   try {
     if (!deck || deck.format === 'expanded' || deck.format === 'prerelease') return '';
     if (typeof mu60Data === 'undefined' || !mu60Data || typeof g68Arch !== 'function') return '';
     if (!(deck.cards || []).some(c => c.supertype)) return '';
-    const m = g68Arch(deck, mu60Data);
-    return m && m.deck && m.deck.name ? m.deck.name : '';
+    // 3.2.8: a list built around another Pokemon than the archetype's (g68Own) picks its main card from the list.
+    const m = g68Arch(deck, mu60Data, ctx);
+    return m && m.deck && m.deck.name && !m.own ? m.deck.name : '';
   } catch (_) { return ''; }
 }
 function toGradeDeck(deck) {
@@ -1517,6 +1518,43 @@ function gEnablers(deck, c) {
     (c.bmega === 'any' || (e.card.types || []).some(t => String(t).toLowerCase() === c.bmega)));
 }
 
+/**
+ * 3.2.8: a Pokemon in a support role: it is in the list for an engine Ability (draws, searches or
+ * attaches Energy) and its own attacks are not the plan, either because they cost only Colorless
+ * Energy (Mega Kangaskhan ex's Rapid-Fire Combo, Fezandipiti ex's Cruel Arrow) or because they hit for
+ * under half the format's biggest threats (Metang). Its hit does not set the deck's damage ceiling and
+ * it is not picked as the main attacker over a real one. A deck whose main attacker is itself such a
+ * Pokemon (Kangaskhan Bouffalant) keeps it, since then the attack is the plan.
+ */
+/** 3.2.8: the share of a support Pokemon's harder hit that the damage ceiling counts (see gViability). */
+const G_SUP_SHARE = 0.5;
+function gSupportMon(c, top) {
+  if (!c || c.t !== 'pkmn' || !(c.ab || []).some(x => !/\bitself\b/.test(x.p || ''))) return false;
+  if (!(c.provides || []).some(t => /^(draw|search(_[a-z]+)?|energy_accel)$/.test(t))) return false;
+  const atks = (c.attacks || []).filter(a => (a.dmg || a.max || 0) > 0 || a.copy);
+  const plain = atks.every(a => (a.cost || []).every(t => t === 'colorless'));
+  return plain || (top || 0) * 2 < FMT.threatHP[1];
+}
+/** 3.2.8: a Basic Pokemon the list runs for an Ability that helps the rest of the team draw, search or switch
+ *  (Latias ex's Skyliner, Fezandipiti ex's Flip the Script). Energy acceleration is left out on purpose,
+ *  since Pokemon like Charizard ex attack as well, and so are evolved Pokemon (Alakazam draws as it evolves
+ *  and still attacks). */
+function gHelperMon(c) {
+  return !!c && c.t === 'pkmn' && c.stage === 'basic' && (c.ab || []).some(x => !/\bitself\b/.test(x.p || ''))
+    && (c.provides || []).some(t => /^(draw|search(_[a-z]+)?|switch_own)$/.test(t));
+}
+/** 3.2.8: how much the list commits to a Pokemon: every copy of it and of the same stage that evolves
+ *  from the same Pokemon (3 Flygon and 2 Flygon ex are one line; a drawing Dudunsparce is not part of
+ *  the Dudunsparce ex line), plus the earlier stages, which count half and at most two per copy
+ *  (4 Metang for 1 Metagross are there for Metal Maker). */
+function gLineWeight(deck, c, extra) {
+  const qtyOf = k => deck.filter(e => e.card && e.card.key === k).reduce((n, e) => n + e.qty, 0);
+  const sib = c.from ? deck.filter(e => e.card && e.card.t === 'pkmn' && e.card.from === c.from && e.card.stage === c.stage
+    && (e.card.key === c.key || !gSupportMon(e.card))).reduce((n, e) => n + e.qty, 0) : qtyOf(c.key);
+  const pre1 = c.from ? qtyOf(c.from) : 0;
+  const pre2 = c.from ? deck.filter(x => x.card && x.card.key === c.from && x.card.from).reduce((n, x) => n + qtyOf(x.card.from), 0) : 0;
+  return sib + 0.5 * Math.min(pre1 + pre2 + (extra || 0), 2 * sib);
+}
 function gMainAttacker(deck, coh, deckName) {
   const et = coh.energyTypes || {};
   const pay = a => (a.cost || []).every(ty => ty === 'colorless' || et[ty] || et.any);
@@ -1548,24 +1586,29 @@ function gMainAttacker(deck, coh, deckName) {
     list.forEach(e => {
       const b = reachOf(e); if (!b) return;
       const c = e.card;
-      const pre1 = c.from ? qtyOf(c.from) : 0;
-      const pre2 = c.from ? deck.filter(x => x.card && x.card.key === c.from && x.card.from).reduce((n, x) => n + qtyOf(x.card.from), 0) : 0;
       // v54: a line that runs more of the earlier stages than two per copy is playing them
       // for their own Abilities (4 Metang for 1 Metagross), so the extra copies do not count.
       // v54: Mega Pokemon ex that let it onto the Bench (Talonflame ex's Excited Dive) count the same way,
       // since the list runs them to put it into play.
+      // 3.2.8: the whole line counts (gLineWeight), so 3 Palafin ex, 2 Palafin and 1 more Palafin are one
+      // plan, not three small ones.
       const en = enablersOf(c).reduce((n, x) => n + x.qty, 0);
-      const weight = e.qty + 0.5 * Math.min(pre1 + pre2 + en, 2 * e.qty);
+      const weight = gLineWeight(deck, c, en);
       const typed = [...new Set((b.a.cost || []).filter(t => t !== 'colorless'))];
       const share = typedTotal ? Math.min(1, typed.reduce((n, t) => n + (et[t] || 0), 0) / typedTotal) : 0;
       // v60: only an Ability counts here. Since v60 attacks add search tags too (Talonflame ex's Talon Hunt),
       // and an attacker that searches with its attack is still the attacker.
-      const support = !typed.length && (c.ab || []).some(x => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(x.p || '')) ? 0.5 : 1;
+      // 3.2.8: and a Pokemon in a support role (gSupportMon) counts half the same way.
+      const support = (!typed.length && (c.ab || []).some(x => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(x.p || ''))) || gSupportMon(c, b.r.top) ? 0.5 : 1;
       // A named attacker whose damage the grade cannot count (Slowking's Seek Inspiration) still counts as one.
       // v62: its own Ability's boost counts too (Okidogi's Adrena-Power with Darkness Energy).
       const sb = c.sboost && deck.some(x => x.card && x.card.t === 'energy' && (x.card.etypes || []).some(y => y === c.sboost.type || y === 'any')) ? c.sboost.n : 0;
-      const score = weight * Math.max(b.r.top + sb, 1) * (1 + share) * support;
-      if (!best || score > best.score) best = { score, e };
+      // 3.2.8: the list's commitment leads and damage past a two-hit Knock Out on the biggest threats
+      // counts a quarter, so a thick line that hits for 130 (Flygon) is the plan over a 2-copy
+      // Mamoswine ex that hits for 300, while a real one-shot attacker still beats a weak hitter.
+      const T = FMT.threatHP[1] / 2, d = Math.max(b.r.top + sb, 1), dmg = d <= T ? d : T + 0.25 * (d - T);
+      const score = weight * dmg * (1 + share) * support;
+      if (!best || score > best.score) best = { score, e, weight: weight * support };
     });
     return best;
   };
@@ -1591,7 +1634,14 @@ function gMainAttacker(deck, coh, deckName) {
     }
     return { key: byName.e.card.key, name: byName.e.name, why: 'name', named: String(deckName), among: new Set(named.map(e => e.card.key)).size };
   }
-  const best = pickFrom(mons.filter(e => { const b = reachOf(e); return b && b.r.top > 0; }));
+  // 3.2.8: a support Pokemon (Latias ex for Skyliner, Fezandipiti ex for draws) is never the main card
+  // while the list has any other Pokemon that attacks. A control deck that attacks with nothing else has
+  // no main attacker, so the grade does not frame it around a support Pokemon.
+  const hitters = mons.filter(e => { const b = reachOf(e); return b && b.r.top > 0; });
+  const side = e => gHelperMon(e.card) || gSupportMon(e.card, reachOf(e).r.top);
+  const real = hitters.filter(e => !side(e));
+  if (!real.length && hitters.length) return null;
+  const best = pickFrom(real);
   return best ? { key: best.e.card.key, name: best.e.name, why: 'list' } : null;
 }
 
@@ -1727,7 +1777,28 @@ function gViability(deck, coh, main) {
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
   // 2.7.3: a copied hit from a thin line is compared at what the grade counts of it.
   const effC = r => r.eff * (r.srcF || 1);
-  let bestR=null; reach.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
+  // 3.2.8: a Pokemon in a support role (gSupportMon: Mega Kangaskhan ex drawing, Fezandipiti ex) does not set
+  // the damage ceiling when the deck has a main attacker that is not one itself. A copied attack (Mew ex
+  // using Rapid-Fire Combo through Memory Helix) is the copier's own hit and still counts.
+  const cardOf = r => (deck.find(e => e.card && e.name === r.name) || {}).card;
+  const mainCard = main ? (deck.find(e => e.card && e.card.key === main.key) || {}).card : null;
+  const mainRr = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
+  // A side piece counts as support only while the list runs it thin: a support Pokemon on a line of 3 or
+  // less (gLineWeight), or a Basic run 1 or 2 deep for an engine or switching Ability (Latias ex's Skyliner).
+  // 4 Mega Kangaskhan ex in Crustle are a second attacker as much as a draw engine, so they still count.
+  // An Ability that only helps the Pokemon itself (Bloodmoon Ursaluna attaching to itself) is not an engine.
+  const sideEng = c => !!c && (c.ab || []).some(x => !/\bitself\b/.test(x.p || '')) && (c.provides || []).some(t => /^(draw|search(_[a-z]+)?|energy_accel|switch_own)$/.test(t));
+  // A box (Basic Box: four or more other Pokemon that each hit for half the biggest threats) attacks
+  // with whatever fits, so nothing there is left out.
+  const sidePre = r => { const c = cardOf(r); return !!c && (gSupportMon(c, r.top) || sideEng(c)); };
+  const boxy = reach.filter(r => !sidePre(r) && effC(r) * 2 >= FMT.threatHP[1]).length >= 4;
+  const sideSup = r => { const c = cardOf(r);
+    if (boxy) return false;
+    if (!(main && mainCard && mainRr && c && r !== mainRr && !gSupportMon(mainCard, mainRr.top))) return false;
+    const lw = gLineWeight(deck, c);
+    return ((gSupportMon(c, r.top) || gHelperMon(c)) && lw <= 3) || (sideEng(c) && lw <= 2); };
+  const plan = reach.some(r => !sideSup(r)) ? reach.filter(r => !sideSup(r)) : reach;
+  let bestR=null; plan.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
   // v53: the main attacker leads when it hits at least as hard. When something
   // else hits harder, the finding says which is which.
   const mainR = main ? reach.find(r => r.name.toLowerCase() === main.key) : null;
@@ -1754,6 +1825,15 @@ function gViability(deck, coh, main) {
   const ceTxt = bestR && ce < eff ? (bestR.srcF && !bestR.boost && !bestR.cond && !bestR.escale ? ` The grade counts ${ce}, since ${thinTxt(bestR)}.`
     : ` The grade counts ${ce}, since the full hit needs ${bestR.boost && bestR.bNames && bestR.bNames.length ? bestR.bNames.join(' and ') : 'time to grow'}${bestR.boost && (bestR.cond || bestR.escale) ? ' and time to grow' : ''}${bestR.srcF ? ' and ' + thinTxt(bestR) : ''}.`) : '';
   const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
+  // 3.2.8: a support Pokemon left out of the ceiling can still attack in a pinch, so a harder hit of its
+  // own counts for part of the gap (G_SUP_SHARE; 0 leaves it out, 1 counts it in full as before).
+  let supR = null; reach.forEach(r => { if (r !== bestR && sideSup(r) && (!supR || effC(r) > effC(supR))) supR = r; });
+  const ceS = supR && bestR && ceOf(supR) > ce ? Math.round(ce + G_SUP_SHARE * (ceOf(supR) - ce)) : ce;
+  const supTxt = ceS > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but it is in the list for its Ability, so the grade counts ${ceS}.${ceS >= FMT.ohkoTarget ? '' : ' ' + g37Hits(ceS, false)}` : '';
+  const hitsT = supTxt ? '' : hitsTxt;
+  // 3.2.8: under a one-shot, the hit count follows what the grade counts, after the reason it counts less,
+  // so a "Two hits" finding never says the deck one-shots.
+  const hitsC = supTxt || !hitsTxt ? '' : ' ' + g37Hits(ce, !!(bestR && bestR.twice));
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
     d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
   else if (spreadEngine) { strat='spread'; eff=Math.round(best*1.5)+boost; closeScore=0.9;
@@ -1761,19 +1841,20 @@ function gViability(deck, coh, main) {
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
   // v55: a one-shot that needs a full discard pile (Ceruledge ex) comes late, so it counts for less.
   // v68: a one-shot on the format's biggest threats (340) is full marks; one that stops short of them a bit less.
-  else if (ce>=FMT.ohkoTarget) { strat='ohko'; closeScore=(bestR&&bestR.late?0.85:1)*(ce>=hi?1:0.95);
+  else if (ceS>=FMT.ohkoTarget) { strat='ohko'; closeScore=(bestR&&bestR.late?0.85:1)*(ceS>=hi?1:0.95);
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${lead}${g35Hit(bestR)}${hitsTxt}`}); }
-  else if (ce*2>=hi) { strat='2hko';
+    d:`${lead}${g35Hit(bestR)}${hitsT}${supTxt}`}); }
+  else if (ceS*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
-    closeScore=0.6+0.3*(ce-hi/2)/(FMT.ohkoTarget-hi/2);
-    const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
+    closeScore=0.6+0.3*(ceS-hi/2)/(FMT.ohkoTarget-hi/2);
+    // 3.2.8: only a one-prize Pokemon that attacks counts, not an engine (Metagross for Metal Maker).
+    const one=[...new Set(reach.filter(r=>r.p===1 && r.eff*2>=hi && (r===bestR || r===mainR || !sidePre(r))).map(r=>gCap(r.name)))];
     if (one.length) closeScore+=0.06;
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${lead}${g35Hit(bestR)}${hitsTxt}${ceTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
-  else { strat='weak'; closeScore=0.15+0.45*ce/(hi/2);
+    d:`${lead}${g35Hit(bestR)}${ceTxt}${hitsC}${supTxt}${one.length?` ${one.slice(0,2).join(' and ')} ${one.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+  else { strat='weak'; closeScore=0.15+0.45*ceS/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${lead}${g35Hit(bestR)}${hitsTxt}${ceTxt} You cannot trade up, which usually loses the prize race.`}); }
+    d:`${lead}${g35Hit(bestR)}${ceTxt}${hitsC}${supTxt} You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.escale && bestR.top > bestR.now) { const e = bestR.escale;
     const what = e.x2 ? `Basic ${gCap(e.x2.type)} Energy cards` : (e.types.length ? e.types.map(gCap).join(' and ') + ' ' : '') + 'Energy';
     findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
@@ -1890,7 +1971,11 @@ function gViability(deck, coh, main) {
     // v67: a 3-prize Pokemon that is there for an engine Ability (Mega Kangaskhan ex's Run Errand draws)
     // is a support piece, not a mistake. Ways to move it out of harm (free retreat, switching) cut the risk.
     const engine=e=>(e.card.abil||[]).length&&(e.card.provides||[]).some(t=>/^(draw|search(_[a-z]+)?|energy_accel)$/.test(t));
-    const supportBig=sideBig&&bigLiabs.every(engine);
+    // 3.2.8: next to a three-prize main attacker (Mega Froslass ex), an engine that is not the deck's hit
+    // (Mega Kangaskhan ex drawing) is named apart, not as an attacker.
+    const engB=bigLiabs.filter(e=>engine(e)&&(!mainC||e.card.key!==mainC.card.key)&&!(bestR&&bestR.name===e.name));
+    const atkB=bigLiabs.filter(e=>!engB.includes(e));
+    const supportBig=(sideBig||!atkB.length)&&bigLiabs.every(engine);
     if (eff<FMT.ohkoTarget && strat!=='spread' && supportBig) {
       const esc=deck.filter(e=>e.card&&!bigLiabs.includes(e)&&((e.card.t==='pkmn'&&e.card.swab)||(e.card.t!=='pkmn'&&(e.card.provides||[]).some(t=>/^switch/.test(t)))));
       const escN=esc.reduce((a,e)=>a+e.qty,0), escP=esc.find(e=>e.card.t==='pkmn');
@@ -1904,6 +1989,8 @@ function gViability(deck, coh, main) {
       findings.push({sev:'warn', t:'A three-prize Pokemon in a one-prize deck',
       d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, half the game in one knockout, while ${gCap(mainC.name)} gives up one. Put ${bigLiabs.length>1?'them':'it'} in play only when you need ${bigLiabs.length>1?'them':'it'}.`}); }
     else if (eff<FMT.ohkoTarget && strat!=='spread') {
+      const listA=atkB.length?atkB.map(e=>gCap(e.name)).join(', '):list, nA=atkB.length||bigLiabs.length;
+      const engTxt=atkB.length&&engB.length?` ${engB.map(e=>gCap(e.name)).join(' and ')} ${engB.length>1?'are':'is'} here for ${engB.length>1?'their Abilities':`its ${(engB[0].card.abil||[])[0]} Ability`}, not to trade hits, so use ${engB.length>1?'them':'it'}, then move ${engB.length>1?'them':'it'} out before your opponent can Knock ${engB.length>1?'them':'it'} out.`:'';
       // v64: no cliff at the one-shot line. A 3-prize attacker that hits for 300 (Mega Lucario ex with
       // Premium Power Pro) already one-shots the format's smaller threats, so it loses less than one that
       // hits for 200. The penalty fades as the hit nears a one-shot on the biggest threats.
@@ -1911,8 +1998,8 @@ function gViability(deck, coh, main) {
       prizeScore=0.5+(prizeScore-0.5)*near*near;
       findings.push({sev:'warn', t:'Three-prize attackers, two-prize punch',
       d: eff>=lo
-        ? `${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}. Your best hit (${eff}) one-shots Pokemon with ${eff} HP or less, but the biggest threats take two hits, so those trades cost you more than they cost your opponent.`
-        : `${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.`}); }
+        ? `${listA} ${nA>1?'give':'gives'} up 3 prizes when ${nA>1?'they fall':'it falls'}. Your best hit (${eff}) one-shots Pokemon with ${eff} HP or less, but the biggest threats take two hits, so those trades cost you more than they cost your opponent.${engTxt}`
+        : `${listA} ${nA>1?'give':'gives'} up 3 prizes when ${nA>1?'they fall':'it falls'}, but you cannot reliably one-shot back. That is a losing exchange unless you tighten the damage.${engTxt}`}); }
     else findings.push({sev:'ok', t:'Big attackers, but the power backs it up',
       d:`${list} ${bigLiabs.length>1?'are':'is'} risky at 3 prizes ${bigLiabs.length>1?'each':''}, yet you hit hard enough to justify the trade.`.replace(' ,', ',')}); }
   // v54: say it plainly when most or all of the Pokemon give up two prizes.
@@ -1996,7 +2083,7 @@ function gViability(deck, coh, main) {
       if (speed.used) clockScore=Math.min(1, v); } } catch (_) {} }
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
-  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce, strat, multiN, pkN, engQ, speed };
+  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce:ceS, strat, multiN, pkN, engQ, speed };
   return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, parts };
 }
 
@@ -3236,7 +3323,7 @@ function gradeDeck(deck) {
   // renaming a deck could move its grade (a viewer's deck went from Synergy 7.2 as "Bolt" to 7.7 as "Slop").
   // The name now comes from the meta deck the cards match (or the one picked under Against the meta),
   // so an Archaludon list still leads with Archaludon ex and not the Metagross that powers it.
-  let main=null; try { main=gMainAttacker(entries, coh, gArchName(deck)); } catch (_) {}
+  let main=null; try { main=gMainAttacker(entries, coh, gArchName(deck, { entries, coh })); } catch (_) {}
   // 2.6.2: the player can set the main attacker, or mark the deck as a toolbox, under Main attacker.
   // Auto is the grade's own pick above. The plan, upgrades and draw odds follow the pick. The grade
   // follows it only when the pick is a real attacker: a Pokemon that hits for at least half of what the

@@ -51,13 +51,45 @@ function g68Strength(data) {
   return out;
 }
 /** The archetype the grade uses: the player's own pick on the meta section, else the closest match. */
-function g68Arch(deck, data) {
+function g68Arch(deck, data, ctx) {
   try { const pick = mu60Picks()[deck.id]; const d = pick && data.decks.find(x => x.id === pick); if (d) return { deck: d, score: 1, pick: true }; } catch (_) {}
   // The grade only borrows results from an archetype whose named Pokemon the deck plays, so an
   // Archaludon list never takes Mega Excadrill's record just because they share support cards.
   const mons = (deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => ' ' + mu60Norm(c.apiName || c.name) + ' ');
-  const best = mu60Best(deck, data, d => g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' '))));
-  return best && best.score >= G68_MATCH ? best : null;
+  const need = d => g68Need(d).every(p => mons.some(n => n.includes(' ' + p + ' ')));
+  const best = mu60Best(deck, data, need);
+  if (!best || best.score < G68_MATCH) return null;
+  // 3.2.8: a list built around another Pokemon than the one the archetype is named for (3 Palafin ex and
+  // 3 Palafin against 2 Mega Starmie ex) takes the results of an archetype named for its own Pokemon when
+  // one is close enough. With none, it keeps the closest match, and own names its own main card so the
+  // grade says the results are borrowed and the main card is read from the list, not from the archetype.
+  const own = g68Own(deck, best.deck, ctx);
+  if (!own) return best;
+  const on = ' ' + mu60Norm(own.name) + ' ';
+  const alt = mu60Best(deck, data, d => need(d) && g68Named(d.name).some(p => on.includes(' ' + p + ' ')));
+  return alt && alt.score >= G68_MATCH ? alt : Object.assign({}, best, { own: own.name });
+}
+/** 3.2.8: how much thicker the deck's own main line must be than the archetype's named Pokemon. */
+const G68_OWN = 1.5;
+/** 3.2.8: the deck's own main card, read from the list alone, when the archetype names other Pokemon
+ *  and the list commits clearly more to its own (gLineWeight at least G68_OWN times the named ones).
+ *  An archetype that names no Pokemon (Basic Box) is never borrowed this way. */
+function g68Own(deck, arch, ctx) {
+  try {
+    if (typeof gMainAttacker !== 'function' || typeof gLineWeight !== 'function') return null;
+    const named = g68Named(arch.name);
+    if (!named.length) return null;
+    const entries = (ctx && ctx.entries) || toGradeDeck(deck), coh = (ctx && ctx.coh) || gCoherence(entries);
+    const own = gMainAttacker(entries, coh, '');
+    if (!own) return null;
+    const has = n => named.some(p => (' ' + mu60Norm(n) + ' ').includes(' ' + p + ' '));
+    if (has(own.name)) return null;
+    const oe = entries.find(e => e.card && e.card.key === own.key);
+    if (!oe) return null;
+    let theirs = 0;
+    entries.forEach(e => { if (e.card && e.card.t === 'pkmn' && has(e.name)) theirs = Math.max(theirs, gLineWeight(entries, e.card)); });
+    return theirs && gLineWeight(entries, oe.card) >= G68_OWN * theirs ? own : null;
+  } catch (_) { return null; }
 }
 const G68_STOP = new Set(['box', 'lead', 'festival', 'basic', 'ex', 'toolbox', 'control', 'turbo']);
 /** The Pokemon an archetype's name asks for: "Mega Charizard Y" is one, "Dragapult Dudunsparce" two. */
@@ -227,7 +259,7 @@ function g68Blend(R, deck) {
   if (!R || !deck || !mu60Data) return R;
   if (deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily || R.rawOverall != null) return R;
   if (!(deck.cards || []).some(c => c.supertype)) return R;
-  const m = g68Arch(deck, mu60Data);
+  const m = g68Arch(deck, mu60Data, R);
   if (!m) return R;
   const arch = m.deck;
   const b = g88Apply(R, deck, arch, m);
@@ -245,7 +277,7 @@ function g68Blend(R, deck) {
   R.overall = gR1(card * (1 - w) + st.score * w);
   // v71: wr is the win rate the score was built from (games since the newest set counted three
   // times), and thin follows the share results actually get, not a separate game count.
-  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, w, score: st.score, idx: st.idx, wr: st.wrUsed, rawWr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
+  R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, own: m.own || '', w, score: st.score, idx: st.idx, wr: st.wrUsed, rawWr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
     since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2 };
   return R;
 }
@@ -258,7 +290,7 @@ function g68Line(R) {
   // Grade vs win rate section shows the plain one, so each says which it is.
   const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
   const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;

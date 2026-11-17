@@ -99,8 +99,9 @@ function gs261Size() { const s = safeLocalGet(GS261_KEY); return GS261_SIZES[s] 
 function gs261Info(deck, R) {
   const out = { arch: '', main: '', urls: [], lim: false };
   try {
-    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data) : null;
-    if (a && a.deck && a.deck.name && a.deck.id !== 'other') {
+    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data, R) : null;
+    // 3.2.8: a list that only borrows an archetype's results (a.own) is not that deck, so the card does not name it.
+    if (a && a.deck && a.deck.name && a.deck.id !== 'other' && !a.own) {
       out.lim = true;
       // A deck already named for its archetype does not say it twice.
       if (!(' ' + mu60Norm(deck.name) + ' ').includes(' ' + mu60Norm(a.deck.name) + ' ')) out.arch = a.deck.name;
@@ -111,7 +112,7 @@ function gs261Info(deck, R) {
   const v = (R && R.via) || {};
   const box = !v.main && (v.boxPick || []).length ? v.boxPick : null;
   let m = box ? { name: box[0] } : v.main || null;
-  if (!m && !R.via) { try { m = gMainAttacker(R.entries || [], R.coh, gArchName(deck)); } catch (_) {} }
+  if (!m && !R.via) { try { m = gMainAttacker(R.entries || [], R.coh, gArchName(deck, R)); } catch (_) {} }
   if (m && m.name) {
     out.main = gCap(m.name);
     out.box = !!box;

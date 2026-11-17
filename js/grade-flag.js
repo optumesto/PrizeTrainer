@@ -25,7 +25,7 @@ function gf80Now() {
   if (!deck || !R) return null;
   let arch = 'Unmatched';
   try {
-    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data) : null;
+    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data, R) : null;
     if (a && a.deck && a.deck.name) arch = String(a.deck.name).slice(0, 60);
   } catch (_) {}
   return { deck, grade: Math.round(R.overall * 10) / 10, arch, key: deck.id + '|' + R.overall.toFixed(1) };
