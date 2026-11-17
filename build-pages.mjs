@@ -44,7 +44,7 @@ const r1 = x => (Math.round(x * 10) / 10).toFixed(1);
 const NAV = [
   ['./', 'RdyDeck'], ['meta-decks.html', 'Deck guides'], ['how-grading-works.html', 'How grading works'],
   ['faq.html', 'FAQ'], ['about.html', 'About'], ['contact.html', 'Contact'],
-  ['terms.html', 'Terms of Service'], ['privacy.html', 'Privacy Policy'],
+  ['terms.html', 'Terms of Service'], ['privacy.html', 'Privacy Policy'], ['delete-data.html', 'Delete your data'],
 ];
 // The free tools and guides, linked from every guide page so search engines and readers find them.
 const TOOLS = [

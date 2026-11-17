@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2.4 (build 114): page to delete your data (17 Nov 2026)
+
+Changed files: delete-data.html (new), privacy.html (link), every page's footer (link), build-pages.mjs (footer link for built pages), sitemap.xml, sw.js (cache prize-trainer-v114, saves the new page for offline), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps) and CHANGES.md.
+
+- New page rdydeck.com/delete-data.html, for Google Play's Data safety "Delete data URL". It names RdyDeck and Optume Ventures LLC and says how to delete each kind of data: decks and settings on the device (Settings, Clear all data, or clear rdydeck.com's site data, in Chrome for the Play app), feedback emails (email support@rdydeck.com with the subject Delete my data; deleted within 30 days, otherwise kept up to 12 months), error reports and grade flags (anonymous, deleted after 90 days, off switch in Settings) and visit counts (totals only). Nothing tied to a person is kept. The page is in all six app languages and opens in the language picked in the app.
+- The Privacy Policy and every page's footer link to it.
+- No grade moves.
+
 # RdyDeck 3.2.3 (build 113): rules page in the Play app (17 Nov 2026)
 
 Changed files: js/card-details.js (All rules link), ads.js (Play app check), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), sw.js (cache prize-trainer-v113), tests/ads-where-check.mjs and CHANGES.md.
