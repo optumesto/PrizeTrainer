@@ -95,6 +95,28 @@
     if (/Failed to fetch|NetworkError|Load failed|aborted|AbortError|QuotaExceeded/i.test(String(r.message) + r.name)) return;
     send((r.name ? r.name + ': ' : '') + r.message, r.stack);
   });
+  // 3.2.2: rdydeck.com sends a Content-Security-Policy-Report-Only header, a
+  // list of the places pages may load from that blocks nothing yet. When the
+  // browser says something would have been blocked, one short error report
+  // names the rule and the site it came from (the site's name only, never the
+  // full address), so the list can be checked before it is enforced. At most
+  // two a visit (within the five above), each once, and none for browser extensions.
+  const cspSent = new Set();
+  addEventListener('securitypolicyviolation', e => {
+    if (!e || e.disposition !== 'report' || cspSent.size >= 2 || count >= MAX || !on()) return;
+    const b = String(e.blockedURI || ''), src = String(e.sourceFile || '');
+    if (/^[a-z-]*extension:/i.test(b) || /^[a-z-]*extension:/i.test(src)) return;
+    let where = 'other';
+    try { where = /^https?:/i.test(b) ? new URL(b).hostname : (b.match(/^[a-z-]+/i) || ['other'])[0]; } catch (_) {}
+    const rule = String(e.effectiveDirective || e.violatedDirective || '').toLowerCase().replace(/[^a-z-]/g, '').slice(0, 24) || 'unknown';
+    const msg = scrub('CSP would block ' + rule + ' from ' + where.slice(0, 80));
+    if (cspSent.has(msg)) return;
+    cspSent.add(msg); count++;
+    const { br, os } = family(navigator.userAgent || '');
+    const body = { kind: 'error', msg, stack: '', page: screenNow(), br, os, play: typeof PT_PLAY !== 'undefined' && !!PT_PLAY };
+    if (!version()) { queue.push(body); return; }
+    post(Object.assign(body, { v: version() }));
+  });
   addEventListener('load', () => setTimeout(() => {
     const q = queue; queue = [];
     if (version()) q.forEach(b => post(Object.assign(b, { v: version() })));

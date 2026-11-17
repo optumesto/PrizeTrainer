@@ -1,4 +1,4 @@
-// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.1.1).
+// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.2.2).
 // The app's files stay in the GitHub repo optumesto/PrizeTrainer and keep
 // being served at optumesto.github.io/PrizeTrainer/. This Worker shows those
 // same files at rdydeck.com, so an upload to GitHub (or the weekly data
@@ -33,6 +33,20 @@
 //    5 minutes for pages and data, a week for fonts and icons.
 // 3. http://rdydeck.com redirects straight to https (only reached if Cloudflare's
 //    Always Use HTTPS is off; it is on now).
+//
+// 3.2.2 adds security headers to every answer (see securityHeaders):
+// 1. No other site may show RdyDeck in a frame (X-Frame-Options and the
+//    policy's frame-ancestors), except the Creator kit's stream card
+//    (/?overlay=1, which the embed code puts in an iframe on creators' sites).
+// 2. An enforced Content-Security-Policy with only rules that cannot block
+//    anything the site loads (frames, plugins, <base> and form targets).
+// 3. A fuller Content-Security-Policy-Report-Only listing every place the site
+//    loads from. It blocks nothing: the app reports what it would have blocked
+//    through its usual error reports, so the list can be checked before it is
+//    enforced.
+// 4. Cross-Origin-Opener-Policy (ad clicks may still open new tabs),
+//    Cross-Origin-Resource-Policy, Permissions-Policy, and no
+//    Access-Control-Allow-Origin: * (GitHub Pages' default; nothing needs it).
 //
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
 // 10 per 60 s) and optionally the secret REPORTS_KEY. With no DB bound, reports
@@ -70,6 +84,55 @@ export function cacheFor(pathname, search) {
   if (/^\/sw\.js$/i.test(pathname)) return 'no-cache';
   if (/\.(woff2|png|svg|ico)$/i.test(pathname)) return 'public, max-age=604800';
   return 'public, max-age=300';
+}
+
+// Google AdSense (US visitors only, once a publisher id is set). From Google's
+// own list of AdSense hosts; the report-only policy shows anything missing.
+const AD_SRC = ['https://pagead2.googlesyndication.com', 'https://*.googlesyndication.com', 'https://*.doubleclick.net',
+  'https://*.adtrafficquality.google', 'https://www.googletagservices.com', 'https://adservice.google.com',
+  'https://www.google.com', 'https://fundingchoicesmessages.google.com'];
+// Card data the app reads in the browser, and card art it reads as pictures.
+const DATA_SRC = ['https://api.tcgdex.net', 'https://api.pokemontcg.io'];
+const ART_SRC = ['https://images.pokemontcg.io', 'https://assets.tcgdex.net', 'https://limitlesstcg.nyc3.digitaloceanspaces.com'];
+// Cloudflare Web Analytics, which Cloudflare adds to pages itself.
+const STATS_SCRIPT = 'https://static.cloudflareinsights.com', STATS_SEND = 'https://cloudflareinsights.com';
+
+// The whole list, reported but not enforced. Inline scripts and styles are
+// allowed because the pages use them (inline <script> blocks and onclick=).
+export const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' " + [STATS_SCRIPT, ...AD_SRC].join(' '),
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' " + [...DATA_SRC, ...ART_SRC, STATS_SEND, ...AD_SRC, 'https://csi.gstatic.com'].join(' '),
+  "frame-src " + AD_SRC.join(' '),
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "media-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
+// The Creator kit's stream card: /?overlay=1 (OBS) and /?overlay=1&embed=1 (iframe on a creator's site).
+export const isOverlay = url => (url.pathname === '/' || url.pathname === '/index.html') && url.searchParams.get('overlay') === '1';
+
+/** Security headers for one answer. Pages may be framed only by rdydeck.com itself, except the stream card. */
+export function securityHeaders(headers, url) {
+  const card = isOverlay(url);
+  headers.set('Content-Security-Policy', ["object-src 'none'", "base-uri 'self'", "form-action 'self'",
+    'frame-ancestors ' + (card ? '*' : "'self'")].join('; '));
+  if (card) headers.delete('X-Frame-Options'); else headers.set('X-Frame-Options', 'SAMEORIGIN');
+  headers.set('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  // Pictures and the stream card may be used by other sites; everything else only by rdydeck.com.
+  headers.set('Cross-Origin-Resource-Policy', card || /\.(png|svg|ico|jpe?g|webp|gif)$/i.test(url.pathname) ? 'cross-origin' : 'same-site');
+  headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+  headers.delete('Access-Control-Allow-Origin');
+  return headers;
 }
 
 const DAY_CAP = 5000;           // reports kept per day, all kinds together
@@ -193,7 +256,7 @@ async function notFound(request) {
   let body = 'Not found';
   try { const r = await fetch(ORIGIN + '/404.html', { cf: { cacheEverything: true, cacheTtl: 300 } }); if (r.ok) body = forHome(await r.text()); } catch (_) {}
   return new Response(request.method === 'HEAD' ? null : body, {
-    status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Content-Type-Options': 'nosniff' },
+    status: 404, headers: securityHeaders(new Headers({ 'Content-Type': 'text/html; charset=utf-8' }), new URL(request.url)),
   });
 }
 
@@ -247,8 +310,7 @@ export default {
     }
     ['x-github-request-id', 'x-proxy-cache', 'x-fastly-request-id', 'x-served-by', 'x-cache', 'x-cache-hits', 'x-timer', 'via']
       .forEach(k => headers.delete(k));
-    headers.set('X-Content-Type-Options', 'nosniff');
-    headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    securityHeaders(headers, url);
     if (upstream.status === 200) headers.set('Cache-Control', cacheFor(url.pathname, url.search));
 
     // Pages: take out the github.io-only noindex line (see MIRROR_NOINDEX).

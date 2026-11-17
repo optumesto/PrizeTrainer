@@ -102,6 +102,7 @@ I18N_MORE.it = {
     "Added: setup and mulligan rules": "Nuovo: regole di preparazione e mulligan",
     "Easier to find in Google and AI assistants": "Più facile da trovare su Google e negli assistenti IA",
     "Deck links fixed": "Corretti i link dei mazzi",
+    "Security headers added": "Intestazioni di sicurezza aggiunte",
     "Shared deck from a link. Tap Import and save to see its grade.": "Mazzo condiviso tramite link. Tocca Importa e salva per vedere il suo voto.",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tocca una carta nella scheda Carte per vedere il testo completo, Debolezza, Resistenza e Ritirata, le regole ufficiali che la riguardano e come si inserisce nel mazzo.",
     "Added: official rules": "Nuovo: regole ufficiali",

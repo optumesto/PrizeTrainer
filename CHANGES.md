@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.2.2 (build 112): security headers (17 Nov 2026)
+
+Changed files: worker/rdydeck-worker.js (security headers), sw.js (cache prize-trainer-v112, framed pages from the network), js/report-errors.js (report-only policy reports), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), privacy.html (one sentence, effective date), tests/headers-check.mjs (new) and CHANGES.md.
+
+- Every answer from rdydeck.com now carries X-Frame-Options SAMEORIGIN and an enforced Content-Security-Policy with frame-ancestors 'self', object-src 'none', base-uri 'self' and form-action 'self'. No other site can show RdyDeck in a frame, except the Creator kit stream card (/?overlay=1, also with &embed=1), which any site may frame so the embed code keeps working.
+- A fuller Content-Security-Policy-Report-Only lists every place the site loads from: its own files, card data and art (TCGdex, Pokemon TCG API, Limitless), Cloudflare Web Analytics and Google AdSense. It blocks nothing yet. When a browser says something would have been blocked, the app sends one error report naming only the rule and the site (at most two a visit, within the five, none for browser extensions, none with error reports off). Once the reports show nothing missing, including with ads on, it can be enforced.
+- Also: Cross-Origin-Opener-Policy same-origin-allow-popups (ad clicks can still open tabs), Cross-Origin-Resource-Policy (pictures and the stream card cross-origin, everything else same-site), Permissions-Policy (no camera, microphone, location, payment or USB), and GitHub Pages' Access-Control-Allow-Origin: * is taken off, since nothing reads rdydeck.com from another site. nosniff and the referrer policy stay. Cross-Origin-Embedder-Policy is left off: it would block ads and card art.
+- The service worker no longer answers for a page inside a frame, so a saved copy can never carry the wrong frame rule onto a creator's site.
+- Privacy Policy: one sentence on the new error report.
+- No grade moves.
+
 # RdyDeck 3.2.1 (build 111): deck links fixed (17 Nov 2026)
 
 Changed files: js/core.js (deck links, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, file stamps), sw.js (cache prize-trainer-v111) and CHANGES.md.

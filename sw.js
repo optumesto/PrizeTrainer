@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v111';
+const CACHE_NAME = 'prize-trainer-v112';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -164,6 +164,11 @@ self.addEventListener('fetch', event => {
     );
     return;
   }
+
+  // 3.2.2: a page inside a frame (the Creator kit card on a creator's site)
+  // always comes from the network. A saved copy keeps the headers it was saved
+  // with, and only the stream card's own answer lets another site frame it.
+  if (req.destination === 'iframe' || req.destination === 'frame') return;
 
   const isHTML = req.mode === 'navigate' ||
                  (req.headers.get('accept') || '').includes('text/html');

@@ -108,6 +108,7 @@ I18N_MORE.de = {
     "Added: setup and mulligan rules": "Neu: Regeln zu Spielvorbereitung und Mulligan",
     "Easier to find in Google and AI assistants": "Leichter zu finden bei Google und in KI-Assistenten",
     "Deck links fixed": "Deck-Links behoben",
+    "Security headers added": "Sicherheits-Header hinzugefügt",
     "Shared deck from a link. Tap Import and save to see its grade.": "Per Link geteiltes Deck. Tippe auf Importieren, um seine Note zu sehen.",
     "Tap a card on the Cards tab to see its full text, Weakness, Resistance and Retreat, the official rules that apply to it and how it fits the deck.": "Tippe auf dem Tab Karten auf eine Karte, um ihren ganzen Text, Schwäche, Resistenz und Rückzug, die offiziellen Regeln dazu und ihre Rolle im Deck zu sehen.",
     "Added: official rules": "Neu: offizielle Regeln",
