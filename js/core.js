@@ -685,6 +685,8 @@ function toGradeRows(deck) {
       abil: (c.abilities||[]).map(x => x.name), protect: (c.abilities||[]).some(x => x.protect),
       pk: (c.abilities||[]).filter(x => x.protect).map(x => x.pkind || null), types: c.types || [],
       selfBench: (c.abilities||[]).some(x => x.bench),
+      // 3.2.8: an Ability that lets it start the game face down in the Active Spot (Cinderace's Explosiveness).
+      setupPut: ((c.atext||[]).find(x => /in your hand when you are setting up to play, you may put it face down/i.test(String(x[1]||''))) || [])[0] || null,
       bmega: ((c.abilities||[]).find(x => x.bench && x.bmega) || {}).bmega || null,
       bmAbil: ((c.abilities||[]).find(x => x.bench && x.bmega) || {}).name || null,
       edbl: (c.abilities||[]).filter(x => x.edouble).map(x => ({ type: x.edouble, abil: x.name })),
@@ -772,7 +774,7 @@ function g115Reviver(deck, e, energyTypes) {
 function g115Can(deck, x) {
   const c = x.card;
   if (!c || c.t !== 'pkmn' || c.stage === 'basic' || !c.from || c.selfBench || c.byName) return true;
-  if ((c.rev || []).some(r => r.self)) return true;
+  if ((c.rev || []).some(r => r.self) || c.setupPut) return true;
   const nk = s => normalizeCardName(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const has = n => deck.some(y => y.card && nk(y.name) === nk(n));
   if (has(c.from)) { const mid = deck.find(y => y.card && nk(y.name) === nk(c.from));
@@ -780,6 +782,14 @@ function g115Can(deck, x) {
   if (c.isEx && deck.some(y => y.card && y.card.standIn && nk(y.card.standIn) === nk(c.from))) return true;
   const candy = deck.some(y => y.card && (y.card.provides || []).includes('evolution_access'));
   return c.stage === 'stage2' && candy && !!c.base && has(c.base);
+}
+/** 3.2.8: a Pokemon that can only start the game face down in the Active Spot (Cinderace's Explosiveness)
+ *  reaches the board when a copy is in the opening 7 cards. It earns credit by those odds, like a revived
+ *  line (4 copies, about 40% of games, earn about two thirds). Set G_SETUP_FULL to give it full credit. */
+const G_SETUP_FULL = false;
+function gSetupOdds(qty) {
+  const p = g115See(qty, 7);
+  return { p, cr: G_SETUP_FULL ? 1 : Math.min(1, p / 0.6) };
 }
 // 3.2.7: how many cards you have seen by the time the line has to come together (your opening 7,
 // a few draws for turn, and what your Supporters and Abilities draw on the way).
@@ -916,8 +926,14 @@ function gCoherence(deck) {
         const noBase=!pre&&c.base&&!deck.some(x=>x.card&&bk(x.name)===bk(c.base));
         const candy=provided['evolution_access']>0&&!noBase;
         const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
-        const rv=!own&&!candy&&!pre&&!copied&&g115Reviver(deck,e,energyTypes);
-        if (candy||pre||own||copied) { reqMet++;
+        const su=!own&&!candy&&!pre&&!copied&&c.setupPut;
+        const rv=!own&&!candy&&!pre&&!copied&&!su&&g115Reviver(deck,e,energyTypes);
+        if (su) { const o=gSetupOdds(e.qty), pc=Math.round(o.p*100); reqMet+=o.cr;
+          if (o.cr>=0.5) { revived.add(c.key); synergies.push({link:gCap(e.name)+': '+c.setupPut, who:c.key,
+            p:`${gCap(e.name)} can start the game face down in the Active Spot with ${c.setupPut} when it is in your opening hand, which happens in about ${pc}% of games, so it does not need to evolve.`}); }
+          else flaws.push({sev:'warn', who:c.key, t:`${gCap(e.name)} rarely reaches the board`,
+            d:`${gCap(e.name)} can only reach the board by starting the game in the Active Spot with ${c.setupPut}, and it is in your opening hand in only about ${pc}% of games.`}); }
+        else if (candy||pre||own||copied) { reqMet++;
           if (own) synergies.push({link:gCap(e.name)+': '+(c.abil[0]||'Ability'), who:c.key,
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
@@ -1739,7 +1755,7 @@ function gViability(deck, coh, main) {
   // v65: a Pokemon counts as an attacker only when it can reach the board: every Pokemon it evolves
   // from is in the list (Rare Candy may skip the middle of a Stage 2), or it puts itself in play.
   const gk=k=>gtNorm(normalizeCardName(k||''));
-  const canPlay=(c,g=0)=>{ if(!c.from||c.stage==='basic'||c.selfBench||c.byName||g>3) return true;
+  const canPlay=(c,g=0)=>{ if(!c.from||c.stage==='basic'||c.selfBench||c.byName||(g===0&&c.setupPut)||g>3) return true;
     const mid=deck.find(x=>x.card&&gk(x.card.key)===gk(c.from));
     if (mid) return canPlay(mid.card,g+1);
     if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
@@ -1796,7 +1812,7 @@ function gViability(deck, coh, main) {
     if (boxy) return false;
     if (!(main && mainCard && mainRr && c && r !== mainRr && !gSupportMon(mainCard, mainRr.top))) return false;
     const lw = gLineWeight(deck, c);
-    return ((gSupportMon(c, r.top) || gHelperMon(c)) && lw <= 3) || (sideEng(c) && lw <= 2); };
+    return ((gSupportMon(c, r.top) || gHelperMon(c)) && lw <= (c.stage === 'basic' ? 4 : 3)) || (sideEng(c) && lw <= 2); };
   const plan = reach.some(r => !sideSup(r)) ? reach.filter(r => !sideSup(r)) : reach;
   let bestR=null; plan.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
   // v53: the main attacker leads when it hits at least as hard. When something
