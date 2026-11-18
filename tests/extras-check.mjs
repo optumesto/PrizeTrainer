@@ -178,7 +178,7 @@ if (add) {
   d.getElementById('ev80-save').click();
   await wait(200);
   const rec = d.querySelector('#gh72-sec .ev80-rec');
-  ok(rec && /At the event: 5-2-1, 12th place/.test(rec.textContent), 'the record shows next to its grade: ' + (rec && rec.textContent.trim()));
+  ok(rec && /Your record there: 5-2-1, 12th place/.test(rec.textContent), 'the record shows next to its grade: ' + (rec && rec.textContent.trim()));
   const deck = w.eval('state.decks').find(x => x.starter === STARTER);
   const saved = deck.gradeLog.e.find(x => x.ev);
   ok(saved && saved.ev.w === 5 && saved.ev.l === 2 && saved.ev.t === 1 && saved.ev.p === 12, 'the record is kept on its grade history entry');

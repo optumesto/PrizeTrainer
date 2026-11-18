@@ -18,6 +18,7 @@ const BLD_SPECIAL_TYPES = { 'prism energy': 'GRWLPFDMYN', 'luminous energy': 'GR
 
 let bldCat = null, bldMeta = null, bldUp = null, bldMC = null, bldLoad = null, bldQ = '', bldTab = 'all', bldActs = [], bldSheetActs = [];
 let bld = bldRead();
+let bldResumed = false;   // the list on screen was left from last time
 
 function bldRead() {
   try { const d = JSON.parse(safeLocalGet(BLD_KEY) || 'null'); if (d && Array.isArray(d.rows)) return d; } catch (_) {}
@@ -473,7 +474,9 @@ function bldRender() {
     <div class="bld-small" id="bld-hint" style="margin:0 0 0.4rem${bldQ ? ';display:none' : ''}">${ref ? `Most run in ${esc(ref.d.name)} lists` : 'Most run in top lists'}</div><div class="bld-results" id="bld-results">${bldResultsHtml()}</div></div>`;
   if (total) {
     const label = { pokemon: 'Pokémon', trainer: 'Trainer', energy: 'Energy' };
-    left += `<div class="bld-sec"><h2 class="bld-h">Your list <span class="bld-n">${total} card${total === 1 ? '' : 's'}</span></h2>` + ['pokemon', 'trainer', 'energy'].map(k => {
+    // A list left in the builder from last time says so, with a plain way to start a new deck empty.
+    const resumed = bldResumed && !bld.from ? `<div class="bld-ref"><span>Your last unsaved list.</span><button type="button" class="btn btn-sm btn-ghost" onclick="bldConfirmReplace(() => bldReset([]))">Start new</button></div>` : '';
+    left += `<div class="bld-sec"><h2 class="bld-h">Your list <span class="bld-n">${total} card${total === 1 ? '' : 's'}</span></h2>${resumed}` + ['pokemon', 'trainer', 'energy'].map(k => {
       const rows = bldSorted(k);
       if (!rows.length) return '';
       return `<div class="bld-group"><h3 class="bld-h">${label[k]} <span class="bld-n">${rows.reduce((a, x) => a + x.r.count, 0)}</span></h3>${rows.map(x => bldRowHtml(x.r, x.i, ref)).join('')}</div>`;
@@ -518,12 +521,14 @@ function openBuilder() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-build').classList.add('active');
   window.scrollTo(0, 0);
+  bldResumed = bldTotal() > 0 && !bld.from;
   bldRender();
   bldData().then(bldRender);
 }
 function bldBack() { showScreen('home'); renderHome(); }
 
 function bldReset(rows, extra) {
+  bldResumed = false;
   bld = { rows: rows || [], arch: null, from: null, name: '', ...(extra || {}) };
   bldQ = '';
   bldChanged();

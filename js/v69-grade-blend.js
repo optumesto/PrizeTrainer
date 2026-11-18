@@ -331,7 +331,7 @@ function g68Blend(R, deck) {
   // v71: wr is the win rate the score was built from (games since the newest set counted three
   // times), and thin follows the share results actually get, not a separate game count.
   R.res = { id: arch.id, name: arch.name, match: Math.round(m.score * 100) / 100, pick: !!m.pick, own: m.own || '', w, score: st.score, idx: st.idx, wr: st.wrUsed, rawWr: st.wr, games: st.games, curGames: st.curGames, curWr: st.curWr,
-    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2,
+    since: mu60Data.from || '', curSet: mu60Data.cur ? mu60Data.cur.since : '', asOf: mu60Data.asOf || '', thin: w < 0.2 && st.n < G68_FULL,   // 3.3: "few games" only when the game count is what kept it low
     alt: g68Alt(R, deck, m), main: R.via && R.via.main ? (R.via.main.name || '') : '' };
   return R;
 }

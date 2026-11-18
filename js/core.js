@@ -366,6 +366,10 @@ function ptCanonName(name) {
   let s = String(name || '')
     .replace(/[\u2018\u2019\u02bc\u0060\u00b4\u2032]/g, "'")
     .replace(/\{([a-z])\}/gi, (m, ch) => PT_SYM_WORD[ch.toLowerCase()] || m)
+    // 3.2.8: markup pasted around a name ("<b>Fezandipiti ex</b>") is not part of it either.
+    .replace(/<\/?[a-z][^<>]*>/gi, '')
+    // 3.2.8: emoji ("\ud83d\udd25 Fezandipiti ex") are not part of a card's name, but the female and male signs are.
+    .replace(/(?![\u2640\u2642])\p{Extended_Pictographic}|[\ufe0f\u200d\u20e3]|\p{Regional_Indicator}|[\u{1f3fb}-\u{1f3ff}]/gu, '')
     .replace(/\s+/g, ' ').replace(/ ([\u2640\u2642])/g, '$1').trim();   // 2.5.5: "Nidoran \u2640" is "Nidoran\u2640"
   const b = s.match(/^basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy$/i);
   if (b) s = b[1].charAt(0).toUpperCase() + b[1].slice(1).toLowerCase() + ' Energy';
@@ -400,7 +404,17 @@ function ptTagCard(c) {
 /** 2.5.5: the promo codes Pokemon TCG Live writes (PR-SV, PR-ME) to the ones Limitless and the card sources use. */
 function ptCanonSet(set) {
   const s = String(set || '').trim().toUpperCase();
-  return ({ 'PR-SV': 'SVP', 'PR-ME': 'MEP', 'PR-MEP': 'MEP' })[s] || set;
+  return ({ 'PR-SV': 'SVP', 'PR-ME': 'MEP', 'PR-MEP': 'MEP' })[s] || ptSetAlias(set) || set;
+}
+/** 3.2.8: a card database set id (swsh9, sv3pt5, or TCGdex's sv03.5) as the set code lists use (BRS, MEW), or null. */
+function ptSetAlias(id) {
+  const raw = String(id || '').trim();
+  if (!raw || typeof TCGEnrich === 'undefined' || !TCGEnrich.SET_MAP) return null;
+  if (TCGEnrich.SET_MAP[raw.toUpperCase()]) return null;   // already a set code
+  const k = raw.toLowerCase().replace(/^(sv|me)0+(?=\d)/, '$1').replace(/\.5$/, 'pt5');
+  if (!/^[a-z]+\d*(?:pt5)?$/.test(k)) return null;
+  for (const code in TCGEnrich.SET_MAP) if (TCGEnrich.SET_MAP[code] === k) return code;
+  return null;
 }
 function ptCanonDecks(decks) {
   (decks || []).forEach(d => (d && Array.isArray(d.cards) ? d.cards : []).forEach(c => {
@@ -420,10 +434,15 @@ function parseDeckList(raw) {
     if (/^\s*total\b/i.test(line)) return;
     const c = parseLine(line);
     // 2.5.1: count the lines that could not be read (and "0 Card" lines), so the import box can say so.
-    if (!c || !(c.count > 0)) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
+    // 3.2.8: and lines with more copies than a whole deck holds ("999 Zzz"), which no list means.
+    if (!c || !(c.count > 0) || c.count > 60) { if (!/^\s*(\/\/|#)/.test(line)) skipped++; return; }
     c.name = ptCanonName(c.name);   // 2.5.3
+    if (!c.name) { skipped++; return; }
     if (c.set) c.set = ptCanonSet(c.set);   // 2.5.5
     if (section) c.section = section;
+    // 3.2.8: the same card on two lines is one entry ("1 Poké Pad POR 81" twice reads as 2).
+    const same = cards.find(x => x.name.toLowerCase() === c.name.toLowerCase() && x.set === c.set && x.num === c.num && x.section === c.section);
+    if (same) { same.count += c.count; return; }
     cards.push(c);
   });
   Object.defineProperty(cards, 'skipped', { value: skipped });
@@ -433,7 +452,19 @@ function parseDeckList(raw) {
 function parsePreviewText(parsed, want) {
   const total = parsed.reduce((a, c) => a + c.count, 0), n = parsed.skipped || 0;
   const skip = n ? ` ${n} line${n === 1 ? ' was' : 's were'} not read. Check ${n === 1 ? 'it' : 'them'} against the list.` : '';
-  return { warn: !!n || total !== want, t: `Parsed ${parsed.length} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}${skip}` };
+  // 3.2.8: unique cards by name, and what the rules flag before any card is read: more than 4 with one name,
+  // and cards from sets that are no longer legal (Sword and Shield or earlier, or TCG Pocket).
+  const key = c => (typeof rules34Key === 'function' ? rules34Key(c.name) : String(c.name).toLowerCase());
+  const byName = new Map();
+  parsed.forEach(c => { const k = key(c), r = byName.get(k) || { name: c.name, n: 0, be: false }; r.n += c.count;
+    if (typeof rules34IsBasicEnergy === 'function' && rules34IsBasicEnergy(c)) r.be = true; byName.set(k, r); });
+  const over = [...byName.values()].filter(r => !r.be && r.n > 4);
+  const overT = over.slice(0, 2).map(r => ` There are ${r.n} ${r.name}, and the most allowed is 4.`).join('');
+  const old = parsed.filter(c => c.set && ((typeof r29OldSet === 'function' && r29OldSet(c.set)) || (typeof r29PocketSet === 'function' && r29PocketSet(c.set))))
+    .reduce((a, c) => a + c.count, 0);
+  const oldT = old ? ` ${old} card${old === 1 ? ' is' : 's are'} from a set that is not Standard legal now.` : '';
+  return { warn: !!n || total !== want || !!over.length || !!old,
+    t: `Parsed ${byName.size} unique cards, ${total} total.${total !== want ? ' Expected ' + want + '.' : ' ' + want + ' cards, ready.'}${overT}${oldT}${skip}` };
 }
 
 /** Deck list text grouped under section headers, for the edit box. */
@@ -646,15 +677,22 @@ function gAbilRead(c) {
     });
     // v60: what the Goldfish steps cannot follow is read sentence by sentence (Munkidori, Iono's Bellibolt ex, Lunatone).
     let pre = '', post = '';
-    if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (!ge.say.length) return;
+    // 3.2.8: an Ability that puts the Pokemon itself onto your Bench from your discard pile (Empoleon's
+    // Emergency Surfacing, Gengar's Netherworld Gate) says so first, before what it does after.
+    const selfRev = /if this pokemon is in your discard pile[^.]*?,? you may put (?:it|this pokemon) onto your bench/.test(t.replace(/pok[e\u00e9]mon/g, 'pokemon'));
+    if (!bits.length) { const ge = geEffects(A.text); ge.tags.forEach(x => tags.add(x)); if (!ge.say.length && !selfRev) return;
       const base = v => v.replace(/^(\w+?)(?:(ch|sh|x)es|s)\b/, (q, w, e) => w + (e || ''));
       bits.push(...ge.say);
       if (ge.cost) { pre = ge.cost + ' to '; bits[0] = /^your /.test(bits[0]) ? 'make ' + bits[0] : base(bits[0]); }
       if (ge.need && ge.need !== 'only while it is Active') post = ` (${ge.need})`; }
     // v62: a condition printed at the start of the Ability (Thwackey's Boom Boom Groove needs Festival Lead in the Active Spot).
     if (!post) { const cm = gfNorm(A.text).match(/^once during your turn, if ([^,]+), you may/i);
-      if (cm && !/^this pokemon is in the active spot$/i.test(cm[1].replace(/\u00e9/g, 'e')))
+      // 3.2.8: being in your discard pile is said by "from your discard pile" already.
+      if (cm && selfRev) cm[1] = cm[1].replace(/^this pok[e\u00e9]mon is in your discard pile(?: and )?/i, '');
+      if (cm && cm[1] && !/^this pokemon is in the active spot$/i.test(cm[1].replace(/\u00e9/g, 'e')))
         post = ` (only if ${cm[1].replace(/\bthis Pok[e\u00e9]mon('s)?/gi, (q, x) => x ? 'its' : 'it').replace(/Pok\u00e9mon/g, 'Pokemon')})`; }
+    if (selfRev) { if (bits.length && /^draws /.test(bits[0])) bits[0] = 'then ' + bits[0];
+      bits.unshift('puts itself onto your Bench from your discard pile'); }
     const when = A.when === 'bench' ? 'when you play it onto your Bench' : A.when === 'evolve' ? 'when you evolve into it from your hand'
       : A.first ? 'on your first turn' : A.many || / as often as you like$/.test(bits[bits.length - 1]) ? (bits[bits.length - 1] = bits[bits.length - 1].replace(/, as often as you like$/, ''), 'as often as you like') : A.active ? 'once a turn while it is Active' : 'once a turn';
     // Decidueye ex's Total Freedom switches it in from the Bench or out from the Active Spot, not only in.
@@ -715,7 +753,10 @@ function toGradeRows(deck) {
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(), ab: ar.say.filter(x => !x.fb), abx: ar.say,
       t, stage: c.stage||null,
-      from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
+      // 3.2.8 (Muse H3): a printing whose record leaves out what it evolves from (TCGdex's 30th Classic
+      // Collection Gengar) takes it from the saved list of Standard cards, read by name.
+      from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase()
+        : (c.stage === 'stage1' || c.stage === 'stage2') && typeof r273From === 'function' ? (String(r273From(c.name) || '').toLowerCase() || null) : null,
       base: c.base ? String(c.base).toLowerCase() : null,
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
@@ -737,6 +778,10 @@ function toGradeRows(deck) {
       bcopy: ((c.atext||[]).find(x => /can use the attacks of (?:any of )?your benched pok/i.test(String(x[1]||''))) || [])[0] || null,
       pex: (c.abilities||[]).filter(x => x.pex).map(x => x.name),
       aneed: (c.abilities||[]).filter(x => x.aneed).map(x => ({ abil: x.name, type: x.aneed })),
+      ahas: (c.abilities||[]).filter(x => x.ahas).map(x => ({ abil: x.name, type: x.ahas })),
+      // 3.2.8: an Ability that searches for Evolution Pokemon of one type (Genesect ex's Metallic Signal).
+      evoSeek: (x => x ? { abil: x[0], type: ((String(x[1]||'').match(/search your deck for (?:up to \d+ |an? )?evolution (grass|fire|water|lightning|psychic|fighting|darkness|metal|dragon|colorless) pok/i) || [])[1] || '').toLowerCase() } : null)(
+        (c.atext||[]).find(x => /search your deck for (?:up to \d+ |an? )?evolution (?:[a-z]+ )?pok[e\u00e9]mon/i.test(String(x[1]||'')))),
       abBoost: (c.abilities||[]).filter(x => x.boost).map(x => Object.assign({ abil: x.name }, x.boost)),
       sboost: (x => x ? Object.assign({ abil: x.name }, x.sboost) : null)((c.abilities||[]).find(x => x.sboost)),
       gate: ((c.abilities||[]).filter(x => x.gate).map(x => Object.assign({ abil: x.name }, x.gate)))[0] || null,
@@ -811,6 +856,17 @@ function g115Reviver(deck, e, energyTypes) {
   }
   return null;
 }
+/** 3.2.8: the Basic a Stage 2 starts from: read with the card, else from its Stage 1 in the list,
+ *  else from the saved list of Standard cards. Rare Candy needs it in play. */
+function g116Base(deck, c) {
+  if (!c || c.stage !== 'stage2' || !c.from) return null;
+  if (c.base) return c.base;
+  const nk = s => normalizeCardName(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const mid = (deck || []).find(y => y.card && nk(y.name) === nk(c.from));
+  if (mid && mid.card.from) return mid.card.from;
+  try { if (typeof r273From === 'function') { const b = r273From(c.from); if (b) return String(b).toLowerCase(); } } catch (_) {}
+  return null;
+}
 /** 3.2.7: can this card reach the board in this list? Trainers and Basics can; an evolution needs its line
  *  (Rare Candy may skip the Stage 1), an Ability that benches it, or a way back from the discard pile of its own. */
 function g115Can(deck, x) {
@@ -823,7 +879,8 @@ function g115Can(deck, x) {
     return c.stage !== 'stage2' || !mid || !mid.card.from || has(mid.card.from) || !!(mid.card.rev || []).some(r => r.self) || mid.card.selfBench; }
   if (c.isEx && deck.some(y => y.card && y.card.standIn && nk(y.card.standIn) === nk(c.from))) return true;
   const candy = deck.some(y => y.card && (y.card.provides || []).includes('evolution_access'));
-  return c.stage === 'stage2' && candy && !!c.base && has(c.base);
+  const base = g116Base(deck, c);
+  return c.stage === 'stage2' && candy && !!base && has(base);
 }
 /** 3.2.8: a Pokemon that can only start the game face down in the Active Spot (Cinderace's Explosiveness)
  *  reaches the board when a copy is in the opening 7 cards. It earns credit by those odds, like a revived
@@ -866,7 +923,7 @@ function g115Odds(deck, v, e, outs) {
     const rc = v.e.card;
     pRev = g115See(g115Reach(deck, rc, qtyOf(v.e.name)));
     if (rc.t === 'pkmn' && rc.stage !== 'basic' && rc.from && !rc.selfBench) {
-      const mid = findE(rc.from), base = rc.stage === 'stage2' ? (mid && mid.card.from ? findE(mid.card.from) : rc.base ? findE(rc.base) : null) : mid;
+      const mid = findE(rc.from), base = rc.stage === 'stage2' ? (mid && mid.card.from ? findE(mid.card.from) : g116Base(deck, rc) ? findE(g116Base(deck, rc)) : null) : mid;
       if (base) pRev *= g115See(g115Reach(deck, base.card, qtyOf(base.name)));
       if (rc.stage === 'stage2') {
         const candy = deck.reduce((a, y) => a + (y.card && (y.card.provides || []).includes('evolution_access') ? y.qty : 0), 0);
@@ -883,8 +940,9 @@ function g115Odds(deck, v, e, outs) {
   // Milling picks no card: it lands only when a copy is among the few cards it turns over.
   const pHit = g115See(cp, 6);
   const p = pRev * (pDeck + (1 - pDeck) * (1 - (1 - pHand * pSee) * (1 - pMill * pHit)));
-  // A line that comes together most games gets full credit; one that rarely does gets almost none.
-  return { p, cr: Math.min(1, p / 0.6) };
+  // 3.2.8: the credit follows the odds all the way up: a line that comes together about 1 game in 3
+  // earns about a third, and one that nearly always does earns nearly all of it.
+  return { p, cr: Math.max(0, Math.min(1, p)) };
 }
 /** 3.2.5: cards that put Pokemon into your discard pile: a cost of discarding from your hand
  *  (Ultra Ball), discarding your hand, or discarding from your deck (Brilliant Blender). */
@@ -912,21 +970,42 @@ function gCoherence(deck) {
   const rv115=new Map(), out115=g115Outlets(deck, energyTypes), revived=new Set();
   // 3.2.7: one that brings itself back is named by its Ability (Gengar's Netherworld Gate).
   const rvBy=v=>v.self ? { name:v.r.via||gCap(v.e.name), via:'' } : { name:gCap(v.e.name), via:v.r.via };
-  const rvKeep=(v,e)=>{ revived.add(e.card.key); const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, self:!!v.self, to:[] }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); };
+  const rvKeep=(v,e,o)=>{ if (!o || o.p>=RV_THIN) revived.add(e.card.key); const k=v.e.card.key+'\u0000'+v.r.via; if(!rv115.has(k)) rv115.set(k,{ by:v.e, r:v.r, self:!!v.self, to:[], p:1 }); const g=rv115.get(k); if(!g.to.includes(e.name)) g.to.push(e.name); if (o) g.p=Math.min(g.p,o.p); };
+  // 3.2.8: the cards that put the Pokemon in your discard pile, the ones the list runs most of first.
+  const rvOuts=()=>{ const m=new Map(); out115.forEach(x=>{ const k=gCap(x.name); m.set(k,(m.get(k)||0)+g115Reach(deck,x.card,x.qty)); });
+    return [...m.entries()].sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,2); };
+  // 3.2.8: how often the line comes together, said under full strength: "about 6 games in 10", "only about 1 game in 4".
+  const rvOdds=p=>p>=0.9 ? '' : p>=0.45 ? `about ${Math.max(5,Math.min(9,Math.round(p*10)))} games in 10` : `only about 1 game in ${Math.max(2,Math.round(1/Math.max(p,0.01)))}`;
+  const RV_THIN=0.3;
   const rvNone=(v,e)=>{ const b=rvBy(v); return {sev:'warn', who:e.card.key, rvn:{ by:b.name, via:b.via, to:e.name }, t:`Nothing puts ${gCap(e.name)} in your discard pile`,
     d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, but nothing in the list discards cards from your hand or deck, like Ultra Ball or Brilliant Blender.`}; };
   // 3.2.7: a line that rarely comes together in time (a 1-of reviver with little to fetch it) earns little credit.
-  const rvThin=(v,e,o)=>{ const b=rvBy(v), n=Math.max(2, Math.round(1/Math.max(o.p,0.01)));
+  const rvThin=(v,e,o)=>{ const b=rvBy(v), n=Math.max(2, Math.round(1/Math.max(o.p,0.01))), outs=rvOuts();
     return {sev:'warn', who:e.card.key, t:`${gCap(e.name)} rarely reaches the board`,
-    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, and that comes together in only about 1 game in ${n}.`}; };
+    d:`${gCap(e.name)} can only reach the board when ${b.name} brings it back from your discard pile${b.via ? ` with ${b.via}` : ''}, and that comes together in only about 1 game in ${n}.` +
+      (outs.length ? ` ${outs.join(' and ')} ${outs.length>1 ? 'are what put' : 'is what puts'} it in your discard pile.` : '')}; };
   // v54: an Ability that attaches Basic Energy of a type the list does not run does nothing.
   deck.forEach(e => { const c=e.card; if(!c) return;
     (c.aneed||[]).filter(x => !energyTypes[x.type]).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
       // v57: when its attacks cannot be paid either, the card does nothing at all, so say so.
       const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any));
-      flaws.push({sev:'warn', who:c.key, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
+      flaws.push({sev:'warn', who:c.key, deadAb:x.abil, t: payable ? `${gCap(e.name)}'s ${x.abil} has nothing to attach` : `${gCap(e.name)} does nothing as built`,
         d:`${x.abil} attaches Basic ${gCap(x.type)} Energy from your hand, but the list runs no ${gCap(x.type)} Energy, so the Ability does nothing as built.` +
           (payable ? '' : ` Its attacks need ${gCap(x.type)} Energy too, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${gCap(x.type)} Energy.`)}); }); });
+  // 3.2.8: an Ability that only works with some Energy attached (Munkidori's Adrena-Brain) does nothing when the list runs none of it.
+  const anyE = Object.keys(energyTypes).some(k => energyTypes[k]);
+  deck.forEach(e => { const c=e.card; if(!c) return;
+    (c.ahas||[]).filter(x => x.type === 'any' ? !anyE : !energyTypes[x.type] && !energyTypes.any).forEach(x => { if (flaws.some(f=>f.who===c.key)) return;
+      const payable = !(c.attacks||[]).length || (c.attacks||[]).some(a=>(a.cost||[]).every(t=>t==='colorless'||energyTypes[t]||energyTypes.any)) && (anyE || (c.attacks||[]).some(a=>!(a.cost||[]).length));
+      const ty = x.type === 'any' ? '' : gCap(x.type) + ' ';
+      flaws.push({sev:'warn', who:c.key, deadAb:x.abil, t: payable ? `${gCap(e.name)}'s ${x.abil} never turns on` : `${gCap(e.name)} does nothing as built`,
+        d:`${x.abil} only works while ${gCap(e.name)} has ${ty}Energy attached, but the list runs no ${ty}Energy, so the Ability does nothing as built.` +
+          (payable ? '' : ` Its attacks cannot be paid either, so the ${e.qty} ${e.qty > 1 ? 'copies are dead cards' : 'copy is a dead card'}. Cut ${e.qty > 1 ? 'them' : 'it'} or add ${ty}Energy.`)}); }); });
+  // 3.2.8: an Ability that searches for Evolution Pokemon finds nothing when the list runs none it can find.
+  deck.forEach(e => { const c=e.card; if(!c||!c.evoSeek||flaws.some(f=>f.who===c.key)) return;
+    const ty=c.evoSeek.type, hit=deck.some(x=>x.card&&x.card.t==='pkmn'&&x.card.stage&&x.card.stage!=='basic'&&(!ty||(x.card.types||[]).some(t=>String(t).toLowerCase()===ty)));
+    if (!hit) flaws.push({sev:'warn', who:c.key, deadAb:c.evoSeek.abil, t:`${gCap(e.name)}'s ${c.evoSeek.abil} finds nothing`,
+      d:`${c.evoSeek.abil} searches your deck for ${ty ? gCap(ty) + ' ' : ''}Evolution Pokemon, but the list runs none, so the Ability does nothing as built.`}); });
   // v55: an attacker that cannot attack until enough of a group is in play (Team Rocket's Mewtwo ex's Power Saver).
   deck.forEach(e => { const c=e.card; if(!c||!c.gate) return;
     const g=c.gate, n=deck.filter(x=>x.card&&x.card.t==='pkmn'&&x.card.key.startsWith(g.pre)).reduce((k,x)=>k+x.qty,0);
@@ -947,8 +1026,12 @@ function gCoherence(deck) {
               : `${gCap(cp.name)} copies ${gCap(e.name)}'s attacks with ${via}, paying only its own cost, so ${gCap(e.name)} needs no ${gCap(ty)} Energy of its own.` }); }
         // v55: a Pokemon the list evolves (Dreepy into Drakloak) is there to evolve, not to attack.
         else if (deck.some(x => x.card && x.card.t==='pkmn' && x.card.from===c.key)) reqMet++;
-        else if (c.abil && c.abil.length && !(c.aneed||[]).some(x => !energyTypes[x.type])) { reqMet++;
-          if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '),
+        // 3.2.8: nor is an Ability that needs Energy the list does not run (Munkidori without Darkness).
+        else if (c.abil && c.abil.length && !(c.aneed||[]).some(x => !energyTypes[x.type]) && !(c.ahas||[]).some(x => x.type === 'any' ? !Object.keys(energyTypes).some(k => energyTypes[k]) : !energyTypes[x.type] && !energyTypes.any)) { reqMet++;
+          // 3.2.8: one line per card, naming each type its attack needs (Tatsugiri's Surf needs Fire and Water).
+          const was = synergies.find(s=>s.who===c.key&&s.abx);
+          if (was) { was.abx.push(gCap(ty)); was.p = `${gCap(e.name)} is here for its Ability, so its attack needing ${was.abx.join(' and ')} Energy does not matter.`; }
+          else if (!flaws.some(f=>f.who===c.key)) synergies.push({link:gCap(e.name)+': '+c.abil.join(', '), abx:[gCap(ty)],
             p:`${gCap(e.name)} is here for its Ability, so its attack needing ${gCap(ty)} Energy does not matter.`, who:c.key}); }
         else if (c.byName) { reqMet++;
           flaws.push({sev:'warn', who:c.key, t:`Check ${gCap(e.name)}'s attack cost`,
@@ -965,7 +1048,7 @@ function gCoherence(deck) {
         // v66: Rare Candy skips the Stage 1, not the Basic, so with no Stage 1 in the list the Basic has to be.
         const bk=s=>normalizeCardName(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
         const pre=c.from&&present[c.from]>0;
-        const noBase=!pre&&c.base&&!deck.some(x=>x.card&&bk(x.name)===bk(c.base));
+        const cb=g116Base(deck,c), noBase=!pre&&cb&&!deck.some(x=>x.card&&bk(x.name)===bk(cb));
         const candy=provided['evolution_access']>0&&!noBase;
         const own=c.selfBench, copied=!own&&!candy&&!pre&&g37Copier(deck,c);
         const su=!own&&!candy&&!pre&&!copied&&c.setupPut;
@@ -980,10 +1063,11 @@ function gCoherence(deck) {
             p:`${gCap(e.name)} can put itself onto your Bench from your hand with ${c.abil[0]||'its Ability'}, so it does not need to evolve. Read the card for what that needs.`});
           else if (candy) synergies.push({link:'Rare Candy > '+gCap(e.name), p:gSynText('evolution_access','Rare Candy',e.name)}); }
         // 3.2.5: brought back from the discard pile, with something in the list to put it there.
+        // 3.2.8: the line is always shown, with how often it comes together, and a warning when that is rare.
         else if (rv) { if (out115.length) { const o=g115Odds(deck,rv,e,out115); reqMet+=o.cr;
-            if (o.cr>=0.5) rvKeep(rv,e); else flaws.push(rvThin(rv,e,o)); } else flaws.push(rvNone(rv,e)); }
-        else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(c.base)} for ${gCap(e.name)}`,
-          d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(c.base)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(c.base)} in play, so ${gCap(e.name)} can never reach the board.`});
+            rvKeep(rv,e,o); if (o.p<RV_THIN) flaws.push(rvThin(rv,e,o)); } else flaws.push(rvNone(rv,e)); }
+        else if (noBase&&provided['evolution_access']>0) flaws.push({sev:'crit', who:c.key, t:`No ${gCap(cb)} for ${gCap(e.name)}`,
+          d:`${gCap(e.name)} evolves from ${gCap(c.from)}, which evolves from ${gCap(cb)}. Neither is in the list, and Rare Candy needs the Basic ${gCap(cb)} in play, so ${gCap(e.name)} can never reach the board.`});
         else flaws.push({sev:'crit', t:`Hard to get ${gCap(e.name)} into play`,
           d:`It is a Stage 2 with no Rare Candy and no ${gCap(c.from||'pre-evolution')} in the deck, so there is no realistic way to evolve into it.`});
       } else {
@@ -1006,9 +1090,9 @@ function gCoherence(deck) {
     // 3.2.5: a Stage 1 brought back from the discard pile needs no Basic either.
     const rv = g115Reviver(deck, e, energyTypes);
     if (rv && out115.length) { const o = g115Odds(deck, rv, e, out115);
-      // 3.2.7: full credit when the line comes together most games, less when it rarely does.
+      // 3.2.8: credit as often as the line comes together, and a warning when that is rare.
       if (o.cr < 1) { reqTotal++; reqMet += o.cr; }
-      if (o.cr >= 0.5) rvKeep(rv, e); else { const f = rvThin(rv, e, o); unmet.push(f.t); flaws.push(f); }
+      rvKeep(rv, e, o); if (o.p < RV_THIN) { const f = rvThin(rv, e, o); unmet.push(f.t); flaws.push(f); }
       return; }
     if (rv) { const f = rvNone(rv, e); reqTotal++; unmet.push(f.t); flaws.push(f); return; }
     reqTotal++; unmet.push(`No ${gCap(c.from)} for ${gCap(e.name)}`);
@@ -1024,9 +1108,10 @@ function gCoherence(deck) {
   // 3.2.5: one line for each card that brings Pokemon back, naming them and what fills the discard pile.
   rv115.forEach(g => { const nm=g.self ? (g.r.via||gCap(g.by.name)) : gCap(g.by.name), via=g.self ? '' : g.r.via, to=g.to.map(gCap), one=to.length===1;
     const list=one ? to[0] : to.slice(0,-1).join(', ')+' and '+to[to.length-1];
-    const outs=[...new Set(out115.map(x=>gCap(x.name)))].slice(0,2);
+    const outs=rvOuts(), odds=rvOdds(g.p);
     synergies.push({ link:(g.self ? gCap(g.by.name)+': '+nm : nm+' > '+to.join(', ')), who:g.by.card.key, rev:true,
-      p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` }); });
+      p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` +
+        (odds ? ` The whole line comes together in ${odds}.` : '') }); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
   if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
     d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
@@ -1046,6 +1131,14 @@ function gCoherence(deck) {
   const eScale = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.escale||a.edisc||(a.pile&&a.pile.kind==='energy')||(a.mill&&a.mill.kind==='energy')));
   if (eQ >= 22 && !eScale) flaws.push({sev:'warn', t:'Heavy on Energy',
     d:`The list runs ${eQ} Energy. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
+  // 3.2.8: attacks that use Energy still want it attached, not stuck in hand: past 24 even those lists draw too much of it.
+  else if (eQ >= 24) flaws.push({sev:'warn', t:'Heavy on Energy',
+    d:`The list runs ${eQ} Energy. Even decks whose attacks use up Energy rarely run more than 20, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
+  // 3.2.8: too little Energy to attack with. Text only: the attacks it cannot pay already count for nothing in the grade.
+  const eAtk = deck.filter(e=>e.card&&e.card.t==='pkmn'&&(e.card.attacks||[]).some(a=>(a.cost||[]).length));
+  if (hasAtk && eAtk.length && eQ <= 1) flaws.push({sev:'warn', t: eQ ? 'Only 1 Energy' : 'No Energy in the list',
+    d: eQ ? 'The list runs 1 Energy card, so it is rarely in your hand when you need it, and attacks that cost Energy will almost never be used. Most decks run 8 to 16.'
+      : 'The list runs no Energy cards, so no attack that costs Energy can ever be used. Most decks run 8 to 16.'});
   // v59: Rare Candy with no Stage 2 in the list can never be played.
   const hasS2 = deck.some(e=>e.card&&e.card.t==='pkmn'&&e.card.stage==='stage2');
   const candyQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&(e.card.provides||[]).includes('evolution_access'));
@@ -1347,6 +1440,9 @@ function g35Boost(deck, atk) {
   // Pokemon is Active helps only that Pokemon.
   deck.forEach(e => (e.card && e.card.abDmg || []).forEach(x => {
     if (x.active && e.card.key !== key) return;
+    // 3.2.8: an Ability that Knocks Out its own Pokemon (Cursed Blast) is not added to that Pokemon's own attack:
+    // Dusknoir cannot use Cursed Blast and then attack. Another Pokemon's attack still counts it (Fezandipiti ex).
+    if (x.selfKO && e.card.key === key) return;
     if (!best.ability || x.n > best.ability.n)
       best.ability = { n: x.n, cat: 'ability', name: `${gCap(e.name)}'s ${x.abil}`, who: gCap(e.name), selfKO: !!x.selfKO }; }));
   // v55: an Ability that boosts the attacks of a group of your Pokemon (Cynthia's Roserade's
@@ -1816,7 +1912,7 @@ function gViability(deck, coh, main) {
     if (mid) return canPlay(mid.card,g+1);
     if (c.isEx&&deck.some(x=>x.card&&x.card.standIn&&gk(x.card.standIn)===gk(c.from))) return true;
     // With the Stage 1 missing, Rare Candy has to carry the whole line, so it takes 2 or more.
-    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2&&(!c.base||deck.some(x=>x.card&&gk(x.card.key)===gk(c.base))); };
+    return c.stage==='stage2'&&(coh.provided['evolution_access']||0)>=2&&(b=>!b||deck.some(x=>x.card&&gk(x.card.key)===gk(b)))(g116Base(deck,c)); };
   const attackers=deck.filter(e=>e.card&&e.card.attacks&&canPlay(e.card)), findings=[];
   // v65: and an attack counts only when the list runs as many Energy of each type as it asks for
   // (2 Grass in the cost needs 2 or more Grass Energy cards, not just one).
@@ -1827,7 +1923,11 @@ function gViability(deck, coh, main) {
     if (!m||!c) return true; const x=m[1].trim();
     return stg[x] ? String(c.stage||'').toLowerCase().replace(/\s+/g,'')===stg[x] : gtNorm(c.key||'').startsWith(x); };
   const EN=deck.filter(x=>x.card&&x.card.t==='energy');
+  // 3.2.8: and the list runs enough Energy cards in all to cover the whole cost, Colorless included
+  // (a Special Energy may count for two), so a list with no Energy has no paid attack.
+  const eUnits=EN.reduce((n,x)=>n+x.qty*((x.card.sub||[]).some(s=>/special/i.test(s))?2:1),0);
   const pay=(a,who)=>{ const need={}; (a.cost||[]).forEach(ty=>{ if(ty!=='colorless') need[ty]=(need[ty]||0)+1; });
+    if ((a.cost||[]).length>eUnits) return false;
     return Object.keys(need).every(ty=>EN.reduce((n,x)=>{ const ts=x.card.etypes&&x.card.etypes.length?x.card.etypes:[x.card.etype];
       return n+((ts.includes(ty)||ts.includes('any'))&&fits(x.card,who)?x.qty:0); },0)>=need[ty]); };
   // Best payable hit per attacker: its ceiling, and what it does early.
@@ -1847,6 +1947,13 @@ function gViability(deck, coh, main) {
       // counted the same way.
       if (!r0.srcF && main && main.key !== e.card.key && deck.some(x => x.card && x.card.bcopy && x.card.key === main.key)) { const sf=g273SrcF(deck, e.card); if (sf.f<1) r0=Object.assign({}, r0, { srcF: sf.f, srcN: sf.n, thinSelf: true }); }
       reach.push({ name:e.name, qty:e.qty, p:e.card.p||1, ...r0, boost:b.n, bNames:b.names, vsEx:b.vsEx, behind:b.behind, poison:b.poison, last:b.last, ko:b.ko, eff:r0.top+b.n }); } });
+  // 3.2.8: a main attacker whose every attack costs more Energy than the list runs in all.
+  const mainK = main && (deck.find(x=>x.card&&x.card.key===main.key)||{}).card;
+  const eQv = EN.reduce((n,x)=>n+x.qty,0);
+  if (mainK && eQv > 1 && (mainK.attacks||[]).length && mainK.attacks.every(a=>(a.cost||[]).length>eUnits)) {
+    const least = Math.min(...mainK.attacks.map(a=>(a.cost||[]).length));
+    findings.push({sev:'warn', t:'Too little Energy for the main attacker',
+      d:`${gCap(main.name)}'s cheapest attack needs ${least} Energy, but the list runs only ${eQv} Energy cards, so it can never attack. Add Energy or pick another main attacker.`}); }
   // 2.7.3: a copied hit from a thin line is compared at what the grade counts of it.
   const effC = r => r.eff * (r.srcF || 1);
   // 3.2.8: a Pokemon in a support role (gSupportMon: Mega Kangaskhan ex drawing, Fezandipiti ex) does not set
@@ -2009,7 +2116,7 @@ function gViability(deck, coh, main) {
     const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
       while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
         if (!m) { if (c2.stage==='stage2') { q=Math.min(q,cand/2); // v67: 1 Rare Candy is half a line here, not none, so Power agrees with Synergy that it can be played
-            if (c2.base) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(c2.base)).reduce((n,x)=>n+x.qty,0)); } break; }
+            const b2=g116Base(deck,c2); if (b2) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(b2)).reduce((n,x)=>n+x.qty,0)); } break; }
         q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
       return q; };
     const av=n=>n>=3?1:n>=2?0.97+0.03*(n-2):n>=1?0.75+0.22*(n-1):0.5+0.25*n;
@@ -2128,7 +2235,9 @@ function gViability(deck, coh, main) {
   // separates the decks that win from the ones that only hit hard. A Stage 1 that draws (Drakloak's
   // Recon Directive) makes the long way up to a Stage 2 pay for itself, so that line is on time.
   // Each engine copy adds a little to Setup speed, up to 4 of them; one that works only some turns counts half.
-  const engAb=e=>e.card&&e.card.t==='pkmn'&&canPlay(e.card)&&(e.card.ab||[]).some(a=>/once a turn/.test(a.p||'')&&/^(?:draws|searches|looks at the top)/.test(a.p||''));
+  // 3.2.8: not one Fix first calls dead as built (Metallic Signal with no Evolution Pokemon to find).
+  const abDead=(e,a)=>((coh&&coh.flaws)||[]).some(f=>f.who===e.card.key&&f.deadAb===a.abil);
+  const engAb=e=>e.card&&e.card.t==='pkmn'&&canPlay(e.card)&&(e.card.ab||[]).some(a=>/once a turn/.test(a.p||'')&&/^(?:draws|searches|looks at the top)/.test(a.p||'')&&!abDead(e,a));
   const engHalf=e=>(e.card.ab||[]).every(a=>!/once a turn/.test(a.p||'')||/\(only if|only when|if you have|coin/.test(a.p||''));
   const engs=deck.filter(engAb);
   const engQ=engs.reduce((n,e)=>n+e.qty*(engHalf(e)?0.5:1),0);
@@ -2314,7 +2423,8 @@ function gPlan(entries, coh, via) {
   const sup = entries.filter(x => { const c = x.card;
     if (!c || c.t !== 'pkmn' || c.key === m.key || pre.has(c.key) || !(c.abil || []).length) return false;
     // v60: the Ability itself has to draw or search; attacks add search tags too since v60.
-    if (!(c.ab || []).some(a => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(a.p || ''))) return false;
+    // 3.2.8: and work in this list (Fix first has not called it dead as built).
+    if (!(c.ab || []).some(a => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(a.p || '') && !((coh && coh.flaws) || []).some(f => f.who === c.key && f.deadAb === a.abil))) return false;
     return (c.attacks || []).every(a => (a.cost || []).every(t => t === 'colorless')); });
   const seen = new Set(), names = [];
   sup.forEach(x => { if (seen.has(x.card.key)) return; seen.add(x.card.key); names.push(`${gCap(x.name)} (${x.card.abil.join(', ')})`); });
@@ -2332,6 +2442,8 @@ function gPlan(entries, coh, via) {
     (c.abx || c.ab).forEach(a => { let p = `${gCap(x.name)}'s ${a.abil}: ${a.p}`;
       if (a.x) { const hit = [...new Set(entries.filter(y => y.card && y.card.t === 'pkmn' && (y.card.types || []).map(String).map(z => z.toLowerCase()).includes(a.x.ty) && (y.card.attacks || []).some(k => (k.max || k.dmg) > 0)).map(y => gCap(y.name)))];
         p += hit.length ? ` (${hit.slice(0, 3).join(', ')} in this list)` : `, though no ${gCap(a.x.ty)} attacker is in this list`; }
+      // 3.2.8: an Ability Fix first calls dead as built (Teal Dance with no Grass Energy) is not shown as working.
+      if (((coh && coh.flaws) || []).some(f => f.who === c.key && f.deadAb === a.abil)) p += '. It does nothing in this list';
       abOut.push({ who: gCap(x.name), p }); }); });
   if (abOut.length) out.push({ link: `Abilities: ${[...new Set(abOut.map(z => z.who))].slice(0, 4).join(', ')}${new Set(abOut.map(z => z.who)).size > 4 ? ' and more' : ''}`,
     p: abOut.map(z => z.p).join('. ') + '.' });
@@ -2761,6 +2873,10 @@ function gtFit(entries, coh, via, main, ctx) {
   const s2 = mainSt2 || st2.sort((a, b) => b.qty - a.qty)[0];
   const nm = gCap, up = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
   const deadSet = new Set(ctx.dead || []);
+  // 3.2.8: how much Energy the list runs, and whether the main attacker's attacks all cost nothing (Igglybuff).
+  const eCards = entries.filter(e => e.card && e.card.t === 'energy').reduce((a, e) => a + e.qty, 0);
+  const mainC = main && (entries.find(e => e.card && e.card.key === main.key) || {}).card;
+  const mainFree = !!(mainC && (mainC.attacks || []).length && mainC.attacks.every(a => !(a.cost || []).length));
   const out = [];
   one.forEach(e => {
     const c = e.card, roles = roleOf.get(c.key), tx = text(c);
@@ -2770,6 +2886,17 @@ function gtFit(entries, coh, via, main, ctx) {
       const miss = gtUnmet(entries, coh, tx);
       row.fit = 'dead';
       row.why = `Needs ${[...new Set(miss.map(gtSay))].join(' or ')}, and the list runs none.`;
+    } else if (!st2.length && roles.has('evolve') && /skipping the stage 1/.test(gtNorm(tx))) {
+      // 3.2.8: as Fix first says, Rare Candy with no Stage 2 in the list cannot be played.
+      row.fit = 'dead';
+      row.why = 'The list has no Stage 2 Pokemon, so it cannot be played.';
+    } else if (roles.size && [...roles].every(r => r === 'energy') && !eCards) {
+      // 3.2.8: a card whose only job is Energy does nothing in a list with no Energy.
+      row.fit = 'dead';
+      row.why = 'Its only job is Energy, and the list runs no Energy.';
+    } else if (roles.size && [...roles].every(r => r === 'energy') && mainFree) {
+      row.fit = 'weak';
+      row.why = `Helps pay Energy costs, but ${nm(main.name)}'s attacks cost no Energy.`;
     } else if (roles.has('evolve') && s2 && /skipping the stage 1/.test(gtNorm(tx)) && (() => {
       // v71: Rare Candy needs the line's Basic in the list, or it has nothing to go on.
       const s1 = P.find(x => x.card.key === s2.card.from);
@@ -2820,7 +2947,7 @@ function gtFit(entries, coh, via, main, ctx) {
   if (!via.ctl && (k.gustQ || 0) < 2) thin.push({ role: 'gust', v: 2 - (k.gustQ || 0), say: (k.gustQ ? `only ${k.gustQ} card pulls` : 'nothing pulls') + ' up a Benched Pokemon' });
   if (evo && (k.find || 0) < 7) thin.push({ role: 'search', v: (7 - (k.find || 0)) / 3.5, say: k.find ? `only ${k.find} ${k.find === 1 ? 'card finds' : 'cards find'} Pokemon` : 'nothing in the list finds Pokemon' });
   if (!via.ctl && (k.drawQ || 0) + (k.abilQ || 0) < 8) thin.push({ role: 'draw', v: (8 - (k.drawQ || 0) - (k.abilQ || 0)) / 4, say: (k.drawQ || 0) + (k.abilQ || 0) ? `only ${(k.drawQ || 0) + (k.abilQ || 0)} ${(k.drawQ || 0) + (k.abilQ || 0) === 1 ? 'card draws' : 'cards draw'}` : 'nothing in the list draws cards' });
-  if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing gets cards back from your discard pile' });
+  if ((k.recQ || 0) < 1) thin.push({ role: 'recovery', v: 0.5, say: 'nothing returns cards from your discard pile to your hand or deck' });
   thin.sort((a, b) => b.v - a.v);
   const inList = new Set(cards.map(e => e.card.key));
   // Each card to swap takes the next job the list is short on, so the ideas do not all name one card.
@@ -3214,8 +3341,13 @@ function gtHereLine(card, X) {
       const tr = [];
       ['stadium', 'tool'].forEach(k => { if (PK.some(x => x.q.k === k)) { const own = X.T.filter(e => e.card.tt === k && gtNorm(e.card.key) !== self).sort((a, b) => b.qty - a.qty); if (own.length) tr.push(own[0].name); } });
       const evo = PK.find(x => x.q.k === 'pkmn');
-      if (evo && evo.own.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evo.own), 'or')}${E.length || genE ? ' and an Energy' : ''} together.`;
-      return tr.length ? `Gets your ${tr.join(' and ')}${E.length || genE ? ' and an Energy' : ''} together.` : null;
+      // 3.2.8: only name what can reach the board, so the note never sells a Pokemon the list cannot evolve into.
+      const evoOk = evo ? evo.own.filter(p => g115Can(X.entries, { card: p.c })) : [];
+      if (evo && evo.own.length && !evoOk.length && !tr.length) return null;
+      // 3.2.8: and no Energy is named when the list runs none to find.
+      const andE = (E.length || genE) && X.entries.some(x => x.card && x.card.t === 'energy') ? ' and an Energy' : '';
+      if (evo && evoOk.length && !tr.length) return `Finds ${gtHereNames(atkFirst(evoOk), 'or')}${andE} together.`;
+      return tr.length ? `Gets your ${tr.join(' and ')}${andE} together.` : null;
     }
     if (!PK.length && !genPk && (E.length || genE)) {
       if (diffTypes) {
@@ -4226,8 +4358,15 @@ function renderReview(deck) {
       const o = m.get(k2); if (o) o.count += c.count; else m.set(k2, Object.assign({}, c)); });
     return [...m.values()];
   }
+  // 3.2.8: the same Pokemon printing on two lines is still one tile, with its copies added up.
+  function byPrint(arr) {
+    const m = new Map();
+    arr.forEach(c => { const k2 = [(c.apiName || c.name || '').trim().toLowerCase(), String(c.set || '').toUpperCase(), String(c.num || '')].join('|');
+      const o = m.get(k2); if (o) o.count += c.count; else m.set(k2, Object.assign({}, c)); });
+    return [...m.values()];
+  }
   const groups = [
-    { key: 'pokemon', label: 'Pokémon', cards: sortGroup(pokemon) },
+    { key: 'pokemon', label: 'Pokémon', cards: sortGroup(byPrint(pokemon)) },
     { key: 'trainer', label: 'Trainers', cards: sortGroup(byName(trainers)) },
     { key: 'energy', label: 'Energy', cards: sortGroup(byName(energies)) },
   ].filter(g => g.cards.length > 0);
@@ -6856,8 +6995,8 @@ function renderReadDrill(deck) {
     <select id="opp-src" class="x-select" onchange="setOppSrc(this.value)">${srcs.map(s => `<option value="${esc(s.val)}"${s.val === _oppSrc ? ' selected' : ''}>${esc(s.label)}</option>`).join('')}</select>
     ${_oppSrc === 'paste' ? `<textarea id="opp-paste" class="nt-area" maxlength="8000" aria-label="Opponent's deck list" placeholder="Paste their 60 card list. It stays on this device and is not saved as a deck.">${esc(_oppPaste)}</textarea>` : ''}
     <div class="seg read-seg" style="margin:0.6rem 0">
-      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 unseen</small></div>
-      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 unseen</small></div>
+      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 still in deck or hand</small></div>
+      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 still in deck or hand</small></div>
     </div>`;
   const R = readDrill;
   if (!R || !R.rows || R.src !== _oppSrc) {
@@ -8217,26 +8356,52 @@ function handleDailyHash() {
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
-  version: 'v3.2.8',
+  version: 'v3.3',
+  date: 'Nov 18, 2026',
   kind: 'small',
   items: [
-    { t: 'Added: 6 deck guides' },
-    { t: 'Added: first deck guide' }
+    { t: 'Grade fixes from a full audit' },
+    { t: 'Cards not legal now always flagged' },
+    { t: 'Grade history shows results updates' },
+    { t: 'Added: card price in card view' },
+    { t: 'Added: notice before leaving RdyDeck' },
+    { t: 'Bigger buttons on phones' },
+    { t: 'Light theme easier to read' },
+    { t: 'Translations improved' }
   ]
 };
+// 3.3: What's new shows the two versions before the latest too, each with its date.
+// At each release, move the old WHATS_NEW to the top of this list and keep two.
+const WHATS_PREV = [
+  { version: 'v3.2.8', date: 'Nov 17, 2026', kind: 'small', items: [
+    { t: 'Added: 6 deck guides' },
+    { t: 'Added: first deck guide' }
+  ] },
+  { version: 'v3.2.7', date: 'Nov 17, 2026', kind: 'small', items: [
+    { t: 'Prices now in dollars only' },
+    { t: 'Starter decks work offline' },
+    { t: 'Added: swipe between cards' },
+    { t: 'Grade waits for all card data' },
+    { t: 'Added: in-app dialogs' }
+  ] }
+];
 const WN_KEY = 'rd_seen_version';
-function wnName() { return WHATS_NEW.version.replace(/^v/, 'RdyDeck '); }
-function wnList() {
-  const full = WHATS_NEW.kind === 'generation';
-  return '<ul class="wn-list">' + WHATS_NEW.items.map(i =>
+function wnName(w) { return (w || WHATS_NEW).version.replace(/^v/, 'RdyDeck '); }
+function wnList(w) {
+  w = w || WHATS_NEW;
+  const full = w.kind === 'generation';
+  return '<ul class="wn-list">' + w.items.map(i =>
     `<li><b>${esc(i.t)}</b>${full && i.d ? `<span>${esc(i.d)}</span>` : ''}</li>`).join('') + '</ul>';
+}
+/** One version's heading (name and date) and its list. */
+function wnBlock(w, first) {
+  return `<div class="wn-ver${first ? ' first' : ''}"><div class="wn-sub"><span>${esc(wnName(w))}</span>${w.date ? `<span class="wn-date">${esc(w.date)}</span>` : ''}</div>${wnList(w)}</div>`;
 }
 function wnMarkSeen() { try { localStorage.setItem(WN_KEY, PT_VERSION); } catch (_) {} }
 function openWhatsNew() {
   wnMarkSeen(); renderWhatsNewCard();
   openSheet(`<div class="modal-title">What's new</div>
-    <div class="wn-sub">${esc(wnName())}</div>
-    ${wnList()}
+    ${[WHATS_NEW].concat(WHATS_PREV.slice(0, 2)).map((w, i) => wnBlock(w, i === 0)).join('')}
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Got it</button></div>`);
 }
 function wnShouldShow() {
@@ -9406,11 +9571,16 @@ function parseLine(line) {
   line = line.trim();
   if (!line || line.startsWith('//') || line.startsWith('#')) return null;
   // v59: "4x Ultra Ball", "4 x Ultra Ball" and a bullet "- 4 Ultra Ball" read as 4 Ultra Ball.
-  line = line.replace(/^[-*\u2022]\s+(?=[x\u00d7]?\d)/i, '').replace(/^(\d+)\s*[x\u00d7]\s+/i, '$1 ')
+  // 3.2.8: but "2 X Speed" is 2 X Speed: a spaced capital X starts a card name.
+  line = line.replace(/^[-*\u2022]\s+(?=[x\u00d7]?\d)/i, '').replace(/^(\d+)(?:[xX\u00d7]|\s+[x\u00d7])\s+/, '$1 ')
     .replace(/^[x\u00d7]\s*(\d+)\s+/i, '$1 ');  // 2.5.1: "x3 Ultra Ball" reads as 3 Ultra Ball
   // v59: "Ultra Ball (MEG) 131" and "Ultra Ball (MEG 131)" read as "Ultra Ball MEG 131".
   line = line.replace(/\s*\(\s*([A-Za-z0-9-]+)\s*\)\s*(\d+[a-zA-Z]*)$/, ' $1 $2')
              .replace(/\s*\(\s*([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)\s*\)$/, ' $1 $2');
+
+  // 3.2.8: a card database id in place of set and number ("2 Piplup swsh9-35") reads as "2 Piplup BRS 35".
+  const id = line.match(/^(\d+\s+.+?)\s+([a-z]+\d*(?:pt5|\.5)?)-(\d+[a-zA-Z]*)$/i);
+  if (id && ptSetAlias(id[2])) line = id[1] + ' ' + ptSetAlias(id[2]) + ' ' + id[3].replace(/^0+(?=\d)/, '');
 
   // Format 1: "4 Charizard ex OBF 125" (standard with set + number)
   const m = line.match(/^(\d+)\s+(.+?)\s+([A-Za-z0-9-]+)\s+(\d+[a-zA-Z]*)$/);
@@ -9446,7 +9616,12 @@ const LIMITLESS_TO_PTCGIO = TCGEnrich.SET_MAP;
  */
 /** True when a card read by name is still the same printing as the list line. */
 function sameCardNumber(c, e) {
-  return !!(e.id && c.set && c.num && TCGEnrich.toCardId(c.set, c.num) === e.id);
+  if (!(e.id && c.set && c.num)) return false;
+  // 3.2.8: TCGdex ids pad the number (swsh11-066) and name sets their own way (sv08), so compare both styles.
+  const norm = id => String(id || '').toLowerCase().replace(/-0+(?=[0-9])/, '-');
+  const ids = [TCGEnrich.toCardId(c.set, c.num)];
+  try { if (typeof td30CardId === 'function') ids.push(td30CardId(c.set, c.num)); } catch (_) {}
+  return ids.some(id => id && norm(id) === norm(e.id));
 }
 
 async function enrichDeckCards(cards) {
@@ -9473,7 +9648,7 @@ async function enrichDeckCards(cards) {
     if (!e.resolved) {
       // Drop anything an older lookup stored; it may describe another card.
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','pocket','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       const nm = normalizeCardName(c.name);
       if (e.provides && e.provides.length) {
         // Every override is a Trainer, and its role is known without the API.
@@ -9491,13 +9666,15 @@ async function enrichDeckCards(cards) {
     const dataCat = categoryFromSupertype(e.supertype);
     // 2.5.1: read by its own set and number (the name was checked too), so the
     // card data is right and the section header above it was misplaced.
-    if (c.section && dataCat && dataCat !== c.section && sameCardNumber(c, e)) delete c.section;
+    // 3.2.8: a read by name matched the name too, so it is the same card and the header is what was misplaced
+    // (Energy Switch listed under Energy:). The same list grades the same in any format.
+    if (c.section && dataCat && dataCat !== c.section && (sameCardNumber(c, e) || e.matchedBy === 'name')) delete c.section;
     if (c.section && dataCat && dataCat !== c.section) {
       // The list says one thing and the lookup read another: the read is
       // a different card (usually a same-number mismatch). Keep nothing.
       c.resolved = false;
       ['supertype','hp','stage','evolvesFrom','base','prizeValue','types','weak','provides',
-       'requires','reg','ace','dataSource','attacks','abilities','byName','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
+       'requires','reg','ace','dataSource','attacks','abilities','byName','readPrint','pocket','atext','rtext','etext','sub','tx','retreat'].forEach(f => { delete c[f]; });
       mismatched++;
       return;
     }
@@ -9530,6 +9707,9 @@ async function enrichDeckCards(cards) {
     c.tx = 1;
     // Read by name from another printing: its costs may not match the card in the list.
     c.byName      = e.matchedBy === 'name' && !sameCardNumber(c, e) ? true : undefined;
+    // 3.2.8: which printing the text was read from, so the Grade tab can name it.
+    c.readPrint   = c.byName && e.printing ? e.printing : undefined;
+    c.pocket      = e.pocket ? true : undefined;
     // Store parsed damage numbers only. The raw attack text is what makes
     // the payload big, and inference already ran, so it is dead weight in
     // IndexedDB once parsed.
@@ -11137,8 +11317,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.2.8';
-const PT_BUILD = 118;
+const PT_VERSION = 'v3.3';
+const PT_BUILD = 119;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

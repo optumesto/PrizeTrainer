@@ -46,24 +46,39 @@ function r273Set(j) {
   // Trainers and Special Energy: a reprint keeps either legal by name alone.
   const names = j.cards.filter(c => c && (c.k === 'T' || (c.k === 'E' && !c.be)) && c.n).map(c => r29Key(c.n));
   if (names.length < 100) return false;
-  r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names) };
+  // 3.2.8: and what each Stage 1 and Stage 2 evolves from, so a Stage 2 played with Rare Candy knows its
+  // Basic, and a printing read without it still knows what it evolves from.
+  const ef = {};
+  j.cards.forEach(c => { if (c && c.k === 'P' && (c.st === 1 || c.st === 2) && c.n && typeof c.ef === 'string' && c.ef) ef[r29Key(c.n)] = c.ef; });
+  r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names), ef };
   return true;
 }
 function r273Ready() {
-  if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n) }; } catch (_) {} }
+  if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n), ef: d.e && typeof d.e === 'object' ? d.e : {} }; } catch (_) {} }
   if (!r273Tried && typeof fetch === 'function') {
     r273Tried = true;
     fetch('cards.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => {
-      const was = r273 && r273.asOf;
+      const was = r273 && r273.asOf, hadEf = !!(r273 && r273.ef && Object.keys(r273.ef).length);
       if (j && r273Set(j)) {
-        safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set] }));
-        if (was !== r273.asOf) { try { _g29Cache.clear(); } catch (_) {} try { if (typeof mu60Rerender === 'function') mu60Rerender(); } catch (_) {} }
+        safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set], e: r273.ef }));
+        if (was !== r273.asOf || !hadEf) { try { _g29Cache.clear(); } catch (_) {} try { if (typeof mu60Rerender === 'function') mu60Rerender(); } catch (_) {} }
       }
     }).catch(() => {});
   }
   return !!r273;
 }
 function r273Legal(name) { return !!r273 && r273.set.has(r29Key(name)); }
+/** 3.2.8: true for a set code from Sword and Shield or earlier (BRS, LOR), whose cards carry no mark legal now. */
+/** 3.2.8: a Pokemon TCG Pocket set code (A1, A2b, P-A), never a card game set. */
+function r29PocketSet(code) { return /^(?:[AB]\d+[a-z]?|P-?[AB])$/i.test(String(code || '')); }
+function r29OldSet(code) {
+  if (typeof TCGEnrich === 'undefined') return false;
+  const k = String(code || '').toUpperCase();
+  const pid = String((TCGEnrich.SET_MAP || {})[k] || (TCGEnrich.LEARNED_SETS || {})[k] || '');
+  return /^(?:swsh|sm|xy|bw|cel25|g1|det1|dv1|hgss|col1|hsp)/.test(pid);
+}
+/** 3.2.8: the Basic a Standard legal Stage 1 evolves from, from cards.json, or ''. */
+function r273From(stage1) { try { r273Ready(); } catch (_) {} return (r273 && r273.ef && r273.ef[r29Key(stage1)]) || ''; }
 
 // One row per card name in the list, with what the mark means for it.
 function r29Rows(deck) {
@@ -82,13 +97,20 @@ function r29Rows(deck) {
       if (!r.abil.length) r.abil = (c.abilities || []).map(a => r29Key(a.name)).filter(Boolean).sort();
     }
     if (c.byName) r.other = true;
+    // 3.2.8: a printing from Pokemon TCG Pocket (X Speed, Sabrina, or a list line with a Pocket set code) is never legal in the card game.
+    const pk = !!(c.pocket || (c.byName && r29PocketSet(c.set)));
+    r.pocket = (r.pocket === undefined ? true : r.pocket) && pk;
     // v68: the list names a set and number the card database does not have (a new promo like
     // MEP 38), so its mark came from an older printing. New printings reach the database late,
     // so this card is unconfirmed, never "not legal now".
     // A row with a printing the database does have still counts as read.
-    const unl = !!(c.byName && c.set && c.num);
+    // 3.2.8: but a printing from a Sword and Shield or older set is never Standard legal, whatever mark
+    // another printing carries, so its own mark is not taken from that printing, and the check decides.
+    const old = !!(c.byName && c.set && r.pkmn && String(c.supertype).toLowerCase().startsWith('pok') && r29OldSet(c.set));
+    if (old) r.oldSet = true;
+    const unl = !!(c.byName && c.set && c.num) && !old;
     r.unlisted = (r.unlisted === undefined ? true : r.unlisted) && unl;
-    r.marks.push(r29M(c.reg.mark));
+    r.marks.push(old ? null : r29M(c.reg.mark));
   });
   const rows = [];
   byName.forEach(r => {
@@ -100,6 +122,8 @@ function r29Rows(deck) {
     const rb = rep && r29M(rep.best);
     r.reprint = rb && rb > (r.mark || '') ? rb : null;
     r.checked = !!rep;
+    // 3.2.8: every line of this name is a Pocket printing, so no mark or reprint makes it legal.
+    if (r.pocket) { r.st = 'out'; rows.push(r); return; }
     const best = r.reprint || r.mark;
     // 2.7.3: a Trainer the online reprint check has not looked at yet is decided from the list of every
     // Trainer name legal now (cards.json, saved on the device): on the list, an older printing counts
@@ -117,6 +141,8 @@ function r29Rows(deck) {
     // Before the check a card stays unconfirmed: lists name old printings of Trainers that were reprinted
     // (Pokegear 3.0 SVI), so capping on the printed mark alone would hold legal decks at 4.9.
     else if (best && r.checked && !r.unlisted) r.st = 'out';
+    // 3.2.8: an old printing with no legal reprint found is not legal now.
+    else if (r.oldSet && r.pkmn && r.checked && !r.marks.some(Boolean)) r.st = 'out';
     else r.st = 'unconf';
     rows.push(r);
   });
@@ -147,7 +173,7 @@ const _r29Busy = new Set(), _r29Tried = new Set();
 function r29NeedsCheck(deck, rows) {
   // v67: name-only cards are checked too, so one whose every printing is past the legal line counts.
   // 2.7.3: a Trainer decided from the saved legal names is still checked online, which has the last word.
-  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf' || r.listed) && !r.checked);
+  return rows.filter(r => (r.st === 'risk' || r.st === 'out' || r.st === 'nomark' || r.st === 'unconf' || r.listed) && !r.checked && !r.pocket);
 }
 var r29CheckReprints;   // set further down
 
@@ -180,9 +206,12 @@ function r29Summary(deck) {
   if (k.energy) h += `<div class="r29-tot">Plus ${k.energy} Basic Energy, which never rotate${k.energy === 1 ? 's' : ''}. ${k.out + k.risk + k.unconf + k.safe + k.energy} cards in all.</div>`;
 
   const name = r => `<div class="r29-n">${esc(r.name)}${r.sub ? `<small>${r.sub}</small>` : ''}</div>`;
-  const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m">${r.reprint || r.mark || '?'}</span></div>`;
+  // 3.2.8: a row whose mark is not confirmed shows "?", never a mark it says it cannot vouch for.
+  const unsure = r => r.st === 'unconf' || r.st === 'unread';
+  const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m"${unsure(r) ? ' title="Mark not confirmed"' : ''}>${unsure(r) ? '?' : r.reprint || r.mark || '?'}</span></div>`;
   const sub = r => {
     if (r.reprint && r.st === 'safe') return `Kept legal by a reprint with the ${r.reprint} mark`;
+    if (r.pocket) return 'This printing is from Pokemon TCG Pocket, not the card game';
     if (r.st === 'nomark') return 'No mark on this printing in the card database';
     const bits = [];
     if (r.reprint) bits.push(`Newest reprint has the ${r.reprint} mark`);
@@ -245,7 +274,7 @@ function r29HomeLine(deck) {
   const open = r29NeedsCheck(deck, rows).length;
   if (open && !_r29Busy.has(deck.id) && !_r29Tried.has(deck.id)) setTimeout(() => r29CheckReprints(deck), 0);
   // Until reprints are checked, an old mark may still be legal.
-  const upTo = open && rows.some(r => (r.st === 'out' || r.st === 'nomark') && !r.checked) ? 'Up to ' : '';
+  const upTo = open && rows.some(r => (r.st === 'out' || r.st === 'nomark') && !r.checked && !r.pocket) ? 'Up to ' : '';
   if (k.out) return `<div class="deck-rot crit"><svg class="ic"><use href="#i-alert"/></svg>${upTo}${k.out} card${k.out > 1 ? 's are' : ' is'} not Standard legal now</div>`;
   if (k.risk) return `<div class="deck-rot"><svg class="ic"><use href="#i-calendar"/></svg>${k.risk} card${k.risk > 1 ? 's' : ''} ${ROT29.next.announced ? 'rotate' : 'expected to rotate'} in ${ROT29.next.when}</div>`;
   if (k.unconf && !open) return `<div class="deck-rot"><svg class="ic"><use href="#i-alert"/></svg>${k.unconf} card${k.unconf > 1 ? 's' : ''} not confirmed Standard legal</div>`;
@@ -411,7 +440,7 @@ function t68Html(R) {
   const low = cnt('weak') + cnt('dead') + aceLow;
   const swaps = (tr.fit || []).filter(r => r.swap).length;
   return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></summary>
-    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every card here works with the list.'} This explains Synergy and does not change the grade.</div>
+    <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every Trainer and Special Energy here works with the list.'} This explains Synergy and does not change the grade.</div>
     ${rows.join('')}</details>`;
 }
 

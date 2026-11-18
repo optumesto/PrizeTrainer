@@ -93,11 +93,16 @@ function op30PSave() {
 function op30Id(set, num) {
   try { return typeof td30CardId === 'function' ? td30CardId(set, num) : null; } catch (_) { return null; }
 }
+/** A price date we can show: a time after 2015 and not in the future, else null.
+ *  TCGdex can send an empty or zero update time, which would read as 1 Jan 1970. */
+const OP30_MIN_T = Date.UTC(2015, 0, 1);
+function op30When(t) { return typeof t === 'number' && isFinite(t) && t >= OP30_MIN_T && t <= Date.now() + 86400000 ? t : null; }
+/** When a saved price was last updated: TCGdex's date, else when we read it, else null. */
+const op30PriceWhen = p => (p && (op30When(p.d) || op30When(p.t))) || null;
 /** What TCGdex's pricing says: TCGplayer market price in US dollars, or null. */
 function op30Read(j) {
   const pr = j && typeof j === 'object' && j.pricing && typeof j.pricing === 'object' ? j.pricing : null;
   const num = v => typeof v === 'number' && isFinite(v) && v > 0 ? Math.round(v * 100) / 100 : null;
-  const when = v => { const t = typeof v === 'string' ? Date.parse(v) : NaN; return isFinite(t) ? t : null; };
   let u = null, d = null;
   const tp = pr && pr.tcgplayer;
   if (tp && typeof tp === 'object' && (!tp.unit || tp.unit === 'USD')) {
@@ -105,7 +110,7 @@ function op30Read(j) {
       const v = tp[k];
       if (v && typeof v === 'object' && num(v.marketPrice)) { u = num(v.marketPrice); break; }
     }
-    if (u) d = when(tp.updated);
+    if (u) d = op30When(typeof tp.updated === 'string' ? Date.parse(tp.updated) : NaN);
   }
   return { u, d };
 }
@@ -221,8 +226,8 @@ function op30Cards(deck) {
       if (!p.u) { none += n; return; }
       usd += p.u * n; if (!own) needU += p.u * n;
       any = true;
-      const when = p.d || p.t;
-      if (oldest == null || when < oldest) oldest = when;
+      const when = op30PriceWhen(p);
+      if (when != null && (oldest == null || when < oldest)) oldest = when;
     });
     // Prices still being read, as opposed to prices a read could not get (offline, no answer).
     const reading = unread > 0 && op30Online() && Date.now() >= _op30Down &&
@@ -234,7 +239,7 @@ function op30Cards(deck) {
       if (none) lines.push(`<p>${none === 1 ? '1 card has no price and is not counted.' : none + ' cards have no price and are not counted.'}</p>`);
       if (unread && reading) lines.push('<p>Reading prices…</p>');
       else if (unread) lines.push(`<p>${unread === 1 ? 'The price of 1 card could not be read yet, so it is not counted.' : 'The prices of ' + unread + ' cards could not be read yet, so they are not counted.'}</p>`);
-      lines.push(`<p class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(oldest)}.</p>`);
+      lines.push(oldest != null ? `<p class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(oldest)}.</p>` : '<p class="op30-src">TCGplayer market prices in US dollars, from TCGdex.</p>');
     } else if (unread && reading) {
       lines.push('<p class="op30-src">Reading prices…</p>');
     } else if (unread && !op30Online()) {
@@ -365,8 +370,8 @@ function op30UpBar(res) {
     const pool = (pf.cheap && res.more ? res.more : res.swaps).slice(0, OP30_UP_MAX);
     const known = res.swaps.map(op30UpPrice).filter(p => p && p.u);
     if (known.length) {
-      const oldest = Math.min(...known.map(p => p.d || p.t));
-      h += `<div class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(oldest)}.</div>`;
+      const dates = known.map(op30PriceWhen).filter(t => t != null);
+      h += dates.length ? `<div class="op30-src">TCGplayer market prices in US dollars, from TCGdex, as of ${op30Date(Math.min(...dates))}.</div>` : '<div class="op30-src">TCGplayer market prices in US dollars, from TCGdex.</div>';
     }
     const ids = pool.map(s => op30Id(s.inSet, s.inNum));
     if (op30Todo(ids).length && op30Online()) setTimeout(() => {

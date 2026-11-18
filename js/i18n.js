@@ -911,6 +911,12 @@ const I18N_ES = {
   "The card list has not loaded yet. Try again in a moment.": "La lista de cartas todavía no cargó. Intenta de nuevo en un momento.",
   "No card matches that name.": "Ninguna carta coincide con ese nombre.",
   "No deck by that name.": "No hay una baraja con ese nombre.",
+  "Find a deck": "Buscar una baraja",
+  "TCGplayer market prices in US dollars, from TCGdex.": "Precios de mercado de TCGplayer en dólares estadounidenses, de TCGdex.",
+  "Clear search": "Borrar búsqueda",
+  "Sort decks": "Ordenar barajas",
+  "Your order": "Tu orden",
+  "Best grade": "Mejor calificación",
   "Which deck is this now?": "¿Qué baraja es esta ahora?",
   "Or pick another deck from the list below.": "O elige otra baraja de la lista de abajo.",
   "This list looks like a different deck now. Its Grade tab asks which one.": "Esta lista ahora parece otra baraja. Su pestaña Nota pregunta cuál.",
@@ -983,7 +989,8 @@ const I18N_ES = {
   "It works with this list.": "Funciona con esta lista.",
   "This explains Synergy and does not change the grade.": "Esto explica Sinergia y no cambia la calificación.",
   "How each Trainer and Special Energy fits this list, ACE SPEC first.": "Cómo encaja cada Entrenador y Energía Especial en esta lista, primero el AS TÁCTICO.",
-  "Every card here works with the list.": "Cada carta aquí funciona con la lista.",
+  "Every Trainer and Special Energy here works with the list.": "Cada Entrenador y Energía especial aquí funciona con la lista.",
+  "It does nothing in this list.": "En esta lista no hace nada.",
   "One card does little here, with a swap idea for each.": "Una carta aporta poco aquí, con una idea de cambio para cada una.",
   "The attacker its meta deck is named for, and how often you can have it ready by your second turn.": "El atacante que le da nombre a su baraja del meta, y qué tan seguido puedes tenerlo listo para tu segundo turno.",
   "Draw Supporters and abilities are not played out.": "No se juegan los Partidarios de robo ni las habilidades.",
@@ -1896,6 +1903,12 @@ const I18N_PT = {
   "The card list has not loaded yet. Try again in a moment.": "A lista de cartas ainda não carregou. Tente de novo daqui a pouco.",
   "No card matches that name.": "Nenhuma carta corresponde a esse nome.",
   "No deck by that name.": "Não há deck com esse nome.",
+  "Find a deck": "Procurar um deck",
+  "TCGplayer market prices in US dollars, from TCGdex.": "Preços de mercado do TCGplayer em dólares americanos, do TCGdex.",
+  "Clear search": "Limpar busca",
+  "Sort decks": "Ordenar decks",
+  "Your order": "Sua ordem",
+  "Best grade": "Melhor nota",
   "Which deck is this now?": "Que deck é este agora?",
   "Or pick another deck from the list below.": "Ou escolha outro deck da lista abaixo.",
   "This list looks like a different deck now. Its Grade tab asks which one.": "Esta lista agora parece outro deck. A aba Nota pergunta qual.",
@@ -1968,7 +1981,8 @@ const I18N_PT = {
   "It works with this list.": "Funciona com esta lista.",
   "This explains Synergy and does not change the grade.": "Isto explica a Sinergia e não muda a nota.",
   "How each Trainer and Special Energy fits this list, ACE SPEC first.": "Como cada Treinador e Energia Especial se encaixa nesta lista, primeiro o ÁS TÁTICO.",
-  "Every card here works with the list.": "Cada carta aqui funciona com a lista.",
+  "Every Trainer and Special Energy here works with the list.": "Cada Treinador e Energia especial aqui funciona com a lista.",
+  "It does nothing in this list.": "Nesta lista ela não faz nada.",
   "One card does little here, with a swap idea for each.": "Uma carta faz pouco aqui, com uma ideia de troca para cada.",
   "The attacker its meta deck is named for, and how often you can have it ready by your second turn.": "O atacante que dá nome ao deck do meta, e com que frequência você consegue deixá-lo pronto até o seu segundo turno.",
   "Draw Supporters and abilities are not played out.": "Apoiadores de compra e Habilidades não são jogados.",
@@ -2034,7 +2048,7 @@ const I18N_PAT = [
   [/^(\d+) safe card names?$/, (m, n) => n + (n === '1' ? ' nombre de carta seguro' : ' nombres de carta seguros'), (m, n) => n + (n === '1' ? ' nome de carta seguro' : ' nomes de carta seguros')],
   [/^Show all (\d+) cards$/, 'Mostrar las $1 cartas', 'Mostrar todas as $1 cartas'],
   [/^(\d+) in list$/, '$1 en la lista', '$1 na lista'],
-  [/^(\d+) unseen$/, '$1 sin ver', '$1 não vistas'],
+  [/^(\d+) still in deck or hand$/, '$1 aún en la baraja o la mano', '$1 ainda no deck ou na mão'],
   [/^Hand \((\d+)\)$/, 'Mano ($1)', 'Mão ($1)'],
   [/^Your hand \((\d+)\)$/, 'Tu mano ($1)', 'Sua mão ($1)'],
   [/^(\d+) open$/, '$1 libres', '$1 livres'],
@@ -2053,6 +2067,8 @@ const I18N_PAT = [
   [/^(\d+) cards? may rotate in ([A-Z][a-z]+ \d{4}) \(not announced yet\)\.$/, (m, n, w) => n + (n === '1' ? ' carta podría rotar en ' : ' cartas podrían rotar en ') + w + ' (todavía sin anunciar).', (m, n, w) => n + (n === '1' ? ' carta pode rotacionar em ' : ' cartas podem rotacionar em ') + w + ' (rotação ainda não anunciada).'],
   [/^(\d+) cards? not confirmed Standard legal$/, (m, n) => n + (n === '1' ? ' carta sin confirmar como legal en Estándar' : ' cartas sin confirmar como legales en Estándar'), (m, n) => n + (n === '1' ? ' carta sem confirmação de legalidade no Padrão' : ' cartas sem confirmação de legalidade no Padrão')],
   [/^(\d+) cards? (?:are|is) not Standard legal now$/, (m, n) => n + (n === '1' ? ' carta no es legal en Estándar ahora' : ' cartas no son legales en Estándar ahora'), (m, n) => n + (n === '1' ? ' carta não é legal no Padrão agora' : ' cartas não são legais no Padrão agora')],
+  [/^(\d+) cards? not confirmed as Standard legal$/, (m, n) => n + (n === '1' ? ' carta sin confirmar como legal en Estándar' : ' cartas sin confirmar como legales en Estándar'), (m, n) => n + (n === '1' ? ' carta não confirmada como legal no Padrão' : ' cartas não confirmadas como legais no Padrão')],
+  [/^Check the regulation mark on (.+) before an event\. The card database could not confirm (it|them), so the grade counts (?:it|them) as legal for now\.$/, (m, l, o) => 'Revisa la marca de regulación de ' + l.replace(/ and (\d+) more$/, ' y $1 más') + ' antes de un evento. La base de datos de cartas no pudo ' + (o === 'it' ? 'confirmarla, así que la calificación la cuenta como legal por ahora.' : 'confirmarlas, así que la calificación las cuenta como legales por ahora.'), (m, l, o) => 'Confira a marca de regulamento de ' + l.replace(/ and (\d+) more$/, ' e mais $1') + ' antes de um evento. O banco de dados de cartas não conseguiu ' + (o === 'it' ? 'confirmá-la, então a nota a conta como legal por enquanto.' : 'confirmá-las, então a nota as conta como legais por enquanto.')],
   [/^(\d+) cards? not legal now$/, (m, n) => n + (n === '1' ? ' carta no legal ahora' : ' cartas no legales ahora'), (m, n) => n + (n === '1' ? ' carta não legal agora' : ' cartas não legais agora')],
   [/^(\d+) (?:are|is) safe\.?$/, (m, n) => n + (n === '1' ? ' está segura' : ' están seguras') + (m.endsWith('.') ? '.' : ''), (m, n) => n + (n === '1' ? ' está segura' : ' estão seguras') + (m.endsWith('.') ? '.' : '')],
   [/^(\d+) not confirmed\.?$/, (m, n) => n + ' sin confirmar' + (m.endsWith('.') ? '.' : ''), (m, n) => n + (n === '1' ? ' não confirmada' : ' não confirmadas') + (m.endsWith('.') ? '.' : '')],
@@ -2178,12 +2194,12 @@ const I18N_PAT = [
   [/^Prized (\d+) times?, missed (\d+)$/, (m, a, b) => 'En premios ' + (a === '1' ? '1 vez' : a + ' veces') + ', fallada ' + (b === '1' ? '1 vez' : b + ' veces'), (m, a, b) => 'Nos prêmios ' + a + (a === '1' ? ' vez' : ' vezes') + ', errada ' + b],
   [/^(\d+)% missed$/, '$1% fallada', '$1% errada'],
   [/^(\d+) matches?$/, (m, n) => n + (n === '1' ? ' partida' : ' partidas'), (m, n) => n + (n === '1' ? ' partida' : ' partidas')],
-  [/^Swap idea: (one more )?(.+), since nothing gets cards back from your discard pile\.$/, (m, o, n) => 'Idea de cambio: ' + (o ? 'una más de ' : '') + n + ', ya que nada recupera cartas de tu pila de descartes.', (m, o, n) => 'Ideia de troca: ' + (o ? 'mais uma ' : '') + n + ', já que nada recupera cartas da sua pilha de descarte.'],
+  [/^Swap idea: (one more )?(.+), since nothing returns cards from your discard pile to your hand or deck\.$/, (m, o, n) => 'Idea de cambio: ' + (o ? 'una más de ' : '') + n + ', ya que nada devuelve cartas de tu pila de descartes a tu mano o a tu baraja.', (m, o, n) => 'Ideia de troca: ' + (o ? 'mais uma ' : '') + n + ', já que nada devolve cartas da sua pilha de descarte para a sua mão ou o seu deck.'],
   [/^([^;()]+?) draws you cards and disrupts your opponent\.$/, '$1 te hace robar cartas y entorpece a tu rival.', '$1 faz você comprar cartas e atrapalha o oponente.'],
   [/^Disrupts your opponent, but (\d+) other cards in the list already do that, more than most winning lists run, so this one adds little\.$/, 'Entorpece a tu rival, pero otras $1 cartas de la lista ya lo hacen, más de lo que llevan la mayoría de las listas ganadoras, así que esta aporta poco.', 'Atrapalha o oponente, mas outras $1 cartas da lista já fazem isso, mais do que a maioria das listas vencedoras usa, então esta acrescenta pouco.'],
   [/^Finds any of your (\d+) Pokemon ex, like (.+) or (.+)\.$/, 'Busca cualquiera de tus $1 Pokémon ex, como $2 o $3.', 'Busca qualquer um dos seus $1 Pokémon ex, como $2 ou $3.'],
   [/^Gets one (\w+) and one (\w+) Energy, one to your hand and one attached\.$/, (m, a, b) => 'Consigue una ' + i18nEnergy(a, 'es') + ' y una ' + i18nEnergy(b, 'es') + ', una a tu mano y otra unida.', (m, a, b) => 'Pega uma ' + i18nEnergy(a, 'pt') + ' e uma ' + i18nEnergy(b, 'pt') + ', uma para a mão e outra ligada.'],
-  [/^([^;()]+?) is here for its Ability, so its attack needing (\w+) Energy does not matter\.$/, (m, n, t) => n + ' está aquí por su Habilidad, así que no importa que su ataque necesite ' + i18nEnergy(t, 'es') + '.', (m, n, t) => n + ' está aqui pela Habilidade, então não importa o ataque precisar de ' + i18nEnergy(t, 'pt') + '.'],
+  [/^([^;()]+?) is here for its Ability, so its attack needing (\w+(?: and \w+)?) Energy does not matter\.$/, (m, n, t) => n + ' está aquí por su Habilidad, así que no importa que su ataque necesite ' + i18nEnergy(t, 'es') + '.', (m, n, t) => n + ' está aqui pela Habilidade, então não importa o ataque precisar de ' + i18nEnergy(t, 'pt') + '.'],
   [/^([^;()]+?) is in play with the (\d+) Energy (.+?) needs(?:, with (\d+) Pokemon in play,)? by your second turn in (\d+%) of games and by your third in (\d+%), from shuffles of this list, so it is (as quick to set up as any list|quick to set up)\.$/, (m, n, e, a, b, t2, t3, q) => n + ' está en juego con ' + (e === '1' ? 'la 1 Energía' : 'las ' + e + ' Energías') + ' que necesita ' + a + (b ? ', con ' + b + ' Pokémon en juego,' : '') + ' para tu segundo turno en el ' + t2 + ' de las partidas y para el tercero en el ' + t3 + ', según mezclas de esta lista, así que ' + (q === 'quick to set up' ? 'se prepara rápido' : 'se prepara tan rápido como cualquier lista') + '.', (m, n, e, a, b, t2, t3, q) => n + ' está em jogo com ' + (e === '1' ? 'a 1 Energia' : 'as ' + e + ' Energias') + ' de que ' + a + ' precisa' + (b ? ', com ' + b + ' Pokémon em jogo,' : '') + ' até o seu segundo turno em ' + t2 + ' das partidas e até o terceiro em ' + t3 + ', por embaralhamentos desta lista, então ' + (q === 'quick to set up' ? 'monta rápido' : 'monta tão rápido quanto qualquer lista') + '.'],
   [/^(\d+) of your (\d+) Pokemon give up 2 or more prizes\.$/, '$1 de tus $2 Pokémon entregan 2 premios o más.', '$1 dos seus $2 Pokémon entregam 2 prêmios ou mais.'],
   [/^Only (\d+) Supporters?$/, (m, n) => 'Solo ' + n + (n === '1' ? ' Partidario' : ' Partidarios'), (m, n) => 'Só ' + n + (n === '1' ? ' Apoiador' : ' Apoiadores')],
@@ -2203,6 +2219,43 @@ const I18N_PAT = [
   [/^Light on Energy for (.+)$/, 'Poca Energía para $1', 'Pouca Energia para $1'],
   [/^Missing (.+) staples$/, 'Faltan cartas imprescindibles de $1', 'Faltam cartas essenciais de $1'],
   [/^Swap 1 (.+) for 1 (.+)$/, 'Cambia 1 $1 por 1 $2', 'Troque 1 $1 por 1 $2'],
+  // 3.2.8: Pocket printings, cards whose job needs Energy the list lacks, Abilities that need Energy or Evolution Pokemon,
+  // too little or too much Energy, Rare Candy with no Stage 2, the import preview's rule checks, and Hilda's "In this deck" line.
+  [/^This printing is from Pokemon TCG Pocket, not the card game$/, 'Esta impresión es de Pokémon TCG Pocket, no del juego de cartas', 'Esta impressão é do Pokémon TCG Pocket, não do jogo de cartas'],
+  [/^Its only job is Energy, and the list runs no Energy\.$/, 'Solo sirve para la Energía, y la lista no lleva Energía.', 'Só serve para Energia, e a lista não usa Energia.'],
+  [/^Helps pay Energy costs, but (.+?)'s attacks cost no Energy\.$/, 'Ayuda a pagar costes de Energía, pero los ataques de $1 no cuestan Energía.', 'Ajuda a pagar custos de Energia, mas os ataques de $1 não custam Energia.'],
+  [/^The list has no Stage 2 Pokemon, so it cannot be played\.$/, 'La lista no tiene Pokémon de Fase 2, así que esta carta no se puede jugar.', 'A lista não tem Pokémon de Estágio 2, então esta carta não pode ser jogada.'],
+  [/^([^;()]+?)'s (.+?) never turns on$/, 'La Habilidad $2 de $1 nunca se activa', 'A Habilidade $2 de $1 nunca é ativada'],
+  [/^([^;()]+?)'s (.+?) finds nothing$/, 'La Habilidad $2 de $1 no encuentra nada', 'A Habilidade $2 de $1 não encontra nada'],
+  [/^([^;()]+?) does nothing as built$/, '$1 no hace nada con la lista tal como está', '$1 não faz nada com a lista como está'],
+  [/^(.+?) only works while (.+?) has (?:(\w+) )?Energy attached, but the list runs no (?:\w+ )?Energy, so the Ability does nothing as built\.$/,
+    (m, a, n, t) => a + ' solo funciona mientras ' + n + ' tiene ' + (t ? i18nEnergy(t, 'es') : 'Energía') + ' unida, pero la lista no lleva ' + (t ? i18nEnergy(t, 'es') : 'Energía') + ', así que la Habilidad no hace nada con la lista tal como está.',
+    (m, a, n, t) => a + ' só funciona enquanto ' + n + ' tem ' + (t ? i18nEnergy(t, 'pt') : 'Energia') + ' ligada, mas a lista não usa ' + (t ? i18nEnergy(t, 'pt') : 'Energia') + ', então a Habilidade não faz nada com a lista como está.'],
+  [/^(.+?) attaches Basic (\w+) Energy from your hand, but the list runs no \w+ Energy, so the Ability does nothing as built\.$/,
+    (m, a, t) => a + ' une ' + i18nEnergy(t, 'es') + ' básica de tu mano, pero la lista no lleva ' + i18nEnergy(t, 'es') + ', así que la Habilidad no hace nada con la lista tal como está.',
+    (m, a, t) => a + ' liga ' + i18nEnergy(t, 'pt') + ' básica da sua mão, mas a lista não usa ' + i18nEnergy(t, 'pt') + ', então a Habilidade não faz nada com a lista como está.'],
+  [/^Its attacks (?:cannot be paid either|need (\w+) Energy too), so the (\d+) (?:copies are dead cards|copy is a dead card)\.$/,
+    (m, t, n) => (t ? 'Sus ataques también necesitan ' + i18nEnergy(t, 'es') : 'Tampoco puede pagar sus ataques') + (n === '1' ? ', así que la 1 copia es una carta muerta.' : ', así que las ' + n + ' copias son cartas muertas.'),
+    (m, t, n) => (t ? 'Seus ataques também precisam de ' + i18nEnergy(t, 'pt') : 'Também não consegue pagar seus ataques') + (n === '1' ? ', então a 1 cópia é uma carta morta.' : ', então as ' + n + ' cópias são cartas mortas.')],
+  [/^Cut (them|it) or add (?:(\w+) )?Energy\.$/, (m, w, t) => (w === 'it' ? 'Quítala' : 'Quítalas') + ' o añade ' + (t ? i18nEnergy(t, 'es') : 'Energía') + '.', (m, w, t) => (w === 'it' ? 'Tire-a' : 'Tire-as') + ' ou adicione ' + (t ? i18nEnergy(t, 'pt') : 'Energia') + '.'],
+  [/^(.+?) searches your deck for (?:(\w+) )?Evolution Pokemon, but the list runs none, so the Ability does nothing as built\.$/,
+    (m, a, t) => a + ' busca en tu baraja Pokémon Evolución' + (t ? ' de tipo ' + ({ Psychic: 'Psíquico', Darkness: 'Oscuridad', Colorless: 'Incoloro' }[t] || I18N_TYPES.es[t] || t) : '') + ', pero la lista no lleva ninguno, así que la Habilidad no hace nada con la lista tal como está.',
+    (m, a, t) => a + ' procura no seu deck Pokémon de Evolução' + (t ? ' do tipo ' + ({ Psychic: 'Psíquico' }[t] || I18N_TYPES.pt[t] || t) : '') + ', mas a lista não tem nenhum, então a Habilidade não faz nada com a lista como está.'],
+  [/^The list runs (\d+) Energy\.$/, 'La lista lleva $1 Energías.', 'A lista usa $1 Energias.'],
+  [/^Even decks whose attacks use up Energy rarely run more than 20, so a lot of your draws are Energy you cannot use that turn\.$/, 'Incluso las barajas cuyos ataques gastan Energía rara vez llevan más de 20, así que muchos de tus robos son Energía que no puedes usar ese turno.', 'Mesmo decks cujos ataques gastam Energia raramente usam mais de 20, então muitas das suas compras são Energia que você não consegue usar naquele turno.'],
+  [/^Trade some for draw or search cards\.$/, 'Cambia algunas por cartas de robo o de búsqueda.', 'Troque algumas por cartas de compra ou de busca.'],
+  [/^Only 1 Energy$/, 'Solo 1 Energía', 'Só 1 Energia'],
+  [/^No Energy in the list$/, 'La lista no lleva Energía', 'A lista não usa Energia'],
+  [/^The list runs 1 Energy card, so it is rarely in your hand when you need it, and attacks that cost Energy will almost never be used\.$/, 'La lista lleva 1 carta de Energía, así que rara vez la tendrás en la mano cuando la necesites, y los ataques que cuestan Energía casi nunca se podrán usar.', 'A lista usa 1 carta de Energia, então ela raramente está na sua mão quando você precisa, e ataques que custam Energia quase nunca serão usados.'],
+  [/^The list runs no Energy cards, so no attack that costs Energy can ever be used\.$/, 'La lista no lleva cartas de Energía, así que ningún ataque que cueste Energía se puede usar nunca.', 'A lista não usa cartas de Energia, então nenhum ataque que custe Energia pode ser usado.'],
+  [/^Most decks run 8 to 16\.$/, 'La mayoría de las barajas lleva de 8 a 16.', 'A maioria dos decks usa de 8 a 16.'],
+  [/^Too little Energy for the main attacker$/, 'Muy poca Energía para el atacante principal', 'Pouca Energia para o atacante principal'],
+  [/^(.+?)'s cheapest attack needs (\d+) Energy, but the list runs only (\d+) Energy cards, so it can never attack\.$/, 'El ataque más barato de $1 necesita $2 Energías, pero la lista solo lleva $3 cartas de Energía, así que nunca puede atacar.', 'O ataque mais barato de $1 precisa de $2 Energias, mas a lista só usa $3 cartas de Energia, então ele nunca pode atacar.'],
+  [/^Add Energy or pick another main attacker\.$/, 'Añade Energía o elige otro atacante principal.', 'Adicione Energia ou escolha outro atacante principal.'],
+  [/^There are (\d+) (.+), and the most allowed is 4\.$/, 'Hay $1 $2, y el máximo permitido es 4.', 'Há $1 $2, e o máximo permitido é 4.'],
+  [/^(\d+) cards? (?:is|are) from a set that is not Standard legal now\.$/, (m, n) => n === '1' ? '1 carta es de una expansión que no es legal en Estándar ahora.' : n + ' cartas son de expansiones que no son legales en Estándar ahora.', (m, n) => n === '1' ? '1 carta é de uma coleção que não é legal no Padrão agora.' : n + ' cartas são de coleções que não são legais no Padrão agora.'],
+  [/^Finds (.+?)( and an Energy)? together\.$/, (m, a, e) => 'Busca ' + a.replace(/ or /g, ' o ') + (e ? ' y una Energía' : '') + ' a la vez.', (m, a, e) => 'Busca ' + a.replace(/ or /g, ' ou ') + (e ? ' e uma Energia' : '') + ' de uma vez.'],
+  [/^Gets your (.+?)( and an Energy)? together\.$/, (m, a, e) => 'Consigue ' + a.replace(/ and /g, ' y ') + (e ? ' y una Energía' : '') + ' a la vez.', (m, a, e) => 'Pega ' + a.replace(/ and /g, ' e ') + (e ? ' e uma Energia' : '') + ' de uma vez.'],
   [/^Only 1 (.+)$/, 'Solo 1 $1', 'Só 1 $1'],
   [/^Your ACE SPEC, (.+), has nothing to work with$/, 'Tu AS TÁCTICO, $1, no tiene con qué funcionar', 'Seu ÁS TÁTICO, $1, não tem com o que funcionar'],
   [/^The list runs (\d+) Energy\. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn\. Trade some for draw or search cards\.$/, 'La lista lleva $1 Energías. La mayoría de las barajas lleva de 8 a 16, así que muchos de tus robos son Energía que no puedes usar ese turno. Cambia algunas por cartas de robo o de búsqueda.', 'A lista usa $1 Energias. A maioria dos decks usa de 8 a 16, então muitas das suas compras são Energia que você não consegue usar naquele turno. Troque algumas por cartas de compra ou de busca.'],
@@ -2228,6 +2281,12 @@ const I18N_PAT = [
   [/^(.+?) are here for their Abilities, not to trade hits, so use them, then move them out before your opponent can Knock them out\.$/, (m, x) => x.replace(/ and /g, ' y ') + ' están aquí por sus Habilidades, no para intercambiar golpes, así que usa las Habilidades y luego retíralos antes de que tu rival pueda dejarlos Fuera de Combate.', (m, x) => x.replace(/ and /g, ' e ') + ' estão aqui pelas Habilidades, não para trocar golpes, então use as Habilidades e depois tire eles do Campo Ativo antes que o oponente consiga Nocauteá-los.'],
   [/^This list is built around (.+?), which has no tournament results of its own yet, so these results are borrowed from (.+?), the closest deck that has them\.$/, (m, a, b) => 'Esta lista se arma alrededor de ' + a + ', que todavía no tiene resultados de torneo propios, así que estos resultados se toman prestados de ' + b + ', la baraja más parecida que sí los tiene.', (m, a, b) => 'Esta lista é montada em torno de ' + a + ', que ainda não tem resultados de torneio próprios, então estes resultados são emprestados de ' + b + ', o deck mais parecido que tem.'],
   [/^(.+?) can only reach the board when (.+?) brings it back from your discard pile(?: with (.+?))?, and that comes together in only about 1 game in (\d+)\.$/, (m, x, r, v, n) => x + ' solo puede llegar a la mesa si ' + r + ' lo trae de vuelta de tu pila de descartes' + (v ? ' con ' + v : '') + ', y eso ocurre solo en aproximadamente 1 de cada ' + n + ' partidas.', (m, x, r, v, n) => x + ' só consegue chegar à mesa quando ' + r + ' o traz de volta da sua pilha de descarte' + (v ? ' com ' + v : '') + ', e isso acontece em apenas cerca de 1 a cada ' + n + ' partidas.'],
+  // 3.2.8: what fills the discard pile, how often the whole revival line comes together, and a card read from another printing.
+  [/^(.+?) (is what puts|are what put) it in your discard pile\.$/, (m, o, v) => o.replace(/ and /g, ' y ') + (v[0] === 'a' ? ' son los que lo ponen' : ' es lo que lo pone') + ' en tu pila de descartes.', (m, o, v) => o.replace(/ and /g, ' e ') + (v[0] === 'a' ? ' são os que o colocam' : ' é o que o coloca') + ' na sua pilha de descarte.'],
+  [/^The whole line comes together in about (\d+) games in 10\.$/, 'Toda la línea se completa en aproximadamente $1 de cada 10 partidas.', 'A linha inteira se completa em cerca de $1 a cada 10 partidas.'],
+  [/^The whole line comes together in only about 1 game in (\d+)\.$/, 'Toda la línea se completa solo en aproximadamente 1 de cada $1 partidas.', 'A linha inteira se completa em apenas cerca de 1 a cada $1 partidas.'],
+  [/^The card text for (.+?) was read from another printing, (.+)\.$/, 'El texto de $1 se leyó de otra impresión, $2.', 'O texto de $1 foi lido de outra impressão, $2.'],
+  [/^(\d+) more cards were read from other printings\.$/, 'Otras $1 cartas se leyeron de otras impresiones.', 'Mais $1 cartas foram lidas de outras impressões.'],
   [/^(.+?)\. (These|It) cannot be played in Standard, so the grade (is held at|can go no higher than) ([\d.]+) until (?:they are|it is) swapped for legal cards\.(?: The list alone would score ([\d.]+)\.)?$/, (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'No se pueden' : 'No se puede') + ' jugar en Estándar, así que la calificación ' + (h === 'is held at' ? 'se queda en ' : 'no puede pasar de ') + c + ' hasta que ' + (p === 'These' ? 'se cambien' : 'se cambie') + ' por cartas legales.' + (a ? ' La lista sola obtendría ' + a + '.' : ''), (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'Não podem ser jogadas' : 'Não pode ser jogada') + ' no Padrão, então a nota ' + (h === 'is held at' ? 'fica em ' : 'não pode passar de ') + c + ' até que ' + (p === 'These' ? 'sejam trocadas' : 'seja trocada') + ' por cartas legais.' + (a ? ' Só pela lista, a nota seria ' + a + '.' : '')],
   [/^Its attack needs (\w+) Energy, but there is none in the deck\. As built it cannot actually fire\.$/, (m, t) => 'Su ataque necesita ' + i18nEnergy(t, 'es') + ', pero no hay en la baraja. Tal como está, no puede atacar.', (m, t) => 'O ataque precisa de ' + i18nEnergy(t, 'pt') + ', mas não há no deck. Do jeito que está, não consegue atacar.'],
   [/^(\d+) top lists$/, '$1 listas top', '$1 listas top'],
@@ -2265,6 +2324,14 @@ Object.assign(I18N_ES, {
   "Added: cards you own": "Nuevo: cartas que tienes",
   "Tick the cards you have, and Upgrades can suggest them first. Saved on your device only.": "Marca las cartas que tienes y Mejoras puede sugerirlas primero. Se guarda solo en tu dispositivo.",
   "Added: card prices": "Nuevo: precios de cartas",
+  "Grade fixes from a full audit": "Correcciones de calificación tras una revisión completa",
+  "Cards not legal now always flagged": "Siempre se señalan las cartas que ahora no son legales",
+  "Grade history shows results updates": "El historial de calificaciones muestra las actualizaciones de resultados",
+  "Added: card price in card view": "Nuevo: precio en la vista de carta",
+  "Added: notice before leaving RdyDeck": "Nuevo: aviso antes de salir de RdyDeck",
+  "Bigger buttons on phones": "Botones más grandes en el teléfono",
+  "Light theme easier to read": "Tema claro más fácil de leer",
+  "Translations improved": "Traducciones mejoradas",
   "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "El precio de cada carta y el total de tu lista, de TCGdex, con la opción de ver primero las más baratas.",
   "Added: how accurate the grades are": "Nuevo: qué tan precisas son las calificaciones",
   "Each week, how closely grades rank decks against their real online win rates, per set.": "Cada semana, qué tan bien las calificaciones ordenan las barajas frente a sus porcentajes de victoria online reales, por expansión.",
@@ -2370,6 +2437,12 @@ Object.assign(I18N_ES, {
   "The picture could not be made on this device. The link still works.": "No se pudo crear la imagen en este dispositivo. El enlace sigue funcionando.",
   "How did it do?": "¿Cómo le fue?",
   "At the event:": "En el evento:",
+  "At an event you played:": "En un evento que jugaste:",
+  "Your record there:": "Tu resultado allí:",
+  "Your record at an event:": "Tu resultado en un evento:",
+  "Your last unsaved list.": "Tu última lista sin guardar.",
+  "Mark not confirmed": "Marca sin confirmar",
+  "Price": "Precio",
   "(wins, losses, ties)": "(victorias, derrotas, empates)",
   "It stays on this device and is never sent anywhere.": "Se queda en este dispositivo y nunca se envía a ningún lado.",
   "Placing": "Posición",
@@ -2383,6 +2456,14 @@ Object.assign(I18N_PT, {
   "Added: cards you own": "Novo: cartas que você tem",
   "Tick the cards you have, and Upgrades can suggest them first. Saved on your device only.": "Marque as cartas que você tem, e Melhorias pode sugeri-las primeiro. Fica salvo só no seu aparelho.",
   "Added: card prices": "Novo: preços das cartas",
+  "Grade fixes from a full audit": "Correções de nota após uma revisão completa",
+  "Cards not legal now always flagged": "Cartas que não são legais agora sempre sinalizadas",
+  "Grade history shows results updates": "O histórico de notas mostra as atualizações de resultados",
+  "Added: card price in card view": "Novo: preço na visualização da carta",
+  "Added: notice before leaving RdyDeck": "Novo: aviso antes de sair do RdyDeck",
+  "Bigger buttons on phones": "Botões maiores no celular",
+  "Light theme easier to read": "Tema claro mais fácil de ler",
+  "Translations improved": "Traduções melhoradas",
   "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "O preço de cada carta e o total da sua lista, do TCGdex, com a opção de ver as mais baratas primeiro.",
   "Added: how accurate the grades are": "Novo: quão precisas são as notas",
   "Each week, how closely grades rank decks against their real online win rates, per set.": "Toda semana, o quanto as notas ordenam os decks de acordo com as taxas de vitória online reais, por coleção.",
@@ -2488,6 +2569,12 @@ Object.assign(I18N_PT, {
   "The picture could not be made on this device. The link still works.": "Não foi possível criar a imagem neste aparelho. O link continua funcionando.",
   "How did it do?": "Como foi?",
   "At the event:": "No evento:",
+  "At an event you played:": "Num evento que você jogou:",
+  "Your record there:": "Seu resultado lá:",
+  "Your record at an event:": "Seu resultado em um evento:",
+  "Your last unsaved list.": "Sua última lista não salva.",
+  "Mark not confirmed": "Marca não confirmada",
+  "Price": "Preço",
   "(wins, losses, ties)": "(vitórias, derrotas, empates)",
   "It stays on this device and is never sent anywhere.": "Fica neste aparelho e nunca é enviado a lugar nenhum.",
   "Placing": "Colocação",
@@ -2973,6 +3060,8 @@ function i18nAbAct(s) {
   if (s === 'switches itself into the Active Spot') return { t: 'switchIn' };
   if (s === 'switches itself into or out of the Active Spot') return { t: 'switchInOut' };
   if (s === 'switches itself out to your Bench') return { t: 'switchOut' };
+  // 3.2.8: an Ability that puts the Pokemon itself onto your Bench from your discard pile (Empoleon's Emergency Surfacing).
+  if (s === 'puts itself onto your Bench from your discard pile') return { t: 'selfBench' };
   if (s === 'switches in a Benched Pokemon') return { t: 'switchBench', np: null };
   if ((m = s.match(/^switches an? Benched (.+) into the Active Spot$/))) return { t: 'switchBench', np: i18nAbNp('a ' + m[1]) };
   if (s === 'moves any amount of Energy from your other Pokemon onto it') return { t: 'moveToSelf' };
@@ -3079,7 +3168,8 @@ function i18nAbilSent(s, l) {
   const L = l === 'es' || l === 'pt' ? I18N_ABIL[l] : (i18nMore(l) || {}).abil;
   if (!L) return null;
   const m0 = String(s).match(/^(.+?'s .+?): (.+?)\.?$/);
-  if (!m0) return null;
+  // 3.2.8: one sentence only; a sentence after it ("It does nothing in this list.") is translated on its own.
+  if (!m0 || /[a-z0-9)][.!?] [A-Z]/.test(m0[2])) return null;
   // Owner and Ability: the owner is a card name the app knows when there is one ("Team Rocket's Spidops"), else the text up to the first "'s ".
   const head = m0[1], cuts = [];
   for (let i = head.indexOf("'s "); i > 0; i = head.indexOf("'s ", i + 1)) cuts.push(i);
@@ -3183,6 +3273,7 @@ function i18nAbRom(l) {
     switchIn: (a, m) => es ? V(m, 'pasa', 'pasar') + ' al Puesto Activo' : V(m, 'vai', 'ir') + ' para o Campo Ativo',
     switchInOut: (a, m) => es ? V(m, 'entra o sale', 'entrar o salir') + ' del Puesto Activo' : V(m, 'entra ou sai', 'entrar ou sair') + ' do Campo Ativo',
     switchOut: (a, m) => es ? V(m, 'vuelve', 'volver') + ' a tu Banca' : V(m, 'volta', 'voltar') + ' para o seu Banco',
+    selfBench: (a, m) => es ? V(m, 'se pone', 'ponerse') + ' en tu Banca desde tu pila de descartes' : V(m, 'se coloca', 'se colocar') + ' no seu Banco a partir da sua pilha de descarte',
     switchBench: (a, m) => es ? V(m, 'pasa', 'pasar') + ' ' + (a.np ? np(a.np) : 'un Pokémon') + ' de tu Banca al Puesto Activo' : V(m, 'coloca', 'colocar') + ' ' + (a.np ? np(a.np) : 'um Pokémon') + ' do seu Banco no Campo Ativo',
     moveToSelf: (a, m) => es ? V(m, 'mueve', 'mover') + ' a este Pokémon cualquier cantidad de Energía de tus otros Pokémon' : V(m, 'move', 'mover') + ' para este Pokémon qualquer quantidade de Energia dos seus outros Pokémon',
     moveBench: (a, m) => es ? V(m, 'mueve', 'mover') + ' Energía de tu Banca a tu Pokémon Activo' : V(m, 'move', 'mover') + ' Energia do seu Banco para o seu Pokémon Ativo',
@@ -5064,7 +5155,8 @@ const rdI18n = (function () {
     }
     // A title used as a sentence: "No clear attacker." is "No clear attacker" plus the stop.
     const end = n.slice(-1);
-    if (!inner && (end === '.' || end === ':')) { const r = one(n.slice(0, -1), lang, true); if (r != null) return r + end; }
+    // 3.2.8: not for several sentences, which lookup translates one by one.
+    if (!inner && (end === '.' || end === ':') && !/[a-z0-9)][.!?] [A-Z¿¡]/.test(n.slice(0, -1))) { const r = one(n.slice(0, -1), lang, true); if (r != null) return r + end; }
     return null;
   }
   // "A; B." where A and B are each known (finding titles joined in one line).
