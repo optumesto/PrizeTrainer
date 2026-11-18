@@ -129,7 +129,7 @@
     try {
       const img = await pixels(file);
       await new Promise(r => setTimeout(r, 30));   // let "Reading your picture" draw first
-      const got = PS.mergeRows(PS.readDeck(IDX, img.px, img.W, img.H));
+      const got = PS.flagRepeats(PS.readDeck(IDX, img.px, img.W, img.H));
       found = got.filter(r => r.matches.length).map(r => {
         const m = r.matches[0];
         let n = r.count, nOk = n != null && r.countSure >= SURE_COUNT;
@@ -155,8 +155,9 @@
       return;
     }
     // A card already in the list from another picture of the same deck counts once.
+    const before = rows.slice();
     for (const r of found) {
-      const same = rows.find(o => o.name === r.name && o.set === r.set && o.num === r.num);
+      const same = before.find(o => o.name === r.name && o.set === r.set && o.num === r.num);
       if (same) { if (r.count > same.count && r.countOk) same.count = r.count; continue; }
       rows.push(r);
     }

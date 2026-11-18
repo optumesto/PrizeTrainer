@@ -571,7 +571,12 @@
     '7067e6ffffffffffda090909091af584000000006afb2000000001d1b30000000039ff4b000000009fdf0400000011f57b000000006ef91900000001d2aa000000003cff43000000',
     '8067088fe8fae4840487e832043ef172bb9f000000b3a678d914001ce5630290f3d6f4800166e95c2e65ed54e87a0000008dd3f26f00000082dda7dc2e0338e6920f9aeafae68f09',
     '90670278e3f9d54f0072ee3b0558f736d78b000000b7a6ec710000009de1c7a4000002cff84df9874fa1eef7003c9bae7482d60000000001c7882a4206148fdf132dcff6efa91e00',
-    'x09873e1090005d7810ae3700063eb100066e916e174000006d9d4e30a00000061ff6b0000000096ff8c00000024f88bf51c0000a3b901c597002dfa360041f924b0ad000001baa3'];
+    'x09873e1090005d7810ae3700063eb100066e916e174000006d9d4e30a00000061ff6b0000000096ff8c00000024f88bf51c0000a3b901c597002dfa360041f924b0ad000001baa3',
+    // Pokémon TCG Live's own count badges (narrow digits), read from real deck screenshots
+    '10554499ddffee4400eeffffffff7700aaddffffff99000022b3ffff9900000077ffff9900000077ffffaa00000088ffff9900114dddffffe633aaddffffffffee88ddffffffffc4',
+    '205755aaffeaead52095eaffffffffaa6ad5d5d5ffffdf000b2055ffffda000015eaffff550000eaffffbf0b4acaffff950b00ffffffffbf8040ffffffffffffd58acaeaf4d5dfa5',
+    '30554d80e6e6e6e64dcce6ffffffffd95999e6ffffffd9001ae6ffffff394db3fffffff23933b3ffffffffe6001a33b3e6fff959737399ffffe6ccffffffffffbf8ca6fff2e6a626',
+    '4066000d79eb7900000028e4ffbc00000051ffff9a000014bcffff00070036f2fff2d7d73c6bffffffffff80d7ffffffffffc3ddffffffffffff36bcd7f8ffffd000000036ebff68'];
   /* DIGITS_END */
   const TW = 7, TH = 10;
   let TPL = null;
@@ -765,21 +770,27 @@
   }
 
   /** Cards of one name and print that appear twice (a second screenshot, or a wrapped row) add up. */
-  function mergeRows(rows) {
-    const out = [];
+  /** One deck screen shows each print once, so the same print read twice in one picture means
+   *  one of them is a misread (often a print missing from the index matched a look-alike). Both
+   *  stay, so neither count is lost, and the weaker match is marked unsure for the player to fix. */
+  function flagRepeats(rows) {
+    const seen = new Map();
     for (const r of rows) {
       const m = r.matches[0];
-      const same = m && out.find(o => o.matches[0] && o.matches[0].name === m.name && o.matches[0].set === m.set && o.matches[0].num === m.num);
-      if (same) { same.count = (same.count || 1) + (r.count || 1); same.countSure = Math.min(same.countSure, r.countSure); continue; }
-      out.push(Object.assign({}, r));
+      if (!m) continue;
+      const k = m.name + '|' + m.set + '|' + m.num, o = seen.get(k);
+      if (!o) { seen.set(k, r); continue; }
+      const weak = m.s < o.matches[0].s ? r : o;
+      weak.sure = 0;
+      if (weak === o) seen.set(k, r);
     }
-    return out;
+    return rows;
   }
 
   /** For tests: how well print i matches the card in box r (no shifting). */
   function scorePrint(idx, px, W, H, r, i) { const q = query(feat(px, W, H, r)); return scoreOne(idx, q.qy, q.qc, i); }
 
-  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, mergeRows, shrink, scorePrint, foreground, parts };
+  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, flagRepeats, shrink, scorePrint, foreground, parts, numbersIn };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PhotoScan = api;
 })(typeof self !== 'undefined' ? self : this);

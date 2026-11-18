@@ -86,7 +86,10 @@ for (const s of wanted) {
     const basicE = sup === 'E' && ((c.subtypes || []).includes('Basic') || s.id === 'sve') && /energy$/i.test(c.name) && !/special/i.test(c.name);
     const num = String(c.number || '');
     if (!/^[A-Za-z0-9]{1,8}$/.test(num)) continue;
-    every.push({ name: clean(c.name, 60), set: code, num, small: c.images && c.images.small, legal: basicE || legalMark(c.regulationMark) });
+    // Some Trainer prints carry the person on the art in brackets ("Boss's Orders (Ghetsis)"); the
+    // card itself is the same one.
+    const name = sup === 'T' ? String(c.name).replace(/\s*\([^)]*\)\s*$/, '') : c.name;
+    every.push({ name: clean(name, 60), set: code, num, small: c.images && c.images.small, legal: basicE || legalMark(c.regulationMark) });
   }
 }
 // An older print still counts when a reprint of the same card is legal now (the app's own rule), and
