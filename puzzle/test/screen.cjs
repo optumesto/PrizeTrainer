@@ -143,7 +143,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     if (E.goalMet(w.eval('pzS').s)) uiWon++;
   }
   ok(uiWon === pack.puzzles.length, `all puzzles won through the screen (${uiWon}); ${oppPicks} opponent choices made by the screen; ${slow} taps over 1.5s`);
-  // Searching your deck finds the real cards (3.3.6): Cyrano on the 18 Nov board, picked one card at a time.
+  // Searching your deck finds the real cards (3.3.9): Cyrano on the 18 Nov board, picked one card at a time.
   {
     const i9 = pack.puzzles.findIndex(p => p.me.hand.some(k => /cyrano/i.test(pack.cards[k].name)) && p.from.mine === 'Raging Bolt Ogerpon');
     const p = pack.puzzles[i9], s0 = E.fromPuzzle(Object.assign({ cards: pack.cards }, JSON.parse(JSON.stringify(p))), { play: true });

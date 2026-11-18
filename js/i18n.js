@@ -1093,6 +1093,18 @@ const I18N_ES = {
   "Every card is already its cheapest printing.": "Todas las cartas ya están en su impresión más barata.",
   "The list changed since, so there is nothing to undo.": "La lista cambió desde entonces, así que no hay nada que deshacer.",
   "De-bling undone.": "Se deshizo Abaratar.",
+  // 3.3.9: puzzle score share.
+  "Puzzle deck search fixed": "Búsqueda en la baraja del puzzle corregida",
+  "Added: share your puzzle score": "Nuevo: comparte tu resultado del puzzle",
+  "Share your puzzle score": "Comparte tu resultado del puzzle",
+  "The link opens today's puzzle, so friends play the same board.": "El enlace abre el puzzle de hoy, así tus amigos juegan el mismo tablero.",
+  "Play today's puzzle first.": "Juega primero el puzzle de hoy.",
+  "Score and link copied. Paste it anywhere.": "Resultado y enlace copiados. Pégalos donde quieras.",
+  "Could not copy. Try Share instead.": "No se pudo copiar. Prueba con Compartir.",
+  "Save image": "Guardar imagen",
+  "Wide": "Ancha",
+  "Square": "Cuadrada",
+  "Picture size": "Tamaño de la imagen",
 };
 const I18N_PT = {
   // Photo deck import (test branch photo-import)
@@ -2149,6 +2161,18 @@ const I18N_PT = {
   "Every card is already its cheapest printing.": "Todas as cartas já estão na impressão mais barata.",
   "The list changed since, so there is nothing to undo.": "A lista mudou depois disso, então não há nada para desfazer.",
   "De-bling undone.": "Baratear desfeito.",
+  // 3.3.9: puzzle score share.
+  "Puzzle deck search fixed": "Busca no deck do puzzle corrigida",
+  "Added: share your puzzle score": "Novo: compartilhe seu resultado do puzzle",
+  "Share your puzzle score": "Compartilhe seu resultado do puzzle",
+  "The link opens today's puzzle, so friends play the same board.": "O link abre o puzzle de hoje, então seus amigos jogam o mesmo tabuleiro.",
+  "Play today's puzzle first.": "Jogue primeiro o puzzle de hoje.",
+  "Score and link copied. Paste it anywhere.": "Resultado e link copiados. Cole onde quiser.",
+  "Could not copy. Try Share instead.": "Não deu para copiar. Tente Compartilhar.",
+  "Save image": "Salvar imagem",
+  "Wide": "Larga",
+  "Square": "Quadrada",
+  "Picture size": "Tamanho da imagem",
 };
 /* I18N_DICT_END */
 
@@ -2995,6 +3019,13 @@ function i18nWhen(w, l) {
   return new RegExp('^' + I18N_DATE + '$').test(w) ? w : null;
 }
 /** The puzzle streak words: "3 wins in a row, 4 days in a row". */
+/** 3.3.9: the puzzle line's ", the shortest win" or ", best 3" (plays in the best line) in language l. */
+function i18nPzBest(b, l) {
+  if (!b) return '';
+  if (b === ', the shortest win') return { es: ', la victoria más corta', pt: ', a vitória mais curta', fr: ', la victoire la plus courte', de: ', der kürzeste Sieg', it: ', la vittoria più breve' }[l] || b;
+  const n = b.replace(/\D/g, '');
+  return ({ es: ', lo mejor posible: ', pt: ', o melhor possível: ', fr: ', le meilleur possible : ', de: ', bestmöglich: ', it: ', il meglio possibile: ' }[l] || ', best ') + n;
+}
 function i18nRuns(s, l) {
   return s.replace(/(\d+) wins in a row/g, l === 'es' ? '$1 victorias seguidas' : '$1 vitórias seguidas')
     .replace(/(\d+) days in a row/g, l === 'es' ? '$1 días seguidos' : '$1 dias seguidos');
@@ -3032,8 +3063,8 @@ I18N_PAT.unshift(
   // Home: the puzzle card and the deck tile
   [/^(\d+) solved of (\d+) played(?:, (.+)\.)?$/, (m, a, b, r) => i18nSolved(a, b, 'es') + (r ? ', ' + i18nRuns(r, 'es') + '.' : ''), (m, a, b, r) => i18nSolved(a, b, 'pt') + (r ? ', ' + i18nRuns(r, 'pt') + '.' : '')],
   [/^(\d+) (wins|days) in a row(?:, (\d+) days in a row)?$/, (m, ...x) => i18nRuns(m, 'es'), (m, ...x) => i18nRuns(m, 'pt')],
-  [/^in (\d+) plays?$/, (m, n) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas'), (m, n) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas')],
-  [/^in (\d+) plays?\. (.+)$/, (m, n, r) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas') + '. ' + i18nRuns(r, 'es'), (m, n, r) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas') + '. ' + i18nRuns(r, 'pt')],
+  [/^in (\d+) plays?(, the shortest win|, best \d+)?$/, (m, n, b) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas') + i18nPzBest(b, 'es'), (m, n, b) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas') + i18nPzBest(b, 'pt')],
+  [/^in (\d+) plays?(, the shortest win|, best \d+)?\. (.+)$/, (m, n, b, r) => 'en ' + n + (n === '1' ? ' jugada' : ' jugadas') + i18nPzBest(b, 'es') + '. ' + i18nRuns(r, 'es'), (m, n, b, r) => 'em ' + n + (n === '1' ? ' jogada' : ' jogadas') + i18nPzBest(b, 'pt') + '. ' + i18nRuns(r, 'pt')],
   [/^(\d+) cards? missing art$/, (m, n) => n + (n === '1' ? ' carta sin imagen' : ' cartas sin imagen'), (m, n) => n + (n === '1' ? ' carta sem imagem' : ' cartas sem imagem')],
   [/^The shortest win takes (\d+)\.$/, 'La victoria más corta toma $1.', 'A vitória mais curta leva $1.'],
   [/^Today's result stays a win in (\d+) plays?\.$/, (m, n) => 'El resultado de hoy sigue siendo una victoria en ' + n + (n === '1' ? ' jugada.' : ' jugadas.'), (m, n) => 'O resultado de hoje continua uma vitória em ' + n + (n === '1' ? ' jogada.' : ' jogadas.')],

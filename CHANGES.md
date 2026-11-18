@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.9 (build 128): puzzle deck search fixed, share your puzzle score (18 Nov 2026)
+
+Changed files: js/puzzle-extras.js (new), puzzle/tools/fill-decks.mjs (new), puzzle/daily.json (each puzzle's deck now knows its face-down cards), puzzle/engine.js, puzzle/solver.js, puzzle/tools/make-daily.mjs, puzzle/test/screen.cjs, js/core.js (puzzle screen, version, What's new), index.html (pick list styles, script tag, version), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name).
+
+- Puzzle deck search fixed. Puzzle decks kept most cards face down, so Cyrano, Ultra Ball, Hilda, Dawn and every other deck search saw only the few cards the board showed. Each puzzle now stores what its face-down cards really are (its real tournament list minus the cards in play, hand and Prizes), and searches find them. Cards still show face down until you search.
+- A win that uses a searched card counts. The best line is still worked out from cards that are sure to be in the deck, so best scores did not change.
+- Searches with many answers (Cyrano can have over 100) show a pick list: tap cards to add them, then take them.
+- Crispin: you choose which Energy goes to your hand and which gets attached.
+- Share your puzzle score: a picture of your line next to the best possible line, wide or square, with the text and a link to the same board. Saved results now keep the day's best line.
+- Checks: all 245 puzzles still win through the screen, puzzle engine checks pass.
+
+
 # RdyDeck 3.3.8 (build 127): Prize game moved to Drills, grade explainer moved to Questions, desktop layout, deck tabs reordered (18 Nov 2026)
 
 Changed files: index.html (layout styles, Questions answer, version, file stamps), js/core.js (Drills, version, What's new), js/v29-rotation.js (Grade tab link and sheet, tab order), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/extras-check.mjs, sw.js (cache name).

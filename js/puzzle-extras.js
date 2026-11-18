@@ -1,4 +1,4 @@
-// Daily puzzle extras (3.3.x):
+// Daily puzzle extras (3.3.9):
 //  1. Pick cards one at a time when a search, a discard or a pick from the discard pile has many
 //     possible answers (Cyrano can have over 100), instead of one button per combination.
 //  2. Share your score against the best possible line, as a picture plus a link.
@@ -73,7 +73,7 @@ function pzPickGo() {
 
 /* ---------------- 2. Share your score against the best ---------------- */
 let _pz83 = null;
-/** The board a day had, from the pack (the best line for results saved before 3.3.6). */
+/** The board a day had, from the pack (the best line for results saved before 3.3.9). */
 async function pzBestFor(key) {
   try {
     const kit = await loadPuzzleKit(), list = kit.pack.puzzles;

@@ -8502,24 +8502,25 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.3.8',
+  version: 'v3.3.9',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
-    { t: 'Prize game moved to Drills' },
-    { t: 'Grade explainer moved to Questions' },
-    { t: 'Desktop layout improved' },
-    { t: 'Deck tabs reordered' }
+    { t: 'Puzzle deck search fixed' },
+    { t: 'Added: share your puzzle score' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.3.8', date: 'Nov 18, 2026', kind: 'small', items: [
+    { t: 'Prize game moved to Drills' },
+    { t: 'Grade explainer moved to Questions' },
+    { t: 'Desktop layout improved' },
+    { t: 'Deck tabs reordered' }
+  ] },
   { version: 'v3.3.7', date: 'Nov 18, 2026', kind: 'small', items: [
     { t: 'Rare Candy bug fixed' }
-  ] },
-  { version: 'v3.3.6', date: 'Nov 18, 2026', kind: 'small', items: [
-    { t: 'Added: De-bling button' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -8916,7 +8917,7 @@ function puzzleShareText(r, key) {
   return `RdyDeck Daily Puzzle, my #${r.num || puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
 async function sharePuzzle(k) {
-  if (typeof pzShareScore === 'function') return pzShareScore(k); // 3.3.6: picture of your score against the best (puzzle-extras.js)
+  if (typeof pzShareScore === 'function') return pzShareScore(k); // 3.3.9: picture of your score against the best (puzzle-extras.js)
   const key = dailyOkKey(k) || dailyKey(), r = puzzleStore().results[key];
   if (!r) { showToast('Play today\'s puzzle first.'); return; }
   const text = puzzleShareText(r, key), url = shareBaseUrl() + '?ref=puzzle#puzzle';
@@ -11459,8 +11460,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.3.8';
-const PT_BUILD = 127;
+const PT_VERSION = 'v3.3.9';
+const PT_BUILD = 128;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
