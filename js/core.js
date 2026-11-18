@@ -517,16 +517,26 @@ async function refreshDeckData(deck) {
   if (note && state.activeDeckId === deck.id) {
     note.textContent = 'Reading card data for this deck\u2026';
     note.style.display = 'block';
+    note.dataset.reading = String(deck.id);
   }
   let cov = null;
   try { cov = await enrichDeckCards(deck.cards); } catch (_) {}
   _dataBusy.delete(deck.id);
+  // 3.3.2 (Muse 3.3.1 retest): the reading note always ends with the read, whatever screen is open now.
+  const done = () => {
+    const n = document.getElementById('review-coverage');
+    if (!n || n.dataset.reading !== String(deck.id)) return;
+    delete n.dataset.reading;
+    const open = state.decks.find(d => String(d.id) === String(state.activeDeckId));
+    if (open) renderCoverageNote(open); else n.style.display = 'none';
+  };
   if (cov && cov.total) {
     // A partial read keeps the old version mark, so it is tried again next time.
     if (!cov.partial) deck.enrichVer = ENRICH_VER;
     if (!cov.partial || !deck.coverage || cov.resolved >= (deck.coverage.resolved || 0)) deck.coverage = cov;
     try { await saveState(); } catch (_) {}
   }
+  done();
   const screen = document.getElementById('screen-review');
   if (state.activeDeckId !== deck.id || !screen || !screen.classList.contains('active')) return;
   const active = ['grade', 'odds', 'hand', 'drills', 'notes'].find(k => {
@@ -856,6 +866,22 @@ function g115Reviver(deck, e, energyTypes) {
     // An attack counts only when the list's Energy can pay for it.
     const r = xc.rev.find(r => g115Fits(r, c, e.name) && (r.src !== 'attack' || (r.cost || []).every(t => t === 'colorless' || energyTypes[t] || energyTypes.any)));
     if (r) return { e: x, r };
+  }
+  return null;
+}
+/** 3.3.2 (Muse 3.3.1 retest): an Ability in the list that puts this Pokemon back from your discard pile
+ *  (Gengar's own Netherworld Gate, or another Pokemon's Ability that fits it). Attacks and Trainers are left out:
+ *  the Trainer side has its own recovery count. Returns the Ability and its Pokemon, or null. */
+function g332Back(deck, e) {
+  const c = e && e.card;
+  if (!c || c.t !== 'pkmn') return null;
+  const own = (c.rev || []).find(r => r.self && r.src === 'ability');
+  if (own) return { abil: own.via || '', by: e.name, self: true };
+  for (const x of deck || []) {
+    const xc = x.card;
+    if (!xc || xc === c || xc.t !== 'pkmn' || !xc.rev) continue;
+    const r = xc.rev.find(r => r.src === 'ability' && g115Fits(r, c, e.name));
+    if (r && g115Can(deck, x)) return { abil: r.via || '', by: x.name, self: false };
   }
   return null;
 }
@@ -2273,7 +2299,12 @@ function gViability(deck, coh, main) {
     d:`${tb.length} different Pokemon in the list hit for ${hi/2} or more: ${tb.slice(0,4).map(r=>gCap(r.name)).join(', ')}${tb.length>4?` and ${tb.length-4} more`:''}. You pick the attacker that fits each turn${one?`, including ${one} that ${one>1?'give':'gives'} up one prize`:''}, so your opponent cannot plan around one threat.`}); }
   // v59: a single copy of the main attacker is gone for the game when it is prized or Knocked Out.
   // 3.2.8 (Muse s5 M3): what top lists run comes from the archetype's own top lists (g88Claims in gradeDeck).
-  if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`, cl:{ n:main.name, q:1 },
+  // 3.3.2 (Muse 3.3.1 retest): a main attacker an Ability puts back from the discard pile (Gengar's Netherworld
+  // Gate) comes back after a knockout, so one copy is not a single life and the grade does not ask for a second.
+  const back332 = main && qtyK(main.key)===1 ? g332Back(deck, deck.find(x=>x.card&&x.card.key===main.key)) : null;
+  if (back332) findings.push({sev:'ok', t:`${gCap(main.name)} comes back`,
+    d:`The list runs one copy of its main attacker, and ${back332.self ? `its ${back332.abil}` : `${gCap(back332.by)}'s ${back332.abil}`} puts it back onto your Bench from your discard pile, so a Knock Out does not end the plan. It is still in your prizes in about 1 game in 10.`});
+  else if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`, cl:{ n:main.name, q:1 },
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan.`});
   // 2.6.6: setup speed also reads how often the attacker is in play with the Energy its attack needs, from
   // shuffles of the list (g80Speed), by your second turn. A quarter of games is about the usual 8.2, half is 9.5,
@@ -2739,7 +2770,9 @@ function gTrainers(entries, coh, via, main, fmt) {
   const swT = cards.filter(e => e.card.t !== 'pkmn' && notAce(e.card) && (roleOf.get(e.card.key) || new Set()).has('switch'));
   const swQ = swT.reduce((a, e) => a + e.qty, 0) + gtQ(entries, c => c.t === 'pkmn' && c.swab);
   const gustQ = gtQ(entries, c => notAce(c) && has(c, 'gust'));
-  const recQ = gtQ(entries, c => notAce(c) && c.t !== 'pkmn' && ((roleOf.get(c.key) || new Set()).has('recovery') || has(c, 'recovery')));
+  // 3.3.2: a Pokemon whose Ability puts a Pokemon back from your discard pile (Gengar's Netherworld Gate) is recovery too.
+  const recQ = gtQ(entries, c => notAce(c) && c.t !== 'pkmn' && ((roleOf.get(c.key) || new Set()).has('recovery') || has(c, 'recovery')))
+    + gtQ(entries, c => c.t === 'pkmn' && (c.rev || []).some(r => r.src === 'ability'));
   const drawQ = gtQ(entries, c => notAce(c) && has(c, 'draw'));
   const abil = cards.filter(e => e.card.t === 'pkmn' && (e.card.abil || []).length && (has(e.card, 'draw') || has(e.card, 'search_pokemon') || has(e.card, 'search_basic') || has(e.card, 'energy_accel')));
   const abilQ = abil.reduce((a, e) => a + e.qty, 0);
@@ -4304,6 +4337,8 @@ function startGameFromReview() {
 function renderCoverageNote(deck) {
   const el = document.getElementById('review-coverage');
   if (!el) return;
+  // 3.3.2: while this deck's cards are being read, the reading note stays; any other note replaces it.
+  if (el.dataset.reading) { if (_dataBusy.has(deck.id) && el.dataset.reading === String(deck.id)) return; delete el.dataset.reading; }
   const cov = deck.coverage;
   if (!cov || !cov.total || cov.unresolved === 0) { el.style.display = 'none'; return; }
   const fromList = deck.cards.some(c => c.section);
@@ -8383,10 +8418,24 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.3.1',
+  version: 'v3.3.2',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
+    { t: 'Gengar revival credited' },
+    { t: 'Setup attack grading fixed' },
+    { t: 'Added: Setup in How it plays' },
+    { t: 'Upgrades bug fixed' },
+    { t: 'Grade history bug fixed' },
+    { t: 'Home grade bug fixed' },
+    { t: 'Card data bug fixed' },
+    { t: 'Translations improved' }
+  ]
+};
+// 3.3: What's new shows the two versions before the latest too, each with its date.
+// At each release, move the old WHATS_NEW to the top of this list and keep two.
+const WHATS_PREV = [
+  { version: 'v3.3.1', date: 'Nov 18, 2026', kind: 'small', items: [
     { t: 'Power counts attackers only' },
     { t: 'Gengar card text fixed' },
     { t: 'Light theme contrast fixed' },
@@ -8394,11 +8443,7 @@ const WHATS_NEW = {
     { t: 'Grade history bug fixed' },
     { t: 'Added: no Energy note on hands' },
     { t: 'Translations improved' }
-  ]
-};
-// 3.3: What's new shows the two versions before the latest too, each with its date.
-// At each release, move the old WHATS_NEW to the top of this list and keep two.
-const WHATS_PREV = [
+  ] },
   { version: 'v3.3', date: 'Nov 17, 2026', kind: 'small', items: [
     { t: 'Grade fixes from a full audit' },
     { t: 'Cards not legal now always flagged' },
@@ -8408,10 +8453,6 @@ const WHATS_PREV = [
     { t: 'Bigger buttons on phones' },
     { t: 'Light theme easier to read' },
     { t: 'Translations improved' }
-  ] },
-  { version: 'v3.2.8', date: 'Nov 17, 2026', kind: 'small', items: [
-    { t: 'Added: 6 deck guides' },
-    { t: 'Added: first deck guide' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11346,8 +11387,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.3.1';
-const PT_BUILD = 120;
+const PT_VERSION = 'v3.3.2';
+const PT_BUILD = 121;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

@@ -296,7 +296,9 @@ function up75Html(res, hasFix) {
       const el = document.getElementById('grade-body');
       const deck = state.decks.find(d => String(d.id) === String(state.activeDeckId));
       if (!el || !deck || !el.querySelector('#g29-fix')) return r;   // still grading, or no grade
-      if (typeof g71Wait === 'function' && g71Wait(deck)) return r;
+      // 3.3.2 (Muse 3.3.1 retest M2): once the grade is on screen, Upgrades is placed too. A results or rotation
+      // read that starts while the grade draws used to stop it here, and the section never came back.
+      if (el.querySelector('.g71-wait')) return r;
       const sig = up75Sig(deck), hit = _up75Cache.get(deck.id);
       if (hit && hit.sig === sig && !hit.err) { place(el, html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
       _up75Cache.set(deck.id, { sig, busy: true });
@@ -304,7 +306,9 @@ function up75Html(res, hasFix) {
       up75Find(deck).then(res => {
         const h = _up75Cache.get(deck.id);
         if (!h || h.sig !== sig) return;
-        _up75Cache.set(deck.id, { sig, res });
+        // 3.3.2: the Trainer data can arrive while the swaps are worked out; the result is kept under the new key.
+        const now = up75Sig(deck);
+        _up75Cache.set(deck.id, { sig: now, res });
         const live = document.getElementById('grade-body');
         if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html(res, fixed(live)));
       }).catch(e => {

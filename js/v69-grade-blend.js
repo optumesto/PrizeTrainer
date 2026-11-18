@@ -378,7 +378,7 @@ function g68Line(R) {
 // alone score against a typical top list, the win rate against the whole field's (every match in the
 // data, about 50.6% on 15 Nov 2026), and how the win rate moved since the newest set.
 // G79_TYP is the median card grade of the 130 tournament top lists in tests/grade-lists.json (8.8 on
-// 15 Nov 2026); an average record scores G68_MID on results. The gap line compares the two.
+// 15 Nov 2026); an average record scores G68_MID on results. The gap line compares the card grade and the results grade as shown (3.3.2).
 const G79_TYP = 8.8, G79_GAP = 0.5, G79_MIN = 100, G79_MOVE = 2;
 function g79Section(deck) {
   const data = mu60Data;
@@ -417,7 +417,9 @@ function g79Section(deck) {
       }
     }
     if (st) {
-      const gap = (card - G79_TYP) - (st.score - G68_MID);
+      // 3.3.2 (Muse 3.3.1 retest): the two numbers the Grade tab shows are compared as shown, so equal cards and
+      // results grades never read as one beating the other.
+      const gap = gR1(gR1(card) - gR1(st.score));
       h += `<p class="mu60-p"><b>${gap >= G79_GAP ? 'Cards beat its results.' : gap <= -G79_GAP ? 'Results beat its cards.' : 'Cards and results agree.'}</b> ${gap >= G79_GAP ? `${esc(arch.name)} decks win less than their cards suggest.` : gap <= -G79_GAP ? `${esc(arch.name)} decks win more than their cards suggest.` : 'The cards and the record rank this deck about the same.'}</p>`;
     }
   }

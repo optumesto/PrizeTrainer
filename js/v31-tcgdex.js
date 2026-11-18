@@ -47,15 +47,25 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
 
   // 2. pokemontcg.io for whatever TCGdex did not read.
   let ptFailed = offline;
-  const rest = list.filter(e => !map.has(String(e.name).toLowerCase()));
+  // 3.3.2 (Muse 3.3.1 retest): a card TCGdex read only from another printing is asked for here too, and its own
+  // printing replaces that read when pokemontcg.io has it. A saved deck kept Gastly's text from another printing
+  // (and so no confirmed mark) while a fresh import of the same list read its own.
+  const other = k => { const v = map.get(k); return !!(v && v.matchedBy === 'name'); };
+  const rest = list.filter(e => { const k = String(e.name).toLowerCase(); return !map.has(k) || other(k); });
   if (rest.length && !offline) {
     let pm = null;
     try { pm = await _v29FetchDeck.call(TCGEnrich, rest, opts); } catch (_) { pm = null; }
     ptFailed = !pm || !!pm.partial;
     rest.forEach(e => {
       const k = String(e.name).toLowerCase();
-      if (map.has(k)) return;
       const got = pm && pm.get(k);
+      if (map.has(k)) {
+        if (other(k) && got && got.resolved && got.matchedBy !== 'name') {
+          map.set(k, got); ptRead.push(k);
+          const i = tdRead.indexOf(k); if (i >= 0) tdRead.splice(i, 1);
+        }
+        return;
+      }
       if (got && got.resolved) { map.set(k, got); ptRead.push(k); }
     });
   }

@@ -491,8 +491,9 @@ renderGrade = function () {
 
   let weak = '';
   if (Math.abs(synV - powV) >= 1) weak = synV < powV
-    ? ' Right now <b>Synergy</b> is what holds it back.'
-    : ' Right now <b>Power</b> is what holds it back.';
+    // 3.3.2 (Muse 3.3.1 retest): one sentence, not three pieces, so each language can put its own article and word order.
+    ? ' <b>Right now Synergy is what holds it back.</b>'
+    : ' <b>Right now Power is what holds it back.</b>';
   const part = (lbl, v, sub) => `<div class="g29-part"><div class="g29-pl">${lbl}</div>
       <div class="g29-pv" style="color:${gBand(v)[1]}">${v.toFixed(1)}</div>
       <div class="g-meter"><span style="width:${Math.max(0, Math.min(100, v * 10))}%;background:${gBand(v)[1]}"></span></div>
@@ -550,9 +551,9 @@ renderGrade = function () {
 
   h += `<details class="g-sec g29-fold" id="g29-about"><summary><span class="g-sec-t">How the grade works</span></summary>
     <div class="g29-scale">
-      <div><b>8.5 to 10</b>Tournament-ready</div><div><b>7 to 8.4</b>Strong</div><div><b>5 to 6.9</b>Fixable</div>
+      <div><b>8.5 to 10</b>Tournament-ready</div><div><b>${R.noRes ? '7 and up' : '7 to 8.4'}</b>Strong</div><div><b>5 to 6.9</b>Fixable</div>
       <div><b>3 to 4.9</b>Needs work</div><div><b>under 3</b>Does not function</div>
-    </div>
+    </div>${R.noRes ? `<p class="g29-about-p">No tournament results match this deck yet, so a grade of 7 and up is called Strong.</p>` : ''}
     <p class="g29-about-p"><b>Synergy</b> checks that your cards support each other: every attacker can pay for its attacks,
     evolutions have what they evolve from, and the deck can draw and search. <b>Power</b> checks that the plan can win:
     how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.</p>

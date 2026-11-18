@@ -68,8 +68,10 @@ function gh72Ctx(deck, R) {
  *  reason is worked out now and kept with the entry (w): s start, e your edit (with r:1 when results
  *  also updated since the last entry), u Against the meta pick, f format, r results, a app update,
  *  l legality, c card data read again. */
-function gh72Note(deck, R) {
-  if (!gh72Final(deck, R)) return;
+function gh72Note(deck, R, shown) {
+  // 3.3.2 (Muse 3.3.1 retest M3): shown is a grade already on the Grade tab as final. It is kept even where a
+  // read that never finished held it back, so the history and How did it do? never trail the grade on screen.
+  if (shown ? !(R && gh72Num(R.overall) && !deck.daily && deck.format !== 'prerelease' && state.decks.includes(deck)) : !gh72Final(deck, R)) return;
   const lines = gh72Lines(deck), k = gh72Hash(lines), x = gh72Ctx(deck, R);
   const cur = { t: Date.now(), g: R.overall, s: gR1(R.coh.score * 10), p: gR1(R.via.score * 10),
     c: R.res && gh72Num(R.cardOverall) ? R.cardOverall : null, k, m: x.m, u: x.u, n: x.n };
@@ -79,9 +81,9 @@ function gh72Note(deck, R) {
   if (last.k === k) {
     // Same list. Results that have not loaded (offline) or cards that could not be read this time
     // would show a drop that is not real, so those are not kept.
-    if (!x.m && was.m) return;
-    if (!x.t && was.t) return;
-    if (x.r > (was.r || 0)) return;
+    if (!shown && !x.m && was.m) return;
+    if (!shown && !x.t && was.t) return;
+    if (!shown && x.r > (was.r || 0)) return;
     if (last.g === cur.g && last.n === cur.n) {
       // The grade held: remember what it was read with, so the next move is put down to the right cause.
       if (['m', 'u', 'b', 'f', 'n', 'r', 't', 'atk'].some(f => (was[f] || '') !== (x[f] || ''))) { log.x = x; deck.gradeLog = log; gh72Save(); }
@@ -194,6 +196,8 @@ function gh72Html(deck) {
       const el = document.getElementById('grade-body');
       const deck = state.decks.find(d => d.id === state.activeDeckId);
       if (!el || !deck || el.querySelector('.g71-wait') || el.querySelector('#gh72-sec')) return r;
+      // 3.3.2 (Muse 3.3.1 retest M3): a final grade on screen that the log has not kept yet is kept now.
+      if (el.querySelector('#g29-fix') && !el.querySelector('.g71-partial')) { const R = g29Grade(deck); if (R) gh72Note(deck, R, true); }
       const h = gh72Html(deck);
       if (!h) return r;
       const fix = el.querySelector('#g29-fix');

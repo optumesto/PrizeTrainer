@@ -42,7 +42,7 @@ function itI18nAsk(s) {
 function itI18nCardOrEnergy(n) {
   const m = /^(Basic )?(\w+) Energy$/.exec(n);
   if (!m || !itI18nTypes[m[2]]) return n;
-  return itI18nEnergy(m[2]) + (m[1] ? ' base' : '');
+  return itI18nEnergy(m[2]) + (m[1] ? ' di base' : '');
 }
 /** Capital first letter, for a sentence that starts with "il 45%" or "l'83%". */
 function itI18nCap(s) { return s ? s[0].toUpperCase() + s.slice(1) : s; }
@@ -456,7 +456,7 @@ I18N_MORE.it = {
     "Stadium": "Stadio",
     "Pokémon Tool": "Oggetto Pokémon",
     "Special Energy": "Energia speciale",
-    "Basic Energy": "Energia base",
+    "Basic Energy": "Energia di base",
     "Basic": "Base",
     "Stage 1": "Fase 1",
     "Stage 2": "Fase 2",
@@ -474,6 +474,8 @@ I18N_MORE.it = {
     "All": "Tutte",
     "Tournament-ready": "Pronto per i tornei",
     "Strong": "Solido",
+    "7 and up": "7 e oltre",
+    "No tournament results match this deck yet, so a grade of 7 and up is called Strong.": "Nessun risultato di torneo corrisponde ancora a questo mazzo, quindi un voto da 7 in su si chiama Solido.",
     "Fixable": "Migliorabile",
     "Needs work": "Va rivisto",
     "Does not function": "Non funziona",
@@ -498,10 +500,8 @@ I18N_MORE.it = {
     "Do the cards work together": "Le carte funzionano insieme?",
     "Can it win a game": "Può vincere una partita?",
     "Share grade": "Condividi il voto",
-    "is what holds it back.": "è ciò che frena il voto.",
-    // 3.3.1 (Muse 3.3 retest): only in "Right now <b>Synergy</b> is what holds it back", so the article
-    // goes here, before the bold Synergy or Power: "Adesso la Sinergia è ciò che frena il voto."
-    "Right now": "Adesso la",
+    "Right now Synergy is what holds it back.": "Adesso la Sinergia è ciò che frena il voto.",
+    "Right now Power is what holds it back.": "Adesso la Potenza è ciò che frena il voto.",
     "Fix first": "Da sistemare",
     "The problem that costs you the most.": "Il problema che ti costa di più.",
     "Stops the deck": "Blocca il mazzo",
@@ -1003,7 +1003,7 @@ I18N_MORE.it = {
     "Exactly 40 cards.": "Esattamente 40 carte.",
     "Any number of copies of a card.": "Qualsiasi numero di copie di una carta.",
     "Each player takes 4 prize cards, not 6.": "Ogni giocatore prende 4 carte Premio, non 6.",
-    "The store has extra Basic Energy to add.": "Il negozio ha Energie base extra da aggiungere.",
+    "The store has extra Basic Energy to add.": "Il negozio ha Energie di base extra da aggiungere.",
     "Build a practice 40": "Crea un 40 di prova",
     "Tap a card to add a copy. Save it, then practice it like any deck. Prize games use 4 prizes.": "Tocca una carta per aggiungerne una copia. Salvalo, poi allenati come con qualsiasi mazzo. Le partite dei Premi usano 4 Premi.",
     "Secret rares": "Rare segrete",
@@ -1112,6 +1112,11 @@ I18N_MORE.it = {
     "Grade history bug fixed": "Bug dello storico dei voti corretto",
     "Added: no Energy note on hands": "Nuovo: avviso per le mani senza Energia",
     "Translations improved": "Traduzioni migliorate",
+    "Gengar revival credited": "Ritorno di Gengar conteggiato",
+    "Setup attack grading fixed": "Voto degli attacchi di preparazione corretto",
+    "Added: Setup in How it plays": "Nuovo: Preparazione in Come gioca",
+    "Upgrades bug fixed": "Bug di Miglioramenti corretto",
+    "Card data bug fixed": "Bug dei dati delle carte corretto",
     "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "Il prezzo di ogni carta e il totale della tua lista, da TCGdex, con l'opzione di vedere prima le più economiche.",
     "Added: how accurate the grades are": "Nuovo: quanto sono precisi i voti",
     "Each week, how closely grades rank decks against their real online win rates, per set.": "Ogni settimana, quanto bene i voti ordinano i mazzi rispetto alle loro vere percentuali di vittoria online, per espansione.",
@@ -1426,8 +1431,8 @@ I18N_MORE.it = {
     [/^(\d+) cards? not legal now$/, (m, n) => n + (n === '1' ? ' carta non valida ora' : ' carte non valide ora')],
     [/^(\d+) (?:are|is) safe\.?$/, (m, n) => n + (n === '1' ? ' è sicura' : ' sono sicure') + (m.endsWith('.') ? '.' : '')],
     [/^(\d+) not confirmed\.?$/, (m, n) => n + (n === '1' ? ' non confermata' : ' non confermate') + (m.endsWith('.') ? '.' : '')],
-    [/^Plus (\d+) Basic Energy\.?$/, (m, n) => 'Più ' + n + (n === '1' ? ' Energia base' : ' Energie base') + (m.endsWith('.') ? '.' : '')],
-    [/^Plus (\d+) Basic Energy, which never rotates?\. (\d+) cards in all\.$/, (m, n, t) => 'Più ' + n + (n === '1' ? ' Energia base, che non ruota mai. ' : ' Energie base, che non ruotano mai. ') + t + ' carte in tutto.'],
+    [/^Plus (\d+) Basic Energy\.?$/, (m, n) => 'Più ' + n + (n === '1' ? ' Energia di base' : ' Energie di base') + (m.endsWith('.') ? '.' : '')],
+    [/^Plus (\d+) Basic Energy, which never rotates?\. (\d+) cards in all\.$/, (m, n, t) => 'Più ' + n + (n === '1' ? ' Energia di base, che non ruota mai. ' : ' Energie di base, che non ruotano mai. ') + t + ' carte in tutto.'],
     [/^Nothing here rotates next\. All (\d+) cards with a mark are safe\.?$/, "Niente qui ruota alla prossima. Tutte le $1 carte con un simbolo sono sicure."],
     [/^(\d+) cards? (may rotate|rotate) in ([A-Z][a-z]+ \d{4})\.$/, (m, n, how, w) => n + (how === 'rotate' ? (n === '1' ? ' carta ruota ' : ' carte ruotano ') : n === '1' ? ' carta potrebbe ruotare ' : ' carte potrebbero ruotare ') + itI18nA(w) + '.'],
     [/^May rotate in (.+)$/, (m, w) => 'Potrebbero ruotare ' + itI18nA(w)],
@@ -1585,7 +1590,7 @@ I18N_MORE.it = {
     [/^(.+?) only works while (.+?) has (?:(\w+) )?Energy attached, but the list runs no (?:\w+ )?Energy, so the Ability does nothing as built\.$/,
       (m, a, n, t) => a + ' funziona solo se ' + n + ' ha ' + (t ? itI18nEnergy(t) : 'Energia') + ' assegnata, ma la lista non usa ' + (t ? itI18nEnergy(t) : 'Energia') + ", quindi l'Abilità non fa niente in questa lista."],
     [/^(.+?) attaches Basic (\w+) Energy from your hand, but the list runs no \w+ Energy, so the Ability does nothing as built\.$/,
-      (m, a, t) => a + ' assegna ' + itI18nEnergy(t) + ' base dalla tua mano, ma la lista non usa ' + itI18nEnergy(t) + ", quindi l'Abilità non fa niente in questa lista."],
+      (m, a, t) => a + ' assegna ' + itI18nEnergy(t) + ' di base dalla tua mano, ma la lista non usa ' + itI18nEnergy(t) + ", quindi l'Abilità non fa niente in questa lista."],
     [/^Its attacks (?:cannot be paid either|need (\w+) Energy too), so the (\d+) (?:copies are dead cards|copy is a dead card)\.$/,
       (m, t, n) => (t ? 'Anche i suoi attacchi richiedono ' + itI18nEnergy(t) : 'Nemmeno i suoi attacchi si possono pagare') + (n === '1' ? ", quindi l'unica copia è una carta morta." : ', quindi le ' + n + ' copie sono carte morte.')],
     [/^Cut (them|it) or add (?:(\w+) )?Energy\.$/, (m, w, t) => (w === 'it' ? 'Toglila' : 'Toglile') + ' o aggiungi ' + (t ? itI18nEnergy(t) : 'Energia') + '.'],
@@ -1607,6 +1612,7 @@ I18N_MORE.it = {
     [/^Finds (.+?)( and an Energy)? together\.$/, (m, a, e) => 'Trova ' + a.replace(/ or /g, ' o ') + (e ? " e un'Energia" : '') + ' in una volta.'],
     [/^Gets your (.+?)( and an Energy)? together\.$/, (m, a, e) => 'Prende ' + a.replace(/ and /g, ' e ') + (e ? " e un'Energia" : '') + ' in una volta.'],
     [/^Only 1 (.+)$/, "Solo 1 $1"],
+    [/^(.+) comes back$/, '$1 ritorna'],
     [/^Your ACE SPEC, (.+), has nothing to work with$/, "Il tuo ASSO TATTICO, $1, non ha niente con cui funzionare"],
     [/^The list runs (\d+) Energy\. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn\. Trade some for draw or search cards\.$/, "La lista usa $1 Energie. La maggior parte dei mazzi ne usa da 8 a 16, quindi molte tue pescate sono Energie che non puoi usare in quel turno. Scambiane alcune con carte di pesca o di ricerca."],
     [/^None of your Supporters draws cards or searches your deck, so once your opening hand is spent your only draw is (.+)\. Most decks run 4 or more Supporters that draw, like Lillie's Determination\.$/, (m, a) => 'Nessuno dei tuoi Aiuti pesca carte o cerca nel tuo mazzo, quindi finita la mano iniziale la tua unica pesca è ' + a.replace(/ and /g, ' e ') + ". La maggior parte dei mazzi usa 4 o più Aiuti che pescano, come Lillie's Determination."],
@@ -1682,7 +1688,7 @@ I18N_MORE.it.abil = (function () {
   const V = (mood, fin, inf) => mood === 'fin' ? fin : inf;
   const noun = (x, pl) => {
     switch (x.k) {
-      case 'energy': return { g: 'f', w: (x.ty ? itI18nEnergy(x.ty, pl ? 2 : 1) : pl ? 'Energie' : 'Energia') + (x.basic ? ' base' : '') };
+      case 'energy': return { g: 'f', w: (x.ty ? itI18nEnergy(x.ty, pl ? 2 : 1) : pl ? 'Energie' : 'Energia') + (x.basic ? ' di base' : '') };
       case 'card': return { g: 'f', w: pl ? 'carte' : 'carta' };
       case 'supporter': return { g: 'f', w: (pl ? 'carte' : 'carta') + ' Aiuto' };
       case 'trainer': return { g: 'f', w: (pl ? 'carte' : 'carta') + ' Allenatore' };
@@ -1853,7 +1859,7 @@ I18N_MORE.it.dmg = (function () {
     and: ' e ', of: (o, w) => `${w} di ${o}`,
     en: (ts, basic, n, cards) => { const k = cards ? 1 : n;
       let e = ts.length ? itI18nEnergy(ts.join(' and ') + ' Energy', k) : (n1(k) ? 'Energia' : 'Energie');
-      if (basic) e += n1(k) ? ' base' : ' base';
+      if (basic) e += n1(k) ? ' di base' : ' di base';
       return cards ? (n1(n) ? 'carta ' : 'carte ') + e : e; },
     pile: (p, m) => p.k === 'kindHas' ? `${m ? 'carte' : 'carta'} ${KIND[p.kind]} con ${p.has} nel nome` : p.k === 'kind' ? `${m ? 'carte' : 'carta'} ${KIND[p.kind]}`
       : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage] : p.k === 'pre' ? `Pokémon di ${own(p.pre)}` : p.k === 'atk' ? `Pokémon con ${p.atk}`
@@ -1899,7 +1905,7 @@ I18N_MORE.it.dmg = (function () {
     escDisc: (x, e, p) => `${x} scarta ${e} dai tuoi Pokémon e infligge ${p} per ognuna scartata.`,
     escPer: (x, b, p, e, sc) => `${x} infligge ${b ? b + ' più ' : ''}${p} per ogni ${e} assegnata a ${sc === 'it' ? 'lui' : 'tutti i tuoi Pokémon'}.`,
     x2: (x, t) => `${x} fa contare doppia ogni ${itI18nEnergy(t + ' Energy', 1)} base.`,
-    takes: (a, t, lo, b, hi) => `Servono ${a}${t ? ' carte ' + itI18nEnergy(t + ' Energy', 1) + ' base' : ''} per mettere KO con un colpo un Pokémon da ${lo} PS e ${b} per uno da ${hi} PS, senza contare la Debolezza.`,
+    takes: (a, t, lo, b, hi) => `Servono ${a}${t ? ' carte ' + itI18nEnergy(t + ' Energy', 1) + ' di base' : ''} per mettere KO con un colpo un Pokémon da ${lo} PS e ${b} per uno da ${hi} PS, senza contare la Debolezza.`,
     listRuns: n => `La tua lista ne usa ${n}.`,
     adds: (b, p, n, ex) => `${b} ${pl(p, 'aggiunge', 'aggiungono')} ${n} in più${ex ? ' contro un Pokémon-ex' : ''}.`,
     koxCounters: (x, b, n) => `${x} mette KO il Pokémon attivo${b ? ' Base' : ''} del tuo avversario quando ha esattamente ${n} segnalini danno, e questa lista può metterglieli per prepararlo, quindi il voto lo conta come un colpo che mette KO qualsiasi Pokémon.`,
@@ -1960,6 +1966,8 @@ I18N_MORE.it.dmg = (function () {
     pick: n => `Scegli l'attaccante adatto a ogni turno${n ? `, ${n1(n) ? 'incluso 1 che cede' : `inclusi ${n} che cedono`} un solo Premio` : ''}, quindi il tuo avversario non può pianificare contro una sola minaccia.`,
     oneCopy: 'La lista usa una sola copia del suo attaccante principale.',
     prizedIn: 'Finisce nei tuoi Premi circa 1 partita su 10, e una volta messo KO il mazzo non ha nessuno che porti avanti il piano.',
+    oneBack: (a, by) => `La lista usa una sola copia del suo attaccante principale, e ${by ? `l'Abilità ${a} di ${by}` : `la sua Abilità ${a}`} lo rimette in panchina dalla tua pila degli scarti, quindi un KO non mette fine al piano.`,
+    stillPrized: 'Finisce comunque nei tuoi Premi circa 1 partita su 10.',
     mostRun: (a, b) => `La maggior parte delle liste ne usa da ${a} a ${b}.`,
     thinRoot: (n, x, y) => `${n} ${x} si evolvono da ${y}, e la lista ne usa 1.`,
     thinKO: 'Se finisce tra i Premi o viene messo KO, non hanno niente da cui evolversi.',
