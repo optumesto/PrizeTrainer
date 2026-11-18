@@ -23,6 +23,8 @@ export function controller(level, seed, opts) {
       return X.actions.find(a => a.t === 'end') || X.actions[Math.floor(rnd() * X.actions.length)];
     }, setup(s, k) { const B = G.shuffle(G.setupChoices(s, k).slice(), rnd); return { active: B[0].uid, bench: B.slice(1, 1 + Math.floor(rnd() * B.length)).map(x => x.uid) }; } };
   }
+  // old-<level>: the AI as it was before the current changes (opponent/ai-old.tmp.js, a local copy for A/B tests).
+  if (level.startsWith('old-')) { const O = require('../ai-old.tmp.js'), lv = level.slice(4), q = new O.Player(lv, seed); return { level, stats: q.stats, choose: (s, k) => q.choose(s, k, opts), setup: (s, k) => O.setupPick(s, k, lv, rnd) }; }
   const p = new AI.Player(level, seed);
   return { level, stats: p.stats, choose: (s, k) => p.choose(s, k, opts), setup: (s, k) => AI.setupPick(s, k, level, rnd) };
 }
@@ -36,7 +38,7 @@ export function controller(level, seed, opts) {
  * attackAvail/attacked: turns where an attack could be paid, and how many of those it attacked in.
  * gusts/gustKO: gusts played, and how many were followed by a Knock Out that turn.
  */
-function newMeter() { return { turns: 0, koAvail: 0, koTaken: 0, winAvail: 0, winTaken: 0, attackAvail: 0, attacked: 0, gusts: 0, gustKO: 0, oracleCut: 0 }; }
+function newMeter() { return { turns: 0, koAvail: 0, koTaken: 0, winAvail: 0, winTaken: 0, attackAvail: 0, attacked: 0, gusts: 0, gustKO: 0, oracleCut: 0, st2: 0, st2n: 0 }; }
 function oracle(s, goal) {
   const o = I.clone(s); o.log = []; o.unread = []; o.luck = false; o.goal = goal;
   o.rng = () => 0.999; // every coin is tails, every shuffle the same: only sure lines count
@@ -74,6 +76,10 @@ export function playGame(listA, listB, ctl, seed, meter) {
     if (t.attackable) M.attackAvail++;
     if (t.attackable && t.attacked) M.attacked++;
     if (t.gusted) { M.gusts++; if (s.koIds.length > t.kos) M.gustKO++; }
+    // Setup: Stage 2 Pokemon in play at the end of its own turn 4 (decks that run Stage 2s).
+    const Pk = s.players[t.k];
+    if (s.turns[t.k] === 4 && Pk.deck.concat(Pk.hand, Pk.discard, Pk.prizes).concat(E.mons(Pk).flatMap(m => m.stack)).some(x => x.card.stage === 'stage2')) {
+      M.st2n++; M.st2 += E.mons(Pk).filter(m => E.topOf(m).card.stage === 'stage2').length; }
     turnStart = null;
   };
   let lastTurn = null;
@@ -119,6 +125,6 @@ if (import.meta.url === new URL('file://' + require('node:path').resolve(process
   console.log(`${A} vs ${B}: ${N} games, ${Math.round((Date.now() - t0) / 1000)} s`);
   console.log(`wins: ${A} ${res[A]}, ${B} ${res[B]}, unfinished ${res.draw}. Avg turns ${(turns / N).toFixed(1)}. Deck-outs ${deckOuts}.`);
   [[A, meter[0]], [B, meter[1]]].forEach(([lv, M]) => {
-    console.log(`${lv}: KO taken when sure ${pct(M.koTaken, M.koAvail)}, game-winning KO taken ${pct(M.winTaken, M.winAvail)}, attacked when able ${pct(M.attacked, M.attackAvail)}, gust then KO ${pct(M.gustKO, M.gusts)}, ms/decision ${dec[lv].d ? (dec[lv].ms / dec[lv].d).toFixed(1) : '-'}${M.oracleCut ? ', oracle cut ' + M.oracleCut : ''}`);
+    console.log(`${lv}: KO taken when sure ${pct(M.koTaken, M.koAvail)}, game-winning KO taken ${pct(M.winTaken, M.winAvail)}, attacked when able ${pct(M.attacked, M.attackAvail)}, gust then KO ${pct(M.gustKO, M.gusts)}, Stage 2s by turn 4 ${M.st2n ? (M.st2 / M.st2n).toFixed(2) + ' (' + M.st2n + ' games)' : '-'}, ms/decision ${dec[lv].d ? (dec[lv].ms / dec[lv].d).toFixed(1) : '-'}${M.oracleCut ? ', oracle cut ' + M.oracleCut : ''}`);
   });
 }

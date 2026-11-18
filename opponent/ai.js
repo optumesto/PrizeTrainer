@@ -80,9 +80,35 @@ function bestHit(s, att, k, target, extra) {
     const ok = E.costMet(att.energy, cost) || (extra && E.costMet(att.energy.concat([ANY]), cost));
     if (!ok) continue;
     let d = 0; try { d = E.damageTo(s2, att, R, target, true); } catch (e) { d = 0; }
+    d += fxDamage(s, R, k);
     if (d > best) best = d;
   }
   return best;
+}
+/** Damage an attack's own effects put on the Active, beyond its printed number (Alakazam's Powerful Hand counts k's hand). */
+function fxDamage(s, R, k) {
+  let d = 0;
+  for (const f of R.fx || []) {
+    if (f.t === 'countersActive') d += 10 * f.per * s.players[k].hand.length;
+  }
+  return d;
+}
+/** The most damage counters an attack k can pay (now, or after one more Energy) spreads on the other Bench. */
+function benchSpread(s, att, k) {
+  let best = 0;
+  for (const a of topOf(att).card.attacks || []) {
+    let R; try { R = E.readAttack(a); } catch (e) { R = null; }
+    const f = R && (R.fx || []).find(x => x.t === 'spread' && x.bench);
+    if (!f) continue;
+    if (E.costMet(att.energy, a.cost || []) || E.costMet(att.energy.concat([ANY]), a.cost || [])) best = Math.max(best, 10 * f.n);
+  }
+  return best;
+}
+/** What a spread on the Bench is worth: a Knock Out it can take, or damage toward one. */
+function spreadValue(s, dmg, Q) {
+  let v = 0;
+  for (const b of Q.bench) { const h = hpLeft(s, b); v = Math.max(v, dmg >= h ? 600 * pv(s, b) : 80 * pv(s, b) * dmg / Math.max(10, h)); }
+  return v;
 }
 const canAct = m => !(m.cond === 'asleep' || m.cond === 'paralyzed');
 
@@ -111,8 +137,14 @@ function value(s, k) {
     // A gust and a Knock Out on my Bench (Boss's Orders is in nearly every list).
     let g = 0;
     P.bench.forEach(b => { if (canAct(O.active) && bestHit(s, O.active, 1 - k, b, true) >= hpLeft(s, b)) g = Math.max(g, 0.45 * 650 * pv(s, b)); });
+    // Damage counters spread on my Bench (Phantom Dive and the like).
+    const sp = canAct(O.active) ? benchSpread(s, O.active, 1 - k) : 0;
+    if (sp) worst = Math.max(worst, 0.8 * spreadValue(s, sp, P));
     v -= Math.max(worst, g) * (myTurn ? 0.8 : 1);
   }
+  // Item lock (Budew's Itchy Pollen): worth having on them, costly on me. A cheap staller earns its keep with it.
+  if (O.lim && O.lim.itemLock === s.turns[1 - k] + (s.cur === 1 - k ? 0 : 1)) v += 110;
+  if (P.lim && P.lim.itemLock === s.turns[k] + (s.cur === k ? 0 : 1)) v -= 110;
   // My next attack.
   if (P.active && O.active) {
     let best = 0;
@@ -121,6 +153,8 @@ function value(s, k) {
       best = Math.max(best, d >= h ? p * 600 * pv(s, t) : p * 150 * pv(s, t) * d / Math.max(10, h));
     };
     hitTheirs(P.active, 0.75, O.active);
+    const sp = canAct(P.active) ? benchSpread(s, P.active, k) : 0;
+    if (sp) best = Math.max(best, 0.7 * spreadValue(s, sp, O));
     P.bench.forEach(b => hitTheirs(b, 0.45, O.active));
     O.bench.forEach(t => hitTheirs(P.active, 0.3, t));
     v += best;
@@ -144,6 +178,45 @@ function energyScore(s, m, k) {
   }
   return best + 6 * Math.max(0, m.energy.length - used);
 }
+/**
+ * Evolution lines still to come: a Basic or Stage 1 in play with its next Stage in hand or deck is worth
+ * part of that Stage now. Each evolution card counts for one Pokemon. This is what makes a Dragapult
+ * deck bench every Dreepy it can and keep them, rather than see Dragapult ex in hand as one more card.
+ */
+function lines(P) {
+  const left = new Map(), add = x => { const c = x.card; if (c.from) left.set(c.from, (left.get(c.from) || []).concat([c])); };
+  P.hand.forEach(add); P.deck.forEach(add);
+  const candy = P.hand.concat(P.deck).some(x => /^rare candy$/i.test(x.card.name));
+  let v = 0;
+  const take = (name, inHand) => { const a = left.get(name); if (!a || !a.length) return null; const c = a.shift(); return c; };
+  // Stage 1s in play first (their Stage 2 is the next step), then Basics.
+  const ms = mons(P).sort((a, b) => stage(b) - stage(a));
+  for (const m of ms) {
+    const nm = topOf(m).card.name, st = stage(m);
+    if (st >= 2) continue;
+    const nx = take(nm);
+    if (nx) {
+      // Less than the 55 an evolution itself adds to the board, so evolving always beats holding the card.
+      v += st === 1 ? 30 : 25;
+      if (st === 0 && nx.stage === 'stage1' && take(nx.name)) v += 20;
+      continue;
+    }
+    if (st === 0 && candy) { // Rare Candy straight to a Stage 2 whose Stage 1 comes from this Basic
+      for (const [from, arr] of left) if (arr.length && arr[0].stage === 'stage2' && P.hand.concat(P.deck).some(x => x.card.name === from && x.card.from === nm)) { arr.shift(); v += 35; break; }
+    }
+  }
+  return v;
+}
+/** How much of an attacker m is: its strongest attack it can pay now or with one more Energy, scaled to 0..90. */
+function attackerScore(s, m, k) {
+  let best = 0;
+  for (const a of topOf(m).card.attacks || []) {
+    const r = missing(s, m, k, a); if (r.n > 1) continue;
+    const dmg = parseInt(a.dmg, 10) || 0; if (dmg < 90) continue;
+    best = Math.max(best, Math.min(90, dmg / 3) * (r.n === 0 ? 1 : 0.7));
+  }
+  return best;
+}
 /** What one side has: Pokemon, Energy on them, cards in hand, a deck that won't run out. */
 function side(s, k) {
   const P = s.players[k];
@@ -153,6 +226,11 @@ function side(s, k) {
     x *= 0.55 + 0.45 * Math.max(0, hpLeft(s, m)) / Math.max(10, E.maxHp(s, m));
     v += x;
   }
+  v += lines(P);
+  // Attackers lined up: the second and third ready (or one Energy away) are what carry a game after a Knock Out.
+  // This is what makes stalling with a cheap Active while Stage 2 lines build up worth it.
+  const ready = mons(P).map(m => attackerScore(s, m, k)).sort((a, b) => b - a);
+  v += (ready[1] || 0) * 0.6 + (ready[2] || 0) * 0.3;
   if (P.active) {
     if (P.active.cond === 'asleep' || P.active.cond === 'paralyzed') v -= 70;
     if (P.active.cond === 'confused') v -= 40;
