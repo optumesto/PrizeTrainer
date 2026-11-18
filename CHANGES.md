@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Photo deck import (branch photo-import, not live; version and build set when it joins a release)
+
+Changed files: js/photo-scan.js (new: finds the cards in a picture, names each from its art and reads its count), js/photo-import.js (new: the "From a photo" button and the review sheet), art-index.json and art-index.bin (new: a 120 byte fingerprint of the art of every Standard legal print, 3,253 prints, about 470 KB, built by build-art-index.mjs), index.html (button, review sheet, styles, file stamps), sw.js (the index is fetched newest first and kept for offline use), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, .github/workflows/art-index.yml, tests/photo-import-check.mjs, tests/photo-import-ui.mjs, tests/photo-import/make-shots.mjs and CHANGES.md.
+
+- Import a deck has a "From a photo" button. Pick a screenshot or photo of a deck screen (a Pokemon TCG Live deck shared as a picture, for example) and RdyDeck reads each card and its count.
+- Everything happens on the device. The picture is read in the page and never uploaded or saved; no new data is collected, so the privacy policy and the Play Data safety form do not change. The reader and the card index download only the first time someone picks a picture.
+- A review sheet shows every card with a crop from the player's own picture, its count, and a "Check the card" or "Check the count" flag where the read is unsure. A card can be changed to a close match or any Standard card by search, or removed; counts have plus and minus buttons; the total shows out of 60. A deck that needs two screenshots can add a second picture, and a card in both counts once.
+- "Use this list" fills the import box with the list and section headers, so nothing is graded until the player taps Import and save.
+- Not shown in the downloaded one-file copy of the app (it cannot read the card index there).
+
 # RdyDeck 3.3.1 (build 120): fixes from Muse's 3.3 re-test (branch fix-3.3.1, not live)
 
 Changed files: js/core.js (damage ceiling, Hand tab, version, What's new), js/card-details.js, js/v29-rotation.js, js/v31-tcgdex.js, js/grade-history.js, js/upgrades.js, js/easier-first-visit.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (light theme colors, file stamps, softwareVersion), sw.js (cache prize-trainer-v120), tests/grade-baseline.json and CHANGES.md.

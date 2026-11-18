@@ -165,9 +165,10 @@
     const total = rows.reduce((a, r) => a + r.count, 0);
     const check = rows.filter(r => !r.nameOk || !r.countOk).length;
     const tot = $('pi-total');
-    tot.textContent = `${total} of 60 cards`;
+    // The numbers sit in their own elements, so each text around them translates as it is.
+    tot.innerHTML = `<span class="pi-big">${total}</span> <span>of 60 cards</span>`;
     tot.classList.toggle('ok', total === 60);
-    $('pi-check').textContent = check ? (check === 1 ? '1 card to check' : `${check} cards to check`) : 'Every card read clearly';
+    $('pi-check').innerHTML = check ? `<span>To check:</span> <b>${check}</b>` : '<span>Every card read clearly</span>';
     $('pi-check').classList.toggle('warn', !!check);
     $('pi-list').innerHTML = rows.map((r, i) => {
       const flag = !r.nameOk ? 'Check the card' : !r.countOk ? 'Check the count' : '';

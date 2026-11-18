@@ -43,7 +43,8 @@ jobs:
       - name: Try photo import in a browser
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
+          # The runner's own Chrome where there is one; Playwright's Chromium otherwise.
+          if command -v google-chrome >/dev/null; then echo "PW_CHANNEL=chrome" >> "$GITHUB_ENV"; export PW_CHANNEL=chrome; else npx playwright install chromium; fi
           mkdir -p ui-shots
           npx --yes http-server@14.1.1 -p 8080 -s -c-1 &
           sleep 3

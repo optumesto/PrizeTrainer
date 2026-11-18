@@ -397,6 +397,36 @@
     // Reading order: rows, then left to right.
     boxes.sort((a, b) => (Math.abs(a.y - b.y) < ch * 0.4 ? a.x - b.x : a.y - b.y));
     const f = s.f, full = { px, W, H, bg: y => m.bg(y / f), cut: m.cut };
+    // Rows again at full size, each row on its own: a row step a little off, or a count badge
+    // hanging under the cards, would otherwise move later rows off their cards. A row's top and
+    // bottom are where most of its width changes between background and card.
+    if (boxes.length) {
+      const CW = cw * f, CH = ch * f;
+      const colX = [...new Set(boxes.map(b => Math.round(b.x * f)))];
+      const fgAt = (x, y) => {
+        const i = (y * W + x) * 4, c = m.bg(y / f);
+        return Math.abs(px[i] - c[0]) + Math.abs(px[i + 1] - c[1]) + Math.abs(px[i + 2] - c[2]) > m.cut;
+      };
+      const E0 = new Float32Array(H), E = new Float32Array(H);
+      for (const x0 of colX) for (let x = Math.max(0, Math.round(x0 + CW * 0.06)); x < Math.min(W, x0 + CW * 0.94); x += 3) {
+        let prev = fgAt(x, 0);
+        for (let y = 1; y < H; y++) { const v = fgAt(x, y); if (v !== prev) E0[y]++; prev = v; }
+      }
+      for (let y = 0; y < H; y++) E[y] = Math.max(E0[y], E0[y - 1] || 0, E0[y + 1] || 0);
+      const rowYs = [];
+      for (const b of boxes) if (!rowYs.some(r => Math.abs(r - b.y) < ch * 0.4)) rowYs.push(b.y);
+      const moved = new Map();
+      for (const ry of rowYs) {
+        const Y = ry * f;
+        let bo = 0, bs = -1;
+        for (let o = -Math.round(CH * 0.25); o <= CH * 0.25; o++) {
+          const sc = (E[Math.round(Y + o)] || 0) + (E[Math.round(Y + o + CH)] || 0) - Math.abs(o) * 0.02;
+          if (sc > bs) { bs = sc; bo = o; }
+        }
+        moved.set(ry, bo / f);
+      }
+      for (const b of boxes) for (const [ry, d] of moved) if (Math.abs(ry - b.y) < ch * 0.4) { b.y = ry + d; break; }
+    }
     return {
       cards: boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
       cardW: cw * f, cardH: ch * f,

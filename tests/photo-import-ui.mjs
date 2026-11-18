@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
 
 const [URL0 = 'http://127.0.0.1:8080/', SHOT, OUT = 'ui-shots'] = process.argv.slice(2);
 await mkdir(OUT, { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {});
 const log = [];
 let failed = false;
 
