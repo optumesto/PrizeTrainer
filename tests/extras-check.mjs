@@ -152,9 +152,14 @@ ok(a.score && a.score === b.score, `grade shown ${a.score}, the same as before t
 
 // Grade tab
 const gb = d.getElementById('grade-body');
+// 3.3.6: How the grade works is a link on the Grade tab that opens the Questions answer in a sheet,
+// with the accuracy line under it.
+ok(!d.getElementById('g29-about') && gb.querySelector('.gw336-a'), 'the Grade tab has the How the grade works link, not the old fold');
+w.gw336Open();
 const acc = d.getElementById('acc80');
 ok(acc && /How accurate the grades are/.test(acc.textContent) && acc.querySelector('a[href="how-grading-works.html#accuracy"]'), 'accuracy line under How the grade works: ' + (acc && acc.textContent.replace(/\s+/g, ' ').trim()));
-ok(acc && acc.parentElement && acc.parentElement.id === 'g29-about', 'the accuracy line sits in the How the grade works fold');
+ok(acc && acc.closest('#x-modal-inner .gw336-body') && d.querySelector('#x-modal-inner .g29-scale'), 'the accuracy line and grade scale sit in the How the grade works sheet');
+w.closeSheet();
 const mx = d.getElementById('mx80');
 ok(mx && /Against the field now: about \d+\.\d% expected/.test(mx.textContent), 'field line under Against the meta: ' + (mx && mx.textContent.replace(/\s+/g, ' ').trim()));
 const how = (gb.querySelector('.g29-how') || {}).textContent || '';

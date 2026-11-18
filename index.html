@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Rate your Pokémon TCG deck out of 10: paste a decklist to see what to fix, opening odds and rotation, then practice prizes. Free, no account.">
 <meta name="twitter:image" content="https://rdydeck.com/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.3.7","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.3.8","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -3418,6 +3418,35 @@ document.documentElement.classList.add('rd-boot');
     html:not(#z) body #screen-review .play-btn { width:auto; min-width:0; min-height:44px; padding:0 1.5rem; margin-left:auto; }
     html:not(#z) body #screen-review .rv-tab { min-height:44px; }
   }
+  /* 3.3.6: no bar at the bottom of a deck's tabs. The prize game is the first section of Drills, and
+     the tabs get the whole screen down to the safe area (the phone's home bar). */
+  html:not(#z) body #screen-review .review-footer { display:none !important; }
+  html:not(#z) body #screen-review .review-body { padding-bottom:calc(1.5rem + env(safe-area-inset-bottom,0px)); }
+  @media (min-width:768px) { html:not(#z) body #screen-review .review-body { padding-bottom:calc(2.25rem + env(safe-area-inset-bottom,0px)); } }
+  /* 3.3.6: How the grade works is one quiet line at the end of the Grade tab; the answer opens in a sheet. */
+  .gw336 { margin:0.25rem 0 0.5rem; }
+  .gw336-a { display:inline-flex; align-items:center; gap:0.45rem; min-height:44px; padding:0; background:none; border:0; color:var(--text-2); font:inherit; font-size:var(--fs-sm); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  .gw336-a:hover { color:var(--text); }
+  .gw336-a .ic { width:1.05em; height:1.05em; flex-shrink:0; }
+  .gw336-body p { font-size:var(--fs-sm); color:var(--text-2); line-height:1.55; margin:0 0 0.7rem; }
+  .gw336-body p b { color:var(--text); }
+  .about40-faq .g29-scale { margin:0.2rem 0 0.7rem; }
+  /* 3.3.6: wide screens use the room at the foot of home. About on the left, Questions on the right,
+     the links in three groups across the full width. Each paragraph keeps a readable line length.
+     Phones and tablets held upright (under 1100px) are unchanged. */
+  @media (min-width:1100px) {
+    html:not(#z) body .about38 { display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); grid-template-rows:auto auto auto 1fr auto; column-gap:48px; align-items:start; }
+    html:not(#z) body .about38 > h2 { grid-column:1 / 7; grid-row:1; }
+    html:not(#z) body .about38 > p:nth-of-type(1) { grid-column:1 / 7; grid-row:2; }
+    html:not(#z) body .about38 > p:nth-of-type(2) { grid-column:1 / 7; grid-row:3; }
+    html:not(#z) body .about38 > p:nth-of-type(3) { grid-column:1 / 7; grid-row:4; margin-top:0.4rem; }
+    html:not(#z) body .about38 > .about40-faq { grid-column:7 / 13; grid-row:1 / span 4; margin:0; max-width:72ch; }
+    html:not(#z) body .about38 > .about38-links { grid-row:5; margin-top:1.4rem; align-self:start; }
+    html:not(#z) body .about38 > div:nth-of-type(2) { grid-column:1 / 5; }
+    html:not(#z) body .about38 > div:nth-of-type(3) { grid-column:5 / 9; }
+    html:not(#z) body .about38 > div:nth-of-type(4) { grid-column:9 / 13; }
+    html:not(#z) body .about40-faq .g29-scale { grid-template-columns:1.3fr repeat(4, minmax(0,1fr)); }
+  }
 </style>
 </head>
 <body>
@@ -3538,7 +3567,7 @@ document.documentElement.classList.add('rd-boot');
         <h3>Questions about RdyDeck</h3>
         <details><summary>What is RdyDeck?</summary><p>RdyDeck is a free web app for Pokémon Trading Card Game players. It grades a 60 card deck, shows its opening odds and which cards rotate out of Standard, and trains you to work out your prize cards.</p></details>
         <details><summary>How does prize card training work?</summary><p>RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.</p></details>
-        <details><summary>How does the deck grade work?</summary><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.</p></details>
+        <details id="faq-grade"><summary>How does the deck grade work?</summary><div class="g29-scale"><div><b>8.5 to 10</b>Tournament-ready</div><div><b>7 to 8.4</b>Strong</div><div><b>5 to 6.9</b>Fixable</div><div><b>3 to 4.9</b>Needs work</div><div><b>under 3</b>Does not function</div></div><p>The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.</p><p>No part of it comes from results while cards are not Standard legal. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not worry about the decimal place.</p></details>
         <details><summary>How does the rotation check work?</summary><p>RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most. An older printing still counts when a reprint with the same name, attacks and Abilities is legal now, so old art is fine.</p></details>
         <details><summary>Which deck lists can I import?</summary><p>Paste an export from Pokémon TCG Live or a list from Limitless TCG, one card per line with the count, name, set code and number. Starter decks are built in if you want to try it first.</p></details>
         <details><summary>Is RdyDeck free? Do I need an account?</summary><p>RdyDeck is free and has no account. Your decks stay in your browser on your own device, it works offline once it has loaded, and you can install it to your home screen.</p></details>
@@ -4072,7 +4101,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=8883917e"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=7649de90"></script>
 
-<script src="js/core.js?v=d6b6c0aa"></script>
+<script src="js/core.js?v=69a4495a"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4140,7 +4169,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v26-practice.js?v=26556df6"></script>
 <script src="js/keyboard.js?v=e715c2ea"></script>
 <script src="js/v28-ask-odds.js?v=fd9d6b7a"></script>
-<script src="js/v29-rotation.js?v=0fac7b72"></script>
+<script src="js/v29-rotation.js?v=c938d868"></script>
 <script src="js/v30-live-data.js?v=74099df4"></script>
 <script src="js/v31-tcgdex.js?v=ed2e8d1d"></script>
 <script src="js/v32-ads.js?v=0608ca29"></script>
@@ -4198,9 +4227,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=990108dc"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=be80d40c"></script>
+<script src="js/i18n.js?v=89245310"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=376af67e"></script><script src="js/i18n-de.js?v=51f33de5"></script><script src="js/i18n-it.js?v=f02f46ef"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=ec8aa68e"></script><script src="js/i18n-de.js?v=892f5ab6"></script><script src="js/i18n-it.js?v=957ee737"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=78548daf"></script></template>

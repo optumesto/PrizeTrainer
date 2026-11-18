@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.8 (build 127): Prize game moved to Drills, grade explainer moved to Questions, desktop layout, deck tabs reordered (18 Nov 2026)
+
+Changed files: index.html (layout styles, Questions answer, version, file stamps), js/core.js (Drills, version, What's new), js/v29-rotation.js (Grade tab link and sheet, tab order), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/extras-check.mjs, sw.js (cache name).
+
+- Prize game moved to Drills: the bar fixed to the bottom of every deck tab is gone. The Prize game is the first section of Drills, with Game modes, Progress (once a game is played) and Play. Home's Prizes button still starts one. Saved games and history are unchanged.
+- Grade explainer moved to Questions: the How the grade works fold on the Grade tab is now one link that opens the Questions answer in a sheet, with this deck's note when it has no results and the accuracy line. The grade scale and the card text sentence were added to the Questions answer first, so nothing was lost.
+- Desktop layout improved: at 1100px and wider, About sits on the left, Questions on the right, and the links spread across the full width in three groups. Phones and tablets held upright are unchanged.
+- Deck tabs reordered: Grade, Cards, Odds, Hand, Drills, Notes, so the list comes before the numbers. A deck still opens on Grade, and links and the last open tab go by name, so they still work.
+
+Grade check: no grade moved.
 # RdyDeck 3.3.7 (build 126): Rare Candy bug fixed (18 Nov 2026)
 
 Changed files: js/core.js (Rare Candy line lookup, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (version), sw.js (cache name), puzzle/tools/make-daily.mjs, tests/rare-candy-check.cjs (new).

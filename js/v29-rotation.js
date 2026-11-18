@@ -552,22 +552,28 @@ renderGrade = function () {
 
   h += t68Html(R);
 
-  h += `<details class="g-sec g29-fold" id="g29-about"><summary><span class="g-sec-t">How the grade works</span></summary>
-    <div class="g29-scale">
-      <div><b>8.5 to 10</b>Tournament-ready</div><div><b>${R.noRes ? '7 and up' : '7 to 8.4'}</b>Strong</div><div><b>5 to 6.9</b>Fixable</div>
-      <div><b>3 to 4.9</b>Needs work</div><div><b>under 3</b>Does not function</div>
-    </div>${R.noRes ? `<p class="g29-about-p">No tournament results match this deck yet, so a grade of 7 and up is called Strong.</p>` : ''}
-    <p class="g29-about-p"><b>Synergy</b> checks that your cards support each other: every attacker can pay for its attacks,
-    evolutions have what they evolve from, and the deck can draw and search. <b>Power</b> checks that the plan can win:
-    how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.</p>
-    <p class="g29-about-p">The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full,
-    but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the
-    grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are
-    not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and
-    sometimes not. Read the findings and do not worry about the decimal place.</p></details>`;
+  // 3.3.6: the full explainer lives in Questions about RdyDeck on home. The deck page keeps one line
+  // that opens that same answer in a sheet, with this deck's own note and the accuracy line.
+  h += `<div class="gw336"><button type="button" class="gw336-a" onclick="gw336Open()"><svg class="ic"><use href="#i-help"/></svg>How the grade works</button></div>`;
 
   el.innerHTML = h;
 };
+
+// 3.3.6: How the grade works opens the answer from Questions about RdyDeck (#faq-grade on home),
+// so the explanation is written once. Already translated text stays as it is.
+function gw336Open() {
+  const src = document.getElementById('faq-grade');
+  if (!src) return;
+  let extra = '';
+  try {
+    const deck = findDeck(state.activeDeckId), R = deck && g29Grade(deck);
+    if (R && R.noRes) extra += `<p>No tournament results match this deck yet, so a grade of 7 and up is called Strong.</p>`;
+  } catch (_) {}
+  try { if (typeof acc80Line === 'function') { acc80Load(); extra += acc80Line(); } } catch (_) {}
+  const body = [...src.children].filter(n => n.tagName !== 'SUMMARY').map(n => n.outerHTML).join('');
+  openSheet(`<div class="modal-title">How does the deck grade work?</div><div class="gw336-body">${body}${extra}</div>
+    <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
+}
 
 // ═══════════ v29: grade first, practice as one of the tools ═══════════
 // Tapping a deck opens its grade. The prize game is still one tap on the
@@ -622,9 +628,9 @@ buildDeckCard = function (deck) {
 (function () {
   const sub = document.querySelector('#screen-home .app-subtitle');
   if (sub) sub.textContent = 'Can Your Deck Win?';
-  // Tabs: Grade first.
+  // Tabs: Grade first, then Cards (3.3.7: the list before the numbers), then Odds.
   const tabs = document.querySelector('.review-tabs');
-  const order = ['grade', 'odds', 'cards', 'practice'];
+  const order = ['grade', 'cards', 'odds', 'practice'];
   if (tabs) order.forEach(k => { const b = document.getElementById('rv-tab-' + k); if (b) tabs.appendChild(b); });
   const play = document.querySelector('#screen-review .play-btn');
   if (play) { play.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Prize game'; play.setAttribute('aria-label', 'Start a prize game with this deck'); }
