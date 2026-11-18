@@ -128,6 +128,7 @@ I18N_MORE.de = {
     "One fewer": "Eine weniger",
     "One more": "Eine mehr",
     "Added: photo deck import": "Neu: Deck-Import per Foto",
+    "Added: copy for TCG Live": "Neu: Kopieren für TCG Live",
     "Rules": "Regeln",
     // 3.1 What's new
     "Added: card details": "Neu: Kartendetails",

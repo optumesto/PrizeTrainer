@@ -2,7 +2,7 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
-# Next release (branch fix-3.3.3, not live, no version number yet)
+# RdyDeck 3.3.3 (build 122): fixes from Muse's 3.3.2 re-test, numbers, photo deck import and TCG Live copy (18 Nov 2026)
 
 Changed files: js/core.js, js/upgrades.js, js/grade-history.js, js/v29-rotation.js, js/v31-tcgdex.js, js/v40-audit-fixes.js, js/v69-grade-blend.js, js/v71-audit-fixes.js, js/v80-extras.js, js/card-details.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/extras-check.mjs, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.
 
@@ -22,7 +22,7 @@ Numbers:
 - What a number is decides, not its size: a year (after a month or a date, a regulation mark like E 2024, or "in 2026" with nothing counted after it), a date like 11/12/2026, a build or a puzzle number stays as it is.
 - tests/i18n-check.mjs fails on a count of 1000 or more left without grouping in a language that groups it, and checks that 2045 games is grouped while April 2027, Nov 16, 2026, 11/12/2026 and E 2024 stay.
 
-# Next release, also: photo deck import (merged from branch photo-import)
+# 3.3.3, also: photo deck import (merged from branch photo-import)
 
 Changed files: js/photo-scan.js (new: finds the cards in a picture, names each from its art and reads its count), js/photo-import.js (new: the "From a photo" button and the review sheet), art-index.json and art-index.bin (new: a 120 byte fingerprint of the art of every print of every card name that is Standard legal now, older art included, 4,282 prints, about 610 KB, built by build-art-index.mjs), index.html (button, review sheet, styles, file stamps), sw.js (the index is fetched newest first and kept for offline use), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, .github/workflows/art-index.yml, tests/photo-import-check.mjs, tests/photo-import-ui.mjs, tests/photo-import/make-shots.mjs and CHANGES.md.
 

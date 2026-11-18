@@ -67,6 +67,7 @@ const I18N_ES = {
   "One fewer": "Una menos",
   "One more": "Una más",
   "Added: photo deck import": "Nuevo: importar barajas desde una foto",
+  "Added: copy for TCG Live": "Nuevo: copiar para TCG Live",
   "Rules": "Reglas",
   // 3.1 What's new
   "Added: card details": "Nuevo: detalles de las cartas",
@@ -1094,6 +1095,7 @@ const I18N_PT = {
   "One fewer": "Uma a menos",
   "One more": "Uma a mais",
   "Added: photo deck import": "Novo: importar deck por foto",
+  "Added: copy for TCG Live": "Novo: copiar para o TCG Live",
   "Rules": "Regras",
   // 3.1 What's new
   "Added: card details": "Novo: detalhes das cartas",
