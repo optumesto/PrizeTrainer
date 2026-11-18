@@ -3256,6 +3256,17 @@ document.documentElement.classList.add('rd-boot');
   .ev80-step .btn { min-width:44px; min-height:44px; justify-content:center; font-family:var(--mono); font-size:1.1rem; }
   .ev80-step input[type="number"] { width:5.5rem; text-align:center; font-family:var(--mono); font-size:max(16px, 1rem); -moz-appearance:textfield; }
   .ev80-step input::-webkit-outer-spin-button, .ev80-step input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .pr81-form { display:flex; flex-direction:column; gap:0.45rem; margin:0.8rem 0 0.4rem; }
+  .pr81-form select, .pr81-form input[type="date"], .pr81-form input[type="number"] { min-height:44px; padding:0 0.6rem; font:inherit; font-size:max(16px, 1rem); color:var(--text); background:var(--surface-2, transparent); border:1px solid var(--line-2); border-radius:var(--r-sm); max-width:100%; }
+  .pr81-r { display:flex; align-items:center; gap:0.5rem; margin:0 0 0.4rem; }
+  .pr81-rn { flex:0 0 4.5rem; color:var(--text-2); font-size:0.875rem; }
+  .pr81-r .pr81-opp { flex:1; min-width:0; }
+  .pr81-r .pr81-res { flex:0 0 5.5rem; }
+  .pr81-rb { display:flex; gap:0.5rem; flex-wrap:wrap; }
+  .pr81-ck { display:flex; gap:0.5rem; align-items:flex-start; color:var(--text); font-size:0.9375rem; line-height:1.4; }
+  .pr81-ck input { width:20px; height:20px; margin-top:0.1rem; flex:0 0 auto; }
+  .pr81-what { margin-top:0.6rem; }
+  .pr81-done { color:var(--text-3); font-size:0.875rem; }
   #ns80-card .dc-banner span { font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
   #acc80 a { color:var(--text); }
 </style>
@@ -3997,7 +4008,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v40-audit-fixes.js?v=65f69221"></script>
 <script src="js/v45-sample-share-daily.js?v=eb597a35"></script>
 <script src="js/v47-prerelease.js?v=a13ae718"></script>
-<script src="js/matchups.js?v=20956e9f"></script>
+<script src="js/matchups.js?v=5accb9c5"></script>
 <script src="js/main-attacker.js?v=b5478c10"></script>
 <script src="js/v65-hide-delete.js?v=8172c39e"></script>
 <script src="js/v67-edit-cards.js?v=095aa513"></script>
@@ -4030,6 +4041,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/owned-prices.js?v=8b924a94"></script>
 <script src="js/grade-history.js?v=9e2ac9b6"></script>
 <script src="js/v80-extras.js?v=d4afb917"></script>
+<script src="js/v81-player-results.js?v=4c266b87"></script>
 <script src="js/easier-first-visit.js?v=d07af246"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
 <script src="js/card-details.js?v=f998dbda"></script>
@@ -4039,8 +4051,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=d911b68a"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=9bfc873d"></script>
+<script src="js/i18n.js?v=c90558f6"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=247b8438"></script><script src="js/i18n-de.js?v=18635644"></script><script src="js/i18n-it.js?v=2a319e18"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=991f5d45"></script><script src="js/i18n-de.js?v=2d9ed66d"></script><script src="js/i18n-it.js?v=680bc3c6"></script></template>
 </body>
 </html>

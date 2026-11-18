@@ -7,6 +7,7 @@
 # same reads meta-cards.json (what each deck's lists run, for the deck builder).
 # Last, checks how well grades track those results and writes grade-results.md, and the public
 # scoreboard (accuracy.json, shown on how-grading-works.html and in the app).
+# 3.4: then adds player-reported results to matchups.json when the repo variable PLAYER_RESULTS is on.
 name: Refresh data.json
 
 on:
@@ -91,6 +92,17 @@ jobs:
         # A failed run keeps last week's page; it never blocks the refresh.
         continue-on-error: true
         run: node build-pages.mjs --only=how-grading-works.html
+
+      - name: Add player-reported results
+        if: ${{ !inputs.cards_only && !inputs.slow }}
+        # 3.4: adds player-submitted event results (totals from rdydeck.com/api/results/summary) to
+        # matchups.json at half weight, as the "Player-reported" source. Runs after the grade check, so
+        # the accuracy scoreboard stays Limitless only. Off unless the repo variable PLAYER_RESULTS is
+        # "on"; with it off, any earlier player results are taken out. A failed run never blocks the refresh.
+        continue-on-error: true
+        env:
+          PLAYER_RESULTS: ${{ vars.PLAYER_RESULTS }}
+        run: node merge-player-results.mjs
 
       - name: Update sitemap dates
         if: ${{ !inputs.cards_only && !inputs.slow }}

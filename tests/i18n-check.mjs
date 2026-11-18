@@ -276,6 +276,25 @@ const SCREENS = [
     w.renderGrade(); await tick(300);
   }],
   ['grade history: holding', async w => { ghLog(w, 0, [], { w: 'c' }, 400); w.renderGrade(); await tick(300); }],
+  // 3.4 (v81): player-reported results. The newest entry gets an event record, the server counts as on and
+  // the age as 13 or older, so Share this result shows; then the share sheet, then the results line with a
+  // player-reported source. The last step puts everything back.
+  ['grade history: share a result', async w => {
+    w.eval(`(() => { const d = state.decks[0], e = d.gradeLog.e[d.gradeLog.e.length - 1]; window.__pr81 = e.t;
+      e.ev = { w: 4, l: 2, t: 1, p: 6 }; pr81On = true; safeLocalSet(AGE32_KEY, 'adult'); renderGrade(); })()`); await tick(300);
+  }],
+  ['share a result', async w => { w.eval('pr81Open(window.__pr81)'); await tick(100); }],
+  ['results: player-reported', async w => {
+    shut(w);
+    w.eval(`(() => { window.__mu81 = JSON.stringify(mu60Data.sources); const s = mu60Data.sources[0];
+      mu60Data.sources.push({ id: 'player', name: 'Player-reported', url: '', events: 12, matches: 40, place: null });
+      renderGrade(); })()`); await tick(300);
+  }],
+  ['results: player-reported only', async w => { w.eval(`mu60SetSrc('player')`); await tick(300); }],
+  ['results: back as they were', async w => {
+    w.eval(`(() => { mu60SetSrc(''); mu60Data.sources = JSON.parse(window.__mu81); const d = state.decks[0], e = d.gradeLog.e[d.gradeLog.e.length - 1];
+      delete e.ev; delete e.pr; pr81On = null; try { localStorage.removeItem(AGE32_KEY); } catch (_) {} renderGrade(); })()`); await tick(300);
+  }],
   ['grade looks off', async w => { w.gf80Open(); await tick(60); }],
   ['grade looks off sent', async w => { await w.gf80Send('too-high'); await tick(60); }],
   // 3.2.7: a grade read from part of the list (marked Not final, with the card data note), then one

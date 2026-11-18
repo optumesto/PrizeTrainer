@@ -48,9 +48,15 @@
 //    Cross-Origin-Resource-Policy, Permissions-Policy, and no
 //    Access-Control-Allow-Origin: * (GitHub Pages' default; nothing needs it).
 //
+// 3.4 (v81) adds /api/results, /api/results/status and /api/results/summary for
+// player-reported event results; see worker/player-results.js. They stay 404s
+// until the variable PLAYER_RESULTS is "on".
+//
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
 // 10 per 60 s) and optionally the secret REPORTS_KEY. With no DB bound, reports
 // are accepted and dropped, so the site itself never depends on them.
+
+import { handleResults } from './player-results.js';
 
 const HOME = 'rdydeck.com';
 const ORIGIN = 'https://optumesto.github.io/PrizeTrainer';
@@ -96,17 +102,19 @@ const DATA_SRC = ['https://api.tcgdex.net', 'https://api.pokemontcg.io'];
 const ART_SRC = ['https://images.pokemontcg.io', 'https://assets.tcgdex.net', 'https://limitlesstcg.nyc3.digitaloceanspaces.com'];
 // Cloudflare Web Analytics, which Cloudflare adds to pages itself.
 const STATS_SCRIPT = 'https://static.cloudflareinsights.com', STATS_SEND = 'https://cloudflareinsights.com';
+// 3.4: Cloudflare Turnstile, only used by the player results form when TURNSTILE_SITEKEY is set.
+const TURNSTILE = 'https://challenges.cloudflare.com';
 
 // The whole list, reported but not enforced. Inline scripts and styles are
 // allowed because the pages use them (inline <script> blocks and onclick=).
 export const CSP_REPORT_ONLY = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' " + [STATS_SCRIPT, ...AD_SRC].join(' '),
+  "script-src 'self' 'unsafe-inline' " + [STATS_SCRIPT, TURNSTILE, ...AD_SRC].join(' '),
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "connect-src 'self' " + [...DATA_SRC, ...ART_SRC, STATS_SEND, ...AD_SRC, 'https://csi.gstatic.com'].join(' '),
-  "frame-src " + AD_SRC.join(' '),
+  "frame-src " + [TURNSTILE, ...AD_SRC].join(' '),
   "worker-src 'self'",
   "manifest-src 'self'",
   "media-src 'self'",
@@ -280,6 +288,11 @@ export default {
       return new Response(request.method === 'HEAD' ? null : JSON.stringify({ ads: adsAllowed(request) }), {
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store, private', 'X-Robots-Tag': 'noindex' },
       });
+    }
+    // v81: player-reported event results (worker/player-results.js). Off until PLAYER_RESULTS is "on".
+    if (url.pathname.startsWith('/api/results')) {
+      const r = await handleResults(request, env, ctx, url, ORIGIN, HOME).catch(() => null);
+      return r || notFound(request);
     }
     if (url.pathname === '/api/reports' && request.method === 'GET') {
       const r = await showReports(url, env).catch(() => null);

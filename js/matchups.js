@@ -12,7 +12,7 @@ const MU60_KEY = 'pt_mu60';
 const MU60_PICK = 'pt_mu60_pick';
 const MU60_FEW = 20;      // fewer matches than this is too few to trust
 const MU60_CLOSE = 0.45;  // how alike a deck must be to count as that archetype
-const MU60_SRC = { online: 'Online', inperson: 'In person' };
+const MU60_SRC = { online: 'Online', inperson: 'In person', player: 'Player-reported' };
 let mu60Data = null, mu60Busy = false, mu60Tried = false, mu60Src = '';
 
 const mu60Id = v => typeof v === 'string' && /^[a-z0-9-]{1,50}$/.test(v) ? v : null;
@@ -306,9 +306,14 @@ function mu60Section(deck) {
   const span = data.from ? `since ${esc(data.from)} came out (${days})` : days;
   const from = data.sources.filter(s => !mu60Src || s.id === mu60Src);
   const events = from.reduce((a, s) => a + s.events, 0);
+  // v81: player-reported results (merge-player-results.mjs) are their own source, named as such.
+  const lim = from.filter(s => s.id !== 'player'), ply = from.find(s => s.id === 'player');
+  const limN = lim.reduce((a, s) => a + s.events, 0);
+  const where = !ply ? `${events} Limitless ${srcIds.length > 1 && !mu60Src ? 'tournaments' : (from[0] ? esc(from[0].name.replace(/^Limitless /, '')) : 'tournaments')}`
+    : lim.length ? `${limN} Limitless online tournaments and ${ply.events} player-reported events` : `${ply.events} player-reported events`;
 
   let h = `<div class="g-sec" id="mu60-sec"><div class="g-sec-t">Against the meta</div>
-    <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${srcIds.length > 1 && !mu60Src ? 'tournaments' : (from[0] ? esc(from[0].name.replace(/^Limitless /, '')) : 'tournaments')}, ${span}.</div>
+    <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${where}, ${span}.</div>${ply ? `<div class="g-sec-i">Player-reported results count half as much as Limitless results.</div>` : ''}
     <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;
 
   if (!arch) {
