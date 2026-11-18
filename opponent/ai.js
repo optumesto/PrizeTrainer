@@ -36,9 +36,14 @@ function view(s0, k, rnd) {
   const P = s.players[k], O = s.players[1 - k];
   // While k is searching or looking through the deck, k can see what is in it (not its order).
   const ask = s.pending && s.pending.ask, open = !!ask && /^(search|look)$/.test(ask.kind) && (ask.who != null ? ask.who : s.pending.who != null ? s.pending.who : s.cur) === k;
-  if (open) G.shuffle(P.deck, rnd);
+  // The same goes for a card effect that offers cards from k's deck by name (its offer is already on the table).
+  const offered = ask && ask.kind === 'hook' && (ask.choices || []).some(u => typeof u === 'number' && P.deck.some(y => y.uid === u));
+  if (open || offered) G.shuffle(P.deck, rnd);
   else { const mine = G.shuffle(P.deck.concat(P.prizes), rnd); P.deck = mine.slice(0, P.deck.length); P.prizes = mine.slice(P.deck.length); }
-  const theirs = G.shuffle(O.hand.concat(O.deck, O.prizes), rnd);
+  // A revealed hand (Eri, Xerosic's Machinations) stays as it is while k picks from it.
+  const seen = ask && ask.kind === 'hook' && (ask.choices || []).some(u => typeof u === 'number' && O.hand.some(y => y.uid === u));
+  const theirs = G.shuffle((seen ? [] : O.hand).concat(O.deck, O.prizes), rnd);
+  if (seen) { O.deck = theirs.slice(0, O.deck.length); O.prizes = theirs.slice(O.deck.length); return s; }
   O.hand = theirs.slice(0, O.hand.length); O.deck = theirs.slice(O.hand.length, O.hand.length + O.deck.length); O.prizes = theirs.slice(O.hand.length + O.deck.length);
   return s;
 }

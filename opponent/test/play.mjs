@@ -30,7 +30,8 @@ export function controller(level, seed, opts) {
 /**
  * The smart checks, on one player's turns:
  * koAvail/koTaken: turns that started with a sure Knock Out on the opponent's Active (found by the puzzle
- *   solver, with the deck face down and every coin tails) and how many of those it took.
+ *   solver, with the deck face down and every coin tails) and how many of those it took (or took as many
+ *   Prize cards another way).
  * winAvail/winTaken: the same for taking the last Prize cards.
  * attackAvail/attacked: turns where an attack could be paid, and how many of those it attacked in.
  * gusts/gustKO: gusts played, and how many were followed by a Knock Out that turn.
@@ -50,12 +51,12 @@ function oracle(s, goal) {
 export function playGame(listA, listB, ctl, seed, meter) {
   let s = G.newGame([listA.cards, listB.cards], { seed });
   for (const k of [0, 1]) { const p = ctl[k].setup(s, k); s = G.setUp(s, k, p.active, p.bench); }
-  let n = 0, turnStart = null;
+  let n = 0, turnStart = null; const ctlName = ctl.map(c => c.level);
   const startTurn = () => {
     const k = s.cur, M = meter && meter[k]; if (!M) return;
     M.turns++;
     const O = s.players[1 - k];
-    const t = { k, opp: O.active && O.active.id, kos: s.koIds.length, prizes: O.prizes.length, attackable: false, attacked: false, gusted: false };
+    const t = { logAt: s.log.length, k, opp: O.active && O.active.id, oppVal: O.active ? E.prizeValue(s, O.active) : 1, myPrizes: s.players[k].prizes.length, kos: s.koIds.length, prizes: O.prizes.length, attackable: false, attacked: false, gusted: false };
     if (s.turn > 1 || !s.first) {
       const r = oracle(s, { t: 'koActive' }); if (!r.complete) M.oracleCut++;
       t.ko = !!r.win; if (t.ko) M.koAvail++;
@@ -65,8 +66,10 @@ export function playGame(listA, listB, ctl, seed, meter) {
   };
   const endTurn = () => {
     const t = turnStart, M = t && meter && meter[t.k]; if (!M) return;
-    const took = s.koIds.slice(t.kos).includes(t.opp);
+    // A sure KO counts as taken when the Active went down, or the turn took at least as many Prize cards some other way (a better gust target).
+    const took = s.koIds.slice(t.kos).includes(t.opp) || (t.myPrizes - s.players[t.k].prizes.length) >= t.oppVal;
     if (t.ko && took) M.koTaken++;
+    if (t.ko && !took && process.env.MISS) console.log('MISSED KO', ctlName[t.k], 'seat', t.k, 'turn', s.turns.join('/'), '\n  ' + s.log.slice(t.logAt).join('\n  '));
     if (t.win && G.winner(s) === t.k) M.winTaken++;
     if (t.attackable) M.attackAvail++;
     if (t.attackable && t.attacked) M.attacked++;
@@ -85,7 +88,9 @@ export function playGame(listA, listB, ctl, seed, meter) {
       if (a.t === 'attack') turnStart.attacked = true;
       if (a.t === 'trainer') { const x = s.players[s.cur].hand.find(y => y.uid === a.uid); const st = x && E.readTrainer(x).steps; if (st && st.some(z => z.t === 'gust')) turnStart.gusted = true; }
     }
-    s = G.step(s, a); n++;
+    const before = s; s = G.step(s, a); n++;
+    if (process.env.CHECK) for (const P of s.players) for (const z of ['hand', 'deck', 'discard', 'prizes']) if (P[z].some(x => !x || !x.card)) {
+      console.log('EMPTY CARD in', z, 'after', JSON.stringify(a), '\n  ' + s.log.slice(-8).join('\n  ')); process.exit(1); }
   }
   endTurn();
   return { winner: G.winner(s), turns: s.turns.slice(), prizesLeft: s.players.map(p => p.prizes.length), deckOut: s.log.some(l => /deck|can't draw/i.test(l) && /lose|lost/i.test(l)), actions: n };
