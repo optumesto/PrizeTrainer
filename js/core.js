@@ -497,6 +497,7 @@ function openReview(deckId) {
 const ENRICH_VER = 21;  // 3.2.7: re-read to store attacks that discard cards from your hand or deck (outlets for discard pile revival). 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
+const _dataRetry = new Map();   // 3.3.3: reads this visit that could not ask for every card
 
 function deckNeedsData(deck) {
   if ((deck.enrichVer || 0) < ENRICH_VER) return true;
@@ -522,6 +523,14 @@ async function refreshDeckData(deck) {
   let cov = null;
   try { cov = await enrichDeckCards(deck.cards); } catch (_) {}
   _dataBusy.delete(deck.id);
+  // 3.3.3 (Muse 3.3.2 retest): a saved deck kept Gastly's text from another printing when pokemontcg.io did not
+  // answer the one read a visit, while a fresh import of the same list read its own. A read that could not ask is
+  // tried again when the deck is opened next, up to three reads a visit.
+  if ((!cov || cov.partial || cov.otherLeft) && (deck.cards || []).some(c => c && c.byName)) {
+    const n = (_dataRetry.get(deck.id) || 0) + 1;
+    _dataRetry.set(deck.id, n);
+    if (n < 3) _dataTried.delete(deck.id);
+  }
   // 3.3.2 (Muse 3.3.1 retest): the reading note always ends with the read, whatever screen is open now.
   const done = () => {
     const n = document.getElementById('review-coverage');
@@ -884,6 +893,23 @@ function g332Back(deck, e) {
     if (r && g115Can(deck, x)) return { abil: r.via || '', by: x.name, self: false };
   }
   return null;
+}
+/** 3.3.3 (Muse 3.3.2 retest, Mason's Nov 17 call that revival credit follows the odds): how often a single
+ *  copy that an Ability puts back from your discard pile (Gengar's Netherworld Gate) gets its second life.
+ *  It has to reach play first (or your discard pile, by the revival line's own odds), it must not be in your
+ *  prizes (about 1 game in 10 for one copy), and a reviver that is another Pokemon has to be found too.
+ *  Power counts that share of a second copy. Returns { p, abil, by, self } or null. */
+function g333BackOdds(deck, e, energyTypes) {
+  const b = g332Back(deck, e);
+  if (!b) return null;
+  const c = e.card, qty = deck.reduce((a, y) => a + (y.card && y.card.key === c.key ? y.qty : 0), 0);
+  if (qty !== 1) return null;
+  const pBoard = g115See(g115Reach(deck, c, qty));
+  let pDisc = 0;
+  try { pDisc = g115Odds(deck, { self: true, e, r: { via: b.abil } }, e, g115Outlets(deck, energyTypes || {})).p; } catch (_) {}
+  let p = (1 - (1 - pBoard) * (1 - pDisc)) * (1 - 6 / 60);
+  if (!b.self) { const x = deck.find(y => y.card && y.name === b.by); p *= x ? g115See(g115Reach(deck, x.card, x.qty)) : 0; }
+  return Object.assign({ p: Math.max(0, Math.min(1, p)) }, b);
 }
 /** 3.2.8: the Basic a Stage 2 starts from: read with the card, else from its Stage 1 in the list,
  *  else from the saved list of Standard cards. Rare Candy needs it in play. */
@@ -2164,22 +2190,30 @@ function gViability(deck, coh, main) {
   // v65: a big hit from a single copy with nothing close behind it shows up in few games. Count the copies
   // that can reach the board (an evolution line is only as deep as its thinnest stage, Rare Candy filling in
   // for the Stage 1) across attackers that hit nearly as hard, and trust the hit less when there are few.
+  let back333=null;
   if (bestR && strat !== 'spread' && best > 0) {
     const cand=coh.provided['evolution_access']||0;
-    const lineQ=r=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
+    // 3.3.3: a single copy an Ability brings back (Gengar's Netherworld Gate) counts as part of a second copy,
+    // by the odds its second life comes together (g333BackOdds). nb leaves that out, for the breakdown's credit line.
+    const backOf=new Map();
+    const lineQ=(r,nb)=>{ const e2=deck.find(x=>x.card&&x.name===r.name); let q=r.qty, c2=e2&&e2.card, g=0;
+      const bk=!nb&&e2?(backOf.has(r.name)?backOf.get(r.name):(backOf.set(r.name,g333BackOdds(deck,e2,coh.energyTypes)),backOf.get(r.name))):null;
       while (c2 && c2.from && g++<3) { const m=deck.find(x=>x.card&&gk(x.card.key)===gk(c2.from));
         if (!m) { if (c2.stage==='stage2') { q=Math.min(q,cand/2); // v67: 1 Rare Candy is half a line here, not none, so Power agrees with Synergy that it can be played
             const b2=g116Base(deck,c2); if (b2) q=Math.min(q,deck.filter(x=>x.card&&gk(x.card.key)===gk(b2)).reduce((n,x)=>n+x.qty,0)); } break; }
         q=Math.min(q, deck.filter(x=>x.card&&x.card.key===m.card.key).reduce((n,x)=>n+x.qty,0)+(c2.stage==='stage2'?cand:0)); c2=m.card; }
-      return q; };
+      return bk&&q>0 ? q+Math.min(1,bk.p) : q; };
     const av=n=>n>=3?1:n>=2?0.97+0.03*(n-2):n>=1?0.75+0.22*(n-1):0.5+0.25*n;
     // Attackers within 85% of the hit count in full, weaker ones down to half of it count in part.
-    const relOf=r=>av(reach.filter(o=>o.eff>=0.5*r.eff).reduce((n,o)=>n+lineQ(o)*Math.min(1,(o.eff/r.eff)/0.85)**2,0));
-    const rel=Math.max(...reach.map(r=>Math.min(1,r.eff/Math.max(1,bestR.eff))*relOf(r)));
+    const relOf=(r,nb)=>av(reach.filter(o=>o.eff>=0.5*r.eff).reduce((n,o)=>n+lineQ(o,nb)*Math.min(1,(o.eff/r.eff)/0.85)**2,0));
+    const relAll=nb=>Math.max(...reach.map(r=>Math.min(1,r.eff/Math.max(1,bestR.eff))*relOf(r,nb)));
+    const rel=relAll(false), mult=x=>x<0.999?0.4+0.6*x:1;
+    const bk=[...backOf.entries()].find(([n,v])=>v&&n===bestR.name);
+    if (bk) back333={ name:bk[0], abil:bk[1].abil, by:bk[1].self?'':bk[1].by, p:bk[1].p, d:Math.max(0, closeScore*(mult(rel)-mult(relAll(true)))) };
     if (rel<0.999) { closeScore*=0.4+0.6*rel;
       // A deck with 3 or more other attackers near the top hit covers the loss, so it gets no warning.
-      if (relOf(bestR)<0.8 && reach.filter(o=>o!==bestR&&o.eff>=0.6*bestR.eff).length<3) findings.push({sev:'warn', t:`Only ${lineQ(bestR)||'no'} ${gCap(bestName)} to hit with`,
-        d:`Your hardest hit comes from ${gCap(bestName)}, and the list can put ${lineQ(bestR)<=1?'only one':'few'} into play, with no other attacker close to it. When it is prized or Knocked Out, your damage drops a lot.`}); } }
+      if (relOf(bestR)<0.8 && reach.filter(o=>o!==bestR&&o.eff>=0.6*bestR.eff).length<3) findings.push({sev:'warn', t:`Only ${lineQ(bestR,true)||'no'} ${gCap(bestName)} to hit with`,
+        d:`Your hardest hit comes from ${gCap(bestName)}, and the list can put ${lineQ(bestR,true)<=1?'only one':'few'} into play, with no other attacker close to it. When it is prized or Knocked Out, your damage drops a lot.`}); } }
   closeScore=gClamp(closeScore,0,1);
   // v63: a lock, mill or stall deck closes games by stopping the opponent. When that counts for more
   // than its damage, the grade uses it and the damage finding says why low damage is fine here.
@@ -2320,9 +2354,11 @@ function gViability(deck, coh, main) {
   // 3.2.8 (Muse s5 M3): what top lists run comes from the archetype's own top lists (g88Claims in gradeDeck).
   // 3.3.2 (Muse 3.3.1 retest): a main attacker an Ability puts back from the discard pile (Gengar's Netherworld
   // Gate) comes back after a knockout, so one copy is not a single life and the grade does not ask for a second.
-  const back332 = main && qtyK(main.key)===1 ? g332Back(deck, deck.find(x=>x.card&&x.card.key===main.key)) : null;
-  if (back332) findings.push({sev:'ok', t:`${gCap(main.name)} comes back`,
-    d:`The list runs one copy of its main attacker, and ${back332.self ? `its ${back332.abil}` : `${gCap(back332.by)}'s ${back332.abil}`} puts it back onto your Bench from your discard pile, so a Knock Out does not end the plan. It is still in your prizes in about 1 game in 10.`});
+  // 3.3.3 (Muse 3.3.2 retest): it says how often that second life comes together, and what Power counts for it.
+  const back332 = main && qtyK(main.key)===1 ? g333BackOdds(deck, deck.find(x=>x.card&&x.card.key===main.key), coh.energyTypes) : null;
+  if (back332) { const pc=Math.round(100*back332.p), cr=back333&&back333.name===main.name;
+    findings.push({sev:'ok', t:`${gCap(main.name)} comes back`,
+    d:`The list runs one copy of its main attacker, and ${back332.self ? `its ${back332.abil}` : `${gCap(back332.by)}'s ${back332.abil}`} puts it back onto your Bench from your discard pile, so a Knock Out does not end the plan. That second life comes together in about ${pc}% of games, since ${gCap(main.name)} has to reach play or your discard pile first and is in your prizes in about 1 game in 10.${cr ? ` Power counts it as ${pc}% of a second copy.` : ''}`}); }
   else if (main && qtyK(main.key)===1) findings.push({sev:'warn', t:`Only 1 ${gCap(main.name)}`, cl:{ n:main.name, q:1 },
     d:`The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan.`});
   // 2.6.6: setup speed also reads how often the attacker is in play with the Energy its attack needs, from
@@ -2342,7 +2378,7 @@ function gViability(deck, coh, main) {
       if (speed.used) clockScore=Math.min(1, v); } } catch (_) {} }
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
-  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce:ceS, strat, multiN, pkN, engQ, speed };
+  const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce:ceS, strat, multiN, pkN, engQ, speed, back:ctl?null:back333 };
   // 3.3.2: setup pieces left out of the ceiling, for How it plays.
   const setupOut = []; reach.forEach(r => { const a = gSetupAtk(cardOf(r)); if (a && sideSup(r) && ceOf(r) > ce && !setupOut.some(x => x.name === r.name)) setupOut.push({ name: r.name, atk: a.name, cost: (a.cost || []).length, hit: r.atk }); });
   return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, ctlMix, parts, setupOut };
@@ -5146,6 +5182,10 @@ function renderHandStrip() {
 
 // ═══════════ v23: shared helpers ═══════════
 const DAILY_ID = '__daily';
+// 3.3.3 (Muse 3.3.2 retest): deck.daily is two things. On the Daily challenge deck it is true; on a saved deck it is
+// the per-day practice rollup (an object, see ensureDaily). Checks that mean the Daily challenge ask this, so a saved
+// deck someone has practiced with keeps its Upgrades, grade history, results blend, legality cap and rotation read.
+function isDailyChallenge(d) { return !!d && (d.daily === true || d.id === DAILY_ID); }
 const ic23 = id => `<svg class="ic"><use href="#i-${id}"/></svg>`;
 const EN23 = { g: 'Grass', r: 'Fire', w: 'Water', l: 'Lightning', p: 'Psychic', f: 'Fighting', d: 'Darkness', m: 'Metal', y: 'Fairy', n: 'Dragon', c: 'Colorless' };
 const cn23 = n => String(n || '').replace(/\{([a-zA-Z])\}/g, (m, l) => EN23[l.toLowerCase()] || '').replace(/\s+/g, ' ').trim();
@@ -9824,6 +9864,7 @@ async function enrichDeckCards(cards) {
     cov.pct = cov.total ? Math.round(cov.resolved / cov.total * 100) : 0;
   }
   if (cov && map.partial) cov.partial = true;
+  if (cov && map.otherLeft) cov.otherLeft = true;
   if (mismatched && cov) {
     cov.resolved = Math.max(0, (cov.resolved || 0) - mismatched);
     cov.unresolved = (cov.unresolved || 0) + mismatched;

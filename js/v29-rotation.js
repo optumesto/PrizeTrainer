@@ -394,7 +394,10 @@ function g67PowWhy(R) {
     ? `${gCap(sp.name)} is in play with ${sp.n === 1 ? 'the 1 Energy' : `the ${sp.n} Energy`} ${sp.atk} needs${sp.board > 1 ? `, with ${sp.board} Pokemon in play,` : ''} by your second turn in ${pc(sp.t2)} of games and by your third in ${pc(sp.t3)}, from shuffles of this list, so it is ${P.clock >= 0.995 ? 'as quick to set up as any list' : 'quick to set up'}.`
     : one(of('clock')) || (P.stage2 ? '' : 'No Stage 2 line to wait on, which is the usual mark for a deck of Basics and Stage 1s.');
   return [
-    { k: 'Damage', w: '50%', v: 10 * P.close, t: one(of('close')) || 'How hard the best attacker hits the format\'s biggest threats.' },
+    // 3.3.3 (Muse 3.3.2 retest): the revival credit (Gengar's Netherworld Gate) is its own line in the breakdown.
+    { k: 'Damage', w: '50%', v: 10 * P.close, t: (one(of('close')) || 'How hard the best attacker hits the format\'s biggest threats.') +
+      (P.back ? ` ${gCap(P.back.name)} coming back with ${P.back.by ? gCap(P.back.by) + "'s " : ''}${P.back.abil}, in about ${Math.round(100 * P.back.p)}% of games, ` +
+        (10 * P.back.d >= 0.05 ? `adds ${(10 * P.back.d).toFixed(1)} to Damage.` : `adds less than 0.1 to Damage, since other attackers in the list already cover a Knock Out.`) : '') },
     { k: 'Prize trade', w: '30%', v: 10 * P.prize, t: (P.pkN ? (P.multiN ? `${P.multiN >= P.pkN ? `All ${P.pkN}` : `${P.multiN} of your ${P.pkN}`} Pokemon give up 2 or more prizes. ` : 'Every Pokemon gives up one prize. ') : '') + one(of('prize')) },
     { k: 'Setup speed', w: '20%', v: 10 * P.clock, t: clockTxt },
   ];

@@ -86,7 +86,7 @@ const up75Yield = () => new Promise(r => setTimeout(r, 0));
  * { out, in, from, to, syn: [a, b], pow: [a, b], note } and all is the grade after the best swaps in a row.
  */
 async function up75Find(deck) {
-  if (!deck || deck.daily || deck.format === 'expanded' || deck.format === 'prerelease') return { why: 'format' };
+  if (!deck || isDailyChallenge(deck) || deck.format === 'expanded' || deck.format === 'prerelease') return { why: 'format' };
   if (!(deck.cards || []).some(c => c.supertype)) return { why: 'data' };
   if (rules34Breaches(deck).length) return { why: 'rules' };
   const R0 = gradeDeck(deck);
@@ -207,11 +207,12 @@ async function up75Find(deck) {
     const parts = [];
     if (syn(s.R) !== syn(R0)) parts.push(`Synergy ${syn(R0).toFixed(1)} to ${syn(s.R).toFixed(1)}`);
     if (pow(s.R) !== pow(R0)) parts.push(`Power ${pow(R0).toFixed(1)} to ${pow(s.R).toFixed(1)}`);
-    return (parts.length ? parts.join(', ') + '. ' : '') + u;
+    // 3.3.3 (Muse 3.3.2 retest): each sentence is its own piece, so each one is translated on its own.
+    return [parts.length ? parts.join(', ') + '.' : '', u].filter(Boolean);
   };
   // 3.0: each swap also names the printing of the card it adds, for its price (js/owned-prices.js).
   const swapOf = s => ({ out: s.o.name, in: s.a.name, from: R0.overall, to: s.R.overall,
-    syn: [syn(R0), syn(s.R)], pow: [pow(R0), pow(s.R)], note: note(s),
+    syn: [syn(R0), syn(s.R)], pow: [pow(R0), pow(s.R)], note: note(s).join(' '), notes: note(s),
     inSet: (s.a.card && s.a.card.set) || s.a.set || '', inNum: (s.a.card && s.a.card.num) || s.a.num || '' });
   const swaps = pick.map(swapOf);
   // 3.0: more of the swaps that raise the grade, best first, so "Suggest cards I own first" and
@@ -260,14 +261,14 @@ function up75Html(res, hasFix) {
   const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
   const moved = s => s.to > s.from;
   const rows = res.swaps.map(s => `<div class="up75-row"><div class="up75-h"><span class="up75-n">Swap 1 ${esc(s.out)} for 1 ${esc(s.in)}</span>${moved(s) ? `<span class="up75-g">${g(s.from, s.to)}</span>` : ''}</div>
-    ${s.note ? `<p>${esc(s.note)}</p>` : ''}${typeof op30UpTag === 'function' ? op30UpTag(s) : ''}</div>`);
+    ${s.note ? `<p>${(s.notes || [s.note]).map(x => `<span>${esc(x)}</span>`).join(' ')}</p>` : ''}${typeof op30UpTag === 'function' ? op30UpTag(s) : ''}</div>`);
   const best = Math.max(...res.swaps.map(s => s.to));
   if (res.all && (res.all.to > best || res.all.syn[1] > Math.max(...res.swaps.map(s => s.syn[1])) || res.all.pow[1] > Math.max(...res.swaps.map(s => s.pow[1])))) {
     const parts = [];
     if (res.all.syn[1] !== res.all.syn[0]) parts.push(`Synergy ${g(res.all.syn[0], res.all.syn[1])}`);
     if (res.all.pow[1] !== res.all.pow[0]) parts.push(`Power ${g(res.all.pow[0], res.all.pow[1])}`);
     rows.push(`<div class="up75-row all"><div class="up75-h"><span class="up75-n">Best ${res.all.n} swaps together</span>${moved(res.all) ? `<span class="up75-g">${g(res.all.from, res.all.to)}</span>` : ''}</div>
-    <p>${res.all.swaps.map(s => `${esc(s.out)} for ${esc(s.in)}`).join(', ')}.${parts.length ? ' ' + parts.join(', ') + '.' : ''}</p></div>`);
+    <p><span>${res.all.swaps.map(s => `${esc(s.out)} for ${esc(s.in)}`).join(', ')}.</span>${parts.length ? ' <span>' + parts.join(', ') + '.</span>' : ''}</p></div>`);
   }
   const any = res.swaps.some(moved) || (res.all && moved(res.all));
   const intro = any ? 'Each number comes from grading the list with that swap made.'

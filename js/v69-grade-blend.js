@@ -308,7 +308,7 @@ function g88Line(R) {
 }
 function g68Blend(R, deck) {
   if (!R || !deck || !mu60Data) return R;
-  if (deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily || R.rawOverall != null) return R;
+  if (deck.format === 'expanded' || deck.format === 'prerelease' || isDailyChallenge(deck) || R.rawOverall != null) return R;
   if (!(deck.cards || []).some(c => c.supertype)) return R;
   const m = g68Arch(deck, mu60Data, R);
   // 3.2.8 (Muse M1): no tournament results match this deck, so the grade is the cards alone. It says so
@@ -382,7 +382,7 @@ function g68Line(R) {
 const G79_TYP = 8.8, G79_GAP = 0.5, G79_MIN = 100, G79_MOVE = 2;
 function g79Section(deck) {
   const data = mu60Data;
-  if (!data || !deck || deck.format === 'expanded' || deck.format === 'prerelease' || deck.daily) return '';
+  if (!data || !deck || deck.format === 'expanded' || deck.format === 'prerelease' || isDailyChallenge(deck)) return '';
   const R = g29Grade(deck);
   if (!R || R.rawOverall != null) return '';
   const arch = (R.res && data.decks.find(d => d.id === R.res.id)) || (g68Arch(deck, data) || {}).deck;

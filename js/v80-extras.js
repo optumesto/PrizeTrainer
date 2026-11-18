@@ -363,7 +363,7 @@ function ns80Render() {
   if (!el && wn) { el = document.createElement('div'); el.id = 'ns80-card'; wn.parentNode.insertBefore(el, wn); }
   if (!el) return;
   const s = ns80Set();
-  const decks = (state.decks || []).filter(d => !d.daily && d.format !== 'expanded' && d.format !== 'prerelease' && (d.cards || []).some(c => c.supertype));
+  const decks = (state.decks || []).filter(d => !isDailyChallenge(d) && d.format !== 'expanded' && d.format !== 'prerelease' && (d.cards || []).some(c => c.supertype));
   if (!s || !decks.length || safeLocalGet(NS80_KEY) === s.code) { el.innerHTML = ''; return; }
   let n = 0;
   try { for (const d of decks) { const k = r29Counts(r29Rows(d)); if (k.out || k.risk) n++; } } catch (_) {}

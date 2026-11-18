@@ -258,6 +258,63 @@ ok(ns && /Delta Reign is out/.test(ns.textContent), 'home says the new set is ou
 w.ns80Close();
 ok(ns && ns.innerHTML === '', 'Close hides the new set line');
 
+// 3.3.3 (Muse 3.3.2 retest): a saved deck someone has practiced with keeps its per-day practice
+// rollup in deck.daily (an object). That is not the Daily challenge, so the deck keeps its Upgrades,
+// its grade history, its results blend and its grade, the same as before it was practiced.
+{
+  const deck = a.deck;
+  const howBefore = ((d.querySelector('#grade-body .g29-how') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+  deck.daily = { '2026-11-10': { g: 2, s: 9, p: 12, t: 240 } }; deck.dailyVer = 1;
+  // As after a reload: nothing graded yet this visit, and a log whose only entry is an older grade (Toxtricity's 8.4).
+  const e0 = deck.gradeLog.e[0];
+  deck.gradeLog = { v: 1, l: deck.gradeLog.l, x: {}, e: [Object.assign({}, e0, { g: Math.round((parseFloat(a.score) - 0.6) * 10) / 10, w: 's', t: e0.t - 86400000 })] };
+  w.eval('_g29Cache.clear(); _up75Cache.clear()');
+  w.openReview(deck.id); w.showReviewTab('grade');
+  for (let i = 0; i < 40; i++) { await wait(250); if (d.querySelector('#grade-body .g-score') && !d.querySelector('#grade-body .g71-wait') && d.getElementById('up75-sec') && !/Checking which card swaps/.test(d.getElementById('up75-sec').textContent)) break; }
+  const sc = ((d.querySelector('#grade-body .g-score') || {}).textContent || '').replace(/\/10.*/, '').trim();
+  const howNow = ((d.querySelector('#grade-body .g29-how') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+  ok(sc === a.score, `a practiced deck grades the same: ${sc}, was ${a.score}`);
+  ok(howNow === howBefore, 'a practiced deck keeps its results blend in the sentence under the grade');
+  const upRes = await w.up75Find(deck);
+  ok(upRes && upRes.why !== 'format', 'Upgrades looks for swaps on a practiced deck (' + (upRes && (upRes.why || upRes.swaps.length + ' swaps')) + ')');
+  const up = d.getElementById('up75-sec');
+  ok(up && !/Checking which card swaps/.test(up.textContent), 'a practiced deck shows Upgrades: ' + (up ? up.textContent.replace(/\s+/g, ' ').trim().slice(0, 80) : 'missing'));
+  ok(!!d.getElementById('gh72-sec'), 'a practiced deck shows its grade history');
+  const last = deck.gradeLog && deck.gradeLog.e[deck.gradeLog.e.length - 1];
+  ok(last && last.g.toFixed(1) === sc, `its grade history ends on the grade on screen (${last && last.g.toFixed(1)})`);
+  ok(w.eval('isDailyChallenge')(w.eval('dailyDeck()')) && !w.eval('isDailyChallenge')(deck), 'only the Daily challenge deck counts as the Daily challenge');
+}
+
+// 3.3.3 (Muse 3.3.2 retest): Kingdra ex. Played thin to set up with King's Order beside another main attacker,
+// its Hydro Pump is left out of the damage the grade counts (3.3.2). As the deck's own main attacker, Hydro
+// Pump still counts. And a single main attacker an Ability brings back (Gengar's Netherworld Gate) earns
+// Power by the odds its second life comes together, with a line in Why Power is.
+{
+  const res = JSON.parse(w.eval(`(() => {
+    const src = state.decks.find(x => x.starter === STARTER_DECKS[0].id);
+    const base = () => toGradeDeck(src).map(e => Object.assign({}, e, { card: e.card && Object.assign({}, e.card) }))
+      .filter(e => !/Munkidori|Blaziken|Torchic|Chi-Yu|Meowth|Fezandipiti/.test(e.name));
+    const flat = en => en.forEach(e => { if (e.card && e.card.attacks) e.card.attacks = e.card.attacks.map(a => Object.assign({}, a, { fx: null })); });
+    const kingdra = q => ({ name: 'Kingdra ex', qty: q, card: { t: 'pkmn', key: 'kingdra ex', stage: 'basic', from: null, hp: 320, isEx: true, p: 2, types: ['water'], provides: [], requires: [],
+      attacks: [{ name: "King's Order", cost: ['water'], dmg: 0, max: 0, rev: { self: false }, fx: null, copy: null },
+                { name: 'Hydro Pump', cost: ['water', 'water', 'water'], dmg: 250, early: 250, max: 250, conf: 'high', fx: null, copy: null }] } });
+    const water = { name: 'Basic Water Energy', qty: 14, card: { t: 'energy', key: 'basic water energy', etype: 'water', etypes: ['water'], basic: true, provides: [] } };
+    const grade = en => { const coh = gCoherence(en), main = gMainAttacker(en, coh, null), v = gViability(en, coh, main);
+      return { main: main && main.name, best: v.bestName, out: (v.setupOut || []).map(x => x.name), power: v.score, back: v.parts.back, f: v.findings.map(x => x.t + ' :: ' + x.d), why: g67PowWhy({ via: v })[0].t }; };
+    const side = base(); flat(side); side.push(kingdra(1), water);
+    const own = base().filter(e => !/Dragapult|Dreepy|Drakloak/.test(e.name)); flat(own); own.push(kingdra(3), water);
+    const solo = (rev) => { const en = base(); flat(en); const m = en.find(e => e.card && e.card.key === 'dragapult ex'); m.qty = 1;
+      if (rev) m.card.rev = [{ self: true, src: 'ability', via: 'Netherworld Gate' }]; return grade(en); };
+    return JSON.stringify({ side: grade(side), own: grade(own), plain: solo(false), back: solo(true) });
+  })()`));
+  ok(res.side.best !== 'Kingdra ex' && res.side.out.includes('Kingdra ex'), `a thin Kingdra ex beside ${res.side.main} is a setup piece, left out of the damage counted (counts ${res.side.best})`);
+  ok(res.own.main === 'Kingdra ex' && res.own.best === 'Kingdra ex' && !res.own.out.includes('Kingdra ex'), `Kingdra ex as the main attacker still counts Hydro Pump (main ${res.own.main}, counts ${res.own.best})`);
+  const fb = res.back.f.find(x => /comes back ::/.test(x)) || '';
+  ok(res.back.back && res.back.back.p > 0.5 && res.back.back.p < 1 && res.back.power > res.plain.power, `Netherworld Gate adds Power by the odds its second life comes together (${(10 * res.plain.power).toFixed(2)} to ${(10 * res.back.power).toFixed(2)}, ${Math.round(100 * (res.back.back || {}).p)}% of games)`);
+  ok(/comes together in about \d+% of games/.test(fb) && /Power counts it as \d+% of a second copy\./.test(fb), 'the finding says how often the line comes together and what Power counts');
+  ok(/coming back with Netherworld Gate, in about \d+% of games, adds [\d.]+ to Damage\./.test(res.back.why), 'Why Power is has a line for the revival credit: ' + res.back.why);
+}
+
 // No em or en dashes in the new file
 const src = fs.readFileSync(path.join(ROOT, 'js/v80-extras.js'), 'utf8');
 ok(!/[\u2013\u2014]/.test(src), 'no em or en dashes in js/v80-extras.js');

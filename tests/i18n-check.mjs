@@ -455,6 +455,24 @@ for (const lang of LANGS) {
     const badCase = cases.filter(([a, b]) => a !== b);
     ok(!badCase.length, `2045 games reads ${y('2045', lang)} games, years stay years` + (badCase.length ? ': ' + badCase.map(c => JSON.stringify(c)).join(' ') : ''));
   }
+  // 3.3.3 (Muse 3.3.2 retest): the Upgrades block and the Top fixes line, whose swaps the screens here may not reach
+  // (no network for the cards to try). Each piece is translated, with card and deck names kept.
+  {
+    const UPS = ['These raise Synergy or Power. The grade itself stays the same, because Synergy lowers the grade only when a list fits loosely. Each number comes from grading the list with that swap made.',
+      'Each number comes from grading the list with that swap made.', 'Synergy 8.4 to 8.9.', 'Power 8.8 to 9.0.', 'Synergy 8.4 to 8.9, Power 8.8 to 9.0.',
+      '100% of Dragapult Dudunsparce top lists run Dunsparce.', '74% of top lists run Night Stretcher.', 'Right now nothing in the list finds Pokemon.', 'Right now only 3 cards draw.',
+      'grade 8.5 to 8.6', 'Synergy 8.4 to 8.9', 'Power 8.8 to 9.0', 'Best 3 swaps together', "Switch for Night Stretcher, Team Rocket's Watchtower for Dunsparce.",
+      'Suggest cards I own first', 'Cheapest first', 'Top fix', 'Top two fixes', 'Upgrades',
+      // 3.3.3: Gengar's second life, in its finding and in Why Power is.
+      'That second life comes together in about 90% of games, since Gengar has to reach play or your discard pile first and is in your prizes in about 1 game in 10.',
+      'Power counts it as 90% of a second copy.', 'Gengar coming back with Netherworld Gate, in about 90% of games, adds 0.8 to Damage.',
+      'Gengar coming back with Netherworld Gate, in about 90% of games, adds less than 0.1 to Damage, since other attackers in the list already cover a Knock Out.'];
+    if (process.env.I18N_SHOW_UP) UPS.slice(-4).forEach(x => console.log('     ' + w.rdI18n.t(x)));
+    const words = x => x.replace(/[^A-Za-z]+/g, ' ').trim();
+    const keep = ['Dragapult Dudunsparce', 'Dunsparce', 'Night Stretcher', "Team Rocket's Watchtower", 'Switch', 'Gengar', 'Netherworld Gate'];
+    const left = UPS.filter(x => { const r = w.rdI18n.t(x); return words(r) === words(x) || !keep.filter(k => x.includes(k)).every(k => r.includes(k)); });
+    ok(!left.length, `Upgrades and Top fixes read in ${lang} (${UPS.length} pieces)` + (left.length ? ':\n       ' + left.join('\n       ') : ''));
+  }
   ok(!engNums.length && numsSeen > 0, `every number in ${lang} form (${numsSeen} shown)` + (engNums.length ? ':\n       ' + [...new Set(engNums)].slice(0, 30).join('\n       ') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.

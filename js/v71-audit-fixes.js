@@ -35,9 +35,12 @@ function g71WaitFor(deck) {
   // 3.2.7: a deck with cards the last read missed waits for one more read too, so the grade does not
   // show from part of the list (an unread Trainer counted as no Supporter, say).
   const gaps = g71Stale(deck) || g71Gaps(deck);
-  if ((_dataBusy.has(deck.id) || _g71Queued.has(deck.id)) && gaps) return 'cards';
+  // 3.3.3 (Muse 3.3.2 retest, Mason: hold the grade until all card data loads): any read of this deck's cards
+  // under way holds the grade, the once a visit read of cards taken from another printing too, so "Reading card
+  // data" never shows beside a grade that may still move.
+  if (_dataBusy.has(deck.id) || (_g71Queued.has(deck.id) && gaps)) return 'cards';
   if (on && gaps && !_dataTried.has(deck.id)) return 'cards';
-  if (deck.format === 'expanded' || deck.daily) return '';
+  if (deck.format === 'expanded' || isDailyChallenge(deck)) return '';
   if (_r29Busy.has(deck.id)) return 'rot';
   if (on && !_r29Tried.has(deck.id) && r29NeedsCheck(deck, r29Rows(deck)).length) return 'rot';
   if (mu60Busy || (on && !mu60Tried)) return 'results';

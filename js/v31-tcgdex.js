@@ -77,6 +77,8 @@ TCGEnrich.fetchDeckCards = async function (entries, opts) {
   });
   // Old data is kept when a source failed and a card is still unread.
   map.partial = (tdFailed || ptFailed) && [...map.values()].some(x => !x.resolved);
+  // 3.3.3: pokemontcg.io could not be asked for a card read only from another printing, so its own printing is still unread.
+  map.otherLeft = !!(ptFailed && rest.some(e => other(String(e.name).toLowerCase())));
   map.tcgdex = tdRead;
   map.ptcg = ptRead;
   _td31Src = { td: tdRead, pt: ptRead };

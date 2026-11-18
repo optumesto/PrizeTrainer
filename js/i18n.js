@@ -2448,6 +2448,8 @@ Object.assign(I18N_ES, {
   "Order of upgrades": "Orden de las mejoras",
   "Suggest cards I own first": "Sugerir primero cartas que tengo",
   "Cheapest first": "Más baratas primero",
+  "These raise Synergy or Power. The grade itself stays the same, because Synergy lowers the grade only when a list fits loosely. Each number comes from grading the list with that swap made.": "Estos cambios suben la Sinergia o el Poder. La calificación no cambia, porque la Sinergia solo baja la calificación cuando la lista está dispersa. Cada número sale de calificar la lista con ese cambio hecho.",
+  "Each number comes from grading the list with that swap made.": "Cada número sale de calificar la lista con ese cambio hecho.",
   "I own this card": "Tengo esta carta",
   "Marked as a card you own.": "Marcada como carta que tienes.",
   "No longer marked as yours.": "Ya no está marcada como tuya.",
@@ -2591,6 +2593,8 @@ Object.assign(I18N_PT, {
   "Order of upgrades": "Ordem das melhorias",
   "Suggest cards I own first": "Sugerir primeiro cartas que eu tenho",
   "Cheapest first": "Mais baratas primeiro",
+  "These raise Synergy or Power. The grade itself stays the same, because Synergy lowers the grade only when a list fits loosely. Each number comes from grading the list with that swap made.": "Estas trocas aumentam a Sinergia ou o Poder. A nota não muda, porque a Sinergia só baixa a nota quando a lista está espalhada. Cada número vem de avaliar a lista com essa troca feita.",
+  "Each number comes from grading the list with that swap made.": "Cada número vem de avaliar a lista com essa troca feita.",
   "I own this card": "Eu tenho esta carta",
   "Marked as a card you own.": "Marcada como carta que você tem.",
   "No longer marked as yours.": "Não está mais marcada como sua.",
@@ -3907,6 +3911,11 @@ function i18nDmgPats(l) {
     // 3.3.2: a single main attacker an Ability puts back from the discard pile (Gengar's Netherworld Gate).
     [/^The list runs one copy of its main attacker, and (?:its (.+?)|(.+?)'s (.+?)) puts it back onto your Bench from your discard pile, so a Knock Out does not end the plan\.$/, (m, a, by, b) => T().oneBack && T().oneBack(a || b, by || '')],
     [/^It is still in your prizes in about 1 game in 10\.$/, () => T().stillPrized],
+    // 3.3.3: how often that second life comes together, and the Power credit for it (finding and Why Power is).
+    [/^That second life comes together in about (\d+)% of games, since (.+?) has to reach play or your discard pile first and is in your prizes in about 1 game in 10\.$/, (m, p, x) => T().backOdds && T().backOdds(p, x)],
+    [/^Power counts it as (\d+)% of a second copy\.$/, (m, p) => T().backCr && T().backCr(p)],
+    [/^(.+?) coming back with (?:(.+?)'s )?(.+?), in about (\d+)% of games, adds ([\d.]+) to Damage\.$/, (m, x, b, a, p, d) => T().backDmg && T().backDmg(x, a, b || '', p, d)],
+    [/^(.+?) coming back with (?:(.+?)'s )?(.+?), in about (\d+)% of games, adds less than 0\.1 to Damage, since other attackers in the list already cover a Knock Out\.$/, (m, x, b, a, p) => T().backLow && T().backLow(x, a, b || '', p)],
     [/^Most lists run (\d+) to (\d+)\.$/, (m, a, b) => T().mostRun(a, b)],
     [/^(\d+) (.+?) evolve from (.+?), and the list has 1\.$/, (m, n, x, y) => T().thinRoot && T().thinRoot(n, x, y)],
     [/^If it is prized or Knocked Out, they have nothing to evolve from\.$/, () => T().thinKO],
@@ -4069,6 +4078,10 @@ const I18N_DMG = {
       prizedIn: `Queda en tus premios en más o menos 1 de cada 10 partidas, y una vez que queda ${AT} la baraja se queda sin nadie que lleve adelante el plan.`,
       oneBack: (a, by) => `La lista lleva una sola copia de su atacante principal, y ${by ? `la Habilidad ${a} de ${by}` : `su Habilidad ${a}`} lo devuelve a tu Banca desde tu pila de descartes, así que quedar ${AT} no acaba con el plan.`,
       stillPrized: 'Aun así, queda en tus premios en más o menos 1 de cada 10 partidas.',
+      backOdds: (p, x) => `Esa segunda vida se da en más o menos el ${p}% de las partidas, porque ${x} tiene que entrar en juego o llegar a tu pila de descartes primero, y queda en tus premios en más o menos 1 de cada 10 partidas.`,
+      backCr: p => `Poder lo cuenta como el ${p}% de una segunda copia.`,
+      backDmg: (x, a, b, p, d) => `Que ${x} vuelva con ${b ? `la Habilidad ${a} de ${b}` : a}, en más o menos el ${p}% de las partidas, suma ${d} al Daño.`,
+      backLow: (x, a, b, p) => `Que ${x} vuelva con ${b ? `la Habilidad ${a} de ${b}` : a}, en más o menos el ${p}% de las partidas, suma menos de 0.1 al Daño, porque otros atacantes de la lista ya cubren que quede ${AT}.`,
       mostRun: (a, b) => `La mayoría de las listas lleva de ${a} a ${b}.`,
       thinRoot: (n, x, y) => `${n} ${x} evolucionan de ${y}, y la lista lleva 1.`,
       thinKO: 'Si queda en los premios o Fuera de Combate, no tienen de qué evolucionar.',
@@ -4213,6 +4226,10 @@ const I18N_DMG = {
       prizedIn: 'Ele fica nos seus prêmios em cerca de 1 a cada 10 partidas, e depois de Nocauteado o deck não tem quem leve o plano.',
       oneBack: (a, by) => `A lista usa uma cópia só do atacante principal, e ${by ? `a Habilidade ${a} de ${by}` : `sua Habilidade ${a}`} o devolve ao seu Banco a partir da sua pilha de descarte, então um Nocaute não acaba com o plano.`,
       stillPrized: 'Ainda assim, ele fica nos seus prêmios em cerca de 1 a cada 10 partidas.',
+      backOdds: (p, x) => `Essa segunda vida acontece em cerca de ${p}% das partidas, porque ${x} precisa entrar em jogo ou chegar à sua pilha de descarte primeiro, e fica nos seus prêmios em cerca de 1 a cada 10 partidas.`,
+      backCr: p => `O Poder conta isso como ${p}% de uma segunda cópia.`,
+      backDmg: (x, a, b, p, d) => `O retorno de ${x} com ${b ? `a Habilidade ${a} de ${b}` : a}, em cerca de ${p}% das partidas, soma ${d} ao Dano.`,
+      backLow: (x, a, b, p) => `O retorno de ${x} com ${b ? `a Habilidade ${a} de ${b}` : a}, em cerca de ${p}% das partidas, soma menos de 0.1 ao Dano, porque outros atacantes da lista já cobrem um Nocaute.`,
       mostRun: (a, b) => `A maioria das listas usa de ${a} a ${b}.`,
       thinRoot: (n, x, y) => `${n} ${x} evoluem de ${y}, e a lista usa 1.`,
       thinKO: 'Se ele ficar nos prêmios ou for Nocauteado, eles não têm de onde evoluir.',
@@ -4370,8 +4387,27 @@ function i18nGtPats(l) {
   // "Precious Trolley finds cards in your deck and fills your Bench": a card name, then its jobs.
   const NR = s => { for (let i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) { const x = s.slice(0, i), k = nm(x) && R(s.slice(i + 1)); if (k) return [x, k]; } return null; };
   const TY = I18N_DMG_TY, PCT = '(<?[\\d.]+%)';
+  // 3.3.3 (Muse 3.3.2 retest): the Upgrades notes and the Top fixes line. Card and deck names stay English.
+  const UP = {
+    es: { syn: 'Sinergia', pow: 'Poder', grade: 'Calificación', ft: (a, b) => `de ${a} a ${b}`, run: (p, d, x) => `El ${p}% de las listas top${d ? ' de ' + d : ''} lleva ${x}.`, now: g => `Ahora mismo, ${g}.`, best: n => `Los ${n} mejores cambios juntos`, by: 'por' },
+    pt: { syn: 'Sinergia', pow: 'Poder', grade: 'Nota', ft: (a, b) => `de ${a} para ${b}`, run: (p, d, x) => `${p}% das listas top${d ? ' de ' + d : ''} usam ${x}.`, now: g => `No momento, ${g}.`, best: n => `As ${n} melhores trocas juntas`, by: 'por' },
+    fr: { syn: 'Synergie', pow: 'Puissance', grade: 'Note', ft: (a, b) => `de ${a} à ${b}`, run: (p, d, x) => `${p}% des meilleures listes${d ? ' ' + d : ''} jouent ${x}.`, now: g => `En ce moment, ${g}.`, best: n => `Les ${n} meilleurs échanges ensemble`, by: 'par' },
+    de: { syn: 'Synergie', pow: 'Stärke', grade: 'Note', ft: (a, b) => `von ${a} auf ${b}`, run: (p, d, x) => `${p}% der Top-Listen${d ? ' mit ' + d : ''} spielen ${x}.`, now: g => `Grund: ${g}.`, best: n => `Die besten ${n} Tausche zusammen`, by: 'gegen' },
+    it: { syn: 'Sinergia', pow: 'Potenza', grade: 'Voto', ft: (a, b) => `da ${a} a ${b}`, run: (p, d, x) => `Il ${p}% delle migliori liste${d ? ' di ' + d : ''} gioca ${x}.`, now: g => `Al momento ${g}.`, best: n => `I ${n} migliori scambi insieme`, by: 'con' },
+  }[l];
+  const upLab = k => UP && (k === 'Synergy' ? UP.syn : k === 'Power' ? UP.pow : /^grade$/i.test(k) ? (k === 'grade' && l !== 'de' ? UP.grade.toLowerCase() : UP.grade) : null);
+  const upMove = (k, a, b) => { const w = upLab(k); return w && `${w} ${UP.ft(a, b)}`; };
   return [
     // Labels and screen reader labels (M3, M8, M9) and dates (M4).
+    // 3.3.3: Upgrades and Top fixes ("Synergy 8.4 to 8.9.", "74% of top lists run Night Stretcher.").
+    [/^(Synergy|Power|Grade|grade) ([\d.]+) to ([\d.]+)(?:, (Synergy|Power) ([\d.]+) to ([\d.]+))?(\.?)$/, (m, k, a, b, k2, c, d, dot) => {
+      const x = upMove(k, a, b), y = k2 ? upMove(k2, c, d) : '';
+      return x && (!k2 || y) && x + (y ? ', ' + y : '') + dot; }],
+    [/^(\d+)% of (?:(.+) )?top lists run (?!it, )(.+)\.$/, (m, p, d, x) => UP && UP.run(p, d || '', x)],
+    [/^Right now (.+)\.$/, (m, g) => { const gp = G(g); return UP && gp && UP.now(T().gap(gp)); }],
+    [/^Best (\d+) swaps together$/, (m, n) => UP && UP.best(n)],
+    [/^(.+? for .+?)\.$/, (m, s) => { if (!UP) return null; const ps = s.split(', ').map(x => x.split(' for '));
+      return ps.every(p => p.length === 2 && nm(p[0]) && nm(p[1])) ? ps.map(p => p[0] + ' ' + UP.by + ' ' + p[1]).join(', ') + '.' : null; }],
     [/^(\d+) cards per row$/, (m, n) => T().perRow(n)],
     [/^Show all (\d+) (decks|days)$/, (m, n, k) => T().showAll(n, k)],
     [/^Updated ((?:\d{1,2} )?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?: \d{1,2})?(?: \d{4})?)$/, (m, d) => { const x = i18nGtDate(d, l); return x && T().updated(x); }],

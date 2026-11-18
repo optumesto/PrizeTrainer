@@ -218,9 +218,10 @@ function cd31Html(c, f, opts) {
   if (reg) h += row('Regulation mark', esc(reg));
   if (pr || c.set) h += row('Printing', esc(f && f.set ? pr : [String(c.set || '').toUpperCase(), c.num].filter(Boolean).join(' ')));
   // 3.2.8: the same price as the card's tile on the Cards tab (TCGplayer market price, or "no price").
+  // 3.3.3 (Muse 3.3.2 retest): written the way the player's language writes a price (0,25 US$), as on the tile.
   try {
     const pt = typeof op30PriceText === 'function' && c.set && c.num ? op30PriceText(op30Price(c.set, c.num)) : '';
-    if (pt) h += `<div class="cd31-f"><span class="cd31-l">Price</span><span class="cd31-v"${pt === 'no price' ? '' : ' data-no-tr'}>${esc(pt)}</span></div>`;
+    if (pt) h += `<div class="cd31-f"><span class="cd31-l">Price</span><span class="cd31-v"${pt === 'no price' ? '' : ' data-no-tr'}>${esc(pt === 'no price' || typeof rdI18n === 'undefined' || !rdI18n.nums ? pt : rdI18n.nums(pt))}</span></div>`;
   } catch (_) {}
   h += '</div>';
 

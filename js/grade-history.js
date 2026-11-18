@@ -40,7 +40,7 @@ let _gh72T = 0;
 function gh72Save() { clearTimeout(_gh72T); _gh72T = setTimeout(() => { try { saveState(); } catch (_) {} }, 500); }
 /** True when this grade is the settled one, so it is safe to keep. */
 function gh72Final(deck, R) {
-  if (!deck || !R || !gh72Num(R.overall) || deck.daily || deck.format === 'prerelease') return false;
+  if (!deck || !R || !gh72Num(R.overall) || isDailyChallenge(deck) || deck.format === 'prerelease') return false;
   if (!state.decks.includes(deck)) return false;                       // shared and daily decks are not saved
   // Still loading. 3.3.1 (Muse 3.3 retest, section 5 M2): this asks what the Grade tab asks (g71Wait), so a
   // grade that is on screen is kept. A check that never finished (a reprint read that hung, say) held the
@@ -71,7 +71,7 @@ function gh72Ctx(deck, R) {
 function gh72Note(deck, R, shown) {
   // 3.3.2 (Muse 3.3.1 retest M3): shown is a grade already on the Grade tab as final. It is kept even where a
   // read that never finished held it back, so the history and How did it do? never trail the grade on screen.
-  if (shown ? !(R && gh72Num(R.overall) && !deck.daily && deck.format !== 'prerelease' && state.decks.includes(deck)) : !gh72Final(deck, R)) return;
+  if (shown ? !(R && gh72Num(R.overall) && !isDailyChallenge(deck) && deck.format !== 'prerelease' && state.decks.includes(deck)) : !gh72Final(deck, R)) return;
   const lines = gh72Lines(deck), k = gh72Hash(lines), x = gh72Ctx(deck, R);
   const cur = { t: Date.now(), g: R.overall, s: gR1(R.coh.score * 10), p: gR1(R.via.score * 10),
     c: R.res && gh72Num(R.cardOverall) ? R.cardOverall : null, k, m: x.m, u: x.u, n: x.n };

@@ -4,7 +4,19 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # Next release (branch fix-3.3.3, not live, no version number yet)
 
-Changed files: js/i18n.js, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.
+Changed files: js/core.js, js/upgrades.js, js/grade-history.js, js/v29-rotation.js, js/v31-tcgdex.js, js/v40-audit-fixes.js, js/v69-grade-blend.js, js/v71-audit-fixes.js, js/v80-extras.js, js/card-details.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/extras-check.mjs, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.
+
+Fixes from Muse's 3.3.2 re-test:
+- A deck you practiced lost Upgrades, its grade history and its results blend (Toxtricity showed no Upgrades and no 8.4 to 9.0 entry; Dragapult showed 8.8 from its tile and 9.0 from its share link). The practice log is kept on the deck under the same field as the Daily challenge mark, so those parts took it for the Daily challenge. Only the Daily challenge deck counts as one now (isDailyChallenge), in Upgrades, grade history, the results blend, the legality cap, the rotation wait and the new set count.
+- Card data read from another printing (Gastly and Haunter "?" on the saved s6b deck): the re-read is tried again, up to 3 times a visit, when pokemontcg.io did not answer. Not reproduced here; fixed by the likely cause.
+- The grade waits while any card data read is running, so "Reading card data" and the grade no longer show together.
+- The card popup price uses the player's number form (0,25 US$).
+- Upgrades and the Top fix line read in every language: the intro, each swap's Synergy or Power move, "% of top lists run", "Right now", "Best 3 swaps together" and the swap list.
+- Gengar comes back: the finding says how often its second life comes together (it has to reach play or the discard pile first, and is prized about 1 game in 10), and Power counts that share of a second copy. Why Power is has a line for it under Damage. Mason's Nov 17 call: revival credit follows the odds.
+- tests/extras-check.mjs checks a practiced deck against the Daily challenge, a thin Kingdra ex left out of the damage counted, Kingdra ex as the main attacker still counting Hydro Pump, and the Gengar credit. tests/i18n-check.mjs checks the Upgrades, Top fix and Gengar lines in all five languages.
+- Grade check: no grade moved on the 132 real lists.
+
+Numbers:
 
 - Numbers: a count the English writes with no comma (3023 wins, 2045 games, 1022 players) is grouped in the player's language too: 3 023 in French, 3.023 in German and Portuguese. Spanish and Italian group from five digits, as their own rule (Intl) does, so 2045 stays and 12.045 is grouped; 5,885 in English now reads 5885 there too.
 - What a number is decides, not its size: a year (after a month or a date, a regulation mark like E 2024, or "in 2026" with nothing counted after it), a date like 11/12/2026, a build or a puzzle number stays as it is.

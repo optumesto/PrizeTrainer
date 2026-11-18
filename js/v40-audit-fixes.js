@@ -10,7 +10,7 @@ const G40_CAP = 4.9;
   gradeDeck = function (deck) {
     const R = _grade.apply(this, arguments);
     try {
-      if (!R || !deck || deck.daily || deck.format === 'expanded') return R;
+      if (!R || !deck || isDailyChallenge(deck) || deck.format === 'expanded') return R;
       if (!(deck.cards || []).some(c => c.supertype) || typeof r29Rows !== 'function') return R;
       const rows = r29Rows(deck), k = r29Counts(rows);
       R.rot = k;
