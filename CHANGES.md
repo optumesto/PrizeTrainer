@@ -2,6 +2,22 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.2 (build 121): fixes from Muse's 3.3.1 re-test, plus the Kingdra ex setup fix (branch fix-3.3.2, not live)
+
+Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version, What's new), js/upgrades.js, js/grade-history.js, js/v29-rotation.js (label scale, Synergy or Power sentence), js/v69-grade-blend.js, js/v31-tcgdex.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (Back button on the deck screen, file stamps, softwareVersion), sw.js (cache prize-trainer-v121) and CHANGES.md.
+
+- Gengar: a main attacker that an Ability puts back from the discard pile (Gengar's own Netherworld Gate, or another Pokemon's) is credited: "Gengar comes back" replaces "Only 1 Gengar", and that Ability counts toward the Trainer check's recovery.
+- Kingdra ex (merged from kingdra-setup): a Pokemon played to set up with a cheap attack (King's Order) no longer sets the damage ceiling, and How it plays gets a Setup line.
+- Upgrades: a results or rotation read that started while the grade drew no longer leaves the section out. A swap result that lands after the Trainer data loads is kept.
+- Grade history: a final grade on screen that the log missed is kept, so How did it do? shows the grade on screen.
+- Home: the deck screen's Back button redraws home, so a tile shows the same grade as the Grade tab.
+- Grade vs win rate: "Results beat its cards" and "Cards beat its results" compare the two grades as shown, so equal grades read "Cards and results agree".
+- Label scale: with no tournament results, the scale says Strong is 7 and up, and why.
+- The "Reading card data" note ends with the read, whatever screen is open.
+- Card data: a card TCGdex read only from another printing is asked of pokemontcg.io too, and its own printing replaces it (saved Gastly and Haunter showed "?" marks).
+- Translations: "Right now Synergy is what holds it back" is one sentence in every language (es and pt articles, German word order); fr "a remporté ... des 515 matchs"; it "Energia ... di base".
+- Grade check: no grade moved on the 132 real lists.
+
 # RdyDeck 3.3.1 (build 120): fixes from Muse's 3.3 re-test (branch fix-3.3.1, not live)
 
 Changed files: js/core.js (damage ceiling, Hand tab, version, What's new), js/card-details.js, js/v29-rotation.js, js/v31-tcgdex.js, js/grade-history.js, js/upgrades.js, js/easier-first-visit.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (light theme colors, file stamps, softwareVersion), sw.js (cache prize-trainer-v120), tests/grade-baseline.json and CHANGES.md.
