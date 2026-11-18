@@ -100,7 +100,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          FILES="data.json builder.json cards.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md accuracy.json how-grading-works.html"
+          FILES="data.json builder.json cards.json prints.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md accuracy.json how-grading-works.html"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

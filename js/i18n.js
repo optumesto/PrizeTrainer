@@ -1068,6 +1068,23 @@ const I18N_ES = {
   "Matchups": "Enfrentamientos",
   "Trends": "Tendencias",
   "The grade checks the rest when you save.": "La calificación revisa el resto cuando guardas.",
+  // 3.3.6: De-bling.
+  "Added: De-bling button": "Nuevo: botón Abaratar",
+  "De-bling": "Abaratar",
+  "Undo de-bling": "Deshacer Abaratar",
+  "Swap each card to its cheapest printing that plays the same": "Cambia cada carta por su impresión más barata que juega igual",
+  "Put back the printings the list had before": "Vuelve a poner las impresiones que tenía la lista",
+  "Finding the cheapest printings…": "Buscando las impresiones más baratas…",
+  "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Estas cartas ahora usan su impresión más barata que juega igual. Cada línea muestra lo que ahorras.",
+  "Estimated savings:": "Ahorro estimado:",
+  "1 card has no price to compare, so it stays as it is.": "1 carta no tiene precio para comparar, así que se queda como está.",
+  "Turn prices on in Settings to use De-bling.": "Activa los precios en Ajustes para usar Abaratar.",
+  "De-bling could not load its card list. Try again when you are online.": "Abaratar no pudo cargar su lista de cartas. Inténtalo de nuevo cuando tengas conexión.",
+  "Prices could not be read. Try again when you are online.": "No se pudieron leer los precios. Inténtalo de nuevo cuando tengas conexión.",
+  "No cheaper printing with a price was found.": "No se encontró ninguna impresión más barata con precio.",
+  "Every card is already its cheapest printing.": "Todas las cartas ya están en su impresión más barata.",
+  "The list changed since, so there is nothing to undo.": "La lista cambió desde entonces, así que no hay nada que deshacer.",
+  "De-bling undone.": "Se deshizo Abaratar.",
 };
 const I18N_PT = {
   // Photo deck import (test branch photo-import)
@@ -2099,6 +2116,23 @@ const I18N_PT = {
   "Matchups": "Confrontos",
   "Trends": "Tendências",
   "The grade checks the rest when you save.": "A nota confere o resto quando você salva.",
+  // 3.3.6: De-bling.
+  "Added: De-bling button": "Novo: botão Baratear",
+  "De-bling": "Baratear",
+  "Undo de-bling": "Desfazer Baratear",
+  "Swap each card to its cheapest printing that plays the same": "Troca cada carta pela impressão mais barata que joga igual",
+  "Put back the printings the list had before": "Volta às impressões que a lista tinha antes",
+  "Finding the cheapest printings…": "Buscando as impressões mais baratas…",
+  "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Estas cartas agora usam a impressão mais barata que joga igual. Cada linha mostra quanto você economiza.",
+  "Estimated savings:": "Economia estimada:",
+  "1 card has no price to compare, so it stays as it is.": "1 carta não tem preço para comparar, então fica como está.",
+  "Turn prices on in Settings to use De-bling.": "Ative os preços nas Configurações para usar Baratear.",
+  "De-bling could not load its card list. Try again when you are online.": "Baratear não conseguiu carregar a lista de cartas. Tente de novo quando estiver online.",
+  "Prices could not be read. Try again when you are online.": "Não foi possível ler os preços. Tente de novo quando estiver online.",
+  "No cheaper printing with a price was found.": "Nenhuma impressão mais barata com preço foi encontrada.",
+  "Every card is already its cheapest printing.": "Todas as cartas já estão na impressão mais barata.",
+  "The list changed since, so there is nothing to undo.": "A lista mudou depois disso, então não há nada para desfazer.",
+  "De-bling undone.": "Baratear desfeito.",
 };
 /* I18N_DICT_END */
 
@@ -2401,6 +2435,7 @@ const I18N_PAT = [
   [/^Game (\d+) of (\d+)$/, 'Partida $1 de $2', 'Partida $1 de $2'],
   [/^(\d+) min$/, '$1 min', '$1 min'],
   [/^(\d+) sec$/, '$1 s', '$1 s'],
+  [/^(\d+) cards have no price to compare, so they stay as they are\.$/, "$1 cartas no tienen precio para comparar, así que se quedan como están.", "$1 cartas não têm preço para comparar, então ficam como estão."],
 ];
 
 // ── 3.0 additions: grade flags, error reports, owned cards and prices, What's next, scoreboard ──

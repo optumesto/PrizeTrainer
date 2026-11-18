@@ -1350,6 +1350,23 @@ I18N_MORE.fr = {
     "Spanish and Portuguese: more of the app translated": "Espagnol et portugais : plus de l'appli traduite",
     "Home grade bug fixed": "Bug de la note à l'accueil corrigé",
     "Changed: a grade flag sent offline goes when you are back online": "Changé : un signalement de note envoyé hors ligne part à votre retour en ligne",
+    // 3.3.6: De-bling.
+    "Added: De-bling button": "Nouveau : bouton Moins cher",
+    "De-bling": "Moins cher",
+    "Undo de-bling": "Annuler Moins cher",
+    "Swap each card to its cheapest printing that plays the same": "Remplace chaque carte par son impression la moins chère qui joue pareil",
+    "Put back the printings the list had before": "Remet les impressions que la liste avait avant",
+    "Finding the cheapest printings…": "Recherche des impressions les moins chères…",
+    "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Ces cartes utilisent maintenant leur impression la moins chère qui joue pareil. Chaque ligne montre ce qu'elle fait économiser.",
+    "Estimated savings:": "Économie estimée :",
+    "1 card has no price to compare, so it stays as it is.": "1 carte n'a pas de prix à comparer, elle reste donc telle quelle.",
+    "Turn prices on in Settings to use De-bling.": "Activez les prix dans Réglages pour utiliser Moins cher.",
+    "De-bling could not load its card list. Try again when you are online.": "Moins cher n'a pas pu charger sa liste de cartes. Réessayez une fois en ligne.",
+    "Prices could not be read. Try again when you are online.": "Les prix n'ont pas pu être lus. Réessayez une fois en ligne.",
+    "No cheaper printing with a price was found.": "Aucune impression moins chère avec un prix n'a été trouvée.",
+    "Every card is already its cheapest printing.": "Chaque carte est déjà dans son impression la moins chère.",
+    "The list changed since, so there is nothing to undo.": "La liste a changé depuis, il n'y a donc rien à annuler.",
+    "De-bling undone.": "Moins cher annulé.",
   },
   pat: [
     [/^(\d+) solved of (\d+) played(?:, (.+)\.)?$/, (m, a, b, r) => frI18nSolved(a, b) + (r ? ', ' + frI18nRuns(r) + '.' : '')],
@@ -1725,6 +1742,7 @@ I18N_MORE.fr = {
     [/^Remove (?!a )(.+)$/, (m, n) => i18nAllCards(n) ? 'Retirer ' + n.replace(/ and ([^,]+)$/, ' et $1').replace(/ or ([^,]+)$/, ' ou $1') : null],
     [/^Last ((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}(?:, \d{4})?|\d{1,2}[ ./-]\S+)(?:, (\d+)% since vs (\d+)% before)?$/, (m, d, a, b) => 'Dernier : ' + frI18nDate(d) + (a ? ', ' + a + '% depuis vs ' + b + '% avant' : '')],
     [/^(?:(?:Resource count|Goldfish on time|Reach check) \d+%(?:, |$))+$/, m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_MORE.fr.dict[n] + ' ' + p)],
+    [/^(\d+) cards have no price to compare, so they stay as they are\.$/, "$1 cartes n'ont pas de prix à comparer, elles restent donc telles quelles."],
   ],
 };
 // 3.2.7: the French words for the Abilities part of How it plays, read by i18nAbilSent in js/i18n.js.

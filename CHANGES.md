@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.6 (build 125): De-bling button (18 Nov 2026)
+
+Changed files: js/debling.js (new), prints.json (new), build-cards.mjs (writes prints.json), .github/workflows/refresh-data.yml (refreshes prints.json weekly), index.html (styles, script tag, version), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name, prints.json), tests/debling-check.mjs (new).
+
+- De-bling button on a deck's Cards tab, beside Mark cards you own, shown when prices are on. It swaps each card to its cheapest Standard legal printing that plays the same, then lists every swap with what it saves, the estimated total, and Undo.
+- Same card means same name and same game text: for Pokemon the HP, type, Abilities, attacks, Weakness, Resistance, Retreat and evolution all match; Trainers and Energy match by name. Older printings that are still legal count. Built from the card data each week into prints.json.
+- A card stays as it is when it has no other printing, when it or every cheaper printing has no US price, or when it is already the cheapest. The sheet says how many cards had no price to compare.
+- Two lines that end up the same printing become one line with the counts added. A de-bling adds no grade history entry.
+- Grade check: no grade moved. De-bling check: 132 top lists de-blinged, no grade moved, every swap to a legal printing of the same card at a lower price, card counts kept, Undo puts the list back exactly.
+
 # RdyDeck 3.3.5 (build 124): large text and landscape layout fixed (18 Nov 2026)
 
 Changed files: index.html (layout styles, version), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name).

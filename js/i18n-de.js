@@ -1356,6 +1356,23 @@ I18N_MORE.de = {
     'Top finishes for the most played decks at big online tournaments, not Regionals.': 'Top-Platzierungen der meistgespielten Decks bei großen Online-Turnieren, nicht Regionals.',
     'Real Standard lists that placed at recent events.': 'Echte Standard-Listen mit Platzierungen bei aktuellen Events.',
     'Load one to start practicing right away, then edit it to match your own build.': 'Lade eine, um sofort zu üben, und passe sie dann an deine eigene Version an.',
+    // 3.3.6: De-bling.
+    "Added: De-bling button": "Neu: Schaltfläche Günstiger",
+    "De-bling": "Günstiger",
+    "Undo de-bling": "Günstiger rückgängig",
+    "Swap each card to its cheapest printing that plays the same": "Ersetzt jede Karte durch ihren günstigsten Druck, der gleich spielt",
+    "Put back the printings the list had before": "Stellt die Drucke wieder her, die die Liste vorher hatte",
+    "Finding the cheapest printings…": "Günstigste Drucke werden gesucht…",
+    "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Diese Karten nutzen jetzt ihren günstigsten Druck, der gleich spielt. Jede Zeile zeigt, was sie spart.",
+    "Estimated savings:": "Geschätzte Ersparnis:",
+    "1 card has no price to compare, so it stays as it is.": "1 Karte hat keinen Preis zum Vergleichen und bleibt daher, wie sie ist.",
+    "Turn prices on in Settings to use De-bling.": "Schalte Preise in den Einstellungen ein, um Günstiger zu nutzen.",
+    "De-bling could not load its card list. Try again when you are online.": "Günstiger konnte seine Kartenliste nicht laden. Versuche es erneut, wenn du online bist.",
+    "Prices could not be read. Try again when you are online.": "Die Preise konnten nicht gelesen werden. Versuche es erneut, wenn du online bist.",
+    "No cheaper printing with a price was found.": "Es wurde kein günstigerer Druck mit Preis gefunden.",
+    "Every card is already its cheapest printing.": "Jede Karte hat schon ihren günstigsten Druck.",
+    "The list changed since, so there is nothing to undo.": "Die Liste hat sich seitdem geändert, daher gibt es nichts rückgängig zu machen.",
+    "De-bling undone.": "Günstiger rückgängig gemacht.",
   },
   // The I18N_PAT patterns in the same order, each [regex, German]. deI18nWrap fills in $1 and puts dates into German.
   pat: [
@@ -1733,6 +1750,7 @@ I18N_MORE.de = {
     [/^Remove (?!a )(.+)$/, (m, n) => i18nAllCards(n) ? n.replace(/ and ([^,]+)$/, ' und $1').replace(/ or ([^,]+)$/, ' oder $1') + ' entfernen' : null],
     [/^Last ((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}(?:, \d{4})?|\d{1,2}[ ./-]\S+)(?:, (\d+)% since vs (\d+)% before)?$/, (m, d, a, b) => 'Zuletzt: ' + d + (a ? ', ' + a + '% seitdem vs. ' + b + '% vorher' : '')],
     [/^(?:(?:Resource count|Goldfish on time|Reach check) \d+%(?:, |$))+$/, m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_MORE.de.dict[n] + ' ' + p)],
+    [/^(\d+) cards have no price to compare, so they stay as they are\.$/, "$1 Karten haben keinen Preis zum Vergleichen und bleiben daher, wie sie sind."],
   ].map(p => [p[0], deI18nWrap(p[1])]),
 };
 // 3.2.7: the German words for the Abilities part of How it plays, read by i18nAbilSent in js/i18n.js.

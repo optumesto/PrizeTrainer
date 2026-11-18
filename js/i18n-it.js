@@ -1345,6 +1345,23 @@ I18N_MORE.it = {
     "Spanish and Portuguese: more of the app translated": "Spagnolo e portoghese: più parti dell'app tradotte",
     "Home grade bug fixed": "Corretto un bug del voto nella Home",
     "Changed: a grade flag sent offline goes when you are back online": "Modificato: una segnalazione di voto inviata offline parte quando torni online",
+    // 3.3.6: De-bling.
+    "Added: De-bling button": "Nuovo: pulsante Risparmia",
+    "De-bling": "Risparmia",
+    "Undo de-bling": "Annulla Risparmia",
+    "Swap each card to its cheapest printing that plays the same": "Sostituisce ogni carta con la sua stampa più economica che gioca allo stesso modo",
+    "Put back the printings the list had before": "Rimette le stampe che la lista aveva prima",
+    "Finding the cheapest printings…": "Ricerca delle stampe più economiche…",
+    "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Queste carte ora usano la loro stampa più economica che gioca allo stesso modo. Ogni riga mostra quanto fa risparmiare.",
+    "Estimated savings:": "Risparmio stimato:",
+    "1 card has no price to compare, so it stays as it is.": "1 carta non ha un prezzo da confrontare, quindi resta com'è.",
+    "Turn prices on in Settings to use De-bling.": "Attiva i prezzi nelle Impostazioni per usare Risparmia.",
+    "De-bling could not load its card list. Try again when you are online.": "Risparmia non è riuscito a caricare la sua lista di carte. Riprova quando sei online.",
+    "Prices could not be read. Try again when you are online.": "Non è stato possibile leggere i prezzi. Riprova quando sei online.",
+    "No cheaper printing with a price was found.": "Non è stata trovata nessuna stampa più economica con un prezzo.",
+    "Every card is already its cheapest printing.": "Ogni carta è già nella sua stampa più economica.",
+    "The list changed since, so there is nothing to undo.": "Nel frattempo la lista è cambiata, quindi non c'è nulla da annullare.",
+    "De-bling undone.": "Risparmia annullato.",
   },
   pat: [
     [/^(\d+) solved of (\d+) played(?:, (.+)\.)?$/, (m, a, b, r) => itI18nSolved(a, b) + (r ? ', ' + itI18nRuns(r) + '.' : '')],
@@ -1720,6 +1737,7 @@ I18N_MORE.it = {
     [/^Remove (?!a )(.+)$/, (m, n) => i18nAllCards(n) ? 'Rimuovi ' + n.replace(/ and ([^,]+)$/, ' e $1').replace(/ or ([^,]+)$/, ' o $1') : null],
     [/^Last ((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}(?:, \d{4})?|\d{1,2}[ ./-]\S+)(?:, (\d+)% since vs (\d+)% before)?$/, (m, d, a, b) => 'Ultima: ' + d + (a ? ', ' + a + '% da allora vs ' + b + '% prima' : '')],
     [/^(?:(?:Resource count|Goldfish on time|Reach check) \d+%(?:, |$))+$/, m => m.replace(/(Resource count|Goldfish on time|Reach check) (\d+%)/g, (x, n, p) => I18N_MORE.it.dict[n] + ' ' + p)],
+    [/^(\d+) cards have no price to compare, so they stay as they are\.$/, "$1 carte non hanno un prezzo da confrontare, quindi restano come sono."],
   ],
 };
 // 3.2.7: the Italian words for the Abilities part of How it plays, read by i18nAbilSent in js/i18n.js.

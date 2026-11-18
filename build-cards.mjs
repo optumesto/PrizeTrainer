@@ -66,6 +66,23 @@ if (!Array.isArray(sets)) { console.log('Set list unreadable, kept last copy.');
 const wanted = sets.filter(s => /^(sv|zsv|rsv|me|svp$|sve$)/.test(s.id));
 
 const groups = new Map();
+// 3.3.6: printings that play exactly the same, for De-bling. A Trainer or Energy is one card per name
+// (the game's own rule: cards with the same name are the same card, newest text applies). A Pokemon
+// needs the whole game text to match: HP, types, stage and the other subtypes, evolves from, every
+// Ability and attack with its cost, damage and text, weakness, resistance and retreat. Case, spaces and
+// punctuation are set aside, so a wording fix between prints still matches, and so are the rule-box
+// reminder lines some prints leave out (ex and Mega rules, which the subtypes already carry).
+const plays = new Map();
+const flat = v => String(v == null ? '' : v).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+const REMIND = /^(pokemonexrule|megaevolutionexrule|tera)/;
+function playKey(c, sup) {
+  if (sup !== 'P') return flat(c.name) + '#' + sup;
+  return [flat(c.name), sup, flat(c.hp), (c.types || []).map(flat).join(','), (c.subtypes || []).map(flat).sort().join(','), flat(c.evolvesFrom),
+    (c.abilities || []).map(a => flat(a.type) + ':' + flat(a.name) + ':' + flat(a.text)).join('|'),
+    (c.attacks || []).map(a => (a.cost || []).map(flat).join(',') + ':' + flat(a.name) + ':' + flat(a.damage) + ':' + flat(a.text)).join('|'),
+    (c.weaknesses || []).map(w => flat(w.type) + flat(w.value)).join(','), (c.resistances || []).map(w => flat(w.type) + flat(w.value)).join(','),
+    String((c.retreatCost || []).length), (c.rules || []).map(flat).filter(r => r && !REMIND.test(r)).join('|')].join('#');
+}
 let read = 0;
 for (const s of wanted) {
   // Promos read PR-SV in this data; deck lists and the app write SVP.
@@ -80,6 +97,13 @@ for (const s of wanted) {
     if (!sup) continue;
     const subs = c.subtypes || [];
     const basicE = sup === 'E' && (subs.includes('Basic') || s.id === 'sve') && /energy$/i.test(c.name) && !/special/i.test(c.name);
+    if (/^[A-Za-z0-9]{1,8}$/.test(String(c.number || ''))) {
+      // 3.3.6: every printing, legal or not, with its whole game text, for De-bling (prints.json).
+      const pk = playKey(c, sup);
+      const g = plays.get(pk) || plays.set(pk, { n: clean(c.name, 60), k: sup, p: [], o: [] }).get(pk);
+      const print = { set: code, num: String(c.number), rar: rank(c.rarity), date: s.releaseDate || '', promo: s.id === 'svp', mark: String(c.regulationMark || '').toUpperCase().slice(0, 1) };
+      (basicE || legalMark(c.regulationMark) ? g.p : g.o).push(print);
+    }
     if (!basicE && !legalMark(c.regulationMark)) continue;
     if (!/^[A-Za-z0-9]{1,8}$/.test(String(c.number || ''))) continue;
     const name = clean(c.name, 60);
@@ -150,6 +174,37 @@ const file = {
   note: 'Standard legal cards for the RdyDeck deck builder, one per card (reprints count once), built weekly by build-cards.mjs from pokemon-tcg-data. Keys: n name, s set, no number, k P/T/E, st stage, ty types, hp, ef evolves from, need Energy types the main attack (most Energy, then most typed Energy, then most damage) asks for, na that attack, w Ability and attack names, tk Trainer kind (I Item, S Supporter, D Stadium, O Tool), ace ACE SPEC, be Basic Energy, pr prints.',
   cards: out,
 };
+// 3.3.6: prints.json, for De-bling. One row per card with more than one printing that plays the same:
+// p the Standard legal printings (the ones De-bling may swap to), plainest first; o older printings of
+// the same card (a deck may run one; De-bling never swaps to it); m the marks of p, in order.
+{
+  const POUT = process.env.PT_PRINTS_OUT || OUT.replace(/cards\.json$/, 'prints.json');
+  const ord = (a, b) => (a.promo - b.promo) || (a.rar - b.rar) || (b.date > a.date ? 1 : b.date < a.date ? -1 : 0) || (parseInt(a.num, 10) - parseInt(b.num, 10));
+  const id = x => x.set + ' ' + x.num;
+  const rows = [];
+  for (const g of plays.values()) {
+    const pm = new Map(g.p.sort(ord).map(x => [id(x), x]));
+    const p = [...pm.keys()];
+    const o = [...new Set(g.o.sort(ord).map(id))].filter(x => !p.includes(x));
+    if (!p.length || p.length + o.length < 2) continue;
+    const r = { n: g.n, k: g.k, p };
+    const m = [...pm.values()].map(x => /^[A-Z]$/.test(x.mark) ? x.mark : '-').join('');
+    if (/[A-Z]/.test(m)) r.m = m;
+    if (o.length) r.o = o;
+    rows.push(r);
+  }
+  rows.sort((a, b) => a.n.localeCompare(b.n) || a.p[0].localeCompare(b.p[0]));
+  let pold = null;
+  try { pold = JSON.parse(await readFile(POUT, 'utf8')); } catch (_) {}
+  if (pold && Array.isArray(pold.rows) && rows.length < pold.rows.length * 0.9) console.log(`prints.json: ${rows.length} rows, under last week's ${pold.rows.length}. Kept last copy.`);
+  else {
+    const pf = { schema: 1, asOf: new Date().toISOString().slice(0, 10), firstLegal: first,
+      note: 'Printings that play exactly the same, for RdyDeck\'s De-bling, built weekly by build-cards.mjs from pokemon-tcg-data. Keys: n name, k P/T/E, p Standard legal printings (set and number, plainest first), m their regulation marks in the same order (- for none), o older printings of the same card.',
+      rows };
+    if (pold && JSON.stringify({ ...pold, asOf: null }) === JSON.stringify({ ...pf, asOf: null })) console.log(`prints.json: ${rows.length} rows, nothing changed.`);
+    else { await writeFile(POUT, JSON.stringify(pf).replace(/\},\{/g, '},\n{') + '\n'); console.log(`prints.json: ${rows.length} rows.`); }
+  }
+}
 const same = old && JSON.stringify({ ...old, asOf: null }) === JSON.stringify({ ...file, asOf: null });
 if (same) { console.log(`cards.json: ${out.length} cards, nothing changed.`); process.exit(0); }
 await writeFile(OUT, JSON.stringify(file).replace(/\},\{/g, '},\n{') + '\n');
