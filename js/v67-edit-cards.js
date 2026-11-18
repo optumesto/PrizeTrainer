@@ -58,6 +58,14 @@ function dl67MoveRows(deck) {
     return r;
   };
 })();
+// Clears the deck search from its own button, and keeps the cursor in the box.
+function dl67Clear() {
+  dl67Q = '';
+  const q = document.querySelector('#deck-list .dl67-q');
+  if (q) q.value = '';
+  dl67Apply();
+  if (q) q.focus();
+}
 function dl67Apply() {
   const list = document.getElementById('deck-list');
   if (!list) return;
@@ -72,6 +80,8 @@ function dl67Apply() {
     if (hit) shown++;
     n.style.display = vis ? '' : 'none';
   });
+  const x = list.querySelector('.dl67-x');
+  if (x) x.hidden = !dl67Q;
   const more = list.querySelector('.dl67-more');
   if (more) {
     more.style.display = q || nodes.length <= DL67_CAP ? 'none' : '';
@@ -103,7 +113,7 @@ function dl67Toggle() { dl67All = !dl67All; dl67Apply(); }
       }
       const o = (v, t) => `<option value="${v}"${dl67Sort === v ? ' selected' : ''}>${t}</option>`;
       list.insertAdjacentHTML('afterbegin', `<div class="dl67-bar">
-          <input type="search" class="dl67-q" placeholder="Find a deck" aria-label="Find a deck" value="${esc(dl67Q)}" oninput="dl67Q=this.value;dl67Apply()">
+          <span class="dl67-qwrap"><input type="search" class="dl67-q" placeholder="Find a deck" aria-label="Find a deck" value="${esc(dl67Q)}" oninput="dl67Q=this.value;dl67Apply()"><button type="button" class="dl67-x" aria-label="Clear search" onclick="dl67Clear()"${dl67Q ? '' : ' hidden'}><span aria-hidden="true">\u00d7</span></button></span>
           <select class="dl67-sort" aria-label="Sort decks" onchange="dl67SetSort(this.value)">${o('mine', 'Your order')}${o('grade', 'Best grade')}${o('name', 'Name')}</select>
         </div><div class="dl67-none" style="display:none">No deck by that name.</div>`);
       const after = [...list.querySelectorAll(':scope > .deck-card')].filter(n => !n.classList.contains('deck-hidden')).pop();

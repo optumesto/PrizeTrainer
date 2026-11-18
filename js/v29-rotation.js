@@ -46,9 +46,10 @@ function r273Set(j) {
   // Trainers and Special Energy: a reprint keeps either legal by name alone.
   const names = j.cards.filter(c => c && (c.k === 'T' || (c.k === 'E' && !c.be)) && c.n).map(c => r29Key(c.n));
   if (names.length < 100) return false;
-  // 3.2.8: and what each Stage 1 evolves from, so a Stage 2 played with Rare Candy knows its Basic.
+  // 3.2.8: and what each Stage 1 and Stage 2 evolves from, so a Stage 2 played with Rare Candy knows its
+  // Basic, and a printing read without it still knows what it evolves from.
   const ef = {};
-  j.cards.forEach(c => { if (c && c.k === 'P' && c.st === 1 && c.n && typeof c.ef === 'string' && c.ef) ef[r29Key(c.n)] = c.ef; });
+  j.cards.forEach(c => { if (c && c.k === 'P' && (c.st === 1 || c.st === 2) && c.n && typeof c.ef === 'string' && c.ef) ef[r29Key(c.n)] = c.ef; });
   r273 = { asOf: String(j.asOf || ''), firstLegal: j.firstLegal, set: new Set(names), ef };
   return true;
 }
@@ -205,7 +206,9 @@ function r29Summary(deck) {
   if (k.energy) h += `<div class="r29-tot">Plus ${k.energy} Basic Energy, which never rotate${k.energy === 1 ? 's' : ''}. ${k.out + k.risk + k.unconf + k.safe + k.energy} cards in all.</div>`;
 
   const name = r => `<div class="r29-n">${esc(r.name)}${r.sub ? `<small>${r.sub}</small>` : ''}</div>`;
-  const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m">${r.reprint || r.mark || '?'}</span></div>`;
+  // 3.2.8: a row whose mark is not confirmed shows "?", never a mark it says it cannot vouch for.
+  const unsure = r => r.st === 'unconf' || r.st === 'unread';
+  const row = r => `<div class="r29-row"><span class="r29-q">${r.qty}</span>${name(r)}<span class="r29-m"${unsure(r) ? ' title="Mark not confirmed"' : ''}>${unsure(r) ? '?' : r.reprint || r.mark || '?'}</span></div>`;
   const sub = r => {
     if (r.reprint && r.st === 'safe') return `Kept legal by a reprint with the ${r.reprint} mark`;
     if (r.pocket) return 'This printing is from Pokemon TCG Pocket, not the card game';

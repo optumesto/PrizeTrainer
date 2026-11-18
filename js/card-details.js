@@ -209,6 +209,11 @@ function cd31Html(c, f, opts) {
   h += '<div class="cd31-facts small">';
   if (reg) h += row('Regulation mark', esc(reg));
   if (pr || c.set) h += row('Printing', esc(f && f.set ? pr : [String(c.set || '').toUpperCase(), c.num].filter(Boolean).join(' ')));
+  // 3.2.8: the same price as the card's tile on the Cards tab (TCGplayer market price, or "no price").
+  try {
+    const pt = typeof op30PriceText === 'function' && c.set && c.num ? op30PriceText(op30Price(c.set, c.num)) : '';
+    if (pt) h += `<div class="cd31-f"><span class="cd31-l">Price</span><span class="cd31-v"${pt === 'no price' ? '' : ' data-no-tr'}>${esc(pt)}</span></div>`;
+  } catch (_) {}
   h += '</div>';
 
   h += `<div id="cd31-here"></div><div id="cd31-rul"></div>`;

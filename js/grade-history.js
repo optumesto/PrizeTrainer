@@ -43,7 +43,9 @@ function gh72Final(deck, R) {
   if (!deck || !R || !gh72Num(R.overall) || deck.daily || deck.format === 'prerelease') return false;
   if (!state.decks.includes(deck)) return false;                       // shared and daily decks are not saved
   if (typeof g71WaitFor === 'function' && g71WaitFor(deck)) return false;  // still loading
-  if (typeof _g71Late !== 'undefined' && _g71Late.has(deck.id)) return false;  // shown before it settled
+  // 3.2.8 (Muse section 5 M2): a deck whose grade showed before everything loaded is kept once all of it
+  // has loaded (g71WaitFor above is then empty), so a move later in the same visit is not lost.
+  if (typeof _g71Late !== 'undefined' && _g71Late.has(deck.id) && typeof g71WaitFor !== 'function') return false;
   if (typeof g71Stale === 'function' && g71Stale(deck)) return false;  // card data from an older reader
   if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) return false;  // 3.2.7: some cards unread
   return true;
@@ -85,6 +87,9 @@ function gh72Note(deck, R) {
     }
     cur.w = x.atk !== (was.atk || '') ? 'k' : x.u !== (was.u || '') ? 'u' : x.f !== (was.f || 'standard') ? 'f' : x.m !== (was.m || '') ? 'r'
       : x.b !== was.b ? 'a' : x.t !== (was.t || 0) ? 'r' : x.n !== (was.n || 0) ? 'l' : 'c';
+    // 3.2.8 (Muse section 5 M2): the same list with the same card grade, where only the blended grade
+    // moved, moved on tournament results, whatever else was read again, so it says so with its date.
+    if ((cur.w === 'c' || cur.w === 'a') && cur.c != null && gh72Num(last.c) && cur.c === last.c && R.res) cur.w = 'r';
     if (cur.w === 'k') { cur.ak = x.atk; if (x.atk && x.atk !== 'toolbox') { const pe = (R.entries || []).find(y => y.card && y.card.key === x.atk); cur.akn = pe ? pe.name : x.atk; } }
   } else {
     cur.w = 'e';

@@ -23,6 +23,13 @@ const G40_CAP = 4.9;
           d: `${list}. ${k.out > 1 ? 'These cannot' : 'It cannot'} be played in Standard, so the grade ${R.rawOverall > G40_CAP ? 'is held at' : 'can go no higher than'} ${G40_CAP} until ${k.out > 1 ? 'they are' : 'it is'} swapped for legal cards.` +
             (R.rawOverall > G40_CAP ? ` The list alone would score ${R.rawOverall.toFixed(1)}.` : '') +
             '' });
+      } else if (k.unconf > 0) {
+        // 3.2.8 (Muse final report H5): a card whose mark the card database could not confirm is not
+        // called legal in silence. It is named here, after the other problems, and the grade is unchanged.
+        const names = rows.filter(r => r.st === 'unconf' || r.st === 'unread').map(r => r.name);
+        const one = names.length === 1, list = names.slice(0, 3).join(', ') + (names.length > 3 ? ` and ${names.length - 3} more` : '');
+        R.coh.flaws.push({ sev: 'warn', t: `${names.length} card${one ? '' : 's'} not confirmed as Standard legal`,
+          d: `Check the regulation mark on ${list} before an event. The card database could not confirm ${one ? 'it' : 'them'}, so the grade counts ${one ? 'it' : 'them'} as legal for now.` });
       }
     } catch (_) {}
     return R;

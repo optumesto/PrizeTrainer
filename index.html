@@ -374,8 +374,17 @@
   }
   .hidden-toggle-row:hover { background:var(--surface); color:var(--text); }
   .dl67-bar { display:flex; gap:0.5rem; margin:0 0 0.75rem; }
-  .dl67-bar .dl67-q { flex:1 1 auto; min-width:0; padding:0.55rem 0.75rem; font:inherit; font-size:0.95rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); outline:none; -webkit-appearance:none; appearance:none; }
+  .dl67-qwrap { position:relative; flex:1 1 auto; min-width:0; display:flex; }
+  .dl67-bar .dl67-q { flex:1 1 auto; min-width:0; padding:0.55rem 2.9rem 0.55rem 0.75rem; font:inherit; font-size:0.95rem; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); outline:none; -webkit-appearance:none; appearance:none; }
   .dl67-bar .dl67-q:focus { border-color:var(--text-2); }
+  .dl67-bar .dl67-q::-webkit-search-cancel-button { -webkit-appearance:none; appearance:none; display:none; }
+  /* Clear button: a 48px tap area around a small round x, shown only while the box has text. */
+  .dl67-x { position:absolute; right:0; top:50%; transform:translateY(-50%); width:48px; height:48px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; background:none; border:0; color:var(--text-2); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .dl67-x[hidden] { display:none; }
+  .dl67-x span { display:flex; align-items:center; justify-content:center; width:1.4rem; height:1.4rem; border-radius:50%; background:var(--line-2); font-size:1rem; line-height:1; }
+  .dl67-x:hover span { color:var(--text); }
+  .dl67-x:focus-visible { outline:none; }
+  .dl67-x:focus-visible span { outline:2px solid var(--text-2); outline-offset:2px; }
   .dl67-bar .dl67-q::placeholder { color:var(--text-3, var(--text-2)); }
   .dl67-bar .dl67-sort { flex:0 0 auto; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); font:inherit; font-size:0.9rem; padding:0 0.6rem; }
   .dl67-none { padding:0.8rem 0; color:var(--text-2); font-size:var(--fs-sm); }
@@ -1582,6 +1591,8 @@
   .wn-list li { display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.45; }
   .wn-list li b { color:var(--text); font-size:var(--fs-md); font-weight:600; }
   .wn-sub { font-size:var(--fs-sm); color:var(--text-3); margin-top:0.15rem; }
+  .wn-sub { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 0.75rem; }
+  .wn-ver + .wn-ver { margin-top:1.1rem; padding-top:0.9rem; border-top:1px solid var(--line); }
   .wn-mini { list-style:none; margin:0.2rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
   .wn-mini .wn-more { color:var(--text-3); }
 
@@ -2277,6 +2288,7 @@
     --r-xs:2px; --r-sm:3px; --r:4px; --r-lg:6px;
     --sh-1:none; --sh-2:0 18px 40px rgba(0,0,0,0.45);
   }
+  /* Light theme: type and status text colors reach 4.5:1 on the page, panels and cards (WCAG AA). */
   body[data-theme="light"] {
     --bg:#f2eee5; --surface:#faf8f3; --surface-2:#e9e4d8; --surface-3:#ddd6c7;
     --line:rgba(26,24,20,0.12); --line-2:rgba(26,24,20,0.24); --rule:#1a1814;
@@ -2285,10 +2297,10 @@
     --accent:#1a1814; --accent-2:#1a1814; --accent-ink:#f2eee5;
     --accent-soft:rgba(26,24,20,0.08); --accent-line:rgba(26,24,20,0.4);
     --mark:#c42b1f;
-    --success:#2f7a4c; --danger:#c42b1f; --info:#2d5f8f;
-    --fire:#b4532a; --water:#2d5f8f; --grass:#3d7a3d; --electric:#8a6a10; --psychic:#7d3f8c;
+    --success:#2c7146; --danger:#bc291e; --info:#2d5f8f;
+    --fire:#a34b26; --water:#2d5f8f; --grass:#397139; --electric:#7d600f; --psychic:#7d3f8c;
     --fighting:#8a5428; --dark:#4b5060; --metal:#5a6068; --dragon:#4f44a0; --fairy:#9c3f74;
-    --gold-dim:#8a6a10;
+    --gold-dim:#7d600f;
     --sh-1:none; --sh-2:0 18px 40px rgba(26,24,20,0.18);
   }
   body, body[data-theme="light"] { background-image:none; font-feature-settings:'tnum' 1; }
@@ -3310,6 +3322,23 @@ document.documentElement.classList.add('rd-boot');
     .about38-links button { min-width:44px; justify-content:center; }
     .deck-card .deck-name { white-space:normal; overflow-wrap:anywhere; }
   }
+  /* Taps of at least 48px on phones and touch screens: buttons, icon buttons, deck tabs, folds,
+     Odds controls, the home deck More and Prizes buttons and the deck search. A mouse keeps the sizes above. */
+  @media (pointer:coarse), (max-width:520px) {
+    html:not(#z) body :is(.btn, .btn-sm) { min-height:48px; }
+    html:not(#z) body :is(.icon-btn, .icon-btn.sm) { width:48px; height:48px; }
+    html:not(#z) body .rv-tab { min-height:48px; }
+    html:not(#z) body :is(.fmt-opt, .mode-opt) { min-height:48px; }
+    html:not(#z) body .ol-k .mode-opt { min-width:48px; min-height:48px; }
+    html:not(#z) body .ol-row-top { flex-wrap:wrap; row-gap:0.35rem; }
+    html:not(#z) body :is(.g29-fold, .g29-more) > summary { min-height:48px; }
+    html:not(#z) body .about40-faq summary { min-height:48px; }
+    html:not(#z) body .deck-more { width:48px; height:48px; }
+    html:not(#z) body .deck-play { min-height:48px; }
+    html:not(#z) body .dl67-bar :is(.dl67-q, .dl67-sort) { min-height:48px; }
+    html:not(#z) body .about38-links :is(a, button) { min-height:48px; }
+    html:not(#z) body .bld-kinds button { min-height:48px; }
+  }
 </style>
 <style>
   /* 2.7.4: room kept for what home adds on its first draw (removed right after it). */
@@ -3919,7 +3948,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=9660ffb2"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=58a99732"></script>
 
-<script src="js/core.js?v=a6f73506"></script>
+<script src="js/core.js?v=9b3031e3"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -3987,7 +4016,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v26-practice.js?v=26556df6"></script>
 <script src="js/keyboard.js?v=e715c2ea"></script>
 <script src="js/v28-ask-odds.js?v=f4e36208"></script>
-<script src="js/v29-rotation.js?v=e463d8a0"></script>
+<script src="js/v29-rotation.js?v=b2c41175"></script>
 <script src="js/v30-live-data.js?v=74099df4"></script>
 <script src="js/v31-tcgdex.js?v=7dda4f0e"></script>
 <script src="js/v32-ads.js?v=0608ca29"></script>
@@ -3998,13 +4027,13 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v37-cards-per-row.js?v=03de74b4"></script>
 <script src="js/v37-save-open.js?v=819d9fe0"></script>
 <script src="js/v38-settings-home.js?v=b6e259c5"></script>
-<script src="js/v40-audit-fixes.js?v=c78a2d1d"></script>
+<script src="js/v40-audit-fixes.js?v=65f69221"></script>
 <script src="js/v45-sample-share-daily.js?v=5f1bc7bb"></script>
 <script src="js/v47-prerelease.js?v=a13ae718"></script>
 <script src="js/matchups.js?v=7d49966a"></script>
 <script src="js/main-attacker.js?v=b5478c10"></script>
 <script src="js/v65-hide-delete.js?v=8172c39e"></script>
-<script src="js/v67-edit-cards.js?v=0a196791"></script>
+<script src="js/v67-edit-cards.js?v=095aa513"></script>
 <!-- ═══════════════════════════ DECK BUILDER SCREEN (v68) -->
 <div id="screen-build" class="screen">
   <div class="ws-header">
@@ -4023,7 +4052,7 @@ document.documentElement.classList.add('rd-boot');
   </div>
 </div>
 </main>
-<script src="js/v68-deck-builder.js?v=15bd643d"></script>
+<script src="js/v68-deck-builder.js?v=ab703610"></script>
 <!-- ═══════════════════════════ DECK BUILDER: WHAT TOP LISTS RUN (2.6) -->
 <script src="js/builder-meta.js?v=88ba9d82"></script>
 <script src="js/v69-grade-blend.js?v=9f73f8e7"></script>
@@ -4031,19 +4060,20 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v71-which-deck.js?v=b6fa22b3"></script>
 <script src="js/grade-flag.js?v=a7f435d3"></script>
 <script src="js/upgrades.js?v=b0fb38b0"></script>
-<script src="js/owned-prices.js?v=57c838c4"></script>
-<script src="js/grade-history.js?v=af1c4c02"></script>
-<script src="js/v80-extras.js?v=c91b69e3"></script>
+<script src="js/owned-prices.js?v=8b924a94"></script>
+<script src="js/grade-history.js?v=35f18744"></script>
+<script src="js/v80-extras.js?v=d4afb917"></script>
 <script src="js/easier-first-visit.js?v=d6317d6a"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
-<script src="js/card-details.js?v=b7fbf937"></script>
+<script src="js/card-details.js?v=96c4e469"></script>
 <script src="js/card-swipe.js?v=fecb1ea0"></script>
 <script src="js/app-dialog.js?v=5a8f6383"></script>
+<script src="js/leave.js?v=182aa2bb"></script>
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=f353e309"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=4e5a3a34"></script>
+<script src="js/i18n.js?v=06879992"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=51cfd74b"></script><script src="js/i18n-de.js?v=3aad71bd"></script><script src="js/i18n-it.js?v=7f8c1a11"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=7ce697be"></script><script src="js/i18n-de.js?v=5f69f49b"></script><script src="js/i18n-it.js?v=04ab27d5"></script></template>
 </body>
 </html>

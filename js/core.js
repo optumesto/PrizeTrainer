@@ -710,7 +710,10 @@ function toGradeRows(deck) {
     return { qty:c.count, name:c.name, card:{
       key: String(c.name||'').toLowerCase(), ab: ar.say,
       t, stage: c.stage||null,
-      from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase() : null,
+      // 3.2.8 (Muse H3): a printing whose record leaves out what it evolves from (TCGdex's 30th Classic
+      // Collection Gengar) takes it from the saved list of Standard cards, read by name.
+      from: c.evolvesFrom ? String(c.evolvesFrom).toLowerCase()
+        : (c.stage === 'stage1' || c.stage === 'stage2') && typeof r273From === 'function' ? (String(r273From(c.name) || '').toLowerCase() || null) : null,
       base: c.base ? String(c.base).toLowerCase() : null,
       p: c.prizeValue||1, hp: c.hp||0,
       etype: t==='energy' ? gEnergyType(c) : null, etypes: t==='energy' ? gEnergyTypes(c) : [],
@@ -6780,8 +6783,8 @@ function renderReadDrill(deck) {
     <select id="opp-src" class="x-select" onchange="setOppSrc(this.value)">${srcs.map(s => `<option value="${esc(s.val)}"${s.val === _oppSrc ? ' selected' : ''}>${esc(s.label)}</option>`).join('')}</select>
     ${_oppSrc === 'paste' ? `<textarea id="opp-paste" class="nt-area" maxlength="8000" aria-label="Opponent's deck list" placeholder="Paste their 60 card list. It stays on this device and is not saved as a deck.">${esc(_oppPaste)}</textarea>` : ''}
     <div class="seg read-seg" style="margin:0.6rem 0">
-      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 unseen</small></div>
-      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 unseen</small></div>
+      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 still in deck or hand</small></div>
+      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 still in deck or hand</small></div>
     </div>`;
   const R = readDrill;
   if (!R || !R.rows || R.src !== _oppSrc) {
@@ -8142,6 +8145,7 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 const WHATS_NEW = {
   version: 'v3.2.7',
+  date: 'Nov 17, 2026',
   kind: 'small',
   items: [
     { t: 'Prices now in dollars only' },
@@ -8158,19 +8162,34 @@ const WHATS_NEW = {
     { t: 'Expanded: older revivers read' }
   ]
 };
+// 3.2.8: What's new shows the two versions before the latest too, each with its date.
+// At each release, move the old WHATS_NEW to the top of this list and keep two.
+const WHATS_PREV = [
+  { version: 'v3.2.6', date: 'Nov 17, 2026', kind: 'small', items: [
+    { t: 'Grade fix: Kingdra ex and other discard pile decks' }
+  ] },
+  { version: 'v3.2.4', date: 'Nov 17, 2026', kind: 'small', items: [
+    { t: 'Rules page fix in the Play app' },
+    { t: 'Added: page to delete your data' }
+  ] }
+];
 const WN_KEY = 'rd_seen_version';
-function wnName() { return WHATS_NEW.version.replace(/^v/, 'RdyDeck '); }
-function wnList() {
-  const full = WHATS_NEW.kind === 'generation';
-  return '<ul class="wn-list">' + WHATS_NEW.items.map(i =>
+function wnName(w) { return (w || WHATS_NEW).version.replace(/^v/, 'RdyDeck '); }
+function wnList(w) {
+  w = w || WHATS_NEW;
+  const full = w.kind === 'generation';
+  return '<ul class="wn-list">' + w.items.map(i =>
     `<li><b>${esc(i.t)}</b>${full && i.d ? `<span>${esc(i.d)}</span>` : ''}</li>`).join('') + '</ul>';
+}
+/** One version's heading (name and date) and its list. */
+function wnBlock(w, first) {
+  return `<div class="wn-ver${first ? ' first' : ''}"><div class="wn-sub"><span>${esc(wnName(w))}</span>${w.date ? `<span class="wn-date">${esc(w.date)}</span>` : ''}</div>${wnList(w)}</div>`;
 }
 function wnMarkSeen() { try { localStorage.setItem(WN_KEY, PT_VERSION); } catch (_) {} }
 function openWhatsNew() {
   wnMarkSeen(); renderWhatsNewCard();
   openSheet(`<div class="modal-title">What's new</div>
-    <div class="wn-sub">${esc(wnName())}</div>
-    ${wnList()}
+    ${[WHATS_NEW].concat(WHATS_PREV.slice(0, 2)).map((w, i) => wnBlock(w, i === 0)).join('')}
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Got it</button></div>`);
 }
 function wnShouldShow() {

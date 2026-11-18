@@ -188,6 +188,7 @@ ${body.trim().split('\n').map(l => l ? '  ' + l.replace(/^ {2}/, '') : l).join('
 ${footerHtml(up)}
 </main>
 <script src="${up}ads.js" defer></script>
+<script src="${up}js/leave.js" defer></script>
 <script>
 // The app's service worker, so this page and the app open with no signal next time.
 if ('serviceWorker' in navigator) addEventListener('load', function () { navigator.serviceWorker.register('${up}sw.js', { scope: '${up || './'}' }).catch(function () {}); });
