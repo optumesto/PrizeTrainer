@@ -50,7 +50,7 @@ const NAV = [
 const TOOLS = [
   ['deck-grader.html', 'Deck checker'], ['improve-your-deck.html', 'Improve your deck'], ['opening-odds.html', 'Opening hand odds'],
   ['rotation.html', 'Rotation check'], ['prize-trainer.html', 'Prize trainer'], ['rulings.html', 'Rules and rulings'],
-  ['cards/', 'Card guides'], ['first-deck.html', 'Your first deck'],
+  ['cards/', 'Card guides'], ['first-deck.html', 'Your first deck'], ['goldfish.html', 'Goldfish your deck'],
 ];
 const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
   @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
@@ -398,6 +398,7 @@ ${matchupTable(g, s)}
 ${s.grade ? `<p>RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}. The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
 <p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How grading works</a> explains each part.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
+<p>To test your own copy before an event, <a href="goldfish.html">goldfish it</a>: play its first turns alone in RdyDeck with real draws and see how often ${esc(g.title)} sets up on time.</p>
 
 <h2>More deck guides</h2>
 <ul class="guides">
@@ -814,6 +815,15 @@ ${cs.map(c => `  <li><a href="${c.slug}.html">${esc(c.name)}</a></li>`).join('\n
   });
 }
 
+// How many turns Goldfish plays, read from the app itself, so the pages that describe it (goldfish.html,
+// the FAQ) never say a different number from the app. {{GF_TURNS}} is the digit, {{GF_TURNS_WORD}} the word.
+const GF_TURNS = (() => {
+  const m = /^const GF_TURNS = (\d+);/m.exec(readFileSync(path.join(ROOT, 'js/core.js'), 'utf8'));
+  if (!m) throw new Error('js/core.js: no GF_TURNS line, so the Goldfish pages cannot say how many turns it plays');
+  return +m[1];
+})();
+const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const gfTurns = s => s.replace(/\{\{GF_TURNS\}\}/g, String(GF_TURNS)).replace(/\{\{GF_TURNS_WORD\}\}/g, WORDS[GF_TURNS] || String(GF_TURNS));
 function handPages() {
   const dir = path.join(ROOT, '.github/pages');
   if (!existsSync(dir)) return [];
@@ -821,8 +831,8 @@ function handPages() {
     const src = readFileSync(path.join(dir, f), 'utf8');
     const m = /^<!--\s*(\{[\s\S]*?\})\s*-->\n/.exec(src);
     if (!m) throw new Error(`.github/pages/${f}: the first line must be a <!-- {json} --> header`);
-    const meta = JSON.parse(m[1]);
-    const body = src.slice(m[0].length).replace(/^<!-- accuracy:[^\n]*-->\n/m, () => accuracyHtml());
+    const meta = JSON.parse(gfTurns(m[1]));
+    const body = gfTurns(src.slice(m[0].length)).replace(/^<!-- accuracy:[^\n]*-->\n/m, () => accuracyHtml());
     return [meta.file, page({ ...meta, body })];
   });
 }

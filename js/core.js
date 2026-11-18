@@ -8759,27 +8759,24 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.0',
+  version: 'v3.4.1',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
-    { t: 'Added: Goldfish damage and attacks' },
-    { t: 'Added: tap a card to play it' },
-    { t: 'Goldfish is now 5 turns' }
+    { t: 'Added: goldfish guide' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.4.0', date: 'Nov 18, 2026', kind: 'small', items: [
+    { t: 'Added: Goldfish damage and attacks' },
+    { t: 'Added: tap a card to play it' },
+    { t: 'Goldfish is now 5 turns' }
+  ] },
   { version: 'v3.3.9', date: 'Nov 18, 2026', kind: 'small', items: [
     { t: 'Puzzle deck search fixed' },
     { t: 'Added: share your puzzle score' }
-  ] },
-  { version: 'v3.3.8', date: 'Nov 18, 2026', kind: 'small', items: [
-    { t: 'Prize game moved to Drills' },
-    { t: 'Grade explainer moved to Questions' },
-    { t: 'Desktop layout improved' },
-    { t: 'Deck tabs reordered' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11743,7 +11740,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.0';
+const PT_VERSION = 'v3.4.1';
 const PT_BUILD = 128;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.

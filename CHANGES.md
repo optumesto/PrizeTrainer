@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.1 (build 130): goldfish guide page, real app screenshots for search (18 Nov 2026)
+
+Changed files: .github/pages/goldfish.html (new), goldfish.html (new, built), build-pages.mjs (reads GF_TURNS from js/core.js into {{GF_TURNS}} and {{GF_TURNS_WORD}} on hand pages; Goldfish in the tools nav; a goldfish line on deck guides), every built page (tools nav), sitemap.xml, llms.txt, index.html (noscript link, About links, featureList, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js ("Goldfish guide"), deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, 404.html, .github/pages/about.html, .github/pages/faq.html.
+
+- New page goldfish.html: what goldfishing is, how to goldfish with real cards (rulebook pp. 8, 12, 13), how to goldfish in RdyDeck (Hand tab, then Goldfish), what it does not cover, other practice tools, and 7 questions. FAQPage and HowTo structured data.
+- The turn count on the Goldfish pages comes from GF_TURNS in js/core.js, so when Goldfish plays more turns, rebuilding the pages updates them.
+- Prize trainer page: names the Prizes button and the Prize game on the Drills tab, as the app has them since 3.3.8, and says Progress shows the cards you miss most.
+- Share image and app screenshots: the home page's og:image and twitter:image are now og-app.png, the RdyDeck logo next to the real Grade screen (from the Play feature graphic), with alt text. The WebApplication structured data names it as its image and lists two real screens (screens/grade.jpg, screens/odds.jpg, the Mega Rayquaza starter deck, no user data) as screenshots. og-image.png stays for the other pages.
+- Copy matches Goldfish 3.4.0: 5 turns, attacks with their effects on your side, damage counters, Knock Outs and healing, solo with no Prizes taken.
+- What's new: Added: goldfish guide (with es, pt, fr, de, it). js/core.js (version), sw.js (cache name prize-trainer-v130).
+
 # RdyDeck 3.4.0 (build 129): Goldfish damage and attacks, tap a card to play it, 5 turns
 
 Changed files: js/core.js (Goldfish damage, healing, attacks, damage moving Abilities, hand card sheets in Goldfish, the Turn 1 line and Puzzle, 5 turns, ENRICH_VER 22, version, What's new), puzzle/engine.js and puzzle/text.js (the shared step reader's new heal and self damage steps), index.html (styles, version), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name), tests/goldfish-check.cjs (new).

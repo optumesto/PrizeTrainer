@@ -246,6 +246,7 @@ I18N_MORE.it = {
     "Deck checker": "Valutatore di mazzi",
     "Opening odds": "Probabilità di apertura",
     "Prize trainer": "Allenamento sui Premi",
+    "Goldfish guide": "Guida al Goldfish",
     "Rotation checker": "Controllo rotazione",
     "Deck guides": "Guide ai mazzi",
     "Improve your deck": "Migliora il tuo mazzo",
@@ -1396,6 +1397,7 @@ I18N_MORE.it = {
     // 3.3.9: puzzle score share.
     "Puzzle deck search fixed": "Ricerca nel mazzo del puzzle corretta",
     "Added: share your puzzle score": "Nuovo: condividi il tuo risultato del puzzle",
+    "Added: goldfish guide": "Nuovo: guida al Goldfish",
     "Share your puzzle score": "Condividi il tuo risultato del puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Il link apre il puzzle di oggi, così i tuoi amici giocano lo stesso tavolo.",
     "Play today's puzzle first.": "Gioca prima il puzzle di oggi.",

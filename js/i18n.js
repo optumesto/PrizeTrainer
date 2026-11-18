@@ -186,6 +186,7 @@ const I18N_ES = {
   "Deck checker": "Calificador de barajas",
   "Opening odds": "Probabilidades de apertura",
   "Prize trainer": "Entrenador de premios",
+  "Goldfish guide": "Guía de Goldfish",
   "Rotation checker": "Revisión de rotación",
   "Deck guides": "Guías de barajas",
   "Improve your deck": "Mejora tu baraja",
@@ -1119,6 +1120,7 @@ const I18N_ES = {
   // 3.3.9: puzzle score share.
   "Puzzle deck search fixed": "Búsqueda en la baraja del puzzle corregida",
   "Added: share your puzzle score": "Nuevo: comparte tu resultado del puzzle",
+  "Added: goldfish guide": "Nuevo: guía de Goldfish",
   "Share your puzzle score": "Comparte tu resultado del puzzle",
   "The link opens today's puzzle, so friends play the same board.": "El enlace abre el puzzle de hoy, así tus amigos juegan el mismo tablero.",
   "Play today's puzzle first.": "Juega primero el puzzle de hoy.",
@@ -1277,6 +1279,7 @@ const I18N_PT = {
   "Deck checker": "Avaliador de decks",
   "Opening odds": "Chances de abertura",
   "Prize trainer": "Treino de prêmios",
+  "Goldfish guide": "Guia de Goldfish",
   "Rotation checker": "Verificador de rotação",
   "Deck guides": "Guias de decks",
   "Improve your deck": "Melhore seu deck",
@@ -2210,6 +2213,7 @@ const I18N_PT = {
   // 3.3.9: puzzle score share.
   "Puzzle deck search fixed": "Busca no deck do puzzle corrigida",
   "Added: share your puzzle score": "Novo: compartilhe seu resultado do puzzle",
+  "Added: goldfish guide": "Novo: guia de Goldfish",
   "Share your puzzle score": "Compartilhe seu resultado do puzzle",
   "The link opens today's puzzle, so friends play the same board.": "O link abre o puzzle de hoje, então seus amigos jogam o mesmo tabuleiro.",
   "Play today's puzzle first.": "Jogue primeiro o puzzle de hoje.",

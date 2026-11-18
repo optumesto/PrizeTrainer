@@ -247,6 +247,7 @@ I18N_MORE.de = {
     'Deck checker': 'Deck-Bewerter',
     'Opening odds': 'Startchancen',
     'Prize trainer': 'Preiskarten-Trainer',
+    'Goldfish guide': 'Goldfish-Anleitung',
     'Rotation checker': 'Rotations-Check',
     'Deck guides': 'Deck-Guides',
     'Improve your deck': 'Verbessere dein Deck',
@@ -1407,6 +1408,7 @@ I18N_MORE.de = {
     // 3.3.9: puzzle score share.
     "Puzzle deck search fixed": "Suche im Puzzle-Deck behoben",
     "Added: share your puzzle score": "Neu: Puzzle-Ergebnis teilen",
+    "Added: goldfish guide": "Neu: Goldfish-Anleitung",
     "Share your puzzle score": "Teile dein Puzzle-Ergebnis",
     "The link opens today's puzzle, so friends play the same board.": "Der Link öffnet das heutige Puzzle, damit deine Freunde dasselbe Spielfeld spielen.",
     "Play today's puzzle first.": "Spiel zuerst das heutige Puzzle.",
