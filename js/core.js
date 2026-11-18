@@ -494,7 +494,7 @@ function openReview(deckId) {
 }
 
 // Bump when the card lookup changes in a way that makes old reads wrong.
-const ENRICH_VER = 21;  // 3.2.7: re-read to store attacks that discard cards from your hand or deck (outlets for discard pile revival). 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
+const ENRICH_VER = 22;  // 3.4: re-read to store each attack's text and printed damage, so Goldfish can play attacks. 3.2.7: re-read to store attacks that discard cards from your hand or deck (outlets for discard pile revival). 3.2.5: re-read to store attacks that put Pokemon onto your Bench from your discard pile (Kingdra ex's King's Order). 2.5.6: re-read so two different cards with one name (Greninja ex from TWM and 30C) each get their own data. v67: re-read so TCGdex card text spells Energy symbols as words (Munkidori's "{D} Energy"). v67: re-read to store each Pokemon's Retreat Cost for Goldfish. v66: re-read to store the Basic behind a Stage 2 whose Stage 1 is not in the list. v65: re-read to store Special Energy text for the Trainer check. v63: re-read for attacks that lock, mill or wall (control decks). v62: re-read for conditions on fixed damage bonuses and Abilities that place counters after a cost. v61: re-read for attacks that count the cards in your hand. v60: re-read for Ability and attack effects read sentence by sentence. v58: re-read to store card text for Goldfish (v56: attacks that count Pokemon in play or cards milled)
 const _dataTried = new Set();
 const _dataBusy = new Set();
 const _dataRetry = new Map();   // 3.3.3: reads this visit that could not ask for every card
@@ -4761,8 +4761,8 @@ function renderHand() {
       ${!H.anyBasic ? '<span class="hp-pill warn">No Basic read, mulligan rule off</span>' : ''}
     </div>
     <div class="hp-hand">${H.hand.map((x, i) => gfIsBasic(x)
-      ? `<button type="button" class="hp-basic" onclick="hpSetUp(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set up</span></button>`
-      : handCardHTML(x.card)).join('')}</div>
+      ? `<button type="button" class="hp-basic" onclick="hpCardSheet(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set up</span></button>`
+      : `<button type="button" class="hp-card" onclick="hpCardSheet(${i})" aria-label="${esc(x.card.name)}">${handCardHTML(x.card)}</button>`).join('')}</div>
     ${hpNoEnergyLine(H.hand)}
     ${H.hand.some(gfIsBasic) ? '<div class="g-sec-i hp-basic-tip">Tap a Basic to put it in play and carry on in Goldfish with this same hand.</div>' : ''}`;
 
@@ -5501,7 +5501,7 @@ function renderNotes() {
 }
 
 // ═══════════ GOLDFISH (v23, inside the Hand tab; v58 plays card text) ═══════════
-// Play your first three turns alone with real draws. It deals the same way
+// Play your first five turns alone with real draws (3.4: five, up from three). It deals the same way
 // the Hand tab does (redeal hands with no Basic, six prizes), and the
 // summary scores what you built against the Hand tab's odds count.
 // v58: Abilities, Items, Supporters and Stadiums do what their own card text
@@ -5510,7 +5510,7 @@ function renderNotes() {
 // app cannot follow yet shows that text, and Draw, Search and Discard do it.
 let handMode = 'line';
 let gf = null;
-const GF_TURNS = 3;
+const GF_TURNS = 5;
 const GF_SUPPORTERS = /^(arven|iono|professor's research|boss's orders|judge|irida|penny|carmine|crispin|lillie's determination|briar|eri|professor turo's scenario|professor sada's vitality|raihan|kieran|cyrano|jacq|clive|hilda|lacey|ciphermaniac's codebreaking|black belt's training|explorer's guidance|thorton|giacomo|atticus|ortega|perrin|caretaker|salvatore|colress's tenacity|marnie|cynthia(?!'s power weight)|n(?!')|guzma|team rocket's archer|melony|roxanne|serena|marnie's pride|lana's aid|janine's secret art|morty's conviction|ryme|dawn|larry's skill|jasmine's gaze|surfer|ethan's adventure|team rocket's petrel|team rocket's ariana|team rocket's proton|brock's scouting|lucian|emcee's hype|rosa|tarragon)\b/;
 const GF_TOOLS = /\b(seal stone|belt|charm|band|board|cape|vest|helmet|glasses|gloves|amulet|bandana|sachet|stone|cushion|claw|spoon|scarf|mochi|pearl|power weight|technical machine|capsule)\b/;
 const GF_STADIUMS = /\b(artazon|area zero underdepths|jamming tower|lost city|path to the peak|collapsed stadium|temple of sinnoh|town store|beach court|mesagoza|levincia|full metal lab|pok[eé]mon league headquarters|training court|pok[eé]stop|magma basin|gapejaw bog|prism tower|festival grounds|neutralization zone|team rocket's watchtower|postwick|perilous jungle|lively stadium|battle cage|nighttime mine|calamitous wasteland|mystery garden|grand tree|lumiose city|n's castle|team rocket's factory|legendary pyroduct|risky ruins|academy at night|forest of vitality)\b/;
@@ -5758,7 +5758,6 @@ function gfParseBody(sents) {
     }
     if (/^attach the other to 1 of your pokemon$/.test(s)) return null;
     if (/^if you attached energy to a pokemon in this way, draw a card$/.test(s)) { push({ t: 'draw', n: 1, ifAttached: true }); continue; }
-    if (/^if you attached energy to a pokemon in this way, heal \d+ damage from that pokemon$/.test(s)) continue; // no damage in Goldfish
     // Move things around your board.
     if (/^(?:if you do, )?switch your active pokemon with 1 of your benched pokemon$/.test(s)) { push({ t: 'switch' }); continue; }
     if (/^move a basic energy from 1 of your pokemon to another of your pokemon$/.test(s)) { push({ t: 'moveEnergy' }); continue; }
@@ -5771,11 +5770,29 @@ function gfParseBody(sents) {
     if (/^flip a coin$/.test(s)) { push({ t: 'coin' }); continue; }
     if (/your turn ends$/.test(s)) { push({ t: 'endTurn' }); continue; }
     if (/^(?:you may )?discard a stadium in play$/.test(s)) { push({ t: 'discardStadium' }); continue; }
-    if (/^heal \d+ damage/.test(s)) continue;
+    // 3.4: damage on your own Pokemon. Healing, damage counters you put on your own Pokemon, and
+    // damage counters you move off them (Munkidori's Adrena-Brain moves them to your opponent).
+    if ((m = s.match(/^(if you attached energy to a pokemon in this way, )?heal (\d+|all) damage from (this pokemon|that pokemon|your active pokemon(?: that has \d+ or more energy attached)?|1 of your pokemon|1 of your benched pokemon|1 of your mega evolution pokemon ex|each of your pokemon)(?:, and it recovers from all special conditions)?$/))) {
+      const w = m[3], who = w === 'this pokemon' ? 'self' : w === 'that pokemon' ? 'target' : /^your active/.test(w) ? 'active' : w === '1 of your pokemon' ? 'one'
+        : w === '1 of your benched pokemon' ? 'bench' : w === 'each of your pokemon' ? 'each' : 'mega';
+      push({ t: 'heal', n: m[2] === 'all' ? 0 : +m[2], all: m[2] === 'all', who, ifAttached: !!m[1] || undefined }); continue;
+    }
+    if ((m = s.match(/^for each (.+?) card in your discard pile, heal (\d+) more damage$/)) && last() && last().t === 'heal') { last().per = { name: m[1], n: +m[2] }; continue; }
+    if (/^if you healed any damage in this way, put all energy attached to that pokemon into your hand$/.test(s) && last() && last().t === 'heal') { push({ t: 'energyToHand', ifHealed: true }); continue; }
+    if ((m = s.match(/^(if you attached energy to a pokemon in this way, )?(?:put|place) (\d+) damage counters? on (that|this) pokemon$/))) { push({ t: 'selfDmg', d: 10 * +m[2], who: m[3] === 'that' ? 'target' : 'self', ifAttached: !!m[1] || undefined }); continue; }
+    if ((m = s.match(/^this pokemon also does (\d+) damage to itself$/))) { push({ t: 'selfDmg', d: +m[1], who: 'self' }); continue; }
+    if (/^you can't use this ability on a pokemon that would be knocked out$/.test(s)) {
+      const sd = last(), at = steps.slice().reverse().find(z => z.t === 'attach');
+      if (sd && sd.t === 'selfDmg' && at) at.noKO = sd.d;
+      continue;
+    }
+    if ((m = s.match(/^(?:you may )?move up to (\d+) damage counters? from 1 of your pokemon to 1 of your opponent's pokemon$/))) { push({ t: 'moveOff', n: +m[1] }); continue; }
+    if ((m = s.match(new RegExp('^(you may )?discard (all|an?|\\d+) (?:(' + GF_TY + ') )?energy (?:cards? )?from this pokemon$')))) {
+      push({ t: 'discardEnergy', n: m[2] === 'all' ? 99 : /^an?$/.test(m[2]) ? 1 : +m[2], etype: m[3] || '', may: !!m[1] || undefined }); continue;
+    }
     // Things that only touch your opponent, or only matter in an attack.
     if (/opponent|during this turn, attacks used by|retreat cost|special condition/.test(s) && !/your deck|your hand|your discard/.test(s)) { opp = true; continue; }
     if (/^(?:if )?they /.test(s) && opp) continue;
-    if (/^if you attached energy to a pokemon in this way, put \d+ damage counters? on that pokemon$/.test(s)) continue;
     if (/^if you use this ability, this pokemon is knocked out$/.test(s)) { push({ t: 'koSelf' }); continue; }
     if ((m = s.match(/^choose 1: \u2022 (.+)$/))) {
       // "Choose 1:" with bullet options (Kieran).
@@ -5786,7 +5803,6 @@ function gfParseBody(sents) {
       push({ t: 'choose', opts: parsed.map(o => ({ label: o.label, steps: o.b.steps, opp: o.b.opp })) });
       continue;
     }
-    if (/^put \d+ damage counters? on (?:that|this) pokemon$|^you can't use this ability on a pokemon that would be knocked out$/.test(s)) continue;
     if (/^shuffle this pokemon and all attached cards into your deck$/.test(s)) { push({ t: 'selfShuffle', ifDrew: true }); continue; }
     if (/^(?:you may )?switch (?:it|this pokemon) with your active pokemon$/.test(s)) { push({ t: 'switchSelf' }); continue; }
     if (/^(?:if you do, )?(?:you may )?move any amount of energy from your other pokemon to this pokemon$/.test(s)) { push({ t: 'moveToSelf', ifSwitched: true }); continue; }
@@ -5964,7 +5980,7 @@ function setHandMode(m) { handMode = m === 'gold' ? 'gold' : 'line'; renderHand(
 function handModeBar() {
   return `<div class="seg hm-seg" role="group" aria-label="Hand practice mode">
     <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 line</div>
-    <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish 3 turns</div>
+    <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish 5 turns</div>
   </div>`;
 }
 function gfIsBasic(x) { const c = x.card; return cardCategory(c) === 'pokemon' && (c.stage === 'basic' || (!c.stage && !c.evolvesFrom)); }
@@ -6056,7 +6072,59 @@ function gfTake(uid) {
   const i = gf.hand.findIndex(x => x.uid === uid);
   return i < 0 ? null : gf.hand.splice(i, 1)[0];
 }
-function gfNewMon(x) { return { id: ++gf.monId, stack: [x], energy: [], tool: null, turnIn: gf.turn, evoTurn: -1, ab: {} }; }
+function gfNewMon(x) { return { id: ++gf.monId, stack: [x], energy: [], tool: null, turnIn: gf.turn, evoTurn: -1, ab: {}, dmg: 0 }; }
+
+/* ---------- 3.4: damage on your own Pokemon ---------- */
+/** HP now: the top card's HP, plus what its Tool adds. 0 when the card data has no HP. */
+function gfHp(m) {
+  let hp = +gfTop(m).card.hp || 0;
+  if (hp && m.tool) { const r = gfNorm(gfInfo(m.tool.card).rtext || '').toLowerCase().match(/the pokemon this card is attached to gets \+(\d+) hp/); if (r) hp += +r[1]; }
+  return hp;
+}
+function gfCtr(d) { const n = Math.round(d / 10); return n + ' damage counter' + (n !== 1 ? 's' : ''); }
+/** Prize cards your opponent would take for this Pokemon. */
+function gfPrizeN(m) { const t = gfTop(m); return gfIsMega(t) && gfIsEx(t) ? 3 : gfRuleBox(t) ? 2 : 1; }
+/** Put damage on one of your Pokemon, then Knock it Out when its damage reaches its HP. */
+function gfAddDmg(m, d, why) {
+  if (!m || d <= 0) return;
+  m.dmg = (m.dmg || 0) + d;
+  gfLog((why ? why + ' put ' : 'Put ') + gfCtr(d) + ' on ' + gfMonNm(m));
+  gfCheckKO(m);
+}
+function gfHeal(m, d) {
+  const h = Math.min(m.dmg || 0, d);
+  m.dmg = (m.dmg || 0) - h;
+  gfLog(h ? 'Healed ' + h + ' damage from ' + gfMonNm(m) : gfMonNm(m) + ' has no damage to heal');
+  return h;
+}
+function gfCheckKO(m) {
+  const hp = gfHp(m);
+  if (!hp || (m.dmg || 0) < hp || !gfMons().includes(m)) return false;
+  gfKnockOut(m);
+  return true;
+}
+function gfKnockOut(m) {
+  if (gf.active === m) { gf.active = null; if (gf.bench.length) gf.needActive = true; } else gf.bench = gf.bench.filter(z => z !== m);
+  m.stack.concat(m.energy, m.tool ? [m.tool] : []).forEach(y => gf.discard.push(y));
+  const p = gfPrizeN(m);
+  gfLog(gfMonNm(m) + ' is Knocked Out. Your opponent would take ' + p + ' Prize card' + (p !== 1 ? 's' : '') + ' for it');
+  if (gf.selMon === m.id) gf.selMon = null;
+  if (!gfMons().length) gfLog('You have no Pokémon left in play, so this game would be lost');
+}
+/** Risky Ruins: a Basic put onto your Bench during your turn takes damage counters. */
+function gfBenchStadium(m) {
+  if (!gf.stadium || gf.turn === 0 || !gf.bench.includes(m)) return;
+  const t = gfSentences(gfInfo(gf.stadium.card).rtext || '').join('. ');
+  const r = t.match(new RegExp('whenever any player puts a basic non-(' + GF_TY + ') pokemon onto their bench during their turn, place (\\d+) damage counters? on that pokemon'));
+  if (r && gfIsBasic(gfTop(m)) && !gfTypes(gfTop(m)).includes(r[1])) gfAddDmg(m, 10 * +r[2], gfNm(gf.stadium));
+}
+/** Add or take off one damage counter by hand, for card text the app cannot follow. */
+function gfManDmg(id, d) {
+  const m = gfMon(id); if (!m || gf.done || gf.turn === 0) return;
+  if (d < 0 && !(m.dmg > 0)) return;
+  if (d > 0) gfAddDmg(m, 10); else { m.dmg -= 10; gfLog('Took 1 damage counter off ' + gfMonNm(m)); }
+  renderHand();
+}
 function gfCanEvolveOnto(m) { return gf.turn >= 2 && m.turnIn < gf.turn && m.evoTurn !== gf.turn; }
 function gfBusy() { return !!(gf.run || gf.needActive); }
 function gfManual() { return !!(gf.run && gf.run.wait && gf.run.wait.t === 'manual'); }
@@ -6130,11 +6198,41 @@ function gfActions(x) {
 
 /** A "when you play this" Ability is offered once, right then; anything else you do passes on it. */
 function gfClearOffer() { if (gf.offer) { const m = gfMon(gf.offer.id); if (m) m.trig = false; gf.offer = null; } }
-function gfSelect(uid) { if (!gf.done && (!gfBusy() || gfManual())) { gfClearOffer(); gf.sel = gf.sel === uid ? null : uid; gf.selMon = null; renderHand(); } }
+// 3.4: tapping a card in your hand opens it with what it can do right now, so you play it from there.
+function gfSelect(uid) { if (!gf.done && (!gfBusy() || gfManual())) { gfClearOffer(); gf.sel = uid; gf.selMon = null; renderHand(); gfHandSheet(uid); } }
+function gfHandSheet(uid) {
+  const sel = gf.hand.find(x => x.uid === uid); if (!sel) return;
+  const acts = gfActions(sel), inf = gfInfo(sel.card), c = sel.card;
+  const tr = cardCategory(c) === 'trainer' && !['tool', 'stadium'].includes(gfKind(sel)) && !(gf.groups[sel.g] || {}).candy;
+  const P = tr ? gfTrainerPlay(sel) : null, manual = tr && (!P || !P.steps);
+  const go = fn => `gfShut();${fn}`;
+  openSheet(gfSheetHTML(sel, `<div class="gf-acts">${acts.map(a => a.off ? `<button class="btn btn-sm" disabled>${a.label}</button>`
+      : `<button class="btn btn-sm${a.ghost ? ' btn-ghost' : ' btn-primary'}" onclick="${go(a.fn)}">${a.label}</button>`).join('') || `<span class="nt-muted">${gf.turn === 0 ? 'During setup only Basic Pokémon go into play.' : gf.turnOver ? 'Your turn has ended.' : 'Nothing to do with this card now.'}</span>`}</div>
+    ${acts.filter(a => a.off && a.why).slice(0, 2).map(a => `<div class="nt-muted gf-why">${a.why}</div>`).join('')}
+    ${manual ? `<div class="nt-muted gf-why">${inf.rtext ? 'The app cannot follow this card\'s text yet, so playing it lets you do it by hand.' : 'No card text read yet. Open this deck online to read it.'}</div>` : ''}`, 'gfShut()'));
+}
+/** A hand card opened in a sheet: its picture, what you can do with it (mid), then its text. */
+function gfSheetHTML(x, mid, close) {
+  const c = x.card, inf = gfInfo(c), cat = cardCategory(c);
+  const txt = cat === 'trainer' ? gfTextHTML(inf.rtext) : cat === 'pokemon'
+    ? gfAbilities(x).map(A => `<div class="gf-txt"><b>${esc(A.name)}.</b> ${esc(gfShow(A.text))}</div>`).join('') + (c.attacks || []).map(gfAtkLine).join('')
+    : gfTextHTML(c.etext);
+  const img = c.imageUrl ? `<img src="${esc(c.imageUrl)}" alt="${gfNm(x)}" data-fallbacks="${esc(JSON.stringify(c.fallbackUrls || []))}" data-fallback-idx="0" onerror="reviewImgError(this)">` : '';
+  return `<div class="pz-card gf-sheet">${img}<div class="pz-ctx"><div class="modal-title">${gfNm(x)}</div>${mid}${txt}</div></div>
+    <div class="modal-actions"><button class="btn" onclick="${close || 'closeSheet()'}">Close</button></div>`;
+}
+/** 3.4: Turn 1 line: tapping a card in the opening hand opens it; a Basic can go straight into play in Goldfish. */
+function hpCardSheet(i) {
+  const H = handState, x = H && H.hand[i]; if (!x) return;
+  openSheet(gfSheetHTML(x, gfIsBasic(x)
+    ? `<div class="gf-acts"><button class="btn btn-sm btn-primary" onclick="closeSheet();hpSetUp(${i})">Make Active and play on in Goldfish</button></div>`
+    : '<div class="nt-muted gf-why">Only Basic Pokémon go into play before turn 1. Tap a Basic to play this hand on in Goldfish.</div>'));
+}
+function gfShut() { closeSheet(); if (gf) gf.sel = null; }
 function gfSelectMon(id) {
   if (gf.done) return;
   if (gf.needActive) { gfPromote(id); return; }
-  if (gf.run) return;
+  if (gf.run && !gfManual()) return;
   if (!(gf.offer && gf.offer.id === id)) gfClearOffer();
   gf.selMon = gf.selMon === id ? null : id; gf.sel = null; renderHand();
 }
@@ -6144,6 +6242,8 @@ function gfPlayBasic(uid, where) {
   if (where === 'active' && !gf.active) gf.active = m; else if (gf.bench.length < 5) gf.bench.push(m); else { gf.hand.push(x); return; }
   gfLog((gf.turn === 0 ? 'Set up ' : 'Played ') + gfNm(x) + (gf.active === m ? ' as your Active' : ' on the Bench'));
   gf.sel = null;
+  gfBenchStadium(m);
+  if (!gfMons().includes(m)) { renderHand(); return; }
   // "When you play this Pokémon from your hand onto your Bench" Abilities (Meowth ex, Mega Rayquaza ex).
   if (gf.turn > 0 && gf.active !== m) {
     m.benchTurn = gf.turn;
@@ -6156,7 +6256,7 @@ function gfEvolve(uid, id) {
   const m = gfMon(id); if (!m || !gfCanEvolveOnto(m)) return;
   const x = gfTake(uid); if (!x) return;
   const under = gfTop(m);
-  m.stack.push(x); m.evoTurn = gf.turn; m.evoHandTurn = gf.turn; m.evoUid = x.uid;
+  m.stack.push(x); m.evoTurn = gf.turn; m.evoHandTurn = gf.turn; m.evoUid = x.uid; m.lock = null;
   gfLog('Evolved ' + gfNm(under) + ' into ' + gfNm(x));
   gf.sel = null; gfOfferEvolve(m);
   renderHand();
@@ -6274,7 +6374,7 @@ function gfStart(R) {
   R.i = 0; R.drew = 0; R.attached = 0; R.heads = null;
   gfClearOffer(); gf.run = R;
   if (!R.steps) { gfLog(esc(R.name) + ': do what the card says with Draw, Search and Discard'); }
-  else if (!R.steps.length) { gfLog(esc(R.name) + (R.opp ? ' only affects your opponent, so nothing happens here' : ' has no effect in Goldfish, where nothing takes damage')); }
+  else if (!R.steps.length && !R.atk) { gfLog(esc(R.name) + (R.opp ? ' only affects your opponent, so nothing happens here' : ' has no effect here')); }
   gfGo();
 }
 function gfFinish() {
@@ -6291,7 +6391,7 @@ function gfGo() {
   if (!R.steps) { R.wait = { t: 'manual' }; renderHand(); return; }
   while (R.i < R.steps.length) {
     const s = R.steps[R.i];
-    if ((s.ifHeads && !R.heads) || (s.ifAttached && !R.attached) || (s.ifDrew && !R.drew) || (s.ifSwitched && !R.switched)) { R.i++; continue; }
+    if ((s.ifHeads && !R.heads) || (s.ifAttached && !R.attached) || (s.ifDrew && !R.drew) || (s.ifSwitched && !R.switched) || (s.ifHealed && !R.healed)) { R.i++; continue; }
     R.i++;
     R.wait = null;
     switch (s.t) {
@@ -6327,17 +6427,48 @@ function gfGo() {
       case 'benchSelf': {
         const x = gfTake(R.handCard); if (!x) break;
         if (gf.bench.length >= 5) { gf.hand.push(x); break; }
-        gf.bench.push(gfNewMon(x)); gfLog('Put ' + gfNm(x) + ' onto the Bench'); break;
+        const nm = gfNewMon(x); gf.bench.push(nm); gfLog('Put ' + gfNm(x) + ' onto the Bench'); gfBenchStadium(nm); break;
       }
       case 'koSelf': {
         const m = gfMon(R.mon); if (!m) break;
-        if (gf.active === m) { gf.active = null; if (gf.bench.length) gf.needActive = true; } else gf.bench = gf.bench.filter(z => z !== m);
-        m.stack.concat(m.energy, m.tool ? [m.tool] : []).forEach(y => gf.discard.push(y));
-        gfLog(gfMonNm(m) + ' is Knocked Out, and your opponent would take Prizes for it');
+        gfKnockOut(m);
         if (gf.needActive) { renderHand(); return; }
         break;
       }
       case 'choose': R.wait = s; renderHand(); return;
+      // 3.4: damage on your own Pokemon.
+      case 'heal': {
+        if (s.who === 'each') { gfMons().forEach(m => gfHeal(m, s.all ? m.dmg : s.n)); break; }
+        if (['self', 'target', 'active'].includes(s.who)) {
+          const one = s.who === 'self' ? gfMon(R.mon) : s.who === 'target' ? gfMon(R.target) : gf.active;
+          if (one && gfHeal(one, gfHealN(s, one))) R.healed = one.id;
+          break;
+        }
+        if (!gfHealPool(s).length) { gfLog('None of your Pokémon have damage to heal'); break; }
+        R.wait = s; renderHand(); return;
+      }
+      case 'energyToHand': {
+        const m = gfMon(R.healed); if (!m || !m.energy.length) break;
+        const en = m.energy.splice(0); en.forEach(e => gf.hand.push(e));
+        gfLog('Put ' + en.map(gfNm).join(', ') + ' from ' + gfMonNm(m) + ' into your hand'); break;
+      }
+      case 'selfDmg': {
+        const m = s.who === 'target' ? gfMon(R.target) : gfMon(R.mon); if (!m) break;
+        gfAddDmg(m, s.d, esc(R.name));
+        if (gf.needActive) { renderHand(); return; }
+        break;
+      }
+      case 'moveOff':
+        if (!gfMons().some(m => m.dmg > 0)) { gfLog('None of your Pokémon have damage counters to move'); break; }
+        R.wait = s; renderHand(); return;
+      case 'discardEnergy': {
+        const m = gfMon(R.mon); if (!m) break;
+        const pool = m.energy.filter(e => !s.etype || gfEProv(e).includes(s.etype));
+        if (!pool.length) { gfLog('No Energy to discard from ' + gfMonNm(m)); break; }
+        if (s.may || (pool.length > s.n && new Set(pool.map(gfKey)).size > 1)) { s.left = Math.min(s.n, pool.length); R.wait = s; renderHand(); return; }
+        pool.slice(0, s.n).forEach(e => { m.energy.splice(m.energy.indexOf(e), 1); gf.discard.push(e); });
+        gfLog('Discarded ' + pool.slice(0, s.n).map(gfNm).join(', ') + ' from ' + gfMonNm(m)); break;
+      }
       case 'switchSelf': {
         const m = gfMon(R.mon);
         if (!m || !gf.active || gf.active === m) break;
@@ -6396,6 +6527,8 @@ function gfAttachChoices(s) {
   if (s.mstage) targets = targets.filter(m => s.mstage === 'evolution' ? gfIsEvo(gfTop(m)) : s.mstage === 'basic' ? gfIsBasic(gfTop(m)) : gfTop(m).card.stage === s.mstage);
   if (s.target) targets = targets.filter(m => m.id === s.target);
   if (s.each) targets = targets.filter(m => !(s.done || []).includes(m.id));
+  // Gardevoir ex: "You can't use this Ability on a Pokemon that would be Knocked Out."
+  if (s.noKO) targets = targets.filter(m => !gfHp(m) || gfHp(m) - (m.dmg || 0) > s.noKO);
   const out = [];
   names.forEach(y => targets.forEach(m => out.push({ uid: y.uid, id: m.id, label: 'Attach ' + gfNm(y) + ' to ' + gfMonNm(m) })));
   return out;
@@ -6406,7 +6539,7 @@ function gfDoAttach(uid, id) {
   const i = src.findIndex(y => y.uid === uid); const m = gfMon(id);
   if (i < 0 || !m) return;
   const x = src.splice(i, 1)[0];
-  m.energy.push(x); R.attached++;
+  m.energy.push(x); R.attached++; R.target = id;
   gfLog('Attached ' + gfNm(x) + (s.from === 'discard' ? ' from the discard pile' : '') + ' to ' + gfMonNm(m));
   s.left--;
   if (s.each) { s.done = (s.done || []).concat(id); } else s.target = id;
@@ -6462,6 +6595,104 @@ function gfDoPickUp(id) {
   if (s.keep) att.forEach(y => gf.hand.push(y)); else att.forEach(y => gf.discard.push(y));
   gfLog('Put ' + gfMonNm(m) + ' into your hand' + (att.length ? s.keep ? ' with its cards' : ', its cards to the discard pile' : ''));
   if (gf.needActive) { renderHand(); return; }
+  gfGo();
+}
+/* ---------- 3.4: attacks ---------- */
+/** The Energy types a card attached to a Pokemon provides. 'any' stands for every type, and a Special
+ * Energy whose text the app cannot read counts as 'any' too, so it never wrongly blocks an attack. */
+function gfEProv(e) {
+  const t = gfEType(e); if (t) return [t];
+  const x = gfNorm(e.card.etext || gfInfo(e.card).rtext || '').toLowerCase();
+  if (/provides every type of energy/.test(x)) return ['any'];
+  const m = x.match(new RegExp('provides (\\d+ )?(' + GF_TY + ') energy'));
+  if (m) return Array(m[1] ? +m[1] : 1).fill(m[2]);
+  return ['any'];
+}
+/** Can the Energy on this Pokemon pay this attack's cost? */
+function gfCostMet(energy, cost) {
+  const pool = [].concat(...energy.map(gfEProv));
+  const need = (cost || []).map(c => String(c).toLowerCase());
+  for (const c of need.filter(c => c !== 'colorless')) {
+    let i = pool.indexOf(c); if (i < 0) i = pool.indexOf('any');
+    if (i < 0) return false;
+    pool.splice(i, 1);
+  }
+  return pool.length >= need.filter(c => c === 'colorless').length;
+}
+function gfCap(w) { w = String(w || ''); return w ? w[0].toUpperCase() + w.slice(1) : w; }
+/** What an attack does to your own side, read from its text. Damage to your opponent is only counted. */
+const _gfAtk = new Map();
+function gfAttackPlan(a) {
+  if (a.text == null) return { steps: null, lock: null, noText: true };
+  const k = a.name + '|' + a.text;
+  if (_gfAtk.has(k)) return _gfAtk.get(k);
+  let lock = null;
+  const dmgOnly = /this attack does|this attack's damage|^for each heads|^if (?:heads|tails|either of them is heads|both of them are heads), this attack does|^flip (?:\d+|a) coins?(?: until you get tails)?(?:, and)?(?: this attack does .*)?$/;
+  let sents = gfSentences(a.text).filter(x => {
+    let m;
+    if ((m = x.match(/^during your next turn, this pokemon can't (?:use (.+)|attack|use attacks)$/))) { lock = m[1] ? m[1].trim() : 'all'; return false; }
+    return !(dmgOnly.test(x) && !/^flip a coin$/.test(x));
+  });
+  // A coin flip that only changes the damage changes nothing here.
+  if (!sents.some(x => /^if (?:heads|tails)/.test(x))) sents = sents.filter(x => !/^flip a coin$/.test(x));
+  const b = gfParseBody(sents);
+  const P = { steps: b ? b.steps : null, opp: b ? b.opp : false, lock };
+  _gfAtk.set(k, P);
+  return P;
+}
+/** Why the Active Pokemon cannot use this attack now, or ''. */
+function gfAttackWhy(m, a) {
+  if (gf.turn === 0) return 'Attacks start on turn 1.';
+  if (gf.turnOver) return 'Your turn has ended.';
+  if (gf.active !== m) return 'Only your Active Pokémon can attack.';
+  if (gf.turn === 1 && gf.first) return 'The player going first cannot attack on turn 1.';
+  if (m.lock && m.lock.turn === gf.turn && (m.lock.what === 'all' || m.lock.what === String(a.name || '').toLowerCase())) return 'It cannot use this attack this turn, because of the attack it used last turn.';
+  if (!gfCostMet(m.energy, a.cost)) return 'Not enough Energy attached.';
+  return '';
+}
+function gfAttack(i) {
+  const m = gf.active; if (!m || gfBusy()) return;
+  const a = (gfTop(m).card.attacks || [])[i]; if (!a) return;
+  const why = gfAttackWhy(m, a);
+  if (why) { showToast(why); return; }
+  const P = gfAttackPlan(a);
+  gf.sel = null; gf.selMon = null;
+  const pd = String(a.pd || '').trim();
+  gfLog(gfMonNm(m) + ' used ' + esc(a.name) + (pd ? ', ' + esc(pd) + " damage to your opponent's Active Pokémon" : ''));
+  if (P.lock) m.lock = { turn: gf.turn + 1, what: P.lock };
+  gf.attacked = gf.turn;
+  gfStart({ name: a.name, text: a.text || (P.noText ? 'No attack text read yet. Open this deck online to read it.' : ''), mon: m.id, steps: P.steps, opp: P.opp, endTurn: true, atk: true });
+}
+
+/** How much a heal step heals from this Pokemon (Tasty Rice Ball heals more for each copy in your discard pile). */
+function gfHealN(s, m) { return s.all ? m.dmg || 0 : s.n + (s.per ? s.per.n * gf.discard.filter(y => gfKey(y) === s.per.name).length : 0); }
+function gfHealPool(s) {
+  const pool = s.who === 'bench' ? gf.bench : s.who === 'mega' ? gfMons().filter(m => gfIsMega(gfTop(m)) && gfIsEx(gfTop(m))) : gfMons();
+  return pool.filter(m => m.dmg > 0);
+}
+function gfDoHeal(id) {
+  const R = gf.run, s = R && R.wait; if (!s || s.t !== 'heal') return;
+  const m = gfMon(id); if (!m) return;
+  if (gfHeal(m, gfHealN(s, m))) R.healed = m.id;
+  gfGo();
+}
+/** Munkidori's Adrena-Brain: the counters leave your Pokemon. There is no opponent here to take them. */
+function gfDoMoveOff(id, n) {
+  const R = gf.run, s = R && R.wait; if (!s || s.t !== 'moveOff') return;
+  const m = gfMon(id); if (!m || !(m.dmg > 0)) return;
+  const k = Math.min(n, s.n, Math.round(m.dmg / 10));
+  m.dmg -= 10 * k;
+  gfLog('Moved ' + gfCtr(10 * k) + ' from ' + gfMonNm(m) + " to your opponent's Pokémon");
+  gfGo();
+}
+function gfDoDiscardEnergy(uid) {
+  const R = gf.run, s = R && R.wait; if (!s || s.t !== 'discardEnergy') return;
+  const m = gfMon(R.mon); if (!m) return;
+  const i = m.energy.findIndex(e => e.uid === uid); if (i < 0) return;
+  const e = m.energy.splice(i, 1)[0]; gf.discard.push(e);
+  gfLog('Discarded ' + gfNm(e) + ' from ' + gfMonNm(m));
+  s.left--;
+  if (s.left > 0 && m.energy.some(z => !s.etype || gfEProv(z).includes(s.etype))) { renderHand(); return; }
   gfGo();
 }
 function gfDoStadiumDiscard() {
@@ -6643,7 +6874,7 @@ function gfSearchDone(dest) {
   shuffle(gf.deck);
   const st = S.step;
   if (!got.length) gfLog('Searched and took nothing');
-  else if (dest === 'bench') { got.forEach(x => { const m = gfNewMon(x); if (!gf.active) gf.active = m; else gf.bench.push(m); }); gfLog('Searched ' + got.map(gfNm).join(', ') + ' onto the Bench'); }
+  else if (dest === 'bench') { const ms = got.map(x => { const m = gfNewMon(x); if (!gf.active) gf.active = m; else gf.bench.push(m); return m; }); gfLog('Searched ' + got.map(gfNm).join(', ') + ' onto the Bench'); ms.forEach(gfBenchStadium); }
   else if (dest === 'top') { got.reverse().forEach(x => gf.deck.unshift(x)); gfLog('Put ' + got.map(gfNm).join(', ') + ' on top of the deck'); }
   else { got.forEach(x => gf.hand.push(x)); gfLog('Searched ' + got.map(gfNm).join(', ') + ' into hand'); }
   if (st && st.split && got.length > 1) {
@@ -6724,9 +6955,10 @@ function gfMonHTML(m, isActive) {
   const en = m.energy.map(e => { const t = gfEType(e); return t ? t[0].toUpperCase() + t.slice(1) : lbl23(e.card); });
   const when = m.turnIn === 0 ? 'In play from the start' : m.turnIn === gf.turn ? 'Came in this turn' : 'Came in turn ' + m.turnIn;
   return `<button class="mt-mon gf-mon${isActive ? ' act' : ''}${on ? ' on' : ''}" onclick="gfSelectMon(${m.id})">
-    <span class="mt-art">${img}</span>
+    <span class="mt-art">${img}${m.dmg > 0 ? `<span class="mt-dmg">${m.dmg}</span>` : ''}</span>
     <span class="mt-tx"><span class="mt-nm">${gfMonNm(m)}</span>
       <span class="mt-sub">${st}${c.hp ? `, ${c.hp} HP` : ''}</span>
+      ${m.dmg > 0 && gfHp(m) ? `<span class="mt-hp hurt"><b>${Math.max(0, gfHp(m) - m.dmg)}</b> of ${gfHp(m)} HP</span>` : ''}
       ${en.length ? `<span class="mt-ens">${mtEnergyHTML(en)}</span>` : '<span class="mt-sub">No Energy</span>'}
       ${m.tool ? `<span class="mt-tool">${esc(lbl23(m.tool.card))}</span>` : ''}
       <span class="mt-when">${when}</span>
@@ -6741,6 +6973,30 @@ function mtEnergyHTML(words) {
 }
 function mtPile(label, n) { return `<span class="mt-pile"><b>${n}</b><span>${label}</span></span>`; }
 function mtPrizes(n) { return `<span class="mt-prz" aria-hidden="true">${'<i></i>'.repeat(Math.max(0, Math.min(6, n)))}</span>`; }
+/** 3.4: an attack's line: name, printed damage, cost and text. */
+function gfAtkLine(a) {
+  const cost = (a.cost || []).length ? `<span class="mt-ens">${mtEnergyHTML(a.cost.map(gfCap))}</span>` : '';
+  return `<div class="gf-txt"><b>${esc(a.name)}${a.pd ? ' ' + esc(a.pd) : ''}.</b> ${cost}${a.text ? ' ' + esc(gfShow(a.text)) : ''}</div>`;
+}
+/** The Active Pokemon's attacks, each with its button, or only their text for a Benched Pokemon. */
+function gfAtkHTML(m) {
+  const atks = gfTop(m).card.attacks || [];
+  if (!atks.length) return '';
+  const live = gf.active === m && gf.turn > 0 && !gf.turnOver;
+  return atks.map((a, i) => {
+    const why = live ? gfAttackWhy(m, a) : '', P = gfAttackPlan(a);
+    return (live ? `<button class="btn btn-sm btn-primary" onclick="gfAttack(${i})" ${why ? 'disabled' : ''}>Attack with ${esc(a.name)}</button>${why ? `<div class="nt-muted gf-why">${why}</div>` : ''}` : '')
+      + gfAtkLine(a) + (P.noText ? '<div class="nt-muted gf-why">No attack text read yet. Open this deck online to read it.</div>'
+        : live && !P.steps ? '<div class="nt-muted gf-why">The app cannot follow all of this attack yet, so you finish it by hand.</div>' : '');
+  }).join('');
+}
+/** Damage counter buttons, for card text the app cannot follow. */
+function gfDmgBtns(m) {
+  if (gf.turn === 0) return '';
+  return `<div class="gf-acts gf-dmgb"><span class="nt-muted">${m.dmg > 0 ? gfCtr(m.dmg) + ' on it' : 'No damage on it'}</span>
+    <button class="btn btn-sm" onclick="gfManDmg(${m.id},1)">Add a damage counter</button>
+    <button class="btn btn-sm" onclick="gfManDmg(${m.id},-1)" ${m.dmg > 0 ? '' : 'disabled'}>Remove a damage counter</button></div>`;
+}
 /** The card's own text, plain, under its buttons. */
 function gfShow(t) { return String(t || '').replace(/\s+/g, ' ').trim(); }
 function gfTextHTML(t) { return t ? `<div class="gf-txt">${esc(gfShow(t))}</div>` : ''; }
@@ -6778,6 +7034,17 @@ function gfRunHTML() {
     body = `<div class="gf-acts">${opts.slice(0, 12).join('')}<button class="btn btn-sm" onclick="gfSkip()">Skip</button></div>`;
   } else if (s && s.t === 'pickUp') {
     body = `<div class="gf-acts">${gfMons().filter(m => !s.basic || gfIsBasic(gfTop(m))).map(m => `<button class="btn btn-sm btn-primary" onclick="gfDoPickUp(${m.id})">Pick up ${gfMonPick(m)}</button>`).join('')}</div>`;
+  } else if (s && s.t === 'heal') {
+    body = `<div class="gf-acts">${gfHealPool(s).map(m => `<button class="btn btn-sm btn-primary" onclick="gfDoHeal(${m.id})">Heal ${gfMonPick(m)}</button>`).join('')}</div>`;
+  } else if (s && s.t === 'moveOff') {
+    const opts = [];
+    gfMons().filter(m => m.dmg > 0).forEach(m => { for (let k = Math.min(s.n, Math.round(m.dmg / 10)); k >= 1; k--) opts.push(`<button class="btn btn-sm btn-primary" onclick="gfDoMoveOff(${m.id},${k})">Move ${gfCtr(10 * k)} from ${gfMonPick(m)}</button>`); });
+    body = `<div class="gf-acts">${opts.slice(0, 12).join('')}<button class="btn btn-sm" onclick="gfSkip()">Skip</button></div>`;
+  } else if (s && s.t === 'discardEnergy') {
+    const me = gfMon(R.mon), seen = new Set();
+    const opts = (me ? me.energy : []).filter(e => (!s.etype || gfEProv(e).includes(s.etype)) && !seen.has(gfKey(e)) && seen.add(gfKey(e)))
+      .map(e => `<button class="btn btn-sm btn-primary" onclick="gfDoDiscardEnergy(${e.uid})">Discard ${gfNm(e)}</button>`);
+    body = `<div class="gf-acts">${opts.join('')}${s.may ? `<button class="btn btn-sm" onclick="gfSkip()">${s.left < Math.min(s.n, 99) ? 'Done' : 'Skip'}</button>` : ''}</div>`;
   } else if (s && s.t === 'discardStadium') {
     body = `<div class="gf-acts"><button class="btn btn-sm btn-primary" onclick="gfDoStadiumDiscard()">Discard ${gfNm(gf.stadium)}</button><button class="btn btn-sm" onclick="gfSkip()">Skip</button></div>`;
   } else if (s) {
@@ -6796,10 +7063,10 @@ function renderGoldfish() {
   if (!gf.anyBasic) { el.innerHTML = `<div class="hp-wrap">${handModeBar()}<div class="g-item warn"><div class="gt">No card data yet</div><p>Goldfish needs each card's stage to know your Basics. Open this deck while online, or open Edit deck and save it, to read them.</p></div></div>`; return; }
   const t = gf.turn;
   let h = `<div class="hp-wrap">${handModeBar()}<div class="g-sec">
-    <div class="g-sec-t">${gf.done ? 'How your three turns went' : t === 0 ? 'Set up' : 'Turn ' + t + ' of ' + GF_TURNS}</div>
-    <div class="g-sec-i">${gf.done ? 'Your board after turn 3, what came together and when, and how that compares with the odds from this opening hand.'
+    <div class="g-sec-t">${gf.done ? 'How your ' + GF_TURNS + ' turns went' : t === 0 ? 'Set up' : 'Turn ' + t + ' of ' + GF_TURNS}</div>
+    <div class="g-sec-i">${gf.done ? 'Your board after turn ' + GF_TURNS + ', what came together and when, and how that compares with the odds from this opening hand.'
       : t === 0 ? 'Put a Basic in the Active Spot and any others on your Bench, then start turn 1. You draw at the start of every turn.'
-      : 'Tap a card in your hand to play it. Tap a Pokémon in play to switch it in or use its Ability. No attacking here, this is about setting up.'}</div>
+      : 'Tap a card in your hand to play it. Tap a Pokémon in play to retreat, use its Ability or attack. An attack ends your turn.'}</div>
     <div class="hp-meta">
       <span class="hp-pill">${gf.first ? 'Going first' : 'Going second'}</span>
       ${gf.mulls ? `<span class="hp-pill warn">${gf.mulls} mulligan${gf.mulls !== 1 ? 's' : ''}</span>` : ''}
@@ -6821,6 +7088,10 @@ function renderGoldfish() {
   </div>`;
   if (gf.needActive) h += `<div class="gf-helper"><div class="gf-ht">Pick a new Active Pokémon</div><div class="gf-acts">${gf.bench.map(m => `<button class="btn btn-sm btn-primary" onclick="gfPromote(${m.id})">${gfMonPick(m)}</button>`).join('')}</div></div>`;
 
+  if (!gf.done && gfManual()) {
+    const selM = gfMons().find(m => m.id === gf.selMon);
+    if (selM) h += `<div class="gf-acts gf-hand-acts"><div class="gf-ht">${gfMonNm(selM)}</div>${gfDmgBtns(selM)}</div>`;
+  }
   if (!gf.done && !gfBusy()) {
     if (gf.selMon === 'stad' && gf.stadium) {
       const P = gfTrainerPlay(gf.stadium) || {};
@@ -6840,7 +7111,7 @@ function renderGoldfish() {
       const txt = As.map(A => `<div class="gf-txt"><b>${esc(A.name)}.</b> ${esc(gfShow(A.text))}${A.when !== 'passive' && !A.steps ? ' The app cannot play this one yet, so use the deck buttons below.' : ''}</div>`).join('');
       h += `<div class="gf-acts gf-hand-acts"><div class="gf-ht">${gfMonNm(selM)}</div>${isBench && gf.active && !gf.turnOver ? (() => { const rw = gfRetreatWhy(), rc = gfRetreatCost(gf.active);
           return `<button class="btn btn-sm" onclick="gfSwitch(${selM.id})" ${rw ? 'disabled' : ''}>Retreat ${gfMonNm(gf.active)} for this one${rc ? ` (discard ${rc} Energy)` : rc === 0 ? ' (free)' : ''}</button>${rw ? `<div class="nt-muted gf-why">${rw}</div>` : ''}`; })() : ''}
-        ${btns}${!As.length && !isBench ? '<span class="nt-muted">No Ability to use.</span>' : ''}${txt}</div>`;
+        ${btns}${!As.length && !isBench && !(gfTop(selM).card.attacks || []).length ? '<span class="nt-muted">No Ability to use.</span>' : ''}${txt}${gfAtkHTML(selM)}${gfDmgBtns(selM)}</div>`;
     }
   }
 
@@ -6854,20 +7125,6 @@ function renderGoldfish() {
 
   // Hand
   h += `<div class="hp-lbl mt-handl">Hand (${gf.hand.length})</div><div class="hp-hand gf-hand">${gf.hand.map(x => gfCardHTML(x, gf.sel === x.uid, gf.done || (gfBusy() && !gfManual()) ? 'disabled' : `onclick="gfSelect(${x.uid})"`)).join('') || '<div class="nt-muted">Empty hand.</div>'}</div>`;
-  const sel = gf.hand.find(x => x.uid === gf.sel);
-  if (sel && !gf.done && (!gfBusy() || gfManual())) {
-    const acts = gfActions(sel);
-    const inf = gfInfo(sel.card);
-    const txt = cardCategory(sel.card) === 'trainer' ? gfTextHTML(inf.rtext) : gfAbilities(sel).filter(A => A.when === 'hand').map(A => `<div class="gf-txt"><b>${esc(A.name)}.</b> ${esc(gfShow(A.text))}</div>`).join('');
-    const P = cardCategory(sel.card) === 'trainer' && !['tool', 'stadium'].includes(gfKind(sel)) && !(gf.groups[sel.g] || {}).candy ? gfTrainerPlay(sel) : null;
-    const manual = cardCategory(sel.card) === 'trainer' && !['tool', 'stadium'].includes(gfKind(sel)) && !(gf.groups[sel.g] || {}).candy && (!P || !P.steps);
-    h += `<div class="gf-acts gf-hand-acts"><div class="gf-ht">${gfNm(sel)}</div>${acts.map(a => a.off
-      ? `<button class="btn btn-sm" disabled>${a.label}</button>`
-      : `<button class="btn btn-sm${a.ghost ? ' btn-ghost' : ' btn-primary'}" onclick="${a.fn}">${a.label}</button>`).join('')}
-      ${acts.filter(a => a.off && a.why).slice(0, 2).map(a => `<div class="nt-muted gf-why">${a.why}</div>`).join('')}
-      ${manual ? `<div class="nt-muted gf-why">${inf.rtext ? 'The app cannot follow this card\'s text yet, so playing it lets you do it by hand.' : 'No card text read yet. Open this deck online to read it.'}</div>` : ''}${txt}</div>`;
-  }
-
   if (!gf.done) {
     const manual = gf.run && gf.run.wait && gf.run.wait.t === 'manual';
     const lock = gfBusy() && !manual;
@@ -6884,7 +7141,7 @@ function renderGoldfish() {
     h += `<div class="g-sec"><div class="g-sec-t" style="font-size:var(--fs-md)">${gf.done ? 'Every move' : 'This game so far'}</div><ol class="gf-log">${
       (gf.done ? gf.log : gf.log.slice(-8)).map(l => `<li><span>${l.t ? 'T' + l.t : 'Setup'}</span>${l.s}</li>`).join('')}</ol></div>`;
   }
-  h += `<div class="g-wip"><b>Goldfish rules.</b> You draw every turn, one Energy and one Supporter a turn, no Supporter on turn 1 going first, and no evolving on your first turn or onto a Pokémon that came in this turn. Abilities, Items, Supporters and Stadiums do what their card text says, with each card's own limits. Effects on your opponent do nothing here. When the app cannot follow a card yet, it shows the text and you use Draw, Search and Discard.</div>`;
+  h += `<div class="g-wip"><b>Goldfish rules.</b> You draw every turn, one Energy and one Supporter a turn, no Supporter and no attack on turn 1 going first, and no evolving on your first turn or onto a Pokémon that came in this turn. Abilities, attacks, Items, Supporters and Stadiums do what their card text says, with each card's own limits, and an attack ends your turn. Damage stays on your Pokémon, and a Pokémon is Knocked Out when its damage reaches its HP. There is no opponent, so effects on your opponent do nothing here. When the app cannot follow a card yet, it shows the text and you use Draw, Search, Discard and the damage counter buttons.</div>`;
   h += `</div></div>`;
   el.innerHTML = h;
 }
@@ -6977,14 +7234,14 @@ function gfSummary(deck) {
     const tG = lineFirstTurn(main, gf.groups);
     const good = when != null && when <= tG;
     h += `<div class="o-tiles">
-      <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when + ' this game' : 'Not in play by turn 3 this game'}</div></div>
+      <div class="o-tile" style="--tone:${good ? 'var(--green)' : when ? 'var(--electric)' : 'var(--fire)'}"><div class="ol">${esc(main.name)}</div><div class="ov">${when ? 'T' + when : 'No'}</div><div class="os">${when ? 'In play on turn ' + when + ' this game' : 'Not in play by turn ' + GF_TURNS + ' this game'}</div></div>
       <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T2</div><div class="ov">${oPct(o.s2)}</div><div class="os">${tG === 3 ? 'Turn 3 at the earliest without Rare Candy' : 'Shuffles from this opening hand, with search'}</div></div>
       <div class="o-tile" style="--tone:var(--accent)"><div class="ol">This hand by T3</div><div class="ov">${oPct(o.s3)}</div><div class="os">Shuffles from this opening hand, with search</div></div>
     </div>`;
     const verdict = good ? `You had ${esc(main.name)} up by turn ${when}. From this opening hand, the odds count gets it there by turn ${tG} in ${oPct(tG === 3 ? o.s3 : o.s2)} of shuffles.${tG === 3 ? ' With no Rare Candy in the list, turn 3 is the earliest it can be in play.' : ''}`
       : when ? `${esc(main.name)} came up on turn ${when}. The odds count has it ready by turn 2 in ${oPct(o.s2)} of shuffles from this hand, so look back at your first two turns.`
-      : `${esc(main.name)} was not in play by turn 3. From this opening hand it is ready by turn 3 in ${oPct(o.s3)} of shuffles, so check the moves below for a search you could have made.`;
-    h += `<div class="g-item ${good ? 'ok' : 'warn'}"><div class="gt">${good ? 'On schedule' : when ? 'A turn behind' : 'Line did not come together'}</div><p>${verdict}</p></div>`;
+      : `${esc(main.name)} was not in play by turn ${GF_TURNS}. From this opening hand it is ready by turn 3 in ${oPct(o.s3)} of shuffles, so check the moves below for a search you could have made.`;
+    h += `<div class="g-item ${good ? 'ok' : 'warn'}"><div class="gt">${good ? 'On schedule' : when ? (when - tG === 1 ? 'A turn behind' : (when - tG) + ' turns behind') : 'Line did not come together'}</div><p>${verdict}</p></div>`;
     if (opts.length > 1) {
       h += `<div class="hp-chips" style="margin:0.5rem 0 0.75rem">${opts.map((l, i) => i === li ? '' : `<span class="hp-chip">${esc(l.name)}: ${gf.ready[i] ? 'turn ' + gf.ready[i] : 'not in play'}</span>`).join('')}</div>`;
     }
@@ -8502,25 +8759,27 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.3.9',
+  version: 'v3.4.0',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
-    { t: 'Puzzle deck search fixed' },
-    { t: 'Added: share your puzzle score' }
+    { t: 'Added: Goldfish damage and attacks' },
+    { t: 'Added: tap a card to play it' },
+    { t: 'Goldfish is now 5 turns' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.3.9', date: 'Nov 18, 2026', kind: 'small', items: [
+    { t: 'Puzzle deck search fixed' },
+    { t: 'Added: share your puzzle score' }
+  ] },
   { version: 'v3.3.8', date: 'Nov 18, 2026', kind: 'small', items: [
     { t: 'Prize game moved to Drills' },
     { t: 'Grade explainer moved to Questions' },
     { t: 'Desktop layout improved' },
     { t: 'Deck tabs reordered' }
-  ] },
-  { version: 'v3.3.7', date: 'Nov 18, 2026', kind: 'small', items: [
-    { t: 'Rare Candy bug fixed' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -8753,7 +9012,7 @@ function pzMonTile(s, m, owner, isActive) {
 function pzHandHTML(list) {
   const g = new Map(); let hidden = 0;
   list.forEach(r => { if (r.card.cat === 'hidden') { hidden++; return; } const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
-  const tiles = [...g.values()].map(x => `<button class="mt-card" onclick="pzKeySheet('${esc(x.c.key)}')"><span class="mt-cimg">${x.c.img ? `<img src="${esc(x.c.img)}" alt="" loading="lazy">` : `<span class="mt-cph">${esc(x.c.name)}</span>`}${x.n > 1 ? `<span class="mt-cnt">×${x.n}</span>` : ''}</span><span class="mt-cnm">${esc(x.c.name)}</span></button>`);
+  const tiles = [...g.values()].map(x => `<button class="mt-card" onclick="pzHandSheet('${esc(x.c.key)}')"><span class="mt-cimg">${x.c.img ? `<img src="${esc(x.c.img)}" alt="" loading="lazy">` : `<span class="mt-cph">${esc(x.c.name)}</span>`}${x.n > 1 ? `<span class="mt-cnt">×${x.n}</span>` : ''}</span><span class="mt-cnm">${esc(x.c.name)}</span></button>`);
   if (hidden) tiles.push(`<span class="mt-card off"><span class="mt-cimg mt-back"></span><span class="mt-cnm">${hidden} face down</span></span>`);
   return tiles.length ? `<div class="mt-hand">${tiles.join('')}</div>` : '<span class="pz-none">Empty</span>';
 }
@@ -8926,7 +9185,7 @@ async function sharePuzzle(k) {
   catch (_) { openSheet(`<div class="modal-title">Your puzzle result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 function pzTypeWord(t) { return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
-function pzCardHtml(c, extra) {
+function pzCardHtml(c, extra, acts) {
   let h = `<div class="pz-card">${c.img ? `<img src="${esc(c.img.replace(/\.png$/, '_hires.png'))}" onerror="this.onerror=null;this.src='${esc(c.img)}'" alt="${esc(c.name)}">` : ''}<div class="pz-ctx">`;
   h += `<div class="modal-title">${esc(c.name)}</div>`;
   if (extra) h += `<div class="pz-s">${extra}</div>`;
@@ -8939,12 +9198,33 @@ function pzCardHtml(c, extra) {
     if (c.kind) h += `<div class="pz-s">${c.ace ? 'ACE SPEC ' : ''}${pzTypeWord(c.kind === 'tool' ? 'Pokémon Tool' : c.kind)}</div>`;
     if (c.rtext) h += `<div class="pz-tx">${esc(c.rtext)}</div>`;
   }
-  return h + `</div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`;
+  return h + `${acts || ''}</div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`;
 }
 function pzKeySheet(key) {
   if (!pzS) return;
   const card = pzS.cards[key] || findPuzzleCard(key);
   if (card) openSheet(pzCardHtml(card));
+}
+/** 3.4: the moves that use one card or one of your Pokemon, as buttons in its sheet, so you play it from there. */
+function pzActsFor(test) {
+  const { E, s } = pzS;
+  if (pzS.over || (s.pending && s.pending.ask) || (s.promote && s.promote.length)) return '';
+  const ok = [], no = [], seen = new Set();
+  E.legalActions(s, { why: true }).forEach((a, i) => {
+    if (!test(a)) return;
+    const label = pzLabel(s, a), k = label + (a.why || '');
+    if (seen.has(k)) return; seen.add(k);
+    (a.why ? no : ok).push({ a, i, label });
+  });
+  if (!ok.length && !no.length) return '';
+  return `<div class="pz-gt">Your move</div><div class="pz-btns">${ok.map(x => `<button class="btn pz-b${x.a.t === 'attack' ? ' btn-primary' : ''}" onclick="closeSheet();pzDo(${x.i})">${esc(x.label)}</button>`).join('')}</div>`
+    + no.slice(0, 3).map(x => `<div class="pz-s"><b>${esc(x.label)}</b> ${esc(x.a.why)}</div>`).join('');
+}
+function pzHandSheet(key) {
+  if (!pzS) return;
+  const P = pzS.s.players[pzS.s.cur], uids = new Set(P.hand.filter(r => r.card.key === key).map(r => r.uid));
+  const card = pzS.cards[key] || findPuzzleCard(key);
+  if (card) openSheet(pzCardHtml(card, '', pzActsFor(a => uids.has(a.uid) || uids.has(a.s2))));
 }
 function findPuzzleCard(key) {
   const s = pzS.s;
@@ -8961,7 +9241,8 @@ function pzCardSheet(who, id) {
   if (!m) return;
   const hp = E.maxHp(s, m);
   const extra = `${Math.max(0, hp - m.dmg)} of ${hp} HP left${m.energy.length ? '. Energy: ' + pzEnergyText(m.energy) : ''}${m.tool ? '. Tool: ' + esc(m.tool.card.name) + (m.tool.card.rtext ? ' (' + esc(m.tool.card.rtext) + ')' : '') : ''}.`;
-  openSheet(pzCardHtml(E.topOf(m).card, extra));
+  const mine = who === 'me' && P === s.players[s.cur];
+  openSheet(pzCardHtml(E.topOf(m).card, extra, mine ? pzActsFor(a => a.mon === id || ((a.t === 'attack' || a.t === 'retreat') && P.active === m)) : ''));
 }
 function handlePuzzleHash() {
   if (!/^#puzzle\b/.test(location.hash || '')) return;
@@ -9858,6 +10139,8 @@ async function enrichDeckCards(cards) {
     c.attacks = (e.attacks || []).map(a => ({
       name: a.name, cost: a.cost,
       dmg: a.dmg, dmgMax: a.dmgMax,
+      // 3.4: the printed damage and the attack's text, so Goldfish can play the attack.
+      pd: a.damage && a.damage.raw ? a.damage.raw : undefined, text: a.text || '',
       early: a.early, cond: a.cond || undefined,
       flip: a.flip || undefined, copy: a.copy || undefined, escale: a.escale || undefined, lock: a.lock || undefined, edisc: a.edisc || undefined, pile: a.pile || undefined, group: a.group || undefined, mill: a.mill || undefined, fx: a.fx || undefined, kox: a.kox || undefined, hand: a.hand || undefined, need: a.need || undefined, ctl: a.ctl || undefined, rev: a.rev || undefined, disc: a.disc || undefined,
       conf: a.damage ? a.damage.confidence : 'low'
@@ -11460,7 +11743,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.3.9';
+const PT_VERSION = 'v3.4.0';
 const PT_BUILD = 128;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.

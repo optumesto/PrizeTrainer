@@ -199,7 +199,6 @@ function gfParseBody(sents) {
     }
     if (/^attach the other to 1 of your pokemon$/.test(s)) return null;
     if (/^if you attached energy to a pokemon in this way, draw a card$/.test(s)) { push({ t: 'draw', n: 1, ifAttached: true }); continue; }
-    if (/^if you attached energy to a pokemon in this way, heal \d+ damage from that pokemon$/.test(s)) continue; // no damage in Goldfish
     // Move things around your board.
     if (/^(?:if you do, )?switch your active pokemon with 1 of your benched pokemon$/.test(s)) { push({ t: 'switch' }); continue; }
     if (/^move a basic energy from 1 of your pokemon to another of your pokemon$/.test(s)) { push({ t: 'moveEnergy' }); continue; }
@@ -212,11 +211,29 @@ function gfParseBody(sents) {
     if (/^flip a coin$/.test(s)) { push({ t: 'coin' }); continue; }
     if (/your turn ends$/.test(s)) { push({ t: 'endTurn' }); continue; }
     if (/^(?:you may )?discard a stadium in play$/.test(s)) { push({ t: 'discardStadium' }); continue; }
-    if (/^heal \d+ damage/.test(s)) continue;
+    // 3.4: damage on your own Pokemon. Healing, damage counters you put on your own Pokemon, and
+    // damage counters you move off them (Munkidori's Adrena-Brain moves them to your opponent).
+    if ((m = s.match(/^(if you attached energy to a pokemon in this way, )?heal (\d+|all) damage from (this pokemon|that pokemon|your active pokemon(?: that has \d+ or more energy attached)?|1 of your pokemon|1 of your benched pokemon|1 of your mega evolution pokemon ex|each of your pokemon)(?:, and it recovers from all special conditions)?$/))) {
+      const w = m[3], who = w === 'this pokemon' ? 'self' : w === 'that pokemon' ? 'target' : /^your active/.test(w) ? 'active' : w === '1 of your pokemon' ? 'one'
+        : w === '1 of your benched pokemon' ? 'bench' : w === 'each of your pokemon' ? 'each' : 'mega';
+      push({ t: 'heal', n: m[2] === 'all' ? 0 : +m[2], all: m[2] === 'all', who, ifAttached: !!m[1] || undefined }); continue;
+    }
+    if ((m = s.match(/^for each (.+?) card in your discard pile, heal (\d+) more damage$/)) && last() && last().t === 'heal') { last().per = { name: m[1], n: +m[2] }; continue; }
+    if (/^if you healed any damage in this way, put all energy attached to that pokemon into your hand$/.test(s) && last() && last().t === 'heal') { push({ t: 'energyToHand', ifHealed: true }); continue; }
+    if ((m = s.match(/^(if you attached energy to a pokemon in this way, )?(?:put|place) (\d+) damage counters? on (that|this) pokemon$/))) { push({ t: 'selfDmg', d: 10 * +m[2], who: m[3] === 'that' ? 'target' : 'self', ifAttached: !!m[1] || undefined }); continue; }
+    if ((m = s.match(/^this pokemon also does (\d+) damage to itself$/))) { push({ t: 'selfDmg', d: +m[1], who: 'self' }); continue; }
+    if (/^you can't use this ability on a pokemon that would be knocked out$/.test(s)) {
+      const sd = last(), at = steps.slice().reverse().find(z => z.t === 'attach');
+      if (sd && sd.t === 'selfDmg' && at) at.noKO = sd.d;
+      continue;
+    }
+    if ((m = s.match(/^(?:you may )?move up to (\d+) damage counters? from 1 of your pokemon to 1 of your opponent's pokemon$/))) { push({ t: 'moveOff', n: +m[1] }); continue; }
+    if ((m = s.match(new RegExp('^(you may )?discard (all|an?|\\d+) (?:(' + GF_TY + ') )?energy (?:cards? )?from this pokemon$')))) {
+      push({ t: 'discardEnergy', n: m[2] === 'all' ? 99 : /^an?$/.test(m[2]) ? 1 : +m[2], etype: m[3] || '', may: !!m[1] || undefined }); continue;
+    }
     // Things that only touch your opponent, or only matter in an attack.
     if (/opponent|during this turn, attacks used by|retreat cost|special condition/.test(s) && !/your deck|your hand|your discard/.test(s)) { opp = true; continue; }
     if (/^(?:if )?they /.test(s) && opp) continue;
-    if (/^if you attached energy to a pokemon in this way, put \d+ damage counters? on that pokemon$/.test(s)) continue;
     if (/^if you use this ability, this pokemon is knocked out$/.test(s)) { push({ t: 'koSelf' }); continue; }
     if ((m = s.match(/^choose 1: \u2022 (.+)$/))) {
       // "Choose 1:" with bullet options (Kieran).
@@ -227,7 +244,6 @@ function gfParseBody(sents) {
       push({ t: 'choose', opts: parsed.map(o => ({ label: o.label, steps: o.b.steps, opp: o.b.opp })) });
       continue;
     }
-    if (/^put \d+ damage counters? on (?:that|this) pokemon$|^you can't use this ability on a pokemon that would be knocked out$/.test(s)) continue;
     if (/^shuffle this pokemon and all attached cards into your deck$/.test(s)) { push({ t: 'selfShuffle', ifDrew: true }); continue; }
     if (/^(?:you may )?switch (?:it|this pokemon) with your active pokemon$/.test(s)) { push({ t: 'switchSelf' }); continue; }
     if (/^(?:if you do, )?(?:you may )?move any amount of energy from your other pokemon to this pokemon$/.test(s)) { push({ t: 'moveToSelf', ifSwitched: true }); continue; }

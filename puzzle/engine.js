@@ -502,6 +502,10 @@ function go(s) {
       case 'search': return ask(s, 'search', { step: R.i });
       case 'recover': return ask(s, 'recover', { step: R.i });
       case 'topFromHand': if (!P.hand.length) break; return ask(s, 'topFromHand', { step: R.i });
+      // Healing and damage counters on your own Pokemon change nothing in a one-turn puzzle the way the
+      // engine reads it (Goldfish applies them). Other own-side damage steps stay unread.
+      case 'heal': if (st.who === 'mega' || st.who === 'one' || st.who === 'bench' || st.who === 'self' || st.who === 'active' || st.who === 'each' || st.who === 'target') break; markUnread(s, c.name + ' (' + st.t + ')'); break;
+      case 'selfDmg': break;
       default: markUnread(s, c.name + ' (' + st.t + ')');
     }
     R.i++;

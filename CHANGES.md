@@ -2,6 +2,21 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.0 (build 129): Goldfish damage and attacks, tap a card to play it, 5 turns
+
+Changed files: js/core.js (Goldfish damage, healing, attacks, damage moving Abilities, hand card sheets in Goldfish, the Turn 1 line and Puzzle, 5 turns, ENRICH_VER 22, version, What's new), puzzle/engine.js and puzzle/text.js (the shared step reader's new heal and self damage steps), index.html (styles, version), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name), tests/goldfish-check.cjs (new).
+
+- Goldfish keeps damage counters on your Pokémon, shown on the board with HP left. A Pokémon is Knocked Out when its damage reaches its HP, and the log says how many Prize cards your opponent would take. Losing your last Pokémon notes that the game would be lost.
+- Risky Ruins (and any Stadium with that text) puts its damage counters on a Basic you Bench during your turn.
+- Attacks: your Active Pokémon can attack from turn 1 (not going first), when its Energy pays the cost. The attack's own effects on your side happen (Banette's Puppet Pull searches, Heat Dive hurts itself, discard Energy, the next turn lock), then your turn ends. Damage to the opponent is logged only: there is no opponent.
+- Abilities that move or place damage counters work: Munkidori's Adrena-Brain moves counters off your Pokémon, and Abilities that place counters as a cost respect "can't be Knocked Out this way".
+- Healing works from Pokémon, Items and Supporters (Pokémon Center Lady, Tasty Rice Ball with its discard pile bonus, Wally's Energy return). Heal text the app cannot read yet is left to the damage buttons.
+- Add and remove damage counter buttons on any Pokémon in play, for cards the app cannot follow yet.
+- Tap a card in your hand to open it with what it can do now, in Goldfish, the Turn 1 line and Puzzle.
+- Goldfish runs 5 turns instead of 3. Still solo: no opponent and no Prizes taken.
+- Card text comes from the card data only. Decks re-read once (ENRICH_VER 22) to store each attack's text and printed damage.
+- Grade check: no grade moved. Goldfish check: Banette, Munkidori, Risky Ruins, healing, a Knock Out, the hand card sheet and 5 turns.
+
 # RdyDeck 3.3.9 (build 128): puzzle deck search fixed, share your puzzle score (18 Nov 2026)
 
 Changed files: js/puzzle-extras.js (new), puzzle/tools/fill-decks.mjs (new), puzzle/daily.json (each puzzle's deck now knows its face-down cards), puzzle/engine.js, puzzle/solver.js, puzzle/tools/make-daily.mjs, puzzle/test/screen.cjs, js/core.js (puzzle screen, version, What's new), index.html (pick list styles, script tag, version), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name).
