@@ -73,7 +73,7 @@ if (old) old.meta.prints.forEach((p, i) => kept.set(p[1] + '|' + p[2], { name: o
 const sets = await getJSON('sets/en.json');
 if (!Array.isArray(sets)) { console.log('Set list unreadable, kept last copy.'); process.exit(0); }
 const wanted = sets.filter(s => /^(sv|zsv|rsv|me|svp$|sve$)/.test(s.id));
-const prints = [];
+const prints = [], every = [];
 for (const s of wanted) {
   const code = s.id === 'svp' ? 'SVP' : String(s.ptcgoCode || (s.id === 'sve' ? 'SVE' : '')).toUpperCase();
   if (!/^[A-Z0-9]{2,5}$/.test(code)) continue;
@@ -84,12 +84,16 @@ for (const s of wanted) {
     const sup = c.supertype === 'Pokémon' ? 'P' : c.supertype === 'Trainer' ? 'T' : c.supertype === 'Energy' ? 'E' : '';
     if (!sup) continue;
     const basicE = sup === 'E' && ((c.subtypes || []).includes('Basic') || s.id === 'sve') && /energy$/i.test(c.name) && !/special/i.test(c.name);
-    if (!basicE && !legalMark(c.regulationMark)) continue;
     const num = String(c.number || '');
     if (!/^[A-Za-z0-9]{1,8}$/.test(num)) continue;
-    prints.push({ name: clean(c.name, 60), set: code, num, small: c.images && c.images.small });
+    every.push({ name: clean(c.name, 60), set: code, num, small: c.images && c.images.small, legal: basicE || legalMark(c.regulationMark) });
   }
 }
+// An older print still counts when a reprint of the same card is legal now (the app's own rule), and
+// players keep their older art in Pokémon TCG Live, so every print of a card name that is legal now
+// is matched, not only the newest ones.
+const legalNames = new Set(every.filter(p => p.legal).map(p => p.name));
+for (const p of every) if (legalNames.has(p.name)) { delete p.legal; prints.push(p); }
 // Prints from data.json's newest sets that pokemon-tcg-data does not have yet are read from the
 // deck lists the app already knows (builder.json), so a card out this week still matches.
 try {

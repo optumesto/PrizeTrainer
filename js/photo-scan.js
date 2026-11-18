@@ -305,6 +305,17 @@
     const L = lumOf(s);
     const ps = parts(m, s.W, s.H).filter(p => p.w >= s.W * 0.035 && p.h >= s.H * 0.02 && p.w * p.h >= s.W * s.H * 0.0012);
     if (!ps.length) return { cards: [], cardW: 0, cardH: 0 };
+    // Most deck screens (Pokémon TCG Live's included) leave a gap round every card, so many cards
+    // stand alone. When enough do, their size and places give the grid directly, and a header,
+    // tab bar or caption bar across the picture cannot pull it off.
+    const fromSingles = gridFromSingles(s, m, ps);
+    if (fromSingles) {
+      const f = s.f, full = { px, W, H, bg: y => m.bg(y / f), cut: m.cut };
+      return {
+        cards: fromSingles.boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
+        cardW: fromSingles.cw * f, cardH: fromSingles.ch * f,
+      };
+    }
     const big = ps.filter(p => p.w * p.h >= s.W * s.H * 0.004);
     const fx = Math.min(...big.map(p => p.x)), tx = Math.max(...big.map(p => p.x + p.w));
     const fy = Math.min(...big.map(p => p.y)), ty = Math.max(...big.map(p => p.y + p.h));
@@ -401,6 +412,65 @@
       cards: boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
       cardW: cw * f, cardH: ch * f,
     };
+  }
+
+  /** Steady spacing of positions v (one per card standing alone): step and start, fitted over
+   *  all of them. min is the least the step can be (a card and nothing more). */
+  function spacing(v, min, fallback) {
+    const c = [];
+    for (const x of v.slice().sort((a, b) => a - b)) { const l = c[c.length - 1]; if (l && x - l.at < min * 0.4) { l.sum += x; l.n++; l.at = l.sum / l.n; } else c.push({ at: x, sum: x, n: 1 }); }
+    let step = 0;
+    for (let i = 1; i < c.length; i++) { const d = c[i].at - c[i - 1].at; if (d >= min * 0.9 && (!step || d < step)) step = d; }
+    if (!step) return { step: fallback, start: c[0].at, one: true };
+    // Every gap between places is a whole number of steps: refit the step over all of them.
+    let a = 0, b = 0;
+    for (let i = 1; i < c.length; i++) { const d = c[i].at - c[0].at, k = Math.round(d / step); if (k) { a += d * k; b += k * k; } }
+    if (b) step = a / b;
+    let st = 0, n = 0;
+    for (const x of c) { const k = Math.round((x.at - c[0].at) / step); st += x.at - k * step; n++; }
+    return { step, start: st / n };
+  }
+
+  /** The grid from the cards that stand alone (see findCards), or null when too few do. */
+  function gridFromSingles(s, m, ps) {
+    const singles = ps.filter(p => {
+      const ar = p.h / p.w;
+      return ar > 1.28 && ar < 1.6 && p.w >= s.W * 0.04 && p.n / (p.w * p.h) > 0.4;
+    });
+    if (singles.length < 3) return null;
+    const mw = median(singles.map(p => p.w));
+    const ok = singles.filter(p => Math.abs(p.w - mw) < mw * 0.12);
+    if (ok.length < 3) return null;
+    const cw = median(ok.map(p => p.w)), ch = cw / CARD_AR;
+    const gx = spacing(ok.map(p => p.x), cw, cw * 1.1), gy = spacing(ok.map(p => p.y), ch, ch * 1.08);
+    if (gx.step > cw * 1.4 || gy.step > ch * 1.6) return null;
+    const gap = gx.step - cw;
+    const cols = [];
+    for (let k = Math.floor((-gx.start) / gx.step); ; k++) { const x = gx.start + k * gx.step; if (x > s.W - cw * 0.85) break; if (x >= -cw * 0.15) cols.push(x); }
+    const boxes = [];
+    for (let k = Math.floor((-gy.start) / gy.step); ; k++) {
+      const y = gy.start + k * gy.step;
+      if (y > s.H - ch * 0.85) break;
+      if (y < -ch * 0.15) continue;
+      const row = cols.map(x => ({ x, y, w: cw, h: ch })).filter(b => fill(m, s.W, b) > 0.55);
+      if (!row.length) continue;
+      // A lone box needs to be mostly card: a deck icon or a button in a header is not.
+      if (row.length === 1 && fill(m, s.W, row[0]) < 0.64) continue;
+      // A real row of cards has background in the gaps between them; a bar across the picture
+      // fills them all.
+      if (gap >= 1.5) {
+        const gs = [];
+        for (let i = 1; i < row.length; i++) {
+          if (row[i].x - row[i - 1].x > gx.step * 1.5) continue;
+          gs.push(fill(m, s.W, { x: row[i - 1].x + cw + gap * 0.2, y: y + ch * 0.12, w: Math.max(1, gap * 0.6), h: ch * 0.6 }));
+        }
+        // At least one clear gap, since a glowing card can spill into the gaps on both its sides.
+        if (gs.length && !gs.some(v => v < 0.35)) continue;
+      }
+      boxes.push(...row);
+    }
+    if (boxes.length < 3) return null;
+    return { boxes, cw, ch };
   }
 
   /** Nudge a box (keeping its size) so its sides sit on the card's edges: the strongest change of
@@ -609,7 +679,7 @@
     const cand = boxes.map(b => {
       const R = { x: b.x - b.w * 0.12, y: b.y - b.h * 0.08, w: b.w * 1.24, h: b.h * 1.32 };
       const out = [];
-      for (const gh of [b.h * 0.07, b.h * 0.12]) for (const c of numbersIn(px, W, H, R, gh)) {
+      for (const gh of [b.h * 0.05, b.h * 0.07, b.h * 0.12]) for (const c of numbersIn(px, W, H, R, gh)) {
         if (out.some(o => Math.abs(o.cx - c.cx) < c.hgt * 0.5 && Math.abs(o.cy - c.cy) < c.hgt * 0.5)) continue;
         out.push(Object.assign(c, { rx: (c.cx - b.x) / b.w, ry: (c.cy - b.y) / b.h, rh: c.hgt / b.h }));
       }
@@ -709,7 +779,7 @@
   /** For tests: how well print i matches the card in box r (no shifting). */
   function scorePrint(idx, px, W, H, r, i) { const q = query(feat(px, W, H, r)); return scoreOne(idx, q.qy, q.qc, i); }
 
-  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, mergeRows, shrink, scorePrint };
+  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, mergeRows, shrink, scorePrint, foreground, parts };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PhotoScan = api;
 })(typeof self !== 'undefined' ? self : this);

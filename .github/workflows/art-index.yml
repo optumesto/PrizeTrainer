@@ -54,6 +54,12 @@ jobs:
             [ -f "ui-shots/$f.jpg" ] || continue
             echo "IMG-START $f"; base64 -w 6000 "ui-shots/$f.jpg"; echo "IMG-END $f"
           done
+      - name: Show a few official card pictures (to compare with real screenshots)
+        run: |
+          for p in PBL/PBL_061 PBL/PBL_062 ASC/ASC_105 MEG/MEG_074 BLK/BLK_084 TWM/TWM_148 SVE/SVE_006; do
+            curl -sf -A "Mozilla/5.0" -o card.png "https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${p}_R_EN_XS.png" || { echo "no picture for $p"; continue; }
+            echo "IMG-START ${p//\//_}"; base64 -w 6000 card.png; echo "IMG-END ${p//\//_}"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: photo-import-shots
