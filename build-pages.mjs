@@ -643,7 +643,7 @@ ${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
     file: 'rulings.html',
-    title: 'Pokémon TCG Rules: Damage, Prizes, Abilities and More | RdyDeck',
+    title: 'Pokémon TCG Rules: Damage, Prizes and Abilities | RdyDeck',
     desc: 'Pokémon TCG rules answered from the official rulebook: setup and mulligans, damage order, Weakness, Pokémon ex, Tera, ACE SPEC and more.',
     updated: rul.asOf,
     kicker: 'Rules',

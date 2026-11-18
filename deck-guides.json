@@ -316,6 +316,111 @@
         ["Tatsugiri", "Attract Customers finds a Supporter from the top 6 cards."]
       ],
       "grade": "RdyDeck grades it a little below most top decks. Synergy is solid, and Power is the lower part. Its online record is close to even."
+    },
+    {
+      "id": "talonflame-dusknoir",
+      "desc": "Talonflame Dusknoir deck guide: Mega Kangaskhan ex lets Talonflame ex dive onto the Bench, and Cursed Blast adds 130. Core list, game plan, matchups.",
+      "slug": "talonflame-dusknoir",
+      "title": "Talonflame Dusknoir",
+      "lead": "Talonflame ex is a Stage 2 Pokémon this deck never evolves. Its Excited Dive Ability puts it straight onto your Bench from your hand once you have a Colorless Mega Evolution Pokémon ex in play, and Mega Kangaskhan ex is that Pokémon. Dusknoir's Cursed Blast adds 13 damage counters wherever the deck needs them.",
+      "plan": [
+        "Mega Kangaskhan ex is a Basic Pokémon, so it can start in the Active Spot. Its Run Errand draws 2 cards once during your turn while it is in the Active Spot, and Latias ex's Skyliner gives your Basic Pokémon no Retreat Cost, so Kangaskhan can draw and then move to the Bench for free.",
+        "Talon Hunt costs 2 Colorless Energy, does 150 and lets you search your deck for up to 2 cards. Ignition Energy provides 3 Colorless Energy on an Evolution Pokémon, so one attachment powers Talon Hunt, but it is discarded at the end of your turn. Hilda searches for an Evolution Pokémon and an Energy card at once, which finds Talonflame ex and Ignition Energy together.",
+        "Duskull, Dusclops and Dusknoir come out through Rare Candy, Buddy-Buddy Poffin and Dawn, which searches for a Basic, a Stage 1 and a Stage 2 Pokémon. Dusknoir's Cursed Blast puts 13 damage counters, and Dusclops's puts 5, on any of your opponent's Pokémon, then Knocks Out the Pokémon that used it, which gives your opponent a Prize card. Bloodmoon Ursaluna ex is the late game hitter: Blood Moon does 240 and costs 1 less Energy for each Prize card your opponent has taken."
+      ],
+      "keys": [
+        ["Talonflame ex", "Excited Dive puts it onto your Bench from your hand. Talon Hunt does 150 and searches for 2 cards."],
+        ["Mega Kangaskhan ex", "The Colorless Mega Evolution Pokémon ex that turns on Excited Dive. Run Errand draws 2 a turn."],
+        ["Ignition Energy", "Provides 3 Colorless Energy on an Evolution Pokémon for one turn, enough for Talon Hunt."],
+        ["Dusknoir", "Cursed Blast puts 13 damage counters on any of your opponent's Pokémon."],
+        ["Hilda", "Searches for an Evolution Pokémon and an Energy card, such as Talonflame ex and Ignition Energy."],
+        ["Latias ex", "Skyliner gives your Basic Pokémon no Retreat Cost, so Kangaskhan can draw and step back."]
+      ],
+      "grade": "RdyDeck counts the deck's hardest hit as Bloodmoon Ursaluna ex's Blood Moon with Dusknoir's Cursed Blast added, and counts Mega Kangaskhan ex for its Run Errand draw, not its attack. Rare Candy and four Kangaskhan keep the setup and the draw steady. The deck's online record since Delta Reign is a little under even, which holds the grade below the top decks."
+    },
+    {
+      "id": "lopunny-dudunsparce",
+      "desc": "Lopunny Dudunsparce deck guide: Gale Thrust hits for 230 when Mega Lopunny ex moves up from the Bench. Core list, Dudunsparce draw and matchups.",
+      "slug": "lopunny-dudunsparce",
+      "title": "Lopunny Dudunsparce",
+      "lead": "Mega Lopunny ex attacks for a single Energy. Its Gale Thrust does 230 on a turn it moves from your Bench to the Active Spot, and Dudunsparce draws the cards that set that up. Both of its attacks cost only Colorless Energy, so any Energy powers them.",
+      "plan": [
+        "Gale Thrust costs 1 Colorless Energy and does 60, plus 170 more if Mega Lopunny ex moved from your Bench to the Active Spot this turn. Retreating your Active Pokémon into Lopunny does that, and Air Balloon makes the Retreat Cost 2 Colorless less. Spiky Hopper does 160 for 2 Energy, and no effect on your opponent's Active Pokémon changes that damage.",
+        "Dunsparce evolves into Dudunsparce, whose Run Away Draw draws 3 cards and then shuffles Dudunsparce and its cards back into your deck, so the same Pokémon can draw again later. Most lists add a Dudunsparce ex, whose Tenacious Tail does 60 for each of your opponent's Pokémon ex in play. Fan Rotom's Fan Call searches for up to 3 Colorless Pokémon with 100 HP or less on your first turn.",
+        "Mist Energy prevents all effects of your opponent's attacks done to the Pokémon it is attached to, and Battle Cage stops damage counters being put on Benched Pokémon by your opponent's attacks and Abilities, which blunts attacks that spread damage counters. Wally's Compassion heals all damage from a Mega Evolution Pokémon ex and returns its Energy to your hand."
+      ],
+      "keys": [
+        ["Mega Lopunny ex", "Gale Thrust does 230 for 1 Energy on the turn it moves up from your Bench."],
+        ["Dudunsparce", "Run Away Draw draws 3, then shuffles itself back into your deck."],
+        ["Air Balloon", "Cuts Retreat Cost by 2 Colorless, so retreating into Lopunny costs little."],
+        ["Mist Energy", "Prevents the effects of your opponent's attacks on the Pokémon it is attached to."],
+        ["Battle Cage", "Stops your opponent's attacks and Abilities from putting damage counters on your Bench."],
+        ["Wally's Compassion", "Heals all damage from Mega Lopunny ex and puts its Energy back in your hand."]
+      ],
+      "grade": "RdyDeck counts Gale Thrust at its full 230 when a list has enough cards to switch Lopunny in or retreat for free. It still grades Lopunny Dudunsparce lower than most top decks, because 230 takes two hits against the format's biggest Pokémon while Mega Lopunny ex gives up 3 prizes when it is Knocked Out. Dudunsparce's draw every turn counts in its favor."
+    },
+    {
+      "id": "mega-lucario-ex",
+      "desc": "Mega Lucario deck guide: Aura Jab reloads Fighting Energy from the discard pile, then Mega Brave hits for 270. Core list, Lunatone draw and matchups.",
+      "slug": "mega-lucario",
+      "title": "Mega Lucario",
+      "lead": "Mega Lucario ex alternates between two attacks. Aura Jab does 130 and puts Fighting Energy from your discard pile onto your Bench, and Mega Brave does 270 for two Energy. Lunatone and Solrock keep the hand full and the discard pile stocked.",
+      "plan": [
+        "Riolu evolves into Mega Lucario ex. Aura Jab costs 1 Fighting Energy, does 130 and attaches up to 3 Basic Fighting Energy cards from your discard pile to your Benched Pokémon in any way you like, so the next attacker is ready. Mega Brave costs 2 Fighting Energy and does 270, but Mega Lucario ex can't use it again during your next turn. Premium Power Pro adds 30 damage to your Fighting Pokémon's attacks on the Active Pokémon that turn.",
+        "Lunatone's Lunar Cycle draws 3 cards when Solrock is in play and you discard a Basic Fighting Energy card from your hand, which also loads the discard pile for Aura Jab. Fighting Gong searches for a Basic Fighting Energy card or a Basic Fighting Pokémon, which covers Riolu, Lunatone, Solrock and Energy.",
+        "Solrock's Cosmic Beam does 70, not changed by Weakness or Resistance, while Lunatone is on your Bench. Most lists play Gravity Mountain, which gives every Stage 2 Pokémon in play 30 less HP, and Rocky Fighting Energy, which prevents the effects of your opponent's attacks on the Fighting Pokémon it is attached to."
+      ],
+      "keys": [
+        ["Mega Lucario ex", "Aura Jab does 130 and reloads 3 Fighting Energy. Mega Brave does 270."],
+        ["Lunatone", "Lunar Cycle draws 3 with Solrock in play, discarding a Fighting Energy for Aura Jab."],
+        ["Solrock", "Turns on Lunar Cycle. Cosmic Beam does 70 with Lunatone on the Bench."],
+        ["Premium Power Pro", "Fighting attacks do 30 more to the Active Pokémon this turn."],
+        ["Fighting Gong", "Searches for a Basic Fighting Energy card or a Basic Fighting Pokémon."],
+        ["Gravity Mountain", "Every Stage 2 Pokémon in play gets 30 less HP."]
+      ],
+      "grade": "RdyDeck counts Mega Brave with Premium Power Pro as a 300 damage hit, which takes most Pokémon in one hit and the biggest in two. Mega Lucario ex gives up 3 prizes, so the grade marks the trade against those biggest Pokémon as costly. Its online record since Delta Reign is better than over the whole two set window."
+    },
+    {
+      "id": "rockets-honchkrow",
+      "desc": "Rocket's Honchkrow deck guide: discard Team Rocket Supporters for 60 each with Rocket Feathers, all single prize Pokémon. Core list and matchups.",
+      "slug": "rockets-honchkrow",
+      "title": "Rocket's Honchkrow",
+      "lead": "A Team Rocket deck of single prize Pokémon. Team Rocket's Honchkrow does 60 damage for each Team Rocket Supporter you discard from your hand, and most of the Trainers in the list either are those Supporters or find them.",
+      "plan": [
+        "Team Rocket's Murkrow evolves into Team Rocket's Honchkrow. Rocket Feathers costs 2 Colorless Energy and lets you discard any number of Supporter cards with Team Rocket in their name from your hand, doing 60 damage for each. Ignition Energy provides 3 Colorless Energy on an Evolution Pokémon for one turn, and Team Rocket's Energy provides 2 Energy but can only be attached to a Team Rocket's Pokémon.",
+        "The list plays 4 each of Team Rocket's Archer, Ariana, Giovanni, Petrel and Proton. Team Rocket's Transceiver searches for one of them, Roto-Stick takes any Supporters from the top 4 cards of your deck, and Team Rocket's Factory draws 2 cards each turn you play a Team Rocket Supporter. Ariana draws until you have 8 cards in hand if all of your Pokémon in play are Team Rocket's Pokémon. Miracle Headset, the ACE SPEC, puts 2 Supporters from your discard pile back into your hand.",
+        "Team Rocket's Porygon2 is the second attacker: R Command does 20 damage for each Team Rocket Supporter in your discard pile, so it grows as Rocket Feathers fills the pile. Team Rocket's Articuno prevents the effects of your opponent's attacks on your Basic Team Rocket's Pokémon, and Team Rocket's Giovanni switches in one of your opponent's Benched Pokémon."
+      ],
+      "keys": [
+        ["Team Rocket's Honchkrow", "Rocket Feathers does 60 for each Team Rocket Supporter you discard from your hand."],
+        ["Team Rocket's Porygon2", "R Command does 20 for each Team Rocket Supporter in your discard pile."],
+        ["Team Rocket's Transceiver", "Searches your deck for a Supporter with Team Rocket in its name."],
+        ["Team Rocket's Factory", "Draws 2 cards each turn you play a Team Rocket Supporter."],
+        ["Team Rocket's Ariana", "Draws to 5 cards, or to 8 when all your Pokémon in play are Team Rocket's."],
+        ["Team Rocket's Articuno", "Repelling Veil shields your Basic Team Rocket's Pokémon from attack effects."]
+      ],
+      "grade": "Rocket's Honchkrow gets one of the highest Synergy readings in RdyDeck, because nearly every card supports the Team Rocket Supporter plan. Power is lower: the grade counts Porygon2's R Command as the hardest hit and treats its full damage as a late game plan, since it grows only as Supporters reach the discard pile. Every Pokémon gives up a single prize, so your opponent needs six Knock Outs to win."
+    },
+    {
+      "id": "greninja-ex",
+      "desc": "Greninja ex deck guide: Shinobi Blade does 170 and searches any card, Mirage Barrage hits 2 Pokémon for 120. Core list, Dusknoir support, matchups.",
+      "slug": "greninja",
+      "title": "Greninja",
+      "lead": "Greninja ex is a Stage 2 attacker that finds a card every time it hits. Shinobi Blade does 170 for one Water Energy and searches your deck for any card, and Mirage Barrage splits 120 damage onto two Pokémon. A Dusknoir line and a few Mega Evolution Pokémon back it up.",
+      "plan": [
+        "Froakie evolves into Frogadier and then Greninja ex, usually through Rare Candy or Grand Tree, the ACE SPEC Stadium that lets each player evolve a Basic Pokémon into its Stage 1 and then its Stage 2 straight from the deck once a turn. Frogadier's Summoning Jutsu searches your deck for up to 3 Pokémon. Colress's Tenacity searches for a Stadium and an Energy card, which finds Grand Tree.",
+        "Shinobi Blade costs 1 Water Energy, does 170 and lets you search your deck for a card and put it into your hand. Mirage Barrage costs Water and 2 Colorless, discards 2 Energy from Greninja ex and does 120 damage to 2 of your opponent's Pokémon. Ignition Energy provides 3 Colorless Energy on an Evolution Pokémon for one turn, so Water Energy plus Ignition Energy pays for Mirage Barrage.",
+        "Dusknoir's Cursed Blast puts 13 damage counters on any of your opponent's Pokémon and then Knocks Out Dusknoir, which finishes what Greninja ex starts. Most lists also play Mega Froslass ex and Mega Starmie ex, whose Nebula Beam does 210 not changed by Weakness, Resistance or effects on the Active Pokémon. Budew's Itchy Pollen stops your opponent from playing Items during their next turn."
+      ],
+      "keys": [
+        ["Greninja ex", "Shinobi Blade does 170 and searches for any card. Mirage Barrage hits 2 Pokémon for 120."],
+        ["Frogadier", "Summoning Jutsu searches your deck for up to 3 Pokémon."],
+        ["Grand Tree", "Evolves a Basic Pokémon to Stage 1 and then Stage 2 from your deck, once a turn."],
+        ["Dusknoir", "Cursed Blast puts 13 damage counters on any of your opponent's Pokémon."],
+        ["Ignition Energy", "Provides 3 Colorless Energy on an Evolution Pokémon for one turn."],
+        ["Mega Starmie ex", "Nebula Beam does 210, not changed by Weakness, Resistance or effects."]
+      ],
+      "grade": "RdyDeck grades Greninja a little below the top decks. Its hardest hit comes from Mega Starmie ex with Dusknoir's Cursed Blast added, and the grade notes that the biggest Pokémon in the format take two hits. Synergy reads lower than in most decks, and its online record since Delta Reign is a little under even."
     }
   ]
 }
