@@ -10,6 +10,17 @@ Changed files: js/i18n.js, tests/i18n-check.mjs, index.html (file stamps) and CH
 - What a number is decides, not its size: a year (after a month or a date, a regulation mark like E 2024, or "in 2026" with nothing counted after it), a date like 11/12/2026, a build or a puzzle number stays as it is.
 - tests/i18n-check.mjs fails on a count of 1000 or more left without grouping in a language that groups it, and checks that 2045 games is grouped while April 2027, Nov 16, 2026, 11/12/2026 and E 2024 stay.
 
+# Next release, also: photo deck import (merged from branch photo-import)
+
+Changed files: js/photo-scan.js (new: finds the cards in a picture, names each from its art and reads its count), js/photo-import.js (new: the "From a photo" button and the review sheet), art-index.json and art-index.bin (new: a 120 byte fingerprint of the art of every print of every card name that is Standard legal now, older art included, 4,282 prints, about 610 KB, built by build-art-index.mjs), index.html (button, review sheet, styles, file stamps), sw.js (the index is fetched newest first and kept for offline use), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, .github/workflows/art-index.yml, tests/photo-import-check.mjs, tests/photo-import-ui.mjs, tests/photo-import/make-shots.mjs and CHANGES.md.
+
+- Import a deck has a "From a photo" button. Pick a screenshot or photo of a deck screen (a Pokemon TCG Live deck shared as a picture, for example) and RdyDeck reads each card and its count.
+- Everything happens on the device. The picture is read in the page and never uploaded or saved; no new data is collected, so the privacy policy and the Play Data safety form do not change. The reader and the card index download only the first time someone picks a picture.
+- A review sheet shows every card with a crop from the player's own picture, its count, and a "Check the card" or "Check the count" flag where the read is unsure. A card can be changed to a close match or any Standard card by search, or removed; counts have plus and minus buttons; the total shows out of 60. A deck that needs two screenshots can add a second picture, and a card in both counts once.
+- "Use this list" fills the import box with the list and section headers, so nothing is graded until the player taps Import and save.
+- Not shown in the downloaded one-file copy of the app (it cannot read the card index there).
+- Tested on six real Pokemon TCG Live screenshots (phone and PC layouts, one with a Reddit caption bar, one cropped to the cards): every card was found, every count read right, and no wrong read was shown as sure. The grid is now found from cards that stand alone, so a header, tab bar or caption bar is not read as cards; the small count badge digits are read; older and gold prints match; and a print read twice in one picture is flagged instead of merged.
+
 # RdyDeck 3.3.2 (build 121): fixes from Muse's 3.3.1 re-test, plus the Kingdra ex setup fix (branch fix-3.3.2, not live)
 
 Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version, What's new), js/upgrades.js, js/grade-history.js, js/v29-rotation.js (label scale, Synergy or Power sentence), js/v69-grade-blend.js, js/v31-tcgdex.js, js/i18n.js (number form), js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/creator-kit.js, tests/i18n-check.mjs, index.html (Back button on the deck screen, file stamps, softwareVersion), sw.js (cache prize-trainer-v121) and CHANGES.md.
