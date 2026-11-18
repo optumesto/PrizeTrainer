@@ -244,16 +244,19 @@ function up75Html(res, hasFix) {
   // 3.0: the order the player picked (cards they own first, cheapest first). Only which swaps show changes.
   if (typeof op30UpOrder === 'function') res = op30UpOrder(res);
   const head = n => `<details class="g-sec g29-fold" id="up75-sec"${n ? ' open' : ''}><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
-  if (!res || res.busy) return head(0) + `<div class="g-sec-i">Checking which card swaps raise this grade.</div></details>`;
-  if (res.why === 'offline') return head(0) + `<div class="g-sec-i">Upgrades need a connection the first time, to read the cards to try.</div></details>`;
+  // 3.3.1 (Muse 3.3 retest, section 5 M1): with nothing to list, the section is not a fold. Its one line
+  // stays on screen, even where the player once folded Upgrades away (that choice is kept for every deck).
+  const line = t => `<div class="g-sec" id="up75-sec"><div class="g-sec-t">Upgrades</div><div class="g-sec-i">${t}</div></div>`;
+  if (!res || res.busy) return line(`Checking which card swaps raise this grade.`);
+  if (res.why === 'offline') return line(`Upgrades need a connection the first time, to read the cards to try.`);
   // 3.2.8 (Muse s5 M1): the section stays, with a line saying why there is nothing to try, so Upgrades is never
   // missing without a word. Only a format Upgrades does not cover (Expanded, prerelease, the daily list) hides it.
-  if (res.why === 'rules') return head(0) + `<div class="g-sec-i">Upgrades show once the list follows the deck rules. Fix first says what to change.</div></details>`;
-  if (res.why === 'legal') return head(0) + `<div class="g-sec-i">Upgrades show once every card in the list is Standard legal.</div></details>`;
-  if (res.why === 'data') return head(0) + `<div class="g-sec-i">Upgrades show once the card data for this list has loaded.</div></details>`;
-  if (res.why === 'error') return head(0) + `<div class="g-sec-i">Upgrades could not be worked out for this list just now. Open the deck again to retry.</div></details>`;
+  if (res.why === 'rules') return line(`Upgrades show once the list follows the deck rules. Fix first says what to change.`);
+  if (res.why === 'legal') return line(`Upgrades show once every card in the list is Standard legal.`);
+  if (res.why === 'data') return line(`Upgrades show once the card data for this list has loaded.`);
+  if (res.why === 'error') return line(`Upgrades could not be worked out for this list just now. Open the deck again to retry.`);
   if (res.why && res.why !== 'none') return '';
-  if (res.why === 'none' || !res.swaps.length) return head(0) + `<div class="g-sec-i">No single swap raises this grade${res.arch ? ` with the cards ${esc(res.arch)} top lists run` : ''}.${hasFix ? ' What Fix first lists needs more than one card changed.' : ''}</div></details>`;
+  if (res.why === 'none' || !res.swaps.length) return line(`No single swap raises this grade, its Synergy or its Power${res.arch ? ` with the cards ${esc(res.arch)} top lists run` : ''}.${hasFix ? ' What Fix first lists needs more than one card changed.' : ''}`);
   const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
   const moved = s => s.to > s.from;
   const rows = res.swaps.map(s => `<div class="up75-row"><div class="up75-h"><span class="up75-n">Swap 1 ${esc(s.out)} for 1 ${esc(s.in)}</span>${moved(s) ? `<span class="up75-g">${g(s.from, s.to)}</span>` : ''}</div>
@@ -295,7 +298,7 @@ function up75Html(res, hasFix) {
       if (!el || !deck || !el.querySelector('#g29-fix')) return r;   // still grading, or no grade
       if (typeof g71Wait === 'function' && g71Wait(deck)) return r;
       const sig = up75Sig(deck), hit = _up75Cache.get(deck.id);
-      if (hit && hit.sig === sig) { place(el, html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
+      if (hit && hit.sig === sig && !hit.err) { place(el, html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
       _up75Cache.set(deck.id, { sig, busy: true });
       place(el, html({ busy: true }));
       up75Find(deck).then(res => {
@@ -306,7 +309,8 @@ function up75Html(res, hasFix) {
         if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html(res, fixed(live)));
       }).catch(e => {
         if (typeof rdReportError === 'function') rdReportError(e, 'upgrades');
-        _up75Cache.delete(deck.id);
+        // 3.3.1: kept as an error (not deleted) so Top fixes stops waiting; the next draw still tries again.
+        _up75Cache.set(deck.id, { sig, res: { why: 'error' }, err: true });
         const live = document.getElementById('grade-body');
         if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html({ why: 'error' }));
       });

@@ -77,6 +77,13 @@ function r29OldSet(code) {
   const pid = String((TCGEnrich.SET_MAP || {})[k] || (TCGEnrich.LEARNED_SETS || {})[k] || '');
   return /^(?:swsh|sm|xy|bw|cel25|g1|det1|dv1|hgss|col1|hsp)/.test(pid);
 }
+/** 3.3.1: a set whose every card has the F mark (Brilliant Stars to Crown Zenith, with Pokemon GO and the Trainer Galleries). */
+function r29FSet(code) {
+  if (typeof TCGEnrich === 'undefined') return false;
+  const k = String(code || '').toUpperCase();
+  const pid = String((TCGEnrich.SET_MAP || {})[k] || (TCGEnrich.LEARNED_SETS || {})[k] || '');
+  return /^(?:swsh(?:9|10|11|12)(?:tg)?|swsh12pt5(?:gg)?|swsh10pt5)$/.test(pid);
+}
 /** 3.2.8: the Basic a Standard legal Stage 1 evolves from, from cards.json, or ''. */
 function r273From(stage1) { try { r273Ready(); } catch (_) {} return (r273 && r273.ef && r273.ef[r29Key(stage1)]) || ''; }
 
@@ -108,9 +115,13 @@ function r29Rows(deck) {
     // another printing carries, so its own mark is not taken from that printing, and the check decides.
     const old = !!(c.byName && c.set && r.pkmn && String(c.supertype).toLowerCase().startsWith('pok') && r29OldSet(c.set));
     if (old) r.oldSet = true;
+    // 3.3.1 (Muse 3.3 retest): every card of the last Sword and Shield sets carries the F mark, so an old printing
+    // from one of them shows F, not "?", even when its text was read from another printing.
+    const setF = old && r29FSet(c.set);
+    if (setF) r.setMark = true;
     const unl = !!(c.byName && c.set && c.num) && !old;
     r.unlisted = (r.unlisted === undefined ? true : r.unlisted) && unl;
-    r.marks.push(old ? null : r29M(c.reg.mark));
+    r.marks.push(old ? (setF ? 'F' : null) : r29M(c.reg.mark));
   });
   const rows = [];
   byName.forEach(r => {
@@ -217,7 +228,7 @@ function r29Summary(deck) {
     if (r.reprint) bits.push(`Newest reprint has the ${r.reprint} mark`);
     else if (!r.checked) bits.push(busy ? 'Checking for reprints' : pending ? 'Reprints not checked yet' : '');
     else bits.push('No reprint with a later mark found');
-    if (r.other) bits.push('mark read from another printing');
+    if (r.other && !r.setMark) bits.push('mark read from another printing');
     return bits.filter(Boolean).join(', ');
   };
   const out = rows.filter(r => r.st === 'out' || r.st === 'nomark'), risk = rows.filter(r => r.st === 'risk');

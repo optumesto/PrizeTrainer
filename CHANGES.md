@@ -2,6 +2,22 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.1 (build 120): fixes from Muse's 3.3 re-test (branch fix-3.3.1, not live)
+
+Changed files: js/core.js (damage ceiling, Hand tab, version, What's new), js/card-details.js, js/v29-rotation.js, js/v31-tcgdex.js, js/grade-history.js, js/upgrades.js, js/easier-first-visit.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (light theme colors, file stamps, softwareVersion), sw.js (cache prize-trainer-v120), tests/grade-baseline.json and CHANGES.md.
+
+- H2: a Pokemon in the list for its Ability (Mega Kangaskhan ex in Crustle, for example) no longer adds its damage to Power, even at half weight. The damage finding says it can also hit, but the grade leaves that hit out.
+- Gengar LOR: the card viewer and mark read the Lost Origin card, with Netherworld Gate, and a saved text from another printing is read again.
+- Light theme: the old early color block (#f4f2ec background) is gone, and every type and status color reaches at least 4.6:1 on every light surface.
+- Upgrades: every empty state (checking, offline, rules, no swaps, error) is a plain line that cannot be folded away, translated in all six languages.
+- Grade history: a reprint check that never finished held the log, so a grade move with no other change was not saved. The log now waits only as long as the grade does, and the reprint check gives up after 30 seconds.
+- Hand tab: a hand with no Energy card says so once, and names the cards that can find one.
+- Top fixes waits for Upgrades and shows once, instead of reordering as swaps arrive. An Upgrades error no longer leaves it checking.
+- Translations: the Main attacker paragraph in es, pt, de, fr and it; fr "a gagné" and it "ha vinto"; the article in "En ce moment, la Synergie" and "Adesso la Sinergia".
+- What's new: dates are the release day in US Eastern time, so 3.3 shows Nov 17.
+- Home PLAY button: already 48px on touch screens (the 3.3 touch rule covers .btn-sm and nothing caps its height). No change.
+- Grade check: 6 of 132 lists moved, 2 by more than 0.1: Crustle 078 8.5 to 8.1 and Crustle 100 8.4 to 8.1 (Mega Kangaskhan ex's hit left out). Dhelmise 091 8.1 to 8.0; Talonflame Dusknoir 062, 102 and 125 change Power only. Baseline updated on this branch.
+
 # RdyDeck 3.2.8 (build 118): deck checker wording, 6 new deck guides, first deck guide, FAQ and llms.txt for 3.2.7 (17 Nov 2026)
 
 Changed files: deck-guides.json (6 new guides, stale claims fixed), build-pages.mjs (first-deck.html, Deck checker wording, Your first deck in the tools links), rulings.json (deck-size, rulebook p. 22), .github/pages/faq.html, about.html and how-grading-works.html, deck-grader.html, index.html (title, description, JSON-LD and sameAs, noscript, heading, about text, softwareVersion, file stamps), prize-trainer.html, rotation.html, opening-odds.html, 404.html, terms.html and delete-data.html (Instagram link), privacy.html (Instagram link, age question in the Play app), llms.txt, js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache prize-trainer-v118), sitemap.xml, every built page (rebuilt) and CHANGES.md.

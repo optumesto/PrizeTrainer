@@ -500,6 +500,9 @@ const _dataBusy = new Set();
 
 function deckNeedsData(deck) {
   if ((deck.enrichVer || 0) < ENRICH_VER) return true;
+  // 3.3.1 (Muse 3.3 retest, H4/H5): a card read from another printing is read again once a session, so a deck
+  // saved while the lookup missed its printing (Lost Origin Gengar under 3.2.7) gets its own card text once it can.
+  if ((deck.cards || []).some(c => c && c.byName) && !_dataTried.has(deck.id)) return true;
   const cov = deck.coverage;
   return !!(cov && cov.unresolved > 0 && !_dataTried.has(deck.id));
 }
@@ -1680,8 +1683,11 @@ function gEnablers(deck, c) {
  * it is not picked as the main attacker over a real one. A deck whose main attacker is itself such a
  * Pokemon (Kangaskhan Bouffalant) keeps it, since then the attack is the plan.
  */
-/** 3.2.8: the share of a support Pokemon's harder hit that the damage ceiling counts (see gViability). */
-const G_SUP_SHARE = 0.5;
+/** 3.2.8: the share of a support Pokemon's harder hit that the damage ceiling counts (see gViability).
+ *  3.3.1 (Muse 3.3 retest, H2): none. While the list has an attacker that is not a support Pokemon, the support
+ *  Pokemon's own hit is left out of the ceiling; the finding still names it. A copier (Mew ex using its
+ *  Rapid-Fire Combo) is the deck's own attack and still counts in full. */
+const G_SUP_SHARE = 0;
 // Muse s2 M2: how much of the games its damage does not close a deck that also mills, walls or locks closes by that.
 const G_CTL_MIX = 0.5;
 function gSupportMon(c, top) {
@@ -2009,7 +2015,9 @@ function gViability(deck, coh, main) {
   // own counts for part of the gap (G_SUP_SHARE; 0 leaves it out, 1 counts it in full as before).
   let supR = null; reach.forEach(r => { if (r !== bestR && sideSup(r) && (!supR || effC(r) > effC(supR))) supR = r; });
   const ceS = supR && bestR && ceOf(supR) > ce ? Math.round(ce + G_SUP_SHARE * (ceOf(supR) - ce)) : ce;
+  // 3.3.1: with G_SUP_SHARE 0 the support Pokemon's hit is named and left out; any share above 0 counts part of it.
   const supTxt = ceS > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but it is in the list for its Ability, so the grade counts ${ceS}.${ceS >= FMT.ohkoTarget ? '' : ' ' + g37Hits(ceS, false)}` : '';
+  const supOut = !supTxt && supR && bestR && ceOf(supR) > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but it is in the list for its Ability, so the grade leaves that hit out.` : '';
   const hitsT = supTxt ? '' : hitsTxt;
   // 3.2.8: under a one-shot, the hit count follows what the grade counts, after the reason it counts less,
   // so a "Two hits" finding never says the deck one-shots.
@@ -2027,7 +2035,7 @@ function gViability(deck, coh, main) {
   // v68: a one-shot on the format's biggest threats (340) is full marks; one that stops short of them a bit less.
   else if (ceS>=FMT.ohkoTarget) { strat='ohko'; closeScore=(bestR&&bestR.late?0.85:1)*(ceS>=hi?1:0.95);
     findings.push({sev:'ok', t:'Hits hard enough to trade up',
-    d:`${lead}${g35Hit(bestR)}${hitsT}${supTxt}`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsT}${supTxt}${supOut}`}); }
   else if (ceS*2>=hi) { strat='2hko';
     // Linear between a bare two-hit knockout (170) and a one-shot (320).
     closeScore=0.6+0.3*(ceS-hi/2)/(FMT.ohkoTarget-hi/2);
@@ -2040,10 +2048,10 @@ function gViability(deck, coh, main) {
     // summed up by its Frogadier. The score above still counts every one-prize attacker, as before.
     const oneT=[...new Set([mainR, bestR].filter(r=>r && r.p===1 && r.eff*2>=hi).map(r=>gCap(r.name)))];
     findings.push({sev:'warn', t:'Two hits for the biggest threats',
-    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt}${oneT.length?` ${oneT.join(' and ')} ${oneT.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt}${supOut}${oneT.length?` ${oneT.join(' and ')} ${oneT.length>1?'give':'gives'} up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even.`:' Fine if you can take the return hit.'}`}); }
   else { strat='weak'; closeScore=0.15+0.45*ceS/(hi/2);
     findings.push({sev:'crit', t:'Damage ceiling is too low',
-    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt} You cannot trade up, which usually loses the prize race.`}); }
+    d:`${lead}${g35Hit(bestR)}${hitsP}${ceTxt}${hitsC}${supTxt}${supOut} You cannot trade up, which usually loses the prize race.`}); }
   if (bestR && bestR.escale && bestR.top > bestR.now) { const e = bestR.escale;
     const what = e.x2 ? `Basic ${gCap(e.x2.type)} Energy cards` : (e.types.length ? e.types.map(gCap).join(' and ') + ' ' : '') + 'Energy';
     findings.push({sev:'ok', t:`${gCap(bestName)} grows into its damage`,
@@ -2181,7 +2189,7 @@ function gViability(deck, coh, main) {
       const what=bigLiabs.length>1?bigLiabs.map(e=>`${gCap(e.name)}'s ${(e.card.abil||[])[0]}`).join(' and '):`its ${(bigLiabs[0].card.abil||[])[0]} Ability`;
       findings.push({sev:'ok', t:`${list}: a three-prize engine`,
       d:`${list} ${bigLiabs.length>1?'give':'gives'} up 3 prizes when ${bigLiabs.length>1?'they fall':'it falls'}, but ${bigLiabs.length>1?'they are':'it is'} here for ${what}, not to trade hits. `+
-        (escN>=2?`Your ${escN} ways to switch or retreat${escP?`, like ${gCap(escP.name)}`:''}, let you use it, then move it out before your opponent can Knock it out.`
+        (escN>=2?`Your ${escN} ways to switch or retreat${escP?`, like ${gCap(escP.name)},`:''} let you use it, then move it out before your opponent can Knock it out.`
           :`Use it, then retreat or switch it out before your opponent's turn, and keep it off the Bench when they can hit the Bench.`)}); }
     else if (eff<FMT.ohkoTarget && strat!=='spread' && sideBig) { prizeScore=0.65;
       findings.push({sev:'warn', t:'A three-prize Pokemon in a one-prize deck',
@@ -4536,7 +4544,7 @@ function handLineOdds(S, line, trials, seed, fixed) {
 /** 3.2.8 (Muse s5 M4): true when the hand holds an Energy the attacker's attacks can use (a Special Energy,
  *  a Basic Energy of a type in a cost, or any when a cost is all Colorless), or a card that finds or attaches
  *  Energy. An attacker with a free attack, or with no attack read, needs none. */
-function hpEnergyIn(deck, g, hand) {
+function hpEnergyIn(deck, g, hand, cardsOnly) {
   if (!g) return true;
   const raw = (deck.cards || []).filter(c => String(c.name || '').toLowerCase() === g.key);
   const costs = raw.flatMap(c => (c.attacks || []).map(a => (a.cost || []).map(t => String(t).toLowerCase())));
@@ -4549,9 +4557,26 @@ function hpEnergyIn(deck, g, hand) {
       const m = String(c.name || '').match(/^(?:Basic )?(\w+) Energy$/i), sp = (c.subtypes || []).some(t => /special/i.test(t));
       return sp || !m || anyType || types.has(m[1].toLowerCase());
     }
+    if (cardsOnly) return false;
     if ((c.provides || []).includes('energy_accel')) return true;
     try { return typeof g273ESearch === 'function' && g273ESearch(c); } catch (_) { return false; }
   });
+}
+/** 3.3.1 (Muse 3.3 retest, section 5 M4): a hand with no Energy card says so on a line of its own, every
+ *  time, with the cards in it that can get one. The line under each attacker counts Energy cards only, so a
+ *  hand with none never reads as ready to attack. */
+function hpNoEnergyLine(hand) {
+  const isE = c => String((c && c.supertype) || '').toLowerCase() === 'energy';
+  if ((hand || []).some(x => x && isE(x.card))) return '';
+  const get = [];
+  (hand || []).forEach(x => {
+    const c = x && x.card;
+    if (!c || get.includes(c.name)) return;
+    let ok = (c.provides || []).includes('energy_accel');
+    try { ok = ok || (typeof g273ESearch === 'function' && g273ESearch(c)); } catch (_) {}
+    if (ok) get.push(c.name);
+  });
+  return `<div class="g-sec-i hp-noe"><b>No Energy card in this hand.</b> ${get.length ? esc(get.join(' or ')) + ' can get you one.' : 'Nothing in it gets you one either.'}</div>`;
 }
 
 function handIsBasic(groups, g) { return groups[g] && groups[g].basic; }
@@ -4633,6 +4658,7 @@ function renderHand() {
     <div class="hp-hand">${H.hand.map((x, i) => gfIsBasic(x)
       ? `<button type="button" class="hp-basic" onclick="hpSetUp(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set up</span></button>`
       : handCardHTML(x.card)).join('')}</div>
+    ${hpNoEnergyLine(H.hand)}
     ${H.hand.some(gfIsBasic) ? '<div class="g-sec-i hp-basic-tip">Tap a Basic to put it in play and carry on in Goldfish with this same hand.</div>' : ''}`;
 
   if (!anyRead || !opts.length) {
@@ -4660,7 +4686,7 @@ function renderHand() {
     if (l.top >= 0 && !handCount[l.top]) need.push(nm(l.top));
     // 3.2.8 (Muse s5 M4): an attacker is not ready without Energy for its attack, so the line counts an Energy
     // its attack can use, or a card that finds or attaches one, before it says every piece is in hand.
-    const noE = (l.main || l.tool) && !hpEnergyIn(deck, groups[l.top >= 0 ? l.top : l.basic], H.hand);
+    const noE = (l.main || l.tool) && !hpEnergyIn(deck, groups[l.top >= 0 ? l.top : l.basic], H.hand, true);
     const eTxt = noE ? (need.length ? ' No Energy to attack with in hand either.' : 'Every Pokémon is in your hand, but no Energy to attack with yet.') : '';
     return `${stageTxt(l.stage)}${l.main ? ', main attacker' : l.tool ? `, one of ${l.tool} attackers` : ''}${l.guessed ? ', from ' + nm(l.basic) + ' with Rare Candy' : ''}. ` +
       (inHand.length ? `In hand: <b>${inHand.join(', ')}</b>. ` : '') +
@@ -8355,11 +8381,25 @@ function handleDailyHash() {
 // "Changed:", "Fixed:"), each with a short description. A small release
 // (2.x.y) lists short items like "MEP bug fixed" with no description. It shows in Settings, and once on home for someone who
 // used an older version. A brand new user never sees the home card.
+// Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.3',
+  version: 'v3.3.1',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
+    { t: 'Power counts attackers only' },
+    { t: 'Gengar card text fixed' },
+    { t: 'Light theme contrast fixed' },
+    { t: 'Upgrades always says why' },
+    { t: 'Grade history bug fixed' },
+    { t: 'Added: no Energy note on hands' },
+    { t: 'Translations improved' }
+  ]
+};
+// 3.3: What's new shows the two versions before the latest too, each with its date.
+// At each release, move the old WHATS_NEW to the top of this list and keep two.
+const WHATS_PREV = [
+  { version: 'v3.3', date: 'Nov 17, 2026', kind: 'small', items: [
     { t: 'Grade fixes from a full audit' },
     { t: 'Cards not legal now always flagged' },
     { t: 'Grade history shows results updates' },
@@ -8368,21 +8408,10 @@ const WHATS_NEW = {
     { t: 'Bigger buttons on phones' },
     { t: 'Light theme easier to read' },
     { t: 'Translations improved' }
-  ]
-};
-// 3.3: What's new shows the two versions before the latest too, each with its date.
-// At each release, move the old WHATS_NEW to the top of this list and keep two.
-const WHATS_PREV = [
+  ] },
   { version: 'v3.2.8', date: 'Nov 17, 2026', kind: 'small', items: [
     { t: 'Added: 6 deck guides' },
     { t: 'Added: first deck guide' }
-  ] },
-  { version: 'v3.2.7', date: 'Nov 17, 2026', kind: 'small', items: [
-    { t: 'Prices now in dollars only' },
-    { t: 'Starter decks work offline' },
-    { t: 'Added: swipe between cards' },
-    { t: 'Grade waits for all card data' },
-    { t: 'Added: in-app dialogs' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11317,8 +11346,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.3';
-const PT_BUILD = 119;
+const PT_VERSION = 'v3.3.1';
+const PT_BUILD = 120;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

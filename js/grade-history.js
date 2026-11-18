@@ -42,10 +42,12 @@ function gh72Save() { clearTimeout(_gh72T); _gh72T = setTimeout(() => { try { sa
 function gh72Final(deck, R) {
   if (!deck || !R || !gh72Num(R.overall) || deck.daily || deck.format === 'prerelease') return false;
   if (!state.decks.includes(deck)) return false;                       // shared and daily decks are not saved
-  if (typeof g71WaitFor === 'function' && g71WaitFor(deck)) return false;  // still loading
-  // 3.2.8 (Muse section 5 M2): a deck whose grade showed before everything loaded is kept once all of it
-  // has loaded (g71WaitFor above is then empty), so a move later in the same visit is not lost.
-  if (typeof _g71Late !== 'undefined' && _g71Late.has(deck.id) && typeof g71WaitFor !== 'function') return false;
+  // Still loading. 3.3.1 (Muse 3.3 retest, section 5 M2): this asks what the Grade tab asks (g71Wait), so a
+  // grade that is on screen is kept. A check that never finished (a reprint read that hung, say) held the
+  // whole log before, so a deck could show 9.0 while its history still said only "first saved grade 8.4".
+  // A grade read from part of the list is still never kept (g71NotFinal below), and the same list read
+  // without results or with fewer cards is still not kept as a drop (gh72Note).
+  if (typeof g71Wait === 'function' ? g71Wait(deck) : (typeof g71WaitFor === 'function' && g71WaitFor(deck))) return false;
   if (typeof g71Stale === 'function' && g71Stale(deck)) return false;  // card data from an older reader
   if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) return false;  // 3.2.7: some cards unread
   return true;

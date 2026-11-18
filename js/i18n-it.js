@@ -92,6 +92,8 @@ I18N_MORE.it = {
     "T": "P",
     // The pile under the play mat (the dictionary has the button verb).
     "Discard": "Scarti",
+    // 3.3.1 (Muse 3.3 retest): "Toxtricity Box ha vinto il 51.8% di tutti i 515 incontri", with the auxiliary.
+    "won": "ha vinto il",
   },
   dict: {
     "Rules": "Regole",
@@ -497,7 +499,9 @@ I18N_MORE.it = {
     "Can it win a game": "Può vincere una partita?",
     "Share grade": "Condividi il voto",
     "is what holds it back.": "è ciò che frena il voto.",
-    "Right now": "Adesso",
+    // 3.3.1 (Muse 3.3 retest): only in "Right now <b>Synergy</b> is what holds it back", so the article
+    // goes here, before the bold Synergy or Power: "Adesso la Sinergia è ciò che frena il voto."
+    "Right now": "Adesso la",
     "Fix first": "Da sistemare",
     "The problem that costs you the most.": "Il problema che ti costa di più.",
     "Stops the deck": "Blocca il mazzo",
@@ -524,6 +528,8 @@ I18N_MORE.it = {
     "Upgrades could not be worked out for this list just now. Open the deck again to retry.": "Non è stato possibile calcolare ora i miglioramenti di questa lista. Riapri il mazzo per riprovare.",
     "Upgrades need a connection the first time, to read the cards to try.": "I miglioramenti hanno bisogno di connessione la prima volta, per leggere le carte da provare.",
     "Checking which card swaps raise this grade.": "Controllo quali scambi di carte alzano questo voto.",
+    "No single swap raises this grade, its Synergy or its Power.": "Nessuno scambio di una sola carta alza questo voto, né la sua Sinergia né la sua Potenza.",
+    "What Fix first lists needs more than one card changed.": "Ciò che indica «Da sistemare» richiede di cambiare più di una carta.",
     "Main attacker": "Attaccante principale",
     "Toolbox: several attackers": "Più attaccanti (toolbox)",
     "The Pokemon you set is no longer in the list, so the grade is back on Auto.": "Il Pokémon che hai scelto non è più nella lista, quindi il voto è tornato su Auto.",
@@ -1099,6 +1105,12 @@ I18N_MORE.it = {
     "Added: notice before leaving RdyDeck": "Nuovo: avviso prima di uscire da RdyDeck",
     "Bigger buttons on phones": "Pulsanti più grandi sul telefono",
     "Light theme easier to read": "Tema chiaro più leggibile",
+    "Power counts attackers only": "La Potenza conta solo gli attaccanti",
+    "Gengar card text fixed": "Testo della carta Gengar corretto",
+    "Light theme contrast fixed": "Contrasto del tema chiaro corretto",
+    "Upgrades always says why": "Miglioramenti spiega sempre il perché",
+    "Grade history bug fixed": "Bug dello storico dei voti corretto",
+    "Added: no Energy note on hands": "Nuovo: avviso per le mani senza Energia",
     "Translations improved": "Traduzioni migliorate",
     "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "Il prezzo di ogni carta e il totale della tua lista, da TCGdex, con l'opzione di vedere prima le più economiche.",
     "Added: how accurate the grades are": "Nuovo: quanto sono precisi i voti",
@@ -1266,6 +1278,8 @@ I18N_MORE.it = {
     "Every piece is in your hand.": "Hai tutti i pezzi in mano.",
     "Every Pokémon is in your hand, but no Energy to attack with yet.": "Hai tutti i Pokémon in mano, ma ancora nessuna Energia per attaccare.",
     "No Energy to attack with in hand either.": "Non hai nemmeno Energia in mano per attaccare.",
+    "No Energy card in this hand.": "Nessuna carta Energia in questa mano.",
+    "Nothing in it gets you one either.": "E niente in mano te ne procura una.",
     "Line locked in prizes": "Linea bloccata nei Premi",
     "any opening hand": "qualsiasi mano iniziale",
     "same": "uguale",
@@ -1613,6 +1627,9 @@ I18N_MORE.it = {
     [/^(.+?) can start the game face down in the Active Spot with (.+?) when it is in your opening hand, which happens in about (\d+)% of games, so it does not need to evolve\.$/, (m, x, a, p) => x + ' può iniziare la partita coperto in Posizione attiva con ' + a + ' quando è nella tua mano iniziale, cosa che succede in circa il ' + p + '% delle partite, quindi non ha bisogno di evolversi.'],
     [/^(.+?) can only reach the board by starting the game in the Active Spot with (.+?), and it is in your opening hand in only about (\d+)% of games\.$/, (m, x, a, p) => x + ' può arrivare in gioco solo iniziando la partita in Posizione attiva con ' + a + ', ed è nella tua mano iniziale solo in circa il ' + p + '% delle partite.'],
     [/^(.+?) can also hit for (\d+), but it is in the list for its Ability, so the grade counts (\d+)\.$/, (m, x, n, c) => x + ' può anche infliggere ' + n + ' danni, ma è nella lista per la sua Abilità, quindi il voto conta ' + c + '.'],
+    [/^(.+?) can also hit for (\d+), but it is in the list for its Ability, so the grade leaves that hit out\.$/, (m, x, n) => x + ' può anche infliggere ' + n + ' danni, ma è nella lista per la sua Abilità, quindi il voto non conta questo attacco.'],
+    [/^(.+) can get you one\.$/, (m, x) => x.split(' or ').join(' o ') + ' può procurartene una.'],
+    [/^No single swap raises this grade, its Synergy or its Power with the cards (.+) top lists run\.$/, (m, d) => 'Nessuno scambio di una sola carta con le carte delle migliori liste ' + d + ' alza questo voto, né la sua Sinergia né la sua Potenza.'],
     [/^(.+?) is here for its (.+?) Ability, not to trade hits, so use it, then move it out before your opponent can Knock it out\.$/, (m, x, a) => x + ' è qui per la sua Abilità ' + a + ", non per scambiare colpi, quindi usa l'Abilità e poi ritiralo prima che il tuo avversario possa metterlo KO."],
     [/^(.+?) are here for their Abilities, not to trade hits, so use them, then move them out before your opponent can Knock them out\.$/, (m, x) => x.replace(/ and /g, ' e ') + ' sono qui per le loro Abilità, non per scambiare colpi, quindi usa le Abilità e poi ritirali prima che il tuo avversario possa metterli KO.'],
     [/^This list is built around (.+?), which has no tournament results of its own yet, so these results are borrowed from (.+?), the closest deck that has them\.$/, (m, a, b) => 'Questa lista è costruita intorno a ' + a + ', che non ha ancora risultati di torneo propri, quindi questi risultati sono presi in prestito da ' + b + ', il mazzo più simile che ne ha.'],
@@ -2174,6 +2191,7 @@ I18N_MORE.it.gt = (function () {
     // How it plays.
     doesAtk: x => `È ${x} ad attaccare.`,
     playsAs: x => `La lista gioca come ${x}, un mazzo che porta il suo nome.`,
+    playsEng: (x, e, k, atk, a, p) => `La lista gioca come ${x}, un mazzo che porta il nome di ${e}, un Pokémon ${{ setsA: 'che prepara gli attaccanti', powA: 'che dà energia agli attaccanti invece di attaccare', setsT: 'che li prepara', powT: 'che dà loro energia invece di attaccare' }[k]}: ${atk ? 'il suo attacco' : 'la sua Abilità'} ${a} ${p}.`,
     playsAsOne: x => `La lista gioca come ${x}, e tra i Pokémon che danno il nome a quel mazzo, è quello con cui la lista è costruita per attaccare.`,
     copies: (you, n, f) => `${you ? "L'hai impostato come attaccante principale" : "È l'attaccante attorno a cui è costruita questa lista"}: ${n} ${n1(n) ? 'copia' : 'copie'}${f ? `, più ${f} Pokémon da cui si evolve` : ''}.`,
     most: (x, n) => `${x} è quello di cui la lista usa più copie (${n}).`,

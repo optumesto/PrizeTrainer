@@ -16,6 +16,7 @@ const CD31_KEY = 'rd_cardtext';
 const CD31_MAX = 400;
 const CD31_TYPES = { grass: 'grass', fire: 'fire', water: 'water', lightning: 'electric', psychic: 'psychic', fighting: 'fighting',
   darkness: 'dark', metal: 'metal', dragon: 'dragon', fairy: 'fairy', colorless: '' };
+const _cd31Again = new Set();
 let _cd31Store = null, _cd31Open = null, _cd31Rul = null, _cd31RulP = null, _cd31Grade = null;
 
 function cd31Load() {
@@ -60,16 +61,23 @@ async function cd31Fetch(c) {
   const id = td30CardId(c.set, c.num);
   const same = t => t && typeof TCGEnrich !== 'undefined' && TCGEnrich.sameCard(c.name, t.name);
   let got = null;
-  for (const tid of id ? [id].concat(/^30th-/.test(id) ? [id.replace(/^30th-/, '30th-c-')] : []) : []) {
+  // 3.3.1: Sword and Shield ids are tried padded both ways, as the deck's own card read does (Lost Origin Gengar).
+  const alt = id && typeof td30AltId === 'function' ? td30AltId(id) : null;
+  for (const tid of id ? [id].concat(/^30th-/.test(id) ? [id.replace(/^30th-/, '30th-c-')] : [], alt || []) : []) {
     const t = await td30Get('/cards/' + encodeURIComponent(tid));
     if (same(t)) { got = cd31Trim(t); break; }
   }
   if (!got && typeof TCGEnrich !== 'undefined') {
     const nm = TCGEnrich.apiName(c.name);
     const list = await td30Get('/cards?name=' + encodeURIComponent('eq:' + nm));
-    const hit = (Array.isArray(list) ? list : []).filter(b => b && typeof b.id === 'string' && same(b))
-      .sort((a, b) => (typeof td30Rank === 'function' ? td30Rank(b.id) - td30Rank(a.id) : 0))[0];
-    if (hit) { const t = cd31Trim(await td30Get('/cards/' + encodeURIComponent(hit.id))); if (t) { t.other = true; got = t; } }
+    const hits = (Array.isArray(list) ? list : []).filter(b => b && typeof b.id === 'string' && same(b))
+      .sort((a, b) => (typeof td30Rank === 'function' ? td30Rank(b.id) - td30Rank(a.id) : 0));
+    // 3.3.1: the list line's own printing, when the name search finds it under an id the guess missed.
+    const set = typeof td30SetId === 'function' ? td30SetId(c.set) : null, num = String(c.num || '').replace(/^0+(?=\d)/, '').toLowerCase();
+    const own = set && num ? hits.find(b => String(b.id).toLowerCase().startsWith(set.toLowerCase() + '-')
+      && String(b.localId || String(b.id).split('-').pop()).replace(/^0+(?=\d)/, '').toLowerCase() === num) : null;
+    const hit = own || hits[0];
+    if (hit) { const t = cd31Trim(await td30Get('/cards/' + encodeURIComponent(hit.id))); if (t) { if (!own) t.other = true; got = t; } }
   }
   if (got) { cd31Load()[cd31Key(c)] = { t: Date.now(), d: got }; cd31Save(); }
   return got;
@@ -294,11 +302,16 @@ async function cd31Show(deck, c) {
     });
   };
   fill();
-  if (f || !online) return;
+  // 3.3.1 (Muse 3.3 retest, H4/H5): text saved from another printing is read again once a session, so a card
+  // whose own printing the lookup missed before (Lost Origin Gengar under 3.2.7) shows its own text once it can.
+  const again = !!(f && f.other && online && !_cd31Again.has(cd31Key(c)));
+  if ((f && !again) || !online) return;
+  if (again) _cd31Again.add(cd31Key(c));
+  const was = f;
   try { f = await cd31Fetch(c); } catch (_) { f = null; }
   if (_cd31Open !== tok || !document.getElementById('x-modal').classList.contains('active') || !sheet) return;
-  if (f) { sheet.innerHTML = cd31Html(c, f); fill(); }
-  else { const n = document.getElementById('cd31-note'); if (n) n.textContent = 'The full card text could not be read just now. Try again later.'; }
+  if (f && (!was || !f.other)) { sheet.innerHTML = cd31Html(c, f); fill(); }
+  else if (!f && !was) { const n = document.getElementById('cd31-note'); if (n) n.textContent = 'The full card text could not be read just now. Try again later.'; }
 }
 
 (function () {

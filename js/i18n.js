@@ -466,6 +466,8 @@ const I18N_ES = {
   "Upgrades could not be worked out for this list just now. Open the deck again to retry.": "Ahora mismo no se pudieron calcular las mejoras de esta lista. Vuelve a abrir la baraja para intentarlo de nuevo.",
   "Upgrades need a connection the first time, to read the cards to try.": "Las mejoras necesitan conexión la primera vez, para leer las cartas a probar.",
   "Checking which card swaps raise this grade.": "Revisando qué cambios de cartas suben esta calificación.",
+  "No single swap raises this grade, its Synergy or its Power.": "Ningún cambio de una sola carta sube esta calificación, ni su Sinergia ni su Poder.",
+  "What Fix first lists needs more than one card changed.": "Lo que indica «Corrige primero» necesita cambiar más de una carta.",
   "Main attacker": "Atacante principal",
   "Toolbox: several attackers": "Toolbox: varios atacantes",
   "The Pokemon you set is no longer in the list, so the grade is back on Auto.": "El Pokémon que elegiste ya no está en la lista, así que la calificación volvió a Auto.",
@@ -1458,6 +1460,8 @@ const I18N_PT = {
   "Upgrades could not be worked out for this list just now. Open the deck again to retry.": "Não foi possível calcular as melhorias desta lista agora. Abra o deck de novo para tentar outra vez.",
   "Upgrades need a connection the first time, to read the cards to try.": "As melhorias precisam de internet na primeira vez, para ler as cartas a testar.",
   "Checking which card swaps raise this grade.": "Verificando quais trocas de cartas sobem esta nota.",
+  "No single swap raises this grade, its Synergy or its Power.": "Nenhuma troca de uma só carta aumenta esta nota, nem a Sinergia nem o Poder.",
+  "What Fix first lists needs more than one card changed.": "O que «Corrija primeiro» indica precisa de mais de uma carta trocada.",
   "Main attacker": "Atacante principal",
   "Toolbox: several attackers": "Toolbox: vários atacantes",
   "The Pokemon you set is no longer in the list, so the grade is back on Auto.": "O Pokémon que você escolheu não está mais na lista, então a nota voltou para Auto.",
@@ -2277,6 +2281,9 @@ const I18N_PAT = [
   [/^(.+?) can start the game face down in the Active Spot with (.+?) when it is in your opening hand, which happens in about (\d+)% of games, so it does not need to evolve\.$/, (m, x, a, p) => x + ' puede empezar la partida boca abajo en el Puesto Activo con ' + a + ' cuando está en tu mano inicial, lo que pasa en cerca del ' + p + '% de las partidas, así que no necesita evolucionar.', (m, x, a, p) => x + ' pode começar a partida virado para baixo no Campo Ativo com ' + a + ' quando está na sua mão inicial, o que acontece em cerca de ' + p + '% das partidas, então não precisa evoluir.'],
   [/^(.+?) can only reach the board by starting the game in the Active Spot with (.+?), and it is in your opening hand in only about (\d+)% of games\.$/, (m, x, a, p) => x + ' solo puede llegar a la mesa empezando la partida en el Puesto Activo con ' + a + ', y está en tu mano inicial en solo cerca del ' + p + '% de las partidas.', (m, x, a, p) => x + ' só consegue chegar à mesa começando a partida no Campo Ativo com ' + a + ', e está na sua mão inicial em só cerca de ' + p + '% das partidas.'],
   [/^(.+?) can also hit for (\d+), but it is in the list for its Ability, so the grade counts (\d+)\.$/, (m, x, n, c) => x + ' también puede golpear por ' + n + ', pero está en la lista por su Habilidad, así que la calificación cuenta ' + c + '.', (m, x, n, c) => x + ' também pode causar ' + n + ' de dano, mas está na lista pela Habilidade, então a nota conta ' + c + '.'],
+  [/^(.+?) can also hit for (\d+), but it is in the list for its Ability, so the grade leaves that hit out\.$/, (m, x, n) => x + ' también puede golpear por ' + n + ', pero está en la lista por su Habilidad, así que la calificación no cuenta ese golpe.', (m, x, n) => x + ' também pode causar ' + n + ' de dano, mas está na lista pela Habilidade, então a nota não conta esse golpe.'],
+  [/^(.+) can get you one\.$/, (m, x) => x.split(' or ').join(' o ') + (/ or /.test(x) ? ' pueden conseguirte una.' : ' puede conseguirte una.'), (m, x) => x.split(' or ').join(' ou ') + (/ or /.test(x) ? ' podem conseguir uma para você.' : ' pode conseguir uma para você.')],
+  [/^No single swap raises this grade, its Synergy or its Power with the cards (.+) top lists run\.$/, (m, d) => 'Ningún cambio de una sola carta sube esta calificación, ni su Sinergia ni su Poder con las cartas que juegan las mejores listas de ' + d + '.', (m, d) => 'Nenhuma troca de uma só carta aumenta esta nota, nem a Sinergia nem o Poder com as cartas que as melhores listas de ' + d + ' usam.'],
   [/^(.+?) is here for its (.+?) Ability, not to trade hits, so use it, then move it out before your opponent can Knock it out\.$/, (m, x, a) => x + ' está aquí por su Habilidad ' + a + ', no para intercambiar golpes, así que usa la Habilidad y luego retíralo antes de que tu rival pueda dejarlo Fuera de Combate.', (m, x, a) => x + ' está aqui pela Habilidade ' + a + ', não para trocar golpes, então use a Habilidade e depois tire ele do Campo Ativo antes que o oponente consiga Nocauteá-lo.'],
   [/^(.+?) are here for their Abilities, not to trade hits, so use them, then move them out before your opponent can Knock them out\.$/, (m, x) => x.replace(/ and /g, ' y ') + ' están aquí por sus Habilidades, no para intercambiar golpes, así que usa las Habilidades y luego retíralos antes de que tu rival pueda dejarlos Fuera de Combate.', (m, x) => x.replace(/ and /g, ' e ') + ' estão aqui pelas Habilidades, não para trocar golpes, então use as Habilidades e depois tire eles do Campo Ativo antes que o oponente consiga Nocauteá-los.'],
   [/^This list is built around (.+?), which has no tournament results of its own yet, so these results are borrowed from (.+?), the closest deck that has them\.$/, (m, a, b) => 'Esta lista se arma alrededor de ' + a + ', que todavía no tiene resultados de torneo propios, así que estos resultados se toman prestados de ' + b + ', la baraja más parecida que sí los tiene.', (m, a, b) => 'Esta lista é montada em torno de ' + a + ', que ainda não tem resultados de torneio próprios, então estes resultados são emprestados de ' + b + ', o deck mais parecido que tem.'],
@@ -2331,6 +2338,12 @@ Object.assign(I18N_ES, {
   "Added: notice before leaving RdyDeck": "Nuevo: aviso antes de salir de RdyDeck",
   "Bigger buttons on phones": "Botones más grandes en el teléfono",
   "Light theme easier to read": "Tema claro más fácil de leer",
+  "Added: no Energy note on hands": "Nuevo: aviso de manos sin Energía",
+  "Grade history bug fixed": "Error del historial de calificaciones corregido",
+  "Upgrades always says why": "Mejoras siempre explica por qué",
+  "Light theme contrast fixed": "Contraste del tema claro corregido",
+  "Gengar card text fixed": "Texto de la carta Gengar corregido",
+  "Power counts attackers only": "Poder solo cuenta a los atacantes",
   "Translations improved": "Traducciones mejoradas",
   "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "El precio de cada carta y el total de tu lista, de TCGdex, con la opción de ver primero las más baratas.",
   "Added: how accurate the grades are": "Nuevo: qué tan precisas son las calificaciones",
@@ -2463,6 +2476,12 @@ Object.assign(I18N_PT, {
   "Added: notice before leaving RdyDeck": "Novo: aviso antes de sair do RdyDeck",
   "Bigger buttons on phones": "Botões maiores no celular",
   "Light theme easier to read": "Tema claro mais fácil de ler",
+  "Added: no Energy note on hands": "Novo: aviso de mãos sem Energia",
+  "Grade history bug fixed": "Erro do histórico de notas corrigido",
+  "Upgrades always says why": "Melhorias sempre explica o porquê",
+  "Light theme contrast fixed": "Contraste do tema claro corrigido",
+  "Gengar card text fixed": "Texto da carta Gengar corrigido",
+  "Power counts attackers only": "Poder conta só os atacantes",
   "Translations improved": "Traduções melhoradas",
   "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "O preço de cada carta e o total da sua lista, do TCGdex, com a opção de ver as mais baratas primeiro.",
   "Added: how accurate the grades are": "Novo: quão precisas são as notas",
@@ -2688,6 +2707,8 @@ Object.assign(I18N_ES, {
   "Every piece is in your hand.": "Tienes todas las piezas en la mano.",
   "Every Pokémon is in your hand, but no Energy to attack with yet.": "Tienes todos los Pokémon en la mano, pero todavía ninguna Energía para atacar.",
   "No Energy to attack with in hand either.": "Tampoco tienes Energía en la mano para atacar.",
+  "No Energy card in this hand.": "No hay cartas de Energía en esta mano.",
+  "Nothing in it gets you one either.": "Y nada en ella te consigue una.",
   // Notes: Edit log and Compare lists
   "Line locked in prizes": "Línea atascada en premios",
   "any opening hand": "cualquier mano inicial",
@@ -2760,6 +2781,8 @@ Object.assign(I18N_PT, {
   "Every piece is in your hand.": "Todas as peças estão na sua mão.",
   "Every Pokémon is in your hand, but no Energy to attack with yet.": "Todos os Pokémon estão na sua mão, mas ainda não há Energia para atacar.",
   "No Energy to attack with in hand either.": "Também não há Energia na mão para atacar.",
+  "No Energy card in this hand.": "Não há cartas de Energia nesta mão.",
+  "Nothing in it gets you one either.": "E nada nela consegue uma para você.",
   // Notes: Edit log and Compare lists
   "Line locked in prizes": "Linha presa nos prêmios",
   "any opening hand": "qualquer mão inicial",
@@ -3835,7 +3858,7 @@ function i18nDmgPats(l) {
     [/^When it is prized or Knocked Out, your damage drops a lot\.$/, () => T().drops],
     // Three-prize Pokemon.
     [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls), but (they are|it is) here for (.+), not to trade hits\.$/, (m, x, v, f, w, a) => { const r = i18nDmgFor(a, T()); return r && T().engine3(nm(x), many(v), r); }],
-    [/^Your (\d+) ways to switch or retreat(?:, like (.+?))?, let you use it, then move it out before your opponent can Knock it out\.$/, (m, n, x) => T().ways(n, x || '')],
+    [/^Your (\d+) ways to switch or retreat(?:, like (.+?),)? let you use it, then move it out before your opponent can Knock it out\.$/, (m, n, x) => T().ways(n, x || '')],
     [/^Use it, then retreat or switch it out before your opponent's turn, and keep it off the Bench when they can hit the Bench\.$/, () => T().useRetreat],
     [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls), half the game in one knockout, while (.+?) gives up one\.$/, (m, x, v, f, y) => T().side3(nm(x), many(v), y)],
     [/^Put (them|it) in play only when you need (?:them|it)\.$/, (m, p) => T().putOnly(p === 'them')],
@@ -4447,6 +4470,12 @@ function i18nGtPats(l) {
     // How it plays.
     [/^(.+) does the attacking\.$/, (m, x) => nm(x) && T().doesAtk(x)],
     [/^The list plays as (.+), a deck named for it\.$/, (m, x) => T().playsAs(x)],
+    // 3.3.1 (Muse 3.3 retest, M29): a deck named for its engine (Toxtricity Box), with the engine's Ability.
+    [/^The list plays as (.+?), a deck named for (.+?), which (sets up the attackers|powers the attackers rather than attacking|sets them up|powers them rather than attacking): its (.+)\.$/, (m, x, e, k, rest) => {
+      if (!nm(e) || !T().playsEng) return null;
+      let atk = false, sp = i18nGtAbSplit(rest, l);
+      if (sp && / attack$/.test(sp[0])) { atk = true; sp = [sp[0].replace(/ attack$/, ''), sp[1]]; }
+      return sp && T().playsEng(x, e, { 'sets up the attackers': 'setsA', 'powers the attackers rather than attacking': 'powA', 'sets them up': 'setsT', 'powers them rather than attacking': 'powT' }[k], atk, sp[0], String(sp[1]).replace(/\.$/, '')); }],
     [/^The list plays as (.+), and of the Pokemon that deck is named for, it is the one the list is built to attack with\.$/, (m, x) => T().playsAsOne(x)],
     [/^(You set it as the main attacker|It is the attacker this list is built around): (\d+) cop(?:y|ies)(?: plus (\d+) Pokemon it evolves from)?\.$/, (m, w, n, f) => T().copies(/^You/.test(w), n, f)],
     [/^(.+) is the one the list runs most copies of \((\d+)\)\.$/, (m, x, n) => nm(x) && T().most(x, n)],
@@ -4718,6 +4747,7 @@ const I18N_GT = {
       // How it plays.
       doesAtk: x => `${x} es quien ataca.`,
       playsAs: x => `La lista juega como ${x}, una baraja que lleva su nombre.`,
+      playsEng: (x, e, k, atk, a, p) => `La lista juega como ${x}, una baraja con el nombre de ${e}, un Pokémon ${{ setsA: 'que prepara a los atacantes', powA: 'que impulsa a los atacantes en lugar de atacar', setsT: 'que los prepara', powT: 'que los impulsa en lugar de atacar' }[k]}: ${atk ? 'su ataque' : 'su Habilidad'} ${a} ${p}.`,
       playsAsOne: x => `La lista juega como ${x}, y de los Pokémon que dan nombre a esa baraja, este es con el que la lista está hecha para atacar.`,
       copies: (you, n, f) => `${you ? 'Lo elegiste como atacante principal' : 'Es el atacante en torno al que se construye esta lista'}: ${n} ${n1(n) ? 'copia' : 'copias'}${f ? ` más ${f} Pokémon de los que evoluciona` : ''}.`,
       most: (x, n) => `${x} es el que la lista lleva en más copias (${n}).`,
@@ -4911,6 +4941,7 @@ const I18N_GT = {
       // How it plays.
       doesAtk: x => `${x} é quem ataca.`,
       playsAs: x => `A lista joga como ${x}, um deck com o nome dele.`,
+      playsEng: (x, e, k, atk, a, p) => `A lista joga como ${x}, um deck com o nome de ${e}, um Pokémon ${{ setsA: 'que prepara os atacantes', powA: 'que impulsiona os atacantes em vez de atacar', setsT: 'que os prepara', powT: 'que os impulsiona em vez de atacar' }[k]}: ${atk ? 'seu ataque' : 'sua Habilidade'} ${a} ${p}.`,
       playsAsOne: x => `A lista joga como ${x}, e dos Pokémon que dão nome a esse deck, este é o que a lista foi montada para usar no ataque.`,
       copies: (you, n, f) => `${you ? 'Você o escolheu como atacante principal' : 'É o atacante em torno do qual esta lista é montada'}: ${n} ${n1(n) ? 'cópia' : 'cópias'}${f ? ` mais ${f} Pokémon dos quais ele evolui` : ''}.`,
       most: (x, n) => `${x} é o que a lista usa em mais cópias (${n}).`,

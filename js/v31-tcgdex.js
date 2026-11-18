@@ -236,12 +236,8 @@ async function r31TdReprints(rows) {
   return found;
 }
 
-r29CheckReprints = async function (deck) {
-  if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
-  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
-  const todo = r29NeedsCheck(deck, r29Rows(deck));
-  if (!todo.length) return;
-  _r29Busy.add(deck.id); _r29Tried.add(deck.id);
+/** The reprint reads for the rows to check: { key: { best } }. */
+async function r31Reprints(deck, todo) {
   const found = {};
   const failed = [];
   const batches = [];
@@ -282,8 +278,23 @@ r29CheckReprints = async function (deck) {
   if (failed.length) {
     try { Object.assign(found, await r31TdReprints(failed)); } catch (_) {}
   }
-  _r29Busy.delete(deck.id);
-  if (!Object.keys(found).length) return;
+  return found;
+}
+
+r29CheckReprints = async function (deck) {
+  if (_r29Busy.has(deck.id) || _r29Tried.has(deck.id)) return;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  const todo = r29NeedsCheck(deck, r29Rows(deck));
+  if (!todo.length) return;
+  _r29Busy.add(deck.id); _r29Tried.add(deck.id);
+  // 3.3.1 (Muse 3.3 retest): the check always ends, even when a read throws, so a grade never waits on it
+  // for the rest of the visit (that held the deck's grade history).
+  let found = {};
+  // A read with no timeout of its own (a browser without AbortSignal.timeout) stops waiting after 30 seconds.
+  try { found = await Promise.race([r31Reprints(deck, todo), new Promise(res => setTimeout(() => res({}), 30000))]); }
+  catch (e) { if (typeof rdReportError === 'function') rdReportError(e, 'reprint check'); }
+  finally { _r29Busy.delete(deck.id); }
+  if (!Object.keys(found).length) { if (typeof g71Redraw === 'function') g71Redraw(); return; }
   if (!deck.rot29 || deck.rot29.v !== ROT29.v) deck.rot29 = { v: ROT29.v, names: {} };
   Object.assign(deck.rot29.names, found);
   try { await saveState(); } catch (_) {}

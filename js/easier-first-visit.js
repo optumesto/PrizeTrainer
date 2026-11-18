@@ -205,7 +205,10 @@ function tf265Items(deck) {
     const n = s.syn[1] > s.syn[0] ? `Synergy ${g(s.syn[0], s.syn[1])}` : s.pow[1] > s.pow[0] ? `Power ${g(s.pow[0], s.pow[1])}` : '';
     out.push({ t: `Swap 1 ${s.out} for 1 ${s.in}`, n, j: 'up75-sec' });
   });
-  return { items: out.slice(0, 3), wait: !!up.wait && out.length < 3 };
+  // 3.3.1 (Muse 3.3 retest): the list waits for Upgrades, so it settles once instead of reordering
+  // as swaps arrive. Until then the box only says it is checking.
+  if (up.wait) return { items: [], wait: true };
+  return { items: out.slice(0, 3), wait: false };
 }
 function tf265Html(deck) {
   const r = tf265Items(deck);
