@@ -673,7 +673,10 @@
     return out;
   }
 
-  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, mergeRows, shrink };
+  /** For tests: how well print i matches the card in box r (no shifting). */
+  function scorePrint(idx, px, W, H, r, i) { const q = query(feat(px, W, H, r)); return scoreOne(idx, q.qy, q.qc, i); }
+
+  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, mergeRows, shrink, scorePrint };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PhotoScan = api;
 })(typeof self !== 'undefined' ? self : this);

@@ -423,6 +423,55 @@
   input:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:var(--surface); }
   textarea { height:190px; resize:vertical; font-family:var(--mono); font-size:0.875rem; line-height:1.6; }
   .modal-hint { font-size:var(--fs-sm); color:var(--text-3); margin-top:0.45rem; }
+  /* Photo deck import (js/photo-import.js) */
+  .pi-btns { display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end; }
+  #photo-modal .pi-state { display:none; }
+  #photo-modal[data-state="start"] .pi-s-start, #photo-modal[data-state="reading"] .pi-s-reading,
+  #photo-modal[data-state="error"] .pi-s-error, #photo-modal[data-state="list"] .pi-s-list { display:block; }
+  #photo-modal[data-state="start"] .pi-wait { visibility:hidden; }
+  .pi-wait { display:flex; align-items:center; gap:0.75rem; padding:1.5rem 0.25rem; color:var(--text-2); font-weight:600; }
+  .pi-wait .spinner { width:28px; height:28px; margin:0; flex:none; }
+  .pi-wait-more { padding:0.75rem 0.25rem; }
+  .pi-private { margin-top:0; }
+  .pi-msg { color:var(--text); line-height:1.5; }
+  .pi-head { display:flex; align-items:baseline; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; }
+  .pi-total { font-family:var(--display); font-size:var(--fs-xl); font-weight:800; color:var(--accent); }
+  .pi-total.ok { color:var(--success); }
+  .pi-check { font-size:var(--fs-sm); font-weight:600; color:var(--success); }
+  .pi-check.warn { color:var(--accent); }
+  .pi-howto { margin:0.2rem 0 0.75rem; }
+  .pi-list { display:flex; flex-direction:column; gap:0.5rem; }
+  .pi-row { display:flex; align-items:center; gap:0.75rem; padding:0.5rem; border-radius:var(--r-sm);
+    background:var(--surface-2); border:1px solid var(--line); }
+  .pi-row.pi-unsure { border-color:var(--accent-line); background:color-mix(in srgb, var(--accent-soft) 60%, var(--surface-2)); }
+  .pi-thumb { width:48px; height:67px; flex:none; border-radius:5px; object-fit:cover; background:var(--surface-3); }
+  .pi-thumb-lg { width:84px; height:117px; border-radius:7px; }
+  .pi-info { flex:1; min-width:0; }
+  .pi-name { font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pi-sub { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-size:var(--fs-xs); color:var(--text-3); margin-top:0.1rem; }
+  .pi-pill { font-weight:700; color:var(--accent-ink); background:var(--accent); border-radius:999px; padding:0.05rem 0.5rem; }
+  .pi-change { margin-top:0.25rem; padding:0.35rem 0; min-height:32px; background:none; border:none; color:var(--info);
+    font:inherit; font-size:var(--fs-sm); font-weight:600; cursor:pointer; }
+  .pi-step { display:flex; align-items:center; gap:0.15rem; flex:none; }
+  .pi-sb { width:40px; height:40px; border-radius:10px; border:1px solid var(--line-2); background:var(--surface);
+    color:var(--text); font-size:1.25rem; font-weight:700; line-height:1; cursor:pointer; }
+  .pi-sb:disabled { opacity:0.35; cursor:default; }
+  .pi-n { min-width:2ch; text-align:center; font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
+  .pi-n-q { color:var(--accent); }
+  .pi-more { margin-top:0.75rem; }
+  .pi-acts { position:sticky; bottom:0; background:var(--surface); padding:0.75rem 0 0.25rem; margin-top:0.75rem; }
+  .pi-ch-top { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; }
+  .pi-ch-top .modal-title { margin-bottom:0.6rem; }
+  .pi-opts { display:flex; flex-direction:column; gap:0.35rem; margin:0.4rem 0 0.9rem; }
+  .pi-opts:empty { display:none; }
+  .pi-opt { display:flex; justify-content:space-between; align-items:center; gap:0.75rem; text-align:left; min-height:44px;
+    padding:0.5rem 0.75rem; border-radius:var(--r-sm); border:1px solid var(--line-2); background:var(--surface-2);
+    color:var(--text); font:inherit; font-weight:600; cursor:pointer; }
+  .pi-opt:hover { background:var(--surface-3); }
+  .pi-opt small { color:var(--text-3); font-weight:500; white-space:nowrap; }
+  .pi-none { color:var(--text-3); font-size:var(--fs-sm); padding:0.25rem 0; }
+  .pi-remove { color:var(--danger); margin-right:auto; }
+  #photo-change { z-index:110; }
   .parse-preview { margin-top:0.5rem; font-size:var(--fs-sm); font-weight:600; color:var(--success); }
   .parse-preview:empty { display:none; }
   .parse-preview.warn { color:var(--danger); }
@@ -3878,7 +3927,7 @@ document.documentElement.classList.add('rd-boot');
         <input type="text" id="import-name" placeholder="e.g. Dragapult ex">
       </div>
       <div class="mb">
-        <div class="field-row"><label for="import-list">Deck list</label><button class="btn btn-sm" onclick="pasteFromClipboard()"><svg class="ic ic-sm"><use href="#i-clipboard"/></svg>Paste</button></div>
+        <div class="field-row"><label for="import-list">Deck list</label><span class="pi-btns"><button class="btn btn-sm" id="photo-import-btn" type="button" onclick="rdPhotoImport()"><svg class="ic ic-sm"><use href="#i-image"/></svg>From a photo</button><button class="btn btn-sm" onclick="pasteFromClipboard()"><svg class="ic ic-sm"><use href="#i-clipboard"/></svg>Paste</button></span></div>
         <textarea id="import-list" placeholder="4 Dreepy TWM 128&#10;4 Drakloak TWM 129&#10;3 Dragapult ex TWM 130&#10;4 Lillie&#39;s Determination MEG 119&#10;..."></textarea>
         <div class="modal-hint">Paste the export from Limitless or Pokémon TCG Live, section headers included. One card per line: quantity, name, set, number.</div>
         <button class="btn btn-sm st-from-import" onclick="openStarterPicker()"><svg class="ic ic-sm"><use href="#i-cards"/></svg>No list handy? Load a starter deck</button>
@@ -3895,6 +3944,64 @@ document.documentElement.classList.add('rd-boot');
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
         <button class="btn btn-primary" onclick="importDeck()">Import and save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Photo deck import: the picture is read on this device and never leaves it (js/photo-import.js). -->
+<input type="file" id="photo-file" accept="image/*" hidden>
+<div class="modal-overlay" id="photo-modal" data-state="start">
+  <div class="modal">
+    <div class="modal-inner">
+      <div class="modal-title">Read a deck from a picture</div>
+      <div class="pi-state pi-s-start pi-s-reading">
+        <div class="pi-wait"><div class="spinner"></div><div>Reading your picture…</div></div>
+        <div class="modal-hint pi-private">Your picture stays on this device. It is never uploaded.</div>
+      </div>
+      <div class="pi-state pi-s-error">
+        <div class="pi-msg" id="pi-msg"></div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" type="button" data-pi-close>Cancel</button>
+          <button class="btn btn-primary" type="button" id="pi-retry"><svg class="ic ic-sm"><use href="#i-image"/></svg>Pick another picture</button>
+        </div>
+      </div>
+      <div class="pi-state pi-s-list">
+        <div class="pi-head">
+          <div class="pi-total" id="pi-total"></div>
+          <div class="pi-check" id="pi-check"></div>
+        </div>
+        <div class="modal-hint pi-howto">Check each card against your picture. Tap Change to fix a card, or use the buttons to fix a count.</div>
+        <div class="pi-list" id="pi-list"></div>
+        <div class="pi-wait pi-wait-more" id="pi-reading-more" hidden><div class="spinner"></div><div>Reading your picture…</div></div>
+        <button class="btn btn-sm pi-more" type="button" id="pi-more"><svg class="ic ic-sm"><use href="#i-plus"/></svg>Add another picture</button>
+        <div class="modal-hint">For a deck that does not fit on one screen. A card in both pictures counts once.</div>
+        <div class="modal-actions pi-acts">
+          <button class="btn btn-ghost" type="button" data-pi-close>Cancel</button>
+          <button class="btn btn-primary" type="button" id="pi-use">Use this list</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="photo-change">
+  <div class="modal">
+    <div class="modal-inner">
+      <div class="pi-ch-top">
+        <img class="pi-thumb pi-thumb-lg" id="pi-alt-img" alt="">
+        <div>
+          <div class="modal-title">Which card is this?</div>
+          <button class="btn btn-sm" type="button" id="pi-keep">This card is right</button>
+        </div>
+      </div>
+      <div class="field-label" id="pi-alts-h">Close matches</div>
+      <div class="pi-opts" id="pi-alts"></div>
+      <label for="pi-q">Search cards</label>
+      <input type="text" id="pi-q" autocomplete="off" placeholder="Card name">
+      <div class="pi-opts" id="pi-found"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost pi-remove" type="button" id="pi-remove"><svg class="ic ic-sm"><use href="#i-trash"/></svg>Not a card, remove it</button>
+        <button class="btn" type="button" id="pi-change-x">Done</button>
       </div>
     </div>
   </div>
@@ -4042,5 +4149,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/i18n.js?v=9bfc873d"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
 <template id="i18n-files"><script src="js/i18n-fr.js?v=247b8438"></script><script src="js/i18n-de.js?v=18635644"></script><script src="js/i18n-it.js?v=2a319e18"></script></template>
+<!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
+<script src="js/photo-import.js?v=12b0c7ff"></script>
+<template id="photo-files"><script src="js/photo-scan.js?v=067e73ad"></script></template>
 </body>
 </html>

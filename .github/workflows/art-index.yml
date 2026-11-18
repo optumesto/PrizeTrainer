@@ -12,6 +12,8 @@ on:
       - js/photo-scan.js
       - tests/photo-import/**
       - tests/photo-import-check.mjs
+      - tests/photo-import-ui.mjs
+      - js/photo-import.js
       - .github/workflows/art-index.yml
 
 permissions:
@@ -38,6 +40,19 @@ jobs:
         run: node tests/photo-import/make-shots.mjs shots
       - name: Check photo import
         run: SHOW=80 node tests/photo-import-check.mjs shots art-index.json art-index.bin | tee shots/result.txt
+      - name: Try photo import in a browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+          mkdir -p ui-shots
+          npx --yes http-server@14.1.1 -p 8080 -s -c-1 &
+          sleep 3
+          node tests/photo-import-ui.mjs http://127.0.0.1:8080/ shots/dragapult-ex--phone-dark.png ui-shots | tee ui-shots/run.txt || true
+          # The pictures of the app's own screens, printed for a look without the download
+          for f in en-dark-2-review en-dark-3-change en-dark-4-search en-dark-5-import-filled en-light-2-review es-dark-2-review de-dark-2-review; do
+            [ -f "ui-shots/$f.jpg" ] || continue
+            echo "IMG-START $f"; base64 -w 6000 "ui-shots/$f.jpg"; echo "IMG-END $f"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: photo-import-shots
@@ -45,6 +60,7 @@ jobs:
             shots
             art-index.json
             art-index.bin
+            ui-shots
           retention-days: 7
       - name: Commit the index
         run: |

@@ -48,7 +48,20 @@ for (const t of truth) {
     const r = rows[hit], m = r.matches[0];
     const nameOk = m && norm(m.name) === norm(c.name);
     const countOk = r.count === c.count;
-    if (nameOk) { T.name++; L.name++; if (r.sure < 0.35) T.unsureRight++; } else { if (r.sure >= 0.35) T.sureWrong++; misses.push(`${t.file}: ${c.name} ${c.set} ${c.num} read as ${m ? m.name + ' ' + m.set + ' ' + m.num : 'nothing'} (sure ${r.sure.toFixed(2)})`); }
+    if (nameOk) { T.name++; L.name++; if (r.sure < 0.35) T.unsureRight++; } else {
+      if (r.sure >= 0.35) T.sureWrong++;
+      // Why: was the box off, or does the picture itself not match its print?
+      const b = r.box, a = c.box, ti = meta.prints.findIndex(p => p[1] === c.set && String(p[2]) === String(c.num));
+      const off = `box off x ${((b.x - a.x) / a.w).toFixed(3)} y ${((b.y - a.y) / a.h).toFixed(3)} w ${(b.w / a.w).toFixed(3)} h ${(b.h / a.h).toFixed(3)}`;
+      let why = ti < 0 ? 'print not in index' : '';
+      if (ti >= 0) {
+        const onFound = PS.scorePrint(idx, px, info.width, info.height, b, ti), onTrue = PS.scorePrint(idx, px, info.width, info.height, a, ti);
+        const best = PS.matchBox(idx, px, info.width, info.height, a, 3)[0];
+        const bn = best ? meta.names[meta.prints[best.i][0]] : '';
+        why = `right print scores ${onFound.toFixed(3)} on found box, ${onTrue.toFixed(3)} on true box; best on true box ${bn} ${best ? best.s.toFixed(3) : ''}; top on found ${m ? m.s.toFixed(3) : ''}`;
+      }
+      misses.push(`${t.file}: ${c.name} ${c.set} ${c.num} [${c.src}] read as ${m ? m.name + ' ' + m.set + ' ' + m.num : 'nothing'} (sure ${r.sure.toFixed(2)}); ${off}; ${why}`);
+    }
     if (countOk) { T.count++; L.count++; } else misses.push(`${t.file}: ${c.name} count ${c.count} read as ${r.count} (sure ${r.countSure.toFixed(2)})`);
     if (nameOk && countOk) { T.both++; L.both++; } else ok = false;
   }
