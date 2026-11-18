@@ -145,6 +145,7 @@ I18N_MORE.de = {
     "Starter decks work offline": "Starterdecks funktionieren offline",
     "Added: swipe between cards": "Neu: zwischen Karten wischen",
     "Landscape layout fixed": "Querformat behoben",
+    "Large text layout fixed": "Layout bei großer Schrift behoben",
     "Added: in-app dialogs": "Neu: eigene App-Dialoge",
     "Added: fold sections": "Neu: einklappbare Abschnitte",
     "Added: 6 deck guides": "Neu: 6 Deck-Guides",

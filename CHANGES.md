@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.5 (build 124): large text and landscape layout fixed (18 Nov 2026)
+
+Changed files: index.html (layout styles, version), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name).
+
+- Deck tiles at large phone text: Prizes and More move to a row under the deck name, and names wrap between words, not mid word.
+- Deck screen title, tabs, Prize game button and grade number stop growing past a cap, so big text no longer crowds them out. At normal text size nothing changes.
+- Page side margins stay near their usual size at large text, so the text keeps the width.
+- Phone landscape deck screen: the header scrolls away, the tabs stay at the top, and the bottom bar is just the Prize game button, so the content gets the screen.
+- Empty prize slots keep their label on one line.
+
+Grade check: no grade moved (no grading code changed).
+
 # RdyDeck 3.3.4 (build 123): 5 deck guides, creator kit guide, shorter titles (18 Nov 2026)
 
 Changed files: deck-guides.json, 5 new deck-*.html, creator-kit.html (from .github/pages/creator-kit.html), build-pages.mjs (rules page title), prize-trainer.html, rulings.html, meta-decks.html and the deck and card pages that now link the new guides, sitemap.xml, llms.txt, js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (version), sw.js (cache name).

@@ -141,6 +141,7 @@ I18N_MORE.it = {
     "Starter decks work offline": "I mazzi iniziali funzionano offline",
     "Added: swipe between cards": "Nuovo: scorri tra le carte",
     "Landscape layout fixed": "Modalità orizzontale corretta",
+    "Large text layout fixed": "Layout con testo grande corretto",
     "Added: in-app dialogs": "Nuovo: finestre di dialogo integrate",
     "Added: fold sections": "Nuovo: sezioni comprimibili",
     "Added: 6 deck guides": "Nuovo: 6 guide ai mazzi",

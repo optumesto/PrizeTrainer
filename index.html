@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Rate your Pokémon TCG deck out of 10: paste a decklist to see what to fix, opening odds and rotation, then practice prizes. Free, no account.">
 <meta name="twitter:image" content="https://rdydeck.com/og-image.png">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.3.4","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":"https://rdydeck.com/og-image.png","inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.3.5","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -3370,6 +3370,46 @@ document.documentElement.classList.add('rd-boot');
   html.rd-boot #screen-home .rd-mark { width:41.57px; height:59px; }
   @media (min-width:768px) { html.rd-boot #screen-home .app-title { font-size:46.224px; } html.rd-boot #screen-home .rd-mark { width:45.8px; height:65px; } }
 </style>
+<style>
+  /* 3.3.5: large phone text, part 2. With the phone's text size turned up (text-scale meta), rem grows
+     and px does not. Deck tiles put their buttons under the text once the tile is narrow for the text
+     (a container query in rem, so it follows the text size, not the screen). Big display type (deck names,
+     tabs, the grade number) grows at most about 1.4 times, so body text keeps the full size. On a short
+     screen (a phone on its side) the deck header scrolls away and the bottom bar is the Prize game button
+     alone, so the tab content gets the height. At the usual text size on a phone held upright nothing moves. */
+  /* Page side margins and header gaps stay near their usual size, so the text gets the width. */
+  :root { --pad-x:min(1rem, 20px); }
+  @media (min-width:640px) { :root { --pad-x:min(1.5rem, 28px); } }
+  html:not(#z) body :is(.review-header, .game-header, .ws-header) { gap:min(0.75rem, 14px); }
+  html:not(#z) body :is(.review-deck-name, .game-deck-name, .ws-title) { font-size:min(1.375rem, 28px, 7.5vw); -webkit-line-clamp:3; }
+  html:not(#z) body .deck-card { container:dk335 / inline-size; }
+  html:not(#z) body .deck-card .deck-name { overflow-wrap:break-word; word-break:normal; -webkit-hyphens:manual; hyphens:manual; }
+  html:not(#z) body .deck-name { font-size:min(1.375rem, 30px); }
+  html:not(#z) body .deck-grade b { font-size:min(1.625rem, 36px); }
+  @media (max-width:360px) { html:not(#z) body .deck-name { font-size:min(1.2rem, 27px); } }
+  @container dk335 (max-width:19rem) {
+    html:not(#z) body .deck-main { display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-rows:auto auto; column-gap:0.9rem; row-gap:0.6rem; align-items:start; }
+    html:not(#z) body .deck-main > .deck-thumb-wrap { grid-row:1 / span 2; }
+    html:not(#z) body .deck-main > .deck-info { grid-column:2; }
+    html:not(#z) body .deck-main > .deck-side { grid-column:2; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:0.5rem; }
+    html:not(#z) body .deck-side .deck-play { flex-direction:row; gap:0.4rem; height:auto; min-height:48px; padding:0 0.9rem; }
+    html:not(#z) body .deck-side .deck-play .ic { margin-left:0; }
+  }
+  html:not(#z) body .review-tabs .rv-tab { font-size:min(1rem, 21px); }
+  @media (max-width:360px) { html:not(#z) body .review-tabs .rv-tab { font-size:min(0.9375rem, 20px); } }
+  html:not(#z) body .play-btn { font-size:min(1.125rem, 24px); }
+  html:not(#z) body .g-score { font-size:min(5.5rem, 26vw, 112px); }
+  @media (max-width:360px) { html:not(#z) body .g-score { font-size:min(4.5rem, 26vw, 96px); } }
+  html:not(#z) body .prize-slot:not(.filled) { white-space:nowrap; }
+  @media (orientation:landscape) and (max-height:560px) {
+    html:not(#z) body #screen-review .review-header { position:relative; top:auto; }
+    html:not(#z) body #screen-review .review-tabs { top:0; }
+    html:not(#z) body #screen-review .review-stats { display:none; }
+    html:not(#z) body #screen-review .review-footer { flex-direction:row; justify-content:flex-end; padding-top:0.4rem; padding-bottom:calc(0.4rem + env(safe-area-inset-bottom,0)); gap:0; }
+    html:not(#z) body #screen-review .play-btn { width:auto; min-width:0; min-height:44px; padding:0 1.5rem; margin-left:auto; }
+    html:not(#z) body #screen-review .rv-tab { min-height:44px; }
+  }
+</style>
 </head>
 <body>
 <noscript><div style="max-width:40rem;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;color:#ede8de;background:#131210;line-height:1.6">
@@ -4023,7 +4063,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=8883917e"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=7649de90"></script>
 
-<script src="js/core.js?v=f08d974a"></script>
+<script src="js/core.js?v=227a12eb"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4148,9 +4188,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=990108dc"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=876591dc"></script>
+<script src="js/i18n.js?v=65b0087a"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=0693082e"></script><script src="js/i18n-de.js?v=1de1c685"></script><script src="js/i18n-it.js?v=fb03fe52"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=546d6b01"></script><script src="js/i18n-de.js?v=279faf4e"></script><script src="js/i18n-it.js?v=45530370"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=78548daf"></script></template>
