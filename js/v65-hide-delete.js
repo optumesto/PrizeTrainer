@@ -6,7 +6,11 @@ function dd65Find(id) { return state.decks.find(d => String(d.id) === String(id)
 function dd65Rows(deck) {
   const sid = esc(String(deck.id));
   const r = (fn, t, ic, cls) => `<button type="button" class="st38-row${cls ? ' ' + cls : ''}" onclick="${fn}('${sid}')"><span>${t}</span><svg class="ic"><use href="#i-${ic}"/></svg></button>`;
+  // v82: copy the list for TCG Live (js/v82-copy-tcg-live.js). Its card data starts loading now, so the tap copies at once.
+  const tl = typeof tl82Copy === 'function' && (deck.cards || []).length;
+  if (tl && tl82Missing(deck)) tl82Data();
   return `<div class="st38-sec st38-rows">
+      ${tl ? r('tl82Copy', 'Copy list for TCG Live', 'clipboard') : ''}
       ${r('dd65Hide', deck.hidden ? 'Show deck' : 'Hide deck', deck.hidden ? 'eye' : 'eye-off')}
       ${r('dd65Ask', 'Delete deck', 'trash', 'st38-danger')}
     </div>`;
