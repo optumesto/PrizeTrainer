@@ -44,6 +44,14 @@ const T = makeText({
   cn23: s => String(s || ''),
 });
 
+// Full games (the AI opponent, opponent/game.js) read and run more than a one-turn puzzle: both
+// players' hands, healing, coins, looks at the deck, real Prize cards. What they add comes in through
+// HOOKS and applies only while a full-game state (state.real) is played, so puzzles read as before.
+const HOOKS = { passive: [], dmgPre: [], cost: [], opp: [], atk: [], step: {}, trainerWhy: [], attackWhy: [], retreatWhy: [], dmg: [], provides: [], abilOff: [], hp: [], preAttack: [], onEnergy: [] };
+let REAL = false;
+function modeMap(m) { let x = m.get(REAL); if (!x) { x = new Map(); m.set(REAL, x); } return x; }
+function reshuffle(s, P) { if (!REAL || !s.rng) return; const a = P.deck; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(s.rng() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } }
+
 function norm(s) { return T.gfNorm(s).toLowerCase(); }
 function isPokemon(x) { return x.card.cat === 'pokemon'; }
 function isEx(x) { return T.gfIsEx(x); }
@@ -66,9 +74,10 @@ function clonePlayer(p) {
 }
 function clone(s) {
   return Object.assign({}, s, { players: s.players.map(clonePlayer), mods: Object.assign({}, s.mods), taken: s.taken.slice(), koIds: s.koIds.slice(),
-    unread: s.unread.slice(), log: s.log.slice(), pending: s.pending ? clonePending(s.pending) : null });
+    unread: s.unread.slice(), log: s.log.slice(), pending: s.pending ? clonePending(s.pending) : null }, s.kos ? { kos: s.kos.slice() } : null);
 }
-function clonePending(P) { return Object.assign({}, P, { ctx: Object.assign({}, P.ctx), picked: P.picked ? P.picked.slice() : P.picked, stack: P.stack ? P.stack.map(clonePending) : P.stack }); }
+function cloneCtx(c) { const o = Object.assign({}, c); for (const k in o) if (Array.isArray(o[k])) o[k] = o[k].slice(); return o; }
+function clonePending(P) { return Object.assign({}, P, { ctx: cloneCtx(P.ctx), picked: P.picked ? P.picked.slice() : P.picked, stack: P.stack ? P.stack.map(clonePending) : P.stack }); }
 
 const me = s => s.players[s.cur];
 const foe = s => s.players[1 - s.cur];
@@ -87,6 +96,7 @@ function markUnread(s, what) { if (!s.unread.includes(what)) s.unread.push(what)
 const OPPISH = /opponent|during this turn, attacks used by|retreat cost|special condition/;
 function readOpp(s) {
   let m;
+  if (REAL) for (const h of HOOKS.opp) { const r = h(s); if (r) return r; }
   if (/^switch in 1 of your opponent's benched pokemon to the active spot$/.test(s)) return { t: 'gust' };
   if ((m = s.match(/^during this turn, attacks used by your pokemon do (\d+) more damage to your opponent's active pokemon ex( and active pokemon v)?$/))) return { t: 'boost', n: +m[1], v: !!m[2] };
   if ((m = s.match(/^(?:you may )?put (\d+) damage counters? on 1 of your opponent's pokemon$/))) return { t: 'counters', n: +m[1] };
@@ -122,10 +132,10 @@ function readBody(sents) {
   return flush() ? steps : null;
 }
 
-const _trainer = new Map();
+const _trainerM = new Map();
 /** A Trainer's rules: Goldfish's cost and "only if" reading, with steps that include the opponent. */
 function readTrainer(ref) {
-  const c = ref.card;
+  const c = ref.card, _trainer = modeMap(_trainerM);
   if (_trainer.has(c)) return _trainer.get(c);
   const P = Object.assign({}, T.gfTrainerPlay(ref) || { steps: null });
   const kind = c.kind;
@@ -141,10 +151,10 @@ function readTrainer(ref) {
   return P;
 }
 
-const _abil = new Map();
+const _abilM = new Map();
 /** A Pokemon's Abilities: Goldfish's reading of when and how often, with steps that include the opponent. */
 function readAbilities(ref) {
-  const c = ref.card;
+  const c = ref.card, _abil = modeMap(_abilM);
   if (_abil.has(c)) return _abil.get(c);
   const out = T.gfAbilities(ref).map(A0 => {
     const A = Object.assign({}, A0);
@@ -189,7 +199,7 @@ const NO_EFFECT_NOW = [
 function passiveKnown(text) {
   const t = T.gfSentences(text).join('. ');
   if (!t) return true;
-  return Object.values(PASSIVE).some(r => r.test(t)) || NO_EFFECT_NOW.some(r => r.test(t));
+  return Object.values(PASSIVE).some(r => r.test(t)) || NO_EFFECT_NOW.some(r => r.test(t)) || (REAL && HOOKS.passive.some(r => r.test(t)));
 }
 function ptext(ref) { return ref ? T.gfSentences(ref.card.rtext || '').join('. ') : ''; }
 function abilTexts(m) { return readAbilities(topOf(m)).map(a => ({ name: a.name, t: T.gfSentences(a.text).join('. ') })); }
@@ -198,6 +208,7 @@ function abilTexts(m) { return readAbilities(topOf(m)).map(a => ({ name: a.name,
 function toolOn(s, m) { if (!m.tool) return null; if (s.stadium && PASSIVE.jamming.test(ptext(s.stadium.ref))) return null; return m.tool; }
 function abilOff(s, m, owner) {
   const top = topOf(m);
+  if (REAL) for (const h of HOOKS.abilOff) { const w = h(s, m, owner); if (w) return w; }
   if (s.stadium && PASSIVE.pyroduct.test(ptext(s.stadium.ref)) && T.gfIsEvo(top)) return s.stadium.ref.card.name + ' is in play, so Evolution Pokémon have no Abilities.';
   for (let k = 0; k < 2; k++) {
     const act = s.players[k].active;
@@ -213,6 +224,7 @@ function maxHp(s, m) {
   const tool = toolOn(s, m); let r;
   if (tool && (r = ptext(tool).match(PASSIVE.hpPlus))) hp += +r[1];
   if (s.stadium && (r = ptext(s.stadium.ref).match(PASSIVE.gravity)) && topOf(m).card.stage === 'stage2') hp -= +r[1];
+  if (REAL) for (const h of HOOKS.hp) hp = h(s, m, hp);
   return hp;
 }
 function prizeValue(s, m) {
@@ -227,14 +239,18 @@ function benchMax(s, p) {
 }
 function canEvolve(s, m) { return s.turn >= 2 && m.turnIn < s.turn && m.evoTurn !== s.turn; }
 /** The Energy types a card provides, or null when the engine cannot read it (most Special Energy). */
-function provides(ref) { const t = T.gfEType(ref); return t ? [t] : null; }
+function provides(ref) {
+  const t = T.gfEType(ref); if (t) return [t];
+  if (REAL) for (const h of HOOKS.provides) { const p = h(ref); if (p) return p; }
+  return null;
+}
 /** Can these Energy pay this cost? Basic Energy only; anything else makes the answer unknown (null). */
 function costMet(energy, cost) {
   const pool = [];
-  for (const e of energy) { const p = provides(e); if (!p) return null; pool.push(p[0]); }
+  for (const e of energy) { const p = provides(e); if (!p) return null; pool.push.apply(pool, p); }
   for (const c of cost) {
     if (c === 'colorless') continue;
-    const i = pool.indexOf(c); if (i < 0) return false; pool.splice(i, 1);
+    let i = pool.indexOf(c); if (i < 0) i = pool.indexOf('any'); if (i < 0) return false; pool.splice(i, 1);
   }
   return pool.length >= cost.filter(c => c === 'colorless').length;
 }
@@ -319,10 +335,10 @@ function abilWhy(s, m, A, handRef) {
 }
 
 /* ---------------- Attacks ---------------- */
-const _atk = new Map();
+const _atkM = new Map();
 /** Read an attack: base damage, what adds to it, and what else it does. Null when any part is unread. */
 function readAttack(a) {
-  const k = a.name + '|' + a.dmg + '|' + a.text;
+  const k = a.name + '|' + a.dmg + '|' + a.text, _atk = modeMap(_atkM);
   if (_atk.has(k)) return _atk.get(k);
   const raw = String(a.dmg || '').replace(/×/g, 'x').trim();
   const mm = raw.match(/^(\d*)\s*([+x-]?)$/);
@@ -331,6 +347,7 @@ function readAttack(a) {
     R = { base: mm[1] ? +mm[1] : 0, op: mm[2] || '', per: null, noWR: false, noFx: false, exPlus: 0, bench: null, edisc: null, luck: false };
     for (const s of T.gfSentences(a.text || '')) {
       let m;
+      if (REAL) { let h = null; for (const f of HOOKS.atk) { h = f(s, R, a); if (h) break; } if (h) { if (h !== true) (R.fx = R.fx || []).push(h); continue; } }
       if ((m = s.match(/^this attack does (\d+) (more )?damage for each (?:(\w+) )?energy attached to (this pokemon|all of your pokemon)$/))) { R.per = { n: +m[1], what: 'energy', type: m[3] || '', where: m[4] }; continue; }
       if ((m = s.match(/^this attack does (\d+) (more )?damage for each of your benched pokemon$/))) { R.per = { n: +m[1], what: 'bench' }; continue; }
       if ((m = s.match(/^this attack does (\d+) (more )?damage for each damage counter on your opponent's active pokemon$/))) { R.per = { n: +m[1], what: 'oppCounters' }; continue; }
@@ -343,9 +360,10 @@ function readAttack(a) {
       // Things that only matter on later turns, or only to your own hand after the attack ends the turn.
       if (/^during your (?:opponent's )?next turn, /.test(s) || /^heal \d+ damage from this pokemon$/.test(s) || /^draw (a|\d+) cards?$/.test(s)) continue;
       if (/^flip (a|\d+) coins?/.test(s) || /^if heads|^if tails|^for each heads/.test(s)) { R.luck = true; continue; }
+      if (REAL) { R.partial = (R.partial || []).concat(s); continue; } // a full game plays the damage and logs what it skipped
       R = null; break;
     }
-    if (R && R.op && !R.per && R.op !== '-') R = R.luck ? R : null; // "30+" or "50x" with no reading of what it counts
+    if (R && R.op && !R.per && !R.calc && !R.exPlus && R.op !== '-') { if (REAL) R.partial = (R.partial || []).concat('counted damage'); else R = R.luck ? R : null; } // "30+" or "50x" with no reading of what it counts
   }
   _atk.set(k, R);
   return R;
@@ -354,7 +372,10 @@ function attackWhy(s, m, a) {
   const P = me(s);
   if (s.turn === 1 && s.first) return 'No attacking on the first turn of the game.';
   if (m.cantAttack) return monName(m) + " can't attack this turn.";
-  const ok = costMet(m.energy, a.cost || []);
+  if (REAL) for (const h of HOOKS.attackWhy) { const w = h(s, m, a); if (w) return w; }
+  let cost = a.cost || [];
+  if (REAL) for (const h of HOOKS.cost) cost = h(s, m, a, cost);
+  const ok = costMet(m.energy, cost);
   if (ok === false) return 'Not enough Energy.';
   // An Energy the engine can't read might not pay the cost, so the attack is never counted as paid.
   if (ok == null) return "RdyDeck can't read an Energy attached here, so this attack can't be used in a puzzle.";
@@ -370,13 +391,15 @@ function weakApplies(s, att, def) {
 function damageTo(s, att, R, target, isActive) {
   const A = topOf(att), D = topOf(target), owner = 1 - s.cur;
   let d = R.base;
-  if (R.per) {
+  if (R.calc) d = R.calc(s, att, target, isActive, d);
+  else if (R.per) {
     let n = 0;
     if (R.per.what === 'energy') { const pool = R.per.where === 'this pokemon' ? att.energy : mons(me(s)).reduce((a, z) => a.concat(z.energy), []); n = pool.filter(e => !R.per.type || T.gfEType(e) === R.per.type).length; }
     else if (R.per.what === 'bench') n = me(s).bench.length;
     else if (R.per.what === 'oppCounters') n = foe(s).active ? foe(s).active.dmg / 10 : 0;
     d = (R.op === 'x' ? 0 : d) + R.per.n * n;
   }
+  if (REAL) for (const h of HOOKS.dmgPre) d = h(s, att, target, isActive, d, R);
   if (isActive) {
     if (R.exPlus && isEx(D)) d += R.exPlus;
     if (d > 0 && isEx(D)) d += s.mods.exBoost || 0;
@@ -384,6 +407,7 @@ function damageTo(s, att, R, target, isActive) {
     if (d > 0 && !R.noWR) { const w = weakApplies(s, A, D); if (w) d = w.plus ? d + w.plus : d * (w.x || 2); const r = D.card.res; if (r && T.gfTypes(A).includes(r.type)) d -= r.n; }
   }
   d = Math.max(0, d);
+  if (REAL) for (const h of HOOKS.dmg) d = h(s, att, target, isActive, d, R);
   // Damage prevention on the defending side.
   if (!(isActive && R.noFx) && !abilOff(s, target, owner)) {
     const A2 = abilTexts(target);
@@ -407,8 +431,9 @@ function checkKOs(s) {
       m.stack.concat(m.energy, m.tool ? [m.tool] : []).forEach(y => P.discard.push(y));
       const n = prizeValue(s, m), taker = s.players[1 - k];
       const got = taker.prizes.splice(0, Math.min(n, taker.prizes.length));
-      // Prizes are taken face down: what you take is luck, so it goes to your hand unusable.
-      got.forEach(() => taker.hand.push({ uid: ++s.uid, card: HIDDEN }));
+      // Prizes are taken face down: what you take is luck, so in a puzzle it goes to your hand unusable.
+      if (REAL) got.forEach(x => taker.hand.push(x)); else got.forEach(() => taker.hand.push({ uid: ++s.uid, card: HIDDEN }));
+      if (s.kos) s.kos[k]++;
       s.taken[1 - k] += got.length;
       if (k !== s.cur) s.koIds.push(m.id);
       log(s, `${monName(m)} is Knocked Out (${got.length} Prize card${got.length !== 1 ? 's' : ''} taken)`);
@@ -475,14 +500,15 @@ function go(s) {
       case 'drawTo': c.drew += drawN(s, P, Math.max(0, st.n - P.hand.length)); break;
       case 'drawPrizes': c.drew += drawN(s, P, P.prizes.length); break;
       case 'discardHand': P.hand.splice(0).forEach(y => P.discard.push(y)); break;
-      case 'shuffleHand': case 'bottomHand': P.deck = P.deck.concat(P.hand.splice(0)); break;
-      case 'coin': s.luck = true; c.heads = true; break;
+      case 'shuffleHand': case 'bottomHand': P.deck = P.deck.concat(P.hand.splice(0)); if (st.t === 'shuffleHand') reshuffle(s, P); break;
+      case 'coin': if (REAL && s.rng) { c.heads = s.rng() < 0.5; log(s, c.heads ? 'Heads' : 'Tails'); } else { s.luck = true; c.heads = true; } break;
       case 'endTurn': c.endTurn = true; break;
-      case 'look': s.luck = true; break; // the top of the deck is unknown in a puzzle
+      case 'look': if (REAL) { c.looked = st.from === 'bottom' ? P.deck.splice(Math.max(0, P.deck.length - st.n)) : P.deck.splice(0, st.n); if (c.looked.length) return ask(s, 'look', { step: R.i }); break; }
+        s.luck = true; break; // the top of the deck is unknown in a puzzle
       case 'koSelf': { const f = findMon(s, c.mon); if (f) { f.m.dmg = 99999; checkKOs(s); } break; }
       case 'selfShuffle': { const f = findMon(s, c.mon); if (!f) break; const m = f.m;
         if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
-        P.deck = P.deck.concat(m.stack, m.energy, m.tool ? [m.tool] : []); break; }
+        P.deck = P.deck.concat(m.stack, m.energy, m.tool ? [m.tool] : []); reshuffle(s, P); break; }
       case 'benchSelf': { const x = take(P.hand, c.handUid); if (!x) break; if (P.bench.length >= benchMax(s, P)) { P.hand.push(x); break; }
         P.bench.push(newMon(s, x, s.cur)); break; }
       case 'boost': if (st.v) s.mods.exvBoost = (s.mods.exvBoost || 0) + st.n; else s.mods.exBoost = (s.mods.exBoost || 0) + st.n; break;
@@ -504,9 +530,14 @@ function go(s) {
       case 'topFromHand': if (!P.hand.length) break; return ask(s, 'topFromHand', { step: R.i });
       // Healing and damage counters on your own Pokemon change nothing in a one-turn puzzle the way the
       // engine reads it (Goldfish applies them). Other own-side damage steps stay unread.
-      case 'heal': if (st.who === 'mega' || st.who === 'one' || st.who === 'bench' || st.who === 'self' || st.who === 'active' || st.who === 'each' || st.who === 'target') break; markUnread(s, c.name + ' (' + st.t + ')'); break;
-      case 'selfDmg': break;
-      default: markUnread(s, c.name + ' (' + st.t + ')');
+      // In a full game (opponent/effects.js) the hooks apply them.
+      case 'heal': case 'selfDmg':
+        if (REAL && HOOKS.step[st.t]) { const r = HOOKS.step[st.t].run(s, st, c, P, O); if (r && (r.length || (r.choices && r.choices.length))) return ask(s, 'hook', { step: R.i, choices: r.choices || r, who: r.who }); break; }
+        if (st.t === 'selfDmg') break;
+        if (st.who === 'mega' || st.who === 'one' || st.who === 'bench' || st.who === 'self' || st.who === 'active' || st.who === 'each' || st.who === 'target') break; markUnread(s, c.name + ' (' + st.t + ')'); break;
+      default:
+        if (REAL && HOOKS.step[st.t]) { const r = HOOKS.step[st.t].run(s, st, c, P, O); if (r && (r.length || (r.choices && r.choices.length))) return ask(s, 'hook', { step: R.i, choices: r.choices || r, who: r.who }); break; }
+        markUnread(s, c.name + ' (' + st.t + ')');
     }
     R.i++;
   }
@@ -552,6 +583,7 @@ function picksFor(pool, spec, maxN, exact) {
  * `why` is filled in only with opts.why (for the UI): then actions that cannot be taken are listed too, with the reason.
  */
 function legalActions(s, opts) {
+  REAL = !!s.real;
   if (s.ended) return [];
   if (s.promote && s.promote.length) {
     const k = s.promote[0];
@@ -595,6 +627,7 @@ function legalActions(s, opts) {
       else if (TP.need) { why = needWhy(s, TP.need, x.uid); if (why === '?') { markUnread(s, c.name); why = 'The engine cannot read its condition.'; } }
       if (!why && TP.cost && P.hand.filter(y => y.uid !== x.uid && T.gfFit(y, TP.cost.F)).length < TP.cost.n) why = 'Needs cards in hand to discard.';
       if (!why) why = targetWhy(s, x, TP.steps);
+      if (!why && REAL) for (const h of HOOKS.trainerWhy) { why = h(s, x, TP) || ''; if (why) break; }
       add({ t: 'trainer', uid: x.uid }, why);
     }
   }
@@ -603,7 +636,8 @@ function legalActions(s, opts) {
   ms.forEach(m => readAbilities(topOf(m)).forEach((A, i) => { if (A.when !== 'passive') add({ t: 'ability', mon: m.id, i }, abilWhy(s, m, A)); }));
   if (P.active && P.bench.length) {
     const cost = retreatCost(s, P.active, s.cur);
-    const why = P.used.retreat ? 'You already retreated this turn.' : cost == null ? 'Retreat Cost unknown.' : P.active.energy.length < cost ? 'Not enough Energy to retreat.' : '';
+    let why = P.used.retreat ? 'You already retreated this turn.' : cost == null ? 'Retreat Cost unknown.' : P.active.energy.length < cost ? 'Not enough Energy to retreat.' : '';
+    if (!why && REAL) for (const h of HOOKS.retreatWhy) { why = h(s, P.active) || ''; if (why) break; }
     if (why) add({ t: 'retreat' }, why);
     else payOptions(P.active.energy, cost).forEach(pay => P.bench.forEach(m => out.push({ t: 'retreat', mon: m.id, pay })));
   }
@@ -639,7 +673,7 @@ function answers(s) {
     case 'attach': attachChoices(s).forEach(pick); pick(null); break;
     case 'cost': picksFor(P.hand.filter(y => y.uid !== (c.card && c.card.uid) && T.gfFit(y, st.F || { any: true })), { alts: [[{ n: st.n, F: st.F || { any: true } }]] }, st.n, st.n).forEach(pick); break;
     case 'search': {
-      const max = Math.min(T.gfMaxOf(st.spec), st.dest === 'bench' ? benchMax(s, P) - P.bench.length : 99);
+      const max = Math.max(0, Math.min(T.gfMaxOf(st.spec), st.dest === 'bench' ? benchMax(s, P) - P.bench.length : 99));
       picksFor(P.deck.filter(y => y.card.cat !== 'hidden' && (s.play || !y.unsure)), st.spec, max).forEach(pick); // the solver can't count on a face-down card
       break;
     }
@@ -647,12 +681,15 @@ function answers(s) {
     case 'topFromHand': { const seen = new Set(); P.hand.forEach(y => { if (seen.has(y.card)) return; seen.add(y.card); pick(y.uid); }); break; }
     case 'splitHand': c.splitPair.forEach(x => pick({ uid: x.uid })); break;
     case 'splitAttach': mons(P).forEach(m => pick(m.id)); break;
+    case 'look': picksFor(c.looked, st.spec, T.gfMaxOf(st.spec)).filter(p => p.length >= (st.min || 0)).forEach(pick); break;
+    case 'hook': A.choices.forEach(pick); break;
   }
   return out;
 }
 
 /* ---------------- Applying actions ---------------- */
 function apply(s0, a) {
+  REAL = !!s0.real;
   const s = clone(s0), P = me(s);
   switch (a.t) {
     case 'promote': { const Q = s.players[a.who]; const i = Q.bench.findIndex(m => m.id === a.mon); Q.active = Q.bench.splice(i, 1)[0]; s.promote.shift(); log(s, monName(Q.active) + ' is now Active'); return s.pending ? go(s) : s; }
@@ -660,7 +697,8 @@ function apply(s0, a) {
     case 'bench': { const x = take(P.hand, a.uid); const m = newMon(s, x, s.cur); m.trig = true; m.benchTurn = s.turn; P.bench.push(m); benchRuins(s, m); log(s, 'Benched ' + x.card.name); return checkKOs(s); }
     case 'evolve': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.stack.push(x); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; log(s, 'Evolved into ' + x.card.name); return s; }
     case 'candy': { const cd = take(P.hand, a.uid), s2 = take(P.hand, a.s2), m = findMon(s, a.mon).m; m.stack.push(s2); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; P.discard.push(cd); log(s, 'Rare Candy: ' + s2.card.name); return s; }
-    case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); return s; }
+    case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + monName(m));
+      if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) return startRun(s, st, { name: x.card.name, mon: m.id }); } return s; }
     case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; if (!passiveKnown(x.card.rtext)) markUnread(s, x.card.name); log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); return s; }
     case 'stadium': { const x = take(P.hand, a.uid); if (s.stadium) s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = { ref: x, owner: s.cur }; P.used.stadium = true;
       const TP = readTrainer(x); if (!TP.once && !passiveKnown(x.card.rtext)) markUnread(s, x.card.name); log(s, 'Played ' + x.card.name); return checkKOs(s); }
@@ -753,15 +791,25 @@ function answer(s, v) {
         P.hand.push(got[0]); c.splitRef = got[1]; R.i = A.step; return ask(s, 'splitAttach', { step: A.step });
       }
       else got.forEach(x => P.hand.push(x));
+      reshuffle(s, P);
       log(s, got.length ? 'Searched for ' + got.map(x => x.card.name).join(', ') : 'Searched and took nothing');
       checkKOs(s); return next();
     }
     case 'splitHand': { const [a, b] = c.splitPair, keep = a.uid === v.uid ? a : b; P.hand.push(keep); c.splitRef = keep === a ? b : a; c.splitPair = null;
       log(s, 'Put ' + keep.card.name + ' into your hand'); R.i = A.step; return ask(s, 'splitAttach', { step: A.step }); }
     case 'splitAttach': { const m = findMon(s, v).m; m.energy.push(c.splitRef); log(s, 'Attached ' + c.splitRef.card.name + ' to ' + monName(m)); c.splitRef = null; return next(); }
-    case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') P.deck = P.deck.concat(got); else got.forEach(x => P.hand.push(x));
+    case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') { P.deck = P.deck.concat(got); reshuffle(s, P); } else got.forEach(x => P.hand.push(x));
       log(s, got.length ? 'Took back ' + got.map(x => x.card.name).join(', ') + (st.dest === 'deck' ? ' into your deck' : '') : 'Took back nothing'); return next(); }
     case 'topFromHand': { const x = take(P.hand, v); P.deck.unshift(x); log(s, 'Put ' + x.card.name + ' on top of your deck'); return next(); }
+    case 'look': {
+      const got = v.map(uid => take(c.looked, uid)), rest = c.looked; c.looked = null;
+      if (st.dest === 'self') { const f = findMon(s, c.mon); got.forEach(x => (f ? f.m.energy : P.discard).push(x)); } else got.forEach(x => P.hand.push(x));
+      if (st.rest === 'discard') rest.forEach(x => P.discard.push(x));
+      else if (st.rest === 'shuffle') { P.deck = P.deck.concat(rest); reshuffle(s, P); }
+      else { if (st.rest === 'shuffleBottom') { const t = { deck: rest }; reshuffle(s, t); } P.deck = P.deck.concat(rest); }
+      log(s, got.length ? 'Took ' + got.map(x => x.card.name).join(', ') : 'Took nothing'); return next();
+    }
+    case 'hook': { const r = HOOKS.step[st.t].answer(s, st, c, v, P, O); if (r && (r.length || (r.choices && r.choices.length))) { R.i = A.step; return ask(s, 'hook', { step: A.step, choices: r.choices || r, who: r.who }); } checkKOs(s); return next(); }
   }
   throw new Error('Unknown choice ' + A.kind);
 }
@@ -770,6 +818,8 @@ function attack(s, i) {
   const R = readAttack(a);
   log(s, monName(att) + ' used ' + a.name);
   if (!R) { markUnread(s, monName(att) + ': ' + a.name); return endTurn(s); }
+  if (REAL && R.partial) log(s, '(Not played: ' + R.partial.join('; ') + ')');
+  if (REAL) { for (const h of HOOKS.preAttack) if (h(s, att, a) === 'fail') { checkKOs(s); return endTurn(s); } if (R.pre) R.pre(s, att); }
   if (R.luck) s.luck = true;
   if (O.active) O.active.dmg += damageTo(s, att, R, O.active, true);
   // "1 (or 2) of your opponent's Benched Pokémon": with that many or fewer on the Bench each one is hit;
@@ -777,7 +827,8 @@ function attack(s, i) {
   const nb = R.bench && R.bench.who !== 'each' ? +R.bench.who : 0, chooseBench = nb > 0 && O.bench.length > nb;
   if (R.bench && !chooseBench) O.bench.forEach(m => { m.dmg += damageTo(s, att, { base: R.bench.n }, m, false); });
   if (R.edisc) { const k = att.energy.filter(e => !R.edisc.type || T.gfEType(e) === R.edisc.type).slice(0, R.edisc.n); k.forEach(e => { take(att.energy, e.uid); P.discard.push(e); }); }
-  if (chooseBench) return startRun(s, [{ t: 'benchHit', n: nb, dmg: R.bench.n }], { name: a.name, mon: att.id, left: nb, done: [], endTurn: true });
+  const fx = (chooseBench ? [{ t: 'benchHit', n: nb, dmg: R.bench.n }] : []).concat(REAL && R.fx ? R.fx : []);
+  if (fx.length && s.gameOver == null) return startRun(s, fx, { name: a.name, mon: att.id, left: nb, done: [], endTurn: true });
   checkKOs(s);
   return endTurn(s);
 }
@@ -853,10 +904,11 @@ function fromPuzzle(pz, opts) {
 function goalMet(s) {
   const g = s.goal || { t: 'prizes' };
   if (s.luck || s.unread.length) return false;
-  if (s.gameOver != null && s.gameOver !== 0) return false; // the opponent won, or Sudden Death
-  if (g.t === 'prizes') return winner(s) === 0;
+  const you = s.real ? s.cur : 0; // a full game (opponent/game.js) asks for whoever is playing the turn
+  if (s.gameOver != null && s.gameOver !== you) return false; // the opponent won, or Sudden Death
+  if (g.t === 'prizes') return winner(s) === you;
   if (g.t === 'koActive') return s.koIds.includes(s.start.oppActive);
-  if (g.t === 'take') return s.taken[0] >= g.n;
+  if (g.t === 'take') return s.taken[you] >= g.n;
   return false;
 }
 /**
@@ -904,7 +956,8 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const api = { needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
+const internals = { clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
