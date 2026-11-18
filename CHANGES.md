@@ -4,7 +4,7 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # RdyDeck 3.3.2 (build 121): fixes from Muse's 3.3.1 re-test, plus the Kingdra ex setup fix (branch fix-3.3.2, not live)
 
-Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version, What's new), js/upgrades.js, js/grade-history.js, js/v29-rotation.js (label scale, Synergy or Power sentence), js/v69-grade-blend.js, js/v31-tcgdex.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (Back button on the deck screen, file stamps, softwareVersion), sw.js (cache prize-trainer-v121) and CHANGES.md.
+Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version, What's new), js/upgrades.js, js/grade-history.js, js/v29-rotation.js (label scale, Synergy or Power sentence), js/v69-grade-blend.js, js/v31-tcgdex.js, js/i18n.js (number form), js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/creator-kit.js, tests/i18n-check.mjs, index.html (Back button on the deck screen, file stamps, softwareVersion), sw.js (cache prize-trainer-v121) and CHANGES.md.
 
 - Gengar: a main attacker that an Ability puts back from the discard pile (Gengar's own Netherworld Gate, or another Pokemon's) is credited: "Gengar comes back" replaces "Only 1 Gengar", and that Ability counts toward the Trainer check's recovery.
 - Kingdra ex (merged from kingdra-setup): a Pokemon played to set up with a cheap attack (King's Order) no longer sets the damage ceiling, and How it plays gets a Setup line.
@@ -16,6 +16,8 @@ Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version
 - The "Reading card data" note ends with the read, whatever screen is open.
 - Card data: a card TCGdex read only from another printing is asked of pokemontcg.io too, and its own printing replaces it (saved Gastly and Haunter showed "?" marks).
 - Translations: "Right now Synergy is what holds it back" is one sentence in every language (es and pt articles, German word order); fr "a remporté ... des 515 matchs"; it "Energia ... di base".
+- Numbers: every language shows numbers in its own form, from Intl (51,8 % and 5 885 in French, 5.885 in German, $78.46 as 78,46 $US). Versions (v3.3.2, License 1.1), dates and card numbers stay as they are. The Creator kit card and its description line use the same form. tests/i18n-check.mjs fails on an English-form number left on any screen.
+- Water Blender (Mason's Nov 17 list): 7.8 to 6.8 from its cards (Power 8.1 to 7.1, Synergy 6.8 the same).
 - Grade check: no grade moved on the 132 real lists.
 
 # RdyDeck 3.3.1 (build 120): fixes from Muse's 3.3 re-test (branch fix-3.3.1, not live)

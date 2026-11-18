@@ -394,7 +394,15 @@ for (const lang of LANGS) {
   const sc = Object.keys(w.rdI18n.scoped).filter(k => names.has(norm(k)));
   console.log(`     scoped words that are also card data (translated only in their own buttons): ${sc.join(', ') || 'none'}`);
   ok(!coll.length, `${Object.keys(dict).length} strings, ${w.rdI18n.pat[lang].length} patterns, no key is a card, attack, set or deck name${coll.length ? ': ' + coll.join(', ') : ''}`);
-  const bad = [], english = [];
+  const bad = [], english = [], engNums = [];
+  let numsSeen = 0;
+  // An English-form number left on screen: 51.8 (a decimal point), 5,885 (comma thousands), or 52%
+  // with no space where the language puts one. Versions (v3.3, License 1.1) are not numbers.
+  const VER = w.eval('I18N_NUM_VER'), pctSpace = /\s/.test(new Intl.NumberFormat(HTML_LANG[lang], { style: 'percent' }).format(0.5));
+  const engForm = v => {
+    for (const m of v.matchAll(/(?<![\w.,$])(\d+\.\d{1,2}|\d{1,3}(?:,\d{3})+)(?![\w]|[.,:]\d)/g)) if (!VER.test(v.slice(Math.max(0, m.index - 9), m.index))) return true;
+    return pctSpace && /\d%/.test(v);
+  };
   let totalLeft = 0, totalKept = 0;
   let openWord = '';
   for (const [name, fn] of SCREENS) {
@@ -403,6 +411,17 @@ for (const lang of LANGS) {
     await tick(60);
     const { left, badCards } = scan(w, roots(d));
     bad.push(...badCards.map(b => name + ': ' + b));
+    // 3.3.2: every number in the language's own form (51,8 % in French), none left as 51.8%.
+    for (const r of roots(d)) {
+      if (!r) continue;
+      const tn = d.createTreeWalker(r, 4);
+      while (tn.nextNode()) {
+        const n = tn.currentNode, v = n.nodeValue, pe = n.parentElement;
+        if (!/\d/.test(v) || !pe || pe.closest(w.rdI18n.skip) || names.has(norm(v))) continue;
+        if (engForm(v)) engNums.push(name + ': ' + v.replace(/\s+/g, ' ').trim().slice(0, 90));
+        else if (/\d,\d|\d\.\d{3}\b|\d[\u00a0\u202f]\d/.test(v)) numsSeen++;
+      }
+    }
     const ui = [...left].filter(([, v]) => !v.keep);
     english.push(...ui.map(([k]) => name + ': ' + k));
     totalLeft += ui.length; totalKept += left.size - ui.length;
@@ -424,6 +443,7 @@ for (const lang of LANGS) {
   }
   ok(openWord === OPEN_WORD[lang], `Ask the odds: Open (the opening hand) reads ${openWord}, not the verb`);
   ok(!english.length, `no English app text left on any of ${SCREENS.length} screens (${totalKept} card data strings kept)` + (english.length ? ':\n       ' + english.slice(0, 40).join('\n       ') + (english.length > 40 ? `\n       and ${english.length - 40} more` : '') : ''));
+  ok(!engNums.length && numsSeen > 0, `every number in ${lang} form (${numsSeen} shown)` + (engNums.length ? ':\n       ' + [...new Set(engNums)].slice(0, 30).join('\n       ') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.
   w.showScreen('home'); w.renderHome(); w.openSettings();

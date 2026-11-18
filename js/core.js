@@ -4271,7 +4271,7 @@ function renderOdds() {
       <div class="ov">${!AT?'?':S.anySearch&&oPct(AT.raw)!==oPct(AT.search)?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(S.anySearch?AT.search:AT.raw)}</div>
       <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?(AT&&oPct(AT.raw)===oPct(AT.search)?', any opening hand, the same from raw draws alone or with your search cards':', any opening hand, from raw draws alone to with your search cards'):', any opening hand, raw draws'):'No attacker line read'}</div></div>
   </div>
-  <div class="o-meta">${S.trials.toLocaleString()} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
+  <div class="o-meta">${S.trials.toLocaleString('en-US')} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
 
   // Notes the user should see before trusting the tiles.
   const notes = [];
@@ -4792,7 +4792,7 @@ function renderHand() {
     <div class="o-tile" style="--tone:${tone(pick.o.s3, 0.7, 0.5)}"><div class="ol">This hand by T3</div><div class="ov">${oPct(pick.o.s3)}</div><div class="os">This opening hand only, with search</div></div>
     <div class="o-tile" style="--tone:${toneBad(pick.o.lock, 0.02, 0.06)}"><div class="ol">Locked in prizes</div><div class="ov">${oPct(pick.o.lock)}</div><div class="os">A piece fully prized</div></div>
   </div>
-  <div class="o-meta">${HAND_TRIALS.toLocaleString()} shuffles of the other ${rest.length} cards for each line. Same hand, same numbers.</div>`;
+  <div class="o-meta">${HAND_TRIALS.toLocaleString('en-US')} shuffles of the other ${rest.length} cards for each line. Same hand, same numbers.</div>`;
 
   const gap = sc(best) - sc(pick);
   const turnW = tH === 3 ? 'third' : 'second';

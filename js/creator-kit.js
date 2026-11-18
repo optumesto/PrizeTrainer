@@ -81,10 +81,12 @@ function ck31Draw(deck, R) {
   let info = { main: '', urls: [] };
   try { if (typeof gs261Info === 'function') info = gs261Info(deck, R); } catch (_) {}
   const art = info.urls && info.urls[0] ? `<img class="ck31-art" src="${esc(info.urls[0])}" alt="" onerror="this.remove()">` : '';
-  const syn = gR1(R.coh.score * 10).toFixed(1), pow = gR1(R.via.score * 10).toFixed(1);
+  // 3.3.2: the numbers in the card's language (8,4 in French); the link carries it as ?lang=.
+  const nf = x => { try { return typeof i18nNums === 'function' && typeof rdI18n !== 'undefined' ? i18nNums(x, rdI18n.lang !== 'en' ? rdI18n.lang : rdI18n.pick()) : x; } catch (_) { return x; } };
+  const syn = nf(gR1(R.coh.score * 10).toFixed(1)), pow = nf(gR1(R.via.score * 10).toFixed(1));
   const inner = `${art}<div class="ck31-main">
       <div class="ck31-name" data-no-tr>${esc(cleanSharedText(deck.name, 60).replace(/\n/g, ' '))}</div>
-      <div class="ck31-row"><span class="ck31-g" data-no-tr>${R.overall.toFixed(1)}</span><span class="ck31-of" data-no-tr>/10</span><span class="ck31-band">${esc(band)}</span></div>
+      <div class="ck31-row"><span class="ck31-g" data-no-tr>${nf(R.overall.toFixed(1))}</span><span class="ck31-of" data-no-tr>/10</span><span class="ck31-band">${esc(band)}</span></div>
       <div class="ck31-row small"><span>Synergy</span> <b data-no-tr>${syn}</b><span class="ck31-sp"></span><span>Power</span> <b data-no-tr>${pow}</b></div>
     </div><div class="ck31-brand"><span>Rdy</span>Deck</div>`;
   const link = CK31 && CK31.embed ? ck31Link(CK31.hash) : '';
@@ -115,7 +117,7 @@ async function ck31Open() {
   const full = base + '?ref=grade' + tail.replace(/^#deck=([^&]*)/, '#deck=$1&g=1');
   const iframe = `<iframe src="${emb}" width="560" height="190" style="border:0;max-width:100%" title="${esc(tr('RdyDeck grade'))}" loading="lazy"></iframe>`;
   const line = tr('{name} grades {grade} out of 10 on RdyDeck: {link}').replace('{name}', () => cleanSharedText(deck.name, 60).replace(/\n/g, ' '))
-    .replace('{grade}', R.overall.toFixed(1)).replace('{link}', () => full);
+    .replace('{grade}', () => typeof rdI18n !== 'undefined' && rdI18n.nums ? rdI18n.nums(R.overall.toFixed(1)) : R.overall.toFixed(1)).replace('{link}', () => full);
   _ck31 = { obs, iframe, line };
   const row = (id, title, hint, val) => `<div class="ck31-k">
       <div class="ck31-kh"><b>${title}</b><button class="btn btn-sm" onclick="ck31Copy('${id}')">${ic23('copy')}Copy</button></div>

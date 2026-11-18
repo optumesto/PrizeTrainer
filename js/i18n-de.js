@@ -1553,7 +1553,7 @@ I18N_MORE.de = {
     [/^Legal now: (\w) mark and later\.$/, 'Jetzt legal: Zeichen $1 und später.'],
     [/^The (\w(?: and \w)*) mark left on (.+?) at events and (.+?) on Live \($/, (m, k, a, b) => (/ and /.test(k) ? 'Die Zeichen ' + k.replace(/ and /g, ' und ') + ' verließen' : 'Das Zeichen ' + k + ' verließ') + ' Events am ' + a + ' und Live am ' + b + ' ('],
     [/^(.+), any opening hand, from raw draws alone to with your search cards$/, '$1, jede Starthand, von reinem Ziehen bis mit deinen Suchkarten'],
-    [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a.replace(/,/g, '.') + ' simulierte Mischungen genau dieser Liste mit ' + b + ' Karten.'],
+    [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a + ' simulierte Mischungen genau dieser Liste mit ' + b + ' Karten.'],
     [/^Chance of at least (\d+) of (.+) by your turn (\d+) \(your first (\d+) cards\)\.$/, (m, a, l, t, f) => 'Chance auf mindestens ' + a + ' von ' + l.replace(/ or ([^,]+)$/, ' oder $1') + ' bis zu deinem Zug ' + t + ' (deine ersten ' + f + ' Karten).'],
     [/^No Basic was read, so mulligans are not taken out\.$/, 'Kein Basis-Pokémon erkannt, daher werden Mulligans nicht abgezogen.'],
     [/^Needs (.+) among your first (\d+) cards\.$/, 'Braucht $1 unter deinen ersten $2 Karten.'],

@@ -2189,7 +2189,7 @@ const I18N_PAT = [
   [/^Legal now: (\w) mark and later\.$/, 'Legal ahora: marca $1 en adelante.', 'Legal agora: marca $1 em diante.'],
   [/^The (\w(?: and \w)*) mark left on (.+?) at events and (.+?) on Live \($/, (m, k, a, b) => 'La marca ' + k.replace(' and ', ' y ') + ' salió el ' + a + ' en los eventos y el ' + b + ' en Live (', (m, k, a, b) => 'A marca ' + k.replace(' and ', ' e ') + ' saiu em ' + a + ' nos eventos e em ' + b + ' no Live ('],
   [/^(.+), any opening hand, from raw draws alone to with your search cards$/, '$1, cualquier mano inicial, de solo robos puros a con tus cartas de búsqueda', '$1, qualquer mão inicial, de só compras puras a com suas cartas de busca'],
-  [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a.replace(/,/g, '.') + ' mezclas simuladas de esta lista exacta de ' + b + ' cartas.', (m, a, b) => a.replace(/,/g, '.') + ' embaralhamentos simulados desta lista exata de ' + b + ' cartas.'],
+  [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a + ' mezclas simuladas de esta lista exacta de ' + b + ' cartas.', (m, a, b) => a + ' embaralhamentos simulados desta lista exata de ' + b + ' cartas.'],
   [/^Chance of at least (\d+) of (.+) by your turn (\d+) \(your first (\d+) cards\)\.$/, (m, a, l, t, f) => 'Probabilidad de al menos ' + a + ' de ' + l.replace(/ or ([^,]+)$/, ' o $1') + ' para tu turno ' + t + ' (tus primeras ' + f + ' cartas).', (m, a, l, t, f) => 'Chance de pelo menos ' + a + ' de ' + l.replace(/ or ([^,]+)$/, ' ou $1') + ' até o seu turno ' + t + ' (suas primeiras ' + f + ' cartas).'],
   [/^No Basic was read, so mulligans are not taken out\.$/, 'No se leyó ningún Básico, así que no se descuentan los mulligans.', 'Nenhum Básico foi lido, então os mulligans não são descontados.'],
   [/^Needs (.+) among your first (\d+) cards\.$/, 'Necesita $1 entre tus primeras $2 cartas.', 'Precisa de $1 entre suas primeiras $2 cartas.'],
@@ -5125,6 +5125,33 @@ Object.assign(I18N_PT, {
   "Top two fixes": "As duas principais correções",
 });
 
+// 3.3.2: numbers in the language's own form, from Intl (51,8 % in French, 5.885 in German).
+// Only what reads as an English number is touched: a decimal (8.4), a count with commas (5,885),
+// a share (52%) or a dollar price ($78.46). Versions (v3.3, License 1.1), dates and card numbers stay.
+const I18N_NUM_FMT = {};
+function i18nNumFmt(loc, o) {
+  const k = loc + JSON.stringify(o);
+  return I18N_NUM_FMT[k] || (I18N_NUM_FMT[k] = new Intl.NumberFormat(loc, o));
+}
+const I18N_NUM_RE = /(?<![\w.,$])(\$)?(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+(?=\s?%))(?![0-9A-Za-wyz_]|[.,:]\d)(\s?%)?/g;
+const I18N_NUM_VER = /(?:\bv|License |[Vv]ersion |RdyDeck |Trainer |Muse |Android |iOS |Chrome )$/;
+function i18nNums(s, l) {
+  const loc = I18N_HTML_LANG[l];
+  if (!s || l === 'en' || !loc || !/\d/.test(s) || typeof Intl !== 'object') return s;
+  try {
+    return String(s).replace(I18N_NUM_RE, (m, usd, n, pct, at, all) => {
+      if (I18N_NUM_VER.test(all.slice(Math.max(0, at - 9), at))) return m;
+      if (usd && pct) return m;
+      const dot = n.indexOf('.'), dec = dot < 0 ? 0 : n.length - dot - 1, v = +n.replace(/,/g, '');
+      if (!isFinite(v)) return m;
+      const o = { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: n.indexOf(',') > 0 };
+      if (usd) return dec === 2 ? i18nNumFmt(loc, Object.assign(o, { style: 'currency', currency: 'USD' })).format(v) : m;
+      if (pct) return i18nNumFmt(loc, Object.assign(o, { style: 'percent' })).format(v / 100);
+      return i18nNumFmt(loc, o).format(v);
+    });
+  } catch (_) { return s; }
+}
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
@@ -5251,9 +5278,10 @@ const rdI18n = (function () {
   function t(s) {
     if (cur === 'en' || s == null) return s;
     const r = lookup(s);
-    if (r == null) return s;
+    // 3.3.2: a card or deck name keeps its own numbers.
+    if (r == null) return isCard(norm(s)) ? s : i18nNums(s, cur);
     const m = String(s).match(/^(\s*)[\s\S]*?(\s*)$/);
-    return m[1] + r + m[2];
+    return m[1] + i18nNums(r, cur) + m[2];
   }
 
   function scoped(v, el) {
@@ -5379,7 +5407,7 @@ const rdI18n = (function () {
     return s;
   }
 
-  return { set, t, lookup, orig, walk, get lang() { return cur; }, get ready() { return ready; }, add, pick, norm, dict: DICT, pat: PAT, scoped: I18N_SCOPED, cardNames, addCardNames, skip: I18N_SKIP };
+  return { set, t, lookup, orig, nums: s => i18nNums(s, cur), walk, get lang() { return cur; }, get ready() { return ready; }, add, pick, norm, dict: DICT, pat: PAT, scoped: I18N_SCOPED, cardNames, addCardNames, skip: I18N_SKIP };
 })();
 
 // Dialogs the app opens with confirm() and alert() say the same in the player's language.

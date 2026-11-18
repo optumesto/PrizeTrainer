@@ -1540,7 +1540,7 @@ I18N_MORE.it = {
     [/^Legal now: (\w) mark and later\.$/, "Valide ora: simbolo $1 e successivi."],
     [/^The (\w(?: and \w)*) mark left on (.+?) at events and (.+?) on Live \($/, (m, k, a, b) => 'Il simbolo ' + k.replace(/ and /g, ' e ') + ' è uscito dagli eventi ' + itI18nDay('il', a) + ' e da Pokémon TCG Live ' + itI18nDay('il', b) + ' ('],
     [/^(.+), any opening hand, from raw draws alone to with your search cards$/, "$1, qualsiasi mano iniziale, dalle sole pescate all'uso delle carte di ricerca"],
-    [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a.replace(/,/g, '.') + ' mescolamenti simulati di questa esatta lista da ' + b + ' carte.'],
+    [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a + ' mescolamenti simulati di questa esatta lista da ' + b + ' carte.'],
     [/^Chance of at least (\d+) of (.+) by your turn (\d+) \(your first (\d+) cards\)\.$/, (m, a, l, t, f) => 'Probabilità di almeno ' + a + ' tra ' + l.replace(/ or ([^,]+)$/, ' o $1') + ' entro il tuo turno ' + t + ' (le tue prime ' + f + ' carte).'],
     [/^No Basic was read, so mulligans are not taken out\.$/, "Nessun Pokémon Base letto, quindi i mulligan non vengono esclusi."],
     [/^Needs (.+) among your first (\d+) cards\.$/, "Richiede $1 tra le tue prime $2 carte."],
@@ -2069,7 +2069,7 @@ I18N_MORE.it.gt = (function () {
   const own = w => String(w).replace(/'s$/, '');
   const MU = { Even: 'Pari', Favored: 'Favorito', Unfavored: 'Sfavorito', 'Leans favored': 'Lieve vantaggio', 'Leans unfavored': 'Lieve svantaggio', 'Too few games': 'Poche partite' };
   // 1,076 as 1.076, the Italian thousands mark.
-  const th = n => String(n).replace(/,(?=\d{3}\b)/g, '.');
+  const th = n => String(n);   // 3.3.2: rdI18n puts every number in Italian form
   const games = n => `${th(n)} ${n1(n) ? 'partita' : 'partite'}`, matches = n => `${th(n)} ${n1(n) ? 'incontro' : 'incontri'}`;
   const TURN = t => t === 2 ? 'secondo' : 'terzo';
   // "needs another attached", "it has to be powered up again".

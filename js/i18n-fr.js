@@ -34,7 +34,7 @@ function frI18nDate(s) {
 /** A sentence that ends on a date: one full stop, even after an abbreviated month ("6 nov."). */
 function frI18nDot(s) { return /\.$/.test(s) ? s : s + '.'; }
 /** 1,597 as 1 597 (a no-break space): in French a comma is the decimal mark, so 1,597 would read as 1.597. */
-function frI18nNum(n) { return String(n).replace(/(\d),(?=\d{3}(?!\d))/g, '$1\u00a0'); }
+function frI18nNum(n) { return String(n); }   // 3.3.2: rdI18n puts every number in French form
 /** The puzzle streak words: "3 wins in a row, 4 days in a row". */
 function frI18nRuns(s) {
   return s.replace(/(\d+) wins in a row/g, (m, n) => n + (n === '1' ? " victoire d'affilée" : " victoires d'affilée"))
