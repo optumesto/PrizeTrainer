@@ -144,6 +144,8 @@ I18N_MORE.it = {
     "Added: in-app dialogs": "Nuovo: finestre di dialogo integrate",
     "Added: fold sections": "Nuovo: sezioni comprimibili",
     "Added: 6 deck guides": "Nuovo: 6 guide ai mazzi",
+    "Added: 5 deck guides": "Nuovo: 5 guide ai mazzi",
+    "Added: creator kit guide": "Nuovo: guida al kit per creator",
     "Added: first deck guide": "Nuovo: guida per costruire il tuo primo mazzo",
     "Text follows your phone's text size": "Il testo segue la dimensione del testo del telefono",
     "Fixed: naming a pasted deck": "Corretto: dare un nome a un mazzo incollato",

@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.4 (build 123): 5 deck guides, creator kit guide, shorter titles (18 Nov 2026)
+
+Changed files: deck-guides.json, 5 new deck-*.html, creator-kit.html (from .github/pages/creator-kit.html), build-pages.mjs (rules page title), prize-trainer.html, rulings.html, meta-decks.html and the deck and card pages that now link the new guides, sitemap.xml, llms.txt, js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (version), sw.js (cache name).
+
+- Deck guides for the five most played decks since Delta Reign that had none: Talonflame Dusknoir, Lopunny Dudunsparce, Mega Lucario, Rocket's Honchkrow and Greninja. Each card claim is read from card text; lists, records and grades come from the tournament data and the grade baseline.
+- creator-kit.html: how to put the live grade card in OBS (browser source, 560 by 190) and embed it on a site, with the link shapes.
+- Titles under 60 characters for the Prize Trainer and Rules pages.
+- The GitHub copy already serves noindex on every page (since 3.2); no change there.
+- Grade check: no grade moved.
+
 # RdyDeck 3.3.3 (build 122): fixes from Muse's 3.3.2 re-test, numbers, photo deck import and TCG Live copy (18 Nov 2026)
 
 Changed files: js/core.js, js/upgrades.js, js/grade-history.js, js/v29-rotation.js, js/v31-tcgdex.js, js/v40-audit-fixes.js, js/v69-grade-blend.js, js/v71-audit-fixes.js, js/v80-extras.js, js/card-details.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/extras-check.mjs, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.

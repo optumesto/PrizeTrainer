@@ -149,6 +149,8 @@ I18N_MORE.fr = {
     "Added: in-app dialogs": "Nouveau : boîtes de dialogue intégrées",
     "Added: fold sections": "Nouveau : sections repliables",
     "Added: 6 deck guides": "Nouveau : 6 guides de decks",
+    "Added: 5 deck guides": "Nouveau : 5 guides de decks",
+    "Added: creator kit guide": "Nouveau : guide du kit créateur",
     "Added: first deck guide": "Nouveau : guide pour construire son premier deck",
     "Text follows your phone's text size": "Le texte suit la taille du texte de votre téléphone",
     "Fixed: naming a pasted deck": "Corrigé : nommer un deck collé",
