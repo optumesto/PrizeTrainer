@@ -1358,6 +1358,7 @@ I18N_MORE.de = {
     'Load one to start practicing right away, then edit it to match your own build.': 'Lade eine, um sofort zu üben, und passe sie dann an deine eigene Version an.',
     // 3.3.6: De-bling.
     "Added: De-bling button": "Neu: Schaltfläche Günstiger",
+    "Rare Candy bug fixed": "Fehler bei Rare Candy behoben",
     "De-bling": "Günstiger",
     "Undo de-bling": "Günstiger rückgängig",
     "Swap each card to its cheapest printing that plays the same": "Ersetzt jede Karte durch ihren günstigsten Druck, der gleich spielt",

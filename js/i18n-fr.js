@@ -1352,6 +1352,7 @@ I18N_MORE.fr = {
     "Changed: a grade flag sent offline goes when you are back online": "Changé : un signalement de note envoyé hors ligne part à votre retour en ligne",
     // 3.3.6: De-bling.
     "Added: De-bling button": "Nouveau : bouton Moins cher",
+    "Rare Candy bug fixed": "Bug de Rare Candy corrigé",
     "De-bling": "Moins cher",
     "Undo de-bling": "Annuler Moins cher",
     "Swap each card to its cheapest printing that plays the same": "Remplace chaque carte par son impression la moins chère qui joue pareil",

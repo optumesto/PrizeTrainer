@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.3.7 (build 126): Rare Candy bug fixed (18 Nov 2026)
+
+Changed files: js/core.js (Rare Candy line lookup, version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (version), sw.js (cache name), puzzle/tools/make-daily.mjs, tests/rare-candy-check.cjs (new).
+
+- Goldfish and the Turn 1 line: Rare Candy now finds the Basic under a Stage 2 whose Stage 1 is not in the list (Blaziken ex onto Torchic with no Combusken). It uses the Basic read with the card, else the card data's Stage 1 (Combusken evolves from Torchic). Before, it only found it through a Stage 1 in the list or a shared start of the name.
+- Every Stage 2 in the Standard card data (175) resolves to its Basic this way.
+- Puzzle maker: a Stage 2 with no Stage 1 in its list takes its Basic from any printing of that Stage 1. No shipped puzzle changes.
+- Grade check: no grade moved. Rare Candy check: Blaziken ex onto Torchic, Dragapult ex onto Dreepy and Alakazam onto Abra.
+
 # RdyDeck 3.3.6 (build 125): De-bling button (18 Nov 2026)
 
 Changed files: js/debling.js (new), prints.json (new), build-cards.mjs (writes prints.json), .github/workflows/refresh-data.yml (refreshes prints.json weekly), index.html (styles, script tag, version), js/core.js (version, What's new), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name, prints.json), tests/debling-check.mjs (new).

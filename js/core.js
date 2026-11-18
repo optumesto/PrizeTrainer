@@ -3793,7 +3793,7 @@ function simGroups(cards) {
     if (!g) {
       g = byKey[key] = { key, name:c.name, qty:0, read:false, basic:false,
                          draw:false, drawT1:false, candy:false, sBasic:false, sAny:false, sItem:false,
-                         stage:null, from:null };
+                         stage:null, from:null, base:null };
       groups.push(g);
     }
     g.qty += c.count;
@@ -3812,6 +3812,8 @@ function simGroups(cards) {
     if ((c.provides||[]).includes('search_item')) g.sItem = true;
     if (c.stage && !g.stage) g.stage = c.stage;
     if (c.evolvesFrom && !g.from) g.from = String(c.evolvesFrom).toLowerCase();
+    // 3.3.7: the Basic a Stage 2 starts from, read with the card, so Rare Candy knows it with no Stage 1 in the list.
+    if (c.base && !g.base) g.base = String(c.base).toLowerCase();
   });
   return groups;
 }
@@ -4543,6 +4545,13 @@ function handLineFor(groups, i) {
   line.s1 = g.from ? idx(g.from) : -1;
   const s1g = line.s1 >= 0 ? groups[line.s1] : null;
   line.basic = s1g && s1g.from ? idx(s1g.from) : -1;
+  // 3.3.7: no Stage 1 in the list (Blaziken ex with Rare Candy only): the Basic read with the card,
+  // else the one the saved list of Standard cards gives for its Stage 1 (Combusken evolves from Torchic).
+  if (line.s1 < 0 && line.basic < 0 && g.base) line.basic = idx(g.base);
+  if (line.s1 < 0 && line.basic < 0 && g.from && typeof r273From === 'function') {
+    const b = String(r273From(g.from) || '').toLowerCase();
+    if (b) line.basic = idx(b);
+  }
   if (line.s1 < 0 && line.basic < 0) {
     // No Stage 1 in the list (Pidgeot ex with Rare Candy only), so card data
     // cannot say which Basic it grows from. Take the one Basic whose name
@@ -8483,23 +8492,22 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.3.6',
+  version: 'v3.3.7',
   date: 'Nov 18, 2026',
   kind: 'small',
   items: [
-    { t: 'Added: De-bling button' }
+    { t: 'Rare Candy bug fixed' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.3.6', date: 'Nov 18, 2026', kind: 'small', items: [
+    { t: 'Added: De-bling button' }
+  ] },
   { version: 'v3.3.5', date: 'Nov 18, 2026', kind: 'small', items: [
     { t: 'Large text layout fixed' },
     { t: 'Landscape layout fixed' }
-  ] },
-  { version: 'v3.3.4', date: 'Nov 18, 2026', kind: 'small', items: [
-    { t: 'Added: 5 deck guides' },
-    { t: 'Added: creator kit guide' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11435,7 +11443,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.3.6';
+const PT_VERSION = 'v3.3.7';
 const PT_BUILD = 125;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.

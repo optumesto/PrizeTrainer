@@ -52,7 +52,8 @@ const lists = JSON.parse(readFileSync(join(root, 'tests', 'grade-lists.json'), '
 const CARD = {}; // key -> engine card
 function engineCard(r, recs) {
   if (CARD[r.id]) return CARD[r.id];
-  const c = E.cardFromApi(r, { base: n => { const s1 = recs.find(x => x.name === n); return s1 ? s1.evolvesFrom : null; } });
+  // The Basic behind a Stage 2: its Stage 1 in this list, else any printing of that Stage 1 (Metagross with no Metang in the list).
+  const c = E.cardFromApi(r, { base: n => { const s1 = recs.find(x => x.name === n) || (byName[n] || []).find(x => x.evolvesFrom); return s1 ? s1.evolvesFrom : null; } });
   return (CARD[r.id] = c);
 }
 const decks = [];

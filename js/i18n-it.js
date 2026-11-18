@@ -1347,6 +1347,7 @@ I18N_MORE.it = {
     "Changed: a grade flag sent offline goes when you are back online": "Modificato: una segnalazione di voto inviata offline parte quando torni online",
     // 3.3.6: De-bling.
     "Added: De-bling button": "Nuovo: pulsante Risparmia",
+    "Rare Candy bug fixed": "Bug di Rare Candy corretto",
     "De-bling": "Risparmia",
     "Undo de-bling": "Annulla Risparmia",
     "Swap each card to its cheapest printing that plays the same": "Sostituisce ogni carta con la sua stampa più economica che gioca allo stesso modo",

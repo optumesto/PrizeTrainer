@@ -1070,6 +1070,7 @@ const I18N_ES = {
   "The grade checks the rest when you save.": "La calificación revisa el resto cuando guardas.",
   // 3.3.6: De-bling.
   "Added: De-bling button": "Nuevo: botón Abaratar",
+  "Rare Candy bug fixed": "Error de Rare Candy corregido",
   "De-bling": "Abaratar",
   "Undo de-bling": "Deshacer Abaratar",
   "Swap each card to its cheapest printing that plays the same": "Cambia cada carta por su impresión más barata que juega igual",
@@ -2118,6 +2119,7 @@ const I18N_PT = {
   "The grade checks the rest when you save.": "A nota confere o resto quando você salva.",
   // 3.3.6: De-bling.
   "Added: De-bling button": "Novo: botão Baratear",
+  "Rare Candy bug fixed": "Erro do Rare Candy corrigido",
   "De-bling": "Baratear",
   "Undo de-bling": "Desfazer Baratear",
   "Swap each card to its cheapest printing that plays the same": "Troca cada carta pela impressão mais barata que joga igual",
