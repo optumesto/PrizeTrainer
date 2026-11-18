@@ -1,0 +1,45 @@
+<!-- {"file":"creator-kit.html","title":"Pokémon TCG Deck Grade for OBS and Websites | RdyDeck","desc":"Put a live RdyDeck grade card on your stream as an OBS browser source, or embed it on your site. The exact links, the card size and an example.","updated":"2026-11-18","kicker":"Creator kit","h1":"Show a deck grade on stream or on your site","faq":true} -->
+<style>.ck-code { display:block; overflow-x:auto; white-space:pre; padding:0.7rem 0.8rem; border:1px solid var(--line); font-family:ui-monospace, Menlo, Consolas, monospace; font-size:0.875rem; }</style>
+<p class="lead">RdyDeck's Creator kit gives you a live grade card for any deck: the deck's name, its grade out of 10, its Synergy and Power, and the RdyDeck name. Add it to OBS as a browser source for your stream, or embed it on a website. It is free and needs no account.</p>
+<p>The card grades the list again each time it loads, and every hour while it stays open, so it follows the newest tournament results. It never shows an ad, and nothing it reads is saved as a deck.</p>
+<div class="cta-row"><a class="cta" href="./">Open RdyDeck</a></div>
+
+<h2>Get your links</h2>
+<ol>
+  <li>Open <a href="./">RdyDeck</a> and paste or build the deck you want to show.</li>
+  <li>Grade the deck, then tap <strong>Share grade</strong> under its grade.</li>
+  <li>Tap <strong>Creator kit: stream card and embed</strong>. It shows three things, each with a Copy button: an OBS browser source link, an embed code for a website, and a line for a video description.</li>
+</ol>
+<p>Each link carries the deck in the part after <strong>#deck=</strong>, so the card needs nothing saved on your computer. If you use RdyDeck in another language, the links carry it too, so the card shows in that language.</p>
+
+<h2>Add the card to OBS</h2>
+<ol>
+  <li>In OBS, add a new source and pick <strong>Browser</strong>.</li>
+  <li>Paste the OBS browser source link from the Creator kit as its URL.</li>
+  <li>Set the width to <strong>560</strong> and the height to <strong>190</strong>.</li>
+  <li>Place the card where you want it. Its background is see-through, so only the card shows over your scene.</li>
+</ol>
+<p>The OBS link always has this shape, with your own deck code in place of YOUR-DECK-CODE:</p>
+<code class="ck-code">https://rdydeck.com/?overlay=1#deck=YOUR-DECK-CODE</code>
+
+<h2>Embed the card on a website</h2>
+<p>Paste the embed code from the Creator kit where your site or blog takes HTML. Tapping the card opens the deck's full grade in RdyDeck in a new tab. The embed code looks like this:</p>
+<code class="ck-code">&lt;iframe src="https://rdydeck.com/?overlay=1&amp;embed=1#deck=YOUR-DECK-CODE" width="560" height="190" style="border:0;max-width:100%" title="RdyDeck grade" loading="lazy"&gt;&lt;/iframe&gt;</code>
+<p>Only the grade card can be embedded this way. The rest of RdyDeck opens in its own tab.</p>
+
+<h2>Put the grade in a video description</h2>
+<p>The third thing in the Creator kit is one line with the deck's name, its grade and a link that opens the list in RdyDeck, in this shape:</p>
+<code class="ck-code">DECK NAME grades GRADE out of 10 on RdyDeck: LINK</code>
+
+<h2>Questions</h2>
+<dl>
+  <dt>Does the grade on stream change?</dt>
+  <dd>Yes. The card grades the list again each time it loads and every hour, so it follows the newest tournament results the same way the grade in the app does.</dd>
+  <dt>Will an ad show on my stream?</dt>
+  <dd>No. The grade card never loads an ad.</dd>
+  <dt>Does it cost anything?</dt>
+  <dd>No. RdyDeck is free, with no account and no paid tier.</dd>
+</dl>
+
+<p>To see what the grade reads before you show it, read <a href="deck-grader.html">how the deck checker works</a> and <a href="how-grading-works.html">how grading works</a>.</p>
+<div class="cta-row"><a class="cta" href="./">Grade a deck</a></div>
