@@ -5127,13 +5127,13 @@ Object.assign(I18N_PT, {
 
 // 3.3.2: numbers in the language's own form, from Intl (51,8 % in French, 5.885 in German).
 // Only what reads as an English number is touched: a decimal (8.4), a count with commas (5,885),
-// a share (52%) or a dollar price ($78.46). Versions (v3.3, License 1.1), dates and card numbers stay.
+// a share (52%), a count of 1000 or more (3023, 3.3.3) or a dollar price ($78.46). Versions (v3.3, License 1.1), dates and card numbers stay.
 const I18N_NUM_FMT = {};
 function i18nNumFmt(loc, o) {
   const k = loc + JSON.stringify(o);
   return I18N_NUM_FMT[k] || (I18N_NUM_FMT[k] = new Intl.NumberFormat(loc, o));
 }
-const I18N_NUM_RE = /(?<![\w.,$])(\$)?(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+(?=\s?%))(?![0-9A-Za-wyz_]|[.,:]\d)(\s?%)?/g;
+const I18N_NUM_RE = /(?<![\w.,$])(\$)?(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+(?=\s?%)|[1-9]\d{3,})(?![0-9A-Za-wyz_]|[.,:]\d)(\s?%)?/g;
 const I18N_NUM_VER = /(?:\bv|License |[Vv]ersion |RdyDeck |Trainer |Muse |Android |iOS |Chrome )$/;
 function i18nNums(s, l) {
   const loc = I18N_HTML_LANG[l];
@@ -5142,9 +5142,12 @@ function i18nNums(s, l) {
     return String(s).replace(I18N_NUM_RE, (m, usd, n, pct, at, all) => {
       if (I18N_NUM_VER.test(all.slice(Math.max(0, at - 9), at))) return m;
       if (usd && pct) return m;
+      // 3.3.3: a count the English writes with no comma (3023 wins) is grouped too, as 3 023 in
+      // French. A year (1990 to 2099) and a build or puzzle number stay as they are.
+      if (!usd && !pct && /^\d+$/.test(n) && (/^(?:199\d|20\d\d)$/.test(n) || /(?:build |#|n°|nº|No\. |Nr\. )$/i.test(all.slice(Math.max(0, at - 7), at)))) return m;
       const dot = n.indexOf('.'), dec = dot < 0 ? 0 : n.length - dot - 1, v = +n.replace(/,/g, '');
       if (!isFinite(v)) return m;
-      const o = { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: n.indexOf(',') > 0 };
+      const o = { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: n.indexOf(',') > 0 || (n.indexOf('.') < 0 && n.length > 3) };
       if (usd) return dec === 2 ? i18nNumFmt(loc, Object.assign(o, { style: 'currency', currency: 'USD' })).format(v) : m;
       if (pct) return i18nNumFmt(loc, Object.assign(o, { style: 'percent' })).format(v / 100);
       return i18nNumFmt(loc, o).format(v);

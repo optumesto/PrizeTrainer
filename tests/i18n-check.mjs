@@ -398,10 +398,13 @@ for (const lang of LANGS) {
   let numsSeen = 0;
   // An English-form number left on screen: 51.8 (a decimal point), 5,885 (comma thousands), or 52%
   // with no space where the language puts one. Versions (v3.3, License 1.1) are not numbers.
-  const VER = w.eval('I18N_NUM_VER'), pctSpace = /\s/.test(new Intl.NumberFormat(HTML_LANG[lang], { style: 'percent' }).format(0.5));
+  const VER = w.eval('I18N_NUM_VER'), group4 = /\D/.test(new Intl.NumberFormat(HTML_LANG[lang]).format(3023)), pctSpace = /\s/.test(new Intl.NumberFormat(HTML_LANG[lang], { style: 'percent' }).format(0.5));
   const engForm = v => {
     for (const m of v.matchAll(/(?<![\w.,$])(\d+\.\d{1,2}|\d{1,3}(?:,\d{3})+)(?![\w]|[.,:]\d)/g)) if (!VER.test(v.slice(Math.max(0, m.index - 9), m.index))) return true;
-    return pctSpace && /\d%/.test(v);
+    if (pctSpace && /\d%/.test(v)) return true;
+    // 3.3.3: a count of 1000 or more with no grouping (3023 wins). Years (1990 to 2099) stay.
+    for (const m of v.matchAll(group4 ? /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{4,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g : /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{5,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g)) if (!/^(19[9]\d|20\d\d)$/.test(m[0]) && !VER.test(v.slice(Math.max(0, m.index - 9), m.index)) && !/(?:build |n°|nº|Nr\. |n\. )$/i.test(v.slice(Math.max(0, m.index - 7), m.index))) return true;
+    return false;
   };
   let totalLeft = 0, totalKept = 0;
   let openWord = '';

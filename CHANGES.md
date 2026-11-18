@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# Next release (branch fix-3.3.3, not live, no version number yet)
+
+Changed files: js/i18n.js, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.
+
+- Numbers: a count the English writes with no comma (3023 wins, 1147 lists, 1022 players) is grouped in the player's language too: 3 023 in French, 3.023 in German, Portuguese and Italian. Spanish keeps four digit numbers as they are, as Spanish style does. Years (1990 to 2099), build numbers and puzzle numbers stay.
+- tests/i18n-check.mjs fails on a count of 1000 or more left without grouping, in each language that groups it.
+
 # RdyDeck 3.3.2 (build 121): fixes from Muse's 3.3.1 re-test, plus the Kingdra ex setup fix (branch fix-3.3.2, not live)
 
 Changed files: js/core.js (Gengar recovery, reading note, setup attacks, version, What's new), js/upgrades.js, js/grade-history.js, js/v29-rotation.js (label scale, Synergy or Power sentence), js/v69-grade-blend.js, js/v31-tcgdex.js, js/i18n.js (number form), js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/creator-kit.js, tests/i18n-check.mjs, index.html (Back button on the deck screen, file stamps, softwareVersion), sw.js (cache prize-trainer-v121) and CHANGES.md.
