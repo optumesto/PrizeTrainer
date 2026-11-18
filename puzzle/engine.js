@@ -43,6 +43,9 @@ const T = makeText({
   gfKind: x => x.card.kind || 'item',
   cn23: s => String(s || ''),
 });
+// Card text is split into sentences over and over while a board is read; the result never changes.
+{ const split = T.gfSentences, memo = new Map();
+  T.gfSentences = t => { const k = String(t || ''); let r = memo.get(k); if (!r) { if (memo.size > 20000) memo.clear(); r = split(t); memo.set(k, r); } return r.slice(); }; }
 
 // Full games (the AI opponent, opponent/game.js) read and run more than a one-turn puzzle: both
 // players' hands, healing, coins, looks at the deck, real Prize cards. What they add comes in through
@@ -201,8 +204,9 @@ function passiveKnown(text) {
   if (!t) return true;
   return Object.values(PASSIVE).some(r => r.test(t)) || NO_EFFECT_NOW.some(r => r.test(t)) || (REAL && HOOKS.passive.some(r => r.test(t)));
 }
-function ptext(ref) { return ref ? T.gfSentences(ref.card.rtext || '').join('. ') : ''; }
-function abilTexts(m) { return readAbilities(topOf(m)).map(a => ({ name: a.name, t: T.gfSentences(a.text).join('. ') })); }
+const _ptext = new WeakMap(), _abilT = new WeakMap();
+function ptext(ref) { if (!ref) return ''; let r = _ptext.get(ref.card); if (r == null) { r = T.gfSentences(ref.card.rtext || '').join('. '); _ptext.set(ref.card, r); } return r; }
+function abilTexts(m) { const top = topOf(m); let r = _abilT.get(top.card); if (!r) { r = readAbilities(top).map(a => ({ name: a.name, t: T.gfSentences(a.text).join('. ') })); _abilT.set(top.card, r); } return r; }
 
 /* ---------------- Board rules ---------------- */
 function toolOn(s, m) { if (!m.tool) return null; if (s.stadium && PASSIVE.jamming.test(ptext(s.stadium.ref))) return null; return m.tool; }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#131210">
+<title>Practice opponent | RdyDeck</title>
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<style>
+  @font-face { font-family:'Saira'; src:url('/saira.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  :root { color-scheme:dark; --bg:#131210; --panel:#1a1814; --line:#2c2924; --text:#ede8de; --mute:#bdb6a9; --red:#e5483a; --amber:#f4b62b; }
+  html, body { margin:0; background:var(--bg); color:var(--text); font-family:'Saira', system-ui, sans-serif; }
+  body { padding:16px; max-width:640px; margin:0 auto; box-sizing:border-box; }
+  h1 { font-size:1.25rem; margin:0 0 12px; } h1 .r { color:var(--red); }
+  .menu label { display:block; margin:0 0 12px; color:var(--mute); font-size:.9rem; }
+  .menu select { display:block; width:100%; margin-top:4px; min-height:44px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; padding:0 10px; font:inherit; }
+  .note, .line, .piles, .meta { color:var(--mute); font-size:.85rem; line-height:1.45; }
+  .turn { font-size:.85rem; color:var(--mute); margin-bottom:10px; }
+  .side { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px; margin-bottom:10px; }
+  .side.opp { border-left:3px solid var(--red); } .side.me { border-left:3px solid var(--text); }
+  .sh { display:flex; justify-content:space-between; font-weight:700; margin-bottom:6px; } .pr { color:var(--amber); font-weight:600; font-size:.9rem; }
+  .zl { font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--mute); margin:8px 0 4px; } .zl span { float:right; }
+  .mon { padding:6px 0; border-top:1px solid var(--line); } .mon.act .mn b { color:var(--text); font-size:1.05rem; }
+  .mn { display:flex; gap:8px; align-items:baseline; } .pv { font-size:.75rem; color:var(--amber); }
+  .hp { font-size:.85rem; display:flex; align-items:center; gap:8px; }
+  .bar { display:inline-block; width:90px; height:6px; background:#2c2924; border-radius:3px; overflow:hidden; } .bar i { display:block; height:100%; background:#7fb36a; } .bar.low i { background:var(--red); }
+  .bad { color:var(--red); } .empty { color:var(--mute); font-size:.85rem; }
+  .hand { margin:4px 0 12px; } .chip { display:inline-block; background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:3px 8px; margin:0 6px 6px 0; font-size:.85rem; }
+  .acts { margin-bottom:14px; } .q { font-weight:700; margin:6px 0 8px; } .gt { font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--mute); margin:10px 0 4px; }
+  .btns { display:flex; flex-wrap:wrap; gap:6px; }
+  .btn { min-height:44px; padding:0 14px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; font:inherit; font-size:.9rem; cursor:pointer; text-align:left; }
+  .btn.primary { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:600; } .btn.ghost { background:transparent; }
+  details { margin-top:10px; color:var(--mute); font-size:.85rem; } summary { cursor:pointer; min-height:32px; }
+  details li b { color:var(--text); font-weight:600; } .log ol { padding-left:20px; max-height:260px; overflow:auto; }
+  .oppturn ol, .result { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px 10px 30px; }
+  .result { padding:12px; } .oppturn .btn { margin-top:10px; }
+</style>
+</head>
+<body>
+<h1><span class="r">Rdy</span>Deck practice opponent</h1>
+<div id="app"></div>
+<script src="../puzzle/text.js"></script>
+<script src="../puzzle/engine.js"></script>
+<script src="game.js"></script>
+<script src="effects.js"></script>
+<script src="ai.js"></script>
+<script src="decks.js"></script>
+<script src="play.js"></script>
+</body>
+</html>

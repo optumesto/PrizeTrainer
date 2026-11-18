@@ -23,7 +23,7 @@ const I = E.internals, T = E.T, mons = E.mons, topOf = E.topOf;
 
 const LEVELS = {
   easy: { name: 'Easy' },
-  contested: { name: 'Contested', width: 3, depth: 14, ms: 120, noise: 90 },
+  contested: { name: 'Contested', width: 4, depth: 16, ms: 150, noise: 90 },
   aggressive: { name: 'Aggressive', width: 14, depth: 40, ms: 700, noise: 0 },
 };
 
@@ -34,8 +34,10 @@ function view(s0, k, rnd) {
   const s = I.clone(s0);
   s.log = []; s.rng = rnd; s.unread = [];
   const P = s.players[k], O = s.players[1 - k];
-  const mine = G.shuffle(P.deck.concat(P.prizes), rnd);
-  P.deck = mine.slice(0, P.deck.length); P.prizes = mine.slice(P.deck.length);
+  // While k is searching or looking through the deck, k can see what is in it (not its order).
+  const ask = s.pending && s.pending.ask, open = !!ask && /^(search|look)$/.test(ask.kind) && (ask.who != null ? ask.who : s.pending.who != null ? s.pending.who : s.cur) === k;
+  if (open) G.shuffle(P.deck, rnd);
+  else { const mine = G.shuffle(P.deck.concat(P.prizes), rnd); P.deck = mine.slice(0, P.deck.length); P.prizes = mine.slice(P.deck.length); }
   const theirs = G.shuffle(O.hand.concat(O.deck, O.prizes), rnd);
   O.hand = theirs.slice(0, O.hand.length); O.deck = theirs.slice(O.hand.length, O.hand.length + O.deck.length); O.prizes = theirs.slice(O.hand.length + O.deck.length);
   return s;
@@ -226,6 +228,7 @@ function plan(s0, k, L, rnd, opts) {
     try { const s2 = G.step(node.s, end); finish({ s: s2, line: node.line.concat([end]), sigs: node.sigs.concat([sig(s2, k)]) }); } catch (e) { /* skip */ }
   };
   for (let depth = 0; depth < L.depth && beam.length; depth++) {
+    const width = depth === 0 ? 1e9 : L.width; // every first move gets looked at
     const next = [];
     for (const node of beam) {
       const X = G.next(node.s);
@@ -244,7 +247,7 @@ function plan(s0, k, L, rnd, opts) {
       if (out()) break;
     }
     next.sort((a, b) => b.score - a.score);
-    beam = next.slice(0, L.width);
+    beam = next.slice(0, width);
     if (out()) break;
   }
   beam.forEach(endNow); // lines still open when depth or time ran out
@@ -281,7 +284,15 @@ Player.prototype.choose = function (s, k, opts) {
   const first = P.line[0] && X.actions.find(b => same(P.line[0], b));
   // Keep the rest of the line while the board looks the way the plan expected after each step.
   this.cache = first ? { line: P.line.slice(1), at: P.sigs[0], sigs: P.sigs.slice(1) } : null;
-  return first || X.actions.find(b => b.t === 'end') || X.actions[0];
+  return first || this.greedy(s, k, X);
+};
+
+/** One step ahead, on what k can see: for a choice the plan didn't foresee. */
+Player.prototype.greedy = function (s, k, X) {
+  const v = view(s, k, this.rnd);
+  let best = null, bv = -Infinity;
+  for (const a of X.actions) { let x; try { x = value(settle(G.step(v, a), k), k); } catch (e) { continue; } if (x > bv) { bv = x; best = a; } }
+  return best || X.actions.find(b => b.t === 'end') || X.actions[0];
 };
 
 /** Opening setup for player k: the Active and Bench. */
