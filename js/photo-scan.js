@@ -397,36 +397,6 @@
     // Reading order: rows, then left to right.
     boxes.sort((a, b) => (Math.abs(a.y - b.y) < ch * 0.4 ? a.x - b.x : a.y - b.y));
     const f = s.f, full = { px, W, H, bg: y => m.bg(y / f), cut: m.cut };
-    // Rows again at full size, each row on its own: a row step a little off, or a count badge
-    // hanging under the cards, would otherwise move later rows off their cards. A row's top and
-    // bottom are where most of its width changes between background and card.
-    if (boxes.length) {
-      const CW = cw * f, CH = ch * f;
-      const colX = [...new Set(boxes.map(b => Math.round(b.x * f)))];
-      const fgAt = (x, y) => {
-        const i = (y * W + x) * 4, c = m.bg(y / f);
-        return Math.abs(px[i] - c[0]) + Math.abs(px[i + 1] - c[1]) + Math.abs(px[i + 2] - c[2]) > m.cut;
-      };
-      const E0 = new Float32Array(H), E = new Float32Array(H);
-      for (const x0 of colX) for (let x = Math.max(0, Math.round(x0 + CW * 0.06)); x < Math.min(W, x0 + CW * 0.94); x += 3) {
-        let prev = fgAt(x, 0);
-        for (let y = 1; y < H; y++) { const v = fgAt(x, y); if (v !== prev) E0[y]++; prev = v; }
-      }
-      for (let y = 0; y < H; y++) E[y] = Math.max(E0[y], E0[y - 1] || 0, E0[y + 1] || 0);
-      const rowYs = [];
-      for (const b of boxes) if (!rowYs.some(r => Math.abs(r - b.y) < ch * 0.4)) rowYs.push(b.y);
-      const moved = new Map();
-      for (const ry of rowYs) {
-        const Y = ry * f;
-        let bo = 0, bs = -1;
-        for (let o = -Math.round(CH * 0.25); o <= CH * 0.25; o++) {
-          const sc = (E[Math.round(Y + o)] || 0) + (E[Math.round(Y + o + CH)] || 0) - Math.abs(o) * 0.02;
-          if (sc > bs) { bs = sc; bo = o; }
-        }
-        moved.set(ry, bo / f);
-      }
-      for (const b of boxes) for (const [ry, d] of moved) if (Math.abs(ry - b.y) < ch * 0.4) { b.y = ry + d; break; }
-    }
     return {
       cards: boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
       cardW: cw * f, cardH: ch * f,
@@ -676,8 +646,41 @@
    * The whole read: card boxes, best matches and counts.
    * Returns [{ box, matches: [{ name, set, num, s }], count, countSure, sure }].
    */
+  /** The best score any print reaches for box r (no shifting). */
+  function bestScore(idx, px, W, H, r) {
+    const q = query(feat(px, W, H, r));
+    let b = -9;
+    for (let i = 0; i < idx.n; i++) { const v = scoreOne(idx, q.qy, q.qc, i); if (v > b) b = v; }
+    return b;
+  }
+  /**
+   * Each row of cards moved up or down to where its pictures match cards best. A count badge
+   * under the cards, a header above them or a row step a little off can leave a row's boxes a
+   * tenth of a card low or high, and the art then matches nothing. The art itself says where
+   * the cards are: a card's own picture scores about 1, a box half on the gap far less.
+   */
+  function placeRows(idx, px, W, H, cards) {
+    if (!cards.length) return cards;
+    const ch = cards[0].h, rows = [];
+    for (const b of cards) {
+      const r = rows.find(r => Math.abs(r.y - b.y) < ch * 0.4);
+      if (r) r.b.push(b); else rows.push({ y: b.y, b: [b] });
+    }
+    for (const r of rows) {
+      // a few cards spread along the row are enough to place it
+      const pick = r.b.length <= 3 ? r.b : [r.b[0], r.b[r.b.length >> 1], r.b[r.b.length - 1]];
+      const at = dy => pick.reduce((a, b) => a + bestScore(idx, px, W, H, { x: b.x, y: Math.max(0, Math.min(H - b.h, b.y + dy)), w: b.w, h: b.h }), 0) / pick.length;
+      let best = 0, bs = at(0);
+      for (let k = -8; k <= 8; k++) { if (!k) continue; const dy = k * 0.03 * ch, v = at(dy); if (v > bs + 0.01) { bs = v; best = dy; } }
+      let fine = best;
+      for (const d of [-0.015, -0.0075, 0.0075, 0.015]) { const dy = best + d * ch, v = at(dy); if (v > bs) { bs = v; fine = dy; } }
+      if (fine) for (const b of r.b) b.y = Math.max(0, Math.min(H - b.h, b.y + fine));
+    }
+    return cards;
+  }
+
   function readDeck(idx, px, W, H) {
-    const { cards } = findCards(px, W, H);
+    const cards = placeRows(idx, px, W, H, findCards(px, W, H).cards);
     const counts = readCounts(px, W, H, cards);
     return cards.map((box, k) => {
       const ms = matchBox(idx, px, W, H, box, 6).map(c => {
