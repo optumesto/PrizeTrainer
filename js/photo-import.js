@@ -132,8 +132,12 @@
       const got = PS.mergeRows(PS.readDeck(IDX, img.px, img.W, img.H));
       found = got.filter(r => r.matches.length).map(r => {
         const m = r.matches[0];
-        return { name: m.name, set: m.set, num: m.num, count: Math.max(1, Math.min(60, r.count || 1)),
-          nameOk: r.sure >= SURE_NAME, countOk: r.count != null && r.countSure >= SURE_COUNT,
+        let n = r.count, nOk = n != null && r.countSure >= SURE_COUNT;
+        // Only basic Energy can run more than 4. A two digit count on any other card is a stray
+        // mark read next to the real count ("41" for 1), so keep its last digit and ask.
+        if (n > 4 && !/^(Basic )?\w+ Energy$/.test(m.name) && kindOf(m.name) !== 'E') { n = n >= 10 ? n % 10 || 1 : n; nOk = false; }
+        return { name: m.name, set: m.set, num: m.num, count: Math.max(1, Math.min(60, n || 1)),
+          nameOk: r.sure >= SURE_NAME, countOk: nOk,
           alts: r.matches.slice(1, 5), img: thumb(img.cv, r.box) };
       });
     } catch (_) {
