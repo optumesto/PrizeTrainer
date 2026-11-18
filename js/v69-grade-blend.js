@@ -154,17 +154,22 @@ function g88Set(j) {
       if (!d || typeof d.id !== 'string' || !Array.isArray(d.cards) || !(d.tops >= G88_TOPS)) continue;
       // Average copies when run, times the share of top lists that run it, summed over the Energy.
       let n = 0;
-      const core = [];
+      const core = [], run = {};
       for (const c of d.cards) {
         if (!Array.isArray(c) || !(c[6] > 0)) continue;
         if (c[3] === 'E') { if (c[5] > 0) n += c[5] * c[6]; continue; }
         if (!Array.isArray(c[7])) continue;
+        // 3.2.8: the copies a quarter or more of all top lists run, for the "most top lists run" claims (g88Claims).
+        const hs = c[7].filter(h => Array.isArray(h) && h[0] > 0), nm = String(c[0]).toLowerCase();
+        let ks = hs.filter(h => c[6] * (+h[1] || 0) >= 0.25).map(h => +h[0]);
+        if (!ks.length && hs.length) ks = [+hs.slice().sort((a, b) => b[1] - a[1])[0][0]];
+        if (!run[nm] || run[nm][0] < c[6]) run[nm] = [Math.round(c[6] * 100) / 100, ks.sort((a, b) => a - b)];
         // The share of all top lists that run at least k copies, for k from 1 to 4.
         let k0 = 0;
         for (let k = 1; k <= 4; k++) if (c[6] * c[7].reduce((a, h) => a + (Array.isArray(h) && h[0] >= k ? +h[1] || 0 : 0), 0) >= G88_CORE) k0 = k;
         if (k0) core.push([String(c[0]), k0]);
       }
-      if (n > 0 || core.length) e[d.id] = [Math.round(n * 10) / 10, d.tops, core];
+      if (n > 0 || core.length) e[d.id] = [Math.round(n * 10) / 10, d.tops, core, run];
     }
   }
   if (!e || typeof e !== 'object' || Object.keys(e).length < 5) return false;
@@ -183,6 +188,30 @@ function g88Load() {
     .then(j => { const was = g88Data && g88Data.asOf; if (j && g88Set(j)) { safeLocalSet(G88_KEY, JSON.stringify(g88Data)); if (was !== g88Data.asOf) mu60Rerender(); } })
     .catch(() => {})
     .finally(() => { clearTimeout(t); g88Busy = false; g88Tried = true; if (typeof g71Redraw === 'function') g71Redraw(); });
+}
+/** 3.2.8 (Muse s5 M3): a "most lists run" claim comes from the deck's own archetype's top lists. A finding
+ *  marked with cl (the card's name n, and the copies q this list runs) keeps its claim only when most of those
+ *  lists run more copies. It goes when they run the same or fewer, and its claim goes when the archetype does
+ *  not run the card or no archetype matches, so the grade never says what winning lists run without the data. */
+function g88Claims(deck, ctx, lists) {
+  let x = null, arch = '';
+  try {
+    if (g88Data && deck && deck.format !== 'expanded' && deck.format !== 'prerelease' && typeof mu60Data !== 'undefined' && mu60Data) {
+      const m = g68Arch(deck, mu60Data, ctx), e = m && m.deck && g88Data.e[m.deck.id];
+      if ((m.pick || m.score >= G88_MATCH) && Array.isArray(e) && e[3] && typeof e[3] === 'object') { x = e[3]; arch = m.deck.name; }
+    }
+  } catch (_) { x = null; }
+  for (const fs of lists) {
+    if (!Array.isArray(fs)) continue;
+    for (let i = fs.length - 1; i >= 0; i--) {
+      const f = fs[i];
+      if (!f || !f.cl) continue;
+      const r = x && x[String(f.cl.n).toLowerCase()], ks = Array.isArray(r) && r[0] >= 0.5 && Array.isArray(r[1]) ? r[1] : [];
+      if (ks.length && Math.max(...ks) <= f.cl.q) { fs.splice(i, 1); continue; }
+      if (ks.length) f.d += ` Most top ${arch} lists run ${ks.length === 1 ? ks[0] : ks.length === 2 ? ks[0] + ' or ' + ks[1] : ks[0] + ' to ' + ks[ks.length - 1]}.`;
+      delete f.cl;
+    }
+  }
 }
 /** 2.7.3: an Item that searches the deck for Basic Energy into the hand, without attaching it. */
 function g273ESearch(c) {

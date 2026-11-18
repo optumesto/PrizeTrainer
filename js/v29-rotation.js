@@ -168,7 +168,7 @@ function r29Summary(deck) {
   const link = s => `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a>`;
   let h = `<div class="g-sec" id="r29-sec"><div class="g-sec-t">Rotation</div>
     <div class="r29-head"><span class="r29-tag ${ann ? 'ann' : 'exp'}">${ann ? 'Announced' : 'Expected'}</span>
-      <span><b>${marks} mark</b> cards ${ann ? 'leave' : 'are expected to leave'} Standard in <b>${N.when}</b>${ann ? '' : ', not announced yet'}.</span></div>
+      <span><b>${marks} mark cards</b> ${ann ? 'leave' : 'are expected to leave'} Standard in <b>${N.when}</b>${ann ? '' : ', not announced yet'}.</span></div>
     <div class="r29-src">${ann ? `Source: ${link(N.src)}.` : `Pokémon has not announced it yet (${link(N.src)}). ${marks} is next by the yearly pattern: ${N.pattern}.`}
       Legal now: ${ROT29.firstLegal} mark and later. The ${ROT29.last.marks.join(' and ')} mark left on ${ROT29.last.events} at events and ${ROT29.last.live} on Live (${link(ROT29.last.src)}). Checked ${ROT29.asOf}.</div>`;
   if (!ann && N.checkBy && Date.now() > Date.parse(N.checkBy)) h += `<div class="g-item warn"><div class="gt">This may be out of date</div>

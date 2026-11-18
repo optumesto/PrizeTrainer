@@ -4,7 +4,7 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # Muse section 1 grade fixes (branch muse-s1-fixes, not numbered yet: give it the next number at release, after 3.2.8 if that goes first)
 
-Changed files: js/core.js, js/tcg-enrich.js, js/v69-grade-blend.js, js/v45-sample-share-daily.js, js/v29-rotation.js, js/creator-kit.js, js/upgrades.js, js/grade-flag.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/matchups.js, index.html (file stamps), tests/grade-baseline.json and CHANGES.md. Version, sw.js cache and What's new are left for the release.
+Changed files: js/core.js, js/tcg-enrich.js, js/v69-grade-blend.js, js/v45-sample-share-daily.js, js/v29-rotation.js, js/creator-kit.js, js/upgrades.js, js/grade-flag.js, js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/matchups.js, js/report-errors.js, js/v28-ask-odds.js, tests/i18n-check.mjs, tests/grade-builds.json, index.html (file stamps), tests/grade-baseline.json and CHANGES.md. Version, sw.js cache and What's new are left for the release.
 
 - Cinderace and other Pokemon with a setup Ability (put it face down in the Active Spot when setting up) count as reachable without their Basic. Credit scales with the odds it is in the opening hand (G_SETUP_FULL in core.js gives full credit instead). A thin line gets a "rarely reaches the board" warning with the odds.
 - Support Pokemon (Basic Pokemon with a draw, search or switch Ability, and others kept for an Ability) are not picked as the main attacker and no longer set the damage ceiling or the one-prize note. Their damage is mentioned at half weight (G_SUP_SHARE), and the 3-prize finding says to use them and move them out.
@@ -20,6 +20,16 @@ Changed files: js/core.js, js/tcg-enrich.js, js/v69-grade-blend.js, js/v45-sampl
 - Muse section 4 M10: when the grade borrows results from a different archetype than the one built around the main attacker, the grade sentence says so, and Against the meta opens on the archetype the grade uses.
 - Muse section 4 L3: the main attacker note says why it is main (the list plays the most of its line, or the deck is named for it).
 - The damage finding's detail text (hits for, HP threats take N hits, prize race lines, toolbox, spread and blend lines) is now translated in every language. It was English in every language before.
+- Muse section 6 M1: the Grade tab sentences are translated by pattern (finds, Gets back, setup, role and Trainer job lines, thin lines, readiness), and i18n-check imports a second, messier list (Mega Excadrill at one copy) and checks its Grade and Cards tabs. 0 English strings left over 69 screens in es, pt, de, fr and it.
+- Muse section 6 M2: Abilities that were left in English (Flip the Script and the others the check found) are read and translated.
+- Muse section 6 M9: aria-labels and the "or" joiner in the Odds rows are translated; the Rotation line reads "N mark cards leave Standard".
+- Muse section 6 clear items (M3 to M8, M10, L1 to L11): the remaining English bits it named are translated or reworded.
+- Puzzle buttons (Bench, Evolve, Rare Candy, Attach, Energy to a Pokemon, Retreat, Switch in, Bring up, Take nothing, the Active and Bench labels) and the deck builder's card facts line (stage, HP, Trainer kind, ACE SPEC) are translated in every language. Card, attack and Ability names stay English.
+- The starter deck lines and the data date line are translated when the app uses the copy built into this version (offline), not only the weekly copy.
+- Muse section 5 M3: "Most lists run 2 to 4" style claims come from the archetype's own top lists ("Most top Toxtricity lists run 1"), and say nothing when that archetype runs as many copies as the list or does not run the card. Toxtricity's "Only 1 Mega Absol ex" warning is gone because its top lists run 1. tests/grade-builds.json carries the per-archetype copy counts.
+- Muse section 5 M1: Upgrades never disappears without a word. It says why when it can't suggest swaps (deck rules, legality, card data not loaded) and shows a retry line if working them out fails; the failure goes to the error report (rdReportError). Toxtricity shows one swap (Night Stretcher to Buddy-Buddy Poffin) in tests; the live 9.0 vs test 8.4 gap points at live data, so the fix is the safe line plus the report.
+- Muse section 5 M4: the Hand tab's readiness line counts Energy. A hand with every Pokemon but no Energy for the attack says so instead of "Every piece is in your hand."
+- No grade moves from sections 5 and 6: grade check passed (132 of 132 lists).
 
 # RdyDeck 3.2.7 (build 117): dollar prices, offline starter decks, swipe, folds, phone text size, landscape, in-app dialogs, Muse audit of 3.2.6, grades wait for card data, Expanded revivers (17 Nov 2026)
 

@@ -271,7 +271,7 @@ function olSectionHTML(deck) {
         <div class="seg ol-k" role="group" aria-label="How many">${[1, 2, 3, 4].map(k => `<div class="mode-opt${r.k === k ? ' active' : ''}${k > (each ? minQ : tot) ? ' ol-dis' : ''}" data-k="${k}" onclick="olSetK(${i},${k})">${k}</div>`).join('')}</div>
         <span class="ol-of">${each ? 'of each' : 'of'}</span></div>
       <div class="ol-line"><button class="ol-names" onclick="olOpenPick(${i})" aria-label="Change cards">${names.length ? names.map(n => `<span class="ol-chip">${esc(n)}</span>`).join(names.length > 1 ? `<span class="ol-or">${word}</span>` : '') : '<span class="ol-ph">Pick cards</span>'}<span class="ol-tot">${tot} in list</span></button>
-        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove ${esc(names.length ? names.join(' ' + word + ' ') : 'this row')}" title="Remove">${ic23('x')}</button></div>
+        <button class="icon-btn sm ol-del" onclick="olDelRow(${i})" aria-label="Remove ${esc(names.length ? (names.length > 1 ? names.slice(0, -1).join(', ') + ' ' + word + ' ' + names[names.length - 1] : names[0]) : 'this row')}" title="Remove">${ic23('x')}</button></div>
     </div>`;
   });
   h += `</div>`;

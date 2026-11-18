@@ -246,6 +246,12 @@ function up75Html(res, hasFix) {
   const head = n => `<details class="g-sec g29-fold" id="up75-sec"${n ? ' open' : ''}><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
   if (!res || res.busy) return head(0) + `<div class="g-sec-i">Checking which card swaps raise this grade.</div></details>`;
   if (res.why === 'offline') return head(0) + `<div class="g-sec-i">Upgrades need a connection the first time, to read the cards to try.</div></details>`;
+  // 3.2.8 (Muse s5 M1): the section stays, with a line saying why there is nothing to try, so Upgrades is never
+  // missing without a word. Only a format Upgrades does not cover (Expanded, prerelease, the daily list) hides it.
+  if (res.why === 'rules') return head(0) + `<div class="g-sec-i">Upgrades show once the list follows the deck rules. Fix first says what to change.</div></details>`;
+  if (res.why === 'legal') return head(0) + `<div class="g-sec-i">Upgrades show once every card in the list is Standard legal.</div></details>`;
+  if (res.why === 'data') return head(0) + `<div class="g-sec-i">Upgrades show once the card data for this list has loaded.</div></details>`;
+  if (res.why === 'error') return head(0) + `<div class="g-sec-i">Upgrades could not be worked out for this list just now. Open the deck again to retry.</div></details>`;
   if (res.why && res.why !== 'none') return '';
   if (res.why === 'none' || !res.swaps.length) return head(0) + `<div class="g-sec-i">No single swap raises this grade${res.arch ? ` with the cards ${esc(res.arch)} top lists run` : ''}.${hasFix ? ' What Fix first lists needs more than one card changed.' : ''}</div></details>`;
   const g = (a, b) => `${a.toFixed(1)} to ${b.toFixed(1)}`;
@@ -275,26 +281,36 @@ function up75Html(res, hasFix) {
     if (after) after.insertAdjacentHTML('afterend', html);
   };
   const fixed = el => !!el.querySelector('#g29-fix .g-sec-t');   // 2.5.2: Fix first lists a problem
+  // 3.2.8 (Muse s5 M1): a throw while finding or drawing Upgrades is reported and leaves a line, not a gap.
+  const html = (res, hasFix) => {
+    try { return up75Html(res, hasFix); }
+    catch (e) { if (typeof rdReportError === 'function') rdReportError(e, 'upgrades html'); return up75Html({ why: 'error' }); }
+  };
   const _rg = renderGrade;
   renderGrade = function () {
     const r = _rg.apply(this, arguments);
     try {
       const el = document.getElementById('grade-body');
-      const deck = state.decks.find(d => d.id === state.activeDeckId);
+      const deck = state.decks.find(d => String(d.id) === String(state.activeDeckId));
       if (!el || !deck || !el.querySelector('#g29-fix')) return r;   // still grading, or no grade
       if (typeof g71Wait === 'function' && g71Wait(deck)) return r;
       const sig = up75Sig(deck), hit = _up75Cache.get(deck.id);
-      if (hit && hit.sig === sig) { place(el, up75Html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
+      if (hit && hit.sig === sig) { place(el, html(hit.busy ? { busy: true } : hit.res, fixed(el))); return r; }
       _up75Cache.set(deck.id, { sig, busy: true });
-      place(el, up75Html({ busy: true }));
+      place(el, html({ busy: true }));
       up75Find(deck).then(res => {
         const h = _up75Cache.get(deck.id);
         if (!h || h.sig !== sig) return;
         _up75Cache.set(deck.id, { sig, res });
         const live = document.getElementById('grade-body');
-        if (live && state.activeDeckId === deck.id && live.querySelector('#g29-fix')) place(live, up75Html(res, fixed(live)));
-      }).catch(() => { _up75Cache.delete(deck.id); const live = document.getElementById('grade-body'); if (live) place(live, ''); });
-    } catch (_) {}
+        if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html(res, fixed(live)));
+      }).catch(e => {
+        if (typeof rdReportError === 'function') rdReportError(e, 'upgrades');
+        _up75Cache.delete(deck.id);
+        const live = document.getElementById('grade-body');
+        if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html({ why: 'error' }));
+      });
+    } catch (e) { if (typeof rdReportError === 'function') rdReportError(e, 'upgrades place'); }
     return r;
   };
 })();
