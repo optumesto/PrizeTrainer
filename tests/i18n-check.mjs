@@ -403,7 +403,7 @@ for (const lang of LANGS) {
     for (const m of v.matchAll(/(?<![\w.,$])(\d+\.\d{1,2}|\d{1,3}(?:,\d{3})+)(?![\w]|[.,:]\d)/g)) if (!VER.test(v.slice(Math.max(0, m.index - 9), m.index))) return true;
     if (pctSpace && /\d%/.test(v)) return true;
     // 3.3.3: a count of 1000 or more with no grouping (3023 wins). Years (1990 to 2099) stay.
-    for (const m of v.matchAll(group4 ? /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{4,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g : /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{5,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g)) if (!/^(19[9]\d|20\d\d)$/.test(m[0]) && !VER.test(v.slice(Math.max(0, m.index - 9), m.index)) && !/(?:build |n°|nº|Nr\. |n\. )$/i.test(v.slice(Math.max(0, m.index - 7), m.index))) return true;
+    for (const m of v.matchAll(group4 ? /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{4,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g : /(?<![\w.,:\/#$\u00a0\u202f-]|\d[\u00a0\u202f])\d{5,}(?![\w.,:\/]?\d|[\u00a0\u202f]\d)/g)) if (!w.i18nIsYear(m[0], v.slice(0, m.index), v.slice(m.index + m[0].length), lang) && !VER.test(v.slice(Math.max(0, m.index - 9), m.index)) && !/(?:build |n°|nº|Nr\. |n\. )$/i.test(v.slice(Math.max(0, m.index - 7), m.index))) return true;
     return false;
   };
   let totalLeft = 0, totalKept = 0;
@@ -446,6 +446,15 @@ for (const lang of LANGS) {
   }
   ok(openWord === OPEN_WORD[lang], `Ask the odds: Open (the opening hand) reads ${openWord}, not the verb`);
   ok(!english.length, `no English app text left on any of ${SCREENS.length} screens (${totalKept} card data strings kept)` + (english.length ? ':\n       ' + english.slice(0, 40).join('\n       ') + (english.length > 40 ? `\n       and ${english.length - 40} more` : '') : ''));
+  // 3.3.3: a count is grouped by what it is, not its size: 2045 games is a count, April 2027 a year.
+  {
+    const want = new Intl.NumberFormat(HTML_LANG[lang]).format(2045), y = w.i18nNums;
+    const mon = (w.eval('I18N_MON')[lang] || (w.i18nMore(lang) || {}).mon)[3];   // April in the language
+    const cases = [[y('2045 x', lang), want + ' x'], [y('51.4% / 2045 x', lang).endsWith(want + ' x'), true], [y(mon + ' 2027', lang), mon + ' 2027'],
+      [y('16 Nov 2026', lang), '16 Nov 2026'], [y('Nov 16, 2026', lang), 'Nov 16, 2026'], [y('11/12/2026', lang), '11/12/2026'], [y('E 2024, F 2025', lang), 'E 2024, F 2025'], [y('build 1210', lang), 'build 1210']];
+    const badCase = cases.filter(([a, b]) => a !== b);
+    ok(!badCase.length, `2045 games reads ${y('2045', lang)} games, years stay years` + (badCase.length ? ': ' + badCase.map(c => JSON.stringify(c)).join(' ') : ''));
+  }
   ok(!engNums.length && numsSeen > 0, `every number in ${lang} form (${numsSeen} shown)` + (engNums.length ? ':\n       ' + [...new Set(engNums)].slice(0, 30).join('\n       ') : ''));
   ok(!bad.length, 'no card or deck name changed' + (bad.length ? ': ' + [...new Set(bad)].slice(0, 20).join('; ') : ''));
   // Back to English: nothing translated stays.

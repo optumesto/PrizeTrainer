@@ -5135,6 +5135,23 @@ function i18nNumFmt(loc, o) {
 }
 const I18N_NUM_RE = /(?<![\w.,$])(\$)?(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+\.\d+|\d+(?=\s?%)|[1-9]\d{3,})(?![0-9A-Za-wyz_]|[.,:]\d)(\s?%)?/g;
 const I18N_NUM_VER = /(?:\bv|License |[Vv]ersion |RdyDeck |Trainer |Muse |Android |iOS |Chrome )$/;
+/** Whether a four digit number, with the text before and after it, is a year rather than a count. */
+const I18N_YEAR_MON = {};
+function i18nIsYear(n, before, after, l) {
+  if (!/^\d{4}$/.test(n) || +n < 1900 || +n > 2199) return false;
+  let mon = I18N_YEAR_MON[l];
+  if (!mon) {
+    const x = i18nMore(l) || {}, words = [].concat(I18N_MONTHS, I18N_MONTHS.map(m => m.slice(0, 3)), I18N_MON[l] || [], I18N_MON3[l] || [], x.mon || [], x.mon3 || []);
+    const alt = [...new Set(words.filter(Boolean).map(w => String(w).replace(/\.$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))].sort((a, b) => b.length - a.length).join('|');
+    mon = I18N_YEAR_MON[l] = new RegExp(`(?:^|[^\\p{L}])(?:${alt})\\.?,?\\s+(?:(?:de|of)\\s+|\\d{1,2}(?:st|nd|rd|th)?,?\\s+)?$`, 'iu');
+  }
+  if (mon.test(before)) return true;                                    // 16 nov. 2026, April 2027, noviembre de 2026, Nov 16, 2026
+  if (/(?:^|[^\p{L}])[A-I]\s+(?:(?:en|in|em|nel|im)\s+)?$/u.test(before)) return true;   // regulation mark E 2024, E en 2024
+  if (/[©(]\s*$/.test(before)) return true;                             // (2025), © 2026
+  // in 2026, depuis 2025, seit 2024: a year when nothing it counts follows.
+  return /(?:^|[^\p{L}])(?:in|en|em|im|nel|dal|desde|depuis|since|seit|ab|from|du|until|bis|au|hasta|até|al|fino al)\s+$/iu.test(before)
+    && /^(?:\s*(?:[,.;:)!?]|$)|\s+(?:and|et|und|y|e|o|or|ou|oder)\b)/u.test(after);
+}
 function i18nNums(s, l) {
   const loc = I18N_HTML_LANG[l];
   if (!s || l === 'en' || !loc || !/\d/.test(s) || typeof Intl !== 'object') return s;
@@ -5142,12 +5159,13 @@ function i18nNums(s, l) {
     return String(s).replace(I18N_NUM_RE, (m, usd, n, pct, at, all) => {
       if (I18N_NUM_VER.test(all.slice(Math.max(0, at - 9), at))) return m;
       if (usd && pct) return m;
-      // 3.3.3: a count the English writes with no comma (3023 wins) is grouped too, as 3 023 in
-      // French. A year (1990 to 2099) and a build or puzzle number stay as they are.
-      if (!usd && !pct && /^\d+$/.test(n) && (/^(?:199\d|20\d\d)$/.test(n) || /(?:build |#|n°|nº|No\. |Nr\. )$/i.test(all.slice(Math.max(0, at - 7), at)))) return m;
+      // 3.3.3: a count the English writes with no comma (3023 wins, 2045 games) is grouped too,
+      // as 3 023 in French. What the number is decides, not its size: a year (after a month, a
+      // regulation mark or "in", "since" and the like), a build or a puzzle number stays.
+      if (!usd && !pct && /^\d+$/.test(n) && (/[\/-]$/.test(all.slice(0, at)) || /^[\/-]\d/.test(all.slice(at + m.length)) || /(?:build |#|n°|nº|No\. |Nr\. )$/i.test(all.slice(Math.max(0, at - 7), at)) || i18nIsYear(n, all.slice(0, at), all.slice(at + m.length), l))) return m;
       const dot = n.indexOf('.'), dec = dot < 0 ? 0 : n.length - dot - 1, v = +n.replace(/,/g, '');
       if (!isFinite(v)) return m;
-      const o = { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: n.indexOf(',') > 0 || (n.indexOf('.') < 0 && n.length > 3) };
+      const o = { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: n.indexOf(',') > 0 || (n.indexOf('.') < 0 && n.length > 3) ? 'auto' : false };   // auto: the language's own rule (Spanish leaves 2045 as is)
       if (usd) return dec === 2 ? i18nNumFmt(loc, Object.assign(o, { style: 'currency', currency: 'USD' })).format(v) : m;
       if (pct) return i18nNumFmt(loc, Object.assign(o, { style: 'percent' })).format(v / 100);
       return i18nNumFmt(loc, o).format(v);

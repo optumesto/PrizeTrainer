@@ -6,8 +6,9 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 Changed files: js/i18n.js, tests/i18n-check.mjs, index.html (file stamps) and CHANGES.md.
 
-- Numbers: a count the English writes with no comma (3023 wins, 1147 lists, 1022 players) is grouped in the player's language too: 3 023 in French, 3.023 in German, Portuguese and Italian. Spanish keeps four digit numbers as they are, as Spanish style does. Years (1990 to 2099), build numbers and puzzle numbers stay.
-- tests/i18n-check.mjs fails on a count of 1000 or more left without grouping, in each language that groups it.
+- Numbers: a count the English writes with no comma (3023 wins, 2045 games, 1022 players) is grouped in the player's language too: 3 023 in French, 3.023 in German and Portuguese. Spanish and Italian group from five digits, as their own rule (Intl) does, so 2045 stays and 12.045 is grouped; 5,885 in English now reads 5885 there too.
+- What a number is decides, not its size: a year (after a month or a date, a regulation mark like E 2024, or "in 2026" with nothing counted after it), a date like 11/12/2026, a build or a puzzle number stays as it is.
+- tests/i18n-check.mjs fails on a count of 1000 or more left without grouping in a language that groups it, and checks that 2045 games is grouped while April 2027, Nov 16, 2026, 11/12/2026 and E 2024 stay.
 
 # RdyDeck 3.3.2 (build 121): fixes from Muse's 3.3.1 re-test, plus the Kingdra ex setup fix (branch fix-3.3.2, not live)
 
