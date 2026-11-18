@@ -573,6 +573,7 @@
     '90670278e3f9d54f0072ee3b0558f736d78b000000b7a6ec710000009de1c7a4000002cff84df9874fa1eef7003c9bae7482d60000000001c7882a4206148fdf132dcff6efa91e00',
     'x09873e1090005d7810ae3700063eb100066e916e174000006d9d4e30a00000061ff6b0000000096ff8c00000024f88bf51c0000a3b901c597002dfa360041f924b0ad000001baa3',
     // Pokémon TCG Live's own count badges (narrow digits), read from real deck screenshots
+    '00600080808080ff000080ffffffffbf80ffffffffffffbfffff80bfffffffffff8080ffffffffff8080ffffffffff8080ffff80ffff80ffffff80ffffffffffff00bfbfffffff60', // the badge font's bold narrow 0 (the 10s in two deck screenshots)
     '10554499ddffee4400eeffffffff7700aaddffffff99000022b3ffff9900000077ffff9900000077ffffaa00000088ffff9900114dddffffe633aaddffffffffee88ddffffffffc4',
     '205755aaffeaead52095eaffffffffaa6ad5d5d5ffffdf000b2055ffffda000015eaffff550000eaffffbf0b4acaffff950b00ffffffffbf8040ffffffffffffd58acaeaf4d5dfa5',
     '30554d80e6e6e6e64dcce6ffffffffd95999e6ffffffd9001ae6ffffff394db3fffffff23933b3ffffffffe6001a33b3e6fff959737399ffffe6ccffffffffffbf8ca6fff2e6a626',
@@ -664,7 +665,7 @@
           if (r.ch === 'x') { if (txt === '') continue; else break; }
           txt += r.ch; s += r.s; k++;
         }
-        if (!k || txt.length > 2) continue;
+        if (!k || txt.length > 2 || (txt.length > 1 && txt[0] === '0')) continue;   // no count starts with 0
         const n = parseInt(txt, 10);
         if (!(n >= 1 && n <= 60)) continue;
         const bx0 = run[0].x, bx1 = run[run.length - 1].x + run[run.length - 1].w;
@@ -709,6 +710,7 @@
         if (best && boxes.length > 2) {
           const d = Math.abs(c.rx - best.rx) / 0.08 + Math.abs(c.ry - best.ry) / 0.06;
           s -= d * 0.25;
+          s -= Math.abs(c.rh - best.rh) / best.rh * 0.5;   // badge digits share one size, so a mark of another size is not one
         }
         if (s > ps) { ps = s; pick = c; }
       }
