@@ -113,6 +113,13 @@ function deal(A, B) {
   for (const k of Object.keys(left)) { const sure = Math.max(0, left[k] - prizesLeft); for (let i = 0; i < left[k]; i++) me.deck.push(i < sure && reads(k, true) ? k : '?'); }
   me.deck = me.deck.slice(0, pool.length - prizesLeft);
   me.prizes = prizesLeft;
+  // What each face-down deck card really is (the rest are your Prizes). The app shows these when you
+  // search; the solver keeps them unknown. fill-decks.mjs does the same for an older pack.
+  const rest = pool.slice(); me.deck.forEach(k => { if (k !== '?') rest.splice(rest.indexOf(k), 1); });
+  let fs = (rest.length * 2654435761 + me.hand.length) >>> 0; // its own seed, so the boards a seed deals stay the same
+  const fr = () => { fs = (fs + 0x6D2B79F5) >>> 0; let t = fs; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(fr() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+  me.deckFaces = rest.slice(prizesLeft);
   // The opponent: Active and 1 to 3 Benched Pokémon from their list, some already damaged.
   const op = B.keys.slice(), opp = { bench: [], hand: between(3, 7), deck: between(12, 30), prizes: between(1, 6) };
   const oppMon = () => {

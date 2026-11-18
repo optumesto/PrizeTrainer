@@ -636,11 +636,12 @@ function answers(s) {
     case 'cost': picksFor(P.hand.filter(y => y.uid !== (c.card && c.card.uid) && T.gfFit(y, st.F || { any: true })), { alts: [[{ n: st.n, F: st.F || { any: true } }]] }, st.n, st.n).forEach(pick); break;
     case 'search': {
       const max = Math.min(T.gfMaxOf(st.spec), st.dest === 'bench' ? benchMax(s, P) - P.bench.length : 99);
-      picksFor(P.deck.filter(y => y.card.cat !== 'hidden'), st.spec, max).forEach(pick); // a face-down card can't be counted on
+      picksFor(P.deck.filter(y => y.card.cat !== 'hidden' && (s.play || !y.unsure)), st.spec, max).forEach(pick); // the solver can't count on a face-down card
       break;
     }
     case 'recover': picksFor(P.discard.filter(y => y.card.cat !== 'hidden'), st.spec, T.gfMaxOf(st.spec)).forEach(pick); break;
     case 'topFromHand': { const seen = new Set(); P.hand.forEach(y => { if (seen.has(y.card)) return; seen.add(y.card); pick(y.uid); }); break; }
+    case 'splitHand': c.splitPair.forEach(x => pick({ uid: x.uid })); break;
     case 'splitAttach': mons(P).forEach(m => pick(m.id)); break;
   }
   return out;
@@ -741,11 +742,18 @@ function answer(s, v) {
       const got = v.map(uid => take(P.deck, uid));
       if (st.dest === 'bench') got.forEach(x => { const m = newMon(s, x, s.cur); m.trig = true; m.benchTurn = s.turn; P.bench.push(m); benchRuins(s, m); });
       else if (st.dest === 'top') { s.luck = true; P.deck = got.concat(P.deck); }
-      else if (st.split && got.length === 2) { P.hand.push(got[0]); c.splitRef = got[1]; R.i = A.step; return ask(s, 'splitAttach', { step: A.step }); }
+      else if (st.split && got.length === 2) {
+        log(s, 'Searched for ' + got.map(x => x.card.name).join(', '));
+        // You pick which one goes to your hand; the other is attached (Crispin).
+        if (got[0].card.key !== got[1].card.key) { c.splitPair = got; R.i = A.step; return ask(s, 'splitHand', { step: A.step }); }
+        P.hand.push(got[0]); c.splitRef = got[1]; R.i = A.step; return ask(s, 'splitAttach', { step: A.step });
+      }
       else got.forEach(x => P.hand.push(x));
       log(s, got.length ? 'Searched for ' + got.map(x => x.card.name).join(', ') : 'Searched and took nothing');
       checkKOs(s); return next();
     }
+    case 'splitHand': { const [a, b] = c.splitPair, keep = a.uid === v.uid ? a : b; P.hand.push(keep); c.splitRef = keep === a ? b : a; c.splitPair = null;
+      log(s, 'Put ' + keep.card.name + ' into your hand'); R.i = A.step; return ask(s, 'splitAttach', { step: A.step }); }
     case 'splitAttach': { const m = findMon(s, v).m; m.energy.push(c.splitRef); log(s, 'Attached ' + c.splitRef.card.name + ' to ' + monName(m)); c.splitRef = null; return next(); }
     case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') P.deck = P.deck.concat(got); else got.forEach(x => P.hand.push(x));
       log(s, got.length ? 'Took back ' + got.map(x => x.card.name).join(', ') + (st.dest === 'deck' ? ' into your deck' : '') : 'Took back nothing'); return next(); }
@@ -812,12 +820,15 @@ function cardFromApi(c, opts) {
  * Build a state from a puzzle record (see ARCHITECTURE "Puzzle format").
  * Cards are listed once in `cards` and named by key everywhere else.
  */
-function fromPuzzle(pz) {
-  const s = { turn: pz.turn || 3, cur: 0, first: !!pz.first, stadium: null, mods: {}, pending: null, luck: false, unread: [], ended: false,
+function fromPuzzle(pz, opts) {
+  const s = { play: !!(opts && opts.play), turn: pz.turn || 3, cur: 0, first: !!pz.first, stadium: null, mods: {}, pending: null, luck: false, unread: [], ended: false,
     taken: [0, 0], koIds: [], log: [], uid: 0, mid: 0, goal: pz.goal || { t: 'prizes' } };
   const card = k => { const c = pz.cards[k]; if (!c) throw new Error('Puzzle names a card not in its card table: ' + k); if (!c.key) c.key = k; return c; };
   const ref = k => ({ uid: ++s.uid, card: k === '?' ? HIDDEN : card(k) });
   const hidden = n => Array.from({ length: n || 0 }, () => ({ uid: ++s.uid, card: HIDDEN }));
+  // In play, a face-down deck card has its real face (deckFaces), marked unsure: you find it when you
+  // search, but the solver never counts on it, since it could have been one of your Prizes.
+  const deckOf = d => { let j = 0; return d.deck.map(k => k !== '?' || !s.play || !d.deckFaces || j >= d.deckFaces.length ? ref(k) : Object.assign(ref(d.deckFaces[j++]), { unsure: true })); };
   const mon = (d, owner) => {
     const m = { id: ++s.mid, stack: (d.under || []).concat(d.c).map(ref), energy: (d.energy || []).map(ref), tool: d.tool ? ref(d.tool) : null,
       dmg: d.dmg || 0, turnIn: d.turnIn != null ? d.turnIn : 0, evoTurn: d.evolvedThisTurn ? s.turn : -1, ab: {}, owner, cantAttack: !!d.cantAttack };
@@ -825,7 +836,7 @@ function fromPuzzle(pz) {
   };
   const side = (d, owner) => ({
     active: d.active ? mon(d.active, owner) : null, bench: (d.bench || []).map(b => mon(b, owner)),
-    hand: Array.isArray(d.hand) ? d.hand.map(ref) : hidden(d.hand), deck: Array.isArray(d.deck) ? d.deck.map(ref) : hidden(d.deck),
+    hand: Array.isArray(d.hand) ? d.hand.map(ref) : hidden(d.hand), deck: Array.isArray(d.deck) ? deckOf(d) : hidden(d.deck),
     discard: (d.discard || []).map(ref), prizes: Array.isArray(d.prizes) ? d.prizes.map(ref) : hidden(d.prizes),
     used: { energy: false, supporter: false, stadium: false, retreat: false }, lim: {}, koLastTurn: !!d.koLastTurn,
   });
@@ -883,7 +894,7 @@ function key(s) {
     (canEvolve(s, q) ? 'e' : '') + (q.trig && (q.benchTurn === s.turn || q.evoTurnHand === s.turn) ? 't' : '') + '/' + Object.keys(q.ab).filter(n => q.ab[n] === s.turn).sort().join(',');
   const side = p => [p.active ? ms(p.active) : '-', p.bench.map(ms).sort().join(';'), p.hand.map(k).sort().join(','), p.deck.length, p.discard.map(k).sort().join(','),
     p.prizes.length, JSON.stringify(p.used), JSON.stringify(p.lim)].join('|');
-  const pend = s.pending ? JSON.stringify([s.pending.i, s.pending.ask, s.pending.steps && s.pending.steps.map(x => x.t), s.pending.ctx.left, s.pending.ctx.target, s.pending.ctx.attached, s.pending.ctx.done, s.pending.ctx.mon, s.pending.ctx.name, s.pending.ctx.switched, s.pending.ctx.splitRef && s.pending.ctx.splitRef.card.key,
+  const pend = s.pending ? JSON.stringify([s.pending.i, s.pending.ask, s.pending.steps && s.pending.steps.map(x => x.t), s.pending.ctx.left, s.pending.ctx.target, s.pending.ctx.attached, s.pending.ctx.done, s.pending.ctx.mon, s.pending.ctx.name, s.pending.ctx.switched, s.pending.ctx.splitRef && s.pending.ctx.splitRef.card.key, s.pending.ctx.splitPair && s.pending.ctx.splitPair.map(x => x.card.key).join('+'),
     s.pending.ctx.drew, s.pending.ctx.heads, s.pending.ctx.card && s.pending.ctx.card.card.key, s.pending.ctx.endTurn, s.pending.ctx.gusted, s.pending.ctx.handUid != null]) : '';
   return [side(s.players[0]), side(s.players[1]), s.stadium ? k(s.stadium.ref) + s.stadium.owner : '', JSON.stringify(s.mods), s.taken.join(','), s.koIds.length, pend,
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');

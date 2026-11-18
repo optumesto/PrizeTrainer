@@ -28,6 +28,7 @@ function isOppChoice(s) {
  * fail with r actions left also fails with fewer, and one that wins with r wins with more.
  */
 function solve(s0, opts) {
+  if (s0.play) s0 = Object.assign({}, s0, { play: false }); // the solver never counts on a face-down deck card
   const max = (opts && opts.maxNodes) || 200000, cap = (opts && opts.maxMoves) || 8;
   const failAt = new Map(), winAt = new Map();
   let nodes = 0, capped = false;
@@ -86,7 +87,8 @@ function obviousWin(s0) {
 
 /** An action named by card key instead of uid, so a player's line can be matched to the engine's. */
 function sig(s, a) {
-  const kOf = uid => { for (const p of s.players) for (const z of [p.hand, p.deck, p.discard]) { const r = z.find(y => y.uid === uid); if (r) return r.card.key; }
+  const kOf = uid => { const sp = s.pending && s.pending.ctx.splitPair, x = sp && sp.find(y => y.uid === uid); if (x) return x.card.key;
+    for (const p of s.players) for (const z of [p.hand, p.deck, p.discard]) { const r = z.find(y => y.uid === uid); if (r) return r.card.key; }
     for (const p of s.players) for (const m of E.mons(p)) { const r = m.energy.find(y => y.uid === uid); if (r) return r.card.key; } return uid; };
   const v = a.v;
   const mapV = Array.isArray(v) ? v.map(kOf).sort() : v && typeof v === 'object' ? Object.assign({}, v, v.uid ? { uid: kOf(v.uid) } : {}) : v;

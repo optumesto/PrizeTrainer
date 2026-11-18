@@ -8634,7 +8634,7 @@ function renderPuzzleCard() {
   const el = document.getElementById('puzzle-card');
   if (!el) return;
   const key = dailyKey(), r = puzzleStore().results[key], st = puzzleStats(), runs = puzzleStreakText(st);
-  const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
+  const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}${r.best ? (r.moves <= r.best ? ', the shortest win' : `, best ${r.best}`) : ''}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
     : st.played ? `${st.won} solved of ${st.played} played` : 'Win this turn from a real tournament board';
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('target')}</div>
@@ -8652,7 +8652,7 @@ async function openPuzzle() {
   hideLoading();
   const key = dailyKey(), n = puzzleNumber(key), list = kit.pack.puzzles;
   const p = list[(puzzleBoardDay(key) - 1) % list.length];
-  const s0 = kit.E.fromPuzzle(Object.assign({ cards: kit.pack.cards }, p));
+  const s0 = kit.E.fromPuzzle(Object.assign({ cards: kit.pack.cards }, p), { play: true }); // play: a search finds the real cards
   pzS = { E: kit.E, cards: kit.pack.cards, key, n, p, s0, s: s0, hist: [], plays: 0, over: false, showAns: false, opp: '' };
   showScreen('puzzle');
   renderPuzzle();
@@ -8720,6 +8720,7 @@ function pzPickLabel(s, v) {
     case 'cost': case 'search': case 'recover': return v.length ? pzNames(s, v) : 'Take nothing';
     case 'topFromHand': return pzRefName(s, v);
     case 'splitAttach': return mon(v);
+    case 'splitHand': return 'Put ' + pzRefName(s, v.uid) + ' into your hand';
   }
   return String(v);
 }
@@ -8731,7 +8732,7 @@ function pzAskText(s) {
     oppMon: `Put ${st.n} damage counters on which Pokémon?`, benchHit: `Put ${st.dmg} damage on which Benched Pokémon?`, moveCounters: 'Move damage counters', moveEnergy: 'Move an Energy',
     moveToSelf: 'Move Energy to this Pokémon', pickUp: 'Choose a Pokémon to pick up', attach: 'Attach Energy',
     cost: `Discard ${st.n} card${st.n === 1 ? '' : 's'} from your hand`, search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile',
-    topFromHand: 'Choose a card to put on top of your deck', splitAttach: `Attach ${R.ctx.splitRef ? esc(R.ctx.splitRef.card.name) : 'the other card'} to which Pokémon?`,
+    topFromHand: 'Choose a card to put on top of your deck', splitHand: 'Which one goes to your hand? The other gets attached.', splitAttach: `Attach ${R.ctx.splitRef ? esc(R.ctx.splitRef.card.name) : 'the other card'} to which Pokémon?`,
   }[A.kind] || 'Choose';
   return who + q;
 }
@@ -8757,7 +8758,8 @@ function pzHandHTML(list) {
 }
 function pzCards(list, opts) {
   const g = new Map(); let hidden = 0;
-  list.forEach(r => { if (r.card.cat === 'hidden') { hidden++; return; } const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
+  // r.unsure: a real deck card that could have been a Prize, so it stays face down until you search.
+  list.forEach(r => { if (r.card.cat === 'hidden' || r.unsure) { hidden++; return; } const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
   const chips = [...g.values()].map(x => `<button class="pz-chip" onclick="pzKeySheet('${esc(x.c.key)}')">${x.n > 1 ? `<b>${x.n}</b> ` : ''}${esc(x.c.name)}</button>`);
   if (hidden) chips.push(`<span class="pz-chip off">${hidden} face down</span>`);
   return chips.length ? chips.join('') : `<span class="pz-none">${opts && opts.empty || 'None'}</span>`;
@@ -8777,7 +8779,7 @@ function pzSide(s, k) {
 function pzMine(s) {
   const P = s.players[s.cur];
   let h = `<div class="pz-zone mt-handw"><div class="pz-zt">Your hand (${P.hand.length})</div>${pzHandHTML(P.hand)}</div>`;
-  h += `<details class="pz-zone"><summary>Deck: ${P.deck.length} cards, ${P.deck.filter(r => r.card.cat !== 'hidden').length} you know are there</summary><div>${pzCards(P.deck)}</div></details>`;
+  h += `<details class="pz-zone"><summary>Deck: ${P.deck.length} cards, ${P.deck.filter(r => r.card.cat !== 'hidden' && !r.unsure).length} you know are there</summary><div>${pzCards(P.deck)}</div></details>`;
   h += `<details class="pz-zone"><summary>Discard pile: ${P.discard.length}</summary><div>${pzCards(P.discard, { empty: 'Empty' })}</div></details>`;
   return h;
 }
@@ -8817,6 +8819,7 @@ function pzActions() {
     return h + `</div>` + tools;
   }
   if (s.pending && s.pending.ask) {
+    if (typeof pzPickWanted === 'function' && pzPickWanted(s, acts)) return h + pzPickHTML(s, acts, tools); // many answers: pick cards one at a time (puzzle-extras.js)
     h += `<div class="pz-q">${pzAskText(s)}</div><div class="pz-btns">`;
     acts.forEach((a, i) => { h += `<button class="btn pz-b" onclick="pzDo(${i})">${esc(pzPickLabel(s, a.v))}</button>`; });
     return h + `</div>` + tools;
@@ -8874,7 +8877,7 @@ function pzReset() { if (!pzS) return; pzS.s = pzS.s0; pzS.hist = []; pzS.plays 
 function pzPeek() {
   if (!pzS) return;
   const store = puzzleStore();
-  if (!store.results[pzS.key]) { store.results[pzS.key] = { won: false, peek: true, moves: 0, num: pzS.n, ts: Date.now() }; saveState(); }
+  if (!store.results[pzS.key]) { store.results[pzS.key] = { won: false, peek: true, moves: 0, best: pzS.p.moves, num: pzS.n, ts: Date.now() }; saveState(); }
   pzS.showAns = true;
   renderPuzzle();
   const el = document.getElementById('pz-ans'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -8890,7 +8893,7 @@ function pzFinish() {
   pzS.over = true;
   const store = puzzleStore();
   pzS.first = false;
-  if (!store.results[pzS.key]) { store.results[pzS.key] = { won, moves: pzS.plays, num: pzS.n, ts: Date.now() }; pzS.first = true; saveState(); }
+  if (!store.results[pzS.key]) { store.results[pzS.key] = { won, moves: pzS.plays, best: pzS.p.moves, num: pzS.n, ts: Date.now() }; pzS.first = true; saveState(); }
   if (typeof renderPuzzleCard === 'function') renderPuzzleCard();
 }
 function pzResult() {
@@ -8913,6 +8916,7 @@ function puzzleShareText(r, key) {
   return `RdyDeck Daily Puzzle, my #${r.num || puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
 async function sharePuzzle(k) {
+  if (typeof pzShareScore === 'function') return pzShareScore(k); // 3.3.6: picture of your score against the best (puzzle-extras.js)
   const key = dailyOkKey(k) || dailyKey(), r = puzzleStore().results[key];
   if (!r) { showToast('Play today\'s puzzle first.'); return; }
   const text = puzzleShareText(r, key), url = shareBaseUrl() + '?ref=puzzle#puzzle';

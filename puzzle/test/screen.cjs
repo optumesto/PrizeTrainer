@@ -55,7 +55,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   w.pzUndo(); ok(!w.eval('pzS').over, 'undo after the end reopens the board');
   w.pzReset();
   // Play the solver's line through the screen's own buttons.
-  const S = E.solve(pz.s0, { maxNodes: 200000, maxMoves: 8 });
+  const S = E.solve(pz.s0, { maxNodes: 200000, maxMoves: 8 }); let usedPick = 0;
   ok(S.win, 'solver finds the win on the shipped board');
   for (const a of S.line) {
     const cur = w.eval('pzS').s;
@@ -64,8 +64,14 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     const i = L.findIndex(x => !x.why && E.sig(cur, x) === want);
     if (i < 0) continue; // the opponent's choice, already made for them
     const btn = [...body.querySelectorAll('button[onclick^="pzDo("]')].find(b => b.getAttribute('onclick') === `pzDo(${i})`);
-    if (!btn) { ok(false, 'no button for ' + want); break; }
-    btn.click();
+    if (btn) { btn.click(); continue; }
+    // Many answers: the pick list (tap each card, then Take).
+    if (body.querySelector('.pz-pk')) {
+      const names = L[i].v.map(u => { for (const z of [cur.players[0].deck, cur.players[0].hand, cur.players[0].discard]) { const r = z.find(y => y.uid === u); if (r) return r.card.name; } });
+      names.forEach(n => [...body.querySelectorAll('.pz-pk-c')].find(c => c.textContent.replace(/^\d+ /, '').trim() === n).click());
+      body.querySelector('.pz-pk-go .btn-primary').click(); usedPick++; continue;
+    }
+    ok(false, 'no button for ' + want); break;
   }
   ok(/You won in/.test(body.textContent), 'the answer line wins on screen: ' + (body.querySelector('.pz-res b') || {}).textContent);
   R = w.eval('state').puzzle.results[pz.key];
@@ -125,7 +131,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   let uiWon = 0, slow = 0, oppPicks = 0;
   for (let k = 0; k < pack.puzzles.length; k++) {
     const p = pack.puzzles[k];
-    const s0 = E.fromPuzzle(Object.assign({ cards: pack.cards }, JSON.parse(JSON.stringify(p))));
+    const s0 = E.fromPuzzle(Object.assign({ cards: pack.cards }, JSON.parse(JSON.stringify(p))), { play: true }); // as the app deals it
     const one = E.solve(s0, { maxNodes: 60000, maxMoves: 7 });
     const P = w.eval('pzS'); P.p = p; P.s0 = s0; P.s = s0; P.hist = []; P.plays = 0; P.over = false;
     for (const a of one.line) {
@@ -137,6 +143,42 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     if (E.goalMet(w.eval('pzS').s)) uiWon++;
   }
   ok(uiWon === pack.puzzles.length, `all puzzles won through the screen (${uiWon}); ${oppPicks} opponent choices made by the screen; ${slow} taps over 1.5s`);
+  // Searching your deck finds the real cards (3.3.6): Cyrano on the 18 Nov board, picked one card at a time.
+  {
+    const i9 = pack.puzzles.findIndex(p => p.me.hand.some(k => /cyrano/i.test(pack.cards[k].name)) && p.from.mine === 'Raging Bolt Ogerpon');
+    const p = pack.puzzles[i9], s0 = E.fromPuzzle(Object.assign({ cards: pack.cards }, JSON.parse(JSON.stringify(p))), { play: true });
+    const P = w.eval('pzS'); P.p = p; P.s0 = s0; P.s = s0; P.hist = []; P.plays = 0; P.over = false; P.pick = null;
+    w.showScreen('puzzle'); w.renderPuzzle();
+    ok(/Deck: \d+ cards, 2 you know are there/.test(body.textContent), 'deck cards that could be Prizes stay face down before a search');
+    const cy = [...body.querySelectorAll('button[onclick^="pzDo("]')].find(b => /Play Cyrano/.test(b.textContent));
+    ok(!!cy, 'Cyrano can be played'); cy.click();
+    const chips = [...body.querySelectorAll('.pz-pk-c')].map(b => b.textContent.trim());
+    ok(chips.length >= 5 && chips.includes('Raging Bolt ex') && chips.includes('Teal Mask Ogerpon ex'), 'Cyrano finds the Pokémon ex in the deck: ' + chips.join(', '));
+    const tap = name => [...body.querySelectorAll('.pz-pk-c')].find(b => b.textContent.replace(/^\d+ /, '').trim() === name).click();
+    tap('Raging Bolt ex'); tap('Raging Bolt ex'); tap('Teal Mask Ogerpon ex');
+    const go = body.querySelector('.pz-pk-go .btn-primary');
+    ok(go && /Take 3 cards/.test(go.textContent) && !go.disabled, 'three picked: ' + (go && go.textContent));
+    tap('Latias ex');
+    ok([...body.querySelectorAll('.pz-pk-c.on')].length === 2, 'a fourth card can\'t be added past Cyrano\'s 3');
+    go.click();
+    const hand = w.eval('pzS').s.players[0].hand.map(r => r.card.name);
+    ok(hand.filter(n => n === 'Raging Bolt ex').length === 2 && hand.includes('Teal Mask Ogerpon ex'), 'they go to your hand: ' + hand.join(', '));
+    ok(/Searched for/.test(body.textContent) && !/can't see/.test(body.textContent), 'the search is logged and is not luck');
+  }
+  // Sharing your score against the best line.
+  {
+    const key = w.dailyKey(), P = w.eval('state').puzzle;
+    P.results[key] = { won: true, moves: 4, best: 3, num: 7 };
+    await w.pzShareScore(key);
+    const g = w.eval('_pz83');
+    ok(/Share your puzzle score/.test(d.getElementById('x-modal').textContent), 'share sheet opens');
+    ok(/won this turn in 4 plays\. Best possible: 3/.test(g.text) && g.W.head === '1 play over the best', 'share text: ' + g.text);
+    P.results[key] = { won: true, moves: 3, best: 3, num: 7 }; await w.pzShareScore(key);
+    ok(/the shortest win/.test(w.eval('_pz83').text) && w.eval('_pz83').W.head === 'Shortest win', 'shortest win: ' + w.eval('_pz83').text);
+    P.results[key] = { won: false, peek: true, moves: 0, num: 7 }; await w.pzShareScore(key);
+    ok(/needed the answer.*Best possible: \d+ play/.test(w.eval('_pz83').text), 'an older result gets the best line from the pack: ' + w.eval('_pz83').text);
+    w.closeSheet(); delete P.results[key];
+  }
   // What's new: someone who used an older version gets the card once.
   { const st = w.eval('state'), keep = st.daily;
     w.localStorage.setItem('rd_seen_version', 'v2.2');
