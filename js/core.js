@@ -1705,6 +1705,21 @@ function gHelperMon(c) {
   return !!c && c.t === 'pkmn' && c.stage === 'basic' && (c.ab || []).some(x => !/\bitself\b/.test(x.p || ''))
     && (c.provides || []).some(t => /^(draw|search(_[a-z]+)?|switch_own)$/.test(t));
 }
+/** 3.3.2: a Pokemon the list runs to set up with a cheap attack: its cheapest attack does no damage and
+ *  searches the deck, attaches Energy, draws or puts Pokemon from the discard pile onto the Bench, and every
+ *  attack that does damage costs more (Kingdra ex's King's Order for 1 Energy, with Hydro Pump behind it).
+ *  Returns that attack, or null. Like a support Pokemon, its own hit does not set the damage ceiling and it
+ *  counts half when the main attacker is picked, while the deck has a main attacker that is not one itself. */
+function gSetupAtk(c) {
+  if (!c || c.t !== 'pkmn' || !(c.attacks || []).length) return null;
+  const n = a => (a.cost || []).length;
+  const hits = c.attacks.filter(a => (a.dmg || a.max || 0) > 0 || a.copy);
+  const su = c.attacks.filter(a => !((a.dmg || a.max || 0) > 0) && !a.copy &&
+    (a.rev || (a.fx || []).some(x => /^(?:searches your deck|attaches|draws|evolves a Pokemon|looks at the top)\b/.test(x))));
+  if (!hits.length || !su.length) return null;
+  const cheap = su.reduce((b, a) => !b || n(a) < n(b) ? a : b, null);
+  return n(cheap) < Math.min(...hits.map(n)) ? cheap : null;
+}
 /** 3.2.8: how much the list commits to a Pokemon: every copy of it and of the same stage that evolves
  *  from the same Pokemon (3 Flygon and 2 Flygon ex are one line; a drawing Dudunsparce is not part of
  *  the Dudunsparce ex line), plus the earlier stages, which count half and at most two per copy
@@ -1761,7 +1776,7 @@ function gMainAttacker(deck, coh, deckName) {
       // v60: only an Ability counts here. Since v60 attacks add search tags too (Talonflame ex's Talon Hunt),
       // and an attacker that searches with its attack is still the attacker.
       // 3.2.8: and a Pokemon in a support role (gSupportMon) counts half the same way.
-      const support = (!typed.length && (c.ab || []).some(x => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(x.p || ''))) || gSupportMon(c, b.r.top) ? 0.5 : 1;
+      const support = (!typed.length && (c.ab || []).some(x => /\b(?:draws?|search(?:es)?|looks at the top)\b/.test(x.p || ''))) || gSupportMon(c, b.r.top) || gSetupAtk(c) ? 0.5 : 1;
       // A named attacker whose damage the grade cannot count (Slowking's Seek Inspiration) still counts as one.
       // v62: its own Ability's boost counts too (Okidogi's Adrena-Power with Darkness Energy).
       const sb = c.sboost && deck.some(x => x.card && x.card.t === 'energy' && (x.card.etypes || []).some(y => y === c.sboost.type || y === 'any')) ? c.sboost.n : 0;
@@ -1981,6 +1996,8 @@ function gViability(deck, coh, main) {
     if (boxy) return false;
     if (!(main && mainCard && mainRr && c && r !== mainRr && !gSupportMon(mainCard, mainRr.top))) return false;
     const lw = gLineWeight(deck, c);
+    // 3.3.2: a setup piece (gSetupAtk) counts as one while the list commits no more to it than to the main attacker.
+    if (gSetupAtk(c) && !gSetupAtk(mainCard) && lw <= Math.max(c.stage === 'basic' ? 4 : 3, gLineWeight(deck, mainCard))) return true;
     return ((gSupportMon(c, r.top) || gHelperMon(c)) && lw <= (c.stage === 'basic' ? 4 : 3)) || (sideEng(c) && lw <= 2); };
   const plan = reach.some(r => !sideSup(r)) ? reach.filter(r => !sideSup(r)) : reach;
   let bestR=null; plan.forEach(r => { if (!bestR || effC(r)>effC(bestR) || (effC(r)===effC(bestR) && r.top>bestR.top)) bestR=r; });
@@ -2016,8 +2033,10 @@ function gViability(deck, coh, main) {
   let supR = null; reach.forEach(r => { if (r !== bestR && sideSup(r) && (!supR || effC(r) > effC(supR))) supR = r; });
   const ceS = supR && bestR && ceOf(supR) > ce ? Math.round(ce + G_SUP_SHARE * (ceOf(supR) - ce)) : ce;
   // 3.3.1: with G_SUP_SHARE 0 the support Pokemon's hit is named and left out; any share above 0 counts part of it.
-  const supTxt = ceS > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but it is in the list for its Ability, so the grade counts ${ceS}.${ceS >= FMT.ohkoTarget ? '' : ' ' + g37Hits(ceS, false)}` : '';
-  const supOut = !supTxt && supR && bestR && ceOf(supR) > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but it is in the list for its Ability, so the grade leaves that hit out.` : '';
+  // 3.3.2: a setup piece names the attack the list plays it for.
+  const supWhy = r => { const a = gSetupAtk(cardOf(r)); return a ? `the list plays it to set up with ${a.name}` : 'it is in the list for its Ability'; };
+  const supTxt = ceS > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but ${supWhy(supR)}, so the grade counts ${ceS}.${ceS >= FMT.ohkoTarget ? '' : ' ' + g37Hits(ceS, false)}` : '';
+  const supOut = !supTxt && supR && bestR && ceOf(supR) > ce ? ` ${gCap(supR.name)} can also hit for ${ceOf(supR)}, but ${supWhy(supR)}, so the grade leaves that hit out.` : '';
   const hitsT = supTxt ? '' : hitsTxt;
   // 3.2.8: under a one-shot, the hit count follows what the grade counts, after the reason it counts less,
   // so a "Two hits" finding never says the deck one-shots.
@@ -2293,7 +2312,9 @@ function gViability(deck, coh, main) {
   const score=gClamp(0.5*closeScore+0.3*prizeScore+0.2*clockScore,0,1);
   // v67: the three parts, kept for the note on why Power is what it is.
   const parts = { close:closeScore, prize:prizeScore, clock:clockScore, stage2, eff, ce:ceS, strat, multiN, pkN, engQ, speed };
-  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, ctlMix, parts };
+  // 3.3.2: setup pieces left out of the ceiling, for How it plays.
+  const setupOut = []; reach.forEach(r => { const a = gSetupAtk(cardOf(r)); if (a && sideSup(r) && ceOf(r) > ce && !setupOut.some(x => x.name === r.name)) setupOut.push({ name: r.name, atk: a.name, cost: (a.cost || []).length, hit: r.atk }); });
+  return { score, findings, best, eff, bestName, reach, main, toolbox, ctl, ctlMix, parts, setupOut };
 }
 
 /**
@@ -2443,6 +2464,10 @@ function gPlan(entries, coh, via) {
          `${names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]}. ` +
          (names.length > 1 ? `Their attacks cost only Colorless Energy, so the list's Energy is not picked for them.` : `Its attack costs only Colorless Energy, so the list's Energy is not picked for it.`) });
   }
+  // 3.3.2: Pokemon the list runs to set up with a cheap attack (Kingdra ex's King's Order), not to attack.
+  const su = ((via && via.setupOut) || []).filter(x => x.name.toLowerCase() !== m.key);
+  if (su.length) out.push({ link: `Setup: ${su.map(x => gCap(x.name)).join(', ')}`,
+    p: su.map(x => `${gCap(x.name)} is in the list to set up with ${x.atk}, which costs ${x.cost} Energy, so the grade leaves ${x.hit} out of the damage it counts.`).join(' ') });
   // v59: every other Ability the grade can read from card text, so the plan shows what each card adds.
   // Muse s6 M2: the support Pokemon above are listed too, so what their Ability does is said (Fezandipiti ex's Flip the Script).
   const abSeen = new Set([m.key, ...seenAb]), abOut = [];
