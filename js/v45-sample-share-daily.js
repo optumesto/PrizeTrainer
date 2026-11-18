@@ -85,7 +85,7 @@ function gs45Fit(ctx, text, max) {
   while (t.length > 1 && ctx.measureText(t + '…').width > max) t = t.slice(0, -1);
   return t.trimEnd() + '…';
 }
-function gs45Band(v) { return v >= 8.5 ? 'Tournament-ready' : v >= 7 ? 'Strong' : v >= 5 ? 'Fixable' : v >= 3 ? 'Needs work' : 'Does not function'; }
+function gs45Band(v, noRes) { return v >= 8.5 && !noRes ? 'Tournament-ready' : v >= 7 ? 'Strong' : v >= 5 ? 'Fixable' : v >= 3 ? 'Needs work' : 'Does not function'; }
 
 // 2.6.1: the card also names the deck's archetype and main attacker and shows the attacker's art,
 // in two sizes: wide (1200 by 630, for X, Discord and YouTube) and square (1080 by 1080, for
@@ -99,8 +99,9 @@ function gs261Size() { const s = safeLocalGet(GS261_KEY); return GS261_SIZES[s] 
 function gs261Info(deck, R) {
   const out = { arch: '', main: '', urls: [], lim: false };
   try {
-    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data) : null;
-    if (a && a.deck && a.deck.name && a.deck.id !== 'other') {
+    const a = typeof mu60Data !== 'undefined' && mu60Data && typeof g68Arch === 'function' ? g68Arch(deck, mu60Data, R) : null;
+    // 3.2.8: a list that only borrows an archetype's results (a.own) is not that deck, so the card does not name it.
+    if (a && a.deck && a.deck.name && a.deck.id !== 'other' && !a.own) {
       out.lim = true;
       // A deck already named for its archetype does not say it twice.
       if (!(' ' + mu60Norm(deck.name) + ' ').includes(' ' + mu60Norm(a.deck.name) + ' ')) out.arch = a.deck.name;
@@ -111,7 +112,7 @@ function gs261Info(deck, R) {
   const v = (R && R.via) || {};
   const box = !v.main && (v.boxPick || []).length ? v.boxPick : null;
   let m = box ? { name: box[0] } : v.main || null;
-  if (!m && !R.via) { try { m = gMainAttacker(R.entries || [], R.coh, gArchName(deck)); } catch (_) {} }
+  if (!m && !R.via) { try { m = gMainAttacker(R.entries || [], R.coh, gArchName(deck, R)); } catch (_) {} }
   if (m && m.name) {
     out.main = gCap(m.name);
     out.box = !!box;
@@ -182,7 +183,7 @@ async function gs45Draw(deck, R, size, info, art) {
   const x = c.getContext('2d');
   const D = '"RD Display", "Arial Narrow", sans-serif', B = '"RD Body", system-ui, sans-serif';
   const synV = gR1(R.coh.score * 10), powV = gR1(R.via.score * 10);
-  const band = gs45Band(R.overall), col = GS45.band[band];
+  const band = gs45Band(R.overall, R.noRes), col = GS45.band[band];
   const k = sq ? 1.18 : 1;   // the square card's type is a little larger
 
   x.fillStyle = GS45.bg; x.fillRect(0, 0, W, H);
@@ -284,7 +285,7 @@ async function v45ShareGrade() {
   if (R.unread > 0) { showToast('Some cards have not been read yet, so this grade is not final. Open the deck again while online, then share.'); return; }
   // v57: a list that breaks a deck building rule would share as Tournament-ready, so fix it first.
   if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { showToast('This list breaks a deck building rule. Fix it in Edit deck, then share the grade.'); return; }
-  const band = gs45Band(R.overall);
+  const band = gs45Band(R.overall, R.noRes);
   const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1' + (typeof deck.atk === 'string' && deck.atk ? '&a=' + encodeURIComponent(deck.atk) : '');
   const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}. Can Your Deck Win?`;
   if (_gs45 && _gs45.img) { try { URL.revokeObjectURL(_gs45.img); } catch (_) {} }

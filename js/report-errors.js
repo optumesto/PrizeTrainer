@@ -124,6 +124,8 @@
 
   // Shared with the "this grade looks off" button.
   window.rdReportsOn = on;
+  // 3.2.8: an error a feature catches to keep the page going (Upgrades, say) is still reported, once.
+  window.rdReportError = (err, where) => { try { send((where ? where + ': ' : '') + ((err && err.name) ? err.name + ': ' : '') + String(err && err.message || err), err && err.stack); } catch (_) {} };
   window.rdReportPost = body => on() && version() ? post(Object.assign({}, body, { v: version() })) : Promise.resolve(false);
   window.rdReportsSet = yes => { try { if (yes) localStorage.removeItem(KEY); else localStorage.setItem(KEY, 'off'); } catch (_) {} };
   window.rdReportsWanted = () => { try { return localStorage.getItem(KEY) !== 'off'; } catch (_) { return true; } };

@@ -77,7 +77,7 @@ async function ck31Run() {
 }
 
 function ck31Draw(deck, R) {
-  const band = typeof gs45Band === 'function' ? gs45Band(R.overall) : '';
+  const band = typeof gs45Band === 'function' ? gs45Band(R.overall, R.noRes) : '';
   let info = { main: '', urls: [] };
   try { if (typeof gs261Info === 'function') info = gs261Info(deck, R); } catch (_) {}
   const art = info.urls && info.urls[0] ? `<img class="ck31-art" src="${esc(info.urls[0])}" alt="" onerror="this.remove()">` : '';

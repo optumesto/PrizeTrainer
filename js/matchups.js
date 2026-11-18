@@ -290,7 +290,10 @@ function mc73Chart(rows, data) {
 function mu60Section(deck) {
   const data = mu60Data;
   if (!data || deck.format === 'expanded' || deck.format === 'prerelease') return '';
-  const auto = mu60Match(deck, data);
+  // 3.2.8 (Muse section 4 M10): the box opens on the deck whose results the grade uses, so the two agree.
+  let graded = null;
+  try { const R = typeof g29Grade === 'function' ? g29Grade(deck) : null; graded = R && R.res ? data.decks.find(d => d.id === R.res.id) || null : null; } catch (_) {}
+  const auto = graded || mu60Match(deck, data);
   const pickId = mu60Picks()[deck.id];
   const arch = data.decks.find(d => d.id === pickId) || auto;
   const byName = data.decks.slice().sort((a, b) => a.name.localeCompare(b.name));

@@ -168,7 +168,7 @@ function r29Summary(deck) {
   const link = s => `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a>`;
   let h = `<div class="g-sec" id="r29-sec"><div class="g-sec-t">Rotation</div>
     <div class="r29-head"><span class="r29-tag ${ann ? 'ann' : 'exp'}">${ann ? 'Announced' : 'Expected'}</span>
-      <span><b>${marks} mark</b> cards ${ann ? 'leave' : 'are expected to leave'} Standard in <b>${N.when}</b>${ann ? '' : ', not announced yet'}.</span></div>
+      <span><b>${marks} mark cards</b> ${ann ? 'leave' : 'are expected to leave'} Standard in <b>${N.when}</b>${ann ? '' : ', not announced yet'}.</span></div>
     <div class="r29-src">${ann ? `Source: ${link(N.src)}.` : `Pokémon has not announced it yet (${link(N.src)}). ${marks} is next by the yearly pattern: ${N.pattern}.`}
       Legal now: ${ROT29.firstLegal} mark and later. The ${ROT29.last.marks.join(' and ')} mark left on ${ROT29.last.events} at events and ${ROT29.last.live} on Live (${link(ROT29.last.src)}). Checked ${ROT29.asOf}.</div>`;
   if (!ann && N.checkBy && Date.now() > Date.parse(N.checkBy)) h += `<div class="g-item warn"><div class="gt">This may be out of date</div>
@@ -437,12 +437,12 @@ renderGrade = function () {
   }
 
   const R = g29Grade(deck) || gradeDeck(deck);
-  let [band, col] = gBand(R.overall);
+  let [band, col] = gBand(R.overall, R.noRes);
   // v57: a list that breaks a deck building rule is never called ready for an event.
   const brk = typeof rules34Breaches === 'function' ? rules34Breaches(deck) : [];
   if (brk.length) band = 'Not legal yet';
   const synV = gR1(R.coh.score * 10), powV = gR1(R.via.score * 10);
-  const means = (G29_BANDS.find(b => R.overall >= b[0]) || G29_BANDS[G29_BANDS.length - 1])[1];
+  const means = (G29_BANDS.find(b => R.overall >= b[0] && !(R.noRes && b[0] >= 8.5)) || G29_BANDS[G29_BANDS.length - 1])[1];
   const probs = g29Problems(R);
   const good = R.via.findings.filter(f => f.sev === 'ok');
   const syn = R.coh.synergies;
@@ -556,7 +556,7 @@ buildDeckCard = function (deck) {
     g = `<div class="deck-grade none g71-wait"><span>Grading\u2026</span></div>`;
     if (typeof g71Kick === 'function') setTimeout(() => g71Kick(deck), 0);
   } else if (R) {
-    let [band, col] = gBand(R.overall);
+    let [band, col] = gBand(R.overall, R.noRes);
     if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { band = 'Not legal yet'; col = 'var(--red)'; }
     // 3.2.7: a grade read from part of the list is marked, not shown as final.
     else if (typeof g71NotFinal === 'function' && g71NotFinal(deck, R)) { band = 'Not final'; col = 'var(--text-3)'; }

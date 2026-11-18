@@ -53,6 +53,7 @@ const grab = (o, deep) => {
     o.forEach(x => grab(x, deep));
   } else if (o && typeof o === 'object') {
     for (const k in o) {
+      if (k === 'src') continue;   // a source's label ("CardJinx, 25 Oct 2026") is app text, not a card
       if ((k === 'name' || k === 'n' || k === 'opp' || k === 'archetype') && typeof o[k] === 'string') names.add(norm(o[k]));
       grab(o[k], deep);
     }
@@ -78,6 +79,7 @@ const CARD_TEXT = [
   ['.bld-sub', 'deck builder sub-lines: stage, HP, attack and Ability names'],
   ['#pz-act, .pz-btns', 'puzzle actions: each names a card, an attack or an Ability'],
 ];
+const EN_GLUE = /\b(?:the|and|your|you|with|this|that|is|it|its|of|to|for|from|when|while|cannot|than|each|every|has|have|are|be|or|which|they|their)\b/;
 const NAMES_BY_LEN = [...names].filter(n => n.length >= 3).sort((a, b) => b.length - a.length);
 const isLetter = c => !!c && /[\p{L}\p{N}]/u.test(c);
 /** The text with every card, attack and Ability name in it blanked out, and whether it had one. */
@@ -97,7 +99,9 @@ function keepWhy(s, el) {
   if (KEEP_NAMES.has(s)) return 'proper name';
   const { rest, hit } = stripNames(s);
   if (hit && !/[a-z]{2}/.test(rest.replace(/\b(?:vs|x\d+|ex|v|vstar|vmax)\b/g, ''))) return 'card names only';
-  if (hit) for (const [sel, why] of CARD_TEXT) if (el.closest(sel)) return why;
+  // Muse s6 M1: a sentence in those blocks stays English only when, with the names blanked, it has none
+  // of the little words that make an English sentence; "Mew's Restart: can use the attacks of ..." does.
+  if (hit && !EN_GLUE.test(rest)) for (const [sel, why] of CARD_TEXT) if (el.closest(sel)) return why;
   return '';
 }
 
@@ -192,6 +196,20 @@ function roots(d) {
 const LIST = JSON.parse(fs.readFileSync(path.join(HERE, 'grade-lists.json'), 'utf8'))[0];
 const LIST_TEXT = ['pokemon', 'trainer', 'energy'].map(part => {
   const rows = LIST.cards.filter(c => c.part === part);
+  const label = { pokemon: 'Pokémon', trainer: 'Trainer', energy: 'Energy' }[part];
+  return rows.length ? label + ': ' + rows.reduce((a, c) => a + c.count, 0) + '\n' + rows.map(c => [c.count, c.name, c.set, c.number].filter(Boolean).join(' ')).join('\n') : '';
+}).filter(Boolean).join('\n\n');
+// Muse s6 M1: a second, messier list: the main attacker at one copy, many singletons and a toolbox of
+// support Pokemon, so the Grade tab writes the sentences a clean top list never needs.
+const LIST2 = (() => {
+  const l = JSON.parse(fs.readFileSync(path.join(HERE, 'grade-lists.json'), 'utf8')).find(x => x.deckName === 'Mega Excadrill');
+  const cards = l.cards.map(c => Object.assign({}, c));
+  const main = cards.find(c => c.name === 'Mega Excadrill ex'), base = cards.find(c => c.name === 'Drilbur');
+  main.count -= 1; base.count += 1;
+  return { deckName: l.deckName, cards };
+})();
+const listText = L => ['pokemon', 'trainer', 'energy'].map(part => {
+  const rows = L.cards.filter(c => c.part === part);
   const label = { pokemon: 'Pokémon', trainer: 'Trainer', energy: 'Energy' }[part];
   return rows.length ? label + ': ' + rows.reduce((a, c) => a + c.count, 0) + '\n' + rows.map(c => [c.count, c.name, c.set, c.number].filter(Boolean).join(' ')).join('\n') : '';
 }).filter(Boolean).join('\n\n');
@@ -347,6 +365,19 @@ const SCREENS = [
     w.eval(`(() => { const R = puzzleStore().results; R[dailyKey()] = { won: false, moves: 5, num: 2, ts: Date.now() }; })()`);
     w.renderHome(); await tick(100);
   }],
+  // Muse s6 M1: the messy list, imported on its own, then its Grade and Cards tabs.
+  ['import a messy list', async w => {
+    shut(w); w.showScreen('home'); w._i18nIds = w.eval('state.decks.map(d => String(d.id))');
+    w.openImportModal();
+    w.document.getElementById('import-name').value = LIST2.deckName;
+    const t = w.document.getElementById('import-list'); t.value = listText(LIST2); t.dispatchEvent(new w.Event('input'));
+    w.setImportFormat('standard');
+    await w.importDeck(); await tick(1500); shut(w);
+    w._i18nMessy = w.eval('state.decks.map(d => String(d.id))').find(id => !w._i18nIds.includes(id));
+    w.showScreen('home'); w.renderHome();
+  }],
+  ['messy deck: grade tab', async w => { shut(w); await w.openReview(w._i18nMessy); await tick(800); w.showReviewTab('grade'); await tick(1500); }],
+  ['messy deck: cards tab', async w => { w.showReviewTab('cards'); await tick(300); }],
   ["what's new card", async w => { shut(w); w.localStorage.setItem('rd_seen_version', 'v2.0.0'); w.showScreen('home'); w.renderHome(); await tick(100); }],
   ['tour', async w => { shut(w); w.showScreen('home'); w.startTour(true); await tick(300); }],
 ];

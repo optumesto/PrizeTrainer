@@ -143,7 +143,7 @@ const I18N_ES = {
   "How does prize card training work?": "¿Cómo funciona el entrenamiento con cartas de Premio?",
   "RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.": "RdyDeck aparta algunas cartas de tu baraja como premios, 6 por defecto o 4 u 8, y tú revisas el resto. Luego nombras las cartas que faltan. Puedes agregar un límite de tiempo, y después de algunas partidas RdyDeck te muestra qué cartas fallas más.",
   "How does the deck grade work?": "¿Cómo funciona la calificación de la baraja?",
-  "The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.": "La calificación es sobre 10. Sinergia revisa que las cartas se apoyen entre sí: los atacantes pueden pagar sus ataques, las evoluciones tienen de qué evolucionar y la baraja puede robar y buscar. Poder revisa que el plan pueda ganar: qué tan fuerte pega, cuántos premios entrega y qué tan rápido se prepara. La calificación es Sinergia por Poder, dividido entre 10, así que la más débil baja la calificación. Una parte de Sinergia, qué tan compacta es la lista, baja la calificación solo cuando la lista está dispersa, así que una lista enfocada puede calificar un poco por encima de Sinergia por Poder. Cuando la baraja coincide con un arquetipo de torneos online recientes, parte de la calificación, hasta la mitad cuando tiene 500 partidas, viene de los resultados de ese arquetipo. Cada calificación muestra su cálculo y trae una lista corta de qué corregir primero.",
+  "The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.": "La calificación es sobre 10. Sinergia revisa que las cartas se apoyen entre sí: los atacantes pueden pagar sus ataques, las evoluciones tienen de qué evolucionar y la baraja puede robar y buscar. Poder revisa que el plan pueda ganar: qué tan fuerte pega, cuántos premios entrega y qué tan rápido se prepara. La calificación es el producto de Sinergia y Poder, dividido entre 10, así que el valor más bajo de los dos arrastra la calificación hacia abajo. Una parte de Sinergia, qué tan compacta es la lista, baja la calificación solo cuando la lista está dispersa, así que una lista enfocada puede calificar un poco por encima del producto de Sinergia y Poder. Cuando la baraja coincide con un arquetipo de torneos online recientes, parte de la calificación, hasta la mitad cuando tiene 500 partidas, viene de los resultados de ese arquetipo. Cada calificación muestra su cálculo y trae una lista corta de qué corregir primero.",
   "How does the rotation check work?": "¿Cómo funciona la revisión de rotación?",
   "RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most. An older printing still counts when a reprint with the same name, attacks and Abilities is legal now, so old art is fine.": "RdyDeck lee la marca de regulación de cada carta y muestra cuáles no son legales en Estándar ahora, cuáles podrían rotar en la próxima rotación y cuáles están seguras. Una carta cuenta como segura solo cuando su marca está confirmada, y una baraja con cartas que no son legales ahora califica 4.9 como máximo. Una impresión anterior sigue contando si hay una reimpresión legal con el mismo nombre, ataques y Habilidades, así que el arte viejo sirve.",
   "Which deck lists can I import?": "¿Qué listas puedo importar?",
@@ -423,7 +423,7 @@ const I18N_ES = {
   "The plan works, but problems will cost you games.": "El plan funciona, pero los problemas te van a costar partidas.",
   "Several problems stop it from working reliably.": "Varios problemas impiden que funcione de forma confiable.",
   "It cannot carry out its plan yet.": "Todavía no puede llevar a cabo su plan.",
-  "Fix first shows the one problem found.": "Corrige primero muestra el único problema encontrado.",
+  "Fix first shows the one problem found.": "En Corrige primero verás el único problema encontrado.",
   "One problem stops this deck from working. Fix it first.": "Un problema impide que esta baraja funcione. Corrígelo primero.",
   "One problem also stops this deck from working.": "Además, un problema impide que esta baraja funcione.",
   "One other change would make it stronger.": "Otro cambio la haría más fuerte.",
@@ -441,7 +441,7 @@ const I18N_ES = {
   "is what holds it back.": "es lo que la frena.",
   "Right now": "Ahora mismo",
   "Fix first": "Corrige primero",
-  "The problem that costs you the most.": "El problema que más te cuesta.",
+  "The problem that costs you the most.": "El problema que más te perjudica.",
   "Stops the deck": "Frena la baraja",
   "Worth fixing": "Vale la pena corregir",
   "Minor": "Menor",
@@ -455,11 +455,15 @@ const I18N_ES = {
   "under 3": "menos de 3",
   "checks that your cards support each other: every attacker can pay for its attacks, evolutions have what they evolve from, and the deck can draw and search.": "revisa que tus cartas se apoyen entre sí: cada atacante puede pagar sus ataques, las evoluciones tienen de qué evolucionar y la baraja puede robar y buscar.",
   "checks that the plan can win: how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.": "revisa que el plan pueda ganar: qué tan fuerte golpea a los Pokémon más grandes del formato, cuántos premios entrega y qué tan rápido se prepara.",
-  "The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full, but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not worry about the decimal place.": "La calificación de las cartas es Sinergia por Poder, dividido entre 10. Qué tan compacta es la lista baja Sinergia por completo, pero baja la calificación solo cuando la lista está dispersa. Cuando tu baraja coincide con un arquetipo de torneos online recientes, parte de la calificación viene del porcentaje de victorias y los resultados de ese arquetipo: más mientras más partidas haya, hasta la mitad con 500 partidas, y nada mientras haya cartas que no son legales en Estándar. La frase bajo la calificación muestra cuánto. Los roles de las cartas se leen del texto de la carta, que casi siempre acierta y a veces no. Lee los hallazgos y no te preocupes por el decimal.",
+  "The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full, but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not worry about the decimal place.": "La calificación de las cartas es el producto de Sinergia y Poder, dividido entre 10. Qué tan compacta es la lista baja Sinergia por completo, pero baja la calificación solo cuando la lista está dispersa. Cuando tu baraja coincide con un arquetipo de torneos online recientes, parte de la calificación viene del porcentaje de victorias y los resultados de ese arquetipo: más mientras más partidas haya, hasta la mitad con 500 partidas, y nada mientras haya cartas que no son legales en Estándar. La frase bajo la calificación muestra qué parte viene de ahí. Los roles de las cartas se leen del texto de la carta, que casi siempre acierta y a veces no. Lee los hallazgos y no te preocupes por el decimal.",
   "No card data for this deck yet.": "Todavía no hay datos de cartas para esta baraja.",
   "These could not be looked up, so they count for nothing in the grade. Opening the deck again while online tries again.": "No se pudieron consultar, así que no cuentan en la calificación. Abrir la baraja otra vez con conexión vuelve a intentarlo.",
   "Grade history": "Historial de calificaciones",
   "Upgrades": "Mejoras",
+  "Upgrades show once the list follows the deck rules. Fix first says what to change.": "Las mejoras aparecen cuando la lista cumple las reglas de la baraja. «Corrige primero» dice qué cambiar.",
+  "Upgrades show once every card in the list is Standard legal.": "Las mejoras aparecen cuando todas las cartas de la lista son legales en Estándar.",
+  "Upgrades show once the card data for this list has loaded.": "Las mejoras aparecen cuando terminan de cargarse los datos de las cartas de esta lista.",
+  "Upgrades could not be worked out for this list just now. Open the deck again to retry.": "Ahora mismo no se pudieron calcular las mejoras de esta lista. Vuelve a abrir la baraja para intentarlo de nuevo.",
   "Upgrades need a connection the first time, to read the cards to try.": "Las mejoras necesitan conexión la primera vez, para leer las cartas a probar.",
   "Checking which card swaps raise this grade.": "Revisando qué cambios de cartas suben esta calificación.",
   "Main attacker": "Atacante principal",
@@ -492,9 +496,11 @@ const I18N_ES = {
   "This may be out of date": "Esto podría estar desactualizado",
   "Pokémon usually announces rotation in January. If it has, update the app to see the official date.": "Pokémon suele anunciar la rotación en enero. Si ya lo hizo, actualiza la app para ver la fecha oficial.",
   "Rotation is a Standard format change. This deck is set to Expanded, so nothing here rotates next.": "La rotación es un cambio del formato Estándar. Esta baraja está en Expandido, así que nada aquí rota en la próxima.",
-  ", not announced yet.": ", todavía sin anunciar.",
+  ", not announced yet.": ", aunque aún no se ha anunciado.",
   "cards are expected to leave Standard in": "se espera que salgan de Estándar en",
   "cards leave Standard in": "salen de Estándar en",
+  "are expected to leave Standard in": "deberían salir de Estándar en",
+  "leave Standard in": "salen de Estándar en",
   "). For a Pokémon, the reprint needs the same name, attacks and Abilities. The marks come from the card database, so check a card you are unsure of before an event.": "). Para un Pokémon, la reimpresión necesita el mismo nombre, ataques y Habilidades. Las marcas vienen de la base de datos de cartas, así que revisa cualquier carta de la que dudes antes de un evento.",
   "A card with an older mark stays legal while a reprint with a legal mark exists (": "Una carta con una marca anterior sigue siendo legal mientras exista una reimpresión con una marca legal (",
   "Pokémon has not announced it yet (": "Pokémon todavía no lo anunció (",
@@ -573,7 +579,7 @@ const I18N_ES = {
   "In this deck:": "En esta baraja:",
   "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "RdyDeck todavía no leyó el texto de esta carta, así que no tiene etiqueta. Abre la baraja con conexión para leerla.",
   "Mulligan": "Mulligan",
-  "Opening 7 with no Basic": "7 iniciales sin Básico",
+  "Opening 7 with no Basic": "Mano inicial de 7 sin Básico",
   "Draw card T1": "Carta de robo T1",
   "A draw card you can use, in your first 8": "Una carta de robo que puedes usar, en tus primeras 8",
   "Attacker by T2, any hand": "Atacante para T2, cualquier mano",
@@ -585,7 +591,7 @@ const I18N_ES = {
   "or": "o",
   "And another card": "Y otra carta",
   "By": "Para",
-  "Stuck in prizes: 0.0%": "Atascada en premios: 0.0%",
+  "Stuck in prizes: 0.0%": "Bloqueo por premios: 0.0%",
   "Games where the prizes hold so many copies that hand and deck cannot make this until you take the right prize. The same on every turn.": "Partidas donde los premios tienen tantas copias que la mano y la baraja no pueden lograrlo hasta que tomes el premio correcto. Igual en todos los turnos.",
   "No Basic Pokemon was read in this list, so every opening hand counts.": "No se leyó ningún Pokémon Básico en esta lista, así que cuentan todas las manos iniciales.",
   "Raw draws only: search and draw cards are not played out, so a real game lands at or above these numbers.": "Solo robos puros: no se juegan cartas de búsqueda ni de robo, así que una partida real queda en estos números o más arriba.",
@@ -961,11 +967,13 @@ const I18N_ES = {
   "Offline": "Sin conexión",
   "to fix": "por corregir",
   "working well": "funcionan bien",
-  "The grade is Synergy times Power, divided by 10.": "La calificación es Sinergia por Poder, dividido entre 10.",
+  "The grade is Synergy times Power, divided by 10.": "La calificación es el producto de Sinergia y Poder, dividido entre 10.",
   "Synergy under 0.6 counts as 0.6.": "Sinergia por debajo de 0.6 cuenta como 0.6.",
   "Power under 1.2 counts as 1.2.": "Poder por debajo de 1.2 cuenta como 1.2.",
   "If that is the wrong deck, pick the right one under Against the meta.": "Si esa no es la baraja correcta, elige la correcta en Contra el meta.",
   "There are few games so far, so results count for little.": "Todavía hay pocas partidas, así que los resultados cuentan poco.",
+  "No online tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games.": "Todavía no hay resultados de torneos online que coincidan con esta baraja, así que la calificación lee solo las cartas y no puede ver cómo le va a la lista en partidas reales.",
+  "Until it has results, it is not called Tournament-ready.": "Hasta que tenga resultados, no se le llama Lista para torneo.",
   "The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.": "El Pokémon en torno al cual giran el plan, las mejoras y las probabilidades de robo. Auto lo lee de las cartas; elígelo tú si tu baraja ataca con otro, o si elige su atacante en cada turno.",
   "Each time you change this list, its new grade is kept here, so you can see it climb.": "Cada vez que cambias esta lista, su nueva calificación se guarda aquí, para que la veas subir.",
   "Ties count as matches, not wins.": "Los empates cuentan como partidas, no como victorias.",
@@ -994,6 +1002,7 @@ const I18N_ES = {
   "No matches logged yet. Log each round at your next event: who you played, the result and how many prizes each of you took.": "Todavía no hay partidas anotadas. Anota cada ronda en tu próximo evento: contra quién jugaste, el resultado y cuántos premios tomó cada uno.",
   "The format changes with every new set, so check a list before an event.": "El formato cambia con cada expansión nueva, así que revisa una lista antes de un evento.",
   "Lists as posted on Limitless (play.limitlesstcg.com).": "Listas tal como se publicaron en Limitless (play.limitlesstcg.com).",
+  "Lists as posted on Limitless (limitlesstcg.com).": "Listas tal como se publicaron en Limitless (limitlesstcg.com).",
   "Or write to support@rdydeck.com": "O escribe a support@rdydeck.com",
   "Same list, same numbers.": "Misma lista, mismos números.",
   "Tab": "Tab",
@@ -1004,7 +1013,7 @@ const I18N_ES = {
   "Enough Rare Candy to land your Stage 2 Pokemon before the game runs away.": "Suficientes Rare Candy para jugar tus Pokémon de Fase 2 antes de que la partida se escape.",
   "Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.": "Nada rellena tu mano de forma confiable. La baraja se atasca en cuanto se acaban tus cartas iniciales.",
   "Every Pokemon here gives up two prizes, so the opponent needs only three knockouts. That is normal for a deck built on Pokemon ex, so each one has to take more than one knockout of its own.": "Cada Pokémon aquí entrega dos premios, así que el rival solo necesita dejar Fuera de Combate a tres. Eso es normal en una baraja de Pokémon ex, así que cada uno tiene que dejar Fuera de Combate a más de un Pokémon rival.",
-  "The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.": "La lista lleva una sola copia de su atacante principal. Queda en tus premios en más o menos 1 de cada 10 partidas, y una vez que queda Fuera de Combate la baraja no tiene quién lleve el plan. La mayoría de las listas lleva de 2 a 4.",
+  "The list runs one copy of its main attacker. It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan. Most lists run 2 to 4.": "La lista lleva una sola copia de su atacante principal. Queda en tus premios en más o menos 1 de cada 10 partidas, y una vez que queda Fuera de Combate la baraja se queda sin nadie que lleve adelante el plan. La mayoría de las listas lleva de 2 a 4.",
   "How hard the best attacker hits the format's biggest threats.": "Qué tan fuerte pega el mejor atacante contra las mayores amenazas del formato.",
   "Fine if you can take the return hit.": "Está bien si puedes aguantar el golpe de vuelta.",
   "Read the card for what that needs.": "Lee la carta para ver qué necesita.",
@@ -1119,7 +1128,7 @@ const I18N_PT = {
   "How does prize card training work?": "Como funciona o treino de cartas de Prêmio?",
   "RdyDeck sets some cards from your deck aside as prizes, 6 by default or 4 or 8, and you flip through the rest. Then you name the cards that are missing. You can add a time limit, and after a few games RdyDeck shows which cards you miss most.": "O RdyDeck separa algumas cartas do seu deck como prêmios, 6 por padrão ou 4 ou 8, e você passa pelo resto. Depois você diz quais cartas estão faltando. Dá para colocar limite de tempo, e depois de alguns jogos o RdyDeck mostra quais cartas você mais erra.",
   "How does the deck grade work?": "Como funciona a nota do deck?",
-  "The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.": "A nota vai de 0 a 10. Sinergia verifica se as cartas se apoiam: os atacantes conseguem pagar os ataques, as evoluções têm de onde evoluir e o deck consegue comprar e buscar. Poder verifica se o plano consegue vencer: quanto dano causa, quantos prêmios entrega e quão rápido monta o jogo. A nota é Sinergia vezes Poder, dividido por 10, então a mais fraca puxa a nota para baixo. Uma parte da Sinergia, o quanto a lista é coesa, só baixa a nota quando a lista está espalhada, então uma lista focada pode ficar um pouco acima de Sinergia vezes Poder. Quando o deck corresponde a um arquétipo de torneios online recentes, parte da nota, até a metade quando há 500 partidas, vem dos resultados desse arquétipo. Cada nota mostra o próprio cálculo e traz uma lista curta do que corrigir primeiro.",
+  "The grade is out of 10. Synergy checks that the cards support each other: attackers can pay for their attacks, evolutions have what they evolve from, and the deck can draw and search. Power checks that the plan can win: how hard it hits, how many prizes it gives up and how fast it sets up. The grade is Synergy times Power, divided by 10, so the weaker one pulls the grade down. One part of Synergy, how tightly the list fits together, lowers the grade only when the fit is loose, so a focused list can grade a little above Synergy times Power. When the deck matches an archetype from recent online tournaments, part of the grade, up to half once it has 500 games, comes from that archetype's results. Each grade shows its own math and comes with a short list of what to fix first.": "A nota vai de 0 a 10. Sinergia verifica se as cartas se apoiam: os atacantes conseguem pagar os ataques, as evoluções têm de onde evoluir e o deck consegue comprar e buscar. Poder verifica se o plano consegue vencer: quanto dano causa, quantos prêmios entrega e quão rápido monta o jogo. A nota é o produto de Sinergia e Poder, dividido por 10, então o valor mais baixo dos dois puxa a nota para baixo. Uma parte da Sinergia, o quanto a lista é coesa, só baixa a nota quando a lista está espalhada, então uma lista focada pode ficar um pouco acima do produto de Sinergia e Poder. Quando o deck corresponde a um arquétipo de torneios online recentes, parte da nota, até a metade quando há 500 partidas, vem dos resultados desse arquétipo. Cada nota mostra o próprio cálculo e traz uma lista curta do que corrigir primeiro.",
   "How does the rotation check work?": "Como funciona a verificação de rotação?",
   "RdyDeck reads each card's regulation mark and shows which cards are not Standard legal now, which may rotate next, and which are safe. A card counts as safe only when its mark is confirmed, and a deck with cards that are not legal now grades 4.9 at most. An older printing still counts when a reprint with the same name, attacks and Abilities is legal now, so old art is fine.": "O RdyDeck lê a marca de regulamentação de cada carta e mostra quais não são legais no Padrão agora, quais podem rotacionar na próxima e quais estão seguras. Uma carta só conta como segura quando a marca está confirmada, e um deck com cartas que não são legais agora fica com nota 4.9 no máximo. Uma impressão antiga ainda vale quando existe uma reimpressão legal com o mesmo nome, ataques e Habilidades, então a arte antiga também vale.",
   "Which deck lists can I import?": "Quais listas posso importar?",
@@ -1431,11 +1440,15 @@ const I18N_PT = {
   "under 3": "abaixo de 3",
   "checks that your cards support each other: every attacker can pay for its attacks, evolutions have what they evolve from, and the deck can draw and search.": "verifica se suas cartas se apoiam: todo atacante consegue pagar os ataques, as evoluções têm de onde evoluir e o deck consegue comprar e buscar.",
   "checks that the plan can win: how hard it hits against the format's biggest Pokemon, how many prizes it gives up, and how fast it sets up.": "verifica se o plano consegue vencer: quanto dano causa contra os maiores Pokémon do formato, quantos prêmios entrega e quão rápido monta o jogo.",
-  "The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full, but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not worry about the decimal place.": "A nota das cartas é Sinergia vezes Poder, dividido por 10. O quanto a lista é coesa baixa a Sinergia por inteiro, mas só baixa a nota quando a lista está espalhada. Quando seu deck corresponde a um arquétipo de torneios online recentes, parte da nota vem da taxa de vitória e dos resultados desse arquétipo: mais quanto mais partidas houver, até a metade com 500 partidas, e nada enquanto houver cartas que não são legais no Padrão. A frase abaixo da nota mostra quanto. Os papéis das cartas são lidos do texto da carta, que quase sempre acerta e às vezes não. Leia os achados e não se preocupe com a casa decimal.",
+  "The card grade is Synergy times Power, divided by 10. How tightly the list fits together lowers Synergy in full, but lowers the grade only when the fit is loose. When your deck matches an archetype from recent online tournaments, part of the grade comes from that archetype's win rate and finishes: more of it the more games there are, up to half at 500 games, and none while cards are not Standard legal. The sentence under the grade shows how much. Card roles are read from card text, which is usually right and sometimes not. Read the findings and do not worry about the decimal place.": "A nota das cartas é o produto de Sinergia e Poder, dividido por 10. O quanto a lista é coesa baixa a Sinergia por inteiro, mas só baixa a nota quando a lista está espalhada. Quando seu deck corresponde a um arquétipo de torneios online recentes, parte da nota vem da taxa de vitória e dos resultados desse arquétipo: mais quanto mais partidas houver, até a metade com 500 partidas, e nada enquanto houver cartas que não são legais no Padrão. A frase abaixo da nota mostra quanto vem daí. Os papéis das cartas são lidos do texto da carta, que quase sempre acerta e às vezes não. Leia os achados e não se preocupe com a casa decimal.",
   "No card data for this deck yet.": "Ainda não há dados das cartas deste deck.",
   "These could not be looked up, so they count for nothing in the grade. Opening the deck again while online tries again.": "Não deu para consultar essas cartas, então elas não contam na nota. Abrir o deck de novo com internet tenta outra vez.",
   "Grade history": "Histórico de notas",
   "Upgrades": "Melhorias",
+  "Upgrades show once the list follows the deck rules. Fix first says what to change.": "As melhorias aparecem quando a lista segue as regras do deck. “Corrija primeiro” diz o que mudar.",
+  "Upgrades show once every card in the list is Standard legal.": "As melhorias aparecem quando todas as cartas da lista são legais no Padrão.",
+  "Upgrades show once the card data for this list has loaded.": "As melhorias aparecem quando os dados das cartas desta lista terminam de carregar.",
+  "Upgrades could not be worked out for this list just now. Open the deck again to retry.": "Não foi possível calcular as melhorias desta lista agora. Abra o deck de novo para tentar outra vez.",
   "Upgrades need a connection the first time, to read the cards to try.": "As melhorias precisam de internet na primeira vez, para ler as cartas a testar.",
   "Checking which card swaps raise this grade.": "Verificando quais trocas de cartas sobem esta nota.",
   "Main attacker": "Atacante principal",
@@ -1471,9 +1484,11 @@ const I18N_PT = {
   ", not announced yet.": ", data ainda não anunciada.",
   "cards are expected to leave Standard in": "devem sair do Padrão em",
   "cards leave Standard in": "saem do Padrão em",
+  "are expected to leave Standard in": "devem sair do Padrão em",
+  "leave Standard in": "saem do Padrão em",
   "). For a Pokémon, the reprint needs the same name, attacks and Abilities. The marks come from the card database, so check a card you are unsure of before an event.": "). Para um Pokémon, a reimpressão precisa ter o mesmo nome, ataques e Habilidades. As marcas vêm do banco de dados de cartas, então confira qualquer carta de que tiver dúvida antes de um evento.",
   "A card with an older mark stays legal while a reprint with a legal mark exists (": "Uma carta com marca antiga continua legal enquanto existir uma reimpressão com marca legal (",
-  "Pokémon has not announced it yet (": "A Pokémon ainda não anunciou (",
+  "Pokémon has not announced it yet (": "A Pokémon Company ainda não anunciou (",
   "Source:": "Fonte:",
   "Grade vs win rate": "Nota x taxa de vitória",
   "Cards alone:": "Só as cartas:",
@@ -1549,7 +1564,7 @@ const I18N_PT = {
   "In this deck:": "Neste deck:",
   "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "O RdyDeck ainda não leu o texto desta carta, então ela não tem rótulo. Abra o deck com internet para ler.",
   "Mulligan": "Mulligan",
-  "Opening 7 with no Basic": "7 iniciais sem Básico",
+  "Opening 7 with no Basic": "Mão inicial de 7 sem Básico",
   "Draw card T1": "Carta de compra T1",
   "A draw card you can use, in your first 8": "Uma carta de compra que dá para usar, nas suas 8 primeiras",
   "Attacker by T2, any hand": "Atacante até T2, qualquer mão",
@@ -1937,11 +1952,13 @@ const I18N_PT = {
   "Offline": "Offline",
   "to fix": "para corrigir",
   "working well": "funcionando bem",
-  "The grade is Synergy times Power, divided by 10.": "A nota é Sinergia vezes Poder, dividido por 10.",
+  "The grade is Synergy times Power, divided by 10.": "A nota é o produto de Sinergia e Poder, dividido por 10.",
   "Synergy under 0.6 counts as 0.6.": "Sinergia abaixo de 0.6 conta como 0.6.",
   "Power under 1.2 counts as 1.2.": "Poder abaixo de 1.2 conta como 1.2.",
   "If that is the wrong deck, pick the right one under Against the meta.": "Se esse não for o deck certo, escolha o certo em Contra o meta.",
   "There are few games so far, so results count for little.": "Ainda há poucas partidas, então os resultados contam pouco.",
+  "No online tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games.": "Ainda não há resultados de torneios online que correspondam a este deck, então a nota lê só as cartas e não consegue ver como a lista se sai em partidas reais.",
+  "Until it has results, it is not called Tournament-ready.": "Até ter resultados, ele não é chamado de Pronto para torneio.",
   "The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.": "O Pokémon em torno do qual o plano, as melhorias e as chances de compra são montados. Auto lê isso das cartas; escolha você se o seu deck ataca com outro, ou se escolhe o atacante a cada turno.",
   "Each time you change this list, its new grade is kept here, so you can see it climb.": "Cada vez que você muda esta lista, a nova nota fica guardada aqui, para você ver a nota subir.",
   "Ties count as matches, not wins.": "Empates contam como partidas, não como vitórias.",
@@ -1970,6 +1987,7 @@ const I18N_PT = {
   "No matches logged yet. Log each round at your next event: who you played, the result and how many prizes each of you took.": "Ainda não há partidas registradas. Registre cada rodada no seu próximo evento: contra quem jogou, o resultado e quantos prêmios cada um pegou.",
   "The format changes with every new set, so check a list before an event.": "O formato muda a cada coleção nova, então confira uma lista antes de um evento.",
   "Lists as posted on Limitless (play.limitlesstcg.com).": "Listas como foram publicadas no Limitless (play.limitlesstcg.com).",
+  "Lists as posted on Limitless (limitlesstcg.com).": "Listas como foram publicadas no Limitless (limitlesstcg.com).",
   "Or write to support@rdydeck.com": "Ou escreva para support@rdydeck.com",
   "Same list, same numbers.": "Mesma lista, mesmos números.",
   "Tab": "Tab",
@@ -2007,12 +2025,13 @@ const I18N_PAT = [
   [/^Today's deck: (.+)$/, 'Baraja de hoy: $1', 'Deck de hoje: $1'],
   [/^(.+), (\d+(?:st|nd|rd|th)) place on (.+), graded in one tap$/, '$1, $2 lugar el $3, calificada con un toque', '$1, $2 lugar em $3, avaliado com um toque'],
   [/^(\d+(?:st|nd|rd|th)), (.+) \((\d+) players, online\), (.+)\. Played by (.+)$/, '$1, $2 ($3 jugadores, online), $4. Jugado por $5', '$1, $2 ($3 jogadores, online), $4. Jogado por $5'],
+  [/^(\d+(?:st|nd|rd|th)), ([^,]+), ([^,]+(?:, \d{4})?)\. Played by (.+?)(?:, (\d+) cards)?$/, (m, p, e, d, b, n) => `${p}, ${e}, ${d}. Jugado por ${b}` + (n ? `, ${n} cartas` : ''), (m, p, e, d, b, n) => `${p}, ${e}, ${d}. Jogado por ${b}` + (n ? `, ${n} cartas` : '')],
   [/^(\d+(?:st|nd|rd|th)) of (\d+)$/, '$1 de $2', '$1 de $2'],
   [/^(\d+) to fix$/, '$1 por corregir', '$1 para corrigir'],
   [/^(\d+) cards? not read$/, (m, n) => n === '1' ? '1 carta sin leer' : n + ' cartas sin leer', (m, n) => n === '1' ? '1 carta não lida' : n + ' cartas não lidas'],
   [/^(\d+) more$/, '$1 más', 'Mais $1'],
   [/^(\d+) more to fix$/, '$1 más por corregir', 'Mais $1 para corrigir'],
-  [/^(\d+) safe card names?$/, (m, n) => n + (n === '1' ? ' carta segura' : ' cartas seguras'), (m, n) => n + (n === '1' ? ' carta segura' : ' cartas seguras')],
+  [/^(\d+) safe card names?$/, (m, n) => n + (n === '1' ? ' nombre de carta seguro' : ' nombres de carta seguros'), (m, n) => n + (n === '1' ? ' nome de carta seguro' : ' nomes de carta seguros')],
   [/^Show all (\d+) cards$/, 'Mostrar las $1 cartas', 'Mostrar todas as $1 cartas'],
   [/^(\d+) in list$/, '$1 en la lista', '$1 na lista'],
   [/^(\d+) unseen$/, '$1 sin ver', '$1 não vistas'],
@@ -2055,7 +2074,7 @@ const I18N_PAT = [
   [/^You already have this list as "(.+)"\.$/, 'Ya tienes esta lista como "$1".', 'Você já tem esta lista como "$1".'],
   [/^The (\d+) problems that cost you the most, worst first\.$/, 'Los $1 problemas que más te cuestan, del peor al menor.', 'Os $1 problemas que mais custam, do mais grave para o menos grave.'],
   [/^(\d+) problems stop this deck from working\. Fix those first\.$/, '$1 problemas impiden que esta baraja funcione. Corrígelos primero.', '$1 problemas impedem este deck de funcionar. Corrija esses primeiro.'],
-  [/^Fix first shows the (\d+) problems found\.$/, 'Corrige primero muestra los $1 problemas encontrados.', 'Corrija primeiro mostra os $1 problemas encontrados.'],
+  [/^Fix first shows the (\d+) problems found\.$/, 'En Corrige primero verás los $1 problemas encontrados.', 'Corrija primeiro mostra os $1 problemas encontrados.'],
   [/^(\d+) problems also stop this deck from working\.$/, 'Además, $1 problemas impiden que esta baraja funcione.', 'Além disso, $1 problemas impedem este deck de funcionar.'],
   [/^(\d+) other changes would make it stronger\.$/, 'Otros $1 cambios la harían más fuerte.', 'Outras $1 mudanças o deixariam mais forte.'],
   [/^Fix the deck (rule|rules) above before an event\.$/, 'Corrige las reglas de construcción de arriba antes de un evento.', 'Corrija as regras de montagem acima antes de um evento.'],
@@ -2077,7 +2096,7 @@ const I18N_PAT = [
   [/^([^;()]+?) grows into its damage$/, '$1 va subiendo su daño', '$1 vai aumentando o dano'],
   [/^Main attacker: (.+)$/, 'Atacante principal: $1', 'Atacante principal: $1'],
   [/^Support: (.+)$/, 'Apoyo: $1', 'Suporte: $1'],
-  [/^Abilities: (.+)$/, 'Habilidades: $1', 'Habilidades: $1'],
+  [/^Abilities: (.+)$/, (m, x) => 'Habilidades: ' + x.replace(/ and more$/, ' y más'), (m, x) => 'Habilidades: ' + x.replace(/ and more$/, ' e mais')],
   [/^Auto: (.+)$/, 'Auto: $1', 'Auto: $1'],
   [/^Closest match: (.+)$/, 'Más parecida: $1', 'Mais parecido: $1'],
   [/^(.+) \(missed\)$/, '$1 (fallada)', '$1 (errada)'],
@@ -2105,7 +2124,7 @@ const I18N_PAT = [
   [/^This list's cards next to how (.+) decks do in Limitless online tournaments\.$/, 'Las cartas de esta lista junto a cómo les va a las barajas de $1 en los torneos online de Limitless.', 'As cartas desta lista ao lado de como os decks de $1 se saem nos torneios online do Limitless.'],
   [/^How decks like this one did in (\d+) Limitless online tournaments, since (.+) came out \((.+) to (.+)\)\.$/, 'Cómo les fue a barajas como esta en $1 torneos online de Limitless, desde que salió $2 ($3 a $4).', 'Como decks como este se saíram em $1 torneios online do Limitless, desde que saiu $2 ($3 a $4).'],
   [/^of (\d+) matches against other decks \((\d+) wins, (\d+) losses, (\d+) ties\)\.$/, 'de $1 partidas contra otras barajas ($2 victorias, $3 derrotas, $4 empates).', 'de $1 partidas contra outros decks ($2 vitórias, $3 derrotas, $4 empates).'],
-  [/^decks, counting wins and how high lists finish\. Its (\d+) lists finished in the top (\d+)% of the field on average, and (\d+) made the top 16, where an average deck with as many lists places (\d+)\.$/, 'barajas, contando victorias y qué tan alto terminan las listas. Sus $1 listas terminaron en promedio en el $2% superior, y $3 llegaron al top 16, donde una baraja promedio con la misma cantidad de listas coloca $4.', 'decks, contando vitórias e quão alto as listas terminam. As $1 listas dele terminaram em média entre os $2% melhores, e $3 chegaram ao top 16, onde um deck médio com o mesmo número de listas coloca $4.'],
+  [/^decks, counting wins and how high lists finish\. Its (\d+) lists finished in the top (\d+)% of the field on average, and (\d+) made the top 16, where an average deck with as many lists places (\d+)\.$/, 'barajas, contando victorias y qué tan alto terminan las listas. Sus $1 listas terminaron en promedio en el $2% superior, y $3 llegaron al top 16, mientras que una baraja promedio con tantas listas metería $4.', 'decks, contando vitórias e quão alto as listas terminam. As $1 listas dele terminaram em média entre os $2% melhores, e $3 chegaram ao top 16, enquanto um deck médio com tantas listas emplacaria $4.'],
   [/^This is the same list, card for card, that finished (\d+(?:st|nd|rd|th)) at (.+) on (\d+ \w+ \d{4})\.( That list was played as (.+)\.)?$/, (m, p, e, d, x, n) => 'Es la misma lista, carta por carta, que terminó ' + p + ' en ' + e + ' el ' + d + '.' + (x ? ' Esa lista se jugó como ' + n + '.' : ''), (m, p, e, d, x, n) => 'É a mesma lista, carta por carta, que terminou em ' + p + ' no ' + e + ' em ' + d + '.' + (x ? ' Essa lista foi jogada como ' + n + '.' : '')],
   [/^Favored against (.+), unfavored against (.+)\.$/, (m, a, b) => 'Favorable contra ' + a.replace(/ and /g, ' y ') + ', desfavorable contra ' + b.replace(/ and /g, ' y ') + '.', (m, a, b) => 'Favorecido contra ' + a.replace(/ and /g, ' e ') + ', desfavorecido contra ' + b.replace(/ and /g, ' e ') + '.'],
   [/^(Favored|Unfavored) against (.+)\.$/, (m, f, a) => (f === 'Favored' ? 'Favorable' : 'Desfavorable') + ' contra ' + a.replace(/ and /g, ' y ') + '.', (m, f, a) => (f === 'Favored' ? 'Favorecido' : 'Desfavorecido') + ' contra ' + a.replace(/ and /g, ' e ') + '.'],
@@ -2113,6 +2132,7 @@ const I18N_PAT = [
   [/^Top (\d+) decks right now$/, 'Las $1 mejores barajas ahora', 'Os $1 melhores decks agora'],
   [/^Limitless online tournaments, (\d+) events and (\d+) players in the last (\d+) days, as of (.+)\.$/, 'Torneos online de Limitless, $1 eventos y $2 jugadores en los últimos $3 días, hasta el $4.', 'Torneios online do Limitless, $1 eventos e $2 jogadores nos últimos $3 dias, em $4.'],
   [/^Data as of (.+), updated weekly\.$/, 'Datos del $1, actualizados cada semana.', 'Dados de $1, atualizados toda semana.'],
+  [/^Data as of (.+), built into this version\.$/, 'Datos del $1, incluidos en esta versión.', 'Dados de $1, incluídos nesta versão.'],
   [/^Lists as of (.+)\.$/, 'Listas del $1.', 'Listas de $1.'],
   [/^RdyDeck v[\d.]+\.?$/, m => m, m => m],
   [/^RdyDeck [\d.]+$/, m => m, m => m],
@@ -2123,18 +2143,18 @@ const I18N_PAT = [
   [/^Draws you cards, one of (\d+) cards that do\.$/, 'Te hace robar cartas, una de las $1 cartas que lo hacen.', 'Faz você comprar cartas, uma das $1 cartas que fazem isso.'],
   [/^Disrupts your opponent, one of (\d+) cards that do\.$/, 'Entorpece a tu rival, una de las $1 cartas que lo hacen.', 'Atrapalha o oponente, uma das $1 cartas que fazem isso.'],
   [/^Disrupts your opponent: (\d+) of the (\d+) cards that do\.$/, 'Entorpece a tu rival: $1 de las $2 cartas que lo hacen.', 'Atrapalha o oponente: $1 das $2 cartas que fazem isso.'],
-  [/^Helps pay Energy costs for (.+)\.$/, 'Ayuda a pagar los costes de Energía de $1.', 'Ajuda a pagar os custos de Energia de $1.'],
+  [/^Helps pay Energy costs for (?!.*, \d+ of the \d+ cards that do\.$)(.+)\.$/, 'Ayuda a pagar los costes de Energía de $1.', 'Ajuda a pagar os custos de Energia de $1.'],
   [/^Key targets: (.+)\.$/, (m, a) => 'Objetivos clave: ' + a.replace(/ and ([^,]+)$/, ' y $1') + '.', (m, l) => 'Alvos principais: ' + l.replace(/ and ([^,]+)$/, ' e $1') + '.'],
   [/^ACE SPEC: (.+)$/, 'AS TÁCTICO: $1', 'ÁS TÁTICO: $1'],
   [/^Ready by turn 2: (.+)$/, 'Listo para el turno 2: $1', 'Pronto até o turno 2: $1'],
   [/^(.+) ready by turn 2: (\d+)% to (\d+)%$/, '$1 listo para el turno 2: $2% a $3%', '$1 pronto até o turno 2: $2% a $3%'],
-  [/^Line locked in prizes: ([\d.]+%)$/, 'Línea atascada en premios: $1', 'Linha presa nos prêmios: $1'],
-  [/^Stuck in prizes: ([\d.]+%)$/, 'Atascada en premios: $1', 'Presa nos prêmios: $1'],
+  [/^Line locked in prizes: (<?[\d.]+%)$/, 'Línea atascada en premios: $1', 'Linha presa nos prêmios: $1'],
+  [/^Stuck in prizes: (<?[\d.]+%)$/, 'Bloqueo por premios: $1', 'Presa nos prêmios: $1'],
   [/^How many Basic Pokemon your kept opening hand holds \((\d+) in the list\), and how often each one is there for the Active Spot\.$/, 'Cuántos Pokémon Básicos tiene tu mano inicial (hay $1 en la lista), y qué tan seguido está cada uno para el Puesto Activo.', 'Quantos Pokémon Básicos tem a mão inicial que você mantém ($1 na lista), e com que frequência cada um está lá para o Campo Ativo.'],
   [/^([\d.]+) to ([\d.]+)$/, '$1 a $2', '$1 a $2'],
-  [/^((?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}|\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2})$/, m => m, m => m],
-  [/^Synergy shows ([\d.]+) after a cut for how tightly the list fits, but that cut lowers the grade only when the fit is loose, so the grade uses Synergy before the cut, ([\d.]+): ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'Sinergia muestra $1 después de un recorte por qué tan compacta es la lista, pero ese recorte baja la calificación solo cuando la lista está dispersa, así que la calificación usa Sinergia antes del recorte, $2: $3 por $4, dividido entre 10, da $5.', 'A Sinergia mostra $1 depois de um corte pelo quanto a lista é coesa, mas esse corte só baixa a nota quando a lista está espalhada, então a nota usa a Sinergia antes do corte, $2: $3 vezes $4, dividido por 10, dá $5.'],
-  [/^The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'La calificación es Sinergia por Poder, dividido entre 10, así que la más débil baja toda la calificación: $1 por $2, dividido entre 10, da $3.', 'A nota é Sinergia vezes Poder, dividido por 10, então a mais fraca puxa a nota toda para baixo: $1 vezes $2, dividido por 10, dá $3.'],
+  [/^((?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}|\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2})$/, m => i18nGtDate(m, 'es') || m, m => i18nGtDate(m, 'pt') || m],
+  [/^Synergy shows ([\d.]+) after a cut for how tightly the list fits, but that cut lowers the grade only when the fit is loose, so the grade uses Synergy before the cut, ([\d.]+): ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'Sinergia muestra $1 tras un recorte por lo compacta que es la lista, pero ese recorte solo baja la calificación cuando la lista está dispersa, así que la calificación usa Sinergia antes del recorte, que es $2: $3 por $4 entre 10 da $5.', 'A Sinergia mostra $1 depois de um corte pela coesão da lista, mas esse corte só baixa a nota quando a lista está espalhada, então a nota usa a Sinergia antes do corte, que é $2: $3 vezes $4 dividido por 10 dá $5.'],
+  [/^The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'La calificación es el producto de Sinergia y Poder, dividido entre 10, así que el valor más bajo de los dos arrastra toda la calificación hacia abajo: $1 por $2 entre 10 da $3.', 'A nota é o produto de Sinergia e Poder, dividido por 10, então o valor mais baixo dos dois puxa a nota toda para baixo: $1 vezes $2 dividido por 10 dá $3.'],
   [/^(\d+)% of the grade comes from (.+)'s online tournament results(?: since (.+?))?(?: \(as of (.+?)\))?: ([\d.]+%) wins over ([\d,]+) games(, with games since the newest set counted three times)?\.$/, (m, p, n, s, a, w, g, x) => p + '% de la calificación viene de los resultados de ' + n + ' en torneos online' + (s ? ' desde ' + s : '') + (a ? ' (hasta el ' + a + ')' : '') + ': ' + w + ' de victorias en ' + g + ' partidas' + (x ? ', con las partidas desde la expansión más reciente contadas tres veces' : '') + '.', (m, p, n, s, a, w, g, x) => p + '% da nota vem dos resultados de ' + n + ' em torneios online' + (s ? ' desde ' + s : '') + (a ? ' (em ' + a + ')' : '') + ': ' + w + ' de vitórias em ' + g + ' partidas' + (x ? ', com as partidas desde a coleção mais nova contando três vezes' : '') + '.'],
   [/^Those results alone score ([\d.]+), so the list's ([\d.]+) becomes ([\d.]+)\.$/, 'Esos resultados por sí solos califican $1, así que el $2 de la lista pasa a $3.', 'Esses resultados sozinhos dão nota $1, então o $2 da lista vira $3.'],
   [/^It is held at ([\d.]+) because some cards are not Standard legal now\.$/, 'Se queda en $1 porque algunas cartas no son legales en Estándar ahora.', 'Fica em $1 porque algumas cartas não são legais no Padrão agora.'],
@@ -2144,12 +2164,12 @@ const I18N_PAT = [
   [/^Legal now: (\w) mark and later\.$/, 'Legal ahora: marca $1 en adelante.', 'Legal agora: marca $1 em diante.'],
   [/^The (\w(?: and \w)*) mark left on (.+?) at events and (.+?) on Live \($/, (m, k, a, b) => 'La marca ' + k.replace(' and ', ' y ') + ' salió el ' + a + ' en los eventos y el ' + b + ' en Live (', (m, k, a, b) => 'A marca ' + k.replace(' and ', ' e ') + ' saiu em ' + a + ' nos eventos e em ' + b + ' no Live ('],
   [/^(.+), any opening hand, from raw draws alone to with your search cards$/, '$1, cualquier mano inicial, de solo robos puros a con tus cartas de búsqueda', '$1, qualquer mão inicial, de só compras puras a com suas cartas de busca'],
-  [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, '$1 mezclas simuladas de esta lista exacta de $2 cartas.', '$1 embaralhamentos simulados desta lista exata de $2 cartas.'],
+  [/^([\d,]+) simulated shuffles of this exact (\d+) card list\.$/, (m, a, b) => a.replace(/,/g, '.') + ' mezclas simuladas de esta lista exacta de ' + b + ' cartas.', (m, a, b) => a.replace(/,/g, '.') + ' embaralhamentos simulados desta lista exata de ' + b + ' cartas.'],
   [/^Chance of at least (\d+) of (.+) by your turn (\d+) \(your first (\d+) cards\)\.$/, (m, a, l, t, f) => 'Probabilidad de al menos ' + a + ' de ' + l.replace(/ or ([^,]+)$/, ' o $1') + ' para tu turno ' + t + ' (tus primeras ' + f + ' cartas).', (m, a, l, t, f) => 'Chance de pelo menos ' + a + ' de ' + l.replace(/ or ([^,]+)$/, ' ou $1') + ' até o seu turno ' + t + ' (suas primeiras ' + f + ' cartas).'],
   [/^No Basic was read, so mulligans are not taken out\.$/, 'No se leyó ningún Básico, así que no se descuentan los mulligans.', 'Nenhum Básico foi lido, então os mulligans não são descontados.'],
   [/^Needs (.+) among your first (\d+) cards\.$/, 'Necesita $1 entre tus primeras $2 cartas.', 'Precisa de $1 entre suas primeiras $2 cartas.'],
   [/^(\d+)% is raw draws alone, the floor\.$/, '$1% es solo con robos puros, el mínimo.', '$1% é só com compras puras, o piso.'],
-  [/^(\d+)% lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling\.$/, '$1% deja que cada carta de búsqueda que tengas a tiempo traiga una pieza que falta, sin contar costes de descarte ni la regla de un Partidario por turno, así que está más cerca del máximo.', '$1% deixa cada carta de busca que você tiver a tempo pegar uma peça que falta, ignorando custos de descarte e a regra de um Apoiador por turno, então está mais perto de um teto.'],
+  [/^(\d+)% lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling\.$/, '$1% supone que cada carta de búsqueda que robes a tiempo trae una pieza que falta, sin contar los costes de descarte ni la regla de un Partidario por turno, así que se acerca más a un máximo.', '$1% supõe que cada carta de busca que você comprar a tempo pega uma peça que falta, sem contar custos de descarte nem a regra de um Apoiador por turno, então fica mais perto de um teto.'],
   [/^By turn (\d+): (\d+)% to (\d+)%\.$/, 'Para el turno $1: $2% a $3%.', 'Até o turno $1: $2% a $3%.'],
   [/^Still need: (.+)\.$/, 'Falta: $1.', 'Falta: $1.'],
   [/^(\d+) mulligans?$/, (m, n) => n + (n === '1' ? ' mulligan' : ' mulligans'), (m, n) => n + (n === '1' ? ' mulligan' : ' mulligans')],
@@ -2187,7 +2207,6 @@ const I18N_PAT = [
   [/^Your ACE SPEC, (.+), has nothing to work with$/, 'Tu AS TÁCTICO, $1, no tiene con qué funcionar', 'Seu ÁS TÁTICO, $1, não tem com o que funcionar'],
   [/^The list runs (\d+) Energy\. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn\. Trade some for draw or search cards\.$/, 'La lista lleva $1 Energías. La mayoría de las barajas lleva de 8 a 16, así que muchos de tus robos son Energía que no puedes usar ese turno. Cambia algunas por cartas de robo o de búsqueda.', 'A lista usa $1 Energias. A maioria dos decks usa de 8 a 16, então muitas das suas compras são Energia que você não consegue usar naquele turno. Troque algumas por cartas de compra ou de busca.'],
   [/^None of your Supporters draws cards or searches your deck, so once your opening hand is spent your only draw is (.+)\. Most decks run 4 or more Supporters that draw, like Lillie's Determination\.$/, (m, a) => 'Ninguno de tus Partidarios roba cartas ni busca en tu baraja, así que cuando se acaba tu mano inicial tu único robo es ' + a.replace(/ and /g, ' y ') + ". La mayoría de las barajas lleva 4 o más Partidarios que roban, como Lillie's Determination.", (m, a) => 'Nenhum dos seus Apoiadores compra cartas ou busca no deck, então quando sua mão inicial acaba sua única compra é ' + a.replace(/ and /g, ' e ') + ". A maioria dos decks usa 4 ou mais Apoiadores que compram, como Lillie's Determination."],
-  [/^([^;()]+?) hits for (\d+) with (\d+) (.+) attached and (\d+) once (\d+) are in play\. Your list runs (\d+), so the full hit is a mid game plan, not a turn 2 one\.$/, (m, n, a, e, w, b, t, h) => n + ' hace ' + a + ' de daño con ' + e + ' ' + i18nEnergy(w, 'es', e) + (e === '1' ? ' unida y ' : ' unidas y ') + b + ' cuando tiene ' + t + ' en juego. Tu lista lleva ' + h + ', así que el golpe completo es un plan de mitad de partida, no del turno 2.', (m, n, a, e, w, b, t, h) => n + ' causa ' + a + ' com ' + e + ' ' + i18nEnergy(w, 'pt', e) + (e === '1' ? ' ligada e ' : ' ligadas e ') + b + ' quando tem ' + t + ' em jogo. Sua lista usa ' + h + ', então o golpe completo é um plano de meio de jogo, não do turno 2.'],
   [/^([^;()]+?) (is|are) risky at 3 prizes( each)?, yet you hit hard enough to justify the trade\.$/, (m, n, v, e) => n + (v === 'are' ? ' son arriesgados porque dan 3 premios' : ' es arriesgado porque da 3 premios') + (e ? ' cada uno' : '') + ', pero golpeas lo bastante fuerte para justificar el intercambio.', (m, n, v, e) => n + (v === 'are' ? ' são arriscados por valerem 3 prêmios' : ' é arriscado por valer 3 prêmios') + (e ? ' cada' : '') + ', mas você bate forte o bastante para justificar a troca.'],
   [/^(\d+) of your (\d+) Pokemon give up two prizes, so most knockouts cost you two\. Send in your one-prize Pokemon when you can\.$/, '$1 de tus $2 Pokémon entregan dos premios, así que casi siempre que uno queda Fuera de Combate el rival toma dos. Usa como atacantes a tus Pokémon de un premio cuando puedas.', '$1 dos seus $2 Pokémon entregam dois prêmios, então a maioria dos nocautes custa dois. Mande seus Pokémon de um prêmio quando puder.'],
   [/^([^;()]+?) evolves from (.+), which is not in the list, so it can never reach the board\.$/, '$1 evoluciona de $2, que no está en la lista, así que nunca puede llegar a la mesa.', '$1 evolui de $2, que não está na lista, então nunca consegue chegar à mesa.'],
@@ -2202,6 +2221,12 @@ const I18N_PAT = [
   [/^⚠ RdyDeck could not find (.+)\. Check the spelling in Edit deck, because the grade cannot read what (these cards do|this card does)\.$/, (m, n, k) => '\u26A0 RdyDeck no encontró ' + n + '. Revisa la ortografía en Editar baraja, porque la calificación no puede leer lo que ' + (k === 'these cards do' ? 'hacen estas cartas.' : 'hace esta carta.'), (m, n, k) => '\u26A0 O RdyDeck não encontrou ' + n + '. Confira a grafia em Editar deck, porque a nota não consegue ler o que ' + (k === 'these cards do' ? 'essas cartas fazem.' : 'essa carta faz.')],
   // 3.2.7: a discard pile revival line that rarely comes together, and the cap on lists with cards not Standard legal now.
   [/^(.+?) rarely reaches the board$/, (m, x) => x + ' casi nunca llega a la mesa', (m, x) => x + ' quase nunca chega à mesa'],
+  [/^(.+?) can start the game face down in the Active Spot with (.+?) when it is in your opening hand, which happens in about (\d+)% of games, so it does not need to evolve\.$/, (m, x, a, p) => x + ' puede empezar la partida boca abajo en el Puesto Activo con ' + a + ' cuando está en tu mano inicial, lo que pasa en cerca del ' + p + '% de las partidas, así que no necesita evolucionar.', (m, x, a, p) => x + ' pode começar a partida virado para baixo no Campo Ativo com ' + a + ' quando está na sua mão inicial, o que acontece em cerca de ' + p + '% das partidas, então não precisa evoluir.'],
+  [/^(.+?) can only reach the board by starting the game in the Active Spot with (.+?), and it is in your opening hand in only about (\d+)% of games\.$/, (m, x, a, p) => x + ' solo puede llegar a la mesa empezando la partida en el Puesto Activo con ' + a + ', y está en tu mano inicial en solo cerca del ' + p + '% de las partidas.', (m, x, a, p) => x + ' só consegue chegar à mesa começando a partida no Campo Ativo com ' + a + ', e está na sua mão inicial em só cerca de ' + p + '% das partidas.'],
+  [/^(.+?) can also hit for (\d+), but it is in the list for its Ability, so the grade counts (\d+)\.$/, (m, x, n, c) => x + ' también puede golpear por ' + n + ', pero está en la lista por su Habilidad, así que la calificación cuenta ' + c + '.', (m, x, n, c) => x + ' também pode causar ' + n + ' de dano, mas está na lista pela Habilidade, então a nota conta ' + c + '.'],
+  [/^(.+?) is here for its (.+?) Ability, not to trade hits, so use it, then move it out before your opponent can Knock it out\.$/, (m, x, a) => x + ' está aquí por su Habilidad ' + a + ', no para intercambiar golpes, así que usa la Habilidad y luego retíralo antes de que tu rival pueda dejarlo Fuera de Combate.', (m, x, a) => x + ' está aqui pela Habilidade ' + a + ', não para trocar golpes, então use a Habilidade e depois tire ele do Campo Ativo antes que o oponente consiga Nocauteá-lo.'],
+  [/^(.+?) are here for their Abilities, not to trade hits, so use them, then move them out before your opponent can Knock them out\.$/, (m, x) => x.replace(/ and /g, ' y ') + ' están aquí por sus Habilidades, no para intercambiar golpes, así que usa las Habilidades y luego retíralos antes de que tu rival pueda dejarlos Fuera de Combate.', (m, x) => x.replace(/ and /g, ' e ') + ' estão aqui pelas Habilidades, não para trocar golpes, então use as Habilidades e depois tire eles do Campo Ativo antes que o oponente consiga Nocauteá-los.'],
+  [/^This list is built around (.+?), which has no tournament results of its own yet, so these results are borrowed from (.+?), the closest deck that has them\.$/, (m, a, b) => 'Esta lista se arma alrededor de ' + a + ', que todavía no tiene resultados de torneo propios, así que estos resultados se toman prestados de ' + b + ', la baraja más parecida que sí los tiene.', (m, a, b) => 'Esta lista é montada em torno de ' + a + ', que ainda não tem resultados de torneio próprios, então estes resultados são emprestados de ' + b + ', o deck mais parecido que tem.'],
   [/^(.+?) can only reach the board when (.+?) brings it back from your discard pile(?: with (.+?))?, and that comes together in only about 1 game in (\d+)\.$/, (m, x, r, v, n) => x + ' solo puede llegar a la mesa si ' + r + ' lo trae de vuelta de tu pila de descartes' + (v ? ' con ' + v : '') + ', y eso ocurre solo en aproximadamente 1 de cada ' + n + ' partidas.', (m, x, r, v, n) => x + ' só consegue chegar à mesa quando ' + r + ' o traz de volta da sua pilha de descarte' + (v ? ' com ' + v : '') + ', e isso acontece em apenas cerca de 1 a cada ' + n + ' partidas.'],
   [/^(.+?)\. (These|It) cannot be played in Standard, so the grade (is held at|can go no higher than) ([\d.]+) until (?:they are|it is) swapped for legal cards\.(?: The list alone would score ([\d.]+)\.)?$/, (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'No se pueden' : 'No se puede') + ' jugar en Estándar, así que la calificación ' + (h === 'is held at' ? 'se queda en ' : 'no puede pasar de ') + c + ' hasta que ' + (p === 'These' ? 'se cambien' : 'se cambie') + ' por cartas legales.' + (a ? ' La lista sola obtendría ' + a + '.' : ''), (m, l, p, h, c, a) => l + '. ' + (p === 'These' ? 'Não podem ser jogadas' : 'Não pode ser jogada') + ' no Padrão, então a nota ' + (h === 'is held at' ? 'fica em ' : 'não pode passar de ') + c + ' até que ' + (p === 'These' ? 'sejam trocadas' : 'seja trocada') + ' por cartas legais.' + (a ? ' Só pela lista, a nota seria ' + a + '.' : '')],
   [/^Its attack needs (\w+) Energy, but there is none in the deck\. As built it cannot actually fire\.$/, (m, t) => 'Su ataque necesita ' + i18nEnergy(t, 'es') + ', pero no hay en la baraja. Tal como está, no puede atacar.', (m, t) => 'O ataque precisa de ' + i18nEnergy(t, 'pt') + ', mas não há no deck. Do jeito que está, não consegue atacar.'],
@@ -2337,7 +2362,7 @@ Object.assign(I18N_ES, {
   "1.0 means exactly the order of their results.": "1.0 significa exactamente el orden de sus resultados.",
   "See every set": "Ver todas las expansiones",
   "Against the field now:": "Contra el meta actual:",
-  "about": "alrededor de",
+  "about": "se espera ganar alrededor del",
   "Save and copy link": "Guardar y copiar enlace",
   "Picture saved and link copied. Post the picture and paste the link with it.": "Imagen guardada y enlace copiado. Publica la imagen y pega el enlace con ella.",
   "Picture saved. Copy the link with Copy link.": "Imagen guardada. Copia el enlace con Copiar enlace.",
@@ -2455,7 +2480,7 @@ Object.assign(I18N_PT, {
   "1.0 means exactly the order of their results.": "1.0 significa exatamente a ordem dos resultados.",
   "See every set": "Ver todas as coleções",
   "Against the field now:": "Contra o meta atual:",
-  "about": "cerca de",
+  "about": "espera-se vencer cerca de",
   "Save and copy link": "Salvar e copiar link",
   "Picture saved and link copied. Post the picture and paste the link with it.": "Imagem salva e link copiado. Poste a imagem e cole o link junto.",
   "Picture saved. Copy the link with Copy link.": "Imagem salva. Copie o link com Copiar link.",
@@ -2478,8 +2503,8 @@ I18N_PAT.unshift(
   [/^The grade counts games since the newest set three times, which makes it ([\d.]+%)\.$/, 'La calificación cuenta tres veces las partidas desde la expansión más reciente, lo que la deja en $1.', 'A nota conta três vezes as partidas desde a coleção mais nova, o que deixa em $1.'],
   [/^of all ([\d,]+) matches against other decks \((\d+) wins, (\d+) losses, (\d+) ties\)\.$/, 'de las $1 partidas contra otras barajas ($2 victorias, $3 derrotas, $4 empates).', 'de todas as $1 partidas contra outros decks ($2 vitórias, $3 derrotas, $4 empates).'],
   [/^expected\. That is its record against the (\d+) most played decks \((\d+)% of play (?:since (.+)|in these results)\), each counted by how often that deck is played, over ([\d,]+) matches\.$/,
-    (m, n, c, s, g) => 'esperado. Es su récord contra las ' + n + ' barajas más jugadas (' + c + '% del juego ' + (s ? 'desde ' + s : 'en estos resultados') + '), cada una contada según cuánto se juega esa baraja, en ' + g + ' partidas.',
-    (m, n, c, s, g) => 'esperado. É o retrospecto dele contra os ' + n + ' decks mais jogados (' + c + '% do jogo ' + (s ? 'desde ' + s : 'nestes resultados') + '), cada um contado por quanto esse deck é jogado, em ' + g + ' partidas.'],
+    (m, n, c, s, g) => 'de las partidas. Es su récord contra las ' + n + ' barajas más jugadas (' + c + '% del juego ' + (s ? 'desde ' + s : 'en estos resultados') + '), cada una contada según cuánto se juega esa baraja, en ' + g + ' partidas.',
+    (m, n, c, s, g) => 'das partidas. É o retrospecto dele contra os ' + n + ' decks mais jogados (' + c + '% do jogo ' + (s ? 'desde ' + s : 'nestes resultados') + '), cada um contado por quanto esse deck é jogado, em ' + g + ' partidas.'],
   [/^On (.+) results, grades put (\d+) decks in an order that matches their online win rates at ([\d.]+)(?: \(([\d.]+) from the cards alone\))?\.$/,
     (m, s, n, x, y) => 'Con los resultados de ' + s + ', las calificaciones ponen ' + n + ' barajas en un orden que coincide con sus porcentajes de victoria online en ' + x + (y ? ' (' + y + ' solo con las cartas)' : '') + '.',
     (m, s, n, x, y) => 'Nos resultados de ' + s + ', as notas colocam ' + n + ' decks numa ordem que bate com as taxas de vitória online em ' + x + (y ? ' (' + y + ' só com as cartas)' : '') + '.'],
@@ -2574,6 +2599,8 @@ Object.assign(I18N_ES, {
   // Hand tab: the turn 1 line
   "In hand:": "En la mano:",
   "Every piece is in your hand.": "Tienes todas las piezas en la mano.",
+  "Every Pokémon is in your hand, but no Energy to attack with yet.": "Tienes todos los Pokémon en la mano, pero todavía ninguna Energía para atacar.",
+  "No Energy to attack with in hand either.": "Tampoco tienes Energía en la mano para atacar.",
   // Notes: Edit log and Compare lists
   "Line locked in prizes": "Línea atascada en premios",
   "any opening hand": "cualquier mano inicial",
@@ -2644,6 +2671,8 @@ Object.assign(I18N_PT, {
   // Hand tab: the turn 1 line
   "In hand:": "Na mão:",
   "Every piece is in your hand.": "Todas as peças estão na sua mão.",
+  "Every Pokémon is in your hand, but no Energy to attack with yet.": "Todos os Pokémon estão na sua mão, mas ainda não há Energia para atacar.",
+  "No Energy to attack with in hand either.": "Também não há Energia na mão para atacar.",
   // Notes: Edit log and Compare lists
   "Line locked in prizes": "Linha presa nos prêmios",
   "any opening hand": "qualquer mão inicial",
@@ -2721,10 +2750,9 @@ function i18nAllCards(s) {
   const c = rdI18n.cardNames;
   return s.split(/, | and | or /).every(x => c.has(rdI18n.norm(x).toLowerCase()));
 }
-/** "3 solved of 5 played", with the words in the singular for 1. */
+/** "3 solved of 5 played", as a label: "Resueltos: 3 de 5". */
 function i18nSolved(a, b, l) {
-  return l === 'es' ? a + (a === '1' ? ' resuelto de ' : ' resueltos de ') + b + (b === '1' ? ' jugado' : ' jugados')
-    : a + (a === '1' ? ' resolvido de ' : ' resolvidos de ') + b + (b === '1' ? ' jogado' : ' jogados');
+  return l === 'es' ? 'Resueltos: ' + a + ' de ' + b : 'Resolvidos: ' + a + ' de ' + b;
 }
 /** A row of Ask the odds: "2 Crispin", "1 of Arven or Iono", "1 each of Arven and Iono". */
 function i18nAsk(s, l) {
@@ -3009,6 +3037,43 @@ function i18nAbParse(p) {
   if (!acts || !acts.every(i18nAbOk)) return null;
   return { cost, acts, when, cond };
 }
+/** Muse s6 M2: the phrases gAbilFb in core.js writes for an Ability its steps cannot follow, each a key into L.fix. */
+const I18N_AB_FIX = [
+  [/^blocks the effects of your opponent's attacks and Abilities on it$/, 'fxAll'],
+  [/^blocks the effects of your opponent's attacks on your Basic Team Rocket's Pokemon$/, 'fxRocket'],
+  [/^blocks the effects of your opponent's attacks on it$/, 'fx'],
+  [/^takes no damage from attacks by your opponent's Pokemon ex$/, 'noEx'],
+  [/^keeps your Benched Pokemon without a Rule Box from taking damage from attacks$/, 'benchNoRule'],
+  [/^keeps your Benched Pokemon safe from your opponent's attacks$/, 'benchSafe'],
+  [/^takes (\d+) less damage from attacks$/, 'less'],
+  [new RegExp(`^gets (\\d+) more HP and does (\\d+) more damage while it has (${I18N_AB_TY}) Energy attached$`), 'hpDmg'],
+  [/^does (\d+) more damage once it has (\d+) or more damage counters on it$/, 'hurtDmg'],
+  [/^has no Retreat Cost while it has no Energy attached$/, 'freeRetreat'],
+  [/^makes your opponent's Active Pokemon's Retreat Cost 1 more$/, 'oppRetreat'],
+  [/^shuffles itself and its attached cards into your deck once a turn while it is Active$/, 'shuffleSelf'],
+  [/^has each player draw a card once a turn$/, 'eachDraw'],
+  [new RegExp(`^moves Basic (${I18N_AB_TY}) Energy between your Pokemon as often as you like$`), 'moveE'],
+  [new RegExp(`^puts itself onto your Bench from your hand while you have a (${I18N_AB_TY}) Mega Evolution Pokemon ex in play$`), 'benchMega'],
+  [/^can use the attacks of your Benched Pokemon$/, 'copyBench'],
+  [/^lets your evolved Pokemon use the attacks of their earlier stages$/, 'copyPrev'],
+  [/^can evolve into any Pokemon ex that evolves from (.+)$/, 'evoAny'],
+  [new RegExp(`^makes each Basic (${I18N_AB_TY}) Energy on your Pokemon count as 2$`), 'double'],
+  [/^can attack twice in a turn while (.+) is in play$/, 'twice'],
+  [/^makes its (.+) cost 1 Colorless less for each Prize card your opponent has taken$/, 'cheaper'],
+  [/^cannot attack unless you have (\d+) or more cards in your hand$/, 'handGate'],
+  [/^survives a knockout from an attack with 10 HP left if you flip heads$/, 'survive'],
+  [/^puts (\d+) damage counters on the attacker when it is Knocked Out in the Active Spot$/, 'revenge'],
+  [/^puts (\d+) more damage counters on your opponent's Poisoned Pokemon between turns while it is Active$/, 'poison'],
+  [new RegExp(`^takes away the Weakness of every (${I18N_AB_TY}) Pokemon in play$`), 'noWeak'],
+  [/^stops every Ability that Knocks Out the Pokemon using it$/, 'damp'],
+  [/^stops damage counters from being moved$/, 'noMove'],
+  [/^cannot be (Asleep|Confused|Paralyzed|Poisoned|Burned)$/, 'immune'],
+];
+function i18nAbFix(p, L) {
+  if (!L || !L.fix) return null;
+  for (const [re, k] of I18N_AB_FIX) { const m = String(p).match(re); if (m) { const f = L.fix[k]; if (!f) return null; try { return f(...m.slice(1)); } catch (e) { return null; } } }
+  return null;
+}
 /** One Abilities sentence ("Owner's Abil: phrase." with the weakness tail) in a language; null when it cannot be read. */
 function i18nAbilSent(s, l) {
   const L = l === 'es' || l === 'pt' ? I18N_ABIL[l] : (i18nMore(l) || {}).abil;
@@ -3026,10 +3091,12 @@ function i18nAbilSent(s, l) {
   let p = m0[2], tail = null, m;
   if ((m = p.match(/ \(([^()]+) in this list\)$/))) { tail = { k: 'in', names: m[1] }; p = p.slice(0, m.index); }
   else if ((m = p.match(new RegExp(', though no (' + I18N_AB_TY + ') attacker is in this list$')))) { tail = { k: 'none', ty: m[1] }; p = p.slice(0, m.index); }
-  const parts = [];
-  for (const q of p.split(/, and (?=your |makes |gives |turns |stops )/)) { const x = i18nAbParse(q); if (!x) return null; parts.push(x); }
-  let body;
-  try { body = parts.map(x => i18nAbSay(x, L)).join(L.and2); } catch (e) { return null; }
+  let body = i18nAbFix(p, L);
+  if (body == null) {
+    const parts = [];
+    for (const q of p.split(/, and (?=your |makes |gives |turns |stops )/)) { const x = i18nAbParse(q); if (!x) return null; parts.push(x); }
+    try { body = parts.map(x => i18nAbSay(x, L)).join(L.and2); } catch (e) { return null; }
+  }
   if (body == null || /\b(?:undefined|null|NaN)\b/.test(body)) return null;
   if (tail) body += tail.k === 'in' ? L.tailIn(tail.names) : L.tailNone(tail.ty);
   const out = L.sent(owner, abil, body);
@@ -3181,8 +3248,1627 @@ function i18nAbRom(l) {
   };
 }
 const I18N_ABIL = { es: i18nAbRom('es'), pt: i18nAbRom('pt') };
+// Muse s6 M2: the Abilities read as a whole phrase (I18N_AB_FIX), said in Spanish and Portuguese.
+I18N_ABIL.es.fix = (function () {
+  const E = t => 'Energía ' + I18N_TYPES.es[t], Y = t => I18N_AB_TYP.es[t];
+  const SC = { Asleep: 'Dormido', Confused: 'Confundido', Paralyzed: 'Paralizado', Poisoned: 'Envenenado', Burned: 'Quemado' };
+  return {
+    fxAll: () => 'bloquea los efectos de los ataques y las Habilidades de tu rival sobre él',
+    fxRocket: () => 'bloquea los efectos de los ataques de tu rival sobre tus Pokémon Básicos del Team Rocket',
+    fx: () => 'bloquea los efectos de los ataques de tu rival sobre él',
+    noEx: () => 'no recibe daño de los ataques de los Pokémon ex de tu rival',
+    benchNoRule: () => 'evita que tus Pokémon en Banca sin Recuadro de regla reciban daño de ataques',
+    benchSafe: () => 'protege a tus Pokémon en Banca de los ataques de tu rival',
+    less: n => `recibe ${n} de daño menos de los ataques`,
+    hpDmg: (h, n, t) => `tiene ${h} PS más y hace ${n} más de daño mientras tiene ${E(t)} unida`,
+    hurtDmg: (n, k) => `hace ${n} más de daño cuando tiene ${k} contadores de daño o más`,
+    freeRetreat: () => 'no tiene Coste de Retirada mientras no tiene Energía unida',
+    oppRetreat: () => 'sube en 1 el Coste de Retirada del Pokémon Activo de tu rival',
+    shuffleSelf: () => 'se baraja en tu baraja con todas sus cartas unidas una vez por turno mientras está en el Puesto Activo',
+    eachDraw: () => 'hace que cada jugador robe una carta una vez por turno',
+    moveE: t => `mueve ${E(t)} Básica entre tus Pokémon tantas veces como quieras`,
+    benchMega: t => `se pone en tu Banca desde tu mano mientras tienes en juego un Pokémon Megaevolución ex de tipo ${Y(t)}`,
+    copyBench: () => 'puede usar los ataques de tus Pokémon en Banca',
+    copyPrev: () => 'permite que tus Pokémon evolucionados usen los ataques de sus fases anteriores',
+    evoAny: x => `puede evolucionar a cualquier Pokémon ex que evolucione de ${x}`,
+    double: t => `hace que cada ${E(t)} Básica en tus Pokémon cuente como 2`,
+    twice: x => `puede atacar dos veces por turno mientras ${x} está en juego`,
+    cheaper: x => `hace que ${x} cueste 1 Energía Incolora menos por cada carta de Premio que haya tomado tu rival`,
+    handGate: n => `no puede atacar a menos que tengas ${n} cartas o más en la mano`,
+    survive: () => 'si sale cara, sobrevive con 10 PS a un ataque que lo dejaría Fuera de Combate',
+    revenge: n => `pone ${n} contadores de daño en el Pokémon atacante cuando queda Fuera de Combate en el Puesto Activo`,
+    poison: n => `pone ${n} contadores de daño más en los Pokémon Envenenados de tu rival entre turnos mientras está en el Puesto Activo`,
+    noWeak: t => `quita la Debilidad a todos los Pokémon de tipo ${Y(t)} en juego`,
+    damp: () => 'anula toda Habilidad que deje Fuera de Combate al Pokémon que la usa',
+    noMove: () => 'impide que se muevan contadores de daño',
+    immune: k => `no puede quedar ${SC[k]}`,
+  };
+})();
+I18N_ABIL.pt.fix = (function () {
+  const E = t => 'Energia ' + I18N_TYPES.pt[t], Y = t => I18N_AB_TYP.pt[t];
+  const SC = { Asleep: 'Adormecido', Confused: 'Confuso', Paralyzed: 'Paralisado', Poisoned: 'Envenenado', Burned: 'Queimado' };
+  return {
+    fxAll: () => 'bloqueia os efeitos dos ataques e das Habilidades do oponente nele',
+    fxRocket: () => 'bloqueia os efeitos dos ataques do oponente nos seus Pokémon Básicos da Equipe Rocket',
+    fx: () => 'bloqueia os efeitos dos ataques do oponente nele',
+    noEx: () => 'não recebe dano de ataques dos Pokémon ex do oponente',
+    benchNoRule: () => 'impede que seus Pokémon no Banco sem Caixa de Regras recebam dano de ataques',
+    benchSafe: () => 'protege seus Pokémon no Banco dos ataques do oponente',
+    less: n => `recebe ${n} a menos de dano de ataques`,
+    hpDmg: (h, n, t) => `ganha ${h} PS a mais e causa ${n} a mais de dano enquanto tem ${E(t)} ligada`,
+    hurtDmg: (n, k) => `causa ${n} a mais de dano quando tem ${k} ou mais contadores de dano`,
+    freeRetreat: () => 'não tem Custo de Recuo enquanto não tem Energia ligada',
+    oppRetreat: () => 'aumenta em 1 o Custo de Recuo do Pokémon Ativo do oponente',
+    shuffleSelf: () => 'se embaralha no seu deck com todas as cartas ligadas uma vez por turno enquanto está no Campo Ativo',
+    eachDraw: () => 'faz cada jogador comprar uma carta uma vez por turno',
+    moveE: t => `move ${E(t)} Básica entre seus Pokémon quantas vezes quiser`,
+    benchMega: t => `vai da sua mão para o seu Banco enquanto você tem em jogo um Pokémon Megaevolução ex do tipo ${Y(t)}`,
+    copyBench: () => 'pode usar os ataques dos seus Pokémon no Banco',
+    copyPrev: () => 'deixa seus Pokémon evoluídos usarem os ataques dos estágios anteriores',
+    evoAny: x => `pode evoluir para qualquer Pokémon ex que evolua de ${x}`,
+    double: t => `faz cada ${E(t)} Básica nos seus Pokémon contar como 2`,
+    twice: x => `pode atacar duas vezes por turno enquanto ${x} está em jogo`,
+    cheaper: x => `faz ${x} custar 1 Energia Incolor a menos para cada carta de Prêmio que o oponente pegou`,
+    handGate: n => `não pode atacar a menos que você tenha ${n} ou mais cartas na mão`,
+    survive: () => 'se sair cara, sobrevive com 10 PS a um ataque que o Nocautearia',
+    revenge: n => `coloca ${n} contadores de dano no Pokémon atacante quando é Nocauteado no Campo Ativo`,
+    poison: n => `coloca ${n} contadores de dano a mais nos Pokémon Envenenados do oponente entre os turnos enquanto está no Campo Ativo`,
+    noWeak: t => `tira a Fraqueza de todos os Pokémon do tipo ${Y(t)} em jogo`,
+    damp: () => 'anula toda Habilidade que Nocauteia o próprio Pokémon que a usa',
+    noMove: () => 'impede que contadores de dano sejam movidos',
+    immune: k => `não pode ficar ${SC[k]}`,
+  };
+})();
 // Every Abilities sentence of How it plays, read and said again in Spanish and Portuguese; null leaves it to the next pattern.
 I18N_PAT.push([/^.+?'s .+?: .+$/, m => i18nAbilSent(m, 'es'), m => i18nAbilSent(m, 'pt')]);
+
+// Muse s1/s2: the control (lock, mill, wall, disruption) findings and How it plays lines that gCtlSay and
+// gViability in core.js write, read back into parts and said again from each language's table
+// (I18N_CTL.es and .pt below, I18N_MORE[lang].ctl in the other files). A phrase this cannot read gives
+// null, so the sentence stays English rather than half translated.
+/** True for a card's own name, so a title that only shares a shape ("Only 2 ...") is left to its own pattern. */
+function i18nCtlCard(x) { const c = typeof rdI18n === 'object' && rdI18n.cardNames; return !c || c.has(String(x).toLowerCase()); }
+function i18nCtlTab(l) { return l === 'es' || l === 'pt' ? I18N_CTL[l] : (i18nMore(l) || {}).ctl; }
+/** "Budew's Itchy Pollen" as the language's "Itchy Pollen of Budew"; a Trainer name ("Team Rocket's Watchtower") stays whole. */
+function i18nCtlBy(by, T) {
+  const names = typeof rdI18n === 'object' && rdI18n.cardNames;
+  if (names && names.has(by.toLowerCase())) return by;
+  const cuts = [];
+  for (let i = by.indexOf("'s "); i > 0; i = by.indexOf("'s ", i + 1)) cuts.push(i);
+  if (!cuts.length) return by;
+  let at = cuts[cuts.length - 1];
+  if (names) { const k = cuts.find(i => names.has(by.slice(0, i).toLowerCase())); if (k != null) at = k; }
+  return T.of(by.slice(0, at), by.slice(at + 3));
+}
+/** What one piece does ("your opponent can't play Item cards during their next turn"), or null. */
+function i18nCtlT(t, T) {
+  let m, flip = '', when = '', r = null;
+  if (/ \(on a coin flip\)$/.test(t)) { flip = T.flip; t = t.replace(/ \(on a coin flip\)$/, ''); }
+  if ((m = t.match(/ (while it is in the Active Spot|during their next turn|on your first turn)$/))) { when = m[1]; t = t.slice(0, m.index); }
+  const n = x => x === 'a few' || x === 'a lot' ? null : x;
+  if ((m = t.match(/^your opponent can't play (Item|Supporter|Pokemon Tool|Stadium) cards$/))) r = T.cantPlay(m[1]);
+  else if ((m = t.match(/^(Pokemon with a Rule Box|Pokemon in play|Evolution Pokemon|Basic Pokemon|Colorless Pokemon|the Active Pokemon) ha(?:s|ve) no Abilities$/))) r = T.noAb[m[1]];
+  else if ((m = t.match(/^Pokemon with (\d+|a few) or less Energy attached can't attack$/))) r = T.lowAtk(n(m[1]));
+  else if (t === "the Defending Pokemon can't attack") r = T.noAtk;
+  else if (t === "the Defending Pokemon can't retreat") r = T.noRet;
+  else if ((m = t.match(/^discards the top (card|\d+ cards) of your opponent's deck$/))) r = T.mill(m[1] === 'card' ? 1 : parseInt(m[1], 10));
+  else if ((m = t.match(/^discards (Special )?Energy from your opponent's Pokemon$/))) r = T.energy(!!m[1]);
+  else if (t === "cuts down your opponent's hand") r = T.hand;
+  else if ((m = t.match(/^heals (all|\d+) damage$/))) r = T.heal(m[1]);
+  else if (t === 'your Benched Pokemon take no damage from attacks') r = T.wall('bench', 'all');
+  else if ((m = t.match(/^(it takes|your Pokemon take|Pokemon without a Rule Box take|your Benched Pokemon take) (no|less) damage(?: from (.+))?$/))) {
+    const who = { 'it takes': 'it', 'your Pokemon take': 'team', 'Pokemon without a Rule Box take': 'nonrule', 'your Benched Pokemon take': 'bench' }[m[1]];
+    if (m[2] === 'less') r = m[3] ? null : T.less(who);
+    else if (m[3]) { const f = m[3]; let k = null, x = null, q;
+      if (f === 'attacks by Pokemon ex') k = 'ex'; else if (f === 'attacks by Basic Pokemon ex') k = 'basicex';
+      else if (f === 'attacks by Pokemon with an Ability') k = 'ability'; else if (f === 'attacks by Basic Pokemon') k = 'basic';
+      else if (f === 'attacks') k = 'all';
+      else if ((q = f.match(/^an attack that does (\d+|a lot) or more$/))) { k = 'big'; x = n(q[1]); }
+      else if ((q = f.match(/^Pokemon with (\d+|a few) or less Energy attached$/))) { k = 'low'; x = n(q[1]); }
+      r = k ? T.wall(who, k, x) : null; } }
+  if (r == null) return null;
+  // German puts "during their next turn" after the verb ("kann während ... keine Item-Karten spielen").
+  return (when ? (T.place ? T.place(r, T.when[when]) : r + T.when[when]) : r) + flip;
+}
+/** "4 Crushing Hammer, 3 Enhanced Hammer discard Energy from your opponent's Pokemon", with ", which" inside a sentence. */
+function i18nCtlWho(s, T) {
+  const m = s.match(/^(\d+ .+?)(, which)? (discard Energy from your opponent's Pokemon|cut down your opponent's hand|heal your Pokemon)( on a coin flip)?$/);
+  if (!m || !/^\d+ [^,]+(?:, \d+ [^,]+)*$/.test(m[1])) return null;
+  const k = /^discard/.test(m[3]) ? 'energy' : /^cut/.test(m[3]) ? 'hand' : 'heal';
+  return T.who(m[1], k, !!m[4], !!m[2]);
+}
+/** One piece sentence of the game plan ("Budew's Itchy Pollen: your opponent can't play Item cards."), or null. */
+function i18nCtlPiece(s, l) {
+  const T = i18nCtlTab(l); if (!T) return null;
+  s = String(s).replace(/\.$/, '');
+  const w = i18nCtlWho(s, T); if (w != null) return w + '.';
+  const m = s.match(/^(.+?): (.+)$/); if (!m) return null;
+  const t = i18nCtlT(m[2], T);
+  return t == null ? null : T.piece(i18nCtlBy(m[1], T), t) + '.';
+}
+/** "The biggest piece is Budew's Itchy Pollen, where your opponent can't play Item cards ..." */
+function i18nCtlBig(inner, l) {
+  const T = i18nCtlTab(l); if (!T) return null;
+  let x = i18nCtlWho(inner, T);
+  if (x == null) { const m = inner.match(/^(.+?), (?:where|which) (.+)$/); if (!m) return null;
+    const t = i18nCtlT(m[2], T); if (t == null) return null; x = T.piece(i18nCtlBy(m[1], T), t); }
+  return T.big(x);
+}
+/** "locking and stripping Energy and cards" (or the "locks", "Lock" forms) as the language's words, or null. */
+function i18nCtlList(s, words, T) {
+  const keys = Object.keys(words), re = new RegExp(keys.map(k => k.replace(/ /g, ' ')).sort((a, b) => b.length - a.length).join('|'), 'g');
+  const got = s.match(re) || [];
+  if (!got.length || got.join(' and ') !== s) return null;
+  return got.map(k => words[k]).join(T.and);
+}
+const I18N_CTL_HOW = { 'locking': 'lock', 'milling': 'mill', 'stalling': 'stall', 'stripping Energy and cards': 'denial' };
+const I18N_CTL_ALSO = { 'locks': 'lock', 'mills': 'mill', 'walls': 'stall', 'strips Energy and cards': 'denial' };
+const I18N_CTL_KIND = { 'Lock': 'lock', 'Mill': 'mill', 'Stall': 'stall', 'Disruption': 'denial' };
+/** The control sentences and titles, as [regex, (m, ...) => text in l] pairs; each language gets them through its own pattern list. */
+function i18nCtlPats(l) {
+  const T = () => i18nCtlTab(l);
+  const map = (o, f) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, f(v)]));
+  const how = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_HOW, k => t.how[k]), t); };
+  const also = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_ALSO, k => t.also[k]), t); };
+  const alsoN = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_ALSO, k => (t.alsoN || t.also)[k]), t); };
+  const kind = s => { const t = T(); return t && i18nCtlList(s, map(I18N_CTL_KIND, k => t.kind[k]), t); };
+  const ok = (...a) => a.every(x => x != null);
+  return [
+    [/^Wins by (.+)$/, (m, h) => { const x = how(h); return ok(x) ? T().winsBy(x) : null; }],
+    [/^This deck wins by (.+?), not by trading knockouts, so its damage counts for less\.$/, (m, h) => { const x = how(h); return ok(x) ? T().winsNot(x) : null; }],
+    [/^This deck wins by (.+?) rather than by trading big hits\.$/, (m, h) => { const x = how(h); return ok(x) ? T().winsRather(x) : null; }],
+    [/^Game plan: (.+)$/, (m, h) => { const x = kind(h); return ok(x) ? T().plan(x) : null; }],
+    [/^Also (.+)$/, (m, h) => { const x = alsoN(h); return ok(x) ? T().alsoT(x) : null; }],
+    [/^Besides attacking, this deck (.+?), which wins some games its hits alone would not\.$/, (m, h) => { const x = also(h); return ok(x) ? T().besidesWins(x) : null; }],
+    [/^Besides attacking, this deck (.+?)\.$/, (m, h) => { const x = also(h); return ok(x) ? T().besides(x) : null; }],
+    [/^The biggest piece is (.+)\.$/, (m, x) => i18nCtlBig(x, l)],
+    [/^The game plan lists (\d+) more\.$/, (m, n) => T() && T().lists(n)],
+    [/^Keep (.+) Active$/, (m, x) => T() && i18nCtlCard(x) ? T().keep(x) : null],
+    [/^(.+?'s .+?) only works while it is in the Active Spot\.$/, (m, x) => T() && T().onlyActive(i18nCtlBy(x, T()))],
+    [/^Switching it out or losing it turns the (lock|mill|stall|denial) off, so plan your retreats around it\.$/, (m, k) => T() && T().switchOff(k)],
+    [/^The (lock|mill|stall|denial) rests on (.+?), and the list runs (\d+)\.$/, (m, k, x, n) => T() && T().rests(k, i18nCtlBy(x, T()), n)],
+    [/^Only (\d+) (.+)$/, (m, n, x) => T() && i18nCtlCard(x) ? T().only(n, x) : null],
+    [/^.+$/, m => i18nCtlPiece(m, l)],
+  ];
+}
+const I18N_CTL = {
+  es: {
+    and: ' y ', flip: ' (si sale cara)',
+    when: { 'while it is in the Active Spot': ' mientras está en el Puesto Activo', 'during their next turn': ' durante su próximo turno', 'on your first turn': ' en tu primer turno' },
+    cantPlay: k => 'tu rival no puede jugar cartas de ' + { Item: 'Objeto', Supporter: 'Partidario', 'Pokemon Tool': 'Herramienta Pokémon', Stadium: 'Estadio' }[k],
+    noAb: { 'Pokemon with a Rule Box': 'los Pokémon con Recuadro de regla no tienen Habilidades', 'Pokemon in play': 'los Pokémon en juego no tienen Habilidades',
+      'Evolution Pokemon': 'los Pokémon Evolución no tienen Habilidades', 'Basic Pokemon': 'los Pokémon Básicos no tienen Habilidades',
+      'Colorless Pokemon': 'los Pokémon de tipo Incoloro no tienen Habilidades', 'the Active Pokemon': 'el Pokémon Activo no tiene Habilidades' },
+    lowAtk: n => n ? `los Pokémon con ${n} o menos Energías unidas no pueden atacar` : 'los Pokémon con pocas Energías unidas no pueden atacar',
+    noAtk: 'el Pokémon Defensor no puede atacar', noRet: 'el Pokémon Defensor no puede retirarse',
+    mill: n => n === 1 ? 'descarta la primera carta de la baraja de tu rival' : `descarta las ${n} primeras cartas de la baraja de tu rival`,
+    energy: sp => `descarta Energía${sp ? ' Especial' : ''} de los Pokémon de tu rival`,
+    hand: 'reduce la mano de tu rival',
+    heal: v => v === 'all' ? 'cura todo el daño' : `cura ${v} puntos de daño`,
+    wall: (who, k, n) => ({ it: 'no recibe daño', team: 'tus Pokémon no reciben daño', nonrule: 'los Pokémon sin Recuadro de regla no reciben daño', bench: 'tus Pokémon en Banca no reciben daño' })[who] + ' '
+      + ({ ex: 'de ataques de Pokémon ex', basicex: 'de ataques de Pokémon ex Básicos', ability: 'de ataques de Pokémon con Habilidad', basic: 'de ataques de Pokémon Básicos', all: 'de ataques',
+        big: n ? `de un ataque que hace ${n} o más de daño` : 'de un ataque que hace mucho daño', low: n ? `de Pokémon con ${n} o menos Energías unidas` : 'de Pokémon con pocas Energías unidas' })[k],
+    less: who => ({ it: 'recibe menos daño', team: 'tus Pokémon reciben menos daño', nonrule: 'los Pokémon sin Recuadro de regla reciben menos daño', bench: 'tus Pokémon en Banca reciben menos daño' })[who],
+    who: (list, k, flip, lead) => list + (lead ? ', que ' : ' ') + ({ energy: 'descartan Energía de los Pokémon de tu rival', hand: 'reducen la mano de tu rival', heal: 'curan a tus Pokémon' })[k] + (flip ? ' si sale cara' : ''),
+    of: (owner, what) => `${what} de ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `La pieza más importante es ${x}.`,
+    how: { lock: 'bloqueando', mill: 'descartando la baraja rival', stall: 'aguantando', denial: 'quitando Energía y cartas' },
+    also: { lock: 'bloquea', mill: 'descarta la baraja rival', stall: 'hace de muro', denial: 'quita Energía y cartas' },
+    kind: { lock: 'Bloqueo', mill: 'Descarte de baraja', stall: 'Muro', denial: 'Disrupción' },
+    winsBy: x => 'Gana ' + x, winsNot: x => `Esta baraja gana ${x}, no intercambiando Fuera de Combate, así que su daño cuenta menos.`,
+    winsRather: x => `Esta baraja gana ${x} en vez de intercambiar golpes fuertes.`, plan: x => 'Plan de juego: ' + x,
+    alsoT: x => 'También ' + x, besidesWins: x => `Además de atacar, esta baraja ${x}, y así gana partidas que sus golpes solos no ganarían.`,
+    besides: x => `Además de atacar, esta baraja ${x}.`, lists: n => `El plan de juego enumera ${n} más.`, keep: x => `Mantén ${x} en el Puesto Activo`,
+    onlyActive: x => `${x} solo funciona mientras está en el Puesto Activo.`,
+    switchOff: k => `Cambiarlo o perderlo apaga ${({ lock: 'el bloqueo', mill: 'el descarte', stall: 'el muro', denial: 'la disrupción' })[k]}, así que planea tus retiradas en torno a él.`,
+    rests: (k, x, n) => `${({ lock: 'El bloqueo', mill: 'El descarte', stall: 'El muro', denial: 'La disrupción' })[k]} depende de ${x}, y la lista lleva ${n}.`,
+    only: (n, x) => `Solo ${n} ${x}`,
+  },
+  pt: {
+    and: ' e ', flip: ' (se sair cara)',
+    when: { 'while it is in the Active Spot': ' enquanto está no Campo Ativo', 'during their next turn': ' durante o próximo turno dele', 'on your first turn': ' no seu primeiro turno' },
+    cantPlay: k => 'o oponente não pode jogar cartas de ' + { Item: 'Item', Supporter: 'Apoiador', 'Pokemon Tool': 'Ferramenta Pokémon', Stadium: 'Estádio' }[k],
+    noAb: { 'Pokemon with a Rule Box': 'os Pokémon com Caixa de Regras não têm Habilidades', 'Pokemon in play': 'os Pokémon em jogo não têm Habilidades',
+      'Evolution Pokemon': 'os Pokémon de Evolução não têm Habilidades', 'Basic Pokemon': 'os Pokémon Básicos não têm Habilidades',
+      'Colorless Pokemon': 'os Pokémon do tipo Incolor não têm Habilidades', 'the Active Pokemon': 'o Pokémon Ativo não tem Habilidades' },
+    lowAtk: n => n ? `os Pokémon com ${n} ou menos Energias ligadas não podem atacar` : 'os Pokémon com poucas Energias ligadas não podem atacar',
+    noAtk: 'o Pokémon Defensor não pode atacar', noRet: 'o Pokémon Defensor não pode recuar',
+    mill: n => n === 1 ? 'descarta a carta de cima do deck do oponente' : `descarta as ${n} cartas de cima do deck do oponente`,
+    energy: sp => `descarta Energia${sp ? ' Especial' : ''} dos Pokémon do oponente`,
+    hand: 'diminui a mão do oponente',
+    heal: v => v === 'all' ? 'cura todo o dano' : `cura ${v} pontos de dano`,
+    wall: (who, k, n) => ({ it: 'não recebe dano', team: 'seus Pokémon não recebem dano', nonrule: 'os Pokémon sem Caixa de Regras não recebem dano', bench: 'seus Pokémon no Banco não recebem dano' })[who] + ' '
+      + ({ ex: 'de ataques de Pokémon ex', basicex: 'de ataques de Pokémon ex Básicos', ability: 'de ataques de Pokémon com Habilidade', basic: 'de ataques de Pokémon Básicos', all: 'de ataques',
+        big: n ? `de um ataque que causa ${n} ou mais de dano` : 'de um ataque que causa muito dano', low: n ? `de Pokémon com ${n} ou menos Energias ligadas` : 'de Pokémon com poucas Energias ligadas' })[k],
+    less: who => ({ it: 'recebe menos dano', team: 'seus Pokémon recebem menos dano', nonrule: 'os Pokémon sem Caixa de Regras recebem menos dano', bench: 'seus Pokémon no Banco recebem menos dano' })[who],
+    who: (list, k, flip, lead) => list + (lead ? ', que ' : ' ') + ({ energy: 'descartam Energia dos Pokémon do oponente', hand: 'diminuem a mão do oponente', heal: 'curam seus Pokémon' })[k] + (flip ? ' se sair cara' : ''),
+    of: (owner, what) => `${what} de ${owner}`, piece: (by, t) => `${by}: ${t}`, big: x => `A peça mais importante é ${x}.`,
+    how: { lock: 'travando', mill: 'descartando o deck do oponente', stall: 'aguentando', denial: 'tirando Energia e cartas' },
+    also: { lock: 'trava', mill: 'descarta o deck do oponente', stall: 'serve de muralha', denial: 'tira Energia e cartas' },
+    kind: { lock: 'Trava', mill: 'Descarte de deck', stall: 'Muralha', denial: 'Disrupção' },
+    winsBy: x => 'Vence ' + x, winsNot: x => `Este deck vence ${x}, não trocando Nocautes, então o dano dele conta menos.`,
+    winsRather: x => `Este deck vence ${x} em vez de trocar golpes fortes.`, plan: x => 'Plano de jogo: ' + x,
+    alsoT: x => 'Também ' + x, besidesWins: x => `Além de atacar, este deck ${x}, e assim vence partidas que só os golpes não venceriam.`,
+    besides: x => `Além de atacar, este deck ${x}.`, lists: n => `O plano de jogo lista mais ${n}.`, keep: x => `Mantenha ${x} no Campo Ativo`,
+    onlyActive: x => `${x} só funciona enquanto está no Campo Ativo.`,
+    switchOff: k => `Trocá-lo ou perdê-lo desliga ${({ lock: 'a trava', mill: 'o descarte', stall: 'a muralha', denial: 'a disrupção' })[k]}, então planeje seus recuos em torno dele.`,
+    rests: (k, x, n) => `${({ lock: 'A trava', mill: 'O descarte', stall: 'A muralha', denial: 'A disrupção' })[k]} depende de ${x}, e a lista usa ${n}.`,
+    only: (n, x) => `Só ${n} ${x}`,
+  },
+};
+Object.assign(I18N_ES, {
+  'Low damage, by design': 'Poco daño, a propósito',
+  'The grade counts what this deck stops more than its damage.': 'La calificación da más peso a lo que esta baraja frena que a su daño.',
+  'With so few copies it is often prized or gone after one knockout.': 'Con tan pocas copias suele quedar en los premios o perderse tras un solo Fuera de Combate.',
+  'Most lists run 3 or 4.': 'La mayoría de las listas lleva 3 o 4.',
+});
+Object.assign(I18N_PT, {
+  'Low damage, by design': 'Pouco dano, de propósito',
+  'The grade counts what this deck stops more than its damage.': 'A nota dá mais peso ao que este deck impede do que ao dano dele.',
+  'With so few copies it is often prized or gone after one knockout.': 'Com tão poucas cópias, ele costuma ficar nos prêmios ou sumir depois de um só Nocaute.',
+  'Most lists run 3 or 4.': 'A maioria das listas usa 3 ou 4.',
+});
+const I18N_CTL_PATS = {};
+/** One sentence or title of the control path in language l, or null. Built on first use, so a language file can load before this one. */
+function i18nCtlSent(s, l) {
+  const ps = I18N_CTL_PATS[l] || (I18N_CTL_PATS[l] = i18nCtlPats(l));
+  // A sentence that runs on into another ("Besides attacking, this deck locks. Budew's ...") is read one sentence at a time.
+  if (/[a-z0-9)][.!?] [A-Z0-9¿¡]/.test(s)) return null;
+  for (const p of ps) { const m = s.match(p[0]); if (m) { const r = p[1](...m); if (r != null) return r; } }
+  return null;
+}
+// After the Abilities pattern, which gives null for these and leaves them here.
+I18N_PAT.push([/^[\s\S]+$/, m => i18nCtlSent(m, 'es'), m => i18nCtlSent(m, 'pt')]);
+// The Power findings' damage text (core.js), translated sentence by sentence.
+
+// 3.2.8 (Muse section 4): the Power findings (damage, prizes and setup speed) in every language. core.js builds
+// each finding from a small set of English sentences (g35Hit, g62Need, g37Hits and the findings in gViability,
+// and the build check in v69-grade-blend.js), so each sentence is read back into its parts here and said again
+// from the language's own words: I18N_DMG.es and .pt below, I18N_MORE[lang].dmg in the other files. Card, attack
+// and Ability names stay English. A sentence with any part this cannot read gives null, so the finding stays in
+// English rather than coming out half translated.
+const I18N_DMG_TY = 'Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy';
+function i18nDmgTab(l) { return l === 'es' || l === 'pt' ? I18N_DMG[l] : (i18nMore(l) || {}).dmg; }
+/** A list of names with the language's own "and": "A, B and C". */
+function i18nDmgJoin(a, T) { return a.length > 1 ? a.slice(0, -1).join(', ') + T.and + a[a.length - 1] : a[0]; }
+/** "A, B and C" or "A and B" (card names) with the language's own "and". */
+function i18nDmgNames(s, T) { return i18nDmgJoin(String(s).split(/, | and /), T); }
+/** "Fire and Lightning Energy", "Basic Grass Energy cards", "Energy" as parts for T.en; null for anything else. */
+/** "Fire Energy" or "Energy" as an Energy's name in Spanish or Portuguese ("Energía Fuego"). */
+function i18nEnName(e, l) {
+  const m = String(e).match(/^(?:Basic )?(\w+) Energy$/), w = l === 'es' ? 'Energía' : 'Energia';
+  return m && I18N_TYPES[l][m[1]] ? w + ' ' + I18N_TYPES[l][m[1]] : w;
+}
+function i18nDmgE(w, T, n) {
+  const m = String(w).match(new RegExp(`^(Basic )?((?:${I18N_DMG_TY})(?:(?:, | and )(?:${I18N_DMG_TY}))*)? ?Energy( cards?)?$`));
+  if (!m) return null;
+  return T.en(m[2] ? m[2].split(/, | and /) : [], !!m[1], n == null ? 1 : +n, !!m[3]);
+}
+/** The cards a pile attack counts (g56One, g56Many): "Ethan's Adventure cards", "Supporter cards with Team Rocket in its name". */
+function i18nDmgPile(s, T, n) {
+  let m;
+  const many = n != null && +n !== 1;
+  if ((m = s.match(/^(Item|Supporter|Trainer|Stadium|Pokemon Tool) cards? with (.+) in its name$/))) return T.pile({ k: 'kindHas', kind: m[1], has: m[2] }, many);
+  if ((m = s.match(/^(Item|Supporter|Trainer|Stadium|Pokemon Tool) cards?$/))) return T.pile({ k: 'kind', kind: m[1] }, many);
+  if (/Energy( cards?)?$/.test(s)) return i18nDmgE(s, T, n);
+  if (s === 'Pokemon') return T.pile({ k: 'pokemon' }, many);
+  if ((m = s.match(/^(Basic|Stage 1|Stage 2) Pokemon$/))) return T.pile({ k: 'stage', stage: m[1] }, many);
+  if ((m = s.match(/^(.+) Pokemon$/))) return T.pile({ k: 'pre', pre: m[1] }, many);
+  if ((m = s.match(/^Pokemon with (.+)$/)) || (m = s.match(/^Pokémon that have the (.+) ability$/))) return T.pile({ k: 'atk', atk: m[1] }, many);
+  if ((m = s.match(/^(.+?) cards?$/)) && i18nCtlCard(m[1])) return T.pile({ k: 'name', name: m[1] }, many);
+  if (/ or /.test(s) && s.split(' or ').every(i18nCtlCard)) return T.pile({ k: 'or', names: s.split(' or ') }, many);
+  return null;
+}
+/** The boosts a hit counts ("Kieran and Dusknoir's Cursed Blast", "its Fighting Fist with Fighting Energy attached"). */
+function i18nDmgBoost(s, T) {
+  const parts = []; let cur = null;
+  for (const p of String(s).split(' and ')) {
+    if (cur != null) { cur += ' and ' + p; if (/ attached$/.test(cur)) { parts.push(cur); cur = null; } continue; }
+    if (/^its /.test(p) && !/ attached$/.test(p)) { cur = p; continue; }
+    parts.push(p);
+  }
+  if (cur != null || !parts.length) return null;
+  const out = parts.map(p => { let m;
+    if ((m = p.match(/^its (.+?) with (.+ Energy) attached$/))) { const e = i18nDmgE(m[2], T, 1); return e && T.selfB(m[1], e); }
+    if ((m = p.match(/^(.+?) from (\d+) (.+)$/))) return T.from(m[1], m[3], m[2]);
+    if ((m = p.match(/^(.+?) from (.+)$/))) return T.from(m[1], m[2]);
+    return /'s /.test(p) ? i18nCtlBy(p, T) : p;
+  });
+  return out.every(x => x) ? i18nDmgJoin(out, T) : null;
+}
+/** "Mew ex copying Mega Kangaskhan ex's Rapid-Fire Combo with Memory Helix" as its parts. */
+function i18nDmgWho(h, T) {
+  const m = h.match(/^(.+?) copying (.+?'s .+) with (.+)$/);
+  return m ? { nm: m[1], cp: i18nCtlBy(m[2], T), via: m[3] } : { nm: h };
+}
+const I18N_DMG_COND = { 'against a Pokemon ex': 'ex', 'while it is Poisoned': 'poison', 'while you are behind on prizes': 'behind', 'when that Supporter is the last card in your hand': 'last' };
+/** What a fixed bonus waits on (g62Need's "when"), as parts for T.when; null when it cannot be read. */
+function i18nDmgWhen(s) {
+  let m;
+  const TY = `(?:${I18N_DMG_TY})`;
+  if ((m = s.match(/^on a turn (.+) moves up from your Bench to the Active Spot$/))) return { k: 'moved', nm: m[1] };
+  if ((m = s.match(/^once (.+) has damage counters on it$/))) return { k: 'selfdmg', nm: m[1] };
+  if (s === 'against an Active Pokemon that already has damage counters on it') return { k: 'oppdmg' };
+  if ((m = s.match(/^once your deck is down to (\d+) cards or fewer$/))) return { k: 'deck', n: m[1] };
+  if ((m = s.match(/^with (\d+) extra Energy attached to it$/))) return { k: 'xenergy', n: m[1] };
+  if (s === 'while you have a Stadium in play') return { k: 'stadium' };
+  if ((m = s.match(new RegExp(`^with a (${TY}) Pokemon on your Bench$`)))) return { k: 'btype', t: m[1] };
+  if ((m = s.match(new RegExp(`^with (?:(${TY}(?: and ${TY})*) )?Energy attached to (.+)$`)))) return { k: 'energy', t: m[1] || '', nm: m[2] };
+  if ((m = s.match(/^with (.+) on your Bench$/))) return { k: 'bnames', names: m[1] };
+  if (s === 'on the turn after one of your Pokemon was Knocked Out') return { k: 'ko' };
+  if (s === 'when it used the same attack the turn before') return { k: 'next' };
+  if ((m = s.match(/^on a turn you play a (.+) Supporter$/))) return { k: 'supname', x: m[1] };
+  if (s === 'while you still have all 6 Prize cards left') return { k: 'prize6' };
+  if ((m = s.match(/^on the turn it evolves from (.+)$/))) return { k: 'evolved', x: m[1] };
+  if ((m = s.match(new RegExp(`^with (\\d+) (?:(${TY}) )?Energy in play$`)))) return { k: 'inplay', n: m[1], t: m[2] || '' };
+  if ((m = s.match(/^with (\d+) Pokemon with (.+) in your discard pile$/))) return { k: 'discab', n: m[1], a: m[2] };
+  return null;
+}
+const I18N_DMG_CS = /^(\d+) cards? that (switch(?:es)? it in or lets? you retreat for free|puts? damage counters on it first|attach(?:es)? extra Energy)$/;
+const i18nDmgCsK = w => /^switch/.test(w) ? 'moved' : /^put/.test(w) ? 'oppdmg' : 'xenergy';
+/** Why the grade counts less than the full hit ("since ..."), as the language's words; null when it cannot be read. */
+function i18nDmgWhy(s, T) {
+  let m;
+  const W = T.why;
+  if (s === 'you attack the turn it evolves') return W.evolved();
+  if ((m = s.match(/^it can keep attacking turn after turn, but its first use does (\d+)$/))) return W.next(m[1]);
+  if ((m = s.match(/^your list has only (.+)$/)) && (m = m[1].match(I18N_DMG_CS))) return W.only(m[1], i18nDmgCsK(m[2]));
+  if (s === 'nothing in your list puts damage counters on it before you attack') return W.noCounters();
+  if (s === 'that is only at the very end of a game') return W.endGame();
+  if (s === 'that is only before you take your first prize') return W.prize6();
+  if (s === 'your list does not run all of them') return W.notAll();
+  if ((m = s.match(/^your list has only (\d+) Stadiums?$/))) return W.stadiums(m[1]);
+  if ((m = s.match(new RegExp(`^your list has only (\\d+) (${I18N_DMG_TY}) Pokemon$`)))) return W.typeMon(m[1], m[2]);
+  if ((m = s.match(new RegExp(`^your list has only (\\d+) ((?:(?:${I18N_DMG_TY}) )?Energy)$`)))) { const e = i18nDmgE(m[2], T, m[1]); return e && W.energy(m[1], e); }
+  if ((m = s.match(/^your list has only (\d+) (.+?) Supporters?$/))) return W.supname(m[1], m[2]);
+  if ((m = s.match(/^your list has only (\d+) Pokemon with (.+)$/))) return W.discab(m[1], m[2]);
+  const thin = x => { let k;
+    if ((k = x.match(/^the list runs only (?:1 copy of|(\d+) copies of) (.+?)( or its line)?, so it is not always in play$/))) return W.thinSelf(k[1] || '1', k[2], !!k[3]);
+    if ((k = x.match(/^there (?:is only 1|are only (\d+)) (.+?)( or its line)? to copy from, so it is not always in play$/))) return W.thinCopy(k[1] || '1', k[2], !!k[3]);
+    return null; };
+  if ((m = s.match(/^the full hit needs (.+)$/))) {
+    let x = m[1], th = null, grow = false, k;
+    if ((k = x.match(/^(.+?) and ((?:the list runs only|there (?:is|are) only) .+)$/))) { th = thin(k[2]); if (!th) return null; x = k[1]; }
+    if (x === 'time to grow') return W.needs(null, true, th);
+    if ((k = x.match(/^(.+) and time to grow$/))) { grow = true; x = k[1]; }
+    const b = i18nDmgBoost(x, T);
+    return b && W.needs(b, grow, th);
+  }
+  return thin(s);
+}
+/** The words of a hit sentence's "with ..." part: boosts, then the conditions. */
+function i18nDmgWith(s, T) {
+  let at = -1;
+  for (const c of Object.keys(I18N_DMG_COND)) { const i = s.indexOf(' ' + c); if (i > 0 && (at < 0 || i < at)) at = i; }
+  const b = i18nDmgBoost(at < 0 ? s : s.slice(0, at), T);
+  if (!b) return null;
+  const conds = at < 0 ? [] : s.slice(at + 1).split(' and ').map(c => I18N_DMG_COND[c]);
+  return conds.every(Boolean) ? { b, conds } : null;
+}
+/** "its Run Errand Ability" or "Mega Kangaskhan ex's Run Errand and Mega Lucario ex's Aura Jab" (a three-prize engine). */
+function i18nDmgFor(s, T) {
+  let m;
+  if ((m = s.match(/^its (.+) Ability$/))) return T.itsAb(m[1]);
+  const parts = s.split(' and ').map(p => /'s /.test(p) ? i18nCtlBy(p, T) : null);
+  return parts.every(Boolean) ? T.theirAb(i18nDmgJoin(parts, T)) : null;
+}
+/** One Ability phrase from the card reader ("looks at the top 2 cards and puts 1 into your hand"), said in language l. */
+function i18nDmgAbil(p, l) {
+  const L = l === 'es' || l === 'pt' ? I18N_ABIL[l] : (i18nMore(l) || {}).abil;
+  const x = L && i18nAbParse(p);
+  if (!x) return null;
+  try { const r = i18nAbSay(x, L); return r && !/\b(?:undefined|null|NaN)\b/.test(r) ? r : null; } catch (e) { return null; }
+}
+function i18nDmgPats(l) {
+  const T = () => i18nDmgTab(l);
+  const by = x => i18nCtlBy(x, T());
+  const nm = x => i18nDmgNames(x, T());
+  const many = v => v === 'give' || v === 'are' || v === 'they fall';
+  const TY = `(?:${I18N_DMG_TY})`;
+  return [
+    // g35Hit: the hit itself.
+    [/^(.+?) (hits for at most|averages) (\d+) before Weakness\.$/, (m, h, v, top) => T().hit(i18nDmgWho(h, T()), v === 'averages', top, null)],
+    [/^(.+?) (hits for at most|averages) (\d+) with (.+) \((\d+) without\), before Weakness\.$/, (m, h, v, eff, w, top) => {
+      const x = i18nDmgWith(w, T()); return x && T().hit(i18nDmgWho(h, T()), v === 'averages', top, Object.assign(x, { eff })); }],
+    [/^Using it Knocks Out (.+), which gives up a prize\.$/, (m, x) => T().koUse(nm(x))],
+    [/^Using it Knocks Out (.+), which gives up a prize, so it finishes a knockout rather than starting one\.$/, () => null],
+    [/^Its (.+?) does (\d+) only (.+), (\d+) otherwise\.$/, (m, a, full, w, base) => { const x = i18nDmgWhen(w); return x && T().need(a, full, x, base); }],
+    [/^Your list has (.+), so the grade counts (\d+)\.$/, (m, w, n) => { const k = w.match(I18N_DMG_CS); return k && T().hasCards(k[1], i18nDmgCsK(k[2]), n); }],
+    [/^The full hit comes after it has taken a hit, not on its first attack\.$/, () => T().afterHit],
+    [/^The full hit comes after you lose a Pokemon, not on your first attack\.$/, () => T().afterKo],
+    [/^Your list can set that up, so the grade counts (\d+)\.$/, (m, n) => T().canSet(n)],
+    [/^The grade counts (\d+), since (.+)\.$/, (m, n, w) => { const x = i18nDmgWhy(w, T()); return x && T().since(n, x); }],
+    [/^Its (.+?) lets it attack twice a turn(?: while (.+?) is in play)?, so the grade counts two hits of (\d+), (\d+) in all(?:, or (\d+) with (.+) on both)?\.$/,
+      (m, a, st, one, all, eff, b) => { const x = b ? i18nDmgBoost(b, T()) : ''; return x == null ? null : T().twice(a, st || '', one, all, eff || '', x); }],
+    [/^It flips coins until tails, so a bigger hit can happen but is not something to count on\.$/, () => T().tails],
+    [/^That counts coin flips at their average\.$/, () => T().flipAvg],
+    [/^That is the average for cards off the top of the deck: your list runs (\d+) (.+), so a bigger or smaller hit is down to luck\.$/, (m, n, w) => { const p = i18nDmgPile(w, T(), n); return p && T().millAvg(n, p); }],
+    [/^It counts the cards in your hand, so (\d+) is the app's estimate for about (\d+) cards(, with the list's draw Abilities filling the hand)?, not a printed number\.$/, (m, t, n, f) => T().hand(t, n, !!f)],
+    [/^Its damage depends on the board, so (\d+) is the app's estimate, not a printed number\.$/, (m, t) => T().lowConf(t)],
+    // Energy scaling.
+    [/^(.+?) does (?:(\d+) plus )?(\d+) for each Energy attached to both Active Pokemon\.$/, (m, x, b, p) => T().escBoth(by(x), b || '', p)],
+    [/^The app counts (\d+) on it(?:, each counting twice with (.+?))?, and 2 on your opponent's Active, so (\d+) is its estimate, not a printed number\.$/, (m, n, w, t) => T().appCounts(n, w ? by(w) : '', t)],
+    [/^(.+?) discards (.*Energy) from your Pokemon and does (\d+) for each one discarded\.$/, (m, x, w, p) => { const e = i18nDmgE(w, T(), 2); return e && T().escDisc(by(x), e, p); }],
+    [/^(.+?) does (?:(\d+) plus )?(\d+) for each (.*Energy) attached to (all your Pokemon|it)\.$/, (m, x, b, p, w, sc) => { const e = i18nDmgE(w, T(), 1); return e && T().escPer(by(x), b || '', p, e, sc === 'it' ? 'it' : 'all'); }],
+    [new RegExp(`^(.+?) makes each Basic (${TY}) Energy count twice\\.$`), (m, x, t) => T().x2(by(x), t)],
+    [new RegExp(`^It takes (\\d+)(?: Basic (${TY}) Energy cards)? to one-shot (\\d+) HP and (\\d+) for (\\d+) HP, before Weakness\\.$`), (m, a, t, lo, b, hi) => T().takes(a, t || '', lo, b, hi)],
+    [/^Your list runs (\d+)\.$/, (m, n) => T().listRuns(n)],
+    [/^(.+) (adds?) (\d+) more( against a Pokemon ex)?\.$/, (m, w, v, n, ex) => { const b = i18nDmgBoost(w, T()); return b && T().adds(b, v === 'add', n, !!ex); }],
+    // Attacks that Knock Out outright.
+    [/^(.+?) Knocks Out your opponent's Active (Basic )?Pokemon when it has exactly (\d+) damage counters on it, and this list can put counters on it to set that up, so the grade counts it as a one-shot of anything\.$/, (m, x, b, n) => T().koxCounters(by(x), !!b, n)],
+    [/^(.+?) Knocks Out your opponent's Active (Basic )?Pokemon on a coin flip, (?:half the time|one time in (\d+)), so the grade counts it at (\d+)\.$/, (m, x, b, n, t) => T().koxFlip(by(x), !!b, n || '2', t)],
+    [/^(.+?) Knocks Out your opponent's Active (Basic )?Pokemon outright, so the grade counts it as a one-shot of anything\.$/, (m, x, b) => T().koxOut(by(x), !!b)],
+    // g37Hits: how many hits the format's threats take.
+    [/^That knocks out the format's (\d+) to (\d+) HP threats in one turn\.$/, (m, lo, hi) => T().oneTurn(lo, hi)],
+    [/^That one-shots the format's (\d+) to (\d+) HP threats\.$/, (m, lo, hi) => T().oneShots(lo, hi)],
+    [/^The format's (\d+) to (\d+) HP threats take (two|three|four|\d+) (hits|turns) each\.$/, (m, lo, hi, w, u) => T().takeEach(lo, hi, I18N_DMG_W[w] || w, u === 'turns')],
+    [/^(\d+) HP threats take (one|two|three|four|\d+) (hits?|turns?) and (\d+) HP threats take (one|two|three|four|\d+) (?:hits?|turns?)\.$/, (m, lo, a, u, hi, b) => T().takeTwo(lo, I18N_DMG_W[a] || a, hi, I18N_DMG_W[b] || b, /^turn/.test(u))],
+    // The finding's lead, its closing sentences, and the spread deck.
+    [/^(.+?) is (the main attacker you set|this deck's main attacker(?:, since the list plays the most of its line|, since the deck is named for it)?), but the hardest hit the grade can count comes from another Pokemon\.$/,
+      (m, x, w) => T().lead(x, /you set/.test(w) ? 'pick' : /most of its line/.test(w) ? 'list' : /named for it/.test(w) ? 'name' : 'main')],
+    [/^(.+?) (give|gives) up one prize per knockout, so needing two hits for a two-prize threat still keeps the prize race even\.$/, (m, x, v) => T().oneTail(nm(x), many(v))],
+    [/^You cannot trade up, which usually loses the prize race\.$/, () => T().cantTrade],
+    [/^This deck wins on spread math: (.+?) chips the whole board and your counter-movers concentrate it\.$/, (m, x) => T().spread(x)],
+    [/^The single-hit number \((\d+)\) undersells its reach against (\d+) to (\d+) HP threats\.$/, (m, n, lo, hi) => T().undersells(n, lo, hi)],
+    [/^The single-hit number undersells it\.$/, () => T().undersellsIt],
+    // Hits that grow.
+    [/^(.+?) hits for (\d+) with (\d+) (.+) attached and (\d+) once (\d+) are in play\.$/, (m, x, now, n, w, top, nt) => { const e = i18nDmgE(w, T(), n); return e && T().grows(x, now, n, e, top, nt); }],
+    [/^Your list runs (\d+), so the full hit is a mid game plan, not a turn 2 one\.$/, (m, n) => T().growsMid(n)],
+    [/^(.+?) hits for (\d+) with 2 (.+?) (in your discard pile|on your Bench|in play) and (\d+) once you have (\d+)\.$/, (m, x, now, w, where, top, n) => { const p = i18nDmgPile(w, T(), 2); return p && T().growsPile(x, now, p, where, top, n); }],
+    [/^(.+?) hits for (\d+) early and (\d+) once you have (\d+) (.+) in your discard pile\.$/, (m, x, now, top, n, w) => { const p = i18nDmgPile(w, T(), n); return p && T().growsEarly(x, now, top, n, p); }],
+    [/^Your list (can have (\d+) there at once|has (\d+) of those cards), so the full hit is a (late game plan that needs a lot of them in the pile|mid game plan, not a turn 2 one)\.$/,
+      (m, w, a, b, k) => T().growsHave(a || b, !!a, /^late/.test(k))],
+    // Hard to disrupt, and Pokemon that wall Pokemon ex.
+    [/^(\d+) of your Pokemon have Abilities that (block the effects of your opponent's attacks or Abilities|prevent damage from some of your opponent's attacks|block damage or effects from some of your opponent's attacks) \((.+)\)\.$/,
+      (m, n, w, x) => T().protect(n, /^block the/.test(w) ? 'effects' : /^prevent/.test(w) ? 'damage' : 'both', x)],
+    [/^Damage still goes through, so this stops lock and disruption, not knockouts\.$/, () => T().dmgThrough],
+    [/^Read each card for when it applies\.$/, () => T().readEach],
+    [/^(.+?) prevents all damage done to it by attacks from your opponent's Pokemon ex, so an ex deck has to find another way to knock it out\.$/, (m, x) => T().wallsEx(by(x))],
+    [/^Pokemon without a Rule Box still hit it normally\.$/, () => T().noRuleBox],
+    // An attack the list's Energy cannot pay for, and damage the grade leaves out.
+    [/^(.+?) needs (.+)\.$/, (m, x, w) => {
+      if (!/'s /.test(x)) return null;
+      const parts = w.split('; it also needs ').map(p => { let k;
+        if ((k = p.match(new RegExp(`^((?:${TY})(?: and ${TY})*) Energy, which this list doesn't run$`)))) { const e = i18nDmgE(k[1] + ' Energy', T(), 2); return e && T().payNone(e); }
+        if ((k = p.match(new RegExp(`^(\\d+) (${TY}) Energy, and this list runs only (\\d+)$`)))) { const e = i18nDmgE(k[2] + ' Energy', T(), k[1]); return e && T().payFew(k[1], e, k[3]); }
+        return null; });
+      return parts.every(Boolean) ? T().cantPay(by(x), parts) : null; }],
+    [/^The grade counts (.+?) \((\d+)\) for it instead\.$/, (m, a, n) => T().instead(a, n)],
+    [/^(.+?) uses an attack from whatever comes off the top of your deck, so the grade does not count its damage\.$/, (m, x) => T().millCopy(by(x))],
+    [/^(.+?) hits (each|\d+) of your opponent's Pokemon for (\d+)( each)?, so two uses can Knock Out (a whole board|\d+) of their Pokemon with (\d+) HP or less\.$/, (m, h, k, top, e, n, hp) => {
+      const c = h.match(/^(.+?), copying (.+?),$/); const how = c ? T().copyHow(by(c[1]), by(c[2])) : by(h);
+      return T().multi(how, k === 'each' ? 0 : k, top, n === 'a whole board' ? 0 : n, hp); }],
+    [/^(.+?) needs ((?:\d+ \w+)(?: and \d+ \w+)*) Energy, and the list runs few Energy that (.+?) can use for it, so it is often not ready to attack\.$/, (m, a, w, x) => {
+      const ps = w.split(' and ').map(p => p.split(' ')); if (!ps.every(p => new RegExp(`^${TY}$`).test(p[1]))) return null;
+      return T().fewE(a, ps.map(p => T().en([p[1]], false, +p[0], false)).map((e, i) => ps[i][0] + ' ' + e), x); }],
+    [/^Your hardest hit comes from (.+?), and the list can put (only one|few) into play, with no other attacker close to it\.$/, (m, x, k) => T().hardest(x, k === 'only one')],
+    [/^When it is prized or Knocked Out, your damage drops a lot\.$/, () => T().drops],
+    // Three-prize Pokemon.
+    [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls), but (they are|it is) here for (.+), not to trade hits\.$/, (m, x, v, f, w, a) => { const r = i18nDmgFor(a, T()); return r && T().engine3(nm(x), many(v), r); }],
+    [/^Your (\d+) ways to switch or retreat(?:, like (.+?))?, let you use it, then move it out before your opponent can Knock it out\.$/, (m, n, x) => T().ways(n, x || '')],
+    [/^Use it, then retreat or switch it out before your opponent's turn, and keep it off the Bench when they can hit the Bench\.$/, () => T().useRetreat],
+    [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls), half the game in one knockout, while (.+?) gives up one\.$/, (m, x, v, f, y) => T().side3(nm(x), many(v), y)],
+    [/^Put (them|it) in play only when you need (?:them|it)\.$/, (m, p) => T().putOnly(p === 'them')],
+    [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls)\.$/, (m, x, v) => T().give3(nm(x), many(v))],
+    [/^(.+?) (give|gives) up 3 prizes when (they fall|it falls), but you cannot reliably one-shot back\.$/, (m, x, v) => T().cantBack(nm(x), many(v))],
+    [/^Your best hit \((\d+)\) one-shots Pokemon with (\d+) HP or less, but the biggest threats take two hits, so those trades cost you more than they cost your opponent\.$/, (m, n) => T().bestHit(n)],
+    [/^That is a losing exchange unless you tighten the damage\.$/, () => T().losing],
+    // Two-prize Pokemon.
+    [/^Every Pokemon here gives up two prizes, so the opponent needs only three knockouts\.$/, () => T().allTwo],
+    [/^That is normal for a deck built on Pokemon ex, so each one has to take more than one knockout of its own\.$/, () => T().normalEx],
+    [/^(\d+) of your (\d+) Pokemon give up two prizes, so most knockouts cost you two\.$/, (m, a, b) => T().mostTwo(a, b)],
+    [/^Send in your one-prize Pokemon when you can\.$/, () => T().sendOne],
+    [/^(\d+) of your (\d+) Pokemon (?:give|gives) up two prizes and the rest give up one, so you are not handing over easy multi-prize turns\.$/, (m, a, b) => T().restOne(a, b)],
+    // Setup speed.
+    [/^Your Stage 2 Pokemon \((.+?)\) evolve through (.+?)( with 1 Rare Candy as a shortcut| without Rare Candy), so plan on attacking with them from your third turn\.$/,
+      (m, x, mids, c) => T().longWay(x, nm(mids), /with 1/.test(c))],
+    [/^Faster decks start swinging by turn (\d+), so your early Pokemon have to hold the line until then\.$/, (m, n) => T().faster(n)],
+    [/^Your Stage 2 Pokemon \((.+?)\) evolve through (\d+) (.+?), and (.+?'s .+?) (looks at .+|searches .+|draws .+|puts .+|attaches .+|discards .+) every turn on the way up, so the slow line still sets up on time\.$/,
+      (m, x, n, mid, a, p) => { const ab = i18nDmgAbil(p, l); return ab && T().midEng(x, n, mid, by(a), ab); }],
+    [/^You lean on Stage 2 Pokemon \((.+?)\) with (?:only (\d+)|no) Rare Candy\.$/, (m, x, n) => T().lean(x, n || '')],
+    [/^In a format that starts swinging by turn (\d+), a slow setup can lose the game before you are online\.$/, (m, n) => T().slow(n)],
+    [/^((?:\d+ .+?)(?:, \d+ .+?)*) (give|gives) you a draw or search Ability once a turn, so the deck finds its pieces without spending a Supporter on it\.$/, (m, x) => T().engs(x, !/^1 [^,]+$/.test(x))],
+    [/^(\d+) different Pokemon in the list hit for (\d+) or more: (.+?)(?: and (\d+) more)?\.$/, (m, n, hp, x, more) => T().toolbox(n, hp, x, more || '')],
+    [/^You pick the attacker that fits each turn(?:, including (\d+) that (?:give|gives) up one prize)?, so your opponent cannot plan around one threat\.$/, (m, n) => T().pick(n || '')],
+    [/^The list runs one copy of its main attacker\.$/, () => T().oneCopy],
+    [/^It is in your prizes in about 1 game in 10, and once it is Knocked Out the deck has no one to carry the plan\.$/, () => T().prizedIn],
+    [/^Most lists run (\d+) to (\d+)\.$/, (m, a, b) => T().mostRun(a, b)],
+    [/^(\d+) (.+?) evolve from (.+?), and the list has 1\.$/, (m, n, x, y) => T().thinRoot && T().thinRoot(n, x, y)],
+    [/^If it is prized or Knocked Out, they have nothing to evolve from\.$/, () => T().thinKO],
+    [/^Most top (.+?) lists run (\d+)(?: (or|to) (\d+))?\.$/, (m, x, a, w, b) => T().mostTop && T().mostTop(x, a, w || '', b || '')],
+    // The build check (v69-grade-blend.js).
+    [/^(.+?) lists that finished in the top quarter of recent online tournaments run about (\d+) Energy\.$/, (m, a, n) => T().archE(a, n)],
+    [/^This list runs (\d+)(?:, and its (\d+) Energy search Items? counts? as (\d+) more, so (\d+))?, outside the (\d+) to (\d+) the grade allows\.$/, (m, raw, s, plus, n, lo, hi) => T().outside(raw, s || '', plus || '', n || '', lo, hi)],
+    [/^The extra Energy takes the place of draw and search, so many turns open with Energy you cannot use\.$/, () => T().extraE],
+    [/^Trade some for draw or search cards\.$/, () => T().tradeSome],
+    [/^With fewer, attackers often miss an attachment and fall behind\.$/, () => T().fewerE],
+    [/^Add Energy back\.$/, () => T().addBack],
+    [/^Nearly every (.+?) list that finished in the top quarter of recent online tournaments runs these, and this one is (\d+) copies short: (.+?)(?: and (\d+) more)?\.$/, (m, a, n, x, more) => {
+      const items = x.split(/(?<=\)), /).map(p => { const k = p.match(/^(.+) \((?:(\d+) of (\d+)|none of (\d+))\)$/); return k && T().coreItem(k[1], k[2] || '0', k[3] || k[4]); });
+      return items.every(Boolean) ? T().core(a, n, items.join(', '), more || '') : null; }],
+    [/^A few swaps are normal, so the first (\d+) copies cost nothing\.$/, (m, n) => T().swaps(n)],
+    [/^Add the rest back unless you have a reason not to\.$/, () => T().restBack],
+    // Under the grade (g68Line): the blend archetype differs from the one built around the main attacker.
+    [/^This list's cards sit closest to (.+?), so the grade uses its results, not those of (.+?), the deck built around (.+?)\.$/, (m, a, b, x) => T().blend(a, b, x)],
+    // Titles.
+    [/^Evolves the long way, drawing as it goes$/, () => T().tLongDraw],
+    [/^(.+?): a three-prize engine$/, (m, x) => T().tEngine(x)],
+    [/^(.+?) can't pay for (.+)$/, (m, x, a) => T().tCantPay(x, a)],
+    [/^Only (\d+(?:\.\d+)?|no) (.+?) to hit with$/, (m, n, x) => T().tOnlyHit(n === 'no' ? '0' : n, x)],
+  ];
+}
+const I18N_DMG_W = { one: '1', two: '2', three: '3', four: '4' };
+const I18N_DMG_PATS = {};
+/** One sentence or title of the Power findings in language l, or null. Built on first use, so a language file can load before this one. */
+function i18nDmgSent(s, l) {
+  const T = i18nDmgTab(l);
+  if (!T) return null;
+  const ps = I18N_DMG_PATS[l] || (I18N_DMG_PATS[l] = i18nDmgPats(l));
+  // A sentence that runs on into another is read one sentence at a time.
+  if (/[a-z0-9)][.!?] [A-Z0-9¿¡]/.test(s)) return null;
+  for (const p of ps) { const m = s.match(p[0]); if (m) { let r = null; try { r = p[1](...m); } catch (e) { r = null; } if (r != null && !/\b(?:undefined|null|NaN)\b/.test(r)) return r; } }
+  return null;
+}
+const I18N_DMG = {
+  es: (function () {
+    const Y = I18N_AB_TYP.es, n1 = n => +n === 1;
+    const deX = x => /'s$/.test(x) ? 'de ' + x.slice(0, -2) : x;
+    const cs = (n, k) => ({ moved: n1(n) ? 'carta que lo cambia al Puesto Activo o te deja retirarte gratis' : 'cartas que lo cambian al Puesto Activo o te dejan retirarte gratis',
+      oppdmg: n1(n) ? 'carta que le pone contadores de daño antes' : 'cartas que le ponen contadores de daño antes',
+      xenergy: n1(n) ? 'carta que une Energía extra' : 'cartas que unen Energía extra' })[k];
+    const KIND = { Item: 'Objeto', Supporter: 'Partidario', Trainer: 'Entrenador', Stadium: 'Estadio', 'Pokemon Tool': 'Herramienta Pokémon' };
+    const STG = { Basic: ['Pokémon Básico', 'Pokémon Básicos'], 'Stage 1': ['Pokémon de Fase 1', 'Pokémon de Fase 1'], 'Stage 2': ['Pokémon de Fase 2', 'Pokémon de Fase 2'] };
+    const AT = 'Fuera de Combate';
+    const pl = (p, a, b) => p ? b : a;
+    return {
+      and: ' y ', of: (o, w) => `${w} de ${o}`,
+      en: (ts, basic, n, cards) => { const k = cards ? 1 : n;
+        let e = ts.length ? i18nEnergy(ts.join(' and ') + ' Energy', 'es', k) : (n1(k) ? 'Energía' : 'Energías');
+        if (basic) e += n1(k) ? ' Básica' : ' Básicas';
+        return cards ? (n1(n) ? 'carta de ' : 'cartas de ') + e : e; },
+      pile: (p, m) => p.k === 'kindHas' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]} con ${p.has} en el nombre`
+        : p.k === 'kind' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]}` : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage][m ? 1 : 0]
+        : p.k === 'pre' ? `Pokémon ${deX(p.pre)}` : p.k === 'atk' ? `Pokémon con ${p.atk}` : p.k === 'name' ? `${m ? 'cartas' : 'carta'} ${p.name}` : p.names.join(' o '),
+      selfB: (a, e) => `${a} con ${e} unida`, from: (a, w, n) => `${a} de ${n ? n + ' ' : ''}${w}`,
+      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg ? 'hace de media' : 'hace como máximo';
+        const C = { ex: 'contra un Pokémon ex', poison: 'mientras está Envenenado', behind: 'cuando vas por detrás en premios', last: 'cuando ese Partidario es la última carta de tu mano' };
+        return b ? `${s} ${v} ${b.eff} de daño con ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' y ') : ''} (${top} sin eso), sin contar la Debilidad.` : `${s} ${v} ${top} de daño sin contar la Debilidad.`; },
+      koUse: x => `Usarlo deja ${AT} a ${x}, lo que le da un premio a tu rival.`,
+      need: (a, full, w, base) => { const E = (t, n) => t ? i18nEnergy(t + ' Energy', 'es', n) : (n1(n) ? 'Energía' : 'Energías');
+        const W = { moved: `en un turno en que ${w.nm} pasa de tu Banca al Puesto Activo`, selfdmg: `cuando ${w.nm} tiene contadores de daño`,
+          oppdmg: 'contra un Pokémon Activo que ya tiene contadores de daño', deck: `cuando a tu baraja le quedan ${w.n} cartas o menos`,
+          xenergy: `con ${w.n} ${n1(w.n) ? 'Energía extra unida' : 'Energías extra unidas'} a él`, stadium: 'mientras tienes un Estadio en juego',
+          btype: `con un Pokémon de tipo ${Y[w.t]} en tu Banca`, bnames: `con ${i18nDmgNames(w.names, I18N_DMG.es)} en tu Banca`,
+          ko: `en el turno después de que uno de tus Pokémon quedara ${AT}`, next: 'si usó el mismo ataque el turno anterior',
+          energy: `con ${E(w.t, 1)} unida a ${w.nm}`, supname: `en un turno en que juegas un Partidario ${deX(w.x)}`,
+          prize6: 'mientras aún te quedan las 6 cartas de Premio', evolved: `en el turno en que evoluciona de ${w.x}`,
+          inplay: `con ${w.n} ${E(w.t, w.n)} en juego`, discab: `con ${w.n} Pokémon con ${w.a} en tu pila de descartes` }[w.k];
+        return W && `${a} solo hace ${full} de daño ${W}; si no, hace ${base}.`; },
+      hasCards: (n, k, full) => `Tu lista tiene ${n} ${cs(n, k)}, así que la calificación cuenta ${full}.`,
+      afterHit: 'El golpe completo llega después de que haya recibido un golpe, no en su primer ataque.',
+      afterKo: 'El golpe completo llega después de que pierdas un Pokémon, no en tu primer ataque.',
+      canSet: n => `Tu lista puede preparar eso, así que la calificación cuenta ${n}.`,
+      since: (n, w) => `La calificación cuenta ${n}, ya que ${w}.`,
+      why: {
+        evolved: () => 'atacas en el turno en que evoluciona', next: b => `puede seguir atacando turno tras turno, pero su primer uso hace ${b}`,
+        only: (n, k) => `tu lista solo tiene ${n} ${cs(n, k)}`, noCounters: () => 'nada en tu lista le pone contadores de daño antes de que ataques',
+        endGame: () => 'eso solo pasa al final de la partida', prize6: () => 'eso solo vale antes de que tomes tu primer premio', notAll: () => 'tu lista no los lleva todos',
+        stadiums: n => `tu lista solo tiene ${n} ${n1(n) ? 'Estadio' : 'Estadios'}`, typeMon: (n, t) => `tu lista solo tiene ${n} Pokémon de tipo ${Y[t]}`,
+        energy: (n, e) => `tu lista solo tiene ${n} ${e}`, supname: (n, x) => `tu lista solo tiene ${n} ${n1(n) ? 'Partidario' : 'Partidarios'} ${deX(x)}`,
+        discab: (n, a) => `tu lista solo tiene ${n} Pokémon con ${a}`,
+        thinSelf: (n, x, line) => `la lista solo lleva ${n1(n) ? '1 copia' : n + ' copias'} de ${x}${line ? ' o de su línea' : ''}, así que no siempre está en juego`,
+        thinCopy: (n, x, line) => `solo hay ${n} ${x}${line ? ' o Pokémon de su línea' : ''} de los que copiar, así que no siempre está en juego`,
+        needs: (b, grow, th) => 'el golpe completo necesita ' + [b, grow && 'tiempo para crecer'].filter(Boolean).join(' y ') + (th ? ', y ' + th : ''),
+      },
+      twice: (a, st, one, all, eff, b) => `${a} le deja atacar dos veces por turno${st ? ` mientras ${st} está en juego` : ''}, así que la calificación cuenta dos golpes de ${one}, ${all} en total${eff ? `, o ${eff} con ${b} en los dos` : ''}.`,
+      tails: 'Lanza monedas hasta que sale cruz, así que puede salir un golpe mayor, pero no conviene contar con ello.',
+      flipAvg: 'Eso cuenta las monedas por su media.',
+      millAvg: (n, p) => `Es la media según las cartas que salen de la parte superior de la baraja: tu lista lleva ${n} ${p}, así que un golpe mayor o menor depende de la suerte.`,
+      hand: (t, n, f) => `Cuenta las cartas de tu mano, así que ${t} es la estimación de la app para unas ${n} cartas${f ? ', con las Habilidades de robo de la lista llenando la mano' : ''}, no un número impreso.`,
+      lowConf: t => `Su daño depende de la mesa, así que ${t} es la estimación de la app, no un número impreso.`,
+      escBoth: (x, b, p) => `${x} hace ${b ? b + ' más ' : ''}${p} por cada Energía unida a los dos Pokémon Activos.`,
+      appCounts: (n, w, t) => `La app cuenta ${n} en él${w ? `, y cada una cuenta doble con ${w}` : ''}, y 2 en el Pokémon Activo de tu rival, así que ${t} es su estimación, no un número impreso.`,
+      escDisc: (x, e, p) => `${x} descarta ${e} de tus Pokémon y hace ${p} por cada una que descarta.`,
+      escPer: (x, b, p, e, sc) => `${x} hace ${b ? b + ' más ' : ''}${p} por cada ${e} unida a ${sc === 'it' ? 'él' : 'todos tus Pokémon'}.`,
+      x2: (x, t) => `${x} hace que cada ${i18nEnergy(t + ' Energy', 'es', 1)} Básica cuente doble.`,
+      takes: (a, t, lo, b, hi) => `Hacen falta ${a}${t ? ' cartas de ' + i18nEnergy(t + ' Energy', 'es', 1) + ' Básica' : ''} para dejar ${AT} de un golpe a un Pokémon de ${lo} PS y ${b} para uno de ${hi} PS, sin contar la Debilidad.`,
+      listRuns: n => `Tu lista lleva ${n}.`,
+      adds: (b, p, n, ex) => `${b} ${pl(p, 'suma', 'suman')} ${n} más${ex ? ' contra un Pokémon ex' : ''}.`,
+      koxCounters: (x, b, n) => `${x} deja ${AT} al Pokémon Activo${b ? ' Básico' : ''} de tu rival cuando tiene exactamente ${n} contadores de daño, y esta lista puede ponérselos para prepararlo, así que la calificación lo cuenta como un golpe que deja ${AT} a cualquiera.`,
+      koxFlip: (x, b, n, t) => `${x} deja ${AT} al Pokémon Activo${b ? ' Básico' : ''} de tu rival si sale bien una moneda, ${n === '2' ? 'la mitad de las veces' : 'una vez de cada ' + n}, así que la calificación lo cuenta como ${t}.`,
+      koxOut: (x, b) => `${x} deja ${AT} directamente al Pokémon Activo${b ? ' Básico' : ''} de tu rival, así que la calificación lo cuenta como un golpe que deja ${AT} a cualquiera.`,
+      oneTurn: (lo, hi) => `Eso deja ${AT} en un solo turno a las amenazas de ${lo} a ${hi} PS del formato.`,
+      oneShots: (lo, hi) => `Eso deja ${AT} de un golpe a las amenazas de ${lo} a ${hi} PS del formato.`,
+      takeEach: (lo, hi, n, t) => `Las amenazas de ${lo} a ${hi} PS del formato necesitan ${n} ${t ? 'turnos' : 'golpes'} cada una.`,
+      takeTwo: (lo, a, hi, b, t) => { const u = n => n1(n) ? (t ? 'un turno' : 'un golpe') : `${n} ${t ? 'turnos' : 'golpes'}`;
+        return `Las amenazas de ${lo} PS necesitan ${u(a)} y las de ${hi} PS, ${u(b)}.`; },
+      lead: (x, w) => `${x} es ${w === 'pick' ? 'el atacante principal que elegiste' : 'el atacante principal de esta baraja' + (w === 'list' ? ', ya que la lista lleva más cartas de su línea' : w === 'name' ? ', ya que la baraja lleva su nombre' : '')}, pero el golpe más fuerte que la calificación puede contar viene de otro Pokémon.`,
+      oneTail: (x, p) => `${x} ${pl(p, 'entrega', 'entregan')} un solo premio por cada ${AT}, así que necesitar dos golpes contra una amenaza de dos premios mantiene igualada la carrera de premios.`,
+      cantTrade: 'No puedes ganar el intercambio, y eso suele hacerte perder la carrera de premios.',
+      spread: x => `Esta baraja gana repartiendo daño: ${x} daña toda la mesa y tus Pokémon que mueven contadores lo concentran.`,
+      undersells: (n, lo, hi) => `El número de un solo golpe (${n}) se queda corto para lo que alcanza contra amenazas de ${lo} a ${hi} PS.`,
+      undersellsIt: 'El número de un solo golpe se queda corto.',
+      grows: (x, now, n, e, top, nt) => `${x} hace ${now} de daño con ${n} ${e} ${n1(n) ? 'unida' : 'unidas'} y ${top} cuando hay ${nt} en juego.`,
+      growsMid: n => `Tu lista lleva ${n}, así que el golpe completo es un plan de mitad de partida, no del turno 2.`,
+      growsPile: (x, now, p, w, top, n) => `${x} hace ${now} de daño con 2 ${p} ${({ 'in your discard pile': 'en tu pila de descartes', 'on your Bench': 'en tu Banca', 'in play': 'en juego' })[w]} y ${top} cuando tienes ${n}.`,
+      growsEarly: (x, now, top, n, p) => `${x} hace ${now} de daño al principio y ${top} cuando tienes ${n} ${p} en tu pila de descartes.`,
+      growsHave: (n, there, late) => `${there ? `Tu lista puede tener ${n} ahí a la vez` : `Tu lista tiene ${n} de esas cartas`}, así que el golpe completo es ${late ? 'un plan de final de partida que necesita muchas en la pila' : 'un plan de mitad de partida, no del turno 2'}.`,
+      protect: (n, k, x) => `${n} de tus Pokémon tienen Habilidades que ${({ effects: 'bloquean los efectos de los ataques o Habilidades de tu rival', damage: 'evitan el daño de algunos ataques de tu rival', both: 'bloquean el daño o los efectos de algunos ataques de tu rival' })[k]} (${x}).`,
+      dmgThrough: `El daño sigue entrando, así que esto frena bloqueos y disrupción, no los ${AT}.`,
+      readEach: 'Lee cada carta para saber cuándo se aplica.',
+      wallsEx: x => `${x} evita todo el daño que le hacen los ataques de los Pokémon ex de tu rival, así que una baraja de ex tiene que buscar otra forma de dejarlo ${AT}.`,
+      noRuleBox: 'Los Pokémon sin Recuadro de regla le siguen haciendo daño con normalidad.',
+      payNone: e => `${e}, que esta lista no lleva`, payFew: (n, e, h) => `${n} ${e}, y esta lista solo lleva ${h}`,
+      cantPay: (x, ps) => `${x} necesita ${ps.join('; también necesita ')}.`,
+      instead: (a, n) => `La calificación cuenta ${a} (${n}) en su lugar.`,
+      millCopy: x => `${x} usa un ataque de la carta que salga de la parte superior de tu baraja, así que la calificación no cuenta su daño.`,
+      copyHow: (a, b) => `${a}, copiando ${b},`,
+      multi: (how, k, top, n, hp) => `${how} golpea a ${k ? k + ' de los Pokémon de tu rival por ' + top + ' cada uno' : 'cada Pokémon de tu rival por ' + top}, así que dos usos pueden dejar ${AT} a ${n ? n + ' de sus Pokémon' : 'todos sus Pokémon'} con ${hp} PS o menos.`,
+      fewE: (a, need, x) => `${a} necesita ${i18nDmgJoin(need, I18N_DMG.es)}, y la lista lleva pocas Energías que ${x} pueda usar para él, así que a menudo no está listo para atacar.`,
+      hardest: (x, one) => `Tu golpe más fuerte viene de ${x}, y la lista ${one ? 'solo puede poner uno' : 'puede poner pocos'} en juego, sin otro atacante que se le acerque.`,
+      drops: `Cuando está en los premios o queda ${AT}, tu daño cae mucho.`,
+      itsAb: a => `su Habilidad ${a}`, theirAb: x => x,
+      engine3: (x, p, r) => `${x} ${pl(p, 'entrega', 'entregan')} 3 premios cuando ${pl(p, 'cae', 'caen')}, pero ${pl(p, 'está', 'están')} aquí por ${r}, no para intercambiar golpes.`,
+      ways: (n, x) => `Tus ${n} formas de cambiar o retirarte${x ? `, como ${x},` : ''} te permiten usarlo y luego sacarlo antes de que tu rival pueda dejarlo ${AT}.`,
+      useRetreat: 'Úsalo y luego retíralo o cámbialo antes del turno de tu rival, y no lo dejes en la Banca cuando pueda golpear a la Banca.',
+      side3: (x, p, y) => `${x} ${pl(p, 'entrega', 'entregan')} 3 premios cuando ${pl(p, 'cae', 'caen')}, la mitad de la partida en un solo ${AT}, mientras que ${y} entrega uno.`,
+      putOnly: p => p ? 'Ponlos en juego solo cuando los necesites.' : 'Ponlo en juego solo cuando lo necesites.',
+      give3: (x, p) => `${x} ${pl(p, 'entrega', 'entregan')} 3 premios cuando ${pl(p, 'cae', 'caen')}.`,
+      cantBack: (x, p) => `${x} ${pl(p, 'entrega', 'entregan')} 3 premios cuando ${pl(p, 'cae', 'caen')}, pero no puedes responder dejando ${AT} de un golpe con fiabilidad.`,
+      bestHit: n => `Tu mejor golpe (${n}) deja ${AT} de un golpe a Pokémon con ${n} PS o menos, pero las mayores amenazas necesitan dos golpes, así que esos intercambios te cuestan más a ti que a tu rival.`,
+      losing: 'Es un intercambio perdedor, salvo que ajustes el daño.',
+      allTwo: `Cada Pokémon aquí entrega dos premios, así que al rival le bastan tres ${AT}.`,
+      normalEx: `Es lo normal en una baraja basada en Pokémon ex, así que cada uno tiene que conseguir más de un ${AT} por su cuenta.`,
+      mostTwo: (a, b) => `${a} de tus ${b} Pokémon entregan dos premios, así que casi siempre que uno queda ${AT} el rival toma dos.`,
+      sendOne: 'Usa como atacantes a tus Pokémon de un premio cuando puedas.',
+      restOne: (a, b) => `${a} de tus ${b} Pokémon ${n1(a) ? 'entrega' : 'entregan'} dos premios y el resto entrega uno, así que no le regalas a tu rival turnos de varios premios.`,
+      longWay: (x, mids, c) => `Tus Pokémon de Fase 2 (${x}) evolucionan a través de ${mids}${c ? ', con 1 Rare Candy como atajo' : ' sin Rare Candy'}, así que cuenta con atacar con ellos desde tu tercer turno.`,
+      faster: n => `Las barajas más rápidas empiezan a golpear en el turno ${n}, así que tus primeros Pokémon tienen que aguantar hasta entonces.`,
+      midEng: (x, n, mid, a, ab) => `Tus Pokémon de Fase 2 (${x}) evolucionan a través de ${n} ${mid}, y en cada turno de la subida ${a} ${ab}, así que la línea lenta llega a tiempo.`,
+      lean: (x, n) => `Dependes de Pokémon de Fase 2 (${x}) ${n ? 'con solo ' + n + ' Rare Candy' : 'sin Rare Candy'}.`,
+      slow: n => `En un formato que empieza a golpear en el turno ${n}, un arranque lento puede perder la partida antes de que estés listo.`,
+      engs: (x, p) => `${x} te ${pl(p, 'da', 'dan')} una Habilidad de robo o búsqueda una vez por turno, así que la baraja encuentra sus piezas sin gastar un Partidario en ello.`,
+      toolbox: (n, hp, x, more) => `${n} Pokémon distintos de la lista golpean por ${hp} o más: ${x}${more ? ` y ${more} más` : ''}.`,
+      pick: n => `Eliges el atacante que encaja en cada turno${n ? `, ${n1(n) ? 'incluido 1 que entrega' : `incluidos ${n} que entregan`} un solo premio` : ''}, así que tu rival no puede planear contra una sola amenaza.`,
+      oneCopy: 'La lista lleva una sola copia de su atacante principal.',
+      prizedIn: `Queda en tus premios en más o menos 1 de cada 10 partidas, y una vez que queda ${AT} la baraja se queda sin nadie que lleve adelante el plan.`,
+      mostRun: (a, b) => `La mayoría de las listas lleva de ${a} a ${b}.`,
+      thinRoot: (n, x, y) => `${n} ${x} evolucionan de ${y}, y la lista lleva 1.`,
+      thinKO: 'Si queda en los premios o Fuera de Combate, no tienen de qué evolucionar.',
+      mostTop: (x, a, w, b) => `La mayoría de las mejores listas de ${x} lleva ${w === 'to' ? `de ${a} a ${b}` : w ? `${a} ${/^8/.test(b) ? 'u' : 'o'} ${b}` : a}.`,
+      archE: (a, n) => `Las listas de ${a} que quedaron en el cuarto superior de torneos online recientes llevan unas ${n} Energías.`,
+      outside: (raw, s, plus, n, lo, hi) => `Esta lista lleva ${raw}${s ? `, y ${n1(s) ? 'su Objeto de búsqueda de Energía cuenta' : `sus ${s} Objetos de búsqueda de Energía cuentan`} como ${plus} más, así que ${n}` : ''}, fuera del rango de ${lo} a ${hi} que permite la calificación.`,
+      extraE: 'La Energía de más ocupa el lugar del robo y la búsqueda, así que muchos turnos empiezan con Energía que no puedes usar.',
+      tradeSome: 'Cambia algunas por cartas de robo o de búsqueda.',
+      fewerE: 'Con menos, los atacantes a menudo se quedan sin unir Energía y se quedan atrás.',
+      addBack: 'Vuelve a añadir Energía.',
+      coreItem: (x, h, w) => h === '0' ? `${x} (ninguna de ${w})` : `${x} (${h} de ${w})`,
+      core: (a, n, items, more) => `Casi todas las listas de ${a} que quedaron en el cuarto superior de torneos online recientes llevan estas cartas, y a esta le faltan ${n} copias: ${items}${more ? ` y ${more} más` : ''}.`,
+      swaps: n => `Unos pocos cambios son normales, así que las primeras ${n} copias no cuestan nada.`,
+      restBack: 'Vuelve a añadir el resto, salvo que tengas un motivo para no hacerlo.',
+      blend: (a, b, x) => `Las cartas de esta lista se parecen más a ${a}, así que la calificación usa sus resultados, no los de ${b}, la baraja construida alrededor de ${x}.`,
+      tLongDraw: 'Evoluciona por el camino largo, robando por el camino',
+      tEngine: x => `${x}: un motor de tres premios`,
+      tCantPay: (x, a) => `${x} no puede pagar ${a}`,
+      tOnlyHit: (n, x) => n === '0' ? `Ningún ${x} con el que golpear` : `Solo ${n} ${x} con ${n1(n) ? 'el' : 'los'} que golpear`,
+    };
+  })(),
+  pt: (function () {
+    const Y = I18N_AB_TYP.pt, n1 = n => +n === 1;
+    const deX = x => /'s$/.test(x) ? 'de ' + x.slice(0, -2) : x;
+    const cs = (n, k) => ({ moved: n1(n) ? 'carta que o coloca no Campo Ativo ou deixa você recuar de graça' : 'cartas que o colocam no Campo Ativo ou deixam você recuar de graça',
+      oppdmg: n1(n) ? 'carta que coloca contadores de dano nele antes' : 'cartas que colocam contadores de dano nele antes',
+      xenergy: n1(n) ? 'carta que liga Energia extra' : 'cartas que ligam Energia extra' })[k];
+    const KIND = { Item: 'Item', Supporter: 'Apoiador', Trainer: 'Treinador', Stadium: 'Estádio', 'Pokemon Tool': 'Ferramenta Pokémon' };
+    const STG = { Basic: ['Pokémon Básico', 'Pokémon Básicos'], 'Stage 1': ['Pokémon de Estágio 1', 'Pokémon de Estágio 1'], 'Stage 2': ['Pokémon de Estágio 2', 'Pokémon de Estágio 2'] };
+    const pl = (p, a, b) => p ? b : a;
+    return {
+      and: ' e ', of: (o, w) => `${w} de ${o}`,
+      en: (ts, basic, n, cards) => { const k = cards ? 1 : n;
+        let e = ts.length ? i18nEnergy(ts.join(' and ') + ' Energy', 'pt', k) : (n1(k) ? 'Energia' : 'Energias');
+        if (basic) e += n1(k) ? ' Básica' : ' Básicas';
+        return cards ? (n1(n) ? 'carta de ' : 'cartas de ') + e : e; },
+      pile: (p, m) => p.k === 'kindHas' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]} com ${p.has} no nome`
+        : p.k === 'kind' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]}` : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage][m ? 1 : 0]
+        : p.k === 'pre' ? `Pokémon ${deX(p.pre)}` : p.k === 'atk' ? `Pokémon com ${p.atk}` : p.k === 'name' ? `${m ? 'cartas' : 'carta'} ${p.name}` : p.names.join(' ou '),
+      selfB: (a, e) => `${a} com ${e} ligada`, from: (a, w, n) => `${a} de ${n ? n + ' ' : ''}${w}`,
+      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} com ${x.via},` : ''), v = avg ? 'causa em média' : 'causa no máximo';
+        const C = { ex: 'contra um Pokémon ex', poison: 'enquanto está Envenenado', behind: 'quando você está atrás nos prêmios', last: 'quando esse Apoiador é a última carta da sua mão' };
+        return b ? `${s} ${v} ${b.eff} de dano com ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' e ') : ''} (${top} sem isso), sem contar a Fraqueza.` : `${s} ${v} ${top} de dano sem contar a Fraqueza.`; },
+      koUse: x => `Usar isso Nocauteia ${x}, o que dá um prêmio ao oponente.`,
+      need: (a, full, w, base) => { const E = (t, n) => t ? i18nEnergy(t + ' Energy', 'pt', n) : (n1(n) ? 'Energia' : 'Energias');
+        const W = { moved: `em um turno em que ${w.nm} sobe do seu Banco para o Campo Ativo`, selfdmg: `quando ${w.nm} tem contadores de dano`,
+          oppdmg: 'contra um Pokémon Ativo que já tem contadores de dano', deck: `quando seu deck tem ${w.n} cartas ou menos`,
+          xenergy: `com ${w.n} ${n1(w.n) ? 'Energia extra ligada' : 'Energias extras ligadas'} a ele`, stadium: 'enquanto você tem um Estádio em jogo',
+          btype: `com um Pokémon do tipo ${Y[w.t]} no seu Banco`, bnames: `com ${i18nDmgNames(w.names, I18N_DMG.pt)} no seu Banco`,
+          ko: 'no turno depois de um dos seus Pokémon ser Nocauteado', next: 'se usou o mesmo ataque no turno anterior',
+          energy: `com ${E(w.t, 1)} ligada a ${w.nm}`, supname: `em um turno em que você joga um Apoiador ${deX(w.x)}`,
+          prize6: 'enquanto você ainda tem as 6 cartas de Prêmio', evolved: `no turno em que evolui de ${w.x}`,
+          inplay: `com ${w.n} ${E(w.t, w.n)} em jogo`, discab: `com ${w.n} Pokémon com ${w.a} na sua pilha de descarte` }[w.k];
+        return W && `${a} só causa ${full} de dano ${W}; caso contrário, causa ${base}.`; },
+      hasCards: (n, k, full) => `Sua lista tem ${n} ${cs(n, k)}, então a nota conta ${full}.`,
+      afterHit: 'O golpe completo vem depois de ele levar um golpe, não no primeiro ataque.',
+      afterKo: 'O golpe completo vem depois de você perder um Pokémon, não no seu primeiro ataque.',
+      canSet: n => `Sua lista consegue preparar isso, então a nota conta ${n}.`,
+      since: (n, w) => `A nota conta ${n}, já que ${w}.`,
+      why: {
+        evolved: () => 'você ataca no turno em que ele evolui', next: b => `ele pode continuar atacando turno após turno, mas o primeiro uso causa ${b}`,
+        only: (n, k) => `sua lista só tem ${n} ${cs(n, k)}`, noCounters: () => 'nada na sua lista coloca contadores de dano nele antes de você atacar',
+        endGame: () => 'isso só acontece no fim da partida', prize6: () => 'isso só vale antes de você pegar seu primeiro prêmio', notAll: () => 'sua lista não usa todos eles',
+        stadiums: n => `sua lista só tem ${n} ${n1(n) ? 'Estádio' : 'Estádios'}`, typeMon: (n, t) => `sua lista só tem ${n} Pokémon do tipo ${Y[t]}`,
+        energy: (n, e) => `sua lista só tem ${n} ${e}`, supname: (n, x) => `sua lista só tem ${n} ${n1(n) ? 'Apoiador' : 'Apoiadores'} ${deX(x)}`,
+        discab: (n, a) => `sua lista só tem ${n} Pokémon com ${a}`,
+        thinSelf: (n, x, line) => `a lista só usa ${n1(n) ? '1 cópia' : n + ' cópias'} de ${x}${line ? ' ou da linha dele' : ''}, então ele nem sempre está em jogo`,
+        thinCopy: (n, x, line) => `só há ${n} ${x}${line ? ' ou Pokémon da linha dele' : ''} para copiar, então ele nem sempre está em jogo`,
+        needs: (b, grow, th) => 'o golpe completo precisa de ' + [b, grow && 'tempo para crescer'].filter(Boolean).join(' e ') + (th ? ', e ' + th : ''),
+      },
+      twice: (a, st, one, all, eff, b) => `${a} deixa ele atacar duas vezes por turno${st ? ` enquanto ${st} está em jogo` : ''}, então a nota conta dois golpes de ${one}, ${all} no total${eff ? `, ou ${eff} com ${b} nos dois` : ''}.`,
+      tails: 'Ele joga moedas até sair coroa, então um golpe maior pode acontecer, mas não é algo com que contar.',
+      flipAvg: 'Isso conta as moedas pela média.',
+      millAvg: (n, p) => `Essa é a média das cartas que saem do topo do deck: sua lista usa ${n} ${p}, então um golpe maior ou menor depende da sorte.`,
+      hand: (t, n, f) => `Ele conta as cartas da sua mão, então ${t} é a estimativa do app para cerca de ${n} cartas${f ? ', com as Habilidades de compra da lista enchendo a mão' : ''}, não um número impresso.`,
+      lowConf: t => `O dano depende da mesa, então ${t} é a estimativa do app, não um número impresso.`,
+      escBoth: (x, b, p) => `${x} causa ${b ? b + ' mais ' : ''}${p} para cada Energia ligada aos dois Pokémon Ativos.`,
+      appCounts: (n, w, t) => `O app conta ${n} nele${w ? `, cada uma contando em dobro com ${w}` : ''}, e 2 no Pokémon Ativo do oponente, então ${t} é a estimativa dele, não um número impresso.`,
+      escDisc: (x, e, p) => `${x} descarta ${e} dos seus Pokémon e causa ${p} para cada uma descartada.`,
+      escPer: (x, b, p, e, sc) => `${x} causa ${b ? b + ' mais ' : ''}${p} para cada ${e} ligada ${sc === 'it' ? 'a ele' : 'a todos os seus Pokémon'}.`,
+      x2: (x, t) => `${x} faz cada ${i18nEnergy(t + ' Energy', 'pt', 1)} Básica contar em dobro.`,
+      takes: (a, t, lo, b, hi) => `São necessárias ${a}${t ? ' cartas de ' + i18nEnergy(t + ' Energy', 'pt', 1) + ' Básica' : ''} para Nocautear de um golpe um Pokémon de ${lo} PS e ${b} para um de ${hi} PS, sem contar a Fraqueza.`,
+      listRuns: n => `Sua lista usa ${n}.`,
+      adds: (b, p, n, ex) => `${b} ${pl(p, 'soma', 'somam')} mais ${n}${ex ? ' contra um Pokémon ex' : ''}.`,
+      koxCounters: (x, b, n) => `${x} Nocauteia o Pokémon Ativo${b ? ' Básico' : ''} do oponente quando ele tem exatamente ${n} contadores de dano, e esta lista consegue colocar esses contadores para preparar isso, então a nota conta isso como um Nocaute de um golpe em qualquer um.`,
+      koxFlip: (x, b, n, t) => `${x} Nocauteia o Pokémon Ativo${b ? ' Básico' : ''} do oponente se uma moeda ajudar, ${n === '2' ? 'metade das vezes' : 'uma vez a cada ' + n}, então a nota conta isso como ${t}.`,
+      koxOut: (x, b) => `${x} Nocauteia direto o Pokémon Ativo${b ? ' Básico' : ''} do oponente, então a nota conta isso como um Nocaute de um golpe em qualquer um.`,
+      oneTurn: (lo, hi) => `Isso Nocauteia em um só turno as ameaças de ${lo} a ${hi} PS do formato.`,
+      oneShots: (lo, hi) => `Isso Nocauteia de um golpe as ameaças de ${lo} a ${hi} PS do formato.`,
+      takeEach: (lo, hi, n, t) => `As ameaças de ${lo} a ${hi} PS do formato precisam de ${n} ${t ? 'turnos' : 'golpes'} cada uma.`,
+      takeTwo: (lo, a, hi, b, t) => { const u = n => n1(n) ? (t ? 'um turno' : 'um golpe') : `${n} ${t ? 'turnos' : 'golpes'}`;
+        return `As ameaças de ${lo} PS precisam de ${u(a)} e as de ${hi} PS, de ${u(b)}.`; },
+      lead: (x, w) => `${x} é ${w === 'pick' ? 'o atacante principal que você escolheu' : 'o atacante principal deste deck' + (w === 'list' ? ', já que a lista usa mais cartas da linha dele' : w === 'name' ? ', já que o deck leva o nome dele' : '')}, mas o golpe mais forte que a nota consegue contar vem de outro Pokémon.`,
+      oneTail: (x, p) => `${x} ${pl(p, 'entrega', 'entregam')} só um prêmio por nocaute, então precisar de dois golpes contra uma ameaça de dois prêmios ainda deixa a corrida de prêmios equilibrada.`,
+      cantTrade: 'Você não consegue ganhar a troca, e isso costuma fazer você perder a corrida de prêmios.',
+      spread: x => `Este deck vence espalhando dano: ${x} acerta a mesa toda e seus Pokémon que movem contadores concentram esse dano.`,
+      undersells: (n, lo, hi) => `O número de um golpe só (${n}) não mostra todo o alcance contra ameaças de ${lo} a ${hi} PS.`,
+      undersellsIt: 'O número de um golpe só não mostra todo o alcance dele.',
+      grows: (x, now, n, e, top, nt) => `${x} causa ${now} com ${n} ${e} ${n1(n) ? 'ligada' : 'ligadas'} e ${top} quando há ${nt} em jogo.`,
+      growsMid: n => `Sua lista usa ${n}, então o golpe completo é um plano de meio de jogo, não do turno 2.`,
+      growsPile: (x, now, p, w, top, n) => `${x} causa ${now} com 2 ${p} ${({ 'in your discard pile': 'na sua pilha de descarte', 'on your Bench': 'no seu Banco', 'in play': 'em jogo' })[w]} e ${top} quando você tem ${n}.`,
+      growsEarly: (x, now, top, n, p) => `${x} causa ${now} no começo e ${top} quando você tem ${n} ${p} na sua pilha de descarte.`,
+      growsHave: (n, there, late) => `${there ? `Sua lista pode ter ${n} ali ao mesmo tempo` : `Sua lista tem ${n} dessas cartas`}, então o golpe completo é ${late ? 'um plano de fim de jogo que precisa de muitas delas na pilha' : 'um plano de meio de jogo, não do turno 2'}.`,
+      protect: (n, k, x) => `${n} dos seus Pokémon têm Habilidades que ${({ effects: 'bloqueiam os efeitos dos ataques ou Habilidades do oponente', damage: 'evitam o dano de alguns ataques do oponente', both: 'bloqueiam o dano ou os efeitos de alguns ataques do oponente' })[k]} (${x}).`,
+      dmgThrough: 'O dano continua passando, então isso segura travas e disrupção, não nocautes.',
+      readEach: 'Leia cada carta para ver quando ela se aplica.',
+      wallsEx: x => `${x} evita todo o dano causado a ele por ataques dos Pokémon ex do oponente, então um deck de ex precisa achar outro jeito de Nocauteá-lo.`,
+      noRuleBox: 'Pokémon sem Caixa de Regras continuam causando dano normal nele.',
+      payNone: e => `${e}, que esta lista não usa`, payFew: (n, e, h) => `${n} ${e}, e esta lista só usa ${h}`,
+      cantPay: (x, ps) => `${x} precisa de ${ps.join('; também precisa de ')}.`,
+      instead: (a, n) => `A nota conta ${a} (${n}) no lugar.`,
+      millCopy: x => `${x} usa um ataque da carta que sair do topo do seu deck, então a nota não conta o dano dele.`,
+      copyHow: (a, b) => `${a}, copiando ${b},`,
+      multi: (how, k, top, n, hp) => `${how} acerta ${k ? k + ' dos Pokémon do oponente com ' + top + ' cada' : 'cada Pokémon do oponente com ' + top}, então dois usos podem Nocautear ${n ? n + ' dos Pokémon dele' : 'todos os Pokémon dele'} com ${hp} PS ou menos.`,
+      fewE: (a, need, x) => `${a} precisa de ${i18nDmgJoin(need, I18N_DMG.pt)}, e a lista usa poucas Energias que ${x} pode usar para isso, então ele muitas vezes não está pronto para atacar.`,
+      hardest: (x, one) => `Seu golpe mais forte vem de ${x}, e a lista ${one ? 'só consegue colocar um' : 'consegue colocar poucos'} em jogo, sem outro atacante perto dele.`,
+      drops: 'Quando ele está nos prêmios ou é Nocauteado, seu dano cai muito.',
+      itsAb: a => `a Habilidade ${a}`, theirAb: x => x,
+      engine3: (x, p, r) => `${x} ${pl(p, 'entrega', 'entregam')} 3 prêmios quando ${pl(p, 'cai', 'caem')}, mas ${pl(p, 'está', 'estão')} aqui ${/^a /.test(r) ? 'pel' + r : 'por ' + r}, não para trocar golpes.`,
+      ways: (n, x) => `Suas ${n} formas de trocar ou recuar${x ? `, como ${x},` : ''} deixam você usá-lo e depois tirá-lo antes que o oponente possa Nocauteá-lo.`,
+      useRetreat: 'Use-o e depois recue ou troque antes do turno do oponente, e deixe-o fora do Banco quando ele puder acertar o Banco.',
+      side3: (x, p, y) => `${x} ${pl(p, 'entrega', 'entregam')} 3 prêmios quando ${pl(p, 'cai', 'caem')}, metade da partida em um só nocaute, enquanto ${y} entrega um.`,
+      putOnly: p => p ? 'Coloque-os em jogo só quando precisar deles.' : 'Coloque-o em jogo só quando precisar dele.',
+      give3: (x, p) => `${x} ${pl(p, 'entrega', 'entregam')} 3 prêmios quando ${pl(p, 'cai', 'caem')}.`,
+      cantBack: (x, p) => `${x} ${pl(p, 'entrega', 'entregam')} 3 prêmios quando ${pl(p, 'cai', 'caem')}, mas você não consegue responder com um Nocaute de um golpe de forma confiável.`,
+      bestHit: n => `Seu melhor golpe (${n}) Nocauteia de um golpe Pokémon com ${n} PS ou menos, mas as maiores ameaças precisam de dois golpes, então essas trocas custam mais para você do que para o oponente.`,
+      losing: 'É uma troca perdedora, a menos que você ajuste o dano.',
+      allTwo: 'Cada Pokémon aqui entrega dois prêmios, então o oponente só precisa de três nocautes.',
+      normalEx: 'Isso é normal em um deck baseado em Pokémon ex, então cada um precisa conseguir mais de um nocaute por conta própria.',
+      mostTwo: (a, b) => `${a} dos seus ${b} Pokémon entregam dois prêmios, então a maioria dos nocautes custa dois.`,
+      sendOne: 'Use seus Pokémon de um prêmio como atacantes quando puder.',
+      restOne: (a, b) => `${a} dos seus ${b} Pokémon ${n1(a) ? 'entrega' : 'entregam'} dois prêmios e o resto entrega um, então você não entrega turnos fáceis de vários prêmios.`,
+      longWay: (x, mids, c) => `Seus Pokémon de Estágio 2 (${x}) evoluem através de ${mids}${c ? ', com 1 Rare Candy como atalho' : ' sem Rare Candy'}, então conte com atacar com eles a partir do seu terceiro turno.`,
+      faster: n => `Os decks mais rápidos começam a bater no turno ${n}, então seus primeiros Pokémon precisam segurar até lá.`,
+      midEng: (x, n, mid, a, ab) => `Seus Pokémon de Estágio 2 (${x}) evoluem através de ${n} ${mid}, e em cada turno da subida ${a} ${ab}, então a linha lenta ainda fica pronta a tempo.`,
+      lean: (x, n) => `Você depende de Pokémon de Estágio 2 (${x}) ${n ? 'com só ' + n + ' Rare Candy' : 'sem Rare Candy'}.`,
+      slow: n => `Em um formato que começa a bater no turno ${n}, uma preparação lenta pode perder a partida antes de você estar pronto.`,
+      engs: (x, p) => `${x} ${pl(p, 'dá', 'dão')} a você uma Habilidade de compra ou busca uma vez por turno, então o deck acha suas peças sem gastar um Apoiador com isso.`,
+      toolbox: (n, hp, x, more) => `${n} Pokémon diferentes da lista causam ${hp} ou mais: ${x}${more ? ` e mais ${more}` : ''}.`,
+      pick: n => `Você escolhe o atacante que encaixa em cada turno${n ? `, ${n1(n) ? 'incluindo 1 que entrega' : `incluindo ${n} que entregam`} só um prêmio` : ''}, então o oponente não consegue se planejar contra uma só ameaça.`,
+      oneCopy: 'A lista usa uma cópia só do atacante principal.',
+      prizedIn: 'Ele fica nos seus prêmios em cerca de 1 a cada 10 partidas, e depois de Nocauteado o deck não tem quem leve o plano.',
+      mostRun: (a, b) => `A maioria das listas usa de ${a} a ${b}.`,
+      thinRoot: (n, x, y) => `${n} ${x} evoluem de ${y}, e a lista usa 1.`,
+      thinKO: 'Se ele ficar nos prêmios ou for Nocauteado, eles não têm de onde evoluir.',
+      mostTop: (x, a, w, b) => `A maioria das melhores listas de ${x} usa ${w === 'to' ? `de ${a} a ${b}` : w ? `${a} ou ${b}` : a}.`,
+      archE: (a, n) => `As listas de ${a} que ficaram no quarto de cima de torneios online recentes usam cerca de ${n} Energias.`,
+      outside: (raw, s, plus, n, lo, hi) => `Esta lista usa ${raw}${s ? `, e ${n1(s) ? 'seu Item de busca de Energia conta' : `seus ${s} Itens de busca de Energia contam`} como mais ${plus}, então ${n}` : ''}, fora da faixa de ${lo} a ${hi} que a nota permite.`,
+      extraE: 'A Energia a mais ocupa o lugar de compra e busca, então muitos turnos começam com Energia que você não pode usar.',
+      tradeSome: 'Troque algumas por cartas de compra ou busca.',
+      fewerE: 'Com menos, os atacantes muitas vezes ficam sem ligar Energia e ficam para trás.',
+      addBack: 'Coloque Energia de volta.',
+      coreItem: (x, h, w) => h === '0' ? `${x} (nenhuma de ${w})` : `${x} (${h} de ${w})`,
+      core: (a, n, items, more) => `Quase todas as listas de ${a} que ficaram no quarto de cima de torneios online recentes usam estas cartas, e esta está ${n} cópias abaixo: ${items}${more ? ` e mais ${more}` : ''}.`,
+      swaps: n => `Algumas trocas são normais, então as primeiras ${n} cópias não custam nada.`,
+      restBack: 'Coloque o resto de volta, a menos que você tenha um motivo para não fazer isso.',
+      blend: (a, b, x) => `As cartas desta lista estão mais perto de ${a}, então a nota usa os resultados dele, não os de ${b}, o deck montado em torno de ${x}.`,
+      tLongDraw: 'Evolui pelo caminho longo, comprando no caminho',
+      tEngine: x => `${x}: um motor de três prêmios`,
+      tCantPay: (x, a) => `${x} não consegue pagar ${a}`,
+      tOnlyHit: (n, x) => n === '0' ? `Nenhum ${x} para atacar` : `Só ${n} ${x} para atacar`,
+    };
+  })(),
+};
+// After the ctl catch-all, which gives null for these and leaves them here.
+I18N_PAT.push([/^[\s\S]+$/, m => i18nDmgSent(m, 'es'), m => i18nDmgSent(m, 'pt')]);
+// Ahead of the "Only 1 X" pattern, which would read "Only 1 X to hit with" word for word.
+I18N_PAT.unshift([/^Only (?:\d+(?:\.\d+)?|no) .+? to hit with$/, m => i18nDmgSent(m, 'es'), m => i18nDmgSent(m, 'pt')]);
+
+// Muse s6 M1: the Grade tab sentences (Trainer fit lines, "In this deck:" notes, How it plays, the attacker
+// odds and the matchup notes) are built in core.js, v29-rotation.js and v69-grade-blend.js from a few English
+// shapes. They are read back into parts here and said again from each language's own words: I18N_GT.es and
+// .pt below, I18N_MORE[lang].gt in the other files. Card, attack, Ability and deck names stay English. A
+// sentence with any part this cannot read gives null, so it stays English rather than half translated.
+/** Muse s6 M4: an English date ("25 Oct 2026", "Nov 17", "March 2026") with the language's month names. */
+const I18N_GT_MON = {
+  es: [['enero', 'ene'], ['febrero', 'feb'], ['marzo', 'mar'], ['abril', 'abr'], ['mayo', 'may'], ['junio', 'jun'], ['julio', 'jul'], ['agosto', 'ago'], ['septiembre', 'sep'], ['octubre', 'oct'], ['noviembre', 'nov'], ['diciembre', 'dic']],
+  pt: [['janeiro', 'jan'], ['fevereiro', 'fev'], ['março', 'mar'], ['abril', 'abr'], ['maio', 'mai'], ['junho', 'jun'], ['julho', 'jul'], ['agosto', 'ago'], ['setembro', 'set'], ['outubro', 'out'], ['novembro', 'nov'], ['dezembro', 'dez']],
+  fr: [['janvier', 'janv.'], ['février', 'févr.'], ['mars', 'mars'], ['avril', 'avr.'], ['mai', 'mai'], ['juin', 'juin'], ['juillet', 'juil.'], ['août', 'août'], ['septembre', 'sept.'], ['octobre', 'oct.'], ['novembre', 'nov.'], ['décembre', 'déc.']],
+  de: [['Januar', 'Jan.'], ['Februar', 'Feb.'], ['März', 'März'], ['April', 'Apr.'], ['Mai', 'Mai'], ['Juni', 'Juni'], ['Juli', 'Juli'], ['August', 'Aug.'], ['September', 'Sept.'], ['Oktober', 'Okt.'], ['November', 'Nov.'], ['Dezember', 'Dez.']],
+  it: [['gennaio', 'gen'], ['febbraio', 'feb'], ['marzo', 'mar'], ['aprile', 'apr'], ['maggio', 'mag'], ['giugno', 'giu'], ['luglio', 'lug'], ['agosto', 'ago'], ['settembre', 'set'], ['ottobre', 'ott'], ['novembre', 'nov'], ['dicembre', 'dic']],
+};
+const I18N_GT_MEN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function i18nGtDate(s, l) {
+  if (l === 'fr' && typeof frI18nDate === 'function') { const x = frI18nDate(s); return x !== s ? x : null; }
+  const M = I18N_GT_MON[l];
+  if (!M) return null;
+  let m;
+  const day = d => l === 'de' ? d + '.' : d;
+  if ((m = String(s).match(/^(\d{1,2}) ([A-Z][a-z]{2})[a-z]*\.? (\d{4})$/)) && I18N_GT_MEN.includes(m[2])) return `${day(m[1])} ${M[I18N_GT_MEN.indexOf(m[2])][1]} ${m[3]}`;
+  if ((m = String(s).match(/^([A-Z][a-z]{2})[a-z]*\.? (\d{1,2})$/)) && I18N_GT_MEN.includes(m[1])) return `${day(m[2])} ${M[I18N_GT_MEN.indexOf(m[1])][1]}`;
+  if ((m = String(s).match(/^([A-Z][a-z]{2})[a-z]* (\d{4})$/)) && I18N_GT_MEN.includes(m[1])) return `${M[I18N_GT_MEN.indexOf(m[1])][0]}${l === 'es' || l === 'pt' ? ' de' : ''} ${m[2]}`;
+  return null;
+}
+const I18N_GT_PATS = {};
+function i18nGtTab(l) { return l === 'es' || l === 'pt' ? I18N_GT[l] : (i18nMore(l) || {}).gt; }
+const i18nGtN = n => +String(n).replace(/,/g, '');
+/** True for a name the list can hold: a card the app knows, or, before the card list loads, a capitalized name. */
+function i18nGtName(x) {
+  x = String(x);
+  if (!x || /[!?:;()]|\.$|\. /.test(x) || /^(?:a|an|the|your|any|and|or|one|it|its|every|each|this|that|Pokemon)\b/i.test(x)) return false;
+  const c = typeof rdI18n === 'object' && rdI18n.cardNames;
+  return c ? c.has(x.toLowerCase()) : /^[A-Z0-9]/.test(x);
+}
+/** "Basic Fire or Lightning Energy" (with "a" or not) in language l, or null. */
+function i18nGtEn(s, T, D) {
+  const m = String(s).match(new RegExp(`^(an? )?(Basic )?((?:${I18N_DMG_TY})(?:(?:, | or | and )(?:${I18N_DMG_TY}))*)? ?Energy$`));
+  if (!m) return null;
+  const ts = m[3] ? m[3].split(/, | or | and /) : [];
+  const or = m[3] && / or /.test(m[3]);
+  const e = or ? T.list(ts.map(t => D.en([t], !!m[2], 1, false)), 'or') : D.en(ts, !!m[2], 1, false);
+  return m[1] ? T.a(e) : e;
+}
+/** One item of a name list: a card name, "X's Attack" or an Energy phrase. */
+function i18nGtItem(x, T, D) {
+  x = String(x).trim();
+  if (/Energy$/.test(x) && !i18nGtName(x)) return i18nGtEn(x, T, D);
+  if (i18nGtName(x)) return x;
+  if (/'s /.test(x)) { const by = i18nCtlBy(x, D); return by !== x ? by : null; }
+  return null;
+}
+/** "A, B or C", "A, B and 2 more", "A or 3 others" with the language's joiners; null when an item is unknown. */
+function i18nGtList(s, T, D, f) {
+  s = String(s);
+  let m, more = null, conj = 'and', items;
+  if ((m = s.match(/^(.+?),? (and|or) (\d+) (more|others?)$/))) { more = { n: +m[3], k: m[4] === 'more' ? 'more' : 'others' }; conj = m[2]; items = m[1].split(', '); }
+  else if ((m = s.match(/^(.+?),? (and|or) ([^,]+)$/)) && !(f == null && i18nGtName(s))) { conj = m[2]; items = m[1].split(', ').concat(m[3]); }
+  else items = [s];
+  const out = items.map(x => (f || i18nGtItem)(x, T, D));
+  if (out.some(x => x == null)) return null;
+  return T.list(out, conj, more);
+}
+/** A gtSay subject ("Basic Fighting Pokemon", "Pokemon without a Rule Box") as parts, or null. */
+function i18nGtQ(s) {
+  const m = String(s).match(new RegExp(`^(?:(Mega Evolution|Stage 2|Stage 1|Basic|Evolution) )?(?:(.+?)'s )?(?:(${I18N_DMG_TY}) )?(?:(Tera|Ancient|Future) )?Pokemon( ex)?( without a Rule Box)?(?: with (\\d+) HP or less)?$`));
+  return m && { stage: m[1] || '', owner: m[2] || '', type: m[3] || '', tag: m[4] || '', ex: !!m[5], noRule: !!m[6], hp: m[7] || '' };
+}
+/** "Supporters", "Pokemon Tools", "Basic Fire Energy", or a Pokemon subject, as the language says it. */
+function i18nGtWhat(s, T, D, many) {
+  let m;
+  if ((m = String(s).match(/^(Supporters?|Pokemon Tools?|Stadiums?|Items?)$/))) return T.kind(m[1].replace(/s$/, ''), many);
+  if ((m = String(s).match(/^a Supporter with "(.+)" in its name$/))) return T.supName(m[1]);
+  if ((m = String(s).match(/^(.+) Supporters?$/))) return T.supOf(m[1], many);
+  if (/Energy$/.test(s)) return i18nGtEn(s, T, D);
+  const q = i18nGtQ(s);
+  return q ? T.q(q, many) : null;
+}
+/** The jobs gTrainers names ("draws you cards and disrupts your opponent") as GT_ROLE_SAY keys, or null. */
+function i18nGtRoles(s) {
+  if (typeof GT_ROLE_SAY !== 'object') return null;
+  let t = String(s);
+  t = t.charAt(0).toLowerCase() + t.slice(1);
+  const ks = Object.keys(GT_ROLE_SAY).sort((a, b) => GT_ROLE_SAY[b].length - GT_ROLE_SAY[a].length), out = [];
+  while (t) {
+    const k = ks.find(k => t.startsWith(GT_ROLE_SAY[k]) && (t.length === GT_ROLE_SAY[k].length || t.startsWith(' and ', GT_ROLE_SAY[k].length)));
+    if (!k) return null;
+    out.push(k); t = t.slice(GT_ROLE_SAY[k].length); if (t) t = t.slice(5);
+  }
+  return out.length ? out : null;
+}
+/** The thin spots an ACE SPEC or a swap idea answers ("only 3 other cards draw"), as parts, or null. */
+function i18nGtGap(s) {
+  let m;
+  if (s === 'nothing else in the list pulls up a Benched Pokemon') return { k: 'gust', n: 0, other: true };
+  if (s === 'nothing pulls up a Benched Pokemon') return { k: 'gust', n: 0 };
+  if ((m = s.match(/^only (\d+) cards? pulls? up a Benched Pokemon$/))) return { k: 'gust', n: +m[1] };
+  if ((m = s.match(/^only (\d+) other cards find Pokemon$/))) return { k: 'find', n: +m[1], other: true };
+  if (s === 'nothing else finds Pokemon') return { k: 'find', n: 0, other: true };
+  if ((m = s.match(/^only (\d+) cards? finds? Pokemon$/))) return { k: 'find', n: +m[1] };
+  if (s === 'nothing in the list finds Pokemon') return { k: 'find', n: 0 };
+  if ((m = s.match(/^only (\d+) other cards draw$/))) return { k: 'draw', n: +m[1], other: true };
+  if ((m = s.match(/^only (\d+) cards? draws?$/))) return { k: 'draw', n: +m[1] };
+  if (/^nothing in the list draws/.test(s)) return { k: 'draw', n: 0 };
+  if (s === 'nothing gets cards back from your discard pile') return { k: 'rec', n: 0 };
+  return null;
+}
+/** "Its Trade", "Dusclops's Cursed Blast": the subject of a How it plays line. */
+function i18nGtIts(s, T, D) { return /^Its /.test(s) ? T.its(s.slice(4)) : i18nCtlBy(s, D); }
+/** An Ability or attack effect phrase ("draws 2 cards once a turn") in language l, or null. */
+function i18nGtAb(p, l) {
+  const L = l === 'es' || l === 'pt' ? I18N_ABIL[l] : (i18nMore(l) || {}).abil;
+  const x = L && i18nAbParse(p);
+  if (!x) return null;
+  try { return i18nAbSay(x, L); } catch (e) { return null; }
+}
+/** "Its Trade draws 2 cards once a turn": the Ability name is the shortest head whose rest reads. */
+function i18nGtAbSplit(s, l) {
+  const w = String(s).split(' ');
+  for (let i = 1; i < w.length - 1; i++) { const p = i18nGtAb(w.slice(i).join(' '), l); if (p) return [w.slice(0, i).join(' '), p]; }
+  return null;
+}
+function i18nGtPats(l) {
+  const T = () => i18nGtTab(l), D = () => i18nDmgTab(l);
+  const L = (s, f) => i18nGtList(s, T(), D(), f), E = s => i18nGtEn(s, T(), D()), Q = (s, many) => i18nGtWhat(s, T(), D(), many);
+  const R = s => i18nGtRoles(s), G = s => i18nGtGap(s), N = i18nGtN, by = s => i18nCtlBy(s, D());
+  const nm = x => i18nGtName(x) ? x : null, its = s => i18nGtIts(s, T(), D());
+  // "Precious Trolley finds cards in your deck and fills your Bench": a card name, then its jobs.
+  const NR = s => { for (let i = s.indexOf(' '); i > 0; i = s.indexOf(' ', i + 1)) { const x = s.slice(0, i), k = nm(x) && R(s.slice(i + 1)); if (k) return [x, k]; } return null; };
+  const TY = I18N_DMG_TY, PCT = '(<?[\\d.]+%)';
+  return [
+    // Labels and screen reader labels (M3, M8, M9) and dates (M4).
+    [/^(\d+) cards per row$/, (m, n) => T().perRow(n)],
+    [/^Show all (\d+) (decks|days)$/, (m, n, k) => T().showAll(n, k)],
+    [/^Updated ((?:\d{1,2} )?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?: \d{1,2})?(?: \d{4})?)$/, (m, d) => { const x = i18nGtDate(d, l); return x && T().updated(x); }],
+    [/^CardJinx, ((?:\d{1,2} )?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?: \d{1,2})?(?: \d{4})?)$/, (m, d) => { const x = i18nGtDate(d, l); return x && 'CardJinx, ' + x; }],
+    [/^Pokémon TCG Live letter to the community, ((?:\d{1,2} )?(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?(?: \d{1,2})?(?: \d{4})?)$/, (m, d) => { const x = i18nGtDate(d, l); return x && T().letter(x); }],
+    [/^Start a prize game with (.+)$/, (m, x) => x !== 'this deck' && T().startWith(x)],
+    [/^More for (.+)$/, (m, x) => x !== 'this deck' && T().moreFor(x)],
+    [/^([A-J](?: and [A-J])*) mark cards$/, (m, k) => T().markCards(T().list(k.split(' and '), 'and'))],
+    // Matchups and the meta notes.
+    [/^(.+): (Even|Favored|Unfavored|Leans favored|Leans unfavored|Too few games), ([\d.]+)% over ([\d,]+) matches$/, (m, x, k, p, n) => T().mu(x, k, p, n)],
+    [/^These are results for all (.+) lists, not your exact list\.$/, (m, x) => T().allLists(x)],
+    [/^over ([\d,]+) games, about the same as before \(([\d.]+%)\)\.$/, (m, n, p) => T().overSame(n, p)],
+    [/^Since the newest set came out \((.+)\): ([\d,]+) games? so far, too few to show a trend\.$/, (m, d, n) => T().sinceFew(i18nGtDate(d, l) || d, n)],
+    [/^Win rate: ([\d,]+) games? so far, too few to judge\.$/, (m, n) => T().wrFew(n)],
+    [/^Matchups against the (\d+) decks played most since (.+)$/, (m, n, d) => T().muSince(n, i18nGtDate(d, l) || d)],
+    [/^Gray rows have fewer than (\d+) matches, too few to trust\.$/, (m, n) => T().gray(n)],
+    // Attacker odds.
+    [new RegExp(`^(.+) (ready|in hand) by turn (\\d+): ${PCT}(?: to ${PCT})?$`), (m, x, k, t, a, b) => nm(x) && T().readyBy(x, k === 'in hand', t, a, b)],
+    [new RegExp(`^${PCT} is raw draws alone, the floor\\.$`), (m, p) => T().floor(p)],
+    [new RegExp(`^${PCT} from raw draws alone, and your search cards do not raise it\\.$`), (m, p) => T().noRaise(p)],
+    [new RegExp(`^By turn (\\d+): ${PCT}(?: to ${PCT})?\\.$`), (m, t, a, b) => T().byTurn(t, a, b)],
+    [/^This list has (\d+) attackers and picks the one each turn needs\.$/, (m, n) => T().nAtk(n)],
+    [/^Here is how often you can have (.+), the one the grade leads with, ready by your (second|third) turn\.$/, (m, x, t) => nm(x) && T().howLead(x, t === 'second' ? 2 : 3)],
+    [/^(The attacker its meta deck is named for|The main attacker you set|The attacker this list is built around), and how often you can have it ready by your (second|third) turn\.$/,
+      (m, w, t) => T().howWhy(w === 'The main attacker you set' ? 'pick' : /meta deck/.test(w) ? 'name' : 'core', t === 'second' ? 2 : 3)],
+    [/^Attacker by T(\d), any hand$/, (m, t) => T().atkBy(t)],
+    [/^(.+?)( in hand)?, any opening hand, (the same from raw draws alone or with your search cards|from raw draws alone to with your search cards|raw draws)$/,
+      (m, x, h, k) => nm(x) && T().anyHand(x, !!h, /^the same/.test(k) ? 'same' : /^from/.test(k) ? 'range' : 'raw')],
+    [/^This counts (.+?) in hand, not at full power: it hits for (\d+) until you have (\d+) (.+?) in your discard pile, then (\d+)\.$/, (m, x, a, k, w, b) => { const p = i18nDmgPile(w, D(), k); return nm(x) && p && T().inHand(x, a, k, p, b); }],
+    [/^This counts (.+?) in hand, not at full power: it hits for (\d+) with 2 (.+?) in your discard pile and (\d+) once you have (\d+)\.$/, (m, x, a, w, b, k) => { const p = i18nDmgPile(w, D(), 2); return nm(x) && p && T().inHand2(x, a, p, b, k); }],
+    [/^(.+) is a Stage (1|2), but a Pokemon it evolves from is not in the list, so it can only reach the board through other cards\.$/, (m, x, s) => nm(x) && T().noFrom(x, s)],
+    [/^Needs (.+?) by turn 1, then (.+?) by turn 2 \(nothing evolves on its first turn in play\)\.$/, (m, a, b) => nm(a) && nm(b) && T().need1(a, b)],
+    [/^Needs (.+?) by turn 1, then (.+?) and Rare Candy by turn 2(?: \(the (.+?) route needs until turn 3\))?\.$/, (m, a, b, c) => nm(a) && nm(b) && T().needCandy(a, b, c)],
+    [/^Needs (.+?) by turn 1 and (.+?) by turn 2, then (.+?) on turn 3 \(there is no Rare Candy in the list, and nothing evolves on its first turn in play\)\.$/, (m, a, b, c) => nm(a) && nm(b) && nm(c) && T().need3(a, b, c)],
+    [/^Needs (.+?) among your first (\d+) cards\.$/, (m, a, n) => nm(a) && T().needSeen(a, n)],
+    // How tightly the list fits.
+    [/^(How tightly the list fits|Fewer of your cards pull the same way)(?:: (.+))?\.$/, (m, h, c) => {
+      const cs = c ? c.split(', and ').map(x => { let k;
+        if ((k = x.match(/^your Pokemon are spread over (\d+) lines$/))) return T().fitLines(k[1]);
+        if ((k = x.match(/^(\d+) of your (\d+) (Pokemon|Trainers) (?:is a single copy|are single copies)$/))) return T().fitSingles(k[1], k[2], k[3] === 'Pokemon');
+        if ((k = x.match(/^your attacks need (\d+) Energy types$/))) return T().fitTypes(k[1]);
+        if ((k = x.match(/^each attacker can use only about (\d+)% of your Energy$/))) return T().fitUse(k[1]);
+        return null; }) : [];
+      return cs.every(x => x != null) ? T().fit(/^How/.test(h), cs) : null; }],
+    // Trainer fit lines.
+    [/^(One card does|(\d+) cards do) little here(, with a swap idea for each|, with swap ideas below)?\.$/, (m, a, n, sw) => T().little(n ? +n : 1, sw ? (/each/.test(sw) ? 'each' : 'below') : '')],
+    [/^(.+?)(?:, one of (\d+) cards that do)?\.$/, (m, r, n) => { const k = R(r); return k && T().role1(k, n); }],
+    [/^(.+?): your only (Trainer|card) that does\.$/, (m, r, w) => { const k = R(r); return k && T().roleOnly(k, w === 'card'); }],
+    [/^(.+?): (\d+) of the (\d+) cards that do\.$/, (m, r, a, b) => { const k = R(r); return k && T().roleOf(k, a, b); }],
+    [/^(.+?), but (\d+) other cards in the list already do that, more than most winning lists run, so this one adds little\.$/, (m, r, n) => { const k = R(r); return k && T().crowded(k, n); }],
+    [/^(.+?), but no winning list from recent events runs it\.$/, (m, r) => { const k = R(r); return k && T().unplayed(k); }],
+    [/^Helps pay Energy costs for (.+?)(?:, (\d+) of the (\d+) cards that do)?\.$/, (m, x, a, b) => nm(x) && T().payFor(x, a, b)],
+    [/^Skips (the Stage 1|.+?) to get (.+?) out a turn sooner\.$/, (m, a, b) => nm(b) && T().skips(a === 'the Stage 1' ? null : nm(a), b)],
+    [/^(.+?) skips the middle stage to get (.+?) into play fast\.$/, (m, a, b) => nm(a) && nm(b) && T().skipsMid(a, b)],
+    [/^Needs (.+?) in the list to put (.+?) on, and the list runs none\.$/, (m, a, b) => nm(a) && nm(b) && T().needsOn(a, b)],
+    [/^Needs (.+?), and the list runs none\.$/, (m, w) => { const q = w.split(' or ').map(x => Q(x, true)); return q.every(Boolean) && T().needsNone(T().list(q, 'or')); }],
+    [/^Needs (.+?), which this list does not run\.$/, (m, w) => { const q = w.split(' or ').map(x => Q(x, true)); return q.every(Boolean) && T().needsAce(T().list(q, 'or')); }],
+    // ACE SPEC lines: "X does R. Y might fit better, since GAP." are read one sentence at a time.
+    [/^(.+), and that fills a hole: (.+)\.$/, (m, s, g) => { const xr = NR(s), gp = G(g); return xr && gp && T().aceFills(xr[0], xr[1], gp); }],
+    [/^(.+?) might fit better, since (.+)\.$/, (m, x, g) => { const gp = G(g); return nm(x) && gp && T().aceBetter(x, gp); }],
+    [/^(.+?) would (.+?), and (.+)\.$/, (m, x, d, g) => { const k = typeof GT_ROLE_DO === 'object' && Object.keys(GT_ROLE_DO).find(k => GT_ROLE_DO[k] === d), gp = G(g); return nm(x) && k && gp && T().aceWould(x, k, gp); }],
+    [/^Swap idea: (one more )?(.+?), since (.+)\.$/, (m, more, x, g) => { const gp = G(g); return nm(x) && gp && T().swap(x, !!more, gp); }],
+    [/^(.+)\.$/, (m, s) => { const xr = NR(s); return xr && T().aceDoes(xr[0], xr[1]); }],
+    // In this deck: notes.
+    [/^(Finds|Can Bench) any of your (\d+) (.+?), like (.+?)(?:, or (an? Basic (?:.+ )?Energy))?\.$/, (m, v, n, q, l, e) => { const w = Q(q, +n !== 1), li = L(l), en = e ? E(e) : ''; return w && li && en != null && T().anyLike(v === 'Finds', n, w, li, en); }],
+    [/^Can Bench every Basic you run at once, like (.+)\.$/, (m, l) => { const li = L(l); return li && T().benchAll(li); }],
+    [/^(?!Gets back (?:any mix of |Knocked Out )?Pokemon like |Gets back Basic .+Energy for )(Finds|Can Bench|Gets back|Works on|Can evolve straight into|Fully heals|Shields|Keeps|Can fetch a single copy like your) (.+?)( from attack effects, like Special Conditions| free of Special Conditions)?\.$/, (m, v, l, tail) => {
+      const k = v === 'Shields' ? (/attack effects/.test(tail || '') ? 'shields' : null) : v === 'Keeps' ? (/Special/.test(tail || '') ? 'keeps' : null) : tail ? null : v;
+      if (!k) return null;
+      let x = l, e = '', mm;
+      if ((mm = l.match(/^(.+?), (or|and) (an? Basic (?:.+ )?Energy|Basic (?:.+ )?Energy)$/))) { x = mm[1]; e = E(mm[3]); if (e == null) return null; e = { e, or: mm[2] === 'or' }; }
+      const li = L(x); return li && T().verbList(k, li, e); }],
+    [/^Gets back (any mix of )?(Knocked Out )?Pokemon like (.+?)(?:, (or|and) (an? Basic (?:.+ )?Energy|Basic (?:.+ )?Energy))?\.$/, (m, mix, ko, l, c, e) => {
+      const li = L(l), en = e ? E(e) : ''; return li && en != null && T().backLike(!!mix, !!ko, li, en ? { e: en, or: c === 'or' } : ''); }],
+    [/^Shuffles Knocked Out Pokemon like (.+?) back into your deck\.$/, (m, l) => { const li = L(l); return li && T().shuffleKo(li); }],
+    [/^(Gets back|Shuffles) (Basic .+Energy)(?: back into your deck)? for (.+?)\.$/, (m, v, e, x) => { const en = E(e); return en && T().energyFor(v === 'Gets back', en, by(x)); }],
+    [/^With (\d+) (.+?) in your (\d+) cards, it (almost always finds one|finds one about (\d+)% of the time)\.$/, (m, n, k, d, f, p) => {
+      const w = k.split(' and ').map(x => Q(x, true)); return w.every(Boolean) && T().withOdds(n, T().list(w, 'and'), d, p || null); }],
+    [/^Takes (.+?) from (\d+) to (\d+) HP(?:, or (.+?) to (\d+))?\.$/, (m, x, a, b, y, c) => nm(x) && (!y || nm(y)) && T().takesHp(x, a, b, y, c)],
+    [/^(.+?'s .+?) goes from (\d+) to (\d+)( against Pokemon ex)?\.$/, (m, x, a, b, ex) => T().goesFrom(by(x), a, b, !!ex)],
+    [/^On (.+?), your opponent takes (\d+) Prizes? for it, not (\d+)(,? once a game)?\.$/, (m, x, a, b, o) => nm(x) && T().prizeFor(x, a, b, !!o)],
+    [new RegExp(`^On (.+?), (${TY}) attackers need (\\d+) damage to Knock it Out, not (\\d+)\\.$`), (m, x, t, a, b) => nm(x) && T().koNeed(x, t, a, b)],
+    [/^Puts (?:(\d+) )?Energy on (.+?)( at once)?(?:, once (.+?) (?:is|are) in play)?\.$/, (m, n, l, once, w) => {
+      const li = L(l); let wh = '';
+      if (w) { const mm = w.match(/^an? (.+?) like (.+)$/); wh = mm ? (Q(mm[1]) && T().aLike(Q(mm[1]), mm[2])) : L(w); if (!wh || (mm && !nm(mm[2]))) return null; }
+      return li && T().putsE(n, li, !!once, wh); }],
+    [/^Turns spare Pokemon like (.+?) into (\d+) cards each\.$/, (m, l, n) => { const li = L(l); return li && T().spare(li, n); }],
+    [new RegExp(`^On a (${TY}) Pokemon like (.+?), it Benches up to (\\d+) of (.+)\\.$`), (m, t, x, n, l) => { const li = L(l); return nm(x) && li && T().onTypeBench(t, x, n, li); }],
+    [new RegExp(`^Picks (\\d+) of your ((?:${TY})(?:, (?:${TY}))* and (?:${TY})) Energy\\.$`), (m, n, ts) => T().picks(n, D().en(ts.split(/, | and /), false, 2, false))],
+    [/^Can pay the Colorless in (.+)\.$/, (m, l) => { const li = L(l); return li && T().payColorless(li); }],
+    [/^On (.+?), it pays (the|\d+ of the) (Colorless|Energy) for (.+?)(, for one turn)?\.$/, (m, x, h, w, a, t) => nm(x) && T().onPays(x, h === 'the' ? null : parseInt(h, 10), w === 'Colorless', a, !!t)],
+    [/^Pays (\d+) of the Energy for (.+?'s .+?)\.$/, (m, n, x) => T().paysFor(n, by(x))],
+    [/^On a (.+?) like (.+?), it counts as any type for (.+)\.$/, (m, q, x, a) => { const w = Q(q + ' Pokemon'); return w && nm(x) && T().anyType(w, x, a); }],
+    [/^Gets a whole (.+?) line at once\.$/, (m, l) => { const li = L(l); return li && T().wholeLine(li); }],
+    [/^Finds (.+?) and an Energy together\.$/, (m, l) => { const li = L(l); return li && T().withEnergy(li, false); }],
+    [/^Gets your (.+?) and an Energy together\.$/, (m, l) => { const li = L(l); return li && T().withEnergy(li, true); }],
+    [/^Gets your (.+?) together\.$/, (m, l) => { const li = L(l); return li && T().together(li); }],
+    [/^Your list has no (.+?), so it finds (\d+) cards?, not (\d+)\.$/, (m, q, a, b) => { const w = Q(q, true); return w && T().findsFewer(w, a, b); }],
+    [/^Can turn (.+?) into (.+?) in one go\.$/, (m, a, b) => nm(a) && nm(b) && T().oneGo(a, b)],
+    [/^Gives you (\d+) Bench spots while (.+?) is in play\.$/, (m, n, l) => { const li = L(l); return li && T().benchSpots(n, li); }],
+    [/^Draws (\d+) after any of your (\d+) (.+?) Supporters?\.$/, (m, n, k, w) => T().drawsAfter(n, k, w)],
+    [/^Every Pokemon in your list is (.+?), so it draws to (\d+)\.$/, (m, q, n) => { const w = Q(q + ' Pokemon', true); return w && T().everyIs(w, n); }],
+    [/^Works when (.+?) takes the Knock Out\.$/, (m, l) => { const li = L(l); return li && T().worksKo(li); }],
+    [/^Your (own )?(.+?) (?:take|takes) (\d+) (less )?damage( too| that turn| when you Bench them)?\.$/, (m, own, l, n, less, w) => {
+      const li = L(l); return li && T().takeDmg(li, n, !!less, (w || '').trim()); }],
+    [/^Your own (.+?) drops to (\d+) HP too\.$/, (m, x, n) => nm(x) && T().dropsTo(x, n)],
+    [/^Fits (.+?), which (attacks?) with (\d+) or more Energy(?:; (.+?) makes it (\d+))?\.$/, (m, l, a, n, s, k) => { const li = L(l); return li && (!s || nm(s)) && T().fits(li, a === 'attacks', n, s, k); }],
+    [/^Heals (\d+) when it moves (.+?) to your Bench\.$/, (m, n, l) => { const li = L(l); return li && T().healsMove(n, li); }],
+    [/^Can grab your (.+?) along with Supporters\.$/, (m, x) => nm(x) && T().grabWith(x)],
+    [/^(.+?) is too big for it \((\d+) HP\)\.$/, (m, x, n) => nm(x) && T().tooBig(x, n)],
+    [/^Lets (.+?) retreat for free(?:; (.+?) still pays (\d+)| \(it costs (\d+) now\))?\.$/, (m, l, x, n, c) => { const li = L(l); return li && (!x || nm(x)) && T().retreat(li, x, n, c); }],
+    [/^Lets (.+?) evolve into (.+?) the turn you play it\.$/, (m, a, b) => nm(a) && nm(b) && T().evolveNow(a, b)],
+    [/^Also turns off your own (.+?)(?: and (\d+) more)?\.$/, (m, l, n) => { const it = l.split(/ and (?=[^,]*'s )|, | and (?=[^,]+$)/).map(x => i18nGtItem(x, T(), D()));
+      return it.every(x => x != null) && T().offOwn(T().list(it, 'and', n ? { n: +n, k: 'more' } : null)); }],
+    [/^You run no (.+?), so (only your opponent's lose HP|it only turns off your opponent's|only your opponent pays more|it only helps your opponent's)\.$/, (m, q, w) => {
+      const x = Q(q, true); return x && T().runNo(x, { "only your opponent's lose HP": 'hp', "it only turns off your opponent's": 'off', 'only your opponent pays more': 'pays', "it only helps your opponent's": 'helps' }[w]); }],
+    [/^Comes back after (.+?'s .+?) discards it\.$/, (m, x) => T().comesBack(by(x))],
+    [/^Turns on once your own Pokemon is Poisoned, which (.+?) does here\.$/, (m, x) => nm(x) && T().poisoned(x)],
+    [new RegExp(`^Takes (\\d+) of your (\\d+) Basic (${TY}) Energy at once\\.$`), (m, a, b, t) => T().takesE(a, b, D().en([t], true, +b, false))],
+    [/^Benches up to (\d+) (.+?) at once\.$/, (m, n, q) => { const w = Q(q, +n !== 1) || nm(q); return w && T().benchesUp(n, w); }],
+    [/^Switches between your (.+?) once a turn\.$/, (m, l) => { const li = L(l); return li && T().switchBetween(li); }],
+    // How it plays.
+    [/^(.+) does the attacking\.$/, (m, x) => nm(x) && T().doesAtk(x)],
+    [/^The list plays as (.+), a deck named for it\.$/, (m, x) => T().playsAs(x)],
+    [/^The list plays as (.+), and of the Pokemon that deck is named for, it is the one the list is built to attack with\.$/, (m, x) => T().playsAsOne(x)],
+    [/^(You set it as the main attacker|It is the attacker this list is built around): (\d+) cop(?:y|ies)(?: plus (\d+) Pokemon it evolves from)?\.$/, (m, w, n, f) => T().copies(/^You/.test(w), n, f)],
+    [/^(.+) is the one the list runs most copies of \((\d+)\)\.$/, (m, x, n) => nm(x) && T().most(x, n)],
+    [/^(\d+) different Pokemon here can carry the attack, and you pick the one that fits each turn\.$/, (m, n) => T().box(n)],
+    [/^(?!The best one here is )(Its .+?|.+?'s .+?) (hits for|averages) (\d+)( with its coin flips)?\.$/, (m, s, k, n, c) => T().hits(its(s), k === 'averages', n, !!c)],
+    [/^(Its .+?|.+?'s .+?) counts the cards in your hand: about (\d+) with (\d+) cards, the app's estimate, not a printed number\.$/, (m, a, n, k) => T().handEst(its(a), n, k)],
+    [/^(Its .+?|.+?'s .+?) depends on the board, so (\d+) is the app's estimate, not a printed number\.$/, (m, a, n) => T().boardEst(its(a), n)],
+    [/^(Its .+?|.+?'s .+?) prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out\.$/, (m, a) => T().wall(its(a))],
+    [new RegExp(`^(Its .+?|.+?'s .+?) adds (\\d+) to its attacks while it has (${TY}) Energy attached(?:, so it hits for (\\d+))?(?:, and gives it (\\d+) more HP)?\\.$`), (m, a, n, t, h, hp) => T().boost(its(a), n, E(t + ' Energy'), h, hp)],
+    [/^(Its .+?|.+?'s .+?) puts (\d+) damage counters on 1 of your opponent's Pokemon each turn( while it is Active)?\.$/, (m, a, n, act) => T().ownDmg(its(a), n, !!act)],
+    [/^(Its .+?|.+?'s .+?) Knocks Out your opponent's Active Pokemon when it has exactly (\d+) damage counters on it(?:, and (.+?) can put them there)?, so the grade counts it as a one-shot of anything\.$/, (m, a, n, x) => (!x || nm(x)) && T().kox(its(a), n, x)],
+    [/^(Its .+?|.+?'s .+?) does (\d+) more for each (.+?) in your discard pile: (\d+) with 2 there, (\d+) once you have (\d+)\.$/, (m, a, n, w, b, c, k) => { const p = i18nDmgPile(w, D(), 1); return p && T().pileDmg(its(a), n, p, b, c, k); }],
+    [/^(Its .+?|.+?'s .+?) counts (the Energy|.+? Energy) attached to (both Active Pokemon|all your Pokemon|itself), so every one you attach (to it|anywhere on your board) adds (\d+)(?: \((\d+) for (an? .+? Energy) with (.+?) in play\))?(, and your opponent's Energy adds to it too)?\.$/,
+      (m, a, e, on, wh, n, n2, e2, x, opp) => { const en = e === 'the Energy' ? '' : E(e); const en2 = e2 ? E(e2) : ''; return en != null && en2 != null && T().eScale(its(a), en, on, n, n2 ? { n: n2, e: en2, by: by(x) } : null, !!opp); }],
+    [/^(Its .+?|.+?'s .+?) discards (.+?) from your Pokemon and does (\d+) for each one, so every one you attach anywhere on your board adds (\d+) to its next big hit\.$/, (m, a, e, n) => { const en = E(e); return en && T().discEach(its(a), en, n); }],
+    [/^That counts the (\d+) more it does when it discards (all its Energy|\d+ .*Energy) from itself, so (it has to be powered up again|it needs another attached|it needs (\d+) more attached) before the next big hit\.$/,
+      (m, n, w, k, k2) => { const c = +(w.match(/^\d+/) || [0])[0], e = /^all/.test(w) ? 'all' : i18nDmgE(w.replace(/^\d+ /, ''), D(), c); return e && T().discNext(n, w.match(/^\d+/) ? +w.match(/^\d+/)[0] : 0, e, /powered/.test(k) ? 'all' : k2 ? +k2 : 1); }],
+    [/^It discards (all its Energy|\d+ .*Energy) from itself each time, so (it has to be powered up again|it needs another attached|it needs (\d+) more attached) before it can hit that hard again\.$/,
+      (m, w, k, k2) => { const c = +(w.match(/^\d+/) || [0])[0], e = /^all/.test(w) ? 'all' : i18nDmgE(w.replace(/^\d+ /, ''), D(), c); return e && T().discEach2(w.match(/^\d+/) ? +w.match(/^\d+/)[0] : 0, e, /powered/.test(k) ? 'all' : k2 ? +k2 : 1); }],
+    [/^(Its .+?|.+?'s .+?) grows as your discard pile fills: (\d+) early, (\d+) once you have (\d+) (.+?) there\.$/, (m, a, b, c, k, w) => { const p = i18nDmgPile(w, D(), k); return p && T().grows(its(a), b, c, k, p); }],
+    [/^(.+?) also does (\d+) damage to (\d+) of your opponent's Benched Pokemon\.$/, (m, a, n, k) => T().alsoBench(a, n, k)],
+    [/^It cannot use (.+?) two turns in a row, so (?:use (.+?) or )?bring in another attacker on the turn between\.$/, (m, a, b) => T().lock(a, b)],
+    [/^It cannot attack at all on its next turn after (.+?), so switch in another attacker on the turn between\.$/, (m, a) => T().lockAll(a)],
+    [/^(Its .+?|.+?'s .+?) lets it use the attacks of your Benched Pokemon, paid with its own Energy\.$/, (m, a) => T().copyBench(its(a))],
+    [/^The best one here is (.+?'s .+?), which (averages|hits for) (\d+)\.$/, (m, x, k, n) => T().bestHere(by(x), k === 'averages', n)],
+    [/^It copies (.+?'s .+?) with (.+?)\.$/, (m, x, a) => T().copiesWith(by(x), a)],
+    [/^(Its .+?|.+?'s .+?) uses an attack from a Pokemon without a Rule Box that comes off the top of your deck\.$/, (m, a) => T().mill(its(a))],
+    [/^In this list that is (.+)\.$/, (m, l) => { const li = L(l); return li && T().inList(li); }],
+    [/^(.+?) put the one you want there first\.$/, (m, l) => { const li = L(l); return li && T().putFirst(li); }],
+    [/^(.+?) can use (.+?)'s attacks with (.+?) when it comes off the top of your deck, so (.+?) needs no (.+?) of its own\.$/, (m, x, y, a, y2, e) => nm(x) && nm(y) && T().useOff(x, y, a, e)],
+    [/^(.+?) copies (.+?)'s attacks with (.+?), paying only its own cost, so (.+?) needs no (.+?) of its own\.$/, (m, x, y, a, y2, e) => { const en = E(e); return nm(x) && nm(y) && en && T().copyPay(x, y, a, en); }],
+    [/^(.+?) evolves from (.+?), and (.+?) can evolve into it, so the line works without a plain (.+?)\.$/, (m, x, f, y) => nm(x) && nm(f) && nm(y) && T().evoWithout(x, f, y)],
+    [/^(.+?) can put itself onto your Bench from your hand with (.+?), so it does not need to evolve\.$/, (m, x, a) => nm(x) && T().benchSelf(x, a)],
+    [/^Played mainly for (their Abilities|its Ability), to (draw and search|draw cards|search your deck): (.+)\.$/, (m, w, k, l) => {
+      const li = L(l, x => /^(.+) \((.+)\)$/.test(x) && i18nGtName(x.replace(/ \(.+\)$/, '')) ? x : null);
+      return li && T().forAbil(/^their/.test(w), k === 'draw and search' ? 'both' : k === 'draw cards' ? 'draw' : 'search', li); }],
+    [/^(Their attacks cost|Its attack costs) only Colorless Energy, so the list's Energy is not picked for (?:them|it)\.$/, (m, w) => T().colorless(/^Their/.test(w))],
+    [/^Damage from (Abilities|an Ability): (.+)$/, (m, w, l) => { const a = l.split(', '); return a.every(nm) && T().dmgFrom(w === 'Abilities', a.join(', ')); }],
+    [/^(.+), on top of your attack that turn\.$/, (m, s) => { const ps = s.split(/, and (?=.+?'s )/).map(p => { const k = p.match(/^(.+?'s .+?) puts (\d+) damage counters? on 1 of your opponent's Pokemon$/); return k && T().abPuts(by(k[1]), k[2]); });
+      return ps.every(Boolean) && T().onTop(ps); }],
+    [/^Using it Knocks Out (.+?), which gives up a prize, so it finishes a knockout rather than starting one\.$/, (m, l) => { const li = L(l); return li && T().koSelf(li); }],
+    [/^Attackers: (.+)$/, (m, l) => l.split(', ').every(nm) && T().attackers(l)],
+    [/^(.+?) can hit any (\d+) of your opponent's Pokemon for (\d+), Benched ones too\.$/, (m, a, n, d) => T().hitAny(a, n, d)],
+    // Ability and attack effect phrases, read with the Abilities table.
+    [/^Its (.+)\.$/, (m, s) => { const x = i18nGtAbSplit(s, l); return x && T().itsAb(x[0], x[1]); }],
+    [/^With its (.+?), (.+)\.$/, (m, a, p) => { const x = i18nGtAb(p, l); return x && T().withAb(a, x); }],
+    [/^(.+?) also (.+)\.$/, (m, a, p) => { const x = i18nGtAb(p, l); return x && T().alsoAtk(a, x); }],
+  ];
+}
+/** One generated Grade tab sentence or label in language l, or null. Built on first use, so a language file can load before this one. */
+function i18nGtSent(s, l) {
+  const T = i18nGtTab(l);
+  if (!T || !i18nDmgTab(l)) return null;
+  const ps = I18N_GT_PATS[l] || (I18N_GT_PATS[l] = i18nGtPats(l));
+  if (/[a-z0-9)][.!?] [A-Z0-9¿¡]/.test(s)) return null;
+  for (const p of ps) { const m = s.match(p[0]); if (m) { let r = null; try { r = p[1](...m); } catch (e) { r = null; } if (typeof r === 'string' && r && !/\b(?:undefined|null|NaN)\b/.test(r)) return r; } }
+  return null;
+}
+// Puzzle buttons and the builder's card facts line: card, attack and Ability names stay English.
+const I18N_PZ_PRE = /^(?=(?:Bench [A-Z]|Evolve |Rare Candy: |Attach |Use [A-Z]|Retreat into |Make |Switch in |Bring up |Take nothing$|Basic(?:, |$)|Stage [12](?:, |$)|.+ Energy (?:to|from) |\d+ from |.+ \((?:Active|Bench \d+)\): |.+ from your hand: |(?:Item|Supporter|Stadium|Pokémon Tool|Trainer|Special Energy), ACE SPEC$))[\s\S]+$/;
+const I18N_PZ = {
+  es: { act: 'Activo', bench: 'Banca', their: n => n + ' del rival', aMon: 'un Pokémon', aCard: 'una carta', hp: 'PS',
+    benchX: x => `Poner a ${x} en la Banca`, evolve: (m, x) => `Evolucionar a ${m} en ${x}`, candy: (m, x) => `Rare Candy: ${m} en ${x}`,
+    to: (x, m) => `${x} a ${m}`, attach: (x, m) => `Unir ${x} a ${m}`, use: x => `Usar ${x}`, retreat: (m, p) => `Retirarse y subir a ${m}` + (p ? `, descartando ${p}` : ''),
+    make: m => `Poner a ${m} como Activo`, swIn: m => `Cambiar a ${m}`, bring: m => `Traer a ${m}`, move: (x, a, b) => `${x} de ${a} a ${b}`, from: (x, a) => `${x} de ${a}`,
+    none: 'No tomar nada', hand: (x, a) => `${x} desde tu mano: ${a}` },
+  pt: { act: 'Ativo', bench: 'Banco', their: n => n + ' do oponente', aMon: 'um Pokémon', aCard: 'uma carta', hp: 'PS',
+    benchX: x => `Colocar ${x} no Banco`, evolve: (m, x) => `Evoluir ${m} para ${x}`, candy: (m, x) => `Rare Candy: ${m} para ${x}`,
+    to: (x, m) => `${x} para ${m}`, attach: (x, m) => `Ligar ${x} a ${m}`, use: x => `Usar ${x}`, retreat: (m, p) => `Recuar e trazer ${m}` + (p ? `, descartando ${p}` : ''),
+    make: m => `Tornar ${m} Ativo`, swIn: m => `Trocar por ${m}`, bring: m => `Trazer ${m}`, move: (x, a, b) => `${x} de ${a} para ${b}`, from: (x, a) => `${x} de ${a}`,
+    none: 'Não pegar nada', hand: (x, a) => `${x} da sua mão: ${a}` },
+  de: { act: 'Aktiv', bench: 'Bank', their: n => n + ' des Gegners', aMon: 'ein Pokémon', aCard: 'eine Karte', hp: 'KP',
+    benchX: x => `${x} auf die Bank legen`, evolve: (m, x) => `${m} zu ${x} entwickeln`, candy: (m, x) => `Rare Candy: ${m} zu ${x}`,
+    to: (x, m) => `${x} an ${m}`, attach: (x, m) => `${x} an ${m} anlegen`, use: x => `${x} einsetzen`, retreat: (m, p) => `Rückzug zu ${m}` + (p ? `, dabei ${p} ablegen` : ''),
+    make: m => `${m} aktiv machen`, swIn: m => `${m} einwechseln`, bring: m => `${m} nach vorne holen`, move: (x, a, b) => `${x} von ${a} auf ${b}`, from: (x, a) => `${x} von ${a}`,
+    none: 'Nichts nehmen', hand: (x, a) => `${x} aus deiner Hand: ${a}` },
+  fr: { act: 'Actif', bench: 'Banc', their: n => n + ' adverse', aMon: 'un Pokémon', aCard: 'une carte', hp: 'PV',
+    benchX: x => `Placer ${x} sur le Banc`, evolve: (m, x) => `Faire évoluer ${m} en ${x}`, candy: (m, x) => `Rare Candy : ${m} en ${x}`,
+    to: (x, m) => `${x} sur ${m}`, attach: (x, m) => `Attacher ${x} à ${m}`, use: x => `Utiliser ${x}`, retreat: (m, p) => `Battre en retraite vers ${m}` + (p ? `, en défaussant ${p}` : ''),
+    make: m => `Rendre ${m} Actif`, swIn: m => `Faire entrer ${m}`, bring: m => `Faire venir ${m}`, move: (x, a, b) => `${x} de ${a} sur ${b}`, from: (x, a) => `${x} de ${a}`,
+    none: 'Ne rien prendre', hand: (x, a) => `${x} depuis ta main : ${a}` },
+  it: { act: 'Attivo', bench: 'Panchina', their: n => n + ' avversario', aMon: 'un Pokémon', aCard: 'una carta', hp: 'PS',
+    benchX: x => `Mettere ${x} in Panchina`, evolve: (m, x) => `Far evolvere ${m} in ${x}`, candy: (m, x) => `Rare Candy: ${m} in ${x}`,
+    to: (x, m) => `${x} a ${m}`, attach: (x, m) => `Assegnare ${x} a ${m}`, use: x => `Usare ${x}`, retreat: (m, p) => `Ritirarsi su ${m}` + (p ? `, scartando ${p}` : ''),
+    make: m => `Rendere Attivo ${m}`, swIn: m => `Far entrare ${m}`, bring: m => `Far avanzare ${m}`, move: (x, a, b) => `${x} da ${a} a ${b}`, from: (x, a) => `${x} da ${a}`,
+    none: 'Non prendere nulla', hand: (x, a) => `${x} dalla tua mano: ${a}` },
+};
+function i18nPzSent(s, l) {
+  const P = I18N_PZ[l]; if (!P) return null;
+  const dict = l === 'es' ? I18N_ES : l === 'pt' ? I18N_PT : ((i18nMore(l) || {}).dict || {});
+  const w = k => dict[k] || null;
+  // A Pokémon in play: "their Tatsugiri (Bench 2)"; a bare name with no spot is a card name and stays.
+  const mon = t => {
+    if (t === 'a Pokémon') return P.aMon;
+    const m = /^(their )?(.+?)(?: \((Active|Bench (\d+))\))?$/.exec(t); if (!m) return null;
+    const n = m[1] ? P.their(m[2]) : m[2];
+    return m[3] ? `${n} (${m[4] ? P.bench + ' ' + m[4] : P.act})` : n;
+  };
+  const card = t => t === 'a card' ? P.aCard : t;
+  let m;
+  if (s === 'Take nothing') return P.none;
+  if ((m = /^(Basic|Stage 1|Stage 2)(?:, (\d+) HP)?((?:, [^,.]+)*)$/.exec(s))) return w(m[1]) && (w(m[1]) + (m[2] ? `, ${m[2]} ${P.hp}` : '') + m[3]);
+  if ((m = /^(Item|Supporter|Stadium|Pokémon Tool|Trainer|Special Energy), ACE SPEC$/.exec(s))) return w(m[1]) && w('ACE SPEC') && `${w(m[1])}, ${w('ACE SPEC')}`;
+  if ((m = /^Bench ([A-Z][^.]*)$/.exec(s))) return P.benchX(m[1]);
+  if ((m = /^Evolve (.+?) into ([^.]+)$/.exec(s))) return mon(m[1]) && P.evolve(mon(m[1]), m[2]);
+  if ((m = /^Rare Candy: (.+?) into ([^.]+)$/.exec(s))) return mon(m[1]) && P.candy(mon(m[1]), m[2]);
+  if ((m = /^Attach (.+?) to ([^.]+)$/.exec(s))) return mon(m[2]) && P.attach(card(m[1]), mon(m[2]));
+  if ((m = /^Use ([A-Z][^.]*)$/.exec(s))) return P.use(m[1]);
+  if ((m = /^Retreat into (.+?)(?:, discarding (.+))?$/.exec(s))) return mon(m[1]) && P.retreat(mon(m[1]), m[2] || '');
+  if ((m = /^Make (.+) Active$/.exec(s))) return mon(m[1]) && P.make(mon(m[1]));
+  if ((m = /^Switch in (.+)$/.exec(s))) return mon(m[1]) && P.swIn(mon(m[1]));
+  if ((m = /^Bring up (.+)$/.exec(s))) return mon(m[1]) && P.bring(mon(m[1]));
+  if ((m = /^(\d+|.+? Energy|a card) from (?!your )(.+?) to (.+)$/.exec(s))) return mon(m[2]) && mon(m[3]) && P.move(card(m[1]), mon(m[2]), mon(m[3]));
+  if ((m = /^(.+? Energy|a card) from (?!your )(?=their |.+ \((?:Active|Bench \d+)\)$)(.+)$/.exec(s))) return mon(m[2]) && P.from(card(m[1]), mon(m[2]));
+  if ((m = /^(.+? Energy|a card) to (.+)$/.exec(s))) return mon(m[2]) && P.to(card(m[1]), mon(m[2]));
+  if ((m = /^(.+) from your hand: (.+)$/.exec(s))) return P.hand(m[1], m[2]);
+  if ((m = /^((?:their )?.+? \((?:Active|Bench \d+)\)): (.+)$/.exec(s))) return mon(m[1]) && `${mon(m[1])}${l === 'fr' ? ' :' : ':'} ${m[2]}`;
+  return null;
+}
+I18N_PAT.unshift([I18N_PZ_PRE, m => i18nPzSent(m, 'es'), m => i18nPzSent(m, 'pt')]);
+const I18N_GT = {
+  es: (function () {
+    const Y = I18N_AB_TYP.es, n1 = n => +n === 1, cap = s => s.charAt(0).toUpperCase() + s.slice(1), pl = s => / y | o |, | más$/.test(s);
+    const ROLE = { gust: 'trae un Pokémon de la Banca', switch: 'cambia tu Pokémon Activo', draw: 'te hace robar cartas', search: 'busca cartas en tu baraja',
+      recovery: 'recupera cartas de tu pila de descartes', energy: 'ayuda a pagar los costes de Energía', survive: 'mantiene vivo más tiempo a un atacante', damage: 'suma daño',
+      heal: 'cura', disrupt: 'entorpece a tu rival', bench: 'llena tu Banca', evolve: 'acelera la evolución', discard: 'llena tu pila de descartes', protect: 'bloquea daño',
+      reduce: 'reduce el daño que reciben tus Pokémon', prize: 'toma cartas de Premio extra', attack: 'le da otro ataque a un Pokémon', coins: 'permite volver a lanzar las monedas de un ataque',
+      denial: 'quita Energía a tu rival', hand: 'entorpece la mano de tu rival', tools: 'descarta Herramientas Pokémon', fossil: 'se juega como un Pokémon Básico del que evolucionar',
+      swapin: 'saca a jugar un Pokémon de tu pila de descartes', devolve: 'involuciona tus Pokémon para volver a usarlos', order: 'prepara la parte de arriba de tu baraja',
+      prizes: 'cambia tus cartas de Premio', cure: 'quita Condiciones Especiales', healup: 'hace más fuerte la curación' };
+    const DO = { gust: 'traer un Pokémon de la Banca', switch: 'cambiar tu Pokémon Activo', draw: 'hacerte robar cartas', search: 'buscar tus Pokémon',
+      recovery: 'recuperar cartas de tu pila de descartes', energy: 'ayudar a pagar los costes de Energía', survive: 'mantener vivo más tiempo a un atacante', damage: 'sumar daño',
+      heal: 'curar', disrupt: 'entorpecer a tu rival', bench: 'llenar tu Banca', evolve: 'acelerar la evolución', discard: 'llenar tu pila de descartes', protect: 'bloquear daño',
+      reduce: 'reducir el daño que reciben tus Pokémon', prize: 'tomar cartas de Premio extra', attack: 'darle otro ataque a un Pokémon', coins: 'volver a lanzar las monedas de un ataque',
+      denial: 'quitarle Energía a tu rival', hand: 'entorpecer la mano de tu rival', tools: 'descartar Herramientas Pokémon', fossil: 'jugarse como un Pokémon Básico del que evolucionar',
+      swapin: 'sacar a jugar un Pokémon de tu pila de descartes', devolve: 'involucionar tus Pokémon para volver a usarlos', order: 'preparar la parte de arriba de tu baraja',
+      prizes: 'cambiar tus cartas de Premio', cure: 'quitar Condiciones Especiales', healup: 'hacer más fuerte la curación' };
+    const roles = k => k.map(r => ROLE[r]).join(' y ');
+    const KIND = { Supporter: ['Partidario', 'Partidarios'], 'Pokemon Tool': ['Herramienta Pokémon', 'Herramientas Pokémon'], Stadium: ['Estadio', 'Estadios'], Item: ['Objeto', 'Objetos'] };
+    const STG = { Basic: ['Básico', 'Básicos'], 'Stage 1': ['de Fase 1', 'de Fase 1'], 'Stage 2': ['de Fase 2', 'de Fase 2'], Evolution: ['Evolución', 'Evolución'], 'Mega Evolution': ['Megaevolución', 'Megaevolución'] };
+    const TAG = { Tera: ['Teracristal', 'Teracristal'], Ancient: ['Antiguo', 'Antiguos'], Future: ['Futuro', 'Futuros'] };
+    const own = w => String(w).replace(/'s$/, '');
+    const KO = 'Fuera de Combate';
+    const MU = { Even: 'Parejo', Favored: 'Favorable', Unfavored: 'Desfavorable', 'Leans favored': 'Algo favorable', 'Leans unfavored': 'Algo desfavorable', 'Too few games': 'Pocas partidas' };
+    const RAW = 'solo con lo que robas';
+    const T = {
+      a: e => 'una ' + e,
+      list: (a, c, more) => { const j = c === 'or' ? ' o ' : ' y ';
+        if (more) return a.join(', ') + j + more.n + ' más';
+        return a.length > 1 ? a.slice(0, -1).join(', ') + j + a[a.length - 1] : a[0]; },
+      kind: (k, m) => KIND[k][m ? 1 : 0], supName: x => `un Partidario con "${x}" en el nombre`, supOf: (w, m) => `${m ? 'Partidarios' : 'Partidario'} de ${own(w)}`,
+      q: (q, m) => { let s = 'Pokémon' + (q.ex ? ' ex' : '');
+        if (q.stage) s += ' ' + STG[q.stage][m ? 1 : 0];
+        if (q.tag) s += ' ' + TAG[q.tag][m ? 1 : 0];
+        if (q.owner) s += ' de ' + q.owner;
+        if (q.type) s += ' de tipo ' + Y[q.type];
+        if (q.noRule) s += ' sin Recuadro de regla';
+        if (q.hp) s += ` con ${q.hp} PS o menos`;
+        return s; },
+      its: a => 'Su ' + a,
+      gap: g => g.k === 'gust' ? (g.n ? `solo ${g.n} ${n1(g.n) ? 'carta trae' : 'cartas traen'} un Pokémon de la Banca` : g.other ? 'nada más en la lista trae un Pokémon de la Banca' : 'nada trae un Pokémon de la Banca')
+        : g.k === 'find' ? (g.n ? `solo ${g.other ? 'otras ' : ''}${g.n} ${n1(g.n) ? 'carta busca' : 'cartas buscan'} Pokémon` : g.other ? 'nada más busca Pokémon' : 'nada en la lista busca Pokémon')
+        : g.k === 'draw' ? (g.n ? `solo ${g.other ? 'otras ' : ''}${g.n} ${n1(g.n) ? 'carta roba' : 'cartas roban'}` : 'nada en la lista roba cartas')
+        : 'nada recupera cartas de tu pila de descartes',
+      // Matchups and meta.
+      mu: (x, k, p, n) => `${x}: ${MU[k]}, ${p}% en ${n} partidas`,
+      allLists: x => `Estos son resultados de todas las listas de ${x}, no de tu lista exacta.`,
+      overSame: (n, p) => `en ${n} partidas, más o menos igual que antes (${p}).`,
+      sinceFew: (d, n) => `Desde que salió la expansión más reciente (${d}): ${n} ${n1(n) ? 'partida' : 'partidas'} hasta ahora, muy pocas para ver una tendencia.`,
+      wrFew: n => `Porcentaje de victorias: ${n} ${n1(n) ? 'partida' : 'partidas'} hasta ahora, muy pocas para juzgar.`,
+      muSince: (n, d) => `Enfrentamientos contra las ${n} barajas más jugadas desde el ${d}`,
+      gray: n => `Las filas grises tienen menos de ${n} partidas, muy pocas para fiarse.`,
+      perRow: n => `${n} ${n1(n) ? 'carta' : 'cartas'} por fila`,
+      showAll: (n, k) => k === 'days' ? `Mostrar los ${n} días` : `Mostrar las ${n} barajas`,
+      updated: d => `Actualizada el ${d}`,
+      letter: d => `Carta de Pokémon TCG Live a la comunidad, ${d}`,
+      startWith: x => `Empezar una partida de premios con ${x}`,
+      moreFor: x => `Más opciones para ${x}`,
+      markCards: k => `Las cartas con marca ${k}`,
+      inHand: (x, a, k, p, b) => `Esto cuenta a ${x} en la mano, no con toda su fuerza: hace ${a} hasta que tienes ${k} ${p} en tu pila de descartes, y luego ${b}.`,
+      inHand2: (x, a, p, b, k) => `Esto cuenta a ${x} en la mano, no con toda su fuerza: hace ${a} con 2 ${p} en tu pila de descartes y ${b} cuando tienes ${k}.`,
+      // Attacker odds.
+      readyBy: (x, h, t, a, b) => `${x} ${h ? 'en la mano' : 'listo'} para el turno ${t}: ${a}${b ? ' a ' + b : ''}`,
+      floor: p => `${p} es ${RAW}, el mínimo.`,
+      noRaise: p => `${p} ${RAW}, y tus cartas de búsqueda no lo suben.`,
+      byTurn: (t, a, b) => `Para el turno ${t}: ${a}${b ? ' a ' + b : ''}.`,
+      nAtk: n => `Esta lista tiene ${n} atacantes y elige el que necesita cada turno.`,
+      howLead: (x, t) => `Aquí ves qué tan seguido puedes tener a ${x}, el que encabeza la calificación, listo para tu ${t === 2 ? 'segundo' : 'tercer'} turno.`,
+      howWhy: (w, t) => `${{ name: 'El atacante que da nombre a su baraja del meta', pick: 'El atacante principal que elegiste', core: 'El atacante en torno al que se construye esta lista' }[w]}, y qué tan seguido puedes tenerlo listo para tu ${t === 2 ? 'segundo' : 'tercer'} turno.`,
+      atkBy: t => `Atacante para T${t}, cualquier mano`,
+      anyHand: (x, h, k) => `${x}${h ? ' en la mano' : ''}, cualquier mano inicial, ${{ same: `igual ${RAW} o con tus cartas de búsqueda`, range: `desde ${RAW} hasta con tus cartas de búsqueda`, raw: RAW }[k]}`,
+      noFrom: (x, s) => `${x} es de Fase ${s}, pero un Pokémon del que evoluciona no está en la lista, así que solo puede llegar al juego con otras cartas.`,
+      need1: (a, b) => `Necesita a ${a} para el turno 1 y luego a ${b} para el turno 2 (nada evoluciona en su primer turno en juego).`,
+      needCandy: (a, b, c) => `Necesita a ${a} para el turno 1 y luego a ${b} y Rare Candy para el turno 2${c ? ` (la ruta de ${c} necesita hasta el turno 3)` : ''}.`,
+      need3: (a, b, c) => `Necesita a ${a} para el turno 1 y a ${b} para el turno 2, y luego a ${c} en el turno 3 (no hay Rare Candy en la lista, y nada evoluciona en su primer turno en juego).`,
+      needSeen: (a, n) => `Necesita a ${a} entre tus primeras ${n} cartas.`,
+      // How tightly the list fits.
+      fitLines: n => `tus Pokémon están repartidos en ${n} líneas`,
+      fitSingles: (a, b, pk) => `${a} de tus ${b} ${pk ? 'Pokémon' : 'Entrenadores'} ${n1(a) ? 'es una sola copia' : 'son copias únicas'}`,
+      fitTypes: n => `tus ataques necesitan ${n} tipos de Energía`,
+      fitUse: p => `cada atacante solo puede usar cerca del ${p}% de tu Energía`,
+      fit: (how, cs) => (how ? 'Qué tan compacta es la lista' : 'Menos de tus cartas tiran para el mismo lado') + (cs.length ? ': ' + cs.join(' y ') : '') + '.',
+      // Trainer fit lines.
+      little: (n, sw) => `${n1(n) ? 'Una carta aporta' : n + ' cartas aportan'} poco aquí${sw === 'each' ? (n1(n) ? ', con una idea de cambio' : ', con una idea de cambio para cada una') : sw === 'below' ? ', con ideas de cambio abajo' : ''}.`,
+      role1: (k, n) => cap(roles(k)) + (n ? `, una de las ${n} cartas que lo hacen` : '') + '.',
+      roleOnly: (k, c) => `${cap(roles(k))}: tu ${c ? 'única carta' : 'único Entrenador'} que lo hace.`,
+      roleOf: (k, a, b) => `${cap(roles(k))}: ${a} de las ${b} cartas que lo hacen.`,
+      crowded: (k, n) => `${cap(roles(k))}, pero otras ${n} cartas de la lista ya lo hacen, más de las que lleva la mayoría de las listas ganadoras, así que esta aporta poco.`,
+      unplayed: k => `${cap(roles(k))}, pero ninguna lista ganadora de eventos recientes la lleva.`,
+      payFor: (x, a, b) => `Ayuda a pagar los costes de Energía de ${x}${a ? `, ${a} de las ${b} cartas que lo hacen` : ''}.`,
+      skips: (a, b) => `Se salta ${a ? 'a ' + a : 'la Fase 1'} para sacar a ${b} un turno antes.`,
+      skipsMid: (a, b) => `${a} se salta la fase intermedia para poner en juego a ${b} rápido.`,
+      needsOn: (a, b) => `Necesita a ${a} en la lista para poner encima a ${b}, y no hay en la lista.`,
+      needsNone: w => `Necesita ${w}, y no hay en la lista.`,
+      needsAce: w => `Necesita ${w}, que esta lista no lleva.`,
+      aceFills: (x, k, g) => `${x} ${roles(k)}, y eso cubre un hueco: ${T.gap(g)}.`,
+      aceBetter: (x, g) => `${x} podría encajar mejor, ya que ${T.gap(g)}.`,
+      aceWould: (x, k, g) => `${x} serviría para ${DO[k]}, y ${T.gap(g)}.`,
+      swap: (x, more, g) => `Idea de cambio: ${more ? 'una copia más de ' : ''}${x}, ya que ${T.gap(g)}.`,
+      aceDoes: (x, k) => `${x} ${roles(k)}.`,
+      // In this deck: notes.
+      anyLike: (find, n, w, li, en) => `${find ? 'Busca' : 'Puede poner en la Banca'} cualquiera de tus ${n} ${w}, como ${li}${en ? ', o ' + en : ''}.`,
+      benchAll: li => `Puede poner en la Banca a la vez todos los Básicos que llevas, como ${li}.`,
+      verbList: (k, li, e) => ({ Finds: `Busca ${li}`, 'Can Bench': `Puede poner en la Banca a ${li}`, 'Gets back': `Recupera ${li}`, 'Works on': `Funciona con ${li}`,
+        'Can evolve straight into': `Puede evolucionar directamente a ${li}`, 'Fully heals': `Cura todo el daño de ${li}`, shields: `Protege a ${li} de los efectos de ataques, como las Condiciones Especiales`,
+        keeps: `Mantiene a ${li} libre de Condiciones Especiales`, 'Can fetch a single copy like your': `Puede buscar una copia única, como ${li}` })[k] + (e ? `, ${e.or ? 'o' : 'y'} ${e.e}` : '') + '.',
+      backLike: (mix, ko, li, e) => `Recupera ${mix ? 'cualquier combinación de ' : ''}Pokémon${ko ? ` que quedaron ${KO}` : ''}, como ${li}${e ? `, ${e.or ? 'o' : 'y'} ${e.e}` : ''}.`,
+      shuffleKo: li => `Devuelve a tu baraja Pokémon que quedaron ${KO}, como ${li}.`,
+      energyFor: (back, en, x) => back ? `Recupera ${en} para ${x}.` : `Devuelve ${en} a tu baraja para ${x}.`,
+      withOdds: (n, w, d, p) => `Con ${n} ${w} en tus ${d} cartas, ${p ? `encuentra uno cerca del ${p}% de las veces` : 'casi siempre encuentra uno'}.`,
+      takesHp: (x, a, b, y, c) => `Lleva a ${x} de ${a} a ${b} PS${y ? `, o a ${y} a ${c}` : ''}.`,
+      goesFrom: (xa, a, b, ex) => `${cap(xa)} pasa de ${a} a ${b}${ex ? ' contra Pokémon ex' : ''}.`,
+      prizeFor: (x, a, b, once) => `Con ${x}, tu rival toma ${a} ${n1(a) ? 'carta de Premio' : 'cartas de Premio'} por él, no ${b}${once ? ', una vez por partida' : ''}.`,
+      koNeed: (x, t, a, b) => `Con ${x}, los atacantes de tipo ${Y[t]} necesitan ${a} de daño para dejarlo ${KO}, no ${b}.`,
+      aLike: (w, x) => `un ${w} como ${x}`,
+      putsE: (n, li, once, wh) => `Une ${n ? n + ' ' : ''}${n && !n1(n) ? 'Energías' : 'Energía'} a ${li}${once ? ' a la vez' : ''}${wh ? `, una vez que ${wh} está en juego` : ''}.`,
+      spare: (li, n) => `Convierte Pokémon sobrantes, como ${li}, en ${n} cartas cada uno.`,
+      onTypeBench: (t, x, n, li) => `Con un Pokémon de tipo ${Y[t]} como ${x}, pone en la Banca hasta ${n} de estos: ${li}.`,
+      picks: (n, e) => `Elige ${n} de tus ${e}.`,
+      payColorless: li => `Puede pagar la Energía Incolora de ${li}.`,
+      onPays: (x, n, c, a, turn) => `Con ${x}, paga ${n ? n + ' de las Energías' + (c ? ' Incoloras' : '') : 'la Energía' + (c ? ' Incolora' : '')} de ${a}${turn ? ', durante un turno' : ''}.`,
+      paysFor: (n, xa) => `Paga ${n} de las Energías de ${xa}.`,
+      anyType: (w, x, a) => `Con un ${w} como ${x}, cuenta como de cualquier tipo para ${a}.`,
+      wholeLine: li => `Consigue toda la línea de ${li} a la vez.`,
+      withEnergy: (li, your) => `${your ? 'Consigue' : 'Busca'} a la vez ${li} y una Energía.`,
+      together: li => `Consigue a la vez ${li}.`,
+      findsFewer: (w, a, b) => `Tu lista no tiene ${w}, así que encuentra ${a} ${n1(a) ? 'carta' : 'cartas'}, no ${b}.`,
+      oneGo: (a, b) => `Puede convertir a ${a} en ${b} de una vez.`,
+      benchSpots: (n, li) => `Te da ${n} espacios en la Banca mientras ${li} está en juego.`,
+      drawsAfter: (n, k, w) => `Roba ${n} después de ${n1(k) ? 'tu Partidario' : `cualquiera de tus ${k} Partidarios`} de ${own(w)}.`,
+      everyIs: (w, n) => `Todos los Pokémon de tu lista son ${w}, así que roba hasta tener ${n}.`,
+      worksKo: li => `Funciona cuando ${li} queda ${KO}.`,
+      takeDmg: (li, n, less, w) => less ? `Tus ${li} reciben ${n} de daño menos${w === 'too' ? ' también' : w === 'that turn' ? ' ese turno' : ''}.`
+        : `Tus propios ${li} reciben ${n} de daño${w === 'when you Bench them' ? ' cuando los pones en la Banca' : w === 'too' ? ' también' : ''}.`,
+      dropsTo: (x, n) => `Tu propio ${x} también baja a ${n} PS.`,
+      fits: (li, one, n, s, k) => `Encaja con ${li}, que ${one ? 'ataca' : 'atacan'} con ${n} Energías o más${s ? `; ${s} lo deja en ${k}` : ''}.`,
+      healsMove: (n, li) => `Cura ${n} cuando mueve a ${li} a tu Banca.`,
+      grabWith: x => `Puede buscar tu ${x} junto con Partidarios.`,
+      tooBig: (x, n) => `${x} es demasiado grande para esta carta (${n} PS).`,
+      retreat: (li, x, n, c) => `Permite que ${li} ${pl(li) ? 'se retiren' : 'se retire'} gratis${x ? `; ${x} sigue pagando ${n}` : c ? ` (ahora le cuesta ${c})` : ''}.`,
+      evolveNow: (a, b) => `Permite que ${a} evolucione a ${b} el turno en que lo juegas.`,
+      offOwn: li => `También anula ${li} de tu lado.`,
+      runNo: (x, k) => `No llevas ${x}, así que ${{ hp: 'solo pierden PS los de tu rival', off: 'solo anula las de tu rival', pays: 'solo tu rival paga más', helps: 'solo ayuda a los de tu rival' }[k]}.`,
+      comesBack: xa => `Vuelve después de que ${xa} la descarte.`,
+      poisoned: x => `Se activa una vez que tu propio Pokémon está Envenenado, cosa que hace ${x} aquí.`,
+      takesE: (a, b, e) => `Toma ${a} de tus ${b} ${e} a la vez.`,
+      benchesUp: (n, w) => `Pone en la Banca hasta ${n} ${w} a la vez.`,
+      switchBetween: li => `Intercambia entre tus ${li} una vez por turno.`,
+      // How it plays.
+      doesAtk: x => `${x} es quien ataca.`,
+      playsAs: x => `La lista juega como ${x}, una baraja que lleva su nombre.`,
+      playsAsOne: x => `La lista juega como ${x}, y de los Pokémon que dan nombre a esa baraja, este es con el que la lista está hecha para atacar.`,
+      copies: (you, n, f) => `${you ? 'Lo elegiste como atacante principal' : 'Es el atacante en torno al que se construye esta lista'}: ${n} ${n1(n) ? 'copia' : 'copias'}${f ? ` más ${f} Pokémon de los que evoluciona` : ''}.`,
+      most: (x, n) => `${x} es el que la lista lleva en más copias (${n}).`,
+      box: n => `${n} Pokémon distintos pueden cargar con el ataque, y eliges el que encaja en cada turno.`,
+      hits: (s, avg, n, coins) => `${cap(s)} ${avg ? 'hace de media' : 'hace'} ${n} de daño${coins ? ' con sus lanzamientos de moneda' : ''}.`,
+      handEst: (s, n, k) => `${s} cuenta las cartas de tu mano: unos ${n} con ${k} cartas, una estimación de la app, no un número impreso.`,
+      boardEst: (s, n) => `${s} depende de la mesa, así que ${n} es una estimación de la app, no un número impreso.`,
+      wall: s => `${s} evita todo el daño que le hacen los ataques de los Pokémon ex de tu rival, así que los atacantes ex no pueden dejarlo ${KO}.`,
+      boost: (s, n, e, h, hp) => `${s} suma ${n} a sus ataques mientras tiene ${e} unida${h ? `, así que hace ${h}` : ''}${hp ? `, y le da ${hp} PS más` : ''}.`,
+      ownDmg: (s, n, act) => `${s} pone ${n} contadores de daño en 1 de los Pokémon de tu rival cada turno${act ? ' mientras está en el Puesto Activo' : ''}.`,
+      kox: (s, n, x) => `${s} deja ${KO} al Pokémon Activo de tu rival cuando tiene exactamente ${n} contadores de daño${x ? `, y ${x} puede ponérselos` : ''}, así que la calificación lo cuenta como un golpe que derriba a cualquiera.`,
+      pileDmg: (s, n, p, b, c, k) => `${s} hace ${n} más por cada ${p} en tu pila de descartes: ${b} con 2 ahí, ${c} cuando tienes ${k}.`,
+      eScale: (s, en, on, n, alt, opp) => `${s} cuenta la ${en || 'Energía'} unida ${{ 'both Active Pokemon': 'a ambos Pokémon Activos', 'all your Pokemon': 'a todos tus Pokémon', itself: 'a sí mismo' }[on]}, así que cada una que unes ${on === 'all your Pokemon' ? 'en cualquier parte de tu lado' : 'a él'} suma ${n}${alt ? ` (${alt.n} por ${alt.e} con ${alt.by} en juego)` : ''}${opp ? ', y la Energía de tu rival también le suma' : ''}.`,
+      discEach: (s, en, n) => `${s} descarta ${en} de tus Pokémon y hace ${n} por cada una, así que cada una que unes en cualquier parte de tu lado suma ${n} a su siguiente gran golpe.`,
+      discNext: (n, k, e, need) => `Eso cuenta los ${n} más que hace cuando descarta ${e === 'all' ? 'toda su Energía' : k + ' ' + e} de sí mismo, así que ${need === 'all' ? 'hay que volver a cargarlo' : need === 1 ? 'necesita otra unida' : `necesita ${need} más unidas`} antes del siguiente gran golpe.`,
+      discEach2: (k, e, need) => `Descarta ${e === 'all' ? 'toda su Energía' : k + ' ' + e} de sí mismo cada vez, así que ${need === 'all' ? 'hay que volver a cargarlo' : need === 1 ? 'necesita otra unida' : `necesita ${need} más unidas`} antes de poder golpear tan fuerte otra vez.`,
+      lock: (a, b) => `No puede usar ${a} dos turnos seguidos, así que ${b ? `usa ${b} o ` : ''}saca a otro atacante en el turno intermedio.`,
+      lockAll: a => `No puede atacar en su siguiente turno después de ${a}, así que cambia a otro atacante en el turno intermedio.`,
+      copyBench: s => `${s} le permite usar los ataques de tus Pokémon en Banca, pagados con su propia Energía.`,
+      bestHere: (xa, avg, n) => `El mejor aquí es ${xa}, que ${avg ? 'hace de media' : 'hace'} ${n}.`,
+      copiesWith: (xa, a) => `Copia ${xa} con ${a}.`,
+      mill: s => `${s} usa un ataque de un Pokémon sin Recuadro de regla que sale de la parte de arriba de tu baraja.`,
+      inList: li => `En esta lista son ${li}.`,
+      putFirst: li => `${li} ${pl(li) ? 'ponen' : 'pone'} ahí primero el que quieres.`,
+      useOff: (x, y, a, e) => `${x} puede usar los ataques de ${y} con ${a} cuando sale de la parte de arriba de tu baraja, así que ${y} no necesita ${i18nEnName(e, 'es')} propia.`,
+      copyPay: (x, y, a, en) => `${x} copia los ataques de ${y} con ${a}, pagando solo su propio coste, así que ${y} no necesita su propia ${en}.`,
+      evoWithout: (x, f, y) => `${x} evoluciona de ${f}, y ${y} puede evolucionar a él, así que la línea funciona sin un ${f} normal.`,
+      benchSelf: (x, a) => `${x} puede ponerse en tu Banca desde tu mano con ${a}, así que no necesita evolucionar.`,
+      forAbil: (their, k, li) => `Se ${their ? 'juegan' : 'juega'} sobre todo por ${their ? 'sus Habilidades' : 'su Habilidad'}, para ${{ both: 'robar y buscar', draw: 'robar cartas', search: 'buscar en tu baraja' }[k]}: ${li}.`,
+      colorless: their => their ? 'Sus ataques solo cuestan Energía Incolora, así que la Energía de la lista no se elige para ellos.' : 'Su ataque solo cuesta Energía Incolora, así que la Energía de la lista no se elige para él.',
+      dmgFrom: (pl2, names) => `Daño de ${pl2 ? 'Habilidades' : 'una Habilidad'}: ${names}`,
+      abPuts: (xa, n) => `${xa} pone ${n} contadores de daño en 1 de los Pokémon de tu rival`,
+      onTop: ps => `${cap(ps.join(', y '))}, además de tu ataque de ese turno.`,
+      koSelf: li => `Usarla deja ${KO} a ${li}, lo que le da un premio a tu rival, así que sirve para rematar, no para empezar.`,
+      attackers: l => `Atacantes: ${l}`,
+      hitAny: (a, n, d) => n1(n) ? `${a} puede hacer ${d} de daño a cualquier Pokémon de tu rival, también a los de la Banca.` : null,
+      itsAb: (a, p) => `Su ${a} ${p.replace(/\.$/, '')}.`,
+      withAb: (a, p) => `Con su ${a}, ${p.replace(/\.$/, '')}.`,
+      alsoAtk: (a, p) => `${a} también ${p.replace(/\.$/, '')}.`,
+      grows: (s, b, c, k, p) => `${s} crece a medida que se llena tu pila de descartes: ${b} al principio, ${c} cuando tienes ${k} ${p} ahí.`,
+      alsoBench: (a, n, k) => `${a} también hace ${n} de daño a ${k} de los Pokémon en Banca de tu rival.`,
+    };
+    return T;
+  })(),
+  pt: (function () {
+    const Y = I18N_AB_TYP.pt || I18N_AB_TYP.es, n1 = n => +n === 1, cap = s => s.charAt(0).toUpperCase() + s.slice(1), pl = s => / e | ou |, | mais$/.test(s);
+    const ROLE = { gust: 'puxa um Pokémon do Banco', switch: 'troca seu Pokémon Ativo', draw: 'faz você comprar cartas', search: 'busca cartas no seu deck',
+      recovery: 'recupera cartas da sua pilha de descarte', energy: 'ajuda a pagar os custos de Energia', survive: 'mantém um atacante vivo por mais tempo', damage: 'aumenta o dano',
+      heal: 'cura', disrupt: 'atrapalha o oponente', bench: 'enche seu Banco', evolve: 'acelera a evolução', discard: 'enche sua pilha de descarte', protect: 'bloqueia dano',
+      reduce: 'reduz o dano que seus Pokémon recebem', prize: 'pega cartas de Prêmio extras', attack: 'dá outro ataque a um Pokémon', coins: 'permite jogar de novo as moedas de um ataque',
+      denial: 'tira Energia do oponente', hand: 'atrapalha a mão do oponente', tools: 'descarta Ferramentas Pokémon', fossil: 'é jogado como um Pokémon Básico para evoluir',
+      swapin: 'coloca em jogo um Pokémon da sua pilha de descarte', devolve: 'faz seus Pokémon involuírem para usá-los de novo', order: 'prepara o topo do seu deck',
+      prizes: 'troca suas cartas de Prêmio', cure: 'remove Condições Especiais', healup: 'deixa a cura mais forte' };
+    const DO = { gust: 'puxar um Pokémon do Banco', switch: 'trocar seu Pokémon Ativo', draw: 'fazer você comprar cartas', search: 'buscar seus Pokémon',
+      recovery: 'recuperar cartas da sua pilha de descarte', energy: 'ajudar a pagar os custos de Energia', survive: 'manter um atacante vivo por mais tempo', damage: 'aumentar o dano',
+      heal: 'curar', disrupt: 'atrapalhar o oponente', bench: 'encher seu Banco', evolve: 'acelerar a evolução', discard: 'encher sua pilha de descarte', protect: 'bloquear dano',
+      reduce: 'reduzir o dano que seus Pokémon recebem', prize: 'pegar cartas de Prêmio extras', attack: 'dar outro ataque a um Pokémon', coins: 'jogar de novo as moedas de um ataque',
+      denial: 'tirar Energia do oponente', hand: 'atrapalhar a mão do oponente', tools: 'descartar Ferramentas Pokémon', fossil: 'ser jogado como um Pokémon Básico para evoluir',
+      swapin: 'colocar em jogo um Pokémon da sua pilha de descarte', devolve: 'fazer seus Pokémon involuírem para usá-los de novo', order: 'preparar o topo do seu deck',
+      prizes: 'trocar suas cartas de Prêmio', cure: 'remover Condições Especiais', healup: 'deixar a cura mais forte' };
+    const roles = k => k.map(r => ROLE[r]).join(' e ');
+    const KIND = { Supporter: ['Apoiador', 'Apoiadores'], 'Pokemon Tool': ['Ferramenta Pokémon', 'Ferramentas Pokémon'], Stadium: ['Estádio', 'Estádios'], Item: ['Item', 'Itens'] };
+    const STG = { Basic: ['Básico', 'Básicos'], 'Stage 1': ['de Estágio 1', 'de Estágio 1'], 'Stage 2': ['de Estágio 2', 'de Estágio 2'], Evolution: ['de Evolução', 'de Evolução'], 'Mega Evolution': ['Megaevolução', 'Megaevolução'] };
+    const TAG = { Tera: ['Teracristal', 'Teracristal'], Ancient: ['Antigo', 'Antigos'], Future: ['Futuro', 'Futuros'] };
+    const own = w => String(w).replace(/'s$/, '');
+    const MU = { Even: 'Equilibrado', Favored: 'Favorecido', Unfavored: 'Desfavorecido', 'Leans favored': 'Levemente favorecido', 'Leans unfavored': 'Levemente desfavorecido', 'Too few games': 'Poucas partidas' };
+    const RAW = 'só com o que você compra';
+    const T = {
+      a: e => 'uma ' + e,
+      list: (a, c, more) => { const j = c === 'or' ? ' ou ' : ' e ';
+        if (more) return a.join(', ') + j + more.n + ' mais';
+        return a.length > 1 ? a.slice(0, -1).join(', ') + j + a[a.length - 1] : a[0]; },
+      kind: (k, m) => KIND[k][m ? 1 : 0], supName: x => `um Apoiador com "${x}" no nome`, supOf: (w, m) => `${m ? 'Apoiadores' : 'Apoiador'} de ${own(w)}`,
+      q: (q, m) => { let s = 'Pokémon' + (q.ex ? ' ex' : '');
+        if (q.stage) s += ' ' + STG[q.stage][m ? 1 : 0];
+        if (q.tag) s += ' ' + TAG[q.tag][m ? 1 : 0];
+        if (q.owner) s += ' de ' + q.owner;
+        if (q.type) s += ' do tipo ' + Y[q.type];
+        if (q.noRule) s += ' sem Caixa de Regras';
+        if (q.hp) s += ` com ${q.hp} PS ou menos`;
+        return s; },
+      its: a => 'Seu ' + a,
+      gap: g => g.k === 'gust' ? (g.n ? `só ${g.n} ${n1(g.n) ? 'carta puxa' : 'cartas puxam'} um Pokémon do Banco` : g.other ? 'nada mais na lista puxa um Pokémon do Banco' : 'nada puxa um Pokémon do Banco')
+        : g.k === 'find' ? (g.n ? `só ${g.n} ${g.other ? (n1(g.n) ? 'outra carta busca' : 'outras cartas buscam') : (n1(g.n) ? 'carta busca' : 'cartas buscam')} Pokémon` : g.other ? 'nada mais busca Pokémon' : 'nada na lista busca Pokémon')
+        : g.k === 'draw' ? (g.n ? `só ${g.n} ${g.other ? (n1(g.n) ? 'outra carta compra' : 'outras cartas compram') : (n1(g.n) ? 'carta compra' : 'cartas compram')}` : 'nada na lista compra cartas')
+        : 'nada recupera cartas da sua pilha de descarte',
+      // Matchups and meta.
+      mu: (x, k, p, n) => `${x}: ${MU[k]}, ${p}% em ${n} partidas`,
+      allLists: x => `Estes são resultados de todas as listas de ${x}, não da sua lista exata.`,
+      overSame: (n, p) => `em ${n} partidas, mais ou menos o mesmo de antes (${p}).`,
+      sinceFew: (d, n) => `Desde que saiu a coleção mais nova (${d}): ${n} ${n1(n) ? 'partida' : 'partidas'} até agora, poucas demais para ver uma tendência.`,
+      wrFew: n => `Taxa de vitória: ${n} ${n1(n) ? 'partida' : 'partidas'} até agora, poucas demais para avaliar.`,
+      muSince: (n, d) => `Confrontos contra os ${n} decks mais jogados desde ${d}`,
+      gray: n => `As linhas cinza têm menos de ${n} partidas, poucas demais para confiar.`,
+      perRow: n => `${n} ${n1(n) ? 'carta' : 'cartas'} por linha`,
+      showAll: (n, k) => k === 'days' ? `Mostrar os ${n} dias` : `Mostrar os ${n} decks`,
+      updated: d => `Atualizada em ${d}`,
+      letter: d => `Carta do Pokémon TCG Live à comunidade, ${d}`,
+      startWith: x => `Começar um jogo de prêmios com ${x}`,
+      moreFor: x => `Mais opções para ${x}`,
+      markCards: k => `As cartas com marca ${k}`,
+      inHand: (x, a, k, p, b) => `Isto conta ${x} na mão, não com força total: causa ${a} até você ter ${k} ${p} na sua pilha de descarte, e depois ${b}.`,
+      inHand2: (x, a, p, b, k) => `Isto conta ${x} na mão, não com força total: causa ${a} com 2 ${p} na sua pilha de descarte e ${b} quando você tem ${k}.`,
+      // Attacker odds.
+      readyBy: (x, h, t, a, b) => `${x} ${h ? 'na mão' : 'pronto'} até o turno ${t}: ${a}${b ? ' a ' + b : ''}`,
+      floor: p => `${p} é ${RAW}, o mínimo.`,
+      noRaise: p => `${p} ${RAW}, e suas cartas de busca não aumentam isso.`,
+      byTurn: (t, a, b) => `Até o turno ${t}: ${a}${b ? ' a ' + b : ''}.`,
+      nAtk: n => `Esta lista tem ${n} atacantes e escolhe o que precisa a cada turno.`,
+      howLead: (x, t) => `Aqui você vê com que frequência pode ter ${x}, que lidera a nota, pronto para o seu ${t === 2 ? 'segundo' : 'terceiro'} turno.`,
+      howWhy: (w, t) => `${{ name: 'O atacante que dá nome ao deck dele no meta', pick: 'O atacante principal que você escolheu', core: 'O atacante em torno do qual esta lista é montada' }[w]}, e com que frequência você pode tê-lo pronto para o seu ${t === 2 ? 'segundo' : 'terceiro'} turno.`,
+      atkBy: t => `Atacante até o T${t}, qualquer mão`,
+      anyHand: (x, h, k) => `${x}${h ? ' na mão' : ''}, qualquer mão inicial, ${{ same: `igual ${RAW} ou com suas cartas de busca`, range: `de ${RAW} até com suas cartas de busca`, raw: RAW }[k]}`,
+      noFrom: (x, s) => `${x} é de Estágio ${s}, mas um Pokémon do qual ele evolui não está na lista, então ele só entra em jogo com outras cartas.`,
+      need1: (a, b) => `Precisa de ${a} até o turno 1 e depois de ${b} até o turno 2 (nada evolui no primeiro turno em jogo).`,
+      needCandy: (a, b, c) => `Precisa de ${a} até o turno 1 e depois de ${b} e Rare Candy até o turno 2${c ? ` (a rota por ${c} precisa até o turno 3)` : ''}.`,
+      need3: (a, b, c) => `Precisa de ${a} até o turno 1 e de ${b} até o turno 2, e depois de ${c} no turno 3 (não há Rare Candy na lista, e nada evolui no primeiro turno em jogo).`,
+      needSeen: (a, n) => `Precisa de ${a} entre as suas primeiras ${n} cartas.`,
+      // How tightly the list fits.
+      fitLines: n => `seus Pokémon estão espalhados em ${n} linhas`,
+      fitSingles: (a, b, pk) => `${a} dos seus ${b} ${pk ? 'Pokémon' : 'Treinadores'} ${n1(a) ? 'é cópia única' : 'são cópias únicas'}`,
+      fitTypes: n => `seus ataques precisam de ${n} tipos de Energia`,
+      fitUse: p => `cada atacante só pode usar cerca de ${p}% da sua Energia`,
+      fit: (how, cs) => (how ? 'O quanto a lista é coesa' : 'Menos cartas suas puxam para o mesmo lado') + (cs.length ? ': ' + cs.join(' e ') : '') + '.',
+      // Trainer fit lines.
+      little: (n, sw) => `${n1(n) ? 'Uma carta acrescenta' : n + ' cartas acrescentam'} pouco aqui${sw === 'each' ? (n1(n) ? ', com uma ideia de troca' : ', com uma ideia de troca para cada uma') : sw === 'below' ? ', com ideias de troca abaixo' : ''}.`,
+      role1: (k, n) => cap(roles(k)) + (n ? `, uma das ${n} cartas que fazem isso` : '') + '.',
+      roleOnly: (k, c) => `${cap(roles(k))}: sua ${c ? 'única carta' : 'única carta de Treinador'} que faz isso.`,
+      roleOf: (k, a, b) => `${cap(roles(k))}: ${a} das ${b} cartas que fazem isso.`,
+      crowded: (k, n) => `${cap(roles(k))}, mas outras ${n} cartas da lista já fazem isso, mais do que a maioria das listas vencedoras usa, então esta acrescenta pouco.`,
+      unplayed: k => `${cap(roles(k))}, mas nenhuma lista vencedora de eventos recentes usa esta carta.`,
+      payFor: (x, a, b) => `Ajuda a pagar os custos de Energia de ${x}${a ? `, ${a} das ${b} cartas que fazem isso` : ''}.`,
+      skips: (a, b) => `Pula ${a ? a : 'o Estágio 1'} para colocar ${b} em jogo um turno antes.`,
+      skipsMid: (a, b) => `${a} pula o estágio do meio para colocar ${b} em jogo rápido.`,
+      needsOn: (a, b) => `Precisa de ${a} na lista para colocar ${b} em cima, e não há nenhum na lista.`,
+      needsNone: w => `Precisa de ${w}, e não há nenhum na lista.`,
+      needsAce: w => `Precisa de ${w}, que esta lista não usa.`,
+      aceFills: (x, k, g) => `${x} ${roles(k)}, e isso cobre uma lacuna: ${T.gap(g)}.`,
+      aceBetter: (x, g) => `${x} poderia encaixar melhor, já que ${T.gap(g)}.`,
+      aceWould: (x, k, g) => `${x} serviria para ${DO[k]}, e ${T.gap(g)}.`,
+      swap: (x, more, g) => `Ideia de troca: ${more ? 'mais uma cópia de ' : ''}${x}, já que ${T.gap(g)}.`,
+      aceDoes: (x, k) => `${x} ${roles(k)}.`,
+      // In this deck: notes.
+      anyLike: (find, n, w, li, en) => `${find ? 'Busca' : 'Pode colocar no Banco'} qualquer um dos seus ${n} ${w}, como ${li}${en ? ', ou ' + en : ''}.`,
+      benchAll: li => `Pode colocar no Banco de uma vez todos os Básicos da lista, como ${li}.`,
+      verbList: (k, li, e) => ({ Finds: `Busca ${li}`, 'Can Bench': `Pode colocar ${li} no Banco`, 'Gets back': `Recupera ${li}`, 'Works on': `Funciona com ${li}`,
+        'Can evolve straight into': `Pode evoluir direto para ${li}`, 'Fully heals': `Cura todo o dano de ${li}`, shields: `Protege ${li} dos efeitos de ataques, como as Condições Especiais`,
+        keeps: `Mantém ${li} livre de Condições Especiais`, 'Can fetch a single copy like your': `Pode buscar uma cópia única, como ${li}` })[k] + (e ? `, ${e.or ? 'ou' : 'e'} ${e.e}` : '') + '.',
+      backLike: (mix, ko, li, e) => `Recupera ${mix ? 'qualquer combinação de ' : ''}Pokémon${ko ? ' que foram Nocauteados' : ''}, como ${li}${e ? `, ${e.or ? 'ou' : 'e'} ${e.e}` : ''}.`,
+      shuffleKo: li => `Devolve ao seu deck Pokémon que foram Nocauteados, como ${li}.`,
+      energyFor: (back, en, x) => back ? `Recupera ${en} para ${x}.` : `Devolve ${en} ao seu deck para ${x}.`,
+      withOdds: (n, w, d, p) => `Com ${n} ${w} nas suas ${d} cartas, ${p ? `encontra um em cerca de ${p}% das vezes` : 'quase sempre encontra um'}.`,
+      takesHp: (x, a, b, y, c) => `Leva ${x} de ${a} para ${b} PS${y ? `, ou ${y} para ${c}` : ''}.`,
+      goesFrom: (xa, a, b, ex) => `${cap(xa)} vai de ${a} para ${b}${ex ? ' contra Pokémon ex' : ''}.`,
+      prizeFor: (x, a, b, once) => `Com ${x}, o oponente pega ${a} ${n1(a) ? 'carta de Prêmio' : 'cartas de Prêmio'} por ele, não ${b}${once ? ', uma vez por partida' : ''}.`,
+      koNeed: (x, t, a, b) => `Com ${x}, os atacantes do tipo ${Y[t]} precisam causar ${a} de dano para Nocauteá-lo, não ${b}.`,
+      aLike: (w, x) => `um ${w} como ${x}`,
+      putsE: (n, li, once, wh) => `Liga ${n ? n + ' ' : ''}${n && !n1(n) ? 'Energias' : 'Energia'} a ${li}${once ? ' de uma vez' : ''}${wh ? `, uma vez que ${wh} está em jogo` : ''}.`,
+      spare: (li, n) => `Transforma Pokémon sobrando, como ${li}, em ${n} cartas cada.`,
+      onTypeBench: (t, x, n, li) => `Com um Pokémon do tipo ${Y[t]} como ${x}, coloca no Banco até ${n} destes: ${li}.`,
+      picks: (n, e) => `Escolhe ${n} das suas ${e}.`,
+      payColorless: li => `Pode pagar a Energia Incolor de ${li}.`,
+      onPays: (x, n, c, a, turn) => `Com ${x}, paga ${n ? n + ' das Energias' + (c ? ' Incolores' : '') : 'a Energia' + (c ? ' Incolor' : '')} de ${a}${turn ? ', durante um turno' : ''}.`,
+      paysFor: (n, xa) => `Paga ${n} das Energias de ${xa}.`,
+      anyType: (w, x, a) => `Com um ${w} como ${x}, conta como de qualquer tipo para ${a}.`,
+      wholeLine: li => `Pega toda a linha de ${li} de uma vez.`,
+      withEnergy: (li, your) => `${your ? 'Pega' : 'Busca'} de uma vez ${li} e uma Energia.`,
+      together: li => `Pega de uma vez ${li}.`,
+      findsFewer: (w, a, b) => `Sua lista não tem ${w}, então encontra ${a} ${n1(a) ? 'carta' : 'cartas'}, não ${b}.`,
+      oneGo: (a, b) => `Pode transformar ${a} em ${b} de uma vez.`,
+      benchSpots: (n, li) => `Dá a você ${n} espaços no Banco enquanto ${li} está em jogo.`,
+      drawsAfter: (n, k, w) => `Compra ${n} depois ${n1(k) ? 'do seu Apoiador' : `de qualquer um dos seus ${k} Apoiadores`} de ${own(w)}.`,
+      everyIs: (w, n) => `Todos os Pokémon da sua lista são ${w}, então compra até ter ${n}.`,
+      worksKo: li => `Funciona quando ${li} é Nocauteado.`,
+      takeDmg: (li, n, less, w) => less ? `Seus ${li} recebem ${n} a menos de dano${w === 'too' ? ' também' : w === 'that turn' ? ' naquele turno' : ''}.`
+        : `Seus próprios ${li} recebem ${n} de dano${w === 'when you Bench them' ? ' quando você os coloca no Banco' : w === 'too' ? ' também' : ''}.`,
+      dropsTo: (x, n) => `Seu próprio ${x} também cai para ${n} PS.`,
+      fits: (li, one, n, s, k) => `Combina com ${li}, que ${one ? 'ataca' : 'atacam'} com ${n} Energias ou mais${s ? `; ${s} deixa isso em ${k}` : ''}.`,
+      healsMove: (n, li) => `Cura ${n} quando move ${li} para o seu Banco.`,
+      grabWith: x => `Pode buscar seu ${x} junto com Apoiadores.`,
+      tooBig: (x, n) => `${x} é grande demais para esta carta (${n} PS).`,
+      retreat: (li, x, n, c) => `Deixa ${li} ${pl(li) ? 'recuarem' : 'recuar'} de graça${x ? `; ${x} ainda paga ${n}` : c ? ` (agora custa ${c})` : ''}.`,
+      evolveNow: (a, b) => `Deixa ${a} evoluir para ${b} no turno em que você o joga.`,
+      offOwn: li => `Também desliga ${li} do seu lado.`,
+      runNo: (x, k) => `Você não usa ${x}, então ${{ hp: 'só os do oponente perdem PS', off: 'só desliga as do oponente', pays: 'só o oponente paga mais', helps: 'só ajuda os do oponente' }[k]}.`,
+      comesBack: xa => `Volta depois que ${xa} a descarta.`,
+      poisoned: x => `Ativa quando seu próprio Pokémon está Envenenado, o que ${x} faz aqui.`,
+      takesE: (a, b, e) => `Pega ${a} das suas ${b} ${e} de uma vez.`,
+      benchesUp: (n, w) => `Coloca no Banco até ${n} ${w} de uma vez.`,
+      switchBetween: li => `Troca entre seus ${li} uma vez por turno.`,
+      // How it plays.
+      doesAtk: x => `${x} é quem ataca.`,
+      playsAs: x => `A lista joga como ${x}, um deck com o nome dele.`,
+      playsAsOne: x => `A lista joga como ${x}, e dos Pokémon que dão nome a esse deck, este é o que a lista foi montada para usar no ataque.`,
+      copies: (you, n, f) => `${you ? 'Você o escolheu como atacante principal' : 'É o atacante em torno do qual esta lista é montada'}: ${n} ${n1(n) ? 'cópia' : 'cópias'}${f ? ` mais ${f} Pokémon dos quais ele evolui` : ''}.`,
+      most: (x, n) => `${x} é o que a lista usa em mais cópias (${n}).`,
+      box: n => `${n} Pokémon diferentes podem levar o ataque, e você escolhe o que encaixa a cada turno.`,
+      hits: (s, avg, n, coins) => `${cap(s)} ${avg ? 'causa em média' : 'causa'} ${n} de dano${coins ? ' com as moedas' : ''}.`,
+      handEst: (s, n, k) => `${s} conta as cartas da sua mão: cerca de ${n} com ${k} cartas, uma estimativa do app, não um número impresso.`,
+      boardEst: (s, n) => `${s} depende da mesa, então ${n} é uma estimativa do app, não um número impresso.`,
+      wall: s => `${s} evita todo o dano dos ataques dos Pokémon ex do oponente, então atacantes ex não conseguem Nocauteá-lo.`,
+      boost: (s, n, e, h, hp) => `${s} soma ${n} aos ataques dele enquanto tem ${e} ligada${h ? `, então causa ${h}` : ''}${hp ? `, e dá ${hp} PS a mais` : ''}.`,
+      ownDmg: (s, n, act) => `${s} coloca ${n} contadores de dano em 1 dos Pokémon do oponente a cada turno${act ? ' enquanto está no Campo Ativo' : ''}.`,
+      kox: (s, n, x) => `${s} Nocauteia o Pokémon Ativo do oponente quando ele tem exatamente ${n} contadores de dano${x ? `, e ${x} pode colocá-los` : ''}, então a nota conta isso como um golpe que derruba qualquer um.`,
+      pileDmg: (s, n, p, b, c, k) => `${s} causa ${n} a mais para cada ${p} na sua pilha de descarte: ${b} com 2 lá, ${c} quando você tem ${k}.`,
+      eScale: (s, en, on, n, alt, opp) => `${s} conta a ${en || 'Energia'} ligada ${{ 'both Active Pokemon': 'aos dois Pokémon Ativos', 'all your Pokemon': 'a todos os seus Pokémon', itself: 'a ele mesmo' }[on]}, então cada uma que você liga ${on === 'all your Pokemon' ? 'em qualquer lugar do seu lado' : 'a ele'} soma ${n}${alt ? ` (${alt.n} por ${alt.e} com ${alt.by} em jogo)` : ''}${opp ? ', e a Energia do oponente também soma' : ''}.`,
+      discEach: (s, en, n) => `${s} descarta ${en} dos seus Pokémon e causa ${n} para cada uma, então cada uma que você liga em qualquer lugar do seu lado soma ${n} ao próximo golpe forte.`,
+      discNext: (n, k, e, need) => `Isso conta os ${n} a mais que ele causa quando descarta ${e === 'all' ? 'toda a Energia dele' : k + ' ' + e} de si mesmo, então ${need === 'all' ? 'é preciso carregá-lo de novo' : need === 1 ? 'precisa de outra ligada' : `precisa de mais ${need} ligadas`} antes do próximo golpe forte.`,
+      discEach2: (k, e, need) => `Descarta ${e === 'all' ? 'toda a Energia dele' : k + ' ' + e} de si mesmo a cada vez, então ${need === 'all' ? 'é preciso carregá-lo de novo' : need === 1 ? 'precisa de outra ligada' : `precisa de mais ${need} ligadas`} antes de poder golpear tão forte de novo.`,
+      lock: (a, b) => `Não pode usar ${a} dois turnos seguidos, então ${b ? `use ${b} ou ` : ''}coloque outro atacante no turno entre eles.`,
+      lockAll: a => `Não pode atacar no próximo turno depois de ${a}, então troque para outro atacante no turno entre eles.`,
+      copyBench: s => `${s} deixa ele usar os ataques dos seus Pokémon no Banco, pagos com a própria Energia.`,
+      bestHere: (xa, avg, n) => `O melhor aqui é ${xa}, que ${avg ? 'causa em média' : 'causa'} ${n}.`,
+      copiesWith: (xa, a) => `Copia ${xa} com ${a}.`,
+      mill: s => `${s} usa um ataque de um Pokémon sem Caixa de Regras que sai do topo do seu deck.`,
+      inList: li => `Nesta lista são ${li}.`,
+      putFirst: li => `${li} ${pl(li) ? 'colocam' : 'coloca'} lá primeiro o que você quer.`,
+      useOff: (x, y, a, e) => `${x} pode usar os ataques de ${y} com ${a} quando ele sai do topo do seu deck, então ${y} não precisa de ${i18nEnName(e, 'pt')} própria.`,
+      copyPay: (x, y, a, en) => `${x} copia os ataques de ${y} com ${a}, pagando só o próprio custo, então ${y} não precisa da própria ${en}.`,
+      evoWithout: (x, f, y) => `${x} evolui de ${f}, e ${y} pode evoluir para ele, então a linha funciona sem um ${f} comum.`,
+      benchSelf: (x, a) => `${x} pode ir da sua mão para o seu Banco com ${a}, então não precisa evoluir.`,
+      forAbil: (their, k, li) => `${their ? 'São usados' : 'É usado'} principalmente pela${their ? 's Habilidades' : ' Habilidade'}, para ${{ both: 'comprar e buscar', draw: 'comprar cartas', search: 'buscar no seu deck' }[k]}: ${li}.`,
+      colorless: their => their ? 'Os ataques deles só custam Energia Incolor, então a Energia da lista não é escolhida para eles.' : 'O ataque dele só custa Energia Incolor, então a Energia da lista não é escolhida para ele.',
+      dmgFrom: (pl2, names) => `Dano de ${pl2 ? 'Habilidades' : 'uma Habilidade'}: ${names}`,
+      abPuts: (xa, n) => `${xa} coloca ${n} contadores de dano em 1 dos Pokémon do oponente`,
+      onTop: ps => `${cap(ps.join(', e '))}, além do seu ataque naquele turno.`,
+      koSelf: li => `Usá-la Nocauteia ${li}, o que dá um prêmio ao oponente, então serve para finalizar, não para abrir.`,
+      attackers: l => `Atacantes: ${l}`,
+      hitAny: (a, n, d) => n1(n) ? `${a} pode causar ${d} de dano a qualquer Pokémon do oponente, inclusive os do Banco.` : null,
+      itsAb: (a, p) => `Sua Habilidade ${a} ${p.replace(/\.$/, '')}.`,
+      withAb: (a, p) => `Com sua Habilidade ${a}, ${p.replace(/\.$/, '')}.`,
+      alsoAtk: (a, p) => `${a} também ${p.replace(/\.$/, '')}.`,
+      grows: (s, b, c, k, p) => `${s} cresce conforme sua pilha de descarte enche: ${b} no começo, ${c} quando você tem ${k} ${p} lá.`,
+      alsoBench: (a, n, k) => `${a} também causa ${n} de dano a ${k} dos Pokémon no Banco do oponente.`,
+    };
+    return T;
+  })(),
+};
+// Last of the catch-alls: the Grade tab sentences the patterns above leave.
+I18N_PAT.push([/^[\s\S]+$/, m => i18nGtSent(m, 'es'), m => i18nGtSent(m, 'pt')]);
+// The damage sentences above would take "...: it hits for" alone, so the in-hand odds note goes first.
+I18N_PAT.unshift([/^This counts .+ in hand, not at full power: [\s\S]+$/, m => i18nGtSent(m, 'es'), m => i18nGtSent(m, 'pt')]);
 
 function i18nTr(s) { const r = rdI18n.lookup(s); return r == null ? s : r; }
 function i18nSentences(s) { return rdI18n.lookup(s); }
@@ -3227,6 +4913,69 @@ function i18nPostMore(s, l) {
     .replace(new RegExp(`\\b(${S}) (\\d{1,2})\\b`, 'g'), (m, mo, d) => `${d} ${short(mo)}`)
     .replace(/\b(\d+)(?:st|nd|rd|th)\b(?! [A-Z])/g, (m, n) => ord(n));
 }
+
+// Muse s6 M3, M8, M9: labels, placeholders and screen reader labels the lists above missed.
+Object.assign(I18N_ES, {
+  "A toolbox deck spreads on purpose, so this counts half.": "Una baraja de caja de herramientas se reparte a propósito, así que esto cuenta la mitad.",
+  "Attacker line incomplete": "Línea del atacante incompleta",
+  "Deck to compare": "Baraja para comparar",
+  "No clear edge either way against these decks yet.": "Aún no hay una ventaja clara para ningún lado contra estas barajas.",
+  "None": "Nada",
+  "None of your own Pokemon lose an Ability to it.": "Ninguno de tus propios Pokémon pierde una Habilidad por ella.",
+  "One of your attackers": "Uno de tus atacantes",
+  "Start a prize game with this deck": "Empezar una partida de premios con esta baraja",
+  "Too few games": "Pocas partidas",
+  "Too few games against these decks to call yet.": "Aún hay muy pocas partidas contra estas barajas para juzgar.",
+  "Win rate against other popular decks": "Porcentaje de victorias contra otras barajas populares",
+  "Filling the discard pile is not counted here, so the full hit this early is much less likely than this.": "Llenar la pila de descartes no se cuenta aquí, así que el golpe completo tan pronto es mucho menos probable que esto.",
+  "Tool": "Herramienta",
+  "ACE SPEC: none": "AS TÁCTICO: ninguna",
+  "It works with this list.": "Funciona con esta lista.",
+  "The list runs no ACE SPEC.": "La lista no lleva ninguna carta AS TÁCTICO.",
+  "Find a deck": "Buscar una baraja",
+  "Your order": "Tu orden",
+  "Best grade": "Mejor calificación",
+  "Show fewer decks": "Mostrar menos barajas",
+  "Sort decks": "Ordenar barajas",
+  "Edit matchup note": "Editar nota de enfrentamiento",
+  "Edit note": "Editar nota",
+  "e.g. Gardevoir ex": "p. ej., Gardevoir ex",
+  "Take a 2 then a 2 then a 2. Bench only two Basics. Save Boss's Orders for the Kirlia.": "Toma 2, luego 2, luego 2. Pon solo dos Básicos en la Banca. Guarda Boss's Orders para el Kirlia.",
+  "Results from": "Resultados desde",
+  "All results": "Todos los resultados",
+  "More for this deck": "Más opciones para esta baraja",
+});
+Object.assign(I18N_PT, {
+  "A toolbox deck spreads on purpose, so this counts half.": "Um deck de caixa de ferramentas se espalha de propósito, então isto conta pela metade.",
+  "Attacker line incomplete": "Linha do atacante incompleta",
+  "Deck to compare": "Deck para comparar",
+  "No clear edge either way against these decks yet.": "Ainda não há vantagem clara para nenhum lado contra esses decks.",
+  "None": "Nada",
+  "None of your own Pokemon lose an Ability to it.": "Nenhum dos seus próprios Pokémon perde uma Habilidade por causa dela.",
+  "One of your attackers": "Um dos seus atacantes",
+  "Start a prize game with this deck": "Começar um jogo de prêmios com este deck",
+  "Too few games": "Poucas partidas",
+  "Too few games against these decks to call yet.": "Ainda há poucas partidas contra esses decks para avaliar.",
+  "Win rate against other popular decks": "Taxa de vitória contra outros decks populares",
+  "Filling the discard pile is not counted here, so the full hit this early is much less likely than this.": "Encher a pilha de descarte não conta aqui, então o golpe completo tão cedo é bem menos provável do que isto.",
+  "Tool": "Ferramenta",
+  "ACE SPEC: none": "ÁS TÁTICO: nenhuma",
+  "It works with this list.": "Funciona com esta lista.",
+  "The list runs no ACE SPEC.": "A lista não usa nenhuma carta ÁS TÁTICO.",
+  "Find a deck": "Encontrar um deck",
+  "Your order": "Sua ordem",
+  "Best grade": "Melhor nota",
+  "Show fewer decks": "Mostrar menos decks",
+  "Sort decks": "Ordenar decks",
+  "Edit matchup note": "Editar nota de confronto",
+  "Edit note": "Editar nota",
+  "e.g. Gardevoir ex": "ex.: Gardevoir ex",
+  "Take a 2 then a 2 then a 2. Bench only two Basics. Save Boss's Orders for the Kirlia.": "Pegue 2, depois 2, depois 2. Coloque só dois Básicos no Banco. Guarde Boss's Orders para o Kirlia.",
+  "Results from": "Resultados desde",
+  "All results": "Todos os resultados",
+  "More for this deck": "Mais opções para este deck",
+  "Top two fixes": "As duas principais correções",
+});
 
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
