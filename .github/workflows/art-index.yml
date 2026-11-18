@@ -1,0 +1,80 @@
+# Builds art-index.json and art-index.bin (photo deck import: a fingerprint of every Standard
+# legal print's picture), then checks photo import on test screenshots and keeps them as a
+# download (Actions > this run > Artifacts) for a closer look.
+name: Photo import index
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [photo-import]
+    paths:
+      - build-art-index.mjs
+      - js/photo-scan.js
+      - tests/photo-import/**
+      - tests/photo-import-check.mjs
+      - tests/photo-import-ui.mjs
+      - js/photo-import.js
+      - .github/workflows/art-index.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: art-index
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install sharp (reads card pictures; not part of the site)
+        run: npm install --no-save --no-package-lock sharp@0.34.3
+      - name: Build the art index
+        run: node build-art-index.mjs art-index.json art-index.bin data.json
+      - name: Make test screenshots
+        run: node tests/photo-import/make-shots.mjs shots
+      - name: Check photo import
+        run: SHOW=80 node tests/photo-import-check.mjs shots art-index.json art-index.bin | tee shots/result.txt
+      - name: Try photo import in a browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          # The runner's own Chrome where there is one; Playwright's Chromium otherwise.
+          if command -v google-chrome >/dev/null; then echo "PW_CHANNEL=chrome" >> "$GITHUB_ENV"; export PW_CHANNEL=chrome; else npx playwright install chromium; fi
+          mkdir -p ui-shots
+          npx --yes http-server@14.1.1 -p 8080 -s -c-1 &
+          sleep 3
+          node tests/photo-import-ui.mjs http://127.0.0.1:8080/ shots/dragapult-ex--phone-dark.png ui-shots | tee ui-shots/run.txt || true
+          # The pictures of the app's own screens, printed for a look without the download
+          for f in en-dark-2-review en-dark-3-change en-dark-4-search en-dark-5-import-filled en-light-2-review es-dark-2-review de-dark-2-review; do
+            [ -f "ui-shots/$f.jpg" ] || continue
+            echo "IMG-START $f"; base64 -w 6000 "ui-shots/$f.jpg"; echo "IMG-END $f"
+          done
+      - name: Show a few official card pictures (to compare with real screenshots)
+        run: |
+          for p in PBL/PBL_061 PBL/PBL_062 ASC/ASC_105 MEG/MEG_074 BLK/BLK_084 TWM/TWM_148 SVE/SVE_006; do
+            curl -sf -A "Mozilla/5.0" -o card.png "https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${p}_R_EN_XS.png" || { echo "no picture for $p"; continue; }
+            echo "IMG-START ${p//\//_}"; base64 -w 6000 card.png; echo "IMG-END ${p//\//_}"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: photo-import-shots
+          path: |
+            shots
+            art-index.json
+            art-index.bin
+            ui-shots
+          retention-days: 7
+      - name: Commit the index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add art-index.json art-index.bin
+          if git diff --cached --quiet; then echo "Index unchanged."; exit 0; fi
+          git commit -m "Photo import: rebuild the art index"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
