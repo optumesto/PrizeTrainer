@@ -48,8 +48,13 @@
 //    Cross-Origin-Resource-Policy, Permissions-Policy, and no
 //    Access-Control-Allow-Origin: * (GitHub Pages' default; nothing needs it).
 //
+// 3.3 adds POST /api/feedback, which emails the app's Send feedback form to the
+// owner (see takeFeedback). It needs the send_email binding FEEDBACK and the
+// plain variable FEEDBACK_TO; without them it answers 503 and the app falls
+// back to the player's own email app.
+//
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
-// 10 per 60 s) and optionally the secret REPORTS_KEY. With no DB bound, reports
+// 10 per 60 s), optionally FEEDBACK (send_email) with FEEDBACK_TO, and optionally the secret REPORTS_KEY. With no DB bound, reports
 // are accepted and dropped, so the site itself never depends on them.
 
 const HOME = 'rdydeck.com';
@@ -221,6 +226,109 @@ async function prune(db) {
   ]);
 }
 
+// ── 3.3 feedback: POST /api/feedback ──
+// The app's Send feedback form posts here, and the message is emailed to the
+// owner through Cloudflare Email Routing (send_email binding FEEDBACK, whose
+// one allowed destination is the verified address in the plain variable
+// FEEDBACK_TO; neither is in this repo). Nothing is stored: no D1 row, no
+// IP (the rate limiter uses it as a key only). The message carries what the
+// form shows: the kind, the text, the deck list only if ticked, and the app
+// version, screen, device family, screen width and language. No email address,
+// so there is no way to reply. With no FEEDBACK binding the answer is 503 and
+// the app offers the player's own email app instead.
+const FB_KINDS = ['Bug', 'Missing card', 'Idea'];
+const FB_DEVICES = ['Android', 'iPhone or iPad', 'Mac', 'Windows', 'Other'];
+const FB_DAY_CAP = 200;         // feedback emails per day, all visitors together
+
+const fbText = (v, max) => typeof v === 'string'
+  ? v.replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').trim().slice(0, max) : '';
+
+/** The checked feedback from a posted body, or null when it is not one. */
+export function cleanFeedback(b) {
+  if (!b || typeof b !== 'object' || b.website) return null;   // website: a field people never see, filled only by bots
+  const text = fbText(b.text, 1500);
+  if (!text) return null;
+  return {
+    kind: FB_KINDS.includes(b.kind) ? b.kind : 'Bug',
+    text,
+    deck: fbText(b.deck, 1000),
+    deckName: fbText(b.deckName, 80).replace(/\n/g, ' '),
+    v: str(b.v, 16, /^v\d+\.\d+(\.\d+)?$/) || '?',
+    build: Number.isInteger(b.build) && b.build > 0 && b.build < 100000 ? b.build : 0,
+    screen: str(b.screen, 24, /^[a-z0-9-]+$/) || 'other',
+    device: FB_DEVICES.includes(b.device) ? b.device : 'Other',
+    width: Number.isInteger(b.width) && b.width > 0 && b.width < 10000 ? b.width : 0,
+    play: !!b.play,
+    lang: str(b.lang, 5, /^[a-z]{2}$/) || 'en',
+  };
+}
+
+const b64 = text => {
+  const bytes = new TextEncoder().encode(text);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+};
+
+/** The whole email (headers and body) for one cleaned feedback. */
+export function feedbackMime(f, from, to, id, date = new Date()) {
+  const first = f.text.split('\n')[0].slice(0, 60);
+  const subject = `RdyDeck ${f.kind}: ${first}`;
+  const body = [
+    f.text,
+    '',
+    '----',
+    `Kind: ${f.kind}`,
+    `App version: ${f.v}${f.build ? ` (build ${f.build})` : ''}${f.play ? ' (Google Play)' : ''}`,
+    `Screen: ${f.screen.replace(/^screen-/, '')}`,
+    `Device: ${f.device}${f.width ? `, ${f.width} px wide` : ''}`,
+    `Language: ${f.lang}`,
+    ...(f.deck ? ['', `Deck: ${f.deckName || 'Untitled'}`, f.deck] : []),
+    '',
+    'Sent from the Send feedback form in RdyDeck. It has no email address, so it cannot be answered by replying.',
+  ].join('\n').replace(/\r?\n/g, '\r\n');
+  return [
+    `From: "RdyDeck feedback" <${from}>`,
+    `To: <${to}>`,
+    `Subject: =?UTF-8?B?${b64(subject)}?=`,
+    `Date: ${date.toUTCString().replace('GMT', '+0000')}`,
+    `Message-ID: <${id}@${from.split('@')[1]}>`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    b64(body).replace(/.{76}/g, '$&\r\n'),
+    '',
+  ].join('\r\n');
+}
+
+async function takeFeedback(request, env) {
+  if (!env.FEEDBACK || !env.FEEDBACK_TO) return json({ ok: false, why: 'off' }, 503);
+  const len = Number(request.headers.get('Content-Length') || 0);
+  if (len > 8192) return json({ ok: false }, 413);
+  if (env.LIMIT) {
+    const ip = request.headers.get('CF-Connecting-IP') || 'none';
+    const { success } = await env.LIMIT.limit({ key: 'feedback:' + ip });
+    if (!success) return json({ ok: false, why: 'busy' }, 429);
+  }
+  let b;
+  try { const t = await request.text(); if (t.length > 8192) return json({ ok: false }, 413); b = JSON.parse(t); }
+  catch (_) { return json({ ok: false }, 400); }
+  if (b && b.website) return json({ ok: true });   // a bot: answer as if sent, send nothing
+  const f = cleanFeedback(b);
+  if (!f) return json({ ok: false, why: 'empty' }, 400);
+  if (env.DB) {
+    // Only a count per day, so a flood cannot fill the inbox.
+    await ensureTables(env.DB);
+    const c = await env.DB.prepare(`INSERT INTO days (day, n) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET n = n + 1 RETURNING n`).bind('feedback-' + today()).first();
+    if (c && c.n > FB_DAY_CAP) return json({ ok: false, why: 'busy' }, 429);
+  }
+  const from = 'feedback@' + HOME, to = env.FEEDBACK_TO;
+  const { EmailMessage } = await import('cloudflare:email');
+  await env.FEEDBACK.send(new EmailMessage(from, to, feedbackMime(f, from, to, crypto.randomUUID())));
+  return json({ ok: true });
+}
+
 const h = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 async function showReports(url, env) {
@@ -274,6 +382,11 @@ export default {
       const origin = request.headers.get('Origin');
       if (origin && origin !== 'https://' + HOME) return json({ ok: false }, 403);
       try { return await takeReport(request, env, ctx); } catch (_) { return json({ ok: false }, 500); }
+    }
+    if (url.pathname === '/api/feedback') {
+      if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: { Allow: 'POST' } });
+      if (request.headers.get('Origin') !== 'https://' + HOME) return json({ ok: false }, 403);
+      try { return await takeFeedback(request, env); } catch (_) { return json({ ok: false, why: 'error' }, 502); }
     }
     if (url.pathname === '/api/where' && (request.method === 'GET' || request.method === 'HEAD')) {
       // Never cached anywhere: the answer depends on where this visitor is.
