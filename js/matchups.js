@@ -1,9 +1,9 @@
 
 // ═══════════ Against the meta: matchup stats from Limitless ═══════════
 // matchups.json sits next to the page and is rebuilt every week by
-// refresh-matchups.mjs from Limitless online tournaments. It holds, per deck
+// refresh-matchups.mjs from Limitless online tournaments and local in-person store events. It holds, per deck
 // archetype, the Pokemon its lists usually play and its record against the most
-// played decks, kept per source ("online" now, in-person can be added later).
+// played decks, kept per source ("online", and "inperson" for local store events of 16 to 63 players).
 // The Grade tab matches the open deck to its closest archetype by Pokemon names and
 // shows that archetype's win rate against each of the most played decks.
 // Every number on screen comes straight from the file. The page never asks Limitless.
@@ -12,8 +12,14 @@ const MU60_KEY = 'pt_mu60';
 const MU60_PICK = 'pt_mu60_pick';
 const MU60_FEW = 20;      // fewer matches than this is too few to trust
 const MU60_CLOSE = 0.45;  // how alike a deck must be to count as that archetype
-const MU60_SRC = { online: 'Online', inperson: 'In person' };
+const MU60_SRC = { online: 'Online', inperson: 'Local in person' };
 let mu60Data = null, mu60Busy = false, mu60Tried = false, mu60Src = '';
+/** Which results the numbers on screen come from, in words: 'online', 'local in-person', or both. */
+function mu60SrcWords(data) {
+  const d = data || mu60Data, ids = d && Array.isArray(d.sources) ? d.sources.map(s => s.id) : ['online'];
+  const on = ids.includes('online') && (!mu60Src || mu60Src === 'online'), ip = ids.includes('inperson') && (!mu60Src || mu60Src === 'inperson');
+  return on && ip ? 'online and local in-person' : ip ? 'local in-person' : 'online';
+}
 
 const mu60Id = v => typeof v === 'string' && /^[a-z0-9-]{1,50}$/.test(v) ? v : null;
 const mu60Rec = r => Array.isArray(r) && r.length === 3 && r.every(n => Number.isInteger(n) && n >= 0 && n < 1e7) ? r.slice() : null;
@@ -308,7 +314,7 @@ function mu60Section(deck) {
   const events = from.reduce((a, s) => a + s.events, 0);
 
   let h = `<div class="g-sec" id="mu60-sec"><div class="g-sec-t">Against the meta</div>
-    <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${srcIds.length > 1 && !mu60Src ? 'tournaments' : (from[0] ? esc(from[0].name.replace(/^Limitless /, '')) : 'tournaments')}, ${span}.</div>
+    <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${mu60SrcWords(data)} tournaments, ${span}.</div>
     <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;
 
   if (!arch) {

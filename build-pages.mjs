@@ -28,6 +28,9 @@ const guides = read('deck-guides.json');
 const data = read('data.json');
 const mc = read('meta-cards.json');
 const mu = read('matchups.json');
+// Nov 19 2026: matchups.json can list local in-person store events as a second source.
+const MU_IP = Array.isArray(mu.sources) && mu.sources.some(s => s.id === 'inperson');
+const MU_WHERE = MU_IP ? 'online and local in-person tournaments' : 'online tournaments';
 const base = existsSync(path.join(ROOT, 'tests/grade-baseline.json')) ? read('tests/grade-baseline.json').lists : {};
 const lists = existsSync(path.join(ROOT, 'tests/grade-lists.json')) ? read('tests/grade-lists.json') : [];
 const acc = existsSync(path.join(ROOT, 'accuracy.json')) ? read('accuracy.json') : null;
@@ -390,7 +393,7 @@ ${g.keys.map(([k, v]) => `  <dt>${cardLink(k)}</dt><dd>${esc(v)}</dd>`).join('\n
 <p>These cards are in at least 90% of ${esc(g.title)} lists, at their usual count. They come from ${basis}, ${num(c.tops)} lists in all, on Limitless online tournaments.</p>
 ${coreTables(c)}
 <h2>Matchups</h2>
-<p>How ${esc(g.title)} has done against the most played decks in Limitless online tournaments since ${day(mu.since)}, as of ${day(mu.asOf)}. Mirror matches are left out. Results with fewer than 20 games are grayed out, since they can swing a lot either way.</p>
+<p>How ${esc(g.title)} has done against the most played decks in Limitless ${MU_WHERE} since ${day(mu.since)}, as of ${day(mu.asOf)}. Mirror matches are left out. Results with fewer than 20 games are grayed out, since they can swing a lot either way.</p>
 ${matchupTable(g, s)}
 <p class="note">These are results for decks like this one, not one exact list.</p>
 
@@ -404,7 +407,7 @@ ${s.grade ? `<p>RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its tes
 <ul class="guides">
 ${guides.decks.filter(x => x.id !== g.id).map(x => `  <li><a href="deck-${x.slug}.html">${esc(x.title)}</a></li>`).join('\n')}
 </ul>
-<p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> online tournaments, read once a week and credited to them. Card details are from each card's own text.</p>
+<p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> ${MU_IP ? 'online tournaments and local in-person store events' : 'online tournaments'}, read once a week and credited to them. Card details are from each card's own text.</p>
 `;
   return page({
     file: `deck-${g.slug}.html`,
@@ -426,7 +429,7 @@ function indexPage() {
   });
   const body = `
 <p class="lead">Guides to the decks winning Pok&eacute;mon TCG tournaments right now: what each one runs, how it plays, what it beats, and how RdyDeck grades it.</p>
-<p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them since ${day(mu.since)}, and the grades from RdyDeck's own deck checker run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
+<p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them${MU_IP ? ' and in local in-person store events' : ''} since ${day(mu.since)}, and the grades from RdyDeck's own deck checker run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
 
 <h2>The decks</h2>
 <div class="tw"><table>
@@ -444,7 +447,7 @@ ${rows.join('\n')}
 <h2>Rate your own list</h2>
 <p>Paste your list from Pok&eacute;mon TCG Live or Limitless into RdyDeck and it rates it out of 10, matches it to the closest of these decks, and shows what to fix first. It is free, needs no account and works offline.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
-<p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> online tournaments, read once a week and credited to them.</p>
+<p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> ${MU_IP ? 'online tournaments and local in-person store events' : 'online tournaments'}, read once a week and credited to them.</p>
 `;
   return page({
     file: 'meta-decks.html',

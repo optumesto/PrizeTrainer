@@ -14,7 +14,7 @@
 const WHATS_NEXT = [
   { t: 'Google Play app', d: 'RdyDeck as an Android app.' },
   { t: 'Spanish and Portuguese deck guides', d: 'The deck guides in two more languages.' },
-  { t: 'In-person tournament results', d: 'Results from events at stores and Regionals next to online ones, once a data source allows it.' },
+  { t: 'Regionals results', d: 'Results from Regionals and other big in-person events, once a data source allows it.' },
   { t: 'Puzzle mode', d: 'More win this turn puzzles to play whenever you like.' },
 ];
 // Discord invite link, once a server exists. While it is empty, no Discord link shows anywhere.

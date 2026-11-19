@@ -4377,7 +4377,7 @@ function renderOdds() {
   h += `</div>`;
 
   h += `<div class="g-wip"><b>What this does not do.</b> Matchup win rates are not here.
-    They are on the Grade tab, in Against the meta, from recent online tournaments.
+    They are on the Grade tab, in Against the meta, from recent online and local in-person tournaments.
     Everything on this tab comes from shuffling your own list.</div>`;
 
   el.innerHTML = h;

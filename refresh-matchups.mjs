@@ -72,7 +72,7 @@ const IP_CALLS = Number(process.env.PT_IP_CALLS) > 0 ? Number(process.env.PT_IP_
 const ONLY_SRC = process.env.PT_SOURCES ? new Set(String(process.env.PT_SOURCES).split(',')) : null;
 const SRC_INFO = {
   online: { name: 'Limitless online tournaments', url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD' },
-  inperson: { name: 'Limitless in-person tournaments', url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD' },
+  inperson: { name: 'Limitless local in-person tournaments', url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD' },
 };
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
 // PT_SLOW=1: about 30 requests per 15 minutes (30 s apart), 25 new events a run, for a gentle catch-up.
