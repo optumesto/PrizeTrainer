@@ -4,12 +4,11 @@
 // Active and Bench from your opening hand.
 // A full game (both sides shown, played to the end) is kept for tests and opens only with ?full.
 // 3.4.6: live, linked from the Hand tab next to Goldfish. Inside the code the mode is still called '5turn'.
-// 3.4.7 (hidden): your own saved decks play too, as your deck or the opponent's (opponent/own.js). Off until
-// OWN_ON is true; ?mine (or localStorage rd_own=1) shows them before that.
+// 3.4.7: your own saved decks play too, as your deck or the opponent's (opponent/own.js). OWN_ON turns it off again.
 (function () {
 'use strict';
 const OPP_ON = true; // false would hide the page again unless it opens with ?try
-const OWN_ON = false; // true lets your saved decks play
+const OWN_ON = true; // true lets your saved decks play (live since 3.4.7)
 const ownOn = () => { if (OWN_ON || /[?&]mine\b/.test(location.search)) return true; try { return localStorage.getItem('rd_own') === '1'; } catch (_) { return false; } };
 window.RD_FT = true; // js/i18n.js turns on this page's own translations (I18N_FT_ROWS)
 const E = window.RdyPuzzle, G = window.RdyGame, AI = window.RdyAI, D = window.RdyOppDecks;

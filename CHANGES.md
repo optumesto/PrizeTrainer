@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.7 (build 136): Sparring with your saved decks, and fixes (19 Nov 2026)
+
+Changed files: opponent/play.js (OWN_ON on, reload and resume, log, labels), opponent/own.js (new: saved decks in Sparring), opponent/game.js (turn limit, result on prizes), opponent/effects.js, opponent/ai.js (Contested and Aggressive attack when they can), opponent/play.html, opponent/decks.js, puzzle/engine.js (Sparring only steps and log lines, gated by state.real), js/core.js (version, What's new), index.html (help text, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, about.html (Sparring line), sw.js (cache name prize-trainer-v136).
+
+- Sparring plays your own saved decks, as your deck or the opponent's. The menu names any card that does not fully play.
+- The opponent stops after its 5th turn. Whoever took more prizes wins; a tie is a draw.
+- A reload goes back into the same game with both decks, the level and any half made picks.
+- Fixes from the 3.4.6 test report: card effects, Abilities, retreat and evolve rules, wording.
+- Contested and Aggressive attack whenever they can.
+- The game log shows damage with its reasons, what was drawn or searched and where it went, the right turn labels, and the whole game.
+
 # RdyDeck 3.4.6 (build 135): Sparring (19 Nov 2026)
 
 Changed files: opponent/ (new: play.html, play.js, game.js, effects.js, ai.js, decks.js, build-decks.mjs, build-preview.mjs, test/), puzzle/engine.js (steps used only in Sparring games, gated by state.real), js/core.js (Sparring link in the Hand tab, version, What's new), index.html (help text, link style, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (Sparring page text, help text, What's new item), about.html (Sparring line), sw.js (cache name prize-trainer-v135).
