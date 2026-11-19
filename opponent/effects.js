@@ -24,6 +24,8 @@ const SENT = [
   [/^if heads, discard an energy from 1 of your opponent's pokemon$/, () => ({ t: 'oppEnergyOff', ifHeads: true })],
   [/^discard an energy from (?:1 of )?your opponent's (active )?pokemon$/, m => ({ t: 'oppEnergyOff', active: !!m[1] })],
   [/^your opponent discards cards from their hand until they have (\d+) cards in their hand$/, m => ({ t: 'oppDiscardTo', n: +m[1] })],
+  // Brilliant Blender: pick cards from your deck one at a time, and they go to the discard pile.
+  [/^search your deck for up to (\d+) cards and discard them$/, m => ({ t: 'deckDiscard', n: +m[1] })],
   [/^choose up to (\d+) pokemon tools attached to pokemon(?: \(yours or your opponent's\))? and discard them$/, m => ({ t: 'toolOff', n: +m[1] })],
   // Other healing is read by the app's own reader (puzzle/text.js); this one keeps its Energy condition.
   [/^heal (\d+) damage from your active pokemon that has (\d+) or more energy attached$/, m => ({ t: 'heal', n: +m[1], who: 'active', minE: +m[2] })],
@@ -135,6 +137,16 @@ S.oppEnergyOff = {
   run(s, st, c, P, O) { const out = []; (st.active ? [O.active] : mons(O)).filter(Boolean).forEach(m => { const seen = new Set(); m.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); out.push({ mon: m.id, uid: e.uid }); }); }); return out; },
   answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + nm(m)); },
 };
+// Up to n cards from your deck to your discard pile, picked one at a time (Done stops early). The deck is shuffled after.
+S.deckDiscard = {
+  run(s, st, c, P) { if ((c.dd || 0) >= st.n || !P.deck.length) return; const seen = new Set(), out = [];
+    P.deck.forEach(y => { if (seen.has(y.card.key)) return; seen.add(y.card.key); out.push(y.uid); }); out.sort((a, b) => cardOf(P, a).localeCompare(cardOf(P, b))); out.push(null); return out; },
+  answer(s, st, c, v, P) {
+    if (v != null) { const x = I.take(P.deck, v); P.discard.push(x); c.dd = (c.dd || 0) + 1; I.log(s, 'Discarded ' + x.card.name + ' from your deck'); } else c.dd = st.n;
+    const more = S.deckDiscard.run(s, st, c, P); if (!more) I.reshuffle(s, P); return more;
+  },
+};
+const cardOf = (P, uid) => { const r = P.deck.find(y => y.uid === uid); return r ? r.card.name : ''; };
 S.oppDiscardTo = {
   run(s, st, c, P, O) { if (O.hand.length <= st.n) return; const seen = new Set(), out = []; O.hand.forEach(y => { if (seen.has(y.card)) return; seen.add(y.card); out.push(y.uid); }); return { choices: out, who: 1 - s.cur }; },
   answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); O.discard.push(x); I.log(s, 'Your opponent discarded ' + x.card.name); return S.oppDiscardTo.run(s, st, c, P, O); },

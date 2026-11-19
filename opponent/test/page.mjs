@@ -47,7 +47,7 @@ if (OWNDECKS) {
 }
 const run = () => { let n = 0; while (timers.length && n++ < 100000) timers.shift()(); };
 let rnd = 7; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
-let multi = 0, setups = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
+let multi = 0, setups = 0, sheets = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
 for (let g = 0; g < N; g++) {
   const mode = modeArg || (g % 2 ? 'full' : '5turn'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
   const D = ctx.RdyOppDecks.decks;
@@ -64,6 +64,16 @@ for (let g = 0; g < N; g++) {
   for (;;) {
     const h = el('app').innerHTML;
     if (/undefined|NaN|\[object/.test(h.replace(/<[^>]+>/g, ' '))) { bad++; console.log('BAD TEXT', g, h.replace(/<[^>]+>/g, ' ').match(/.{0,60}(undefined|NaN|\[object).{0,30}/)[0]); }
+    // 3.4.8: every Pokémon in play (both sides) is on the board, and a tapped card opens its full text.
+    if (/class="side opp"/.test(h)) {
+      const st = ctx.RdyPlay._s && ctx.RdyPlay._s(), inPlay = st ? st.players.reduce((a, P) => a + (P.active ? 1 : 0) + P.bench.length, 0) : 0, shown = (h.match(/onclick="RdyPlay\.card\('m',\d+\)"/g) || []).length;
+      if (st && shown !== inPlay) { bad++; console.log('BOARD', g, 'shown', shown, 'in play', inPlay); }
+      const taps = [...h.matchAll(/RdyPlay\.card\('([mhc])',(\d+)\)/g)];
+      if (taps.length && r() < 0.35) { const t = taps[Math.floor(r() * taps.length)]; ctx.RdyPlay.card(t[1], +t[2]); sheets++;
+        const sh = el('sheet').innerHTML, txt = sh.replace(/<[^>]+>/g, ' ');
+        if (!/class="sheet"/.test(sh) || /undefined|NaN|\[object/.test(txt)) { bad++; console.log('SHEET', g, t[0], txt.slice(0, 200)); }
+        ctx.RdyPlay.shut(); if (el('sheet').innerHTML) { bad++; console.log('SHEET NOT CLOSED'); } }
+    }
     if (/class="result"/.test(h)) { const t = h.match(/<div class="q">([^<]*)/)[1]; if (/You win/.test(t)) out.win++; else if (/opponent wins/.test(t)) out.lose++; else out.pressure++; if (process.env.V) console.log(g, mode, level, t); break; }
     if (/RdyPlay\.go\(\)/.test(h)) { ctx.RdyPlay.go(); run(); continue; }
     if (/RdyPlay\.su\(/.test(h)) { // setup: an Active, then some of the other Basics on the Bench, then start
@@ -92,5 +102,5 @@ for (let g = 0; g < N; g++) {
   }
 }
 bad += ownBad;
-console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}`);
+console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}, card sheets ${sheets}`);
 if (process.env.LABELS) console.log([...labels].sort().join('\n'));

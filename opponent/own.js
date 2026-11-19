@@ -57,6 +57,8 @@ function fromSaved(c) {
   const sub = low(c.sub || c.subtypes);
   const out = { key: c.name, name: c.name, cat, sub, types: low(c.types), own: true };
   if (c.img || c.image) out.img = c.img || c.image;
+  // Its printing, so Sparring can show the card's picture (opponent/play.js cardArt).
+  if (c.set && c.num) { out.set = String(c.set); out.num = String(c.num); }
   if (cat === 'pokemon') {
     const stage = c.stage === 'stage1' || c.stage === 'stage2' ? c.stage : c.evolvesFrom ? 'stage1' : 'basic';
     const w = typeof c.weak === 'string' ? c.weak.toLowerCase() : c.weak && c.weak.type ? String(c.weak.type).toLowerCase() : '';

@@ -5981,8 +5981,8 @@ function setHandMode(m) { handMode = m === 'gold' ? 'gold' : 'line'; renderHand(
 function handModeBar() {
   return `<div class="seg hm-seg" role="group" aria-label="Hand practice mode">
     <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 line</div>
-    <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish 3 turns</div>
-    <a class="mode-opt hm-spar" href="opponent/play.html">Sparring</a>
+    <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish (3 Turns)</div>
+    <a class="mode-opt hm-spar" href="opponent/play.html">Sparring (5 Turns)</a>
   </div>`;
 }
 function gfIsBasic(x) { const c = x.card; return cardCategory(c) === 'pokemon' && (c.stage === 'basic' || (!c.stage && !c.evolvesFrom)); }

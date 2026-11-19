@@ -73,7 +73,7 @@ function english(lang, found) {
 }
 
 let rnd = 11; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
-let total = 0, errors = 0;
+let total = 0, errors = 0, sheets = 0;
 for (const lang of LANGS) {
   w.rdI18n.set(lang, false);
   const found = new Map();
@@ -104,6 +104,11 @@ for (const lang of LANGS) {
       if (/class="result"/.test(h)) { if (process.env.DEBUG) console.log("result at", presses); break; }
       if (process.env.DUMP && presses === +process.env.DUMP) { const a = app.cloneNode(true); a.querySelectorAll('div,li,p,button,summary').forEach(e => e.append('\n')); console.log(a.textContent.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').slice(0, 5000)); }
       const on = re => [...h.matchAll(re)].map(m => m[1]);
+      // now and then open a card's sheet (a Pokémon in play, a card in hand, the Stadium) and look at its text too
+      if (presses % 4 === 0) {
+        const cards = [...h.matchAll(/RdyPlay\.card\('([mhc])',(\d+)\)/g)];
+        if (cards.length) { const c = cards[Math.floor(r() * cards.length)]; w.RdyPlay.card(c[1], +c[2]); await new Promise(res => setImmediate(res)); english(lang, found); sheets++; w.RdyPlay.shut(); }
+      }
       try {
         if (/RdyPlay\.go\(\)/.test(h)) { w.RdyPlay.go(); run(); continue; }
         if (/RdyPlay\.su\(/.test(h)) {
@@ -135,4 +140,4 @@ for (const lang of LANGS) {
 }
 w.rdI18n.set('en', false);
 if (total || errors) { console.log(`FAIL: ${total} English texts, ${errors} errors`); process.exit(1); }
-console.log('OK: no English app text left in ' + LANGS.join(', '));
+console.log('OK: no English app text left in ' + LANGS.join(', ') + ` (${sheets} card sheets looked at)`);

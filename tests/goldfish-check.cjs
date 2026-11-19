@@ -48,7 +48,7 @@ const CARDS = [
   const G = () => w.eval('gf'), body = () => d.getElementById('hand-body').textContent.replace(/\s+/g, ' ');
   // 3.4.6: the Hand tab's mode bar links to Sparring next to Goldfish.
   const spar = d.querySelector('.hm-seg a.hm-spar');
-  ok(spar && spar.getAttribute('href') === 'opponent/play.html' && spar.textContent.trim() === 'Sparring', 'the Hand tab links to Sparring next to Goldfish');
+  ok(spar && spar.getAttribute('href') === 'opponent/play.html' && spar.textContent.trim() === 'Sparring (5 Turns)' && /Goldfish \(3 Turns\)/.test(d.querySelector('.hm-seg').textContent), 'the Hand tab links to Sparring (5 Turns) next to Goldfish (3 Turns)');
   // Rig a board: the hand and the top of the deck are set by name.
   const rig = (hand, top) => w.eval(`(() => { const all = gf.hand.concat(gf.deck, gf.prizes); const take = n => { const i = all.findIndex(x => x.card.name === n); return all.splice(i, 1)[0]; };
     gf.hand = ${JSON.stringify(hand)}.map(take); const tp = ${JSON.stringify(top || [])}.map(take); gf.deck = tp.concat(all.slice(6)); gf.prizes = all.slice(0, 6);

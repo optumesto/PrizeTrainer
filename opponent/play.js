@@ -63,7 +63,7 @@ function label(s, a) {
 }
 // Choices inside the card effects of a full game (opponent/effects.js) say what kind of thing they pick.
 const HOOK_MON = /^(heal|wally|snipe|toolOff|switchOpt|swapOut|energyToBench|perCounter|raid|benchSwap|topAttach|discardAttach)$/;
-const HOOK_CARD = /^(oppDiscardTo|gwynn|kinds|eri|pokeBack|comfey|handPick)$/;
+const HOOK_CARD = /^(oppDiscardTo|gwynn|kinds|eri|pokeBack|comfey|handPick|deckDiscard)$/;
 // Any other card effect choice is a Pokémon or a card: whichever every one of its choices is.
 function hookKind(s, st) {
   if (HOOK_MON.test(st.t)) return 'mon'; if (HOOK_CARD.test(st.t)) return 'card';
@@ -118,35 +118,158 @@ function askText(s) {
     search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile', look: 'Choose from the cards you looked at', cost: 'Choose cards to discard',
     attach: 'Attach Energy', topFromHand: 'Choose a card to put on top of your deck',
     splitHand: 'Choose the card that goes into your hand. The other one gets attached.', splitAttach: 'Choose the Pokémon to attach the other card to' }[A.kind] || 'Choose';
+  const st = R.steps[A.step];
+  if (A.kind === 'hook' && st && st.t === 'deckDiscard') return who + `<span>Choose a card from your deck to discard (${(R.ctx.dd || 0) + 1} of ${st.n})</span>`;
   return who + `<span>${q}</span>`;
 }
 
-/* ---------------- Drawing the board ---------------- */
+/* ---------------- Drawing the board ----------------
+ * 3.4.8: every card shows its picture, and every Pokémon in play (yours and your opponent's) shows its attacks,
+ * their Energy costs and damage, and its Energy as small type marks. Tap a card for its full text in a sheet.
+ * Laid out as RdyDeck lists and panels, not as a play mat.
+ */
+// Energy types as small round marks with the letter players write in lists ({G}, {R}...), in RdyDeck's own colors.
+const TYPE_L = { grass: 'G', fire: 'R', water: 'W', lightning: 'L', psychic: 'P', fighting: 'F', darkness: 'D', metal: 'M', fairy: 'Y', dragon: 'N', colorless: 'C' };
+const tname = t => t ? t[0].toUpperCase() + t.slice(1) : '';
+const pip = (t, ring) => { const k = TYPE_L[t] ? t : 'colorless'; return `<i class="pip t-${k}${ring ? ' ring' : ''}" title="${tname(k)}" data-no-tr>${TYPE_L[k]}</i>`; };
+const costPips = cost => (cost && cost.length ? cost.map(t => pip(t)).join('') : '<i class="pip t-none" title="No Energy" data-no-tr>0</i>');
+// The type an attached Energy gives: its basic type, else the card's own type, else Colorless (shown with a ring: a Special Energy).
+function eType(ref) { const t = E.T.gfEType(ref); if (t) return { t, sp: false }; const c = ref.card; return { t: c.types && c.types[0] && TYPE_L[c.types[0]] ? c.types[0] : 'colorless', sp: true }; }
+// Attached Energy, grouped: a mark per kind with its count ("G 3"), so three Grass Energy read at a glance.
+function energyMarks(m) {
+  if (!m.energy.length) return '<span class="none">No Energy</span>';
+  const g = new Map();
+  m.energy.forEach(e => { const k = e.card.name; if (!g.has(k)) g.set(k, { e: eType(e), n: 0, name: k }); g.get(k).n++; });
+  return [...g.values()].map(x => `<span class="eg" title="${esc(x.n + ' ' + x.name)}">${pip(x.e.t, x.e.sp)}${x.n > 1 ? `<b data-no-tr>${x.n}</b>` : ''}</span>`).join('');
+}
+/* Card pictures: Limitless's copy of the card first (by set code and number), then TCGdex, then the record's own link.
+ * A picture that fails moves to the next link; the one that loads is remembered for the rest of the visit. */
+const ART_OK = {};
+function tdId(img) {
+  const m = /images\.pokemontcg\.io\/([a-z0-9]+)\/([A-Za-z0-9]+)\.png/.exec(img || ''); if (!m) return null;
+  let r = m[1].match(/^(sv|me)(\d+)(pt5)?$/);
+  if (r) return { ser: r[1], set: r[1] + r[2].padStart(2, '0') + (r[3] ? '.5' : ''), n: /^\d+$/.test(m[2]) ? m[2].padStart(3, '0') : m[2] };
+  r = m[1].match(/^(swsh|sm)(\d+)(pt5)?$/);
+  if (r) { const set = r[1] + r[2] + (r[3] ? '.5' : ''); return { ser: r[1], set, n: /^swsh(9|1[0-2])$/.test(set) && /^\d+$/.test(m[2]) ? m[2].padStart(3, '0') : m[2] }; }
+  return null;
+}
+function artUrls(c, big) {
+  const out = [], set = String(c.set || '').toUpperCase(), n = String(c.num || '');
+  if (/^[A-Z0-9]{2,6}$/.test(set) && /^[A-Za-z0-9]{1,8}$/.test(n)) {
+    const clean = n.replace(/^0+(?=\d)/, ''), pad = /^\d+$/.test(clean) ? clean.padStart(3, '0') : clean, base = `https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${set}/${set}_`;
+    [pad, clean].filter((x, i, a) => a.indexOf(x) === i).forEach(x => { out.push(base + x + (big ? '_R_EN.png' : '_R_EN_XS.png')); });
+    if (big) out.push(base + pad + '_R_EN_XS.png');
+  }
+  const td = tdId(c.img);
+  if (td) out.push(`https://assets.tcgdex.net/en/${td.ser}/${td.set}/${td.n}/${big ? 'high' : 'low'}.webp`);
+  if (/^https:\/\/[\w.-]+\//.test(c.img || '') && !/["'<>\s|]/.test(c.img)) out.push(c.img);
+  return out;
+}
+function artHTML(c, cls, big) {
+  const key = (big ? 'B:' : 'S:') + (c.key || c.name), list = artUrls(c, big), ok = ART_OK[key];
+  const urls = ok ? [ok].concat(list.filter(u => u !== ok)) : list;
+  const ph = `<span class="ph t-${TYPE_L[(c.types || [])[0]] ? c.types[0] : 'colorless'}" data-no-tr>${esc(c.name)}</span>`;
+  if (!urls.length) return `<span class="art ${cls} noart">${ph}</span>`;
+  return `<span class="art ${cls}">${ph}<img src="${esc(urls[0])}" data-a="${esc(urls.slice(1).join('|'))}" data-k="${esc(key)}" alt="" loading="lazy" decoding="async" onerror="RdyPlay.ie(this)" onload="RdyPlay.il(this)"></span>`;
+}
 function hpLine(s, m) { const hp = E.maxHp(s, m), left = Math.max(0, hp - m.dmg); return `${left} of ${hp} HP`; }
 function cond(m) { return [m.cond, m.poison ? 'poisoned' : '', m.burn ? 'burned' : ''].filter(Boolean).map(x => `<span>${x[0].toUpperCase() + x.slice(1)}</span>`).join(', '); }
-function monRow(s, m, active) {
-  const c = E.topOf(m).card, hp = E.maxHp(s, m), pct = hp ? Math.max(0, Math.round((hp - m.dmg) / hp * 100)) : 0;
-  const en = m.energy.map(e => e.card.name).join(', ');
-  return `<div class="mon${active ? ' act' : ''}"><div class="mn"><b data-no-tr>${esc(c.name)}</b>${c.p > 1 ? `<span class="pv">${c.p} Prizes</span>` : ''}</div>
-    <div class="hp"><span class="bar${pct <= 34 ? ' low' : ''}"><i style="width:${pct}%"></i></span>${hpLine(s, m)}</div>
-    <div class="meta">${en ? '<span>Energy:</span> ' + cn(en) : '<span>No Energy</span>'}${m.tool ? ' · <span>Tool:</span> ' + cn(m.tool.card.name) : ''}${cond(m) ? ' · <span class="bad">' + cond(m) + '</span>' : ''}</div></div>`;
+// Can this Pokémon pay for this attack now? Your Active asks the rules (what you can really do this turn);
+// any other Pokémon counts its Energy against the cost. Missing: how many more Energy it needs, at least.
+function attackState(s, m, k, i, okSet) {
+  const a = E.topOf(m).card.attacks[i];
+  if (okSet && k === 0 && s.players[0].active === m) return okSet.has(i) ? { ok: true } : { ok: false, miss: Math.max(0, a.cost.length - m.energy.length) };
+  const r = E.costMet(m.energy, a.cost || []);
+  return r === true ? { ok: true } : { ok: false, miss: Math.max(0, (a.cost || []).length - m.energy.length), unknown: r == null };
 }
-function sideHTML(s, k, compact) {
+function attacksHTML(s, m, k, okSet, full) {
+  const c = E.topOf(m).card, out = [];
+  E.readAbilities(E.topOf(m)).forEach(A => out.push(`<div class="ab"><span class="tag">Ability</span> <b data-no-tr>${esc(A.name)}</b></div>`));
+  (c.attacks || []).forEach((a, i) => {
+    const st = attackState(s, m, k, i, okSet);
+    const need = st.ok ? '' : st.miss > 0 ? `<span class="need">${st.miss === 1 ? 'Needs 1 more Energy' : `Needs ${st.miss} more Energy`}</span>` : `<span class="need">Needs other Energy</span>`;
+    out.push(`<div class="atk${st.ok ? ' ok' : ''}"><span class="cost">${costPips(a.cost)}</span><b data-no-tr>${esc(a.name)}</b>${a.dmg ? `<span class="dmg" data-no-tr>${esc(a.dmg)}</span>` : ''}${need}</div>`);
+  });
+  if (full) {
+    const ret = E.retreatCost(s, m, k), w = c.weak, r = c.res;
+    out.push(`<div class="wr">${w ? `<span><span>Weakness</span> ${pip(w.type)}<span data-no-tr>×${w.x || 2}</span></span>` : ''}${r && r.type ? `<span><span>Resistance</span> ${pip(r.type)}<span data-no-tr>-${Math.abs(r.n || r.x || 30)}</span></span>` : ''}<span><span>Retreat</span> ${ret ? costPips(Array(ret).fill('colorless')) : '<span>None</span>'}</span></div>`);
+  }
+  return out.join('');
+}
+function monRow(s, m, k, active, okSet) {
+  const c = E.topOf(m).card, hp = E.maxHp(s, m), pct = hp ? Math.max(0, Math.round((hp - m.dmg) / hp * 100)) : 0;
+  return `<div class="mon${active ? ' act' : ''}" role="button" tabindex="0" onclick="RdyPlay.card('m',${m.id})" onkeydown="if(event.key==='Enter')RdyPlay.card('m',${m.id})">${artHTML(c, active ? 'a' : 'b')}
+    <div class="mb"><div class="mn"><b data-no-tr>${esc(c.name)}</b>${c.p > 1 ? `<span class="pv">${c.p} Prizes</span>` : ''}</div>
+    <div class="hp"><span class="bar${pct <= 34 ? ' low' : ''}"><i style="width:${pct}%"></i></span><span>${hpLine(s, m)}</span><span class="en">${energyMarks(m)}</span></div>
+    ${m.tool || cond(m) ? `<div class="meta">${m.tool ? '<span>Tool:</span> ' + cn(m.tool.card.name) : ''}${m.tool && cond(m) ? ' · ' : ''}${cond(m) ? '<span class="bad">' + cond(m) + '</span>' : ''}</div>` : ''}
+    <div class="atks">${attacksHTML(s, m, k, okSet, active)}</div></div></div>`;
+}
+// Which of your Active's attacks the rules let you use right now (its attack buttons), for "ready" marks.
+function readyAttacks(s) {
+  const X = G.next(s); if (X.who !== 0 || s.pending) return null;
+  return new Set(X.actions.filter(a => a.t === 'attack' && a.via == null).map(a => a.i));
+}
+// Both sides the same way: Active, then Bench, then the piles. Your opponent's hand shows as a count only.
+function sideHTML(s, k, okSet) {
   const P = s.players[k], you = k === 0;
   const head = `<div class="sh"><span>${you ? 'You' : 'Opponent'}</span><span class="pr">${P.prizes.length} Prize card${P.prizes.length === 1 ? '' : 's'} left</span></div>`;
-  if (compact) {
-    const a = P.active;
-    return `<div class="side opp compact">${head}<div class="line"><span>Active:</span> ${a ? `<b data-no-tr>${esc(E.topOf(a).card.name)}</b>, <span>${hpLine(s, a)}</span>${a.energy.length ? ', <span>' + a.energy.length + ' Energy</span>' : ''}` : '<span>None</span>'}. <span>Bench:</span> ${P.bench.length}. <span>Hand:</span> ${P.hand.length}.</div></div>`;
-  }
   const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <span>Discard pile</span> ${P.discard.length}</div>`;
-  const act = `<div class="zl">Active</div>${P.active ? monRow(s, P.active, true) : '<div class="empty">No Active Pokémon</div>'}`;
-  const bench = `<div class="zl"><span>Bench</span> <span>${P.bench.length} of 5</span></div>${P.bench.length ? P.bench.map(m => monRow(s, m, false)).join('') : '<div class="empty">Empty</div>'}`;
-  return `<div class="side ${you ? 'me' : 'opp'}">${head}${you ? act + bench + piles : piles + bench + act}</div>`;
+  const act = `<div class="zl">Active</div>${P.active ? monRow(s, P.active, k, true, okSet) : '<div class="empty">No Active Pokémon</div>'}`;
+  const bench = `<div class="zl"><span>Bench</span> <span>${P.bench.length} of 5</span></div>${P.bench.length ? `<div class="bench">${P.bench.map(m => monRow(s, m, k, false, null)).join('')}</div>` : '<div class="empty">Empty</div>'}`;
+  return `<div class="side ${you ? 'me' : 'opp'}">${head}${act}${bench}${piles}</div>`;
 }
 function handHTML(s) {
   const P = s.players[0], g = new Map();
-  P.hand.forEach(r => { const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
-  return `<div class="hand"><div class="zl"><span>Your hand</span> <span>${P.hand.length}</span></div>${[...g.values()].map(x => `<span class="chip">${x.n > 1 ? '<b>' + x.n + '</b> ' : ''}${cn(x.c.name)}</span>`).join('') || '<span class="empty">Empty</span>'}</div>`;
+  P.hand.forEach(r => { const k = r.card.key; if (!g.has(k)) g.set(k, { r, n: 0 }); g.get(k).n++; });
+  const tiles = [...g.values()].map(x => `<button type="button" class="hc" onclick="RdyPlay.card('h',${x.r.uid})">${artHTML(x.r.card, 'h')}<span class="hn" data-no-tr>${esc(x.r.card.name)}</span>${x.n > 1 ? `<b class="hx" data-no-tr>×${x.n}</b>` : ''}</button>`).join('');
+  return `<div class="hand"><div class="zl"><span>Your hand</span> <span>${P.hand.length}</span></div>${tiles ? `<div class="tiles">${tiles}</div>` : '<span class="empty">Empty</span>'}</div>`;
+}
+/* ---------------- The card sheet: one card's full text ---------------- */
+const KIND = { item: 'Item', supporter: 'Supporter', stadium: 'Stadium', tool: 'Pokémon Tool' };
+function sheetHTML(s, ref, m, k) {
+  const c = ref.card, rows = [];
+  if (c.cat === 'pokemon') {
+    const stage = c.stage === 'stage1' ? 'Stage 1' : c.stage === 'stage2' ? 'Stage 2' : 'Basic';
+    rows.push(`<div class="sl"><span>${stage}</span>${c.from ? ` · <span>Evolves from</span> ${cn(c.from)}` : ''} · <span>${(m ? E.maxHp(s, m) : c.hp) + ' HP'}</span>${c.types && c.types[0] ? ' · ' + pip(c.types[0]) : ''}${c.p > 1 ? ` · <span class="pv">${c.p} Prizes</span>` : ''}</div>`);
+    if (m) rows.push(`<div class="sl"><span>${hpLine(s, m)}</span> · <span class="en">${energyMarks(m)}</span></div>` +
+      (m.energy.length ? `<div class="sl mute">${cn([...new Map(m.energy.map(e => [e.card.name, 0])).keys()].map(n => m.energy.filter(e => e.card.name === n).length + ' ' + n).join(', '))}</div>` : '') +
+      (m.tool ? `<div class="sl"><span>Tool:</span> ${cn(m.tool.card.name)}</div><p class="tx" data-no-tr>${esc(m.tool.card.rtext || '')}</p>` : '') +
+      (cond(m) ? `<div class="sl bad">${cond(m)}</div>` : ''));
+    (c.abil || []).forEach(([n, t]) => rows.push(`<div class="sa"><div><span class="tag">Ability</span> <b data-no-tr>${esc(n)}</b></div><p class="tx" data-no-tr>${esc(t)}</p></div>`));
+    (c.attacks || []).forEach((a, i) => {
+      const st = m ? attackState(s, m, k, i, k === 0 && s.players[0].active === m ? readyAttacks(s) : null) : null;
+      rows.push(`<div class="sa${st && st.ok ? ' ok' : ''}"><div class="atk${!st || st.ok ? ' ok' : ''}"><span class="cost">${costPips(a.cost)}</span><b data-no-tr>${esc(a.name)}</b>${a.dmg ? `<span class="dmg" data-no-tr>${esc(a.dmg)}</span>` : ''}${st && !st.ok ? `<span class="need">${st.miss === 1 ? 'Needs 1 more Energy' : st.miss > 1 ? `Needs ${st.miss} more Energy` : 'Needs other Energy'}</span>` : ''}</div>${a.text ? `<p class="tx" data-no-tr>${esc(a.text)}</p>` : ''}</div>`);
+    });
+    const ret = m ? E.retreatCost(s, m, k) : c.retreat;
+    rows.push(`<div class="wr"><span><span>Weakness</span> ${c.weak ? pip(c.weak.type) + `<span data-no-tr>×${c.weak.x || 2}</span>` : '<span>None</span>'}</span><span><span>Resistance</span> ${c.res && c.res.type ? pip(c.res.type) + `<span data-no-tr>-${Math.abs(c.res.n || c.res.x || 30)}</span>` : c.resUnknown ? '<span>Not saved</span>' : '<span>None</span>'}</span><span><span>Retreat</span> ${ret ? costPips(Array(ret).fill('colorless')) : '<span>None</span>'}</span></div>`);
+  } else if (c.cat === 'trainer') {
+    rows.push(`<div class="sl"><span>Trainer</span> · <span>${KIND[c.kind] || 'Item'}</span>${c.ace ? ' · <span class="pv" data-no-tr>ACE SPEC</span>' : ''}</div><p class="tx" data-no-tr>${esc(c.rtext || '')}</p>`);
+    if (cantDo(s, ref)) rows.push(`<p class="note">Sparring can't do this card's text yet. You can still play it, and nothing happens.</p>`);
+  } else {
+    rows.push(`<div class="sl"><span>Energy</span> · ${pip(eType(ref).t, eType(ref).sp)}</div>${c.rtext ? `<p class="tx" data-no-tr>${esc(c.rtext)}</p>` : ''}`);
+  }
+  return `<div class="sheet-bg" onclick="RdyPlay.shut()"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(c.name)}">
+    <div class="sh"><b data-no-tr>${esc(c.name)}</b><button type="button" class="btn ghost x" onclick="RdyPlay.shut()">Close</button></div>
+    <div class="sbody">${artHTML(c, 'big', true)}<div class="sinfo">${rows.join('')}</div></div></div>`;
+}
+// Cards Sparring can't play the text of (so playing them does nothing), checked once per card.
+const CANT = new WeakMap();
+function cantDo(s, ref) {
+  const c = ref.card; if (c.cat === 'pokemon') return false;
+  if (!CANT.has(c)) { let bad = false; try { bad = E.cardProblems(s, { card: c, uid: -1 }, true).length > 0; } catch (_) { bad = false; } CANT.set(c, bad); }
+  return CANT.get(c);
+}
+function showSheet() {
+  const el = $('sheet'); if (!el) return;
+  const s = S && S.s, o = S && S.open;
+  let ref = null, m = null, k = 0;
+  if (s && o) {
+    if (o.t === 'm') { const f = monById(s, o.id); if (f) { m = f.m; k = f.k; ref = E.topOf(m); } }
+    else ref = s.players[0].hand.find(y => y.uid === o.id) || (s.stadium && s.stadium.ref.uid === o.id ? s.stadium.ref : null) || cardRef(s, o.id);
+  }
+  if (!ref) { el.innerHTML = ''; el.className = ''; if (S) S.open = null; return; }
+  el.className = 'open';
+  el.innerHTML = sheetHTML(s, ref, m, k);
 }
 function actionsHTML(s) {
   if (S.over) return resultHTML();
@@ -174,7 +297,9 @@ function actionsHTML(s) {
   groups.forEach(([g, title]) => {
     const list = ok.filter(x => kind(x.a) === g && x.i >= 0); if (!list.length) return;
     if (title) h += `<div class="gt">${title}</div>`;
-    h += `<div class="btns">${list.map(x => `<button class="btn${g === 'attack' ? ' primary' : g === 'end' ? ' ghost' : ''}" onclick="RdyPlay.do(${x.i})">${esc(x.l)}</button>`).join('')}</div>`;
+    // A card Sparring can't do yet says so on its button (playing it does nothing).
+    const nope = a => { const r = /^(trainer|stadium|tool)$/.test(a.t) && s.players[0].hand.find(y => y.uid === a.uid); return r && cantDo(s, r) ? '<span class="nt">Does nothing in Sparring yet</span>' : ''; };
+    h += `<div class="btns">${list.map(x => `<button class="btn${g === 'attack' ? ' primary' : g === 'end' ? ' ghost' : ''}" onclick="RdyPlay.do(${x.i})">${esc(x.l)}${nope(x.a)}</button>`).join('')}</div>`;
   });
   if (no.length) h += `<details class="no"><summary>Can't do right now (${no.length})</summary><ul>${no.map(x => `<li><b>${esc(x.l)}</b> <span>${esc(x.a.why)}</span></li>`).join('')}</ul></details>`;
   return h;
@@ -221,15 +346,19 @@ function setupHTML(s) {
   return h + '</div>';
 }
 function render() {
-  if (S.setup) { $('app').innerHTML = setupHTML(S.s); return; }
-  const s = S.s, compact = S.mode === '5turn';
+  if (S.setup) { $('app').innerHTML = `<div class="narrow">${setupHTML(S.s)}</div>`; showSheet(); return; }
+  const s = S.s;
+  if (E.internals && E.internals.setReal) E.internals.setReal(!!s.real);
   // Whose turn it is, counted from 1 for each player ("Your turn 1 of 5" before your first turn too).
   const n = k => Math.max(1, Math.min(s.turns[k], PRESS_TURNS));
   const head = S.mode !== '5turn' ? `Turn ${s.turns[0] + s.turns[1]}` : s.cur === 1 && !S.over ? `Opponent's turn ${n(1)} of ${PRESS_TURNS}` : `Your turn ${n(0)} of ${PRESS_TURNS}`;
-  const turn = `<div class="turn"><span>${head}</span> · <span>${esc(S.levelName)}</span> · ${s.stadium ? '<span>Stadium:</span> ' + cn(s.stadium.ref.card.name) : '<span>No Stadium</span>'}</div>`;
-  $('app').innerHTML = turn + sideHTML(s, 1, compact) + sideHTML(s, 0, false) + handHTML(s) + `<div class="acts">${actionsHTML(s)}</div>` +
+  const turn = `<div class="turn"><span>${head}</span> · <span>${esc(S.levelName)}</span> · ${s.stadium ? `<span>Stadium:</span> <button type="button" class="lk" onclick="RdyPlay.card('c',${s.stadium.ref.uid})">${cn(s.stadium.ref.card.name)}</button>` : '<span>No Stadium</span>'}</div>`;
+  const okSet = S.busy || S.oppLog ? null : readyAttacks(s);
+  // Two columns on a wide screen (the board, then your hand and moves); one column on a phone.
+  $('app').innerHTML = turn + `<div class="game"><div class="board">${sideHTML(s, 1, null)}${sideHTML(s, 0, okSet)}</div><div class="play">${handHTML(s)}<div class="acts">${actionsHTML(s)}</div>` +
     // The whole game, every line, from the first.
-    `<details class="log"${S.logOpen ? ' open' : ''} ontoggle="RdyPlay.logT(this.open)"><summary>Full game log</summary><ol>${s.log.map(t => `<li>${esc(t)}</li>`).join('')}</ol></details>`;
+    `<details class="log"${S.logOpen ? ' open' : ''} ontoggle="RdyPlay.logT(this.open)"><summary>Full game log</summary><ol>${s.log.map(t => `<li>${esc(t)}</li>`).join('')}</ol></details></div></div>`;
+  showSheet();
 }
 
 /* ---------------- Playing ---------------- */
@@ -298,7 +427,7 @@ const api = {
   do(i) {
     if (!S || S.busy || S.over) return;
     const X = G.next(S.s); const a = X.actions[i]; if (!a || X.who !== 0) return;
-    S.s = G.step(S.s, a); S.sel = null; rec(a);
+    S.s = G.step(S.s, a); S.sel = null; S.open = null; rec(a);
     if (checkOver()) { save(); render(); return; }
     oppStep();
   },
@@ -310,6 +439,13 @@ const api = {
   },
   go() { S.oppLog = null; save(); render(); if (checkOver()) render(); },
   logT(open) { if (S) S.logOpen = !!open; },
+  // A card's full text: 'm' a Pokémon in play (by id), 'h' a card in your hand, 'c' any other card you can see (by uid).
+  card(t, id) { if (!S) return; S.open = { t, id }; showSheet(); },
+  shut() { if (S) S.open = null; showSheet(); },
+  _s() { return S && S.s; }, // tests: the game state
+  // Card pictures: on a failed link try the next one; remember the one that loads.
+  ie(img) { const a = (img.getAttribute('data-a') || '').split('|').filter(Boolean); if (a.length) { img.setAttribute('data-a', a.slice(1).join('|')); img.src = a[0]; } else { img.remove(); } },
+  il(img) { const k = img.getAttribute('data-k'); if (k) ART_OK[k] = img.getAttribute('src'); img.parentNode.classList.add('loaded'); },
   start(opts, seedIn) {
     const seed = seedIn != null ? seedIn : Math.floor(Math.random() * 2 ** 31);
     let s = G.newGame([deckCards(opts.deckA), deckCards(opts.deckB)], { seed, maxTurns: opts.mode === '5turn' ? PRESS_TURNS : 0 });

@@ -566,7 +566,8 @@ function logDraw(s, k, got) {
 }
 function go(s) {
   const R = s.pending; if (!R) return s;
-  if (!R.steps) { markUnread(s, R.ctx.name); return finishRun(s); }
+  // Sparring (REAL) says so in the game log, so a card that does nothing never looks like a bug.
+  if (!R.steps) { markUnread(s, R.ctx.name); if (REAL) log(s, "Sparring can't do " + R.ctx.name + "'s text yet, so nothing happened", true); return finishRun(s); }
   const P = me(s), O = foe(s);
   while (R.i < R.steps.length) {
     if (s.gameOver != null) { s.pending = null; return s; } // the game is over: nothing more happens
@@ -782,9 +783,9 @@ function apply(s0, a) {
     case 'candy': { const cd = take(P.hand, a.uid), s2 = take(P.hand, a.s2), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(s2); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; P.discard.push(cd); log(s, 'Rare Candy: ' + (REAL ? was + ' into ' : '') + s2.card.name); return s; }
     case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + monName(m));
       if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) return startRun(s, st, { name: x.card.name, mon: m.id }); } return s; }
-    case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; if (!passiveKnown(x.card.rtext)) markUnread(s, x.card.name); log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); return s; }
+    case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); if (!passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return s; }
     case 'stadium': { const x = take(P.hand, a.uid); if (s.stadium) s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = { ref: x, owner: s.cur }; P.used.stadium = true;
-      const TP = readTrainer(x); if (!TP.once && !passiveKnown(x.card.rtext)) markUnread(s, x.card.name); log(s, 'Played ' + x.card.name); return checkKOs(s); }
+      const TP = readTrainer(x); log(s, 'Played ' + x.card.name); if (!TP.once && !passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return checkKOs(s); }
     case 'stadiumUse': { P.lim.stadiumUse = s.turn; const TP = readTrainer(s.stadium.ref); return startRun(s, TP.steps, { name: s.stadium.ref.card.name }); }
     case 'trainer': {
       const x = take(P.hand, a.uid), TP = readTrainer(x);
@@ -911,7 +912,7 @@ function attack(s, i, via) {
   if (REAL && s.mods.again) s.mods.again = null;
   const R = readAttack(a);
   log(s, monName(att) + ' used ' + a.name);
-  if (!R) { markUnread(s, monName(att) + ': ' + a.name); return endTurn(s); }
+  if (!R) { markUnread(s, monName(att) + ': ' + a.name); if (REAL) log(s, "Sparring can't do " + a.name + "'s text yet, so nothing happened", true); return endTurn(s); }
   if (REAL && R.partial) log(s, '(Not played: ' + R.partial.join('; ') + ')');
   if (REAL) { for (const h of HOOKS.preAttack) if (h(s, att, a) === 'fail') { checkKOs(s); return endTurn(s); } if (R.pre) R.pre(s, att); }
   if (R.luck) s.luck = true;
