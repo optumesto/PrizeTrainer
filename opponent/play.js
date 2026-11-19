@@ -37,7 +37,7 @@ function label(s, a) {
     case 'ability': { const f = monById(s, a.mon); return `${mon(a.mon)}: ${E.readAbilities(E.topOf(f.m))[a.i].name}`; }
     case 'handAbility': { const r = P.hand.find(y => y.uid === a.uid); return `${r.card.name} from your hand: ${E.readAbilities(r)[a.i].name}`; }
     case 'retreat': return `Retreat into ${mon(a.mon)}${a.pay && a.pay.length ? ', discarding ' + names(s, a.pay) : ''}`;
-    case 'attack': { const c = E.topOf(P.active).card.attacks[a.i]; return `${c.name}${c.dmg ? ' (' + c.dmg + ')' : ''}`; }
+    case 'attack': { const c = a.via == null ? E.topOf(P.active).card.attacks[a.i] : E.internals.attackList(s, P.active).find(x => x.act.i === a.i && JSON.stringify(x.act.via) === JSON.stringify(a.via)).a; return `${c.name}${c.dmg ? ' (' + c.dmg + ')' : ''}`; }
     case 'promote': return 'Make ' + monName(s, a.mon).replace(/^(your|their) /, '') + ' Active';
     case 'end': return 'End your turn';
   }

@@ -15,7 +15,7 @@ for (let g = 0; g < N; g++) {
     for (const k of [0, 1]) { const ch = G.setupChoices(s, k); s = G.setUp(s, k, ch[0].uid, ch.slice(1, 1 + Math.floor(rnd() * ch.length)).map(x => x.uid)); }
     let n = 0;
     while (G.winner(s) < 0 && n < 4000) {
-      const X = G.next(s); if (!X.actions.length) { stuck++; if (process.env.DBG) { console.log(JSON.stringify(s.pending, (k, v) => k === "card" ? v.name : v).slice(0, 1500)); console.log(s.log.slice(-8).join("\n")); } errs.set('stuck ' + JSON.stringify(s.pending && s.pending.ask || s.phase).slice(0, 120), (errs.get('stuck') || 0) + 1); break; }
+      const X = G.next(s); if (!X.actions.length) { stuck++; if (process.env.DBG) { console.log("FLAGS", JSON.stringify({ended:s.ended,go:s.gameOver,pro:s.promote,cur:s.cur,mods:s.mods,act:s.players.map(p=>p.active&&p.active.id),bench:s.players.map(p=>p.bench.length)})); console.log(JSON.stringify(s.pending, (k, v) => k === "card" ? v.name : v).slice(0, 1500)); console.log(s.log.slice(-8).join("\n")); } errs.set('stuck ' + JSON.stringify(s.pending && s.pending.ask || s.phase).slice(0, 120), (errs.get('stuck') || 0) + 1); break; }
       const atk = X.actions.filter(x => x.t === 'attack');
       const act = atk.length && rnd() < 0.6 ? atk[Math.floor(rnd() * atk.length)] : X.actions[Math.floor(rnd() * X.actions.length)];
       s = G.step(s, act); n++;

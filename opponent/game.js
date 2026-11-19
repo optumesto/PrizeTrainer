@@ -68,7 +68,7 @@ function setUp(s0, k, active, bench) {
 /** Start the current player's turn (in place): draw, reset the turn's limits. */
 function startTurn(s) {
   const k = s.cur, P = s.players[k];
-  s.turns = s.turns.slice(); s.turns[k]++; s.turn = s.turns[k]; s.first = k === s.firstPlayer; s.ended = false; s.pending = null; s.mods = {};
+  s.turns = s.turns.slice(); s.turns[k]++; s.turn = s.turns[k]; s.first = k === s.firstPlayer; s.ended = false; s.pending = null; s.mods = {}; s.noPromote = null;
   P.used = { energy: false, supporter: false, stadium: false, retreat: false };
   P.koLastTurn = s.kosBy ? s.kosBy[k] > 0 : false; // your Pokemon Knocked Out during your opponent's last turn
   s.kosBy = [0, 0]; s.kos = [0, 0];
@@ -84,7 +84,7 @@ const HOOKS_START = [], HOOKS_END = [];
 function next(s) {
   if (s.gameOver != null) return { who: -1, actions: [] };
   if (s.phase === 'setup') { const k = s.ready[0] ? 1 : 0; return { who: k, setup: true, actions: [] }; }
-  if (s.promote && s.promote.length) { const k = s.promote[0]; return { who: k, actions: s.players[k].bench.filter(m => m.id !== s.noPromote).map(m => ({ t: 'promote', who: k, mon: m.id })) }; }
+  if (s.promote && s.promote.length) { const k = s.promote[0], B = s.players[k].bench, ok = B.filter(m => m.id !== s.noPromote); return { who: k, actions: (ok.length ? ok : B).map(m => ({ t: 'promote', who: k, mon: m.id })) }; }
   const who = s.pending ? (s.pending.ask && s.pending.ask.who != null ? s.pending.ask.who : s.pending.who) : s.cur;
   return { who, actions: E.legalActions(s) };
 }

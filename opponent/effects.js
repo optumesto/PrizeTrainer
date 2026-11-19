@@ -25,14 +25,13 @@ const SENT = [
   [/^discard an energy from (?:1 of )?your opponent's (active )?pokemon$/, m => ({ t: 'oppEnergyOff', active: !!m[1] })],
   [/^your opponent discards cards from their hand until they have (\d+) cards in their hand$/, m => ({ t: 'oppDiscardTo', n: +m[1] })],
   [/^choose up to (\d+) pokemon tools attached to pokemon(?: \(yours or your opponent's\))? and discard them$/, m => ({ t: 'toolOff', n: +m[1] })],
-  [/^heal (\d+) damage from 1 of your pokemon(?:, and it recovers from all special conditions)?$/, m => ({ t: 'heal', n: +m[1], who: 'any' })],
-  [/^heal (\d+) damage from your active pokemon(?: that has (\d+) or more energy attached)?$/, m => ({ t: 'heal', n: +m[1], who: 'active', minE: +(m[2] || 0) })],
-  [/^heal all damage from 1 of your mega evolution pokemon ex$/, () => ({ t: 'wally' })],
-  [/^if you healed any damage in this way, put all energy attached to that pokemon into your hand$/, () => ({ t: 'noop' })],
-  [/^if you attached energy to a pokemon in this way, heal (\d+) damage from that pokemon$/, m => ({ t: 'healTarget', n: +m[1], ifAttached: true })],
+  // Other healing is read by the app's own reader (puzzle/text.js); this one keeps its Energy condition.
+  [/^heal (\d+) damage from your active pokemon that has (\d+) or more energy attached$/, m => ({ t: 'heal', n: +m[1], who: 'active', minE: +m[2] })],
   [/^during this turn, attacks used by your (\w+) pokemon do (\d+) more damage to your opponent's active pokemon$/, m => ({ t: 'typeBoost', type: m[1], n: +m[2] })],
 ];
-H.opp.push(s => { for (const [re, f] of SENT) { const m = s.match(re); if (m) return f(m); } return null; });
+// prevSent: the sentence read just before this one (readBody reads a card's sentences in order).
+let prevSent = '', lastLook = null;
+H.opp.push(s => { const prev = prevSent; prevSent = s; for (const [re, f] of SENT) { const m = s.match(re); if (m) { const r = f(m, prev); if (r) return r; } } return null; });
 
 /* ---------- Attacks ---------- */
 function calcOf(R) {
@@ -103,7 +102,7 @@ const ATK = [
   [/^you may shuffle (\d+) energy attached to this pokemon into your deck$/, m => ({ t: 'pump', n: +m[1] })],
   [/^if you do, this attack also does (\d+) damage to 1 of your opponent's benched pokemon$/, m => ({ t: 'snipe', n: +m[1], k: 1, bench: true, ifPumped: true })],
 ];
-H.atk.push((s, R, a) => { for (const [re, f] of ATK) { const m = s.match(re); if (m) { const r = f(m, R, s); if (r) return r; } } return null; });
+H.atk.push((s, R, a) => { for (const [re, f] of ATK) { const m = s.match(re); if (m) { const r = f(m, R, s, a); if (r) return r; } } return null; });
 
 /* ---------- Steps ---------- */
 const self = (s, c) => { const f = I.findMon(s, c.mon); return f && f.m; };
@@ -381,6 +380,411 @@ H.abilOff.push((s, m) => {
   return '';
 });
 // Risky Ruins is applied by the engine itself (benchRuins).
+
+/* ---------- Third batch (5turn): the rest of the meta lists ---------- */
+const lc = x => String(x || '').toLowerCase();
+const nameOf = ref => lc(ref.card.name);
+const isTR = ref => /^team rocket's /.test(nameOf(ref));
+const typesOf = m => T.gfTypes(topOf(m));
+const isTera = m => T.gfSubs(topOf(m)).includes('tera');
+const rule = m => T.gfRuleBox(topOf(m));
+const stTurn = (s, k) => s.turns[k]; // a player's own turn count
+const sneakers = P => P.discard.filter(y => y.card.cat === 'pokemon' && (y.card.abil || []).some(a => a[0] === "Hide 'n' Sneak")).length;
+const hopsKO = (s, k, re) => (s.koLog || []).some(e => e.k === k && e.by === 1 - k && e.t === stTurn(s, 1 - k) && (!re || re.test(e.name)));
+const energyType = (e, type) => { const p = E.internals && T.gfEType(e) ? [T.gfEType(e)] : null; return p ? p[0] === type : false; };
+const special = e => !T.gfEType(e);
+
+// Effects of attacks (and of Abilities, for Hide 'n' Sneak) that a Pokemon is protected from. Damage is not an effect.
+function shielded(s, m, byAbility) {
+  const k = ownerOf(s, m); if (k < 0 || k === s.cur) return false;
+  if (abilOn(s, m, k, /^prevent all effects of your opponent's pokemon's attacks and abilities done to this pokemon/)) return true;
+  if (byAbility) return false;
+  if (abilOn(s, m, k, /^prevent all effects of attacks used by your opponent's pokemon done to this pokemon/)) return true;
+  if (T.gfIsBasic(topOf(m)) && isTR(topOf(m)) && anyOn(s, k, /^prevent all effects of attacks used by your opponent's pokemon done to your basic team rocket's pokemon/).length) return true;
+  if (s.players[k].active !== m && anyOn(s, k, /^prevent all damage from and effects of attacks from your opponent's pokemon done to your benched pokemon/).length) return true;
+  const att = s.players[s.cur].active;
+  if (m.acerola === stTurn(s, s.cur) && att && T.gfIsEx(topOf(att))) return true;
+  return false;
+}
+const inAttack = s => s.mods.atkMon != null && !s.pending ? true : !!(s.pending && s.pending.ctx && s.pending.ctx.endTurn);
+
+/* Sentences in Trainers and Abilities */
+SENT.unshift(
+  // Damage counters from Abilities and Trainers, here so the protections above apply.
+  [/^(?:you may )?put (\d+) damage counters? on 1 of your opponent's pokemon$/, m => ({ t: 'countersOn', n: +m[1] })],
+  [/^(?:you may )?move up to (\d+) damage counters? from 1 of your pokemon to 1 of your opponent's pokemon$/, m => ({ t: 'moveOff', n: +m[1] })],
+);
+SENT.push(
+  [/^shuffle the other cards and put them on the bottom of your deck$/, (m, prev) => /^look at the top \d+ cards of your deck and attach any number of basic/.test(prev) ? { t: 'noop' } : null],
+  [/^you can use this card only when it is the last card in your hand$/, () => ({ t: 'noop' })],
+  [/^during this turn, if your opponent's active pokemon is knocked out by damage from an attack used by your tera pokemon, take 1 more prize card$/, () => ({ t: 'mod', k: 'briar' })],
+  [/^during this turn, attacks used by your pokemon that don't have a rule box do (\d+) more damage to your opponent's active pokemon$/, m => ({ t: 'mod', k: 'gladion', v: +m[1] })],
+  [/^switch your active team rocket's pokemon with 1 of your benched team rocket's pokemon$/, () => ({ t: 'trSwap' })],
+  [/^if you do, switch in 1 of your opponent's benched pokemon to the active spot$/, () => ({ t: 'gust', ifSwitched: true })],
+  [/^if heads, switch in 1 of your opponent's benched pokemon to the active spot$/, () => ({ t: 'gust', ifHeads: true })],
+  [/^choose up to (\d+) of your (\w+) pokemon$/, m => ({ t: 'pickMine', n: +m[1], type: m[2] })],
+  [/^for each of those pokemon, search your deck for a basic (\w+) energy card and attach it to that pokemon$/, m => ({ t: 'janine', type: m[1] })],
+  [/^if you attached energy to your active pokemon in this way, it is now poisoned$/, () => ({ t: 'janinePoison' })],
+  [/^search your deck for a basic (\w+) energy card and attach it to 1 of your benched (\w+) pokemon$/, m => ({ t: 'searchAttach', type: m[1], to: 'bench', toType: m[2] })],
+  [/^if you attached energy to a pokemon in this way, place (\d+) damage counters on that pokemon$/, m => ({ t: 'selfDmg', d: 10 * +m[1], who: 'target', ifAttached: true })],
+  [/^if your active pokemon has the festival lead ability, (?:you may )?search your deck for a card and put it into your hand$/, () => ({ t: 'groove' })],
+  [/^(?:once during (?:each player's|your) turn, )?(?:(?:that player|you) may )?search (?:their|your) deck for a stage 1 pokemon that evolves from 1 of their basic pokemon and put it onto that pokemon to evolve it$/, () => ({ t: 'grandTree' })],
+  [/^if that pokemon was evolved in this way, (?:that player )?may search (?:their|your) deck for a stage 2 pokemon that evolves from that pokemon and put it onto that pokemon to evolve it$/, () => ({ t: 'grandTree2' })],
+  [/^that player shuffles their deck$/, () => ({ t: 'noop' })],
+  [/^(?:once during (?:each player's|your) turn, )?(?:(?:that player|you) may )?switch their active (\w+) pokemon with 1 of their benched (\w+) pokemon$/, m => ({ t: 'typeSwap', type: m[1] })],
+  [/^switch your active pokemon with 1 of your benched pokemon$/, () => ({ t: 'swapOut' })],
+  [/^if you do, move an energy from the pokemon you moved to your bench to the new active pokemon$/, () => ({ t: 'zinnia' })],
+  [/^if you moved a pokemon ex to your bench in this way, heal (\d+) damage from that pokemon$/, m => ({ t: 'az', n: +m[1] })],
+  [/^discard a pokemon tool and a special energy from 1 of your opponent's pokemon$/, () => ({ t: 'ruffian' })],
+  [/^discard a special energy from (1 of )?your opponent's (active )?pokemon$/, m => ({ t: 'hammer', active: !!m[2] })],
+  [/^count your prize cards, shuffle them, and put them on the bottom of your deck$/, () => ({ t: 'ticket' })],
+  [/^take that many cards from the top of your deck and put them face down as your prize cards$/, () => ({ t: 'noop' })],
+  [/^choose 1 of your pokemon in play$/, () => ({ t: 'pickOne' })],
+  [/^during your opponent's next turn, prevent all damage from and effects of attacks done to that pokemon by your opponent's pokemon ex$/, () => ({ t: 'acerola' })],
+  [/^discard your hand and search your deck for (.+), reveal them, and put them into your hand$/, m => { const spec = T.gfThings(m[1]); return spec ? { t: 'larry', spec } : null; }],
+  [/^devolve 1 of your evolved (\w+) pokemon by putting any number of evolution cards on it into your hand$/, m => ({ t: 'devolve', type: m[1] })],
+  [/^draw a card for each of your opponent's benched pokemon$/, () => ({ t: 'drawOppBench' })],
+  [/^reveal the top (\d+) cards of your opponent's deck$/, m => ({ t: 'flute', n: +m[1] })],
+  [/^you may choose any number of basic pokemon you find there and put those pokemon onto their bench$/, () => ({ t: 'noop' })],
+  [/^your opponent shuffles the other cards back into their deck$/, () => ({ t: 'noop' })],
+  // Naveen: the draw is read first (Goldfish), so the discard comes after it and draws back up to 5.
+  [/^before drawing cards, you may discard any number of cards from your hand$/, () => ({ t: 'naveen', n: 5 })],
+  [/^attach up to (\d+) basic (\w+) energy cards from your discard pile to your (\w+) pokemon in any way you like$/, m => ({ t: 'discardAttach', n: +m[1], type: m[2], toType: m[3], any: true })],
+  [/^search your deck for up to (\d+) basic (\w+) energy cards and attach them to your (.+?) pokemon in any way you like$/, m => ({ t: 'punkUp', n: +m[1], type: m[2], who: m[3] })],
+  [/^search your deck for (an? .+? card), reveal it, and put it into your hand$/, m => { const spec = T.gfThings(m[1]); if (spec) return null; const w = m[1].replace(/^an? /, '').replace(/ card$/, ''); return { t: 'byName', name: w }; }],
+  [/^attach a basic (\w+) energy card from your hand to 1 of your (\w+) pokemon$/, m => ({ t: 'handAttach', type: m[1], toType: m[2] })],
+  // Comfey: the look is Goldfish's; the card not taken stays out of the game (the Lost Zone), read here as the discard pile.
+  [/^(?:you may )?look at the top (\d+) cards of your deck and put 1 of them into your hand$/, m => (lastLook = { t: 'comfey', n: +m[1], rest: 'bottom' })],
+  [/^put the other cards? (in the lost zone|on the bottom of your deck)$/, (m, prev) => { if (!lastLook || !/look at the top \d+ cards of your deck and put 1 of them into your hand$/.test(prev)) return null; lastLook.rest = /lost/.test(m[1]) ? 'lost' : 'bottom'; return { t: 'noop' }; }],
+  [/^move a basic (\w+) energy from 1 of your pokemon to another of your pokemon$/, m => ({ t: 'moveType', type: m[1] })],
+  [/^search your deck for a card that has no abilities and evolves from 1 of your pokemon, and put it onto that pokemon to evolve it$/, () => ({ t: 'salvatore' })],
+  [/^you can use this card on a pokemon you put down when you were setting up to play or on a pokemon that was put into play this turn$/, () => ({ t: 'noop' })],
+  [/^search your deck for a basic (\w+) energy card and a basic (\w+) energy card, reveal them, and put them into your hand$/, m => ({ t: 'search', spec: T.gfThings('a basic ' + m[1] + ' energy card and a basic ' + m[2] + ' energy card') || { alts: [[{ n: 1, F: { cat: 'energy', basic: true, type: m[1] } }, { n: 1, F: { cat: 'energy', basic: true, type: m[2] } }]] }, dest: 'hand' })],
+);
+
+/* Attacks */
+const hereEnergy = (m, type) => m.energy.filter(e => !type || T.gfEType(e) === type).length;
+ATK.unshift(
+  [/^heal (\d+) damage from 1 of your pokemon$/, m => ({ t: 'heal', n: +m[1], who: 'one' })],
+  [/^this pokemon recovers from all special conditions$/, () => ({ t: 'recover' })],
+  [/^(?:you may )?search your deck for a card and put it into your hand$/, () => ({ t: 'search', spec: { alts: [[{ n: 1, F: { any: true } }]] }, dest: 'hand' })],
+  [/^if this pokemon moved from your bench to the active spot this turn, this attack does (\d+) more damage$/, (m, R) => { addCalc(R, (s, att) => s.startAct && s.startAct[s.cur] !== att.id ? +m[1] : 0); return true; }],
+  [/^if this pokemon has at least (\d+) extra energy attached ?,? this attack does (\d+) more damage$/, (m, R, s, a) => { addCalc(R, (st, att) => att.energy.length >= (a.cost || []).length + +m[1] ? +m[2] : 0); return true; }],
+  [/^if any of your (?:(.+?)'s )?pokemon were knocked out by damage from an attack during your opponent's last turn, this attack does (\d+) more damage(, and your opponent's active pokemon is now paralyzed)?$/, (m, R) => {
+    const re = m[1] ? new RegExp('^' + m[1] + "'s ") : null; addCalc(R, s => (re ? hopsKO(s, s.cur, re) : s.players[s.cur].koLastTurn) ? +m[2] : 0);
+    return m[3] ? { t: 'cond', c: ['paralyzed'], ifKO: m[1] || true } : true; }],
+  [/^your opponent reveals their hand, and you choose a card you find there and put it on the bottom of their deck$/, () => ({ t: 'handPick', to: 'bottom' })],
+  [/^your opponent reveals their hand, and you discard a card you find there$/, () => ({ t: 'handPick', to: 'discard' })],
+  [/^your opponent reveals their hand$/, () => true],
+  [/^if 1 of your pokemon used (.+?) during your last turn, this attack can't be used$/, (m, R) => { R.notTwice = true; return true; }],
+  [/^during your opponent's next turn, prevent all damage from attacks done to this pokemon$/, () => ({ t: 'guard', all: true })],
+  [/^during your opponent's next turn, this pokemon takes (\d+) less damage from attacks$/, m => ({ t: 'guard', n: +m[1] })],
+  [/^if you go second, you can't use this attack during your first turn$/, (m, R) => { R.notFirstSecond = true; return true; }],
+  [/^if you go first, you can use this attack during your first turn$/, (m, R) => { R.firstOK = true; return true; }],
+  [/^search your deck for an? (?:(basic )?(\w+) )?energy card and attach it to (this pokemon|1 of your benched pokemon)$/, m => ({ t: 'searchAttach', type: m[2] && m[2] !== 'energy' ? m[2] : '', basic: !!m[1], to: m[3] === 'this pokemon' ? 'self' : 'bench' })],
+  [/^if this pokemon has any (\w+) energy attach(?:ed|es), this attack does (\d+) more damage$/, (m, R) => { addCalc(R, (s, att) => hereEnergy(att, m[1]) ? +m[2] : 0); return true; }],
+  [/^you may discard up to (\d+) basic energy from your benched pokemon$/, (m, R) => { R._bolt = { t: 'bolt', per: 0, max: +m[1], bench: true }; R.calc = () => 0; return R._bolt; }],
+  [/^this attack does (\d+) more damage for each card you discarded in this way$/, (m, R) => { if (!R._bolt) return null; R._bolt.per = +m[1]; R.calc = (s, a, t, i, d) => R.base; return true; }],
+  [/^discard any amount of (\w+) energy from among your pokemon, and this attack does (\d+) damage for each card you discarded in this way$/, (m, R) => { R.calc = () => 0; return { t: 'bolt', per: +m[2], type: m[1] }; }],
+  [/^discard up to (\d+) energy cards? from this pokemon, and this attack does (\d+) damage for each card you discarded in this way$/, (m, R) => { R.calc = () => 0; return { t: 'bolt', per: +m[2], max: +m[1], self: true, any: true }; }],
+  [/^discard (\d+) energy from this pokemon, and this attack does (\d+) damage to 1 of your opponent's pokemon$/, m => ({ t: 'raid', n: +m[2], discardN: +m[1], any: true })],
+  [/^you may discard all energy from this pokemon and have this attack do (\d+) more damage$/, (m, R) => { R.calc = (s, a, t, i, d) => R.base; return { t: 'optBoost', all: true, more: +m[1] }; }],
+  [/^this attack does (\d+) damage for each energy attached to all of your opponent's pokemon$/, (m, R) => { addCalc(R, s => +m[1] * mons(oppOf(s)).reduce((a, z) => a + z.energy.length, 0)); return true; }],
+  [/^this attack does (\d+) more damage for each colorless in your opponent's active pokemon's retreat cost$/, (m, R) => { addCalc(R, s => { const O = oppOf(s); return O.active ? +m[1] * (E.retreatCost(s, O.active, 1 - s.cur) || 0) : 0; }); return true; }],
+  [/^this attack does (\d+) more damage for each (.+?) card in your discard pile$/, (m, R) => { addCalc(R, s => +m[1] * s.players[s.cur].discard.filter(y => nameOf(y) === m[2]).length); return true; }],
+  [/^if your opponent doesn't have exactly (\d+) or (\d+) prize cards remaining, this attack does nothing$/, (m, R) => { gate(R, s => [+m[1], +m[2]].includes(oppOf(s).prizes.length)); return true; }],
+  [/^if your opponent's active pokemon has exactly (\d+) damage counters on it, that pokemon is knocked out$/, m => ({ t: 'exactKO', n: +m[1] })],
+  [/^if your opponent's pokemon is knocked out by damage from this attack, take (\d+) more prize cards?$/, (m, R) => { R.prizePlus = +m[1]; return true; }],
+  [/^shuffle your hand into your deck$/, () => ({ t: 'handToDeck' })],
+  [/^discard a special energy from your opponent's active pokemon$/, () => ({ t: 'hammer', active: true })],
+  [/^move an energy from 1 of your opponent's pokemon to another of their pokemon$/, () => ({ t: 'oppMoveE' })],
+  [/^(?:you may )?search your deck for up to (\d+) (.+?) and put them onto your bench$/, m => ({ t: 'benchByName', n: +m[1], name: m[2] })],
+  [/^search your deck for a card that evolves from this pokemon and put it onto this pokemon to evolve it$/, () => ({ t: 'ascend' })],
+  [/^discard a card from your hand$/, () => ({ t: 'tossOwn' })],
+  [/^if you do, your opponent discards a card from their hand$/, () => ({ t: 'oppToss' })],
+  [/^you may discard any number of (\w+) cards that have "(.+?)" in their name from your hand, and this attack does (\d+) damage for each card you discarded in this way$/, (m, R) => { R.calc = () => 0; return { t: 'feathers', kind: m[1], name: m[2], per: +m[3] }; }],
+  [/^choose 1 of your opponent's active pokemon's attacks$/, () => ({ t: 'torment' })],
+  [/^choose 1 of your opponent's pokemon (\d+) times$/, m => ({ t: 'salvo', k: +m[1], n: 0 })],
+  [/^for each time you chose a pokemon, do (\d+) damage to it$/, (m, R) => { const z = (R.fx || []).find(x => x.t === 'salvo'); if (!z) return null; z.n = +m[1]; return true; }],
+  [/^this damage isn't affected by weakness or resistance$/, () => true],
+  [/^place (\d+) damage counters? on your opponent's active pokemon$/, m => ({ t: 'countersActive', flat: +m[1] })],
+  [/^if you have (\d+) or more pokemon that have the hide 'n' sneak ability in your discard pile, place (\d+) damage counters on each of your opponent's pokemon$/, m => ({ t: 'matcha', k: +m[1], n: +m[2] })],
+  [/^if you have (\d+) or more pokemon that have the hide 'n' sneak ability in your discard pile, this attack does (\d+) more damage$/, (m, R) => { addCalc(R, s => sneakers(s.players[s.cur]) >= +m[1] ? +m[2] : 0); return true; }],
+  [/^if you have (\d+) or more pokemon that have the hide 'n' sneak ability in your discard pile, choose (\d+) of your opponent's pokemon and quadruple the number of damage counters on each of them$/, m => ({ t: 'quad', k: +m[1], n: +m[2] })],
+  [/^choose 1 of your benched (.+?)'s pokemon's attacks and use it as this attack$/, m => ({ t: 'copy', from: 'bench', name: m[1] })],
+  [/^discard the top card of your deck, and if that card is a pokemon that doesn't have a rule box, choose 1 of its attacks and use it as this attack$/, () => ({ t: 'copy', from: 'top' })],
+  [/^choose 1 of your opponent's active (\w+) pokemon's attacks and use it as this attack$/, m => ({ t: 'copy', from: 'opp', sub: m[1] })],
+);
+// countersActive also reads a flat number of counters (Poltchageist's Furtive Drop).
+S.countersActive = { run(s, st, c, P, O) { if (!O.active || shielded(s, O.active)) return; O.active.dmg += 10 * (st.flat != null ? st.flat : st.per * P.hand.length); } };
+
+/* Steps */
+const ids = a => a.map(m => m.id);
+const may = o => o.length ? o.concat([null]) : null;
+function attachFromDeck(s, P, m, F) { const y = P.deck.find(z => T.gfFit(z, F)); if (!y) return false; m.energy.push(I.take(P.deck, y.uid)); I.log(s, 'Attached ' + y.card.name + ' to ' + nm(m)); return true; }
+const basicE = type => ({ cat: 'energy', basic: true, type: type || '' });
+S.mod = { run(s, st) { s.mods[st.k] = st.v != null ? st.v : true; } };
+S.recover = { run(s, st, c) { const m = self(s, c); if (m) { m.cond = null; m.poison = 0; m.burn = 0; } } };
+S.trSwap = { run(s, st, c, P) { if (!P.active || !isTR(topOf(P.active))) return; return pickBench(P, m => isTR(topOf(m))); },
+  answer(s, st, c, v, P) { const i = P.bench.findIndex(m => m.id === v), m = P.bench[i]; P.bench[i] = P.active; P.active = m; c.switched = true; I.log(s, nm(m) + ' is now Active'); } };
+S.swapOut = { run(s, st, c, P) { return P.active && P.bench.length ? ids(P.bench) : null; },
+  answer(s, st, c, v, P) { const i = P.bench.findIndex(m => m.id === v), m = P.bench[i]; c.out = P.active.id; P.bench[i] = P.active; P.active = m; c.switched = true; I.log(s, nm(m) + ' is now Active'); } };
+S.zinnia = { run(s, st, c, P) { const f = c.out != null && I.findMon(s, c.out); if (!f || !f.m.energy.length || !P.active) return; P.active.energy.push(f.m.energy.shift()); } };
+S.az = { run(s, st, c, P) { const f = c.out != null && I.findMon(s, c.out); if (f && T.gfIsEx(topOf(f.m))) f.m.dmg = Math.max(0, f.m.dmg - st.n); } };
+S.typeSwap = { run(s, st, c, P) { if (!P.active || !typesOf(P.active).includes(st.type)) return; return may(pickBench(P, m => typesOf(m).includes(st.type))); },
+  answer(s, st, c, v, P) { if (v == null) return; const i = P.bench.findIndex(m => m.id === v), m = P.bench[i]; P.bench[i] = P.active; P.active = m; I.log(s, nm(m) + ' is now Active'); } };
+S.pickMine = { run(s, st, c, P) { if ((c.picked || []).length >= st.n) return; return may(mons(P).filter(m => typesOf(m).includes(st.type) && !(c.picked || []).includes(m.id)).map(m => m.id)); },
+  answer(s, st, c, v, P) { if (v == null) return; c.picked = (c.picked || []).concat(v); return S.pickMine.run(s, st, c, P); } };
+S.janine = { run(s, st, c, P) { (c.picked || []).forEach(id => { const f = I.findMon(s, id); if (f && attachFromDeck(s, P, f.m, basicE(st.type)) && P.active === f.m) c.toActive = true; }); I.reshuffle(s, P); } };
+S.janinePoison = { run(s, st, c, P) { if (c.toActive && P.active) setCond(P.active, 'poisoned', s, s.cur); } };
+S.searchAttach = { run(s, st, c, P) {
+    const F = Object.assign({ cat: 'energy' }, st.type ? { type: st.type } : {}, st.basic || st.toType ? { basic: true } : {});
+    if (!P.deck.some(y => y.card.cat === 'energy' && T.gfFit(y, F))) { I.reshuffle(s, P); return; }
+    if (st.to === 'self') { const m = self(s, c); if (m) { attachFromDeck(s, P, m, F); c.attached++; c.target = m.id; } I.reshuffle(s, P); return; }
+    const o = P.bench.filter(m => !st.toType || typesOf(m).includes(st.toType)).map(m => m.id); if (!o.length) { I.reshuffle(s, P); return; } return o; },
+  answer(s, st, c, v, P) { const F = Object.assign({ cat: 'energy' }, st.type ? { type: st.type } : {}, st.basic || st.toType ? { basic: true } : {}); const m = I.findMon(s, v).m;
+    if (attachFromDeck(s, P, m, F)) { c.attached++; c.target = m.id; } I.reshuffle(s, P); } };
+S.groove = { run(s, st, c, P) { if (!P.active || !abilOn(s, P.active, s.cur, /^if festival grounds is in play, this pokemon may use an attack it has twice/)) return;
+    const seen = new Set(), o = []; P.deck.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
+  answer(s, st, c, v, P) { P.hand.push(I.take(P.deck, v)); I.reshuffle(s, P); } };
+function evoChoices(s, P, test) { const o = []; mons(P).forEach(m => { const seen = new Set(); P.deck.forEach(y => { if (y.card.cat !== 'pokemon' || seen.has(y.card) || lc(y.card.from) !== T.gfKey(topOf(m)) || !test(m, y)) return; seen.add(y.card); o.push({ mon: m.id, uid: y.uid }); }); }); return o; }
+function evolveWith(s, P, v) { const m = I.findMon(s, v.mon).m, y = I.take(P.deck, v.uid); m.stack.push(y); m.evoTurn = s.turn; I.log(s, 'Evolved into ' + y.card.name); return m; }
+S.grandTree = { run(s, st, c, P) { return may(evoChoices(s, P, (m, y) => m.stack.length === 1 && y.card.stage === 'stage1' && m.turnIn < s.turn && s.turn >= 2)); },
+  answer(s, st, c, v, P) { if (v == null) { I.reshuffle(s, P); return; } c.tree = evolveWith(s, P, v).id; } };
+S.grandTree2 = { run(s, st, c, P) { if (c.tree == null) return; return may(evoChoices(s, P, (m, y) => m.id === c.tree && y.card.stage === 'stage2')); },
+  answer(s, st, c, v, P) { if (v != null) evolveWith(s, P, v); I.reshuffle(s, P); } };
+S.salvatore = { run(s, st, c, P) { return evoChoices(s, P, (m, y) => !(y.card.abil || []).length && m.evoTurn !== s.turn); },
+  answer(s, st, c, v, P) { evolveWith(s, P, v); I.reshuffle(s, P); } };
+S.ascend = { run(s, st, c, P) { return evoChoices(s, P, m => m.id === c.mon); }, answer(s, st, c, v, P) { evolveWith(s, P, v); I.reshuffle(s, P); } };
+S.ruffian = { run(s, st, c, P, O) { return mons(O).filter(m => !shielded(s, m) && (m.tool || m.energy.some(special))).map(m => m.id); },
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v).m; if (m.tool) { O.discard.push(m.tool); m.tool = null; } const e = m.energy.find(special); if (e) O.discard.push(I.take(m.energy, e.uid)); I.log(s, 'Discarded from ' + nm(m)); } };
+S.hammer = { run(s, st, c, P, O) { const o = []; (st.active ? [O.active] : mons(O)).filter(m => m && !shielded(s, m)).forEach(m => { const e = m.energy.find(special); if (e) o.push({ mon: m.id, uid: e.uid }); }); return o; },
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + nm(m)); } };
+S.ticket = { run(s, st, c, P) { const n = P.prizes.length; const old = P.prizes.splice(0); I.reshuffle(s, { deck: old }); P.deck = P.deck.concat(old); P.prizes = P.deck.splice(0, n); } };
+S.pickOne = { run(s, st, c, P) { return ids(mons(P)); }, answer(s, st, c, v) { c.one = v; } };
+S.acerola = { run(s, st, c) { const f = c.one != null && I.findMon(s, c.one); if (f) f.m.acerola = stTurn(s, 1 - s.cur) + 1; } };
+S.larry = { run(s, st, c, P) { P.discard.push.apply(P.discard, P.hand.splice(0)); st.spec.alts[0].forEach(q => { for (let i = 0; i < q.n; i++) { const y = P.deck.find(z => T.gfFit(z, q.F)); if (y) P.hand.push(I.take(P.deck, y.uid)); } }); I.reshuffle(s, P); } };
+S.devolve = { run(s, st, c, P) { return mons(P).filter(m => m.stack.length > 1 && typesOf(m).includes(st.type)).map(m => m.id); },
+  answer(s, st, c, v, P) { const m = I.findMon(s, v).m; while (m.stack.length > 1) P.hand.push(m.stack.pop()); m.evoTurn = s.turn; I.log(s, nm(m) + ' was devolved'); } };
+S.drawOppBench = { run(s, st, c, P, O) { drawFor(s, P, O.bench.length); } };
+S.flute = { run(s, st, c, P, O) { const top = O.deck.splice(0, st.n), room = () => O.bench.length < I.benchMax(s, O);
+    top.filter(y => y.card.cat === 'pokemon' && y.card.stage === 'basic').forEach(y => { if (!room()) return; top.splice(top.indexOf(y), 1); O.bench.push(I.newMon(s, y, 1 - s.cur)); I.log(s, 'Put ' + y.card.name + " on your opponent's Bench"); });
+    O.deck = O.deck.concat(top); I.reshuffle(s, O); } };
+S.naveen = { run(s, st, c, P) { if (c.tossDone) return; const seen = new Set(), o = []; P.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return may(o); },
+  answer(s, st, c, v, P) { if (v == null) { c.tossDone = true; return; } P.discard.push(I.take(P.hand, v)); return S.naveen.run(s, st, c, P); } };
+const naveenAfter = S.naveen.run;
+S.naveen.run = (s, st, c, P) => { const r = naveenAfter(s, st, c, P); if (!r) drawFor(s, P, Math.max(0, st.n - P.hand.length)); return r; };
+S.discardAttach.run = (s, st, c, P) => { if ((c.att || 0) >= st.n || !P.discard.some(y => T.gfEType(y) === st.type)) return; const to = (st.any ? mons(P) : P.bench).filter(m => !st.toType || typesOf(m).includes(st.toType)); return to.length ? may(ids(to)) : null; };
+S.punkUp = { run(s, st, c, P) { if ((c.att || 0) >= st.n || !P.deck.some(y => T.gfEType(y) === st.type)) { I.reshuffle(s, P); return; }
+    const to = mons(P).filter(m => nmL(m).startsWith(st.who + "'s ") || (st.who === 'marnie' && /^marnie's /.test(nmL(m)))); return to.length ? may(ids(to)) : (I.reshuffle(s, P), null); },
+  answer(s, st, c, v, P) { if (v == null) { I.reshuffle(s, P); return; } attachFromDeck(s, P, I.findMon(s, v).m, basicE(st.type)); c.att = (c.att || 0) + 1; return S.punkUp.run(s, st, c, P); } };
+const nmL = m => lc(nm(m));
+S.byName = { run(s, st, c, P) { const y = P.deck.find(z => nameOf(z) === st.name || nameOf(z).startsWith(st.name)); if (y) P.hand.push(I.take(P.deck, y.uid)); I.reshuffle(s, P); } };
+S.handAttach = { run(s, st, c, P) { if (!P.hand.some(y => T.gfEType(y) === st.type)) return; return mons(P).filter(m => typesOf(m).includes(st.toType)).map(m => m.id); },
+  answer(s, st, c, v, P) { const y = P.hand.find(z => T.gfEType(z) === st.type); I.findMon(s, v).m.energy.push(I.take(P.hand, y.uid)); } };
+// Look at the top cards and put 1 into your hand; the rest go to the bottom of the deck, or out of the game (the Lost Zone).
+S.comfey = { run(s, st, c, P) { c.top = P.deck.splice(0, st.n); if (!c.top.length) return; return c.top.map(y => y.uid); },
+  answer(s, st, c, v, P) { P.hand.push(I.take(c.top, v)); if (st.rest === 'bottom') P.deck = P.deck.concat(c.top); else P.lost = (P.lost || []).concat(c.top); c.top = null; } };
+S.moveType = { run(s, st, c, P) { const o = []; mons(P).forEach(a => { const e = a.energy.find(x => T.gfEType(x) === st.type); if (e) mons(P).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); return o; },
+  answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, 'Moved Energy from ' + nm(a) + ' to ' + nm(b)); } };
+S.countersOn = { run(s, st, c, P, O) { return mons(O).filter(m => !shielded(s, m, true)).map(m => m.id); },
+  answer(s, st, c, v) { const m = I.findMon(s, v).m; m.dmg += 10 * st.n; I.log(s, 'Put ' + st.n + ' damage counters on ' + nm(m)); } };
+const moveOffRun = S.moveOff.run;
+S.moveOff.run = (s, st, c, P, O) => { if (s.players.some((Q, k) => anyOn(s, k, /^damage counters on each pokemon can't be moved to other pokemon/).length)) return; const r = moveOffRun(s, st, c, P, O); return r && r.filter(v => v == null || !shielded(s, I.findMon(s, v.to).m, true)); };
+const condRun = S.cond.run;
+S.cond.run = (s, st, c, P, O) => { if (st.ifKO && !(st.ifKO === true ? P.koLastTurn : hopsKO(s, s.cur, new RegExp('^' + st.ifKO + "'s ")))) return; if (O.active && shielded(s, O.active)) return; return condRun(s, st, c, P, O); };
+S.handPick = { run(s, st, c, P, O) { const seen = new Set(), o = []; O.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
+  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); if (st.to === 'bottom') O.deck.push(x); else O.discard.push(x); I.log(s, (st.to === 'bottom' ? 'Put ' : 'Discarded ') + x.card.name + " from your opponent's hand"); } };
+S.guard = { run(s, st, c) { const m = self(s, c); if (m) m.guard = { t: stTurn(s, 1 - s.cur) + 1, all: !!st.all, n: st.n || 0 }; } };
+S.exactKO = { run(s, st, c, P, O) { if (O.active && O.active.dmg === 10 * st.n && !shielded(s, O.active)) { O.active.dmg = E.maxHp(s, O.active); I.log(s, nm(O.active) + ' is Knocked Out by the effect'); } } };
+S.handToDeck = { run(s, st, c, P) { P.deck = P.deck.concat(P.hand.splice(0)); I.reshuffle(s, P); } };
+S.oppMoveE = { run(s, st, c, P, O) { const o = []; mons(O).filter(m => !shielded(s, m)).forEach(a => { const seen = new Set(); a.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); mons(O).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); }); return o; },
+  answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, "Moved an Energy on your opponent's side"); } };
+S.benchByName = { run(s, st, c, P) { const want = lc(st.name).replace(/s$/, ''); let k = 0;
+    while (k < st.n && P.bench.length < I.benchMax(s, P)) { const y = P.deck.find(z => nameOf(z) === want || nameOf(z) === lc(st.name)); if (!y) break; P.bench.push(I.newMon(s, I.take(P.deck, y.uid), s.cur)); k++; } I.reshuffle(s, P); } };
+S.tossOwn = { run(s, st, c, P) { const seen = new Set(), o = []; P.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
+  answer(s, st, c, v, P) { P.discard.push(I.take(P.hand, v)); c.tossed = 1; } };
+S.oppToss = { run(s, st, c, P, O) { if (!c.tossed || !O.hand.length) return; const seen = new Set(), o = []; O.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return { choices: o, who: 1 - s.cur }; },
+  answer(s, st, c, v, P, O) { O.discard.push(I.take(O.hand, v)); } };
+S.feathers = { run(s, st, c, P) { const o = P.hand.filter(y => y.card.kind === st.kind && nameOf(y).includes(st.name)); return Array.from({ length: o.length + 1 }, (_, i) => i); },
+  answer(s, st, c, v, P, O) { for (let i = 0; i < v; i++) { const y = P.hand.find(z => z.card.kind === st.kind && nameOf(z).includes(st.name)); P.discard.push(I.take(P.hand, y.uid)); }
+    const att = self(s, c); if (att && O.active && v) hit(s, att, O.active, st.per * v); } };
+S.torment = { run(s, st, c, P, O) { return O.active && !shielded(s, O.active) ? topOf(O.active).card.attacks.map(a => a.name) : null; },
+  answer(s, st, c, v, P, O) { O.active.torment = { name: v, t: stTurn(s, 1 - s.cur) + 1 }; I.log(s, nm(O.active) + " can't use " + v + ' next turn'); } };
+S.salvo = { run(s, st, c, P, O) { if ((c.salvo || 0) >= st.k) return; return ids(mons(O)); },
+  answer(s, st, c, v, P, O) { const att = self(s, c); if (att) hit(s, att, I.findMon(s, v).m, st.n, true); c.salvo = (c.salvo || 0) + 1; return S.salvo.run(s, st, c, P, O); } };
+S.matcha = { run(s, st, c, P, O) { if (sneakers(P) < st.k) return; mons(O).filter(m => !shielded(s, m)).forEach(m => { m.dmg += 10 * st.n; }); } };
+S.quad = { run(s, st, c, P, O) { if (sneakers(P) < st.k || (c.quad || 0) >= st.n) return; return mons(O).filter(m => m.dmg > 0 && !shielded(s, m) && !(c.quadDone || []).includes(m.id)).map(m => m.id); },
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v).m; m.dmg *= 4; c.quad = (c.quad || 0) + 1; c.quadDone = (c.quadDone || []).concat(v); return S.quad.run(s, st, c, P, O); } };
+// Using another card's attack: its damage now, then its effects (its Energy cost is not paid again).
+function copyChoices(s, st, c, P, O) {
+  if (st.from === 'bench') return P.bench.filter(m => nmL(m).startsWith(st.name + "'s ")).reduce((o, m) => o.concat(topOf(m).card.attacks.map((a, i) => ({ mon: m.id, i }))), []);
+  if (st.from === 'opp') return O.active && T.gfSubs(topOf(O.active)).includes(st.sub) ? topOf(O.active).card.attacks.map((a, i) => ({ opp: O.active.id, i })) : [];
+  if (c.topCard == null) { const y = P.deck.shift(); if (!y) return []; P.discard.push(y); c.topCard = y.uid; I.log(s, 'Discarded ' + y.card.name + ' from the top of the deck');
+    if (y.card.cat !== 'pokemon' || /ex$/i.test(y.card.name) || T.gfRuleBox(y)) return []; }
+  const y = P.discard.find(z => z.uid === c.topCard); return y && y.card.cat === 'pokemon' && !T.gfRuleBox(y) ? y.card.attacks.map((a, i) => ({ top: y.uid, i })) : [];
+}
+S.copy = { run(s, st, c, P, O) { if (c.copied) return; const o = copyChoices(s, st, c, P, O); return o.length ? o : null; },
+  answer(s, st, c, v, P, O) { c.copied = true;
+    const src = v.mon != null ? topOf(I.findMon(s, v.mon).m) : v.opp != null ? topOf(I.findMon(s, v.opp).m) : P.discard.find(z => z.uid === v.top);
+    const a = src.card.attacks[v.i], R = E.readAttack(a), att = self(s, c); I.log(s, 'Used ' + a.name);
+    if (!R || !att) return; if (R.pre) R.pre(s, att);
+    if (O.active) { const d = E.damageTo(s, att, R, O.active, true); O.active.dmg += d; I.log(s, d + ' damage to ' + nm(O.active)); }
+    if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { m.dmg += E.damageTo(s, att, { base: R.bench.n }, m, false); });
+    if (R.fx && R.fx.length) { const Rn = s.pending; Rn.steps = Rn.steps.slice(0, Rn.i + 1).concat(R.fx, Rn.steps.slice(Rn.i + 1)); } } };
+const raidRun = S.raid.run;
+S.raid = Object.assign({}, S.raid, { run(s, st, c, P, O) { const m = self(s, c); if (m && st.discardN && !c.paid) { c.paid = true; P.discard.push.apply(P.discard, m.energy.splice(0, st.discardN)); } return raidRun(s, st, c, P, O); } });
+// optBoost with "all": discard every Energy from this Pokemon for the extra damage.
+const optRun = S.optBoost.run, optAns = S.optBoost.answer;
+S.optBoost = { run(s, st, c, P, O) { if (!st.all) return optRun(s, st, c, P, O); const m = self(s, c); return m && m.energy.length ? [true, false] : null; },
+  answer(s, st, c, v, P, O) { if (!st.all) return optAns(s, st, c, v, P, O); if (!v) return; const m = self(s, c); P.discard.push.apply(P.discard, m.energy.splice(0));
+    if (O.active) O.active.dmg += E.damageTo(s, m, { base: st.more * 2 }, O.active, true) - E.damageTo(s, m, { base: st.more }, O.active, true); } };
+// Bolt: discard Energy for damage, from the Bench only, of one type, from this Pokemon only, or up to a number.
+S.bolt = { run(s, st, c, P) { const pool = st.self ? [self(s, c)].filter(Boolean) : st.bench ? P.bench : mons(P);
+    const n = pool.reduce((a, z) => a + z.energy.filter(e => st.any ? true : st.type ? T.gfEType(e) === st.type : T.gfEType(e)).length, 0); return Array.from({ length: Math.min(n, st.max || 99) + 1 }, (_, i) => i); },
+  answer(s, st, c, v, P, O) { let left = v; const pool = st.self ? [self(s, c)].filter(Boolean) : st.bench ? P.bench.slice() : P.bench.concat([P.active]).filter(Boolean);
+    for (const m of pool) m.energy = m.energy.filter(e => { if (left > 0 && (st.any || (st.type ? T.gfEType(e) === st.type : T.gfEType(e)))) { left--; P.discard.push(e); return false; } return true; });
+    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, d + ' damage to ' + nm(O.active)); } } };
+
+/* Rules on the board */
+H.passive.push(
+  /^each player's grass pokemon can evolve into grass pokemon during the turn they play those pokemon, except during their first turn$/,
+  /^search your deck for a basic \w+ energy card and a basic \w+ energy card, reveal them, and put them into your hand/, // Adventure Lantern: read as "when you attach this card"
+  /^this pokemon can use the attacks of any of your benched pokemon$/,
+  /^each of your evolved pokemon can use any attack from its previous evolutions$/,
+  /^if festival grounds is in play, this pokemon may use an attack it has twice/,
+  /^if your opponent has any cards in their discard pile that have "(\w+)" in the name, this pokemon can use the (\w+) attack for colorless$/,
+  /^prevent all effects of attacks used by your opponent's pokemon done to your basic team rocket's pokemon$/,
+  /^prevent all effects of your opponent's pokemon's attacks and abilities done to this pokemon$/,
+  /^prevent all effects of attacks used by your opponent's pokemon done to this pokemon$/,
+  /^prevent all damage from and effects of attacks from your opponent's pokemon done to your benched pokemon$/,
+  /^as long as this pokemon is in the active spot, put (\d+) more damage counters on your opponent's poisoned pokemon during pokemon checkup$/,
+  /^attacks used by your (\w+)'s pokemon do (\d+) more damage to your opponent's active pokemon/,
+  /^the (\w+)'s pokemon this card is attached to gets \+(\d+) hp$/,
+  /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon/,
+  /^during pokemon checkup, put 1 damage counter on each pokemon that has an ability/,
+  /^metal pokemon take (\d+) less damage from attacks from the opponent's pokemon$/,
+  /^damage counters on each pokemon can't be moved to other pokemon$/,
+  /^this pokemon can evolve into any pokemon ex that evolves from (\w+) if you play it from your hand onto this pokemon$/,
+  /^if the pokemon this card is attached to is damaged by an attack from your opponent's (\w+) pokemon, it takes (\d+) less damage/,
+  /^attacks used by the (\w+)'s pokemon this card is attached to cost colorless less and do (\d+) more damage/,
+  /^attacks used by (\w+)'s pokemon do (\d+) more damage to the opponent's active pokemon$/,
+  /^if this pokemon has any (\w+) energy attached, it gets \+(\d+) hp, and the attacks it uses do (\d+) more damage/,
+  /^if this pokemon is in the active spot and is knocked out by damage from an attack from your opponent's pokemon, put (\d+) damage counters on the attacking pokemon$/,
+  /^your opponent's active pokemon's retreat cost is colorless more$/,
+  /^this pokemon can't use attacks unless you have (\d+) or more cards in your hand$/,
+  /^this pokemon takes (\d+) less damage from attacks$/,
+  /^attacks used by each tera pokemon in play cost colorless more$/,
+);
+// Team Rocket's Energy: 2 Energy, each Psychic or Darkness, on a Team Rocket's Pokemon only.
+H.provides.push(ref => /provides 2 in any combination of psychic energy and darkness energy/.test(I.ptext(ref)) ? ['psychic|darkness', 'psychic|darkness'] : null);
+H.onEnergy.push((s, x, m) => { if (!/can only be attached to a team rocket's pokemon/.test(I.ptext(x)) || isTR(topOf(m))) return null; const P = s.players[s.cur]; P.discard.push(I.take(m.energy, x.uid)); I.log(s, x.card.name + ' was discarded'); return null; });
+// Adventure Lantern: when attached, the two Energy into the hand.
+H.onEnergy.length; // (Tools have no attach hook in the engine; see G.HOOKS_STEP below.)
+G.HOOKS_STEP.push((s0, s) => { const P = s.players[s.cur], P0 = s0.players[s.cur];
+  mons(P).forEach(m => { if (!m.tool || !/^search your deck for a basic (\w+) energy card and a basic (\w+) energy card/.test(I.ptext(m.tool))) return;
+    const m0 = mons(P0).find(z => z.id === m.id); if (m0 && m0.tool && m0.tool.uid === m.tool.uid) return;
+    const r = I.ptext(m.tool).match(/a basic (\w+) energy card and a basic (\w+) energy card/); [r[1], r[2]].forEach(t => { const y = P.deck.find(z => T.gfEType(z) === t); if (y) P.hand.push(I.take(P.deck, y.uid)); }); I.reshuffle(s, P); }); });
+G.HOOKS_START.push(s => { s.startAct = s.players.map(P => P.active && P.active.id); });
+
+const trName = (m, w) => nmL(m).startsWith(w + "'s ");
+H.dmgPre.push((s, att, t, isA, d) => {
+  if (!isA || d <= 0) return d;
+  const k = s.cur, tool = I.toolOn(s, att), tt = tool ? I.ptext(tool) : ''; let r;
+  mons(s.players[k]).forEach(z => { if (I.abilOff(s, z, k)) return; I.abilTexts(z).forEach(a => { const q = a.t.match(/^attacks used by your (\w+)'s pokemon do (\d+) more damage to your opponent's active pokemon/); if (q && !/doesn't stack/.test(a.t) && trName(att, q[1])) d += +q[2]; }); });
+  ['hop'].forEach(w => { if (trName(att, w) && anyOn(s, k, /^attacks used by your hop's pokemon do 30 more damage to your opponent's active pokemon.*doesn't stack/).length) d += 30; });
+  if ((r = tt.match(/^attacks used by the (\w+)'s pokemon this card is attached to cost colorless less and do (\d+) more damage/)) && trName(att, r[1])) d += +r[2];
+  if (s.stadium && (r = I.ptext(s.stadium.ref).match(/^attacks used by (\w+)'s pokemon do (\d+) more damage to the opponent's active pokemon$/)) && trName(att, r[1])) d += +r[2];
+  if (abilOn(s, att, k, /^if this pokemon has any darkness energy attached, it gets \+100 hp, and the attacks it uses do 100 more damage/) && hereEnergy(att, 'darkness')) d += 100;
+  if (s.mods.gladion && !rule(att)) d += s.mods.gladion;
+  return d;
+});
+H.dmg.push((s, att, t, isA, d) => {
+  if (d <= 0) return d;
+  const k = 1 - s.cur, tool = I.toolOn(s, t), tt = tool ? I.ptext(tool) : ''; let r;
+  if (!isA && s.players[k].bench.includes(t) && anyOn(s, k, /^prevent all damage from and effects of attacks from your opponent's pokemon done to your benched pokemon/).length) return 0;
+  if (t.guard && t.guard.t === stTurn(s, s.cur)) { if (t.guard.all) return 0; d -= t.guard.n; }
+  if (t.acerola === stTurn(s, s.cur) && T.gfIsEx(topOf(att))) return 0;
+  if (s.stadium && (r = I.ptext(s.stadium.ref).match(/^metal pokemon take (\d+) less damage from attacks from the opponent's pokemon$/)) && typesOf(t).includes('metal')) d -= +r[1];
+  if (t.ironDef === stTurn(s, s.cur) && typesOf(t).includes('metal')) d -= 30;
+  if ((r = tt.match(/^if the pokemon this card is attached to is damaged by an attack from your opponent's (\w+) pokemon, it takes (\d+) less damage/)) && typesOf(att).includes(r[1])) d -= +r[2];
+  if (abilOn(s, t, k, /^this pokemon takes (\d+) less damage from attacks$/)) d -= +I.abilTexts(t).map(a => a.t.match(/^this pokemon takes (\d+) less damage from attacks$/)).find(Boolean)[1];
+  return Math.max(0, d);
+});
+// Iron Defender: during your opponent's next turn, your Metal Pokemon take 30 less.
+SENT.push([/^during your opponent's next turn, all of your metal pokemon take (\d+) less damage from attacks from your opponent's pokemon$/, () => ({ t: 'ironDef' })]);
+S.ironDef = { run(s, st, c, P) { s.players[s.cur].ironDef = stTurn(s, 1 - s.cur) + 1; mons(P).forEach(m => { m.ironDef = s.players[s.cur].ironDef; }); } };
+H.hp.push((s, m, hp) => {
+  const tool = I.toolOn(s, m), tt = tool ? I.ptext(tool) : ''; let r;
+  if ((r = tt.match(/^the (\w+)'s pokemon this card is attached to gets \+(\d+) hp$/)) && trName(m, r[1])) hp += +r[2];
+  const k = ownerOf(s, m);
+  if (k >= 0 && abilOn(s, m, k, /^if this pokemon has any darkness energy attached, it gets \+100 hp/) && hereEnergy(m, 'darkness')) hp += 100;
+  return hp;
+});
+H.cost.push((s, m, a, cost) => {
+  const k = ownerOf(s, m); if (k < 0) return cost;
+  const tool = I.toolOn(s, m), tt = tool ? I.ptext(tool) : ''; let r;
+  const pb = I.abilTexts(m).map(x => !I.abilOff(s, m, k) && x.t.match(/^if your opponent has any cards in their discard pile that have "(\w+)" in the name, this pokemon can use the (\w+) attack for colorless$/)).find(Boolean);
+  if (pb && lc(a.name) === pb[2] && s.players[1 - k].discard.some(y => nameOf(y).includes(pb[1]))) return ['colorless'];
+  if ((r = tt.match(/^attacks used by the (\w+)'s pokemon this card is attached to cost colorless less/)) && trName(m, r[1])) { const i = cost.lastIndexOf('colorless'); if (i >= 0) { cost = cost.slice(); cost.splice(i, 1); } }
+  if (s.stadium && /^attacks used by each tera pokemon in play cost colorless more$/.test(I.ptext(s.stadium.ref)) && isTera(m)) cost = cost.concat(['colorless']);
+  return cost;
+});
+H.trainerWhy.push((s, x) => /^you can use this card only when it is the last card in your hand/.test(I.ptext(x)) && s.players[s.cur].hand.length !== 1 ? 'It has to be the last card in your hand.' : '');
+H.attackWhy.push((s, m, a) => {
+  const k = s.cur, R = E.readAttack(a) || {};
+  const g = I.abilTexts(m).map(x => !I.abilOff(s, m, k) && x.t.match(/^this pokemon can't use attacks unless you have (\d+) or more cards in your hand$/)).find(Boolean);
+  if (g && s.players[k].hand.length < +g[1]) return 'Needs ' + g[1] + ' or more cards in your hand.';
+  if (R.notFirstSecond && s.turn === 1 && !s.first) return "Can't be used on your first turn when you go second.";
+  if (R.notTwice && s.players[k].lastAtk && s.players[k].lastAtk.name === a.name && s.players[k].lastAtk.t === s.turn - 1) return 'It was used last turn.';
+  if (m.torment && m.torment.name === a.name && m.torment.t === stTurn(s, k)) return "Your opponent's attack stops this attack this turn.";
+  return '';
+});
+H.preAttack.push((s, att, a) => { const P = s.players[s.cur], O = oppOf(s); P.lastAtk = { name: a.name, t: s.turn }; s.mods.atkMon = att.id; s.mods.atkTarget = O.active && O.active.id; s.mods.prizePlus = (E.readAttack(a) || {}).prizePlus || 0; });
+H.retreat.push((s, m, k, n) => s.players[k].active === m && anyOn(s, 1 - k, /^your opponent's active pokemon's retreat cost is colorless more$/).length ? n + anyOn(s, 1 - k, /^your opponent's active pokemon's retreat cost is colorless more$/).length : n);
+H.prize.push((s, m, p) => {
+  if (m.id !== s.mods.atkTarget || ownerOf(s, m) === s.cur) return p;
+  const att = s.players[s.cur].active; if (!att || att.id !== s.mods.atkMon) return p;
+  if (s.mods.briar && isTera(att)) p += 1;
+  return p + (s.mods.prizePlus || 0);
+});
+H.ko.push((s, m, k, wasActive) => {
+  s.koLog = (s.koLog || []).slice(-11).concat({ k, by: s.cur, t: stTurn(s, s.cur), name: nmL(m) });
+  if (k === s.cur || !wasActive || s.mods.atkMon == null) return;
+  const r = I.abilTexts(m).map(x => x.t.match(/^if this pokemon is in the active spot and is knocked out by damage from an attack from your opponent's pokemon, put (\d+) damage counters on the attacking pokemon$/)).find(Boolean);
+  const att = s.players[s.cur].active; if (r && att && att.id === s.mods.atkMon) { att.dmg += 10 * +r[1]; I.log(s, nm(att) + ' took ' + r[1] + ' damage counters'); }
+});
+H.need.push((s, need) => {
+  let m;
+  if ((m = need.match(/^any of your (.+?)'s pokemon were knocked out during your opponent's last turn$/))) return hopsKO(s, s.cur, new RegExp('^' + m[1] + "'s ")) ? '' : 'None of your ' + m[1] + "'s Pokémon were Knocked Out last turn.";
+  if (/^(?:when )?it is the last card in your hand$/.test(need)) return s.players[s.cur].hand.length === 1 ? '' : 'It has to be the last card in your hand.';
+  return null;
+});
+H.evoNow.push((s, m, x) => !!s.stadium && /^each player's grass pokemon can evolve into grass pokemon during the turn they play those pokemon/.test(I.ptext(s.stadium.ref))
+  && typesOf(m).includes('grass') && (x.card.types || []).includes('grass') && m.evoTurn !== s.turn - 1000);
+H.evoFrom.push((s, m, x) => { const k = ownerOf(s, m); const r = I.abilTexts(m).map(a => !I.abilOff(s, m, k) && a.t.match(/^this pokemon can evolve into any pokemon ex that evolves from (\w+) if you play it/)).find(Boolean);
+  return !!r && lc(x.card.from) === r[1] && /ex$/i.test(x.card.name); });
+H.attacks.push((s, m) => {
+  const k = ownerOf(s, m), out = [];
+  if (abilOn(s, m, k, /^this pokemon can use the attacks of any of your benched pokemon$/)) s.players[k].bench.forEach(b => topOf(b).card.attacks.forEach((a, i) => out.push({ a, i, via: { mon: b.id } })));
+  if (m.stack.length > 1 && anyOn(s, k, /^each of your evolved pokemon can use any attack from its previous evolutions$/).length) m.stack.slice(0, -1).forEach((y, j) => (y.card.attacks || []).forEach((a, i) => out.push({ a, i, via: { stack: j } })));
+  return out;
+});
+H.twice.push((s, att) => !!s.stadium && /^festival grounds$/i.test(s.stadium.ref.card.name) && abilOn(s, att, s.cur, /^if festival grounds is in play, this pokemon may use an attack it has twice/));
+H.hit.push((s, att, t, d) => {
+  if (d <= 0) return; const k = 1 - s.cur, tool = I.toolOn(s, t), tt = tool ? I.ptext(tool) : '', P = s.players[s.cur]; let r;
+  if ((r = tt.match(/^if the pokemon this card is attached to is damaged by an attack from your opponent's (\w+) pokemon, it takes \d+ less damage/)) && typesOf(att).includes(r[1]) && /discard this card/.test(tt)) { s.players[k].discard.push(t.tool); t.tool = null; }
+  if (/^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon/.test(tt) && att.energy.length && P.bench.length) {
+    const to = P.bench.slice().sort((a, b) => a.energy.length - b.energy.length)[0]; to.energy.push(att.energy.shift()); I.log(s, 'Handheld Fan moved an Energy to ' + nm(to)); }
+});
+// Pokemon Checkup: Pecharunt's Toxic Subjugation, Froslass's Freezing Shroud.
+G.HOOKS_END.push(s => {
+  s.players.forEach((Q, j) => { const m = Q.active; if (!m || !m.poison) return; const o = s.players[1 - j].active;
+    if (o && abilOn(s, o, 1 - j, /^as long as this pokemon is in the active spot, put 5 more damage counters on your opponent's poisoned pokemon/)) { m.dmg += 50; I.log(s, nm(m) + ' took 5 more damage counters from Poison'); } });
+  const fro = [0, 1].reduce((a, k) => a + anyOn(s, k, /^during pokemon checkup, put 1 damage counter on each pokemon that has an ability/).length, 0);
+  if (fro) s.players.forEach((Q, j) => mons(Q).forEach(m => { if (!/^froslass/.test(nmL(m)) && I.abilTexts(m).length && !shielded(s, m, true)) m.dmg += 10 * fro; }));
+});
+
 
 const api = { clearConds };
 root.RdyEffects = api;

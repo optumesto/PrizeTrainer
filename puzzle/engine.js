@@ -50,7 +50,10 @@ const T = makeText({
 // Full games (the AI opponent, opponent/game.js) read and run more than a one-turn puzzle: both
 // players' hands, healing, coins, looks at the deck, real Prize cards. What they add comes in through
 // HOOKS and applies only while a full-game state (state.real) is played, so puzzles read as before.
-const HOOKS = { passive: [], dmgPre: [], cost: [], opp: [], atk: [], step: {}, trainerWhy: [], attackWhy: [], retreatWhy: [], dmg: [], provides: [], abilOff: [], hp: [], preAttack: [], onEnergy: [] };
+const HOOKS = { passive: [], dmgPre: [], cost: [], opp: [], atk: [], step: {}, trainerWhy: [], attackWhy: [], retreatWhy: [], dmg: [], provides: [], abilOff: [], hp: [], preAttack: [], onEnergy: [],
+  // Full games only (opponent/effects.js): "only if" conditions, Prize counts, Knock Out triggers, evolving, Retreat Costs, attacks a
+  // Pokemon can use besides its own, attacking twice, and what happens after an attack's damage.
+  need: [], prize: [], ko: [], evoNow: [], evoFrom: [], retreat: [], attacks: [], twice: [], hit: [] };
 let REAL = false;
 function modeMap(m) { let x = m.get(REAL); if (!x) { x = new Map(); m.set(REAL, x); } return x; }
 function reshuffle(s, P) { if (!REAL || !s.rng) return; const a = P.deck; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(s.rng() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } }
@@ -235,13 +238,17 @@ function prizeValue(s, m) {
   let p = topOf(m).card.p || 1;
   const tool = toolOn(s, m);
   if (tool && PASSIVE.pearl.test(ptext(tool)) && /^lillie's /i.test(monName(m))) p -= 1;
+  if (REAL) for (const h of HOOKS.prize) p = h(s, m, p);
   return Math.max(0, p);
 }
 function benchMax(s, p) {
   if (s.stadium && /can have up to (\d+) pokemon on their bench/.test(ptext(s.stadium.ref)) && mons(p).some(m => T.gfSubs(topOf(m)).includes('tera'))) return +ptext(s.stadium.ref).match(/up to (\d+)/)[1];
   return 5;
 }
-function canEvolve(s, m) { return s.turn >= 2 && m.turnIn < s.turn && m.evoTurn !== s.turn; }
+function canEvolve(s, m, x) {
+  if (s.turn >= 2 && m.turnIn < s.turn && m.evoTurn !== s.turn) return true;
+  return !!(REAL && x && s.turn >= 2 && HOOKS.evoNow.some(h => h(s, m, x))); // Forest of Vitality
+}
 /** The Energy types a card provides, or null when the engine cannot read it (most Special Energy). */
 function provides(ref) {
   const t = T.gfEType(ref); if (t) return [t];
@@ -254,7 +261,7 @@ function costMet(energy, cost) {
   for (const e of energy) { const p = provides(e); if (!p) return null; pool.push.apply(pool, p); }
   for (const c of cost) {
     if (c === 'colorless') continue;
-    let i = pool.indexOf(c); if (i < 0) i = pool.indexOf('any'); if (i < 0) return false; pool.splice(i, 1);
+    let i = pool.indexOf(c); if (i < 0) i = pool.findIndex(p => p.includes('|') && p.split('|').includes(c)); if (i < 0) i = pool.indexOf('any'); if (i < 0) return false; pool.splice(i, 1);
   }
   return pool.length >= cost.filter(c => c === 'colorless').length;
 }
@@ -272,6 +279,7 @@ function retreatCost(s, m, owner) {
     if (/the pokemon this card is attached to has no retreat cost/.test(tt)) return 0;
     const r = tt.match(PASSIVE.retreatLess); if (r) n -= (r[1].match(/colorless|\{c\}/g) || []).length; }
   if (!abilOff(s, m, owner)) abilTexts(m).forEach(a => { if (/this pokemon has no retreat cost/.test(a.t)) n = 0; });
+  if (REAL) for (const h of HOOKS.retreat) n = h(s, m, owner, n);
   return Math.max(0, n);
 }
 
@@ -296,6 +304,7 @@ function needWhy(s, need, selfUid) {
   if ((m = need.match(/^you have (?:any |a |an )?(.+?) pokemon in play$/))) { const w = m[1].replace(/^any /, '');
     return mons(P).some(z => { const t = topOf(z); return T.gfKey(t).includes(w) || T.gfSubs(t).includes(w) || T.gfTypes(t).includes(w); }) ? '' : 'Needs ' + w + ' Pokémon in play.'; }
   if ((m = need.match(/^your bench has (\d+) or more pokemon$|^you have (\d+) or more benched pokemon$/))) { const k = +(m[1] || m[2]); return P.bench.length >= k ? '' : `Needs ${k} or more Benched Pokémon.`; }
+  if (REAL) for (const h of HOOKS.need) { const w = h(s, need, selfUid); if (w != null) return w; }
   return '?';
 }
 /** Targets a Trainer's effect needs on the board (port of Goldfish's gfTargetWhy, plus gusts). */
@@ -374,7 +383,7 @@ function readAttack(a) {
 }
 function attackWhy(s, m, a) {
   const P = me(s);
-  if (s.turn === 1 && s.first) return 'No attacking on the first turn of the game.';
+  if (s.turn === 1 && s.first && !(REAL && (readAttack(a) || {}).firstOK)) return 'No attacking on the first turn of the game.';
   if (m.cantAttack) return monName(m) + " can't attack this turn.";
   if (REAL) for (const h of HOOKS.attackWhy) { const w = h(s, m, a); if (w) return w; }
   let cost = a.cost || [];
@@ -442,6 +451,7 @@ function checkKOs(s) {
       if (k !== s.cur) s.koIds.push(m.id);
       log(s, `${monName(m)} is Knocked Out (${got.length} Prize card${got.length !== 1 ? 's' : ''} taken)`);
       if (wasActive && P.bench.length) s.promote = (s.promote || []).concat(k);
+      if (REAL) HOOKS.ko.forEach(h => h(s, m, k, wasActive));
     }
   }
   // The game ends the moment a player wins: they took their last Prize card, or the other side has no
@@ -480,7 +490,8 @@ function finishRun(s) {
   const R = s.pending; s.pending = null;
   if (!R) return s;
   if (R.ctx.card) me(s).discard.push(R.ctx.card);
-  if (R.ctx.endTurn) endTurn(s, 'Your turn ends');
+  if (R.ctx.endTurn === 'again') { if (s.gameOver == null) { s.mods.again = R.ctx.mon; log(s, 'It can attack again'); } }
+  else if (R.ctx.endTurn) endTurn(s, 'Your turn ends');
   return s;
 }
 function ask(s, kind, data) { s.pending.ask = Object.assign({ kind }, data); return s; }
@@ -596,6 +607,10 @@ function legalActions(s, opts) {
   if (s.pending) return answers(s);
   const P = me(s), O = foe(s), out = [], wantWhy = opts && opts.why;
   const add = (a, why) => { if (!why) out.push(a); else if (wantWhy) out.push(Object.assign(a, { why })); };
+  if (REAL && s.mods.again) { // Festival Lead: a second attack, and nothing else, before the turn ends
+    if (P.active && P.active.id === s.mods.again) attackList(s, P.active).forEach(x => add(x.act, attackWhy(s, P.active, x.a)));
+    out.push({ t: 'end' }); return out;
+  }
   const ms = mons(P), room = P.bench.length < benchMax(s, P);
   const seen = new Set();
   for (const x of P.hand) {
@@ -605,7 +620,7 @@ function legalActions(s, opts) {
       if (T.gfIsBasic(x)) add({ t: 'bench', uid: x.uid }, room ? '' : 'Your Bench is full.');
       else if (T.gfIsEvo(x)) {
         const from = String(c.from || '').toLowerCase();
-        ms.filter(m => T.gfKey(topOf(m)) === from).forEach(m => add({ t: 'evolve', uid: x.uid, mon: m.id }, canEvolve(s, m) ? '' : 'It cannot evolve this turn.'));
+        ms.filter(m => T.gfKey(topOf(m)) === from || (REAL && HOOKS.evoFrom.some(h => h(s, m, x)))).forEach(m => add({ t: 'evolve', uid: x.uid, mon: m.id }, canEvolve(s, m, x) ? '' : 'It cannot evolve this turn.'));
       }
       readAbilities(x).forEach((A, i) => { if (A.when === 'hand') add({ t: 'handAbility', uid: x.uid, i }, abilWhy(s, null, A, x)); });
     } else if (c.cat === 'energy') {
@@ -618,7 +633,7 @@ function legalActions(s, opts) {
         P.hand.filter(y => y.card.stage === 'stage2').forEach(s2 => {
           // The Basic behind a Stage 2: the puzzle card table records it as `base` (as the grader does).
           ms.filter(m => m.stack.length === 1 && T.gfKey(topOf(m)) === String(s2.card.base || '').toLowerCase())
-            .forEach(m => add({ t: 'candy', uid: x.uid, s2: s2.uid, mon: m.id }, canEvolve(s, m) ? '' : 'It cannot evolve this turn.'));
+            .forEach(m => add({ t: 'candy', uid: x.uid, s2: s2.uid, mon: m.id }, canEvolve(s, m, s2) ? '' : 'It cannot evolve this turn.'));
         });
         continue;
       }
@@ -645,7 +660,7 @@ function legalActions(s, opts) {
     if (why) add({ t: 'retreat' }, why);
     else payOptions(P.active.energy, cost).forEach(pay => P.bench.forEach(m => out.push({ t: 'retreat', mon: m.id, pay })));
   }
-  if (P.active) topOf(P.active).card.attacks.forEach((a, i) => add({ t: 'attack', i }, attackWhy(s, P.active, a)));
+  if (P.active) attackList(s, P.active).forEach(x => add(x.act, attackWhy(s, P.active, x.a)));
   out.push({ t: 'end' });
   return out;
 }
@@ -685,7 +700,7 @@ function answers(s) {
     case 'topFromHand': { const seen = new Set(); P.hand.forEach(y => { if (seen.has(y.card)) return; seen.add(y.card); pick(y.uid); }); break; }
     case 'splitHand': c.splitPair.forEach(x => pick({ uid: x.uid })); break;
     case 'splitAttach': mons(P).forEach(m => pick(m.id)); break;
-    case 'look': picksFor(c.looked, st.spec, T.gfMaxOf(st.spec)).filter(p => p.length >= (st.min || 0)).forEach(pick); break;
+    case 'look': picksFor(c.looked, st.spec, T.gfMaxOf(st.spec)).filter(p => p.length >= Math.min(st.min || 0, c.looked.length)).forEach(pick); break;
     case 'hook': A.choices.forEach(pick); break;
   }
   return out;
@@ -730,7 +745,7 @@ function apply(s0, a) {
       const i = P.bench.findIndex(m => m.id === a.mon); P.active = P.bench[i]; P.bench[i] = old; P.used.retreat = true;
       log(s, 'Retreated ' + monName(old) + (monName(old) === monName(P.active) ? ' for the other ' : ' for ') + monName(P.active)); return s;
     }
-    case 'attack': return attack(s, a.i);
+    case 'attack': return attack(s, a.i, a.via);
     case 'end': return endTurn(s, 'Ended the turn');
   }
   throw new Error('Unknown action ' + a.t);
@@ -817,24 +832,34 @@ function answer(s, v) {
   }
   throw new Error('Unknown choice ' + A.kind);
 }
-function attack(s, i) {
-  const P = me(s), O = foe(s), att = P.active, a = topOf(att).card.attacks[i];
+function attack(s, i, via) {
+  const P = me(s), O = foe(s), att = P.active;
+  const a = via == null ? topOf(att).card.attacks[i] : attackList(s, att).find(x => x.act.i === i && JSON.stringify(x.act.via) === JSON.stringify(via)).a;
+  const twice = REAL && !s.mods.again && HOOKS.twice.some(h => h(s, att));
+  if (REAL && s.mods.again) s.mods.again = null;
   const R = readAttack(a);
   log(s, monName(att) + ' used ' + a.name);
   if (!R) { markUnread(s, monName(att) + ': ' + a.name); return endTurn(s); }
   if (REAL && R.partial) log(s, '(Not played: ' + R.partial.join('; ') + ')');
   if (REAL) { for (const h of HOOKS.preAttack) if (h(s, att, a) === 'fail') { checkKOs(s); return endTurn(s); } if (R.pre) R.pre(s, att); }
   if (R.luck) s.luck = true;
-  if (O.active) O.active.dmg += damageTo(s, att, R, O.active, true);
+  if (O.active) { const d = damageTo(s, att, R, O.active, true); O.active.dmg += d; if (REAL) HOOKS.hit.forEach(h => h(s, att, O.active, d)); }
   // "1 (or 2) of your opponent's Benched Pokémon": with that many or fewer on the Bench each one is hit;
   // with more, the player chooses which, and Knock Outs are checked once all the damage is placed.
   const nb = R.bench && R.bench.who !== 'each' ? +R.bench.who : 0, chooseBench = nb > 0 && O.bench.length > nb;
   if (R.bench && !chooseBench) O.bench.forEach(m => { m.dmg += damageTo(s, att, { base: R.bench.n }, m, false); });
   if (R.edisc) { const k = att.energy.filter(e => !R.edisc.type || T.gfEType(e) === R.edisc.type).slice(0, R.edisc.n); k.forEach(e => { take(att.energy, e.uid); P.discard.push(e); }); }
   const fx = (chooseBench ? [{ t: 'benchHit', n: nb, dmg: R.bench.n }] : []).concat(REAL && R.fx ? R.fx : []);
-  if (fx.length && s.gameOver == null) return startRun(s, fx, { name: a.name, mon: att.id, left: nb, done: [], endTurn: true });
+  if (fx.length && s.gameOver == null) return startRun(s, fx, { name: a.name, mon: att.id, left: nb, done: [], endTurn: twice ? 'again' : true });
   checkKOs(s);
+  if (twice && s.gameOver == null) { s.mods.again = att.id; log(s, monName(att) + ' can attack again'); return s; }
   return endTurn(s);
+}
+/** The attacks a Pokemon can use: its own, then (full games) any it can borrow, such as Mew ex's Memory Helix. */
+function attackList(s, m) {
+  const out = topOf(m).card.attacks.map((a, i) => ({ a, act: { t: 'attack', i } }));
+  if (REAL) HOOKS.attacks.forEach(h => (h(s, m) || []).forEach(x => out.push({ a: x.a, act: { t: 'attack', i: x.i, via: x.via } })));
+  return out;
 }
 function endTurn(s, why) { s.ended = true; s.pending = null; if (why) log(s, why); return s; }
 
@@ -960,7 +985,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const internals = { clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const internals = { attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
 const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;
