@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.8 (build 137): Sparring shows real cards and both boards (19 Nov 2026)
+
+Changed files: opponent/play.js (card pictures, both boards, card sheet, labels), opponent/play.html (layout for phone and desktop), opponent/effects.js (Brilliant Blender), puzzle/engine.js (a log line for any card Sparring can't do yet), opponent/build-decks.mjs and opponent/decks.js (set and number for card pictures), opponent/own.js, opponent/test/page.mjs and i18n.mjs (card sheets checked), js/core.js (version, What's new, Goldfish (3 Turns) and Sparring (5 Turns)), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, faq.html and goldfish.html (Goldfish (3 Turns)), tests/goldfish-check.cjs, sw.js (cache name prize-trainer-v137).
+
+- Every card shows its picture. Every Pokémon in play, yours and your opponent's, shows its attacks with Energy costs and damage, its Energy, and what it still needs to attack. The Active also shows Weakness, Resistance and Retreat.
+- Tap any card for its full text.
+- Your opponent's Bench shows in full; their hand stays a count.
+- Brilliant Blender discards up to 5 cards from your deck. A card Sparring can't do yet says so on its button, in its card text and in the log.
+- Names: Sparring (5 Turns) and Goldfish (3 Turns), in all 5 languages.
+- Game log numbers no longer clip on a phone.
+
 # RdyDeck 3.4.7 (build 136): Sparring with your saved decks, and fixes (19 Nov 2026)
 
 Changed files: opponent/play.js (OWN_ON on, reload and resume, log, labels), opponent/own.js (new: saved decks in Sparring), opponent/game.js (turn limit, result on prizes), opponent/effects.js, opponent/ai.js (Contested and Aggressive attack when they can), opponent/play.html, opponent/decks.js, puzzle/engine.js (Sparring only steps and log lines, gated by state.real), js/core.js (version, What's new), index.html (help text, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, about.html (Sparring line), sw.js (cache name prize-trainer-v136).

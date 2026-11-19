@@ -1420,6 +1420,8 @@ I18N_MORE.it = {
     "Added: Sparring": "Nuovo: Sparring",
     "Sparring plays your saved decks": "Sparring gioca con i tuoi mazzi salvati",
     "Sparring bugs fixed": "Bug di Sparring corretti",
+    "Sparring shows cards and both boards": "Sparring mostra le carte ed entrambi i campi",
+    "Brilliant Blender fixed": "Brilliant Blender corretto",
     "Added: watch out for box": "Nuovo: riquadro Attenzione a",
     "Share your puzzle score": "Condividi il tuo risultato del puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Il link apre il puzzle di oggi, così i tuoi amici giocano lo stesso tavolo.",

@@ -1431,6 +1431,8 @@ I18N_MORE.de = {
     "Added: Sparring": "Neu: Sparring",
     "Sparring plays your saved decks": "Sparring spielt mit deinen gespeicherten Decks",
     "Sparring bugs fixed": "Sparring-Fehler behoben",
+    "Sparring shows cards and both boards": "Sparring zeigt die Karten und beide Spielfelder",
+    "Brilliant Blender fixed": "Brilliant Blender behoben",
     "Added: watch out for box": "Neu: Achte-auf-Box",
     "Share your puzzle score": "Teile dein Puzzle-Ergebnis",
     "The link opens today's puzzle, so friends play the same board.": "Der Link öffnet das heutige Puzzle, damit deine Freunde dasselbe Spielfeld spielen.",
