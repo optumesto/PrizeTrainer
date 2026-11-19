@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.5 (build 134): Goldfish back to 3 turns (19 Nov 2026)
+
+Changed files: js/core.js (GF_TURNS 3, mode button, version, What's new), index.html (help text, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (3 turns wording, What's new item), goldfish.html, faq.html, about.html (3 turns wording), tests/goldfish-check.cjs (3 turns), sw.js (cache name prize-trainer-v134).
+
+- Goldfish plays 3 turns again. 3.4.0 set it to 5 by mistake; 5 was meant for a computer opponent, which the app does not have.
+- Damage counters, attacks, Abilities, healing and tap to play from 3.4.0 stay as they are.
+- The Goldfish button, the help text, the goldfish guide page, the FAQ and the About page say 3 turns, in all 6 languages where translated.
+
 # RdyDeck 3.4.4 (build 133): Watch out for box on the Grade tab (19 Nov 2026)
 
 Changed files: js/v83-watch-out.js (new), watch-out-data.mjs (new), tests/watch-out-check.mjs (new), .github/workflows/refresh-data.yml (Watch out for step), index.html (script, styles, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/core.js (version, What's new), sw.js (cache name prize-trainer-v133).

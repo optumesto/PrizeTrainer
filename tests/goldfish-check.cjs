@@ -103,11 +103,11 @@ const CARDS = [
   w.gfSelect(G().hand[0].uid);
   ok(d.getElementById('x-modal').classList.contains('active') && d.querySelector('#x-modal .gf-sheet'), 'tapping a hand card opens it with its moves');
   w.gfShut();
-  // 8. Five turns.
-  w.gfEndTurn(); w.gfEndTurn();
-  ok(G().turn === 5 && /Turn 5 of 5/.test(body()), 'turn 5 of 5');
+  // 8. Three turns (3.4.5).
+  while (!G().done && G().turn < 3) w.gfEndTurn();
+  ok(G().turn === 3 && /Turn 3 of 3/.test(body()), 'turn 3 of 3');
   w.gfEndTurn();
-  ok(G().done && /How your 5 turns went/.test(body()), 'the game ends after turn 5');
+  ok(G().done && /How your 3 turns went/.test(body()), 'the game ends after turn 3');
   // 9. Self damage: Fletchinder's Heat Dive.
   w.eval('gfDeal(false)');
   rig(['Fletchinder', 'Basic Fire Energy', 'Shuppet', 'Shuppet', 'Shuppet', 'Shuppet', 'Munkidori'], []);
