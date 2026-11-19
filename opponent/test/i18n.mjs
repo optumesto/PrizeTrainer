@@ -4,6 +4,7 @@
 // and are not counted. Fails (exit 1) when any English app text is left.
 // node opponent/test/i18n.mjs [games per language] [--lang=xx]
 // Needs jsdom: npm install --prefix tests.
+// OWN=1: your saved decks switched on (?mine), and the menu's notes about them checked in every language too.
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,11 +18,22 @@ const ONLY = (args.find(a => a.startsWith('--lang=')) || '').slice(7);
 const LANGS = ONLY ? [ONLY] : ['es', 'pt', 'fr', 'de', 'it'];
 
 const html = readFileSync(join(root, 'opponent', 'play.html'), 'utf8').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<template[\s\S]*?<\/template>/g, '');
-const dom = new JSDOM(html, { url: 'https://rdydeck.com/opponent/play.html?try', runScripts: 'dangerously', pretendToBeVisual: true });
+const SAVED = process.env.OWN ? await import('./saved.mjs') : null; // before the page, so its DOMContentLoaded comes after the scripts
+const dom = new JSDOM(html, { url: 'https://rdydeck.com/opponent/play.html?try' + (process.env.OWN ? '&mine' : ''), runScripts: 'dangerously', pretendToBeVisual: true });
 const w = dom.window;
+let OWNDECKS = null;
+if (process.env.OWN) {
+  OWNDECKS = SAVED.savedDecks().slice(0, 4);
+  OWNDECKS.push({ id: 'short', name: 'Short deck', cards: OWNDECKS[0].cards.map((c, i) => i ? c : Object.assign({}, c, { count: c.count - 2 })) });
+  OWNDECKS.push({ id: 'nodata', name: 'No data deck', cards: OWNDECKS[0].cards.map((c, i) => i ? c : Object.assign({}, c, { count: c.count - 1 })).concat([{ name: 'Mystery Card', count: 1 }]) });
+  OWNDECKS.push({ id: 'nobasic', name: 'No Basic deck', cards: [Object.assign({}, OWNDECKS[0].cards.find(c => c.supertype === 'Trainer'), { count: 60 })] });
+  OWNDECKS.push({ id: 'odd', name: 'Odd deck', cards: OWNDECKS[1].cards.map(c => c.supertype === 'Trainer' && c.ttype === 'item' ? Object.assign({}, c, { name: 'Odd ' + c.name, rtext: 'Do something no card has ever done before.' })
+    : c.supertype === 'Energy' && /^(fire|water|grass|lightning|psychic|fighting|darkness|metal) energy$/i.test(c.name) ? Object.assign({}, c, { name: 'Odd Energy', etext: 'This card is very strange.', sub: ['special'] }) : c) });
+  w.localStorage.setItem('ptcg_prize_trainer_v2', JSON.stringify({ decks: OWNDECKS, activeDeckId: 'odd' }));
+}
 let timers = [];
 w.setTimeout = f => { timers.push(f); return timers.length; };
-const files = ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/play.js',
+const files = ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/own.js', 'opponent/play.js',
   'js/i18n.js', 'js/i18n-fr.js', 'js/i18n-de.js', 'js/i18n-it.js'];
 for (const f of files) { const sc = w.document.createElement('script'); sc.textContent = readFileSync(join(root, f), 'utf8') + '\n//# sourceURL=' + f; w.document.head.appendChild(sc); }
 w.eval("['fr','de','it'].forEach(l => rdI18n.add(l)); rdI18n.addCardNames(Object.keys(RdyOppDecks.cards));");
@@ -66,6 +78,20 @@ for (const lang of LANGS) {
   w.rdI18n.set(lang, false);
   const found = new Map();
   w.RdyPlay.menu(); english(lang, found);
+  if (OWNDECKS) { // each kind of note about a saved deck, on both sides
+    await new Promise(res => setTimeout(res, 20));
+    const sel = id => w.document.getElementById(id), n = OWNDECKS.length;
+    if (!/<optgroup/.test(sel('m-a').innerHTML)) { errors++; console.log(lang, 'no saved decks in the menu'); }
+    [...sel('m-a').querySelectorAll('optgroup')].forEach(o => { const k = 'optgroup ' + o.label; if (/^(Your decks|Tournament decks)$/.test(o.label)) { if (!found.has(k)) found.set(k, { n: 0, ex: o.label }); found.get(k).n++; } });
+    for (let i = 0; i < n; i++) for (const b of ['m1', 'o0']) {
+      sel('m-a').value = 'o' + i; sel('m-b').value = b; sel('m-b').dispatchEvent(new w.Event('change'));
+      await new Promise(res => setImmediate(res)); english(lang, found);
+    }
+    sel('m-a').value = 'o' + (n - 1); sel('m-b').value = 'm1'; sel('m-a').dispatchEvent(new w.Event('change'));
+    if (process.env.DEBUG) console.log(lang, sel('m-note').textContent);
+    sel('m-go').click(); run(); await new Promise(res => setImmediate(res)); english(lang, found);
+    if (!/RdyPlay\.su\(/.test(sel('app').innerHTML)) { errors++; console.log(lang, 'saved deck did not start'); }
+  }
   for (let g = 0; g < N; g++) {
     const level = ['easy', 'contested', 'aggressive'][g % 3];
     w.RdyPlay.start({ mode: '5turn', level, deckA: D.decks[(g * 3 + LANGS.indexOf(lang)) % D.decks.length], deckB: D.decks[(g * 5 + 7) % D.decks.length] }); run();

@@ -31,6 +31,7 @@
   .acts { margin-bottom:14px; } .q { font-weight:700; margin:6px 0 8px; } .gt { font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--mute); margin:10px 0 4px; }
   .btns { display:flex; flex-wrap:wrap; gap:6px; }
   .btn { min-height:44px; padding:0 14px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; font:inherit; font-size:.9rem; cursor:pointer; text-align:left; }
+  .btn:disabled { opacity:.45; cursor:default; }
   .btn.primary { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:600; } .btn.ghost { background:transparent; }
   details { margin-top:10px; color:var(--mute); font-size:.85rem; } summary { cursor:pointer; min-height:32px; }
   details li b { color:var(--text); font-weight:600; } .log ol { padding-left:20px; max-height:260px; overflow:auto; }
@@ -49,6 +50,7 @@
 <script src="effects.js"></script>
 <script src="ai.js"></script>
 <script src="decks.js"></script>
+<script src="own.js"></script>
 <script src="play.js"></script>
 <script src="../js/i18n.js"></script>
 <template id="i18n-files"><script src="../js/i18n-fr.js"></script><script src="../js/i18n-de.js"></script><script src="../js/i18n-it.js"></script></template>

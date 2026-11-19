@@ -4,9 +4,13 @@
 // Active and Bench from your opening hand.
 // A full game (both sides shown, played to the end) is kept for tests and opens only with ?full.
 // 3.4.6: live, linked from the Hand tab next to Goldfish. Inside the code the mode is still called '5turn'.
+// 3.4.7 (hidden): your own saved decks play too, as your deck or the opponent's (opponent/own.js). Off until
+// OWN_ON is true; ?mine (or localStorage rd_own=1) shows them before that.
 (function () {
 'use strict';
 const OPP_ON = true; // false would hide the page again unless it opens with ?try
+const OWN_ON = false; // true lets your saved decks play
+const ownOn = () => { if (OWN_ON || /[?&]mine\b/.test(location.search)) return true; try { return localStorage.getItem('rd_own') === '1'; } catch (_) { return false; } };
 window.RD_FT = true; // js/i18n.js turns on this page's own translations (I18N_FT_ROWS)
 const E = window.RdyPuzzle, G = window.RdyGame, AI = window.RdyAI, D = window.RdyOppDecks;
 const PRESS_TURNS = 5;
@@ -16,6 +20,8 @@ const $ = id => document.getElementById(id);
 const cn = n => `<span data-no-tr>${esc(n)}</span>`;
 
 let S = null; // { s, mode, level, ai, deckA, deckB, busy, oppLog, over }
+let OWN = null; // your saved decks, built for Sparring (opponent/own.js), once read
+let OWN_ACTIVE = null; // the deck open in RdyDeck when you left it
 
 /* ---------------- Names for what is on the screen ---------------- */
 function monById(s, id) { for (let k = 0; k < 2; k++) { const m = E.mons(s.players[k]).find(z => z.id === id); if (m) return { m, k }; } return null; }
@@ -186,7 +192,7 @@ function setupHTML(s) {
   const notes = [s.firstPlayer === 0 ? 'You go first.' : 'Your opponent goes first.'];
   if (s.mulls[0]) notes.push(s.mulls[0] === 1 ? 'You took 1 mulligan.' : `You took ${s.mulls[0]} mulligans.`);
   if (s.mulls[1]) notes.push(s.mulls[1] === 1 ? 'Your opponent took 1 mulligan, so you draw 1 more card after setup.' : `Your opponent took ${s.mulls[1]} mulligans, so you draw ${s.mulls[1]} more cards after setup.`);
-  let h = `<div class="turn"><span>Set up</span> · <span>${esc(S.levelName)}</span></div>` + notes.map(x => `<p class="note">${x}</p>`).join('') + handHTML(s);
+  let h = `<div class="turn"><span>Set up</span> · <span>${esc(S.levelName)}</span></div>` + notes.map(x => `<p class="note">${x}</p>`).join('') + (S.deckA.own ? deckNote(S.deckA, false) : '') + handHTML(s);
   h += `<div class="acts"><div class="q">Choose your Active Pokémon</div><div class="btns">${B.map(r => `<button class="btn${U.active === r.uid ? ' primary' : ''}" onclick="RdyPlay.su(${r.uid})">${nm(r)}</button>`).join('')}</div>`;
   if (U.active != null) {
     const rest = B.filter(r => r.uid !== U.active);
@@ -240,7 +246,7 @@ const api = {
   },
   go() { S.oppLog = null; render(); if (checkOver()) render(); },
   start(opts) {
-    const deck = d => { const out = []; d.list.forEach(([k, n]) => { for (let i = 0; i < n; i++) out.push(D.cards[k]); }); return out; };
+    const deck = d => { if (d.cards) return d.cards.slice(); const out = []; d.list.forEach(([k, n]) => { for (let i = 0; i < n; i++) out.push(D.cards[k]); }); return out; };
     const seed = Math.floor(Math.random() * 2 ** 31);
     let s = G.newGame([deck(opts.deckA), deck(opts.deckB)], { seed });
     S = { s, mode: opts.mode, level: opts.level, levelName: AI.LEVELS[opts.level].name, ai: new AI.Player(opts.level, seed + 1), deckA: opts.deckA, deckB: opts.deckB, busy: false, oppLog: null, over: false, opts };
@@ -264,19 +270,62 @@ const api = {
 };
 window.RdyPlay = api;
 
+/** What to know about one of your decks before it plays: why it can't, or which cards don't do all of their text yet. */
+function deckNote(d, who) {
+  const lead = who ? `<span>${who}</span> ` : '', p = t => `<p class="note">${lead}${t}</p>`;
+  if (d.block === 'count') return p(`<span>This deck has ${d.n} cards. Sparring needs 60.</span>`);
+  if (d.block === 'data') return p(`<span>RdyDeck has no card data for these cards yet:</span> ${cn(d.missing.join(', '))}. <span>Open the deck in RdyDeck while online, then come back.</span>`);
+  if (d.block === 'basic') return p('<span>This deck has no Basic Pokémon.</span>');
+  let h = '';
+  if (d.plain.length) h += p(`<span>Not every card does all of its text yet:</span> ${cn(d.plain.join(', '))}. <span>They still play, and the parts Sparring can't do yet are skipped.</span>`);
+  if (d.colorless.length) h += p(`<span>Sparring can't read this Energy yet, so each one counts as 1 Colorless Energy:</span> ${cn(d.colorless.join(', '))}.`);
+  return h || p('<span>Every card in this deck plays in full.</span>');
+}
+const tr = t => window.rdI18n && rdI18n.t ? rdI18n.t(t) : t;
+function pickDeck(v) { return v && v[0] === 'o' ? OWN[+v.slice(1)] : D.decks[+String(v).replace(/^m/, '')]; }
+function menuNotes() {
+  const el = $('m-note'); if (!el) return;
+  const a = pickDeck($('m-a').value), b = pickDeck($('m-b').value);
+  el.innerHTML = (a.own ? deckNote(a, b.own ? 'Your deck:' : '') : '') + (b.own ? deckNote(b, "Opponent's deck:") : '');
+  $('m-go').disabled = !!(a.block || b.block);
+  if (window.rdI18n && rdI18n.walk) rdI18n.walk(el);
+}
 function menu() {
   if (!OPP_ON && !/[?&]try\b/.test(location.search)) { $('app').innerHTML = '<p class="note">Nothing here yet.</p>'; return; }
-  const opt = D.decks.map((d, i) => `<option value="${i}">${esc(d.name)}</option>`).join('');
+  const mine = ownOn() && OWN ? OWN : [];
+  const metaOpt = D.decks.map((d, i) => `<option value="m${i}">${esc(d.name)}</option>`).join('');
+  const opt = mine.length ? `<optgroup label="${esc(tr('Your decks'))}">${mine.map((d, i) => `<option value="o${i}">${esc(d.name)}</option>`).join('')}</optgroup><optgroup label="${esc(tr('Tournament decks'))}">${metaOpt}</optgroup>` : metaOpt;
   const langs = typeof I18N_LANGS === 'object' && window.rdI18n ? `<div class="zl">Language</div><div class="btns lang" id="i18n-lang">${I18N_LANGS.map(([l, n]) => `<button type="button" class="btn${rdI18n.lang === l ? ' primary' : ''}" data-no-tr data-l="${l}" onclick="RdyPlay.lang('${l}')">${n}</button>`).join('')}</div>` : '';
+  const foot = ownOn() ? (mine.length ? `You play ${PRESS_TURNS} turns against the opponent. Tournament decks play from their tournament lists, and your decks from the cards RdyDeck saved with them.`
+    : 'You have no saved decks here yet. Save a deck in RdyDeck to spar with it.') : `You play ${PRESS_TURNS} turns against the opponent. Card names and text come from the decks' tournament lists.`;
   $('app').innerHTML = `<div class="menu">
     ${/[?&]full\b/.test(location.search) ? '<label>Way to play<select id="m-mode"><option value="5turn">Sparring</option><option value="full">Full game</option></select></label>' : ''}
     <label>Opponent level<select id="m-level"><option value="easy">Easy: only places cards</option><option value="contested" selected>Contested: attacks and messes with you</option><option value="aggressive">Aggressive: plays the best line it finds</option></select></label>
     <label>Your deck<select id="m-a" data-no-tr>${opt}</select></label>
     <label>Opponent's deck<select id="m-b" data-no-tr>${opt}</select></label>
+    <div id="m-note"></div>
     <button class="btn primary" id="m-go">Start</button>
-    <p class="note">You play 5 turns against the opponent. Card names and text come from the decks' tournament lists.</p>${langs}</div>`;
-  $('m-b').value = '1';
-  $('m-go').onclick = () => api.start({ mode: $('m-mode') ? $('m-mode').value : '5turn', level: $('m-level').value, deckA: D.decks[+$('m-a').value], deckB: D.decks[+$('m-b').value] });
+    <p class="note">${foot}</p>${langs}</div>`;
+  // Your deck: the one open in RdyDeck when there is one, then your first saved deck; the opponent a tournament deck.
+  const at = mine.findIndex(d => OWN_ACTIVE != null && String(d.id) === String(OWN_ACTIVE));
+  $('m-a').value = mine.length ? 'o' + Math.max(0, at) : 'm0';
+  $('m-b').value = 'm1';
+  $('m-a').onchange = $('m-b').onchange = menuNotes;
+  menuNotes();
+  $('m-go').onclick = () => { const a = pickDeck($('m-a').value), b = pickDeck($('m-b').value); if (a.block || b.block) return; api.start({ mode: $('m-mode') ? $('m-mode').value : '5turn', level: $('m-level').value, deckA: a, deckB: b }); };
 }
-document.addEventListener('DOMContentLoaded', menu);
+// Your saved decks are read once, then the menu is drawn again with them (and again once the language file is in).
+function boot() {
+  menu();
+  if (window.rdI18n && rdI18n.ready) Promise.resolve(rdI18n.ready).then(() => { if (!S) menu(); });
+  if (!ownOn() || !window.RdyOwn) return;
+  RdyOwn.readSaved().then(p => {
+    const list = p ? p.decks.filter(d => d && Array.isArray(d.cards) && d.cards.length) : [];
+    OWN_ACTIVE = p ? p.activeDeckId : null;
+    OWN = list.map(d => { try { return RdyOwn.build(d, D.cards); } catch (e) { return { name: String(d.name || ''), own: true, block: 'data', missing: ['?'], plain: [], colorless: [] }; } });
+    if (window.rdI18n && rdI18n.addCardNames) rdI18n.addCardNames([...new Set(OWN.flatMap(d => (d.cards || []).map(c => c.name)))]);
+    if (!S) menu();
+  });
+}
+document.addEventListener('DOMContentLoaded', boot);
 })();

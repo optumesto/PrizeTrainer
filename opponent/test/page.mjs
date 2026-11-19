@@ -1,6 +1,8 @@
 // Plays the hidden page (opponent/play.js) with no browser: a stand-in document, timers run at once,
 // and a bot that presses the page's own buttons. Catches errors in labels and screens.
 // node opponent/test/page.mjs [games] [mode] [level]
+// OWN=1: your saved decks (opponent/own.js) are switched on with ?mine, read from a stand-in localStorage holding the
+// meta lists saved the way RdyDeck saves them, and every game starts from the menu with a saved deck.
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { join, dirname } from 'node:path';
@@ -10,18 +12,53 @@ const [nArg = '6', modeArg, levelArg] = process.argv.slice(2);
 const els = {}; const el = id => els[id] || (els[id] = { id, innerHTML: '', value: '', onclick: null });
 let timers = [];
 const ctx = { console, Math, JSON, Date, Map, Set, WeakMap, Object, Array, String, Number, Error, RegExp, Boolean, Symbol, Promise,
-  setTimeout: f => timers.push(f), document: { getElementById: el, addEventListener: (e, f) => { ctx._ready = f; } }, location: { search: '?try' } };
+  setTimeout: f => timers.push(f), document: { getElementById: el, addEventListener: (e, f) => { ctx._ready = f; } }, location: { search: process.env.OWN ? '?try&mine' : '?try' } };
+let OWNDECKS = null;
+if (process.env.OWN) {
+  const { savedDecks, saved } = await import('./saved.mjs');
+  OWNDECKS = savedDecks();
+  // Two that can't play (58 cards, a card with no data) and one with cards Sparring can't fully play.
+  OWNDECKS.push({ id: 'short', name: 'Short deck', cards: OWNDECKS[0].cards.map((c, i) => i ? c : Object.assign({}, c, { count: c.count - 2 })) });
+  OWNDECKS.push({ id: 'nodata', name: 'No data deck', cards: OWNDECKS[0].cards.map((c, i) => i ? c : Object.assign({}, c, { count: c.count - 1 })).concat([{ name: 'Mystery Card', count: 1 }]) });
+  const odd = OWNDECKS[1].cards.map(c => c.supertype === 'Trainer' && c.ttype === 'item' ? Object.assign({}, c, { name: 'Odd ' + c.name, rtext: 'Do something no card has ever done before.' }) : c);
+  OWNDECKS.push({ id: 'odd', name: 'Odd deck', cards: odd });
+  const store = { ptcg_prize_trainer_v2: JSON.stringify({ decks: OWNDECKS, activeDeckId: 'odd' }) };
+  ctx.localStorage = { getItem: k => store[k] == null ? null : store[k], setItem: (k, v) => { store[k] = String(v); } };
+}
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/play.js'])
+for (const f of ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/own.js', 'opponent/play.js'])
   vm.runInContext(readFileSync(join(root, f), 'utf8'), ctx, { filename: f });
 ctx._ready();
+await new Promise(r => setTimeout(r, 0)); await new Promise(r => setImmediate(r));
+let ownBad = 0;
+if (OWNDECKS) {
+  const h = el('app').innerHTML, note = el('m-note').innerHTML.replace(/<[^>]+>/g, '');
+  const want = [[/<optgroup label="Your decks">/.test(h), 'menu lists your decks'], [/<optgroup label="Tournament decks">/.test(h), 'menu lists tournament decks'],
+    [el('m-a').value === 'o' + (OWNDECKS.length - 1), 'the deck open in RdyDeck is picked'], [/Not every card does all of its text yet: Odd /.test(note), 'odd cards named: ' + note],
+    [el('m-go').disabled === false, 'start allowed']];
+  el('m-a').value = 'o' + (OWNDECKS.length - 3); el('m-a').onchange();
+  want.push([/This deck has 58 cards\. Sparring needs 60\./.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')) && el('m-go').disabled === true, 'short deck held back']);
+  el('m-a').value = 'o' + (OWNDECKS.length - 2); el('m-a').onchange();
+  want.push([/no card data for these cards yet: Mystery Card\./.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')) && el('m-go').disabled === true, 'no-data deck held back']);
+  el('m-a').value = 'o0'; el('m-b').value = 'o2'; el('m-b').onchange();
+  want.push([/^Your deck: Every card in this deck plays in full\.Opponent's deck: Every card/.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')), 'both sides noted: ' + el('m-note').innerHTML.replace(/<[^>]+>/g, '')]);
+  want.forEach(([ok, what]) => { if (!ok) { ownBad++; console.log('OWN MENU', what); } });
+}
 const run = () => { let n = 0; while (timers.length && n++ < 100000) timers.shift()(); };
 let rnd = 7; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
 let multi = 0, setups = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
 for (let g = 0; g < N; g++) {
   const mode = modeArg || (g % 2 ? 'full' : '5turn'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
   const D = ctx.RdyOppDecks.decks;
+  if (OWNDECKS) { // from the menu: a saved deck against a tournament deck, or against another saved deck
+    ctx.RdyPlay.menu(); const n = OWNDECKS.length - 2;
+    el('m-level').value = level; if (el('m-mode')) el('m-mode').value = mode;
+    el('m-a').value = 'o' + (g === 0 ? OWNDECKS.length - 1 : (g * 5) % (n - 1)); el('m-b').value = g % 3 === 2 ? 'o' + ((g * 11 + 1) % (n - 1)) : 'm' + (g % D.length);
+    el('m-go').onclick(); run();
+    if (!/RdyPlay\.su\(/.test(el('app').innerHTML)) { console.log('OWN START', g, el('app').innerHTML.slice(0, 200)); bad++; continue; }
+    if (g === 0 && !/Not every card does all of its text yet/.test(el('app').innerHTML)) { console.log('OWN SETUP NOTE missing'); bad++; }
+  } else
   ctx.RdyPlay.start({ mode, level, deckA: D[g % D.length], deckB: D[(g * 7 + 3) % D.length] }); run();
   let presses = 0;
   for (;;) {
@@ -54,5 +91,6 @@ for (let g = 0; g < N; g++) {
     if (++presses > 3000) { console.log('TOO LONG', g); bad++; break; }
   }
 }
+bad += ownBad;
 console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}`);
 if (process.env.LABELS) console.log([...labels].sort().join('\n'));
