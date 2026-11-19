@@ -72,7 +72,7 @@ function startTurn(s) {
   P.used = { energy: false, supporter: false, stadium: false, retreat: false };
   P.koLastTurn = s.kosBy ? s.kosBy[k] > 0 : false; // your Pokemon Knocked Out during your opponent's last turn
   s.kosBy = [0, 0]; s.kos = [0, 0];
-  I.log(s, '— ' + (k ? "Your opponent's" : 'Your') + ' turn ' + s.turn);
+  I.log(s, (k ? "Your opponent's" : 'Your') + ' turn ' + s.turn);
   if (!P.deck.length) { s.gameOver = 1 - k; s.ended = true; I.log(s, (k ? 'Your opponent' : 'You') + ' could not draw a card and lose'); return s; }
   P.hand.push(P.deck.shift());
   HOOKS_START.forEach(h => h(s));

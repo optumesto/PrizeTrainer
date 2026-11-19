@@ -5129,8 +5129,8 @@ const I18N_FT_ROWS = [
   // The game log
   ['Ended the turn', 'Terminó el turno', 'Terminou o turno', 'A terminé le tour', 'Zug beendet', 'Ha finito il turno'],
   ['Your turn ends', 'Tu turno termina', 'Seu turno termina', 'Votre tour se termine', 'Dein Zug endet', 'Il tuo turno finisce'],
-  [/^— Your turn (\d+)$/, '— Tu turno $1', '— Seu turno $1', '— Votre tour $1', '— Dein Zug $1', '— Il tuo turno $1'],
-  [/^— Your opponent's turn (\d+)$/, '— Turno del rival $1', '— Turno do oponente $1', '— Tour de l\'adversaire $1', '— Zug des Gegners $1', '— Turno dell\'avversario $1'],
+  [/^Your turn (\d+)$/, 'Tu turno $1', 'Seu turno $1', 'Votre tour $1', 'Dein Zug $1', 'Il tuo turno $1'],
+  [/^Your opponent's turn (\d+)$/, 'Turno del rival $1', 'Turno do oponente $1', 'Tour de l\'adversaire $1', 'Zug des Gegners $1', 'Turno dell\'avversario $1'],
   [/^You drew (\d+) for mulligans$/, 'Robaste $1 por los mulligans', 'Você comprou $1 pelos mulligans', 'Vous avez pioché $1 pour les mulligans', 'Du hast $1 für die Mulligans gezogen', 'Hai pescato $1 per i mulligan'],
   [/^Your opponent drew (\d+) for mulligans$/, 'El rival robó $1 por los mulligans', 'O oponente comprou $1 pelos mulligans', 'L\'adversaire a pioché $1 pour les mulligans', 'Der Gegner hat $1 für die Mulligans gezogen', 'L\'avversario ha pescato $1 per i mulligan'],
   ['You could not draw a card and lose', 'No pudiste robar una carta y pierdes', 'Você não pôde comprar uma carta e perde', 'Vous n\'avez pas pu piocher de carte et vous perdez', 'Du konntest keine Karte ziehen und verlierst', 'Non hai potuto pescare una carta e perdi'],
