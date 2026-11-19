@@ -793,7 +793,7 @@ function apply(s0, a) {
   REAL = !!s0.real;
   const s = clone(s0), P = me(s);
   switch (a.t) {
-    case 'promote': { const Q = s.players[a.who]; const i = Q.bench.findIndex(m => m.id === a.mon); Q.active = Q.bench.splice(i, 1)[0]; s.promote.shift(); log(s, monName(Q.active) + ' is now Active'); return s.pending ? go(s) : s; }
+    case 'promote': { const Q = s.players[a.who]; const i = Q.bench.findIndex(m => m.id === a.mon); Q.active = Q.bench.splice(i, 1)[0]; s.promote = s.promote.slice(1); /* a new list: states share it until changed */ log(s, monName(Q.active) + ' is now Active'); return s.pending ? go(s) : s; }
     case 'pick': return answer(s, a.v);
     case 'bench': { const x = take(P.hand, a.uid); const m = newMon(s, x, s.cur); m.trig = true; m.benchTurn = s.turn; P.bench.push(m); benchRuins(s, m); log(s, 'Benched ' + x.card.name); return checkKOs(s); }
     case 'evolve': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(x); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; log(s, REAL ? 'Evolved ' + was + ' into ' + x.card.name : 'Evolved into ' + x.card.name); return s; }
