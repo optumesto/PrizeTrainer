@@ -232,11 +232,21 @@ H.preAttack.push((s, att) => {
 // Team Rocket's Watchtower: Colorless Pokemon have no Abilities.
 H.abilOff.push((s, m) => s.stadium && /^colorless pokemon in play have no abilities$/.test(I.ptext(s.stadium.ref)) && T.gfTypes(topOf(m)).includes('colorless') ? s.stadium.ref.card.name + ' is in play, so Colorless Pokémon have no Abilities.' : '');
 // Special Energy that says what it provides.
-H.provides.push(ref => {
+// 3.4.12: "If this card is attached to an Evolution Pokemon / a Basic Pokemon / a Stage 2 Pokemon" changes what it
+// provides while it is on such a Pokemon (Ignition Energy: 3 Colorless on an Evolution Pokemon).
+const ETYPE = /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|colorless|dragon)$/;
+function onKind(m, kind) { if (!m) return false; const top = topOf(m); return kind === 'evolution' ? T.gfIsEvo(top) : kind === 'basic' ? T.gfIsBasic(top) : top.card.stage === 'stage2'; }
+H.provides.push((ref, mon) => {
   const t = I.ptext(ref);
-  if (/provides every type of energy but provides only 1 energy at a time/.test(t)) return ['any'];
+  const cond = t.match(/if this card is attached to (?:an? )?(evolution|basic|stage 2) pokemon, (?:this card|it) provides ([^.]+?) energy(?: but provides only (\d+) energy at a time| instead)?(?:\.|$)/);
+  if (cond && onKind(mon, cond[1].replace(' ', ''))) {
+    if (/^every type of$/.test(cond[2])) return Array(+(cond[3] || 1)).fill('any');
+    const list = cond[2].match(/grass|fire|water|lightning|psychic|fighting|darkness|metal|colorless|dragon/g);
+    if (list && list.join('') === cond[2].replace(/\s+/g, '')) return list;
+  }
+  if (/^(?:(?!if this card is attached to).)*provides every type of energy but provides only 1 energy at a time/.test(t)) return ['any'];
   const m = t.match(/it provides (\w+?) energy/);
-  return m && /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|colorless|dragon)$/.test(m[1]) ? [m[1]] : null;
+  return m && ETYPE.test(m[1]) ? [m[1]] : null;
 });
 // Telepathic Psychic Energy: on attaching to a Psychic Pokemon, 2 Basic Psychic Pokemon onto the Bench.
 H.onEnergy.push((s, x, m) => /when you attach this card from your hand to a psychic pokemon, search your deck for up to 2 basic psychic pokemon and put them onto your bench/.test(I.ptext(x)) && T.gfTypes(topOf(m)).includes('psychic')
@@ -293,7 +303,7 @@ G.HOOKS_END.push(s => {
   s.atkHeads = null;
   const k = s.cur, P = s.players[k];
   // Ignition Energy and the like: discarded at the end of your turn.
-  mons(P).forEach(m => { m.energy = m.energy.filter(e => { if (/discard it at the end of your turn/.test(I.ptext(e))) { P.discard.push(e); return false; } return true; }); });
+  mons(P).forEach(m => { m.energy = m.energy.filter(e => { if (/discard it at the end of your turn/.test(I.ptext(e))) { P.discard.push(e); I.log(s, e.card.name + ' on ' + nm(m) + ' was discarded at the end of the turn'); return false; } return true; }); });
   // Pokemon Checkup, both Active Pokemon.
   s.players.forEach((Q, j) => {
     const m = Q.active; if (!m) return;
@@ -364,7 +374,7 @@ S.gwynn = {
 S.selfToDeck = { run(s, st, c, P) { const m = c.mon != null && I.findMon(s, c.mon) ? I.findMon(s, c.mon).m : null; if (!m || P.active !== m) return;
   P.active = null; P.deck = P.deck.concat(m.stack, m.energy, m.tool ? [m.tool] : []); I.reshuffle(s, P); if (P.bench.length) s.promote = (s.promote || []).concat(s.cur); I.log(s, nm(m) + ' was shuffled into the deck'); } };
 S.needDiscard = { run(s, st, c, P) { const ok = mons(P).some(m => nm(m).toLowerCase() === st.mon) && P.hand.find(y => T.gfEType(y) === st.type);
-  if (!ok) { c.stop = true; s.pending && (s.pending.i = 1e9); return; } P.discard.push(I.take(P.hand, ok.uid)); } };
+  if (!ok) { c.stop = true; s.pending && (s.pending.i = 1e9); return; } P.discard.push(I.take(P.hand, ok.uid)); I.log(s, 'Discarded ' + ok.card.name + ' from your hand to use ' + (c.name || 'the Ability')); } };
 S.toActive = { run(s, st, c, P) { if ((c.moved || 0) >= st.n || !P.active) return; const o = []; P.bench.forEach(m => m.energy.forEach(e => o.push({ mon: m.id, uid: e.uid }))); return o.length ? o.concat([null]) : null; },
   answer(s, st, c, v, P) { if (v == null) return; const m = I.findMon(s, v.mon).m; P.active.energy.push(I.take(m.energy, v.uid)); c.moved = (c.moved || 0) + 1; return S.toActive.run(s, st, c, P); } };
 S.kinds = { run(s, st, c, P) { if ((c.found || 0) >= st.n) { I.reshuffle(s, P); return; } const seen = new Set(), o = [];
@@ -648,7 +658,12 @@ S.handAttach = { run(s, st, c, P) { if (!P.hand.some(y => T.gfEType(y) === st.ty
   answer(s, st, c, v, P) { const y = P.hand.find(z => T.gfEType(z) === st.type); I.findMon(s, v).m.energy.push(I.take(P.hand, y.uid)); } };
 // Look at the top cards and put 1 into your hand; the rest go to the bottom of the deck, or out of the game (the Lost Zone).
 S.comfey = { run(s, st, c, P) { c.top = P.deck.splice(0, st.n); if (!c.top.length) return; return c.top.map(y => y.uid); },
-  answer(s, st, c, v, P) { P.hand.push(I.take(c.top, v)); if (st.rest === 'bottom') P.deck = P.deck.concat(c.top); else P.lost = (P.lost || []).concat(c.top); c.top = null; } };
+  answer(s, st, c, v, P) { const x = I.take(c.top, v), rest = c.top; P.hand.push(x); if (st.rest === 'bottom') P.deck = P.deck.concat(rest); else P.lost = (P.lost || []).concat(rest); c.top = null;
+    // 3.4.12: what went where (your own cards by name; your opponent's hand and deck stay hidden, the Lost Zone is face up).
+    const where = st.rest !== 'bottom' ? 'in the Lost Zone' : s.cur === 0 ? 'on the bottom of your deck' : 'on the bottom of their deck';
+    const restW = st.rest !== 'bottom' || s.cur === 0 ? rest.map(y => y.card.name).join(', ') : rest.length === 1 ? '1 card' : rest.length + ' cards';
+    if (!rest.length) I.log(s, s.cur === 0 ? 'Put ' + x.card.name + ' into your hand' : 'Your opponent put 1 card into their hand', true);
+    else I.log(s, s.cur === 0 ? 'Put ' + x.card.name + ' into your hand and ' + restW + ' ' + where : 'Your opponent put 1 card into their hand and ' + restW + ' ' + where, true); } };
 S.moveType = { run(s, st, c, P) { const o = []; mons(P).forEach(a => { const e = a.energy.find(x => T.gfEType(x) === st.type); if (e) mons(P).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); return o; },
   answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, 'Moved Energy from ' + nm(a) + ' to ' + nm(b)); } };
 S.countersOn = { run(s, st, c, P, O) { return mons(O).filter(m => !shielded(s, m, true)).map(m => m.id); },
@@ -661,15 +676,15 @@ S.handPick = { run(s, st, c, P, O) { const seen = new Set(), o = []; O.hand.forE
   answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); if (st.to === 'bottom') O.deck.push(x); else O.discard.push(x); I.log(s, (st.to === 'bottom' ? 'Put ' : 'Discarded ') + x.card.name + " from your opponent's hand" + (st.to === 'bottom' ? " on the bottom of your opponent's deck" : '')); } };
 S.guard = { run(s, st, c) { const m = self(s, c); if (m) m.guard = { t: stTurn(s, 1 - s.cur) + 1, all: !!st.all, n: st.n || 0 }; } };
 S.exactKO = { run(s, st, c, P, O) { if (O.active && O.active.dmg === 10 * st.n && !shielded(s, O.active)) { O.active.dmg = E.maxHp(s, O.active); I.log(s, nm(O.active) + ' is Knocked Out by the effect'); } } };
-S.handToDeck = { run(s, st, c, P) { P.deck = P.deck.concat(P.hand.splice(0)); I.reshuffle(s, P); } };
+S.handToDeck = { run(s, st, c, P) { const n = P.hand.length; P.deck = P.deck.concat(P.hand.splice(0)); I.reshuffle(s, P); I.log(s, n === 1 ? 'Shuffled 1 card from your hand into your deck' : 'Shuffled ' + n + ' cards from your hand into your deck'); } };
 S.oppMoveE = { run(s, st, c, P, O) { const o = []; mons(O).filter(m => !shielded(s, m)).forEach(a => { const seen = new Set(); a.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); mons(O).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); }); return o; },
   answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, "Moved an Energy on your opponent's side"); } };
 S.benchByName = { run(s, st, c, P) { const want = lc(st.name).replace(/s$/, ''); let k = 0;
     while (k < st.n && P.bench.length < I.benchMax(s, P)) { const y = P.deck.find(z => nameOf(z) === want || nameOf(z) === lc(st.name)); if (!y) break; P.bench.push(I.newMon(s, I.take(P.deck, y.uid), s.cur)); k++; } I.reshuffle(s, P); } };
 S.tossOwn = { run(s, st, c, P) { const seen = new Set(), o = []; P.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
-  answer(s, st, c, v, P) { P.discard.push(I.take(P.hand, v)); c.tossed = 1; } };
+  answer(s, st, c, v, P) { const x = I.take(P.hand, v); P.discard.push(x); c.tossed = 1; I.log(s, 'Discarded ' + x.card.name + ' from your hand'); } };
 S.oppToss = { run(s, st, c, P, O) { if (!c.tossed || !O.hand.length) return; const seen = new Set(), o = []; O.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return { choices: o, who: 1 - s.cur }; },
-  answer(s, st, c, v, P, O) { O.discard.push(I.take(O.hand, v)); } };
+  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); O.discard.push(x); I.log(s, s.cur === 0 ? 'Your opponent discarded ' + x.card.name + ' from their hand' : 'You discarded ' + x.card.name + ' from your hand', true); } };
 S.feathers = { run(s, st, c, P) { const o = P.hand.filter(y => y.card.kind === st.kind && nameOf(y).includes(st.name)); return Array.from({ length: o.length + 1 }, (_, i) => i); },
   answer(s, st, c, v, P, O) { for (let i = 0; i < v; i++) { const y = P.hand.find(z => z.card.kind === st.kind && nameOf(z).includes(st.name)); P.discard.push(I.take(P.hand, y.uid)); }
     const att = self(s, c); if (att && O.active && v) hit(s, att, O.active, st.per * v); } };

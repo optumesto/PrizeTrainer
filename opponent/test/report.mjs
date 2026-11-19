@@ -102,14 +102,14 @@ const abilOf = (s, name) => acts(s).find(a => a.t === 'ability' && E.topOf(I.fin
   if (a) { s = play(s, a); ok(s.log.some(l => /^\d+ damage to Cynthia's Gible \(base 20, plus 100 from the attack's text/.test(l)), 'L7 Full Moon Rondo gives its breakdown: ' + s.log.slice(-4).join(' / ')); }
   else ok(false, 'L7 Full Moon Rondo offered'); }
 { let s = board([{ active: ['Mega Kangaskhan ex'] }, { active: 'Shuppet' }]);
-  s = play(s, abilOf(s, 'Mega Kangaskhan ex')); ok(s.log.includes('Drew 2 Psychic Energy'), 'M8 Run Errand names the cards drawn'); }
+  s = play(s, abilOf(s, 'Mega Kangaskhan ex')); ok(s.log.includes('You drew 2 Psychic Energy'), 'M8 Run Errand names the cards drawn'); }
 { let s = board([{ active: ['Shuppet'], hand: ['Ultra Ball', 'Psychic Energy', 'Psychic Energy'], deck: ['Dreepy'] }, { active: 'Shuppet' }]);
   s = play(s, handPlay(s, 'Ultra Ball'), X => X.find(x => Array.isArray(x.v) && x.v.length) || X[0]);
   ok(s.log.some(l => / into your hand$/.test(l) && /^Searched for /.test(l)) || s.log.includes('Searched and took nothing'), 'M8 a search says where the cards went: ' + s.log.slice(-3).join(' / ')); }
 // M8: the opponent's lines read from your side.
 { let s = board([{ active: ['Mega Kangaskhan ex'] }, { active: 'Shuppet' }], { cur: 1 });
   s.players[1].active = null; s.players[1].active = I.newMon(s, { uid: ++s.uid, card: C.card('Mega Kangaskhan ex') }, 1); s.players[1].active.turnIn = 0;
-  s = play(s, abilOf(s, 'Mega Kangaskhan ex')); ok(s.log.includes('Drew 2 cards') && !s.log.some(l => /Psychic Energy/.test(l)), 'M8 the opponent draw shows a count only: ' + s.log.slice(-2).join(' / ')); }
+  s = play(s, abilOf(s, 'Mega Kangaskhan ex')); ok(s.log.includes('Your opponent drew 2 cards') && !s.log.some(l => /Psychic Energy/.test(l)), 'M8 the opponent draw shows a count only: ' + s.log.slice(-2).join(' / ')); }
 // H1 / H2: five turns each, and a verdict on Prize cards.
 { let s = G.newGame([C.lists()[0].cards, C.lists()[1].cards], { seed: 9, maxTurns: 5 });
   for (const k of [0, 1]) { const B = G.setupChoices(s, k); s = G.setUp(s, k, B[0].uid, []); }

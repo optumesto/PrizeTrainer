@@ -259,15 +259,17 @@ function canEvolve(s, m, x) {
   return !!(REAL && x && s.turn >= 2 && HOOKS.evoNow.some(h => h(s, m, x))); // Forest of Vitality
 }
 /** The Energy types a card provides, or null when the engine cannot read it (most Special Energy). */
-function provides(ref) {
+// 3.4.12: m (optional) is the Pokemon the card is attached to, for Special Energy that provides more on some
+// Pokemon (Ignition Energy on an Evolution Pokemon, Prism Energy on a Basic, Neo Upper Energy on a Stage 2).
+function provides(ref, m) {
   const t = T.gfEType(ref); if (t) return [t];
-  if (REAL) for (const h of HOOKS.provides) { const p = h(ref); if (p) return p; }
+  if (REAL) for (const h of HOOKS.provides) { const p = h(ref, m); if (p) return p; }
   return null;
 }
 /** Can these Energy pay this cost? Basic Energy only; anything else makes the answer unknown (null). */
-function costMet(energy, cost) {
+function costMet(energy, cost, m) {
   const pool = [];
-  for (const e of energy) { const p = provides(e); if (!p) return null; pool.push.apply(pool, p); }
+  for (const e of energy) { const p = provides(e, m); if (!p) return null; pool.push.apply(pool, p); }
   for (const c of cost) {
     if (c === 'colorless') continue;
     let i = pool.indexOf(c); if (i < 0) i = pool.findIndex(p => p.includes('|') && p.split('|').includes(c)); if (i < 0) i = pool.indexOf('any'); if (i < 0) return false; pool.splice(i, 1);
@@ -372,6 +374,11 @@ function abilWhy(s, m, A, handRef) {
   if (A.energy && m && !m.energy.some(e => T.gfEType(e) === A.energy)) return 'Needs ' + A.energy.charAt(0).toUpperCase() + A.energy.slice(1) + ' Energy attached.';
   if (A.cost && P.hand.filter(y => !handRef || y.uid !== handRef.uid).length < A.cost) return 'Needs a card in hand to discard.';
   if (A.when === 'hand' && A.steps.some(x => x.t === 'benchSelf') && P.bench.length >= benchMax(s, P)) return 'Your Bench is full.';
+  // 3.4.12: "If you have Solrock in play, discard a Basic Fighting Energy card ... in order to use this Ability" (Lunar Cycle).
+  const nd = REAL && A.steps.find(x => x.t === 'needDiscard');
+  if (nd) { const cap = w => w.replace(/\b\w/g, c => c.toUpperCase());
+    if (!mons(P).some(z => topOf(z).card.name.toLowerCase() === nd.mon)) return 'Needs ' + cap(nd.mon) + ' in play.';
+    if (!P.hand.some(y => T.gfEType(y) === nd.type)) return 'Needs a Basic ' + cap(nd.type) + ' Energy card in your hand to discard.'; }
   return emptyWhy(s, A.steps, m, handRef && handRef.uid);
 }
 
@@ -416,7 +423,7 @@ function attackWhy(s, m, a) {
   if (REAL) for (const h of HOOKS.attackWhy) { const w = h(s, m, a); if (w) return w; }
   let cost = a.cost || [];
   if (REAL) for (const h of HOOKS.cost) cost = h(s, m, a, cost);
-  const ok = costMet(m.energy, cost);
+  const ok = costMet(m.energy, cost, m);
   if (ok === false) return 'Not enough Energy.';
   // An Energy the engine can't read might not pay the cost, so the attack is never counted as paid.
   if (ok == null) return "RdyDeck can't read an Energy attached here, so this attack can't be used in a puzzle.";
@@ -506,6 +513,8 @@ function checkKOs(s) {
       s.taken[1 - k] += got.length;
       if (k !== s.cur) s.koIds.push(m.id);
       log(s, `${monName(m)} is Knocked Out (${got.length} Prize card${got.length !== 1 ? 's' : ''} taken)`);
+      // 3.4.12: the Prize cards you take are named (they go to your hand); your opponent's stay hidden.
+      if (REAL && 1 - k === 0 && got.length) log(s, 'You took ' + cardList(got) + ' as ' + (got.length === 1 ? 'a Prize card' : 'Prize cards'), true);
       if (wasActive && P.bench.length) s.promote = (s.promote || []).concat(k);
       if (REAL) HOOKS.ko.forEach(h => h(s, m, k, wasActive));
     }
@@ -564,6 +573,9 @@ function cardList(got) { const g = new Map(); got.forEach(x => g.set(x.card.name
 function logDraw(s, k, got) {
   if (k < 0) return;
   if (!got.length) { log(s, k === s.cur ? 'Drew nothing, the deck is empty' : 'Your opponent drew nothing, the deck is empty'); return; }
+  // 3.4.12: in a full game every draw says who drew ("You drew ...", "Your opponent drew 5 cards"), so a card that
+  // has both players draw (Archer, Judge) reads clearly.
+  if (REAL) { log(s, (k === 0 ? 'You drew ' : 'Your opponent drew ') + drawWords(k, got), true); return; }
   log(s, (k === s.cur ? 'Drew ' : 'Your opponent drew ') + drawWords(k, got));
 }
 function go(s) {
@@ -573,6 +585,8 @@ function go(s) {
   const P = me(s), O = foe(s);
   while (R.i < R.steps.length) {
     if (s.gameOver != null) { s.pending = null; return s; } // the game is over: nothing more happens
+    // 3.4.12: an Ability that Knocks Out its own Pokemon (Cursed Blast) finishes that before anyone chooses a new Active.
+    if (s.promote && s.promote.length && R.steps[R.i] && R.steps[R.i].t === 'koSelf') { const f = findMon(s, R.ctx.mon); if (f) { f.m.dmg = 99999; checkKOs(s); } R.i++; continue; }
     if (s.promote && s.promote.length) return s; // wait for a new Active
     const st = R.steps[R.i], c = R.ctx;
     if ((st.ifHeads && !c.heads) || (st.ifAttached && !c.attached) || (st.ifDrew && !c.drew) || (st.ifSwitched && !c.switched) || (REAL && st.ifHealed && c.healed == null)) { R.i++; continue; }
@@ -582,7 +596,8 @@ function go(s) {
       case 'drawTo': c.drew += drawN(s, P, Math.max(0, st.n - P.hand.length)); break;
       case 'drawPrizes': c.drew += drawN(s, P, P.prizes.length); break;
       case 'discardHand': P.hand.splice(0).forEach(y => P.discard.push(y)); break;
-      case 'shuffleHand': case 'bottomHand': P.deck = P.deck.concat(P.hand.splice(0)); if (st.t === 'shuffleHand') reshuffle(s, P); break;
+      case 'shuffleHand': case 'bottomHand': { const n = P.hand.length; P.deck = P.deck.concat(P.hand.splice(0)); if (st.t === 'shuffleHand') reshuffle(s, P);
+        if (REAL && st.t === 'shuffleHand') log(s, n === 1 ? 'Shuffled 1 card from your hand into your deck' : 'Shuffled ' + n + ' cards from your hand into your deck'); break; }
       case 'coin': if (REAL && s.rng) { c.heads = s.rng() < 0.5; log(s, c.heads ? 'Heads' : 'Tails'); } else { s.luck = true; c.heads = true; } break;
       case 'endTurn': c.endTurn = true; break;
       case 'look': if (REAL) { c.looked = st.from === 'bottom' ? P.deck.splice(Math.max(0, P.deck.length - st.n)) : P.deck.splice(0, st.n); if (c.looked.length) return ask(s, 'look', { step: R.i }); break; }
@@ -590,7 +605,7 @@ function go(s) {
       case 'koSelf': { const f = findMon(s, c.mon); if (f) { f.m.dmg = 99999; checkKOs(s); } break; }
       case 'selfShuffle': { const f = findMon(s, c.mon); if (!f) break; const m = f.m;
         if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
-        P.deck = P.deck.concat(m.stack, m.energy, m.tool ? [m.tool] : []); reshuffle(s, P); break; }
+        P.deck = P.deck.concat(m.stack, m.energy, m.tool ? [m.tool] : []); reshuffle(s, P); if (REAL) log(s, topOf(m).card.name + ' and all attached cards were shuffled into your deck'); break; }
       case 'benchSelf': { const x = take(P.hand, c.handUid); if (!x) break; if (P.bench.length >= benchMax(s, P)) { P.hand.push(x); break; }
         P.bench.push(newMon(s, x, s.cur)); if (REAL) log(s, 'Put ' + x.card.name + ' on your Bench'); break; }
       case 'boost': if (st.v) s.mods.exvBoost = (s.mods.exvBoost || 0) + st.n; else s.mods.exBoost = (s.mods.exBoost || 0) + st.n; break;
@@ -784,7 +799,7 @@ function apply(s0, a) {
     case 'evolve': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(x); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; log(s, REAL ? 'Evolved ' + was + ' into ' + x.card.name : 'Evolved into ' + x.card.name); return s; }
     case 'candy': { const cd = take(P.hand, a.uid), s2 = take(P.hand, a.s2), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(s2); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; P.discard.push(cd); log(s, 'Rare Candy: ' + (REAL ? was + ' into ' : '') + s2.card.name); return s; }
     case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + monName(m));
-      if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) return startRun(s, st, { name: x.card.name, mon: m.id }); } return s; }
+      if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) { log(s, x.card.name + ' on ' + monName(m) + ' took effect'); return startRun(s, st, { name: x.card.name, mon: m.id }); } } return s; }
     case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); if (!passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return s; }
     case 'stadium': { const x = take(P.hand, a.uid); if (s.stadium) s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = { ref: x, owner: s.cur }; P.used.stadium = true;
       const TP = readTrainer(x); log(s, 'Played ' + x.card.name); if (!TP.once && !passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return checkKOs(s); }

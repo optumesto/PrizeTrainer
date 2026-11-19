@@ -77,7 +77,7 @@ function bestHit(s, att, k, target, extra) {
     if (!R) continue;
     let cost = a.cost || [];
     try { for (const h of E.HOOKS.cost) cost = h(s2, att, a, cost); } catch (e) { /* keep the printed cost */ }
-    const ok = E.costMet(att.energy, cost) || (extra && E.costMet(att.energy.concat([ANY]), cost));
+    const ok = E.costMet(att.energy, cost, att) || (extra && E.costMet(att.energy.concat([ANY]), cost, att));
     if (!ok) continue;
     let d = 0; try { d = E.damageTo(s2, att, R, target, true); } catch (e) { d = 0; }
     d += fxDamage(s, R, k);
@@ -100,7 +100,7 @@ function benchSpread(s, att, k) {
     let R; try { R = E.readAttack(a); } catch (e) { R = null; }
     const f = R && (R.fx || []).find(x => x.t === 'spread' && x.bench);
     if (!f) continue;
-    if (E.costMet(att.energy, a.cost || []) || E.costMet(att.energy.concat([ANY]), a.cost || [])) best = Math.max(best, 10 * f.n);
+    if (E.costMet(att.energy, a.cost || [], att) || E.costMet(att.energy.concat([ANY]), a.cost || [], att)) best = Math.max(best, 10 * f.n);
   }
   return best;
 }
@@ -165,7 +165,7 @@ function value(s, k) {
 function missing(s, m, k, a) {
   let cost = a.cost || [];
   try { const s2 = Object.assign({}, s, { cur: k }); for (const h of E.HOOKS.cost) cost = h(s2, m, a, cost); } catch (e) { /* printed cost */ }
-  for (let n = 0; n <= cost.length; n++) if (E.costMet(n ? m.energy.concat(Array(n).fill(ANY)) : m.energy, cost)) return { n, of: cost.length };
+  for (let n = 0; n <= cost.length; n++) if (E.costMet(n ? m.energy.concat(Array(n).fill(ANY)) : m.energy, cost, m)) return { n, of: cost.length };
   return { n: cost.length, of: cost.length };
 }
 /** Energy on m, worth more when it pays for a strong attack with the right types. */

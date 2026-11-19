@@ -158,8 +158,10 @@ function eType(ref) { const t = E.T.gfEType(ref); if (t) return { t, sp: false }
 function energyMarks(m) {
   if (!m.energy.length) return '<span class="none">No Energy</span>';
   const g = new Map();
-  m.energy.forEach(e => { const k = e.card.name; if (!g.has(k)) g.set(k, { e: eType(e), n: 0, name: k }); g.get(k).n++; });
-  return [...g.values()].map(x => `<span class="eg" title="${esc(x.n + ' ' + x.name)}">${pip(x.e.t, x.e.sp)}${x.n > 1 ? `<b data-no-tr>${x.n}</b>` : ''}</span>`).join('');
+  // 3.4.12: a Special Energy that provides more than 1 Energy here (Ignition Energy on an Evolution Pokémon) shows how many.
+  m.energy.forEach(e => { const k = e.card.name; if (!g.has(k)) g.set(k, { e: eType(e), n: 0, per: (E.internals.provides(e, m) || [0]).length, name: k }); g.get(k).n++; });
+  return [...g.values()].map(x => { const tot = x.n * x.per, more = x.per > 1 ? ` (${tot} Energy)` : '';
+    return `<span class="eg" title="${esc(x.n + ' ' + x.name + more)}">${pip(x.e.t, x.e.sp)}${tot > 1 ? `<b data-no-tr>${tot}</b>` : ''}</span>`; }).join('');
 }
 /* Card pictures: Limitless's copy of the card first (by set code and number), then TCGdex, then the record's own link.
  * A picture that fails moves to the next link; the one that loads is remembered for the rest of the visit. */
@@ -200,7 +202,7 @@ function cond(m) { return [m.cond, m.poison ? 'poisoned' : '', m.burn ? 'burned'
 function attackState(s, m, k, i, okSet) {
   const a = E.topOf(m).card.attacks[i];
   if (okSet && k === 0 && s.players[0].active === m) return okSet.has(i) ? { ok: true } : { ok: false, miss: Math.max(0, a.cost.length - m.energy.length) };
-  const r = E.costMet(m.energy, a.cost || []);
+  const r = E.costMet(m.energy, a.cost || [], m);
   return r === true ? { ok: true } : { ok: false, miss: Math.max(0, (a.cost || []).length - m.energy.length), unknown: r == null };
 }
 function attacksHTML(s, m, k, okSet, full) {
@@ -220,7 +222,7 @@ function attacksHTML(s, m, k, okSet, full) {
 function monRow(s, m, k, active, okSet) {
   const c = E.topOf(m).card, hp = E.maxHp(s, m), pct = hp ? Math.max(0, Math.round((hp - m.dmg) / hp * 100)) : 0;
   return `<div class="mon${active ? ' act' : ''}" role="button" tabindex="0" onclick="RdyPlay.card('m',${m.id})" onkeydown="if(event.key==='Enter')RdyPlay.card('m',${m.id})">${artHTML(c, active ? 'a' : 'b')}
-    <div class="mb"><div class="mn"><b data-no-tr>${esc(c.name)}</b>${c.p > 1 ? `<span class="pv">${c.p} Prizes</span>` : ''}</div>
+    <div class="mb"><div class="mn"><b data-no-tr>${esc(c.name)}</b>${!active && isTwin(s, m.id) ? `<span class="pv sp"><span>Bench</span> ${s.players[k].bench.indexOf(m) + 1}</span>` : ''}${c.p > 1 ? `<span class="pv">${c.p} Prizes</span>` : ''}</div>
     <div class="hp"><span class="bar${pct <= 34 ? ' low' : ''}"><i style="width:${pct}%"></i></span><span>${hpLine(s, m)}</span><span class="en">${energyMarks(m)}</span></div>
     ${m.tool || cond(m) ? `<div class="meta">${m.tool ? '<span>Tool:</span> ' + cn(m.tool.card.name) : ''}${m.tool && cond(m) ? ' · ' : ''}${cond(m) ? '<span class="bad">' + cond(m) + '</span>' : ''}</div>` : ''}
     <div class="atks">${attacksHTML(s, m, k, okSet, active)}</div></div></div>`;
@@ -236,7 +238,11 @@ function sideHTML(s, k, okSet) {
   // Prize cards left as small card outlines (the RdyDeck logo's card shape); taken ones stay as faint slots.
   const n = P.prizes.length, slots = Array.from({ length: Math.max(6, n) }, (_, i) => `<i${i < n ? '' : ' class="gone"'}></i>`).join('');
   const head = `<div class="sh"><span>${you ? 'You' : 'Opponent'}</span><span class="pr"><span class="pz" aria-hidden="true">${slots}</span><span class="vh">${n} Prize card${n === 1 ? '' : 's'} left</span></span></div>`;
-  const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <button type="button" class="lk" onclick="RdyPlay.pile(${k})"><span>Discard pile</span> ${P.discard.length}</button></div>`;
+  // 3.4.12: "In play" counts every card on the board (Pokémon with the cards under them, Energy, Tools, their Stadium),
+  // so Hand, Deck, Discard pile, Prize cards and In play add up to 60.
+  const inPlay = E.mons(P).reduce((t, m) => t + m.stack.length + m.energy.length + (m.tool ? 1 : 0), 0) + (s.stadium && s.stadium.owner === k ? 1 : 0);
+  const lost = (P.lost || []).length;
+  const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <span>In play</span> ${inPlay}${lost ? ` · <span>Lost Zone</span> ${lost}` : ''} · <button type="button" class="lk" onclick="RdyPlay.pile(${k})"><span>Discard pile</span> ${P.discard.length}</button></div>`;
   const act = `<div class="zl">Active</div>${P.active ? monRow(s, P.active, k, true, okSet) : '<div class="empty">No Active Pokémon</div>'}`;
   const bench = `<div class="zl"><span>Bench</span> <span>${P.bench.length} of 5</span></div>${P.bench.length ? `<div class="bench">${P.bench.map(m => monRow(s, m, k, false, null)).join('')}</div>` : '<div class="empty">Empty</div>'}`;
   return `<div class="side ${you ? 'me' : 'opp'}">${head}${act}${bench}${piles}</div>`;
@@ -312,9 +318,13 @@ function actionsHTML(s) {
   const X = G.next(s);
   // After a Knock Out in the opponent's turn you choose your new Active right away, under what the opponent did.
   const promoting = X.who === 0 && s.promote && s.promote.length;
+  // 3.4.12: a choice that's yours in the middle of the opponent's turn (a discard they made you make) shows right
+  // under what they did, with no "Take your turn" button, since it isn't your turn yet.
+  const midTurn = X.who === 0 && s.cur === 1 && s.pending && s.pending.ask;
   if (S.oppLog) {
-    return `<div class="oppturn"><div class="q">Opponent's turn</div><ol>${S.oppLog.map(t => `<li>${esc(t)}</li>`).join('') || '<li>It passed.</li>'}</ol>` +
-      (promoting ? '' : `<button class="btn primary" onclick="RdyPlay.go()">Take your turn</button>`) + '</div>' + (promoting ? promoteHTML(s, X) : '');
+    const list = `<div class="oppturn"><div class="q">Opponent's turn</div><ol>${S.oppLog.map(t => `<li>${esc(t)}</li>`).join('') || '<li>It passed.</li>'}</ol>`;
+    if (midTurn) { const keep = S.oppLog; S.oppLog = null; const h = actionsHTML(s); S.oppLog = keep; return list + '</div>' + h; }
+    return list + (promoting ? '' : `<button class="btn primary" onclick="RdyPlay.go()">Take your turn</button>`) + '</div>' + (promoting ? promoteHTML(s, X) : '');
   }
   if (X.who !== 0) return '';
   const acts = E.legalActions(s, { why: true });
@@ -346,6 +356,19 @@ function promoteHTML(s, X) {
 }
 // Picking several cards (search, discard for a cost): tap cards to add them, then confirm, instead of one button per mix.
 function pickKey(s, v) { return v.map(u => refName(s, u)).sort().join('|'); }
+// 3.4.12: the card's own words for what a deck search can take ("Search your deck for a Pokémon that doesn't have a
+// Rule Box..."), shown under the prompt as the card prints them.
+function searchWords(s) {
+  const n = s.pending && s.pending.ctx && s.pending.ctx.name; if (!n) return '';
+  let card = null;
+  for (const P of s.players) { for (const z of [P.discard, P.hand]) { const r = z.find(y => y.card.name === n); if (r) { card = r.card; break; } }
+    if (!card) { const m = E.mons(P).find(z => E.topOf(z).card.name === n); if (m) card = E.topOf(m).card; } if (card) break; }
+  if (!card && s.stadium && s.stadium.ref.card.name === n) card = s.stadium.ref.card;
+  if (!card) return '';
+  const texts = [card.rtext || ''].concat((card.attacks || []).map(a => a.text || ''), (card.abil || []).map(a => a[1] || ''));
+  for (const t of texts) { const m = t.match(/[^.]*search your deck[^.]*\./i); if (m) return m[0].trim(); }
+  return '';
+}
 function multiHTML(s, X, deck) {
   const sel = S.sel || (S.sel = {}), keys = X.actions.map(a => pickKey(s, a.v)), max = {};
   keys.forEach(k => { const c = {}; (k ? k.split('|') : []).forEach(n => { c[n] = (c[n] || 0) + 1; }); for (const n in c) max[n] = Math.max(max[n] || 0, c[n]); });
@@ -369,16 +392,27 @@ function multiHTML(s, X, deck) {
     pick = (full ? `<p class="note">Your whole deck (${s.players[0].deck.length} cards). Cards this can take are bright; tap one to choose it.</p>`
       : `<p class="note">Cards this can take from your deck. Tap one to choose it.</p>`) + (tiles ? `<div class="tiles pile deck${full ? '' : ' few'}">${tiles}</div>` : `<p class="note">No card in your deck fits this.</p>`) + more;
   }
-  return `<div class="q">${askText(s)}</div>${pick}<div class="btns" style="margin-top:10px">` +
-    (hit >= 0 && chosen ? `<button class="btn primary" onclick="RdyPlay.do(${hit})">${s.pending.ask.kind === 'cost' ? 'Discard' : 'Take'} ${esc(names(s, X.actions[hit].v))}</button>` : chosen ? '<span class="note">That mix isn\'t allowed. Tap a card again to drop it.</span>' : '') +
+  // 3.4.12: a pick that's part of a legal one (1 card of an Ultra Ball's 2) says how many more to choose.
+  const cnt = k => { const c = {}; (k ? k.split('|') : []).forEach(x => { c[x] = (c[x] || 0) + 1; }); return c; };
+  const mine = cnt(chosen), more = hit >= 0 || !chosen ? 0 : Math.min(...keys.map(k => { const c = cnt(k), n = k ? k.split('|').length : 0;
+    return Object.keys(mine).every(x => (c[x] || 0) >= mine[x]) ? n - chosen.split('|').length : Infinity; }));
+  const words = deck ? searchWords(s) : '';
+  return `<div class="q">${askText(s)}</div>${words ? `<p class="tx sw" data-no-tr>${esc(words)}</p>` : ''}${pick}<div class="btns" style="margin-top:10px">` +
+    (hit >= 0 && chosen ? `<button class="btn primary" onclick="RdyPlay.do(${hit})">${s.pending.ask.kind === 'cost' ? 'Discard' : 'Take'} ${esc(names(s, X.actions[hit].v))}</button>`
+      : chosen && more > 0 && more < Infinity ? `<span class="note">${more === 1 ? 'Choose 1 more card.' : `Choose ${more} more cards.`}</span>`
+      : chosen ? '<span class="note">That mix isn\'t allowed. Tap a card again to drop it.</span>' : '') +
     (none >= 0 ? ` <button class="btn ghost" onclick="RdyPlay.do(${none})">${s.pending.ask.kind === 'cost' ? 'Discard nothing' : 'Take nothing'}</button>` : '') + '</div>';
 }
 // The end: who won. At the turn limit, whoever took more Prize cards wins, and the same number is a draw.
-function resultHTML() {
-  const s = S.s, R = G.result(s) || { winner: -1, took: [6 - s.players[0].prizes.length, 6 - s.players[1].prizes.length], by: 'game' }, t = R.took;
+function resultText(s) {
+  const R = G.result(s) || { winner: -1, took: [6 - s.players[0].prizes.length, 6 - s.players[1].prizes.length], by: 'game' }, t = R.took;
   const head = R.by === 'prizes' ? (R.winner === 0 ? 'You win on Prize cards.' : R.winner === 1 ? 'Your opponent wins on Prize cards.' : "It's a draw.")
     : R.winner === 0 ? 'You win.' : R.winner === 1 ? 'Your opponent wins.' : 'Game over.';
   const sub = R.by === 'prizes' ? `After ${PRESS_TURNS} turns each, you took ${t[0]} Prize card${t[0] === 1 ? '' : 's'} and your opponent took ${t[1]}.` : '';
+  return { head, sub };
+}
+function resultHTML() {
+  const { head, sub } = resultText(S.s);
   return `<div class="result"><div class="q">${esc(head)}</div>${sub ? `<p class="note">${esc(sub)}</p>` : ''}<div class="line"><span>Opponent level:</span> <span>${esc(S.levelName)}</span> · <span>Opponent's deck:</span> ${cn(S.deckB.name)}</div>
     <button class="btn primary" onclick="RdyPlay.again()">Play again</button> <button class="btn ghost" onclick="RdyPlay.menu()">Change decks</button></div>`;
 }
@@ -390,10 +424,15 @@ function setupHTML(s) {
   if (s.mulls[0]) notes.push(s.mulls[0] === 1 ? 'You took 1 mulligan.' : `You took ${s.mulls[0]} mulligans.`);
   if (s.mulls[1]) notes.push(s.mulls[1] === 1 ? 'Your opponent took 1 mulligan, so you draw 1 more card after setup.' : `Your opponent took ${s.mulls[1]} mulligans, so you draw ${s.mulls[1]} more cards after setup.`);
   let h = `<div class="turn"><span>Game setup</span> · <span>${esc(S.levelName)}</span></div>` + notes.map(x => `<p class="note">${x}</p>`).join('') + (S.deckA.own ? deckNote(S.deckA, false) : '') + handHTML(s);
-  h += `<div class="acts"><div class="q">Choose your Active Pokémon</div><div class="btns">${B.map(r => `<button class="btn${U.active === r.uid ? ' primary' : ''}" onclick="RdyPlay.su(${r.uid})">${nm(r)}</button>`).join('')}</div>`;
+  // 3.4.12: copies of one Pokémon are the same card, so each name shows once. On the Bench a name with copies says
+  // how many are on it ("1 of 2"); tapping adds the next copy, and tapping when all are on takes them off.
+  const byName = list => { const g = new Map(); list.forEach(r => { const n = r.card.name; if (!g.has(n)) g.set(n, []); g.get(n).push(r); }); return [...g.values()]; };
+  const actName = U.active != null && (B.find(r => r.uid === U.active) || {}).card;
+  h += `<div class="acts"><div class="q">Choose your Active Pokémon</div><div class="btns">${byName(B).map(g => `<button class="btn${actName && actName.name === g[0].card.name ? ' primary' : ''}" onclick="RdyPlay.su(${(actName && actName.name === g[0].card.name ? U.active : g[0].uid)})">${nm(g[0])}</button>`).join('')}</div>`;
   if (U.active != null) {
-    const rest = B.filter(r => r.uid !== U.active);
-    h += rest.length ? `<div class="gt"><span>Your Bench</span> <span>${U.bench.length} of 5</span></div><p class="note">Tap a Pokémon to put it on your Bench. Tap it again to take it off.</p><div class="btns">${rest.map(r => `<button class="btn${U.bench.includes(r.uid) ? ' primary' : ''}" onclick="RdyPlay.sb(${r.uid})">${nm(r)}</button>`).join('')}</div>`
+    const rest = byName(B.filter(r => r.uid !== U.active));
+    h += rest.length ? `<div class="gt"><span>Your Bench</span> <span>${U.bench.length} of 5</span></div><p class="note">Tap a Pokémon to put it on your Bench. Tap it again to take it off.</p><div class="btns">${rest.map(g => { const on = g.filter(r => U.bench.includes(r.uid)).length;
+      return `<button class="btn${on ? ' primary' : ''}" onclick="RdyPlay.sb(${g[0].uid})">${nm(g[0])}${g.length > 1 ? ` (<span>${on} of ${g.length}</span>)` : ''}</button>`; }).join('')}</div>`
       : `<p class="note">No other Basic Pokémon in your hand for your Bench.</p>`;
     h += `<div class="btns" style="margin-top:14px"><button class="btn primary" onclick="RdyPlay.sgo()">Start the game</button></div>`;
   }
@@ -418,7 +457,11 @@ function render() {
 /* ---------------- Playing ---------------- */
 function checkOver() {
   const s = S.s;
-  if (G.winner(s) >= 0 || s.gameOver != null || s.timeUp) { S.over = true; return true; }
+  if (G.winner(s) >= 0 || s.gameOver != null || s.timeUp) {
+    // 3.4.12: the result goes in the game log too, once.
+    if (!S.over) { const r = resultText(s); s.log.push(r.head); if (r.sub) s.log.push(r.sub); }
+    S.over = true; return true;
+  }
   return false;
 }
 function oppStep() {
@@ -426,7 +469,8 @@ function oppStep() {
   // follow what it does. Card art that has loaded stays put between moves (see artHTML), so nothing flashes.
   const s = S.s, X = G.next(s);
   if (checkOver()) { S.busy = false; render(); return; }
-  if (X.who !== 1) { S.busy = false; if (S.oppTurn) { S.oppLog = S.s.log.slice(S.oppTurn.from); S.oppTurn = null; } save(); render(); return; }
+  // A choice of yours in the middle of their turn keeps the turn's start, so the list after it shows the whole turn.
+  if (X.who !== 1) { S.busy = false; if (S.oppTurn) { S.oppLog = S.s.log.slice(S.oppTurn.from); if (s.cur !== 1) S.oppTurn = null; } save(); render(); return; }
   if (s.cur === 1 && !S.oppTurn) S.oppTurn = { from: s.log.length - 1 };
   S.busy = true; render();
   const at = S;
@@ -518,7 +562,14 @@ const api = {
   },
   // Setup: tap a Basic to make it your Active, then tap Basics to put them on your Bench.
   su(uid) { if (!S || !S.setup) return; const U = S.setup; if (U.active === uid) { U.active = null; U.bench = []; } else { U.active = uid; U.bench = U.bench.filter(u => u !== uid); } render(); },
-  sb(uid) { if (!S || !S.setup || S.setup.active == null) return; const U = S.setup; if (U.bench.includes(uid)) U.bench = U.bench.filter(u => u !== uid); else if (U.bench.length < 5) U.bench.push(uid); render(); },
+  sb(uid) {
+    if (!S || !S.setup || S.setup.active == null) return; const U = S.setup;
+    // Any copy of the tapped Pokémon (not the Active one): add the next one off the Bench, or take them all off.
+    const B = G.setupChoices(S.s, 0), name = (B.find(r => r.uid === uid) || {}).card; if (!name) return;
+    const same = B.filter(r => r.card.name === name.name && r.uid !== U.active).map(r => r.uid), off = same.filter(u => !U.bench.includes(u));
+    if (off.length && U.bench.length < 5) U.bench.push(off[0]); else U.bench = U.bench.filter(u => !same.includes(u));
+    render();
+  },
   sgo() {
     if (!S || !S.setup || S.setup.active == null) return;
     S.rec.me = { active: S.setup.active, bench: S.setup.bench.slice() };

@@ -1431,6 +1431,7 @@ I18N_MORE.fr = {
     "Sparring Tool and Energy fixes": "Sparring : corrections des Outils et des Énergies",
     "Sparring shows Energy on matching Pokémon": "Sparring affiche l'Énergie des Pokémon identiques",
     "Sparring search opens with cards you can take": "La recherche de Sparring montre d'abord les cartes que vous pouvez prendre",
+    "Sparring Energy and game log fixes": "Corrections de l'Énergie et du journal de partie dans Sparring",
     "Added: watch out for box": "Nouveau : encadré Attention à",
     "Share your puzzle score": "Partagez votre résultat du puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Le lien ouvre le puzzle du jour, pour que vos amis jouent le même plateau.",

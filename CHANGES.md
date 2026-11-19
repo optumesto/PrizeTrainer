@@ -2,6 +2,19 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.12 (build 141): Sparring Energy and game log fixes (19 Nov 2026)
+
+Changed files: puzzle/engine.js, opponent/effects.js, opponent/ai.js, opponent/play.js, opponent/play.html, opponent/test/count.mjs (new), js/core.js (version, What's new, PT_BUILD now 141), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v141).
+
+- Ignition Energy provides 3 Colorless Energy on an Evolution Pokémon (1 otherwise), Prism Energy any type on a Basic, Neo Upper Energy 2 of any type on a Stage 2, and the board shows the total. Ignition's end of turn discard is now in the log.
+- The log now shows Hacking and other hand discards, Lunar Cycle's discard (and it can't be used without Solrock and a Basic Fighting Energy), Lillie's and similar hand shuffles, Run Away Draw's shuffle back, Enriching Energy's draw, which Prize cards you took, what Recon Directive kept and put back, and who won.
+- Cursed Blast finishes its own Knock Out before a new Active is chosen.
+- A choice of yours in the opponent's turn shows under their moves with no "Take your turn" button.
+- Look-alike Pokémon on the Bench show their Bench spot; setup shows each Pokémon once with how many copies are on the Bench.
+- Deck searches show the card's own search words, and a pick that's short says how many more to choose.
+- Each side's piles line counts cards in play (and the Lost Zone), so the counts add up to 60. A new test checks every card stays in one place in 400 games.
+- PT_BUILD was still 133 since 3.4.6; it now matches the build number.
+
 # RdyDeck 3.4.11 (build 140): Sparring search opens with the cards you can take (19 Nov 2026)
 
 Changed files: opponent/play.js (search view), opponent/play.html (style), opponent/test/page.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v140).
