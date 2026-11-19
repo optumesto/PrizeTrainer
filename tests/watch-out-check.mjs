@@ -5,7 +5,7 @@
 //   - fails when a Mega Lucario ex list is not warned about its Psychic Weakness,
 //   - fails when an Alakazam list (Powerful Hand) is not warned about hand disruption,
 //   - fails when the box changes a grade (the grade is read before and after it is drawn),
-//   - fails when the box shows while it is switched off.
+//   - fails when the box is switched off.
 //
 //   node tests/watch-out-check.mjs           the check, with one line per list
 //   - fails when a text of the box shows in English in Spanish, Portuguese, French, German or Italian
@@ -78,8 +78,7 @@ const w = dom.window;
 await new Promise(r => setTimeout(r, 3500));
 w.eval(`mu60Data = mu60Validate(${MATCHUPS});`);
 ok(w.eval('typeof wo83Lines') === 'function', 'js/v83-watch-out.js is not loaded');
-ok(w.eval('WO83_ON') === false, 'WO83_ON must stay false until it is switched on');
-ok(w.eval('wo83On()') === false, 'the box shows while switched off');
+ok(w.eval('WO83_ON') === true && w.eval('wo83On()') === true, 'the box is switched off');
 
 const lists = JSON.parse(fs.readFileSync(path.join(HERE, 'grade-lists.json'), 'utf8'));
 const listText = list => ['pokemon', 'trainer', 'energy'].map(part => {

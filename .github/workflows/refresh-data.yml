@@ -5,6 +5,7 @@
 # writes gap fixes into data.json and a plain report to card-check.md.
 # Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments, and from the
 # same reads meta-cards.json (what each deck's lists run, for the deck builder).
+# Then refreshes the facts behind the Grade tab's Watch out for box (watch-out-data.mjs).
 # Last, checks how well grades track those results and writes grade-results.md, and the public
 # scoreboard (accuracy.json, shown on how-grading-works.html and in the app).
 name: Refresh data.json
@@ -76,6 +77,17 @@ jobs:
           PT_SLOW: ${{ inputs.slow && '1' || '' }}
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
+      - name: Refresh the Watch out for box
+        if: ${{ !inputs.slow }}
+        # Which types each meta deck attacks with, and who plays the cards the box warns about, from
+        # this week's meta-cards.json and pokemon-tcg-data card text, into js/v83-watch-out.js.
+        # The stamp step gives index.html the file's new ?v= so browsers fetch it.
+        # A failed run keeps last week's facts; it never blocks the refresh.
+        continue-on-error: true
+        run: |
+          node watch-out-data.mjs
+          node app-file.mjs --stamp
+
       - name: Check grades against results
         if: ${{ !inputs.cards_only && !inputs.slow }}
         # Ranks archetypes by grade and by this week's results and writes grade-results.md.
@@ -100,7 +112,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          FILES="data.json builder.json cards.json prints.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md accuracy.json how-grading-works.html"
+          FILES="data.json builder.json cards.json prints.json card-check.md matchups.json .github/matchups-cache.json meta-cards.json .github/cards-cache.json sitemap.xml grade-results.md accuracy.json how-grading-works.html js/v83-watch-out.js index.html"
           if git diff --quiet -- $FILES && [ -z "$(git ls-files --others --exclude-standard $FILES)" ]; then
             echo "No change this week."
             exit 0

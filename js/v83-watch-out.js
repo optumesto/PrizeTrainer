@@ -1,4 +1,4 @@
-// ═══════════ Watch out for (hidden until switched on) ═══════════
+// ═══════════ Watch out for ═══════════
 // A box on the Grade tab, after Against the meta: up to 3 things the current meta can use against this
 // deck's plan, worst first. Each line says what is weak, which cards or decks hit it, and how this
 // deck's archetype did against those decks online (matchups.json, the same records as Against the meta).
@@ -9,8 +9,9 @@
 //     many Pokemon with 70 HP or less, against Bench damage
 // It reads the deck and the meta only. It changes no grade, score or weight.
 // The meta facts (WO83_DATA) are written by watch-out-data.mjs from meta-cards.json and card text.
-// Hidden: WO83_ON stays false until Mason says so. ?wo in the address, or rd_wo83 set to 1, shows it for checks.
-const WO83_ON = false;
+// The weekly data refresh runs watch-out-data.mjs after matchups.json, so the facts follow the meta.
+// On since Mason's yes (Nov 18, 2026). WO83_ON false hides it again; ?wo or rd_wo83 set to 1 still shows it for checks.
+const WO83_ON = true;
 const WO83_MAX = 3;          // lines shown
 const WO83_MIN = 0.03;       // a line needs at least this much of the meta behind it
 const WO83_ROWS = 3;         // decks shown per line
