@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.11 (build 140): Sparring search opens with the cards you can take (19 Nov 2026)
+
+Changed files: opponent/play.js (search view), opponent/play.html (style), opponent/test/page.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v140).
+
+- A search card now shows only the cards it can take, so there is no scrolling past the rest. "Click Here for Full Deck" opens the whole deck (dimmed where it can't take), and "Hide Full Deck" closes it.
+
 # RdyDeck 3.4.10 (build 139): Sparring shows Energy on matching Pokémon (19 Nov 2026)
 
 Changed files: opponent/play.js (Energy and Tool on buttons for matching Pokémon), opponent/play.html (style), opponent/test/page.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v139).

@@ -358,11 +358,16 @@ function multiHTML(s, X, deck) {
   if (deck) {
     const g = new Map(), rank = { pokemon: 0, trainer: 1, energy: 2 };
     s.players[0].deck.forEach(r => { const n = r.card.name; if (!g.has(n)) g.set(n, { r, n: 0 }); g.get(n).n++; });
-    const tiles = [...g.values()].sort((a, b) => (rank[a.r.card.cat] ?? 3) - (rank[b.r.card.cat] ?? 3) || a.r.card.name.localeCompare(b.r.card.name)).map(x => {
+    // 3.4.11: only the cards this search can take show at first; "Click Here for Full Deck" opens the rest, so the
+    // screen doesn't need scrolling past cards you can't take.
+    const full = !!S.full;
+    const tiles = [...g.values()].filter(x => full || max[x.r.card.name] > 0).sort((a, b) => (rank[a.r.card.cat] ?? 3) - (rank[b.r.card.cat] ?? 3) || a.r.card.name.localeCompare(b.r.card.name)).map(x => {
       const n = x.r.card.name, can = max[n] > 0, on = sel[n] || 0;
       return `<button type="button" class="hc${can ? '' : ' off'}${on ? ' on' : ''}"${can ? ` onclick="RdyPlay.tog(${esc(JSON.stringify(n))})" aria-pressed="${on ? 'true' : 'false'}"` : ' disabled'}>${artHTML(x.r.card, 'h')}<span class="hn" data-no-tr>${esc(n)}</span>${on ? `<b class="hx pk" data-no-tr>✓${max[n] > 1 ? ' ' + on : ''}</b>` : x.n > 1 ? `<b class="hx" data-no-tr>×${x.n}</b>` : ''}</button>`;
     }).join('');
-    pick = `<p class="note">Your whole deck (${s.players[0].deck.length} cards). Cards this can take are bright; tap one to choose it.</p><div class="tiles pile deck">${tiles}</div>`;
+    const more = `<p class="note fd"><button type="button" class="lk" onclick="RdyPlay.full()">${full ? 'Hide Full Deck' : 'Click Here for Full Deck'}</button></p>`;
+    pick = (full ? `<p class="note">Your whole deck (${s.players[0].deck.length} cards). Cards this can take are bright; tap one to choose it.</p>`
+      : `<p class="note">Cards this can take from your deck. Tap one to choose it.</p>`) + (tiles ? `<div class="tiles pile deck${full ? '' : ' few'}">${tiles}</div>` : `<p class="note">No card in your deck fits this.</p>`) + more;
   }
   return `<div class="q">${askText(s)}</div>${pick}<div class="btns" style="margin-top:10px">` +
     (hit >= 0 && chosen ? `<button class="btn primary" onclick="RdyPlay.do(${hit})">${s.pending.ask.kind === 'cost' ? 'Discard' : 'Take'} ${esc(names(s, X.actions[hit].v))}</button>` : chosen ? '<span class="note">That mix isn\'t allowed. Tap a card again to drop it.</span>' : '') +
@@ -477,7 +482,7 @@ const api = {
   do(i) {
     if (!S || S.busy || S.over) return;
     const X = G.next(S.s); const a = X.actions[i]; if (!a || X.who !== 0) return;
-    S.s = G.step(S.s, a); S.sel = null; S.open = null; rec(a);
+    S.s = G.step(S.s, a); S.sel = null; S.full = false; S.open = null; rec(a);
     if (checkOver()) { save(); render(); return; }
     oppStep();
   },
@@ -487,6 +492,7 @@ const api = {
     sel[n] = (sel[n] || 0) + 1; if (sel[n] > most) delete sel[n];
     save(); render();
   },
+  full() { if (!S) return; S.full = !S.full; render(); },
   go() { S.oppLog = null; save(); render(); if (checkOver()) render(); },
   logT(open) { if (S) S.logOpen = !!open; },
   // A card's full text: 'm' a Pokémon in play (by id), 'h' a card in your hand, 'c' any other card you can see (by uid).

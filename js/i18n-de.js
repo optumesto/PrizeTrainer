@@ -1436,6 +1436,7 @@ I18N_MORE.de = {
     "Sparring: discard piles and deck search": "Sparring: Ablagestapel und Decksuche",
     "Sparring Tool and Energy fixes": "Sparring: Fehler bei Ausrüstungen und Energien behoben",
     "Sparring shows Energy on matching Pokémon": "Sparring zeigt die Energie gleicher Pokémon",
+    "Sparring search opens with cards you can take": "Die Suche in Sparring zeigt zuerst die Karten, die du nehmen kannst",
     "Added: watch out for box": "Neu: Achte-auf-Box",
     "Share your puzzle score": "Teile dein Puzzle-Ergebnis",
     "The link opens today's puzzle, so friends play the same board.": "Der Link öffnet das heutige Puzzle, damit deine Freunde dasselbe Spielfeld spielen.",

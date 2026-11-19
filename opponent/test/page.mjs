@@ -83,8 +83,14 @@ for (let g = 0; g < N; g++) {
         ctx.RdyPlay.shut(); if (el('sheet').innerHTML) { bad++; console.log('PILE NOT CLOSED'); } }
       // A search shows every distinct card in your deck.
       if (st && st.pending && st.pending.ask && st.pending.ask.kind === 'search' && st.cur === 0) { searches++;
-        const want = new Set(st.players[0].deck.map(y => y.card.name)).size, got = ((h.split('class="tiles pile deck">')[1] || '').split('</div>')[0].match(/class="hc( off)?( on)?"/g) || []).length;
-        if (want !== got) { bad++; console.log('SEARCH VIEW', g, 'distinct', want, 'tiles', got); } }
+        // 3.4.11: at first only the cards it can take (none dimmed), then Click Here for Full Deck shows every distinct card.
+        const part = (x, c) => ((x.split(`class="tiles pile deck${c}">`)[1] || '').split('</div>')[0].match(/class="hc( off)?( on)?"/g) || []);
+        const few = part(h, ' few');
+        if (few.some(t => / off/.test(t)) || !/Click Here for Full Deck/.test(h)) { bad++; console.log('SEARCH FEW', g, few.length); }
+        ctx.RdyPlay.full(); const h2 = el('app').innerHTML;
+        const want = new Set(st.players[0].deck.map(y => y.card.name)).size, got = part(h2, '').length;
+        if (want !== got || !/Hide Full Deck/.test(h2)) { bad++; console.log('SEARCH VIEW', g, 'distinct', want, 'tiles', got); }
+        ctx.RdyPlay.full(); }
     }
     if (/class="result"/.test(h)) { const t = h.match(/<div class="q">([^<]*)/)[1]; if (/You win/.test(t)) out.win++; else if (/opponent wins/.test(t)) out.lose++; else out.pressure++; if (process.env.V) console.log(g, mode, level, t); break; }
     if (/RdyPlay\.go\(\)/.test(h)) { ctx.RdyPlay.go(); run(); continue; }
