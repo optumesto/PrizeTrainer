@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v130';
+const CACHE_NAME = 'prize-trainer-v131';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -141,6 +141,9 @@ self.addEventListener('fetch', event => {
   // from the network and are never saved: /api/where depends on where the
   // visitor is right now.
   if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) return;
+  // 3.4.2: the card databases' APIs go straight to the network. They were never saved here, and passing
+  // them through only added a second error line in the console each time one did not answer.
+  if (url.hostname === 'api.pokemontcg.io' || url.hostname === 'api.tcgdex.net') return;
   // Card art from another site: saved copy first, then the network.
   if (req.destination === 'image' && url.origin !== self.location.origin) {
     event.respondWith(

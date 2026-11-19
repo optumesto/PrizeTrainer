@@ -108,15 +108,16 @@ async function td66Bases(map, list) {
       if (c && typeof c.evolveFrom === 'string' && c.evolveFrom) { found.set(TCGEnrich.nameKey(w.name), c.evolveFrom); break; }
     } }));
   const rest = [...want.values()].filter(w => !found.has(TCGEnrich.nameKey(w.name)));
-  if (rest.length) {
+  if (rest.length && !(TCGEnrich.ptcgDown && TCGEnrich.ptcgDown())) {
     const q = rest.map(w => 'name:"' + TCGEnrich.apiName(w.name).replace(/"/g, '') + '"').join(' OR ');
     try {
       const init = {}; if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
       const r = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent('(' + q + ')') + '&select=name,evolvesFrom&pageSize=50', init);
+      if (r.status >= 500 && TCGEnrich.ptcgMarkDown) TCGEnrich.ptcgMarkDown();
       const j = r.ok ? await r.json() : null;
       ((j && j.data) || []).forEach(c => { const k = TCGEnrich.nameKey(c.name);
         if (want.has(k) && !found.has(k) && c.evolvesFrom) found.set(k, c.evolvesFrom); });
-    } catch (_) {}
+    } catch (_) { if (navigator.onLine !== false && TCGEnrich.ptcgMarkDown) TCGEnrich.ptcgMarkDown(); }
   }
   // 3.2.8: last, the saved list of Standard cards, which knows every legal Stage 1's Basic.
   want.forEach((w, k) => { if (!found.has(k) && typeof r273From === 'function') { const b = r273From(w.name); if (b) found.set(k, b); } });
@@ -254,17 +255,25 @@ async function r31Reprints(deck, todo) {
   const failed = [];
   const batches = [];
   for (let i = 0; i < todo.length; i += 4) batches.push(todo.slice(i, i + 4));
+  const isDown = () => !!(TCGEnrich.ptcgDown && TCGEnrich.ptcgDown());
   const get = async url => {
+    // 3.4.2: pokemontcg.io is skipped while it is down; these names go straight to TCGdex below.
+    if (isDown()) return null;
+    let down = false;
     for (let a = 0; a < 2; a++) {
+      if (a && isDown()) break;
+      down = false;
       try {
         const init = {};
         if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) init.signal = AbortSignal.timeout(10000);
         const r = await fetch(url, init);
         if (r.ok) return await r.json();
         if (r.status !== 429 && r.status < 500) return null;
-      } catch (_) {}
+        down = r.status >= 500;
+      } catch (_) { down = true; }
       if (!a) await new Promise(res => setTimeout(res, 1200));
     }
+    if (down && navigator.onLine !== false && TCGEnrich.ptcgMarkDown) TCGEnrich.ptcgMarkDown();
     return null;
   };
   await Promise.all(batches.map(async b => {

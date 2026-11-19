@@ -1481,10 +1481,31 @@ function nameVariants(name) {
   return out;
 }
 
+/** 3.4.2: a basic Energy's type ("fire energy"), whether or not the name says Basic, or null. */
+function basicKey(name) {
+  const m = nameKey(name).match(/^(?:basic )?(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/);
+  return m ? m[1] + ' energy' : null;
+}
+
 /** True when an API card is the card the list names. */
 function sameCard(listName, apiCardName) {
   const k = nameKey(apiCardName);
-  return nameVariants(listName).some(v => nameKey(v) === k);
+  if (nameVariants(listName).some(v => nameKey(v) === k)) return true;
+  // 3.4.2: lists write "Fire Energy MEE 10", where that printing is named "Basic Fire Energy". Same card.
+  const b = basicKey(listName);
+  return !!b && b === basicKey(apiCardName);
+}
+
+/* 3.4.2: pokemontcg.io's API is down (502 on every request since Nov 2026; it is now part of Scrydex).
+   After a request it could not answer, it is skipped for 30 minutes, on every page, so a deck read
+   does not wait on it and the console does not fill with errors. TCGdex is still read first. */
+const PT_DOWN_MS = 30 * 60 * 1000;
+let _ptDownUntil = 0;
+try { _ptDownUntil = Number(localStorage.getItem('ptcgDownUntil')) || 0; } catch (_) {}
+function ptcgDown() { return Date.now() < _ptDownUntil; }
+function ptcgMarkDown() {
+  _ptDownUntil = Date.now() + PT_DOWN_MS;
+  try { localStorage.setItem('ptcgDownUntil', String(_ptDownUntil)); } catch (_) {}
 }
 
 /**
@@ -1525,14 +1546,21 @@ async function fetchDeckCards(entries, opts) {
   // keep what it read before instead of wiping it.
   let failed = false;
   const getJSON = async (url) => {
+    // 3.4.2: not asked at all while it is down; the read still counts as one that could not ask.
+    if (!o.fetchImpl && ptcgDown()) { failed = true; return null; }
+    let down = false;
     for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt && !o.fetchImpl && ptcgDown()) break;
+      down = false;
       try {
         const resp = await doFetch(url, makeInit());
         if (resp.ok) return await resp.json();
         if (resp.status !== 429 && resp.status < 500) return null;
-      } catch (_) {}
+        down = resp.status >= 500;
+      } catch (_) { down = true; }
       if (attempt === 0) await new Promise(r => setTimeout(r, 1200));
     }
+    if (down && !o.fetchImpl && !(typeof navigator !== 'undefined' && navigator.onLine === false)) ptcgMarkDown();
     failed = true;
     return null;
   };
@@ -1649,6 +1677,7 @@ return {
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
   findOverride, enrichCard, fetchDeckCards, coverage, ctl63, revive115, outlet115,
+  ptcgDown, ptcgMarkDown,
 };
 });
 

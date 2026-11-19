@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.2 (build 131): card lookups stop asking pokemontcg.io while it is down (19 Nov 2026)
+
+Changed files: js/tcg-enrich.js, js/v31-tcgdex.js, js/core.js (version, What's new), index.html (version, stamps), sw.js (cache name prize-trainer-v131, API hosts skipped).
+
+- pokemontcg.io's API answers 502/500 on every request (it is now part of Scrydex). The 500 page carries no CORS header, so the browser showed each failure as a CORS error, twice with the service worker. Players lost nothing (TCGdex is read first and every pokemontcg.io read has a TCGdex fallback), but every deck read waited about 3.6 seconds on failed retries and filled the console.
+- After one request pokemontcg.io cannot answer, it is skipped for 30 minutes (localStorage ptcgDownUntil), in the deck read, the Stage 2 base read and the rotation reprint check.
+- A list's "Fire Energy MEE 10" now matches TCGdex's "Basic Fire Energy" (TCGEnrich.sameCard), so basic Energy reads its own printing from TCGdex and never goes to pokemontcg.io. Before, it was read from another printing and then asked of pokemontcg.io on every read.
+- The service worker no longer passes api.pokemontcg.io and api.tcgdex.net requests through (they were never saved).
+- What's new: Card data bug fixed.
+
 # RdyDeck 3.4.1 (build 130): goldfish guide page, real app screenshots for search (18 Nov 2026)
 
 Changed files: .github/pages/goldfish.html (new), goldfish.html (new, built), build-pages.mjs (reads GF_TURNS from js/core.js into {{GF_TURNS}} and {{GF_TURNS_WORD}} on hand pages; Goldfish in the tools nav; a goldfish line on deck guides), every built page (tools nav), sitemap.xml, llms.txt, index.html (noscript link, About links, featureList, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js ("Goldfish guide"), deck-grader.html, opening-odds.html, prize-trainer.html, rotation.html, 404.html, .github/pages/about.html, .github/pages/faq.html.
