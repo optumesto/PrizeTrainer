@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.4 (build 133): Watch out for box on the Grade tab (19 Nov 2026)
+
+Changed files: js/v83-watch-out.js (new), watch-out-data.mjs (new), tests/watch-out-check.mjs (new), .github/workflows/refresh-data.yml (Watch out for step), index.html (script, styles, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, js/core.js (version, What's new), sw.js (cache name prize-trainer-v133).
+
+- New box on the Grade tab, after Against the meta: up to 3 things the current meta can use against the deck's plan, worst first. It changes no grade, score or weight.
+- Lines: the main attacker's Weakness (share of the meta attacking with that type), hand disruption for attackers that count cards in hand, Item lock for Rare Candy decks, Team Rocket's Watchtower for Colorless Pokemon with Abilities, Tool lock, Psyduck's Damp for Abilities that Knock Out their own Pokemon, and Bench damage for decks with many low HP Pokemon.
+- Each line names the cards that do it with the share of top lists playing them, and the decks that do it most with the deck's record against them from matchups.json (gray under 20 matches). A bad record moves a line up.
+- Weakness counts damage only, so decks that place damage counters never count toward it.
+- The facts (which types each meta deck attacks with, who plays each card) come from meta-cards.json and pokemon-tcg-data card text. The Monday data refresh rebuilds them and the file's stamp.
+- All text in es, pt, fr, de and it. Grade check: no grade moved.
+- What's new: Added: watch out for box.
+
 # RdyDeck 3.4.3 (build 132): Send feedback sends the message itself (19 Nov 2026)
 
 Changed files: js/feedback-send.js (new), worker/rdydeck-worker.js (POST /api/feedback), worker/README.md, js/i18n.js, js/i18n-de.js, js/i18n-fr.js, js/i18n-it.js, privacy.html, terms.html, tests/feedback-check.mjs (new), js/core.js (version, What's new, PT_BUILD back in step with sw.js), index.html (script, version, stamps), sw.js (cache name prize-trainer-v132).

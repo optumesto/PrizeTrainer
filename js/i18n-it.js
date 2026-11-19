@@ -1414,6 +1414,7 @@ I18N_MORE.it = {
     "Puzzle deck search fixed": "Ricerca nel mazzo del puzzle corretta",
     "Added: share your puzzle score": "Nuovo: condividi il tuo risultato del puzzle",
     "Added: goldfish guide": "Nuovo: guida al Goldfish",
+    "Added: watch out for box": "Nuovo: riquadro Attenzione a",
     "Share your puzzle score": "Condividi il tuo risultato del puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Il link apre il puzzle di oggi, così i tuoi amici giocano lo stesso tavolo.",
     "Play today's puzzle first.": "Gioca prima il puzzle di oggi.",

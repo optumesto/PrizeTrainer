@@ -116,6 +116,21 @@ for (const list of lists) {
   r.lines.forEach(l => console.log(`   ${l.sev.toFixed(3)} ${l.head}: ${l.cards.join(', ')}${l.cards.length && l.decks.length ? ' | ' : ''}${l.decks.join(', ')}`));
   out.push({ name: list.deckName, html: r.html });
 }
+// On the Grade tab itself: the box sits after Against the meta.
+const where = await w.eval(`(async function (text) {
+  const cards = parseDeckList(text);
+  const deck = { id: 'wo-ui', name: 'UI check', cards, history: [], format: 'standard' };
+  deck.coverage = await enrichDeckCards(deck.cards); deck.enrichVer = ENRICH_VER;
+  state.decks.push(deck); state.activeDeckId = deck.id;
+  showReviewTab('grade');
+  // The grade waits for the legality check first.
+  for (let i = 0; i < 60 && !document.querySelector('#grade-body #g29-fix'); i++) { await new Promise(r => setTimeout(r, 250)); if (i % 8 === 7) renderGrade(); }
+  const s = document.querySelector('#grade-body #wo83-sec');
+  return s ? ((s.previousElementSibling && s.previousElementSibling.id) || 'first') : null;
+})`)(listText(lists[0]));
+ok(where, 'the box does not show on the Grade tab');
+console.log('On the Grade tab after: ' + where);
+ok(where === 'mu60-sec', 'the box is not right after Against the meta');
 // Every box drawn once, then read in each language.
 const box = w.document.createElement('div');
 box.id = 'wo83-test';
