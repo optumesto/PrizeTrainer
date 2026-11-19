@@ -2477,3 +2477,37 @@ I18N_MORE.de.pat.push([/^[\s\S]+$/, m => i18nGtSent(m, 'de')]);
 I18N_MORE.de.pat.unshift([/^This counts .+ in hand, not at full power: [\s\S]+$/, m => i18nGtSent(m, 'de')]);
 // Puzzle buttons and the builder's card facts line, ahead of the patterns that would take part of them.
 I18N_MORE.de.pat.unshift([I18N_PZ_PRE, m => i18nPzSent(m, 'de')]);
+// Watch out for (hidden box on the Grade tab, js/v83-watch-out.js).
+Object.assign(I18N_MORE.de.dict, {
+  "Watch out for": "Achte auf",
+  "What the current meta can use against this deck's plan. It does not change the grade.": "Was das aktuelle Meta gegen den Plan dieses Decks einsetzen kann. Die Note ändert sich dadurch nicht.",
+  "Nothing popular right now targets this deck's plan.": "Gerade zielt nichts Beliebtes auf den Plan dieses Decks.",
+  "Hand disruption": "Handstörung",
+  "Item lock": "Item-Sperre",
+  "Ability lock": "Fähigkeiten-Sperre",
+  "Tool lock": "Ausrüstungs-Sperre",
+  "Blocked Abilities": "Blockierte Fähigkeiten",
+  "Bench damage": "Schaden auf der Bank",
+  "Your attacker does more damage the more cards you hold.": "Dein Angreifer macht mehr Schaden, je mehr Karten du auf der Hand hast.",
+  "These cards shrink your hand.": "Diese Karten verkleinern deine Hand.",
+  "Your Stage 2 Pokemon lean on Item cards to evolve.": "Deine Phase-2-Pokémon brauchen Item-Karten, um sich zu entwickeln.",
+  "This Pokemon stops you playing Items for a turn.": "Dieses Pokémon hindert dich einen Zug lang daran, Items zu spielen.",
+  "This Stadium turns those Abilities off.": "Dieses Stadion schaltet diese Fähigkeiten ab.",
+  "These cards turn them off or discard them.": "Diese Karten schalten sie ab oder legen sie ab.",
+  "Your plan uses an Ability that Knocks Out its own Pokemon.": "Dein Plan nutzt eine Fähigkeit, die ihr eigenes Pokémon kampfunfähig macht.",
+  "This Pokemon stops those Abilities while it is in play.": "Dieses Pokémon blockiert solche Fähigkeiten, solange es im Spiel ist.",
+  "These decks damage the Bench.": "Diese Decks machen Schaden auf der Bank.",
+  "Share of top lists that play each card.": "Anteil der Top-Listen, die jede Karte spielen.",
+  "Pick the closest deck under Against the meta to see how it did against these.": "Wähle unter Gegen das Meta das ähnlichste Deck, um zu sehen, wie es gegen diese abgeschnitten hat.",
+  "Decks that do this most": "Decks, die das am meisten tun",
+  "Most played in these decks.": "Am meisten in diesen Decks gespielt.",
+});
+I18N_MORE.de.pat.unshift(
+  [/^Weak to (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy)$/, (m, t) => 'Schwach gegen ' + deI18nTypes[t]],
+  [/^Your main attacker takes double damage from (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy) attacks\.$/, (m, t) => 'Dein Hauptangreifer erleidet doppelten Schaden durch ' + deI18nTypes[t] + '-Attacken.'],
+  [/^Decks that attack with them are about (\d+)% of the meta\.$/, (m, n) => 'Decks, die mit diesem Typ angreifen, machen etwa ' + n + '% des Metas aus.'],
+  [/^This deck plays (\d+) Colorless Pokemon with Abilities\.$/, (m, n) => 'Dieses Deck spielt ' + n + ' farblose Pokémon mit Fähigkeiten.'],
+  [/^This deck plays (\d+) Pokemon Tools\.$/, (m, n) => 'Dieses Deck spielt ' + n + ' Pokémon-Ausrüstungen.'],
+  [/^(\d+) of your Pokemon have 70 HP or less\.$/, (m, n) => n + ' deiner Pokémon haben 70 KP oder weniger.'],
+  [/^Win rates are for all (.+) lists, as in Against the meta\.$/, (m, n) => 'Die Siegquoten gelten für alle Listen von ' + n + ', wie unter Gegen das Meta.'],
+);

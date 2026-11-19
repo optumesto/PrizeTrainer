@@ -5450,6 +5450,65 @@ function i18nNums(s, l) {
   } catch (_) { return s; }
 }
 
+// Watch out for (hidden box on the Grade tab, js/v83-watch-out.js).
+Object.assign(I18N_ES, {
+  "Watch out for": "Ojo con",
+  "What the current meta can use against this deck's plan. It does not change the grade.": "Lo que el meta actual puede usar contra el plan de esta baraja. No cambia la calificación.",
+  "Nothing popular right now targets this deck's plan.": "Ahora mismo nada popular ataca el plan de esta baraja.",
+  "Hand disruption": "Disrupción de mano",
+  "Item lock": "Bloqueo de Objetos",
+  "Ability lock": "Bloqueo de Habilidades",
+  "Tool lock": "Bloqueo de Herramientas",
+  "Blocked Abilities": "Habilidades bloqueadas",
+  "Bench damage": "Daño a la Banca",
+  "Your attacker does more damage the more cards you hold.": "Tu atacante hace más daño cuantas más cartas tengas en la mano.",
+  "These cards shrink your hand.": "Estas cartas reducen tu mano.",
+  "Your Stage 2 Pokemon lean on Item cards to evolve.": "Tus Pokémon de Fase 2 dependen de cartas de Objeto para evolucionar.",
+  "This Pokemon stops you playing Items for a turn.": "Este Pokémon te impide jugar Objetos durante un turno.",
+  "This Stadium turns those Abilities off.": "Este Estadio anula esas Habilidades.",
+  "These cards turn them off or discard them.": "Estas cartas las anulan o las descartan.",
+  "Your plan uses an Ability that Knocks Out its own Pokemon.": "Tu plan usa una Habilidad que deja Fuera de Combate a su propio Pokémon.",
+  "This Pokemon stops those Abilities while it is in play.": "Este Pokémon bloquea esas Habilidades mientras está en juego.",
+  "These decks damage the Bench.": "Estas barajas hacen daño a la Banca.",
+  "Share of top lists that play each card.": "Porcentaje de listas top que llevan cada carta.",
+  "Pick the closest deck under Against the meta to see how it did against these.": "Elige la baraja más parecida en Contra el meta para ver cómo le fue contra estas.",
+  "Decks that do this most": "Barajas que más lo hacen",
+  "Most played in these decks.": "Se juega sobre todo en estas barajas.",
+});
+Object.assign(I18N_PT, {
+  "Watch out for": "Cuidado com",
+  "What the current meta can use against this deck's plan. It does not change the grade.": "O que o meta atual pode usar contra o plano deste deck. Não muda a nota.",
+  "Nothing popular right now targets this deck's plan.": "No momento, nada popular mira o plano deste deck.",
+  "Hand disruption": "Disrupção de mão",
+  "Item lock": "Bloqueio de Itens",
+  "Ability lock": "Bloqueio de Habilidades",
+  "Tool lock": "Bloqueio de Ferramentas",
+  "Blocked Abilities": "Habilidades bloqueadas",
+  "Bench damage": "Dano ao Banco",
+  "Your attacker does more damage the more cards you hold.": "Seu atacante causa mais dano quanto mais cartas você tiver na mão.",
+  "These cards shrink your hand.": "Estas cartas diminuem a sua mão.",
+  "Your Stage 2 Pokemon lean on Item cards to evolve.": "Seus Pokémon de Estágio 2 dependem de cartas de Item para evoluir.",
+  "This Pokemon stops you playing Items for a turn.": "Este Pokémon impede você de jogar Itens por um turno.",
+  "This Stadium turns those Abilities off.": "Este Estádio anula essas Habilidades.",
+  "These cards turn them off or discard them.": "Estas cartas as anulam ou as descartam.",
+  "Your plan uses an Ability that Knocks Out its own Pokemon.": "Seu plano usa uma Habilidade que Nocauteia o próprio Pokémon.",
+  "This Pokemon stops those Abilities while it is in play.": "Este Pokémon bloqueia essas Habilidades enquanto está em jogo.",
+  "These decks damage the Bench.": "Estes decks causam dano no Banco.",
+  "Share of top lists that play each card.": "Porcentagem de listas top que usam cada carta.",
+  "Pick the closest deck under Against the meta to see how it did against these.": "Escolha o deck mais parecido em Contra o meta para ver como ele se saiu contra estes.",
+  "Decks that do this most": "Decks que mais fazem isso",
+  "Most played in these decks.": "É mais jogado nestes decks.",
+});
+I18N_PAT.unshift(
+  [/^Weak to (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy)$/, (m, t) => 'Débil al tipo ' + I18N_AB_TYP.es[t], (m, t) => 'Fraco contra o tipo ' + I18N_AB_TYP.pt[t]],
+  [/^Your main attacker takes double damage from (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy) attacks\.$/, (m, t) => 'Tu atacante principal recibe el doble de daño de los ataques de tipo ' + I18N_AB_TYP.es[t] + '.', (m, t) => 'Seu atacante principal recebe o dobro de dano de ataques do tipo ' + I18N_AB_TYP.pt[t] + '.'],
+  [/^Decks that attack with them are about (\d+)% of the meta\.$/, 'Las barajas que atacan con ese tipo son más o menos el $1% del meta.', 'Os decks que atacam com esse tipo são cerca de $1% do meta.'],
+  [/^This deck plays (\d+) Colorless Pokemon with Abilities\.$/, 'Esta baraja lleva $1 Pokémon de tipo Incoloro con Habilidades.', 'Este deck usa $1 Pokémon do tipo Incolor com Habilidades.'],
+  [/^This deck plays (\d+) Pokemon Tools\.$/, 'Esta baraja lleva $1 Herramientas Pokémon.', 'Este deck usa $1 Ferramentas Pokémon.'],
+  [/^(\d+) of your Pokemon have 70 HP or less\.$/, '$1 de tus Pokémon tienen 70 PS o menos.', '$1 dos seus Pokémon têm 70 PS ou menos.'],
+  [/^Win rates are for all (.+) lists, as in Against the meta\.$/, 'Los porcentajes de victoria son de todas las listas de $1, como en Contra el meta.', 'As taxas de vitória são de todas as listas de $1, como em Contra o meta.'],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
