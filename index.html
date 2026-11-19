@@ -1478,7 +1478,8 @@
     .rv-tab .ic { width:16px; height:16px; }
   }
   .hm-seg { margin:0 0 1rem; }
-  a.mode-opt { text-decoration:none; }
+  a.mode-opt, #screen-review a.mode-opt:not(.btn) { text-decoration:none; color:var(--text-2); }
+  #screen-review a.mode-opt:not(.btn):hover { color:var(--text); }
   .hp-pill.done { color:var(--success); border-color:color-mix(in srgb, var(--success) 35%, transparent); }
   .hp-actions .btn, .gf-acts .btn, .gf-tools .btn, .modal-actions .btn { white-space:normal; text-align:center; }
   .nt-empty { padding:0.9rem 1rem; border-radius:var(--r); background:var(--surface); border:1px dashed var(--line-2); font-size:var(--fs-sm); color:var(--text-2); line-height:1.5; }
