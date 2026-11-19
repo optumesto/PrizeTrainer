@@ -1427,6 +1427,8 @@ I18N_MORE.fr = {
     "Sparring bugs fixed": "Bugs de Sparring corrigés",
     "Sparring shows cards and both boards": "Sparring affiche les cartes et les deux terrains",
     "Brilliant Blender fixed": "Brilliant Blender corrigé",
+    "Sparring: discard piles and deck search": "Sparring : piles de défausse et recherche dans le deck",
+    "Sparring Tool and Energy fixes": "Sparring : corrections des Outils et des Énergies",
     "Added: watch out for box": "Nouveau : encadré Attention à",
     "Share your puzzle score": "Partagez votre résultat du puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Le lien ouvre le puzzle du jour, pour que vos amis jouent le même plateau.",

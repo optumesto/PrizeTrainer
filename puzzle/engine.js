@@ -53,7 +53,9 @@ const T = makeText({
 const HOOKS = { passive: [], dmgPre: [], cost: [], opp: [], atk: [], step: {}, trainerWhy: [], attackWhy: [], retreatWhy: [], dmg: [], provides: [], abilOff: [], hp: [], preAttack: [], onEnergy: [],
   // Full games only (opponent/effects.js): "only if" conditions, Prize counts, Knock Out triggers, evolving, Retreat Costs, attacks a
   // Pokemon can use besides its own, attacking twice, and what happens after an attack's damage.
-  need: [], prize: [], ko: [], evoNow: [], evoFrom: [], retreat: [], attacks: [], twice: [], hit: [] };
+  need: [], prize: [], ko: [], evoNow: [], evoFrom: [], retreat: [], attacks: [], twice: [], hit: [],
+  // Every sentence a full game reads on a Special Energy card; any other sentence means the card doesn't play in full yet.
+  energyText: [] };
 let REAL = false;
 function modeMap(m) { let x = m.get(REAL); if (!x) { x = new Map(); m.set(REAL, x); } return x; }
 function reshuffle(s, P) { if (!REAL || !s.rng) return; const a = P.deck; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(s.rng() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } }
@@ -205,7 +207,7 @@ const PASSIVE = {
 };
 // Passive text that cannot change what happens on your turn before you attack.
 const NO_EFFECT_NOW = [
-  /draw 2 cards$/,                                           // Lucky Helmet: on your opponent's attack
+  /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, draw 2 cards$/, // Lucky Helmet: on your opponent's attack
   /recovers from all special conditions and can't be affected by any special conditions/, // Festival Grounds (Dipplin aside)
   /^once during each player's turn/,                          // read as a once-a-turn Stadium instead
 ];
@@ -1035,7 +1037,7 @@ function cardProblems(s, ref, mine) {
   if (c.cat === 'trainer') {
     if (c.kind === 'tool' || (c.kind === 'stadium' && !readTrainer(ref).once)) { if (!passiveKnown(c.rtext)) bad.push(c.name); }
     else if (mine && !/^rare candy$/i.test(c.name)) { const TP = readTrainer(ref); if (!TP.steps || (TP.need && needWhy(s, TP.need) === '?')) bad.push(c.name); }
-  } else if (c.cat === 'energy') { if (!provides(ref)) bad.push(c.name); }
+  } else if (c.cat === 'energy') { if (!provides(ref) || (REAL && c.rtext && !T.gfEType(ref) && T.gfSentences(c.rtext).some(x => !HOOKS.energyText.some(r => r.test(x))))) bad.push(c.name); }
   else if (c.cat === 'pokemon') {
     readAbilities(ref).forEach(A => { if (A.when === 'passive' ? !passiveKnown(A.text) : mine && !A.steps) bad.push(c.name + ': ' + A.name); });
     if (mine) (c.attacks || []).forEach(a => { if (!readAttack(a)) bad.push(c.name + ': ' + a.name); });
@@ -1058,7 +1060,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const internals = { hitLine, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const internals = { provides, hitLine, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
 const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;

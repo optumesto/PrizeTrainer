@@ -108,6 +108,7 @@ for (const lang of LANGS) {
       if (presses % 4 === 0) {
         const cards = [...h.matchAll(/RdyPlay\.card\('([mhc])',(\d+)\)/g)];
         if (cards.length) { const c = cards[Math.floor(r() * cards.length)]; w.RdyPlay.card(c[1], +c[2]); await new Promise(res => setImmediate(res)); english(lang, found); sheets++; w.RdyPlay.shut(); }
+        if (/RdyPlay\.pile\(/.test(h)) { w.RdyPlay.pile(presses % 8 === 0 ? 0 : 1); await new Promise(res => setImmediate(res)); english(lang, found); sheets++; w.RdyPlay.shut(); }
       }
       try {
         if (/RdyPlay\.go\(\)/.test(h)) { w.RdyPlay.go(); run(); continue; }

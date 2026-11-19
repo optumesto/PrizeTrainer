@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.9 (build 138): Sparring discard piles, deck search and fixes (19 Nov 2026)
+
+Changed files: opponent/play.js (discard piles, whole-deck search, Prize card outlines, hand count, steady card pictures, calmer opponent pace), opponent/play.html (styles, reduced motion), opponent/effects.js (Lucky Helmet and Handheld Fan, Special Energy), puzzle/engine.js (Special Energy text check, Lucky Helmet), opponent/own.js (readable Special Energy keeps its type), opponent/test/rules.mjs, page.mjs and i18n.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v138).
+
+- Both discard piles open, newest first; tap a card to read it, Back returns to the pile.
+- A search card (Ultra Ball, Poke Pad, Telepathic Psychic Energy...) shows your whole deck; cards it can take are bright, the rest dimmed.
+- Prize cards left show as card outlines, the RdyDeck logo's card shape.
+- The hand count sits right beside Your hand.
+- No more flashing while the opponent plays: card pictures stay put between moves, and its moves come at a calmer pace. No animation with reduced motion on.
+- Lucky Helmet was read as Handheld Fan and moved an Energy. Each now does only its own text, from the Active Spot.
+- Special Energy now plays in full: Spiky, Enriching, Growing Grass, Voltaic Lightning, Magnetic Metal, Mist, Rocky Fighting, Legacy and Boomerang. A Special Energy with text Sparring can't do yet says so.
+
 # RdyDeck 3.4.8 (build 137): Sparring shows real cards and both boards (19 Nov 2026)
 
 Changed files: opponent/play.js (card pictures, both boards, card sheet, labels), opponent/play.html (layout for phone and desktop), opponent/effects.js (Brilliant Blender), puzzle/engine.js (a log line for any card Sparring can't do yet), opponent/build-decks.mjs and opponent/decks.js (set and number for card pictures), opponent/own.js, opponent/test/page.mjs and i18n.mjs (card sheets checked), js/core.js (version, What's new, Goldfish (3 Turns) and Sparring (5 Turns)), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, faq.html and goldfish.html (Goldfish (3 Turns)), tests/goldfish-check.cjs, sw.js (cache name prize-trainer-v137).

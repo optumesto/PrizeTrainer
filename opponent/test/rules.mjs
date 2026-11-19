@@ -129,5 +129,36 @@ const handPlay = (s, name) => acts(s).find(a => a.t === 'trainer' && s.players[s
 { let s = board([{ active: ['Sinistcha', ['Psychic Energy']], discard: Array(6).fill('Shuppet') }, { active: ['Dusknoir'], bench: ['Mega Lopunny ex'] }]);
   s = play(s, attackNamed(s, 'Matcha Spin')); ok(s.players[1].active.dmg === 40 && s.players[1].bench[0].dmg === 40, 'Matcha Spin: 4 counters on each'); }
 
+// 3.4.9: Lucky Helmet draws 2 and moves no Energy (it used to be read as Handheld Fan); Handheld Fan moves 1 Energy.
+{ let s = board([{ active: ['Dragapult ex', ['Psychic Energy', 'Fire Energy']], bench: ['Shuppet'] }, { active: 'Dusknoir', tool: 'Lucky Helmet' }]);
+  const h = s.players[1].hand.length; s = play(s, attackNamed(s, 'Jet Headbutt'));
+  ok(s.players[0].active.energy.length === 2 && s.players[0].bench[0].energy.length === 0, 'Lucky Helmet moves no Energy');
+  ok(s.log.some(t => /^Lucky Helmet on Dusknoir took effect/.test(t)) && s.players[1].hand.length >= h + 2, 'Lucky Helmet draws 2');
+  ok(!s.log.some(t => /Handheld Fan/.test(t)), 'no Handheld Fan line for Lucky Helmet'); }
+{ let s = board([{ active: ['Dragapult ex', ['Psychic Energy', 'Fire Energy']], bench: ['Shuppet'] }, { active: 'Dusknoir', tool: 'Handheld Fan' }]);
+  s = play(s, attackNamed(s, 'Jet Headbutt'));
+  ok(s.players[0].active.energy.length === 1 && s.players[0].bench[0].energy.length === 1, 'Handheld Fan moves 1 Energy to the Bench'); }
+// Special Energy: Spiky, Enriching, Growing Grass, Voltaic Lightning, Magnetic Metal; Mist Energy shows as not played in full.
+{ let s = board([{ active: ['Dragapult ex', ['Psychic Energy']] }, { active: ['Dusknoir', ['Spiky Energy']] }]);
+  s = play(s, attackNamed(s, 'Jet Headbutt')); ok(s.players[0].active.dmg === 20, 'Spiky Energy: 2 counters on the attacker'); }
+{ let s = board([{ active: ['Dusknoir'], hand: ['Enriching Energy'] }, { active: 'Shuppet' }]);
+  const a = acts(s).find(x => x.t === 'energy'); s = play(s, a); ok(s.players[0].hand.length === 4, 'Enriching Energy draws 4'); }
+{ const s = board([{ active: ['Teal Mask Ogerpon ex', ['Growing Grass Energy']] }, { active: 'Shuppet' }]);
+  ok(E.maxHp(s, s.players[0].active) === E.topOf(s.players[0].active).card.hp + 20, 'Growing Grass Energy: +20 HP'); }
+{ let a = board([{ active: ['Stunfisk', ['Voltaic Lightning Energy']] }, { active: 'Dusknoir' }]), b = board([{ active: ['Stunfisk', ['Lightning Energy']] }, { active: 'Dusknoir' }]);
+  a = play(a, attackNamed(a, 'Pouncing Trap')); b = play(b, attackNamed(b, 'Pouncing Trap'));
+  ok(a.players[1].active.dmg === b.players[1].active.dmg + 20, 'Voltaic Lightning Energy: 20 more'); }
+{ const s = board([{ active: ['Archaludon ex', ['Magnetic Metal Energy']] }, { active: 'Shuppet' }]);
+  ok(E.retreatCost(s, s.players[0].active, 0) === 0, 'Magnetic Metal Energy: no Retreat Cost'); }
+// Mist Energy stops an attack's effect (here: discarding its Energy); Legacy Energy gives 1 fewer Prize once.
+{ let s = board([{ active: ['Dragapult ex', ['Psychic Energy']] }, { active: ['Dusknoir', ['Mist Energy']] }]);
+  ok(s.players[1].active && E.cardProblems(s, { card: C.card('Mist Energy'), uid: -1 }, true).length === 0, 'Mist Energy plays in full'); }
+{ let s = board([{ active: ['Dragapult ex', ['Psychic Energy']] }, { active: ['Shuppet', ['Legacy Energy']], bench: ['Shuppet'] }]);
+  const p = s.players[1].prizes.length, q = s.players[0].prizes.length; s = play(s, attackNamed(s, 'Jet Headbutt'));
+  ok(s.players[0].prizes.length === q && s.players[1].legacyUsed === true, 'Legacy Energy: 1 fewer Prize card on the Knock Out'); }
+{ const s = board([{ active: 'Dusknoir' }, { active: 'Shuppet' }]); I.setReal(true);
+  ok(E.cardProblems(s, { card: C.card('Boomerang Energy'), uid: -1 }, true).length === 0, 'Boomerang Energy plays in full');
+  ok(E.cardProblems(s, { card: C.card('Spiky Energy'), uid: -1 }, true).length === 0, 'Spiky Energy plays in full'); }
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

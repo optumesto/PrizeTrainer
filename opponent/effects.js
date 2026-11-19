@@ -242,6 +242,52 @@ H.provides.push(ref => {
 H.onEnergy.push((s, x, m) => /when you attach this card from your hand to a psychic pokemon, search your deck for up to 2 basic psychic pokemon and put them onto your bench/.test(I.ptext(x)) && T.gfTypes(topOf(m)).includes('psychic')
   ? [{ t: 'search', spec: T.gfThings('up to 2 basic psychic pokemon'), dest: 'bench' }] : null);
 
+// 3.4.9: Special Energy. Each sentence below is one this file plays; a Special Energy with any other sentence
+// (Mist, Rocky Fighting, Legacy's Prize part, Boomerang for now) shows as not playing in full, so the menu never
+// says otherwise. Enriching draws 4 on attach; Spiky, Growing Grass, Voltaic Lightning and Magnetic Metal are read below.
+H.energyText.push(
+  /^as long as this card is attached to a pokemon, it provides /,
+  /^(?:ace spec: )?you can't have more than 1 ace spec card in your deck$/,
+  /^if this card is attached to (?:a basic|an evolution|a stage 2) pokemon, (?:this card|it) provides /,
+  /^this card can only be attached to a team rocket's pokemon$/,
+  /^if this card is attached to anything other than a team rocket's pokemon, discard this card$/,
+  /^if this card is attached to 1 of your pokemon, discard it at the end of your turn$/,
+  /recovers from all special conditions and can't be affected by any special conditions$/,
+  /^when you attach this card from your hand to a psychic pokemon, search your deck for up to 2 basic psychic pokemon and put them onto your bench$/,
+  /^shuffle your deck$/,
+  /^when you attach this card from your hand to a pokemon, draw 4 cards$/,
+  /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, put 2 damage counters on the attacking pokemon$/,
+  /^the grass pokemon this card is attached to gets \+20 hp$/,
+  /^attacks used by the lightning pokemon this card is attached to do 20 more damage to your opponent's active pokemon$/,
+  /^the metal pokemon this card is attached to has no retreat cost$/,
+  /^prevent all effects of attacks used by your opponent's pokemon done to the (?:fighting )?pokemon this card is attached to$/,
+  /^if the pokemon this card is attached to is knocked out by damage from an attack from your opponent's pokemon, that player takes 1 fewer prize card$/,
+  /^this effect of your legacy energy can't be applied more than once per game$/,
+  /^if this card is discarded by an effect of an attack used by the pokemon this card is attached to, attach this card from your discard pile to that pokemon after attacking$/);
+// How many of this Pokemon's Energy carry a sentence (each Special Energy counts on its own).
+const eWith = (m, re) => m.energy.filter(e => !T.gfEType(e) && T.gfSentences(e.card.rtext || '').some(x => re.test(x))).length;
+H.onEnergy.push((s, x, m) => T.gfSentences(x.card.rtext || '').some(y => /^when you attach this card from your hand to a pokemon, draw 4 cards$/.test(y)) ? [{ t: 'draw', n: 4 }] : null);
+H.hp.push((s, m, hp) => typesOf(m).includes('grass') ? hp + 20 * eWith(m, /^the grass pokemon this card is attached to gets \+20 hp$/) : hp);
+H.dmgPre.push((s, att, t, isA, d) => isA && d > 0 && typesOf(att).includes('lightning') ? d + 20 * eWith(att, /^attacks used by the lightning pokemon this card is attached to do 20 more damage to your opponent's active pokemon$/) : d);
+H.retreat.push((s, m, k, n) => typesOf(m).includes('metal') && eWith(m, /^the metal pokemon this card is attached to has no retreat cost$/) ? 0 : n);
+// Legacy Energy: a Knock Out by an attack gives 1 fewer Prize card, once per game for its owner.
+const LEGACY = /^if the pokemon this card is attached to is knocked out by damage from an attack from your opponent's pokemon, that player takes 1 fewer prize card$/;
+H.prize.push((s, m, p) => s.mods.atkMon != null && !s.players[1 - s.cur].legacyUsed && eWith(m, LEGACY) ? Math.max(0, p - 1) : p);
+H.ko.push((s, m, k) => { if (k !== s.cur && s.mods.atkMon != null && !s.players[k].legacyUsed && eWith(m, LEGACY)) { s.players[k].legacyUsed = true; I.log(s, 'Legacy Energy: 1 fewer Prize card', true); } });
+// Boomerang Energy: discarded by its Pokemon's own attack, it comes back to that Pokemon after the attack.
+const BOOM = /^if this card is discarded by an effect of an attack used by the pokemon this card is attached to, attach this card from your discard pile to that pokemon after attacking$/;
+H.preAttack.push((s, att) => { const b = att.energy.filter(e => eWith({ energy: [e] }, BOOM)).map(e => e.uid); if (b.length) s.mods.boom = { mon: att.id, uids: b }; });
+G.HOOKS_END.push(s => {
+  const b = s.mods && s.mods.boom; if (!b) return; s.mods.boom = null;
+  const f = I.findMon(s, b.mon), P = s.players[s.cur]; if (!f || f.owner !== s.cur) return;
+  b.uids.forEach(u => { const i = P.discard.findIndex(y => y.uid === u); if (i >= 0) { f.m.energy.push(P.discard.splice(i, 1)[0]); I.log(s, 'Boomerang Energy was attached to ' + nm(f.m) + ' again', true); } });
+});
+H.hit.push((s, att, t, d) => {
+  if (d <= 0 || s.players[1 - s.cur].active !== t) return;
+  const n = eWith(t, /, put 2 damage counters on the attacking pokemon$/); if (!n) return;
+  att.dmg += 20 * n; I.log(s, 'Spiky Energy put ' + 2 * n + ' damage counters on ' + nm(att), true);
+});
+
 /* ---------- Between turns ---------- */
 G.HOOKS_END.push(s => {
   s.atkHeads = null;
@@ -415,6 +461,9 @@ function shielded(s, m, byAbility) {
   if (abilOn(s, m, k, /^prevent all effects of your opponent's pokemon's attacks and abilities done to this pokemon/)) return true;
   if (byAbility) return false;
   if (abilOn(s, m, k, /^prevent all effects of attacks used by your opponent's pokemon done to this pokemon/)) return true;
+  // Mist Energy, and Rocky Fighting Energy on a Fighting Pokemon.
+  if (m.energy.some(e => !T.gfEType(e) && T.gfSentences(e.card.rtext || '').some(x => x === "prevent all effects of attacks used by your opponent's pokemon done to the pokemon this card is attached to" ||
+    (x === "prevent all effects of attacks used by your opponent's pokemon done to the fighting pokemon this card is attached to" && typesOf(m).includes('fighting'))))) return true;
   if (T.gfIsBasic(topOf(m)) && isTR(topOf(m)) && anyOn(s, k, /^prevent all effects of attacks used by your opponent's pokemon done to your basic team rocket's pokemon/).length) return true;
   if (s.players[k].active !== m && anyOn(s, k, /^prevent all damage from and effects of attacks from your opponent's pokemon done to your benched pokemon/).length) return true;
   const att = s.players[s.cur].active;
@@ -676,7 +725,7 @@ H.passive.push(
   /^as long as this pokemon is in the active spot, put (\d+) more damage counters on your opponent's poisoned pokemon during pokemon checkup$/,
   /^attacks used by your (\w+)'s pokemon do (\d+) more damage to your opponent's active pokemon/,
   /^the (\w+)'s pokemon this card is attached to gets \+(\d+) hp$/,
-  /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon/,
+  /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, (?:move an energy from the attacking pokemon to 1 of your opponent's benched pokemon|draw \d+ cards)$/,
   /^during pokemon checkup, put 1 damage counter on each pokemon that has an ability/,
   /^metal pokemon take (\d+) less damage from attacks from the opponent's pokemon$/,
   /^damage counters on each pokemon can't be moved to other pokemon$/,
@@ -789,8 +838,13 @@ H.twice.push((s, att) => !!s.stadium && /^festival grounds$/i.test(s.stadium.ref
 H.hit.push((s, att, t, d) => {
   if (d <= 0) return; const k = 1 - s.cur, tool = I.toolOn(s, t), tt = tool ? I.ptext(tool) : '', P = s.players[s.cur]; let r;
   if ((r = tt.match(/^if the pokemon this card is attached to is damaged by an attack from your opponent's (\w+) pokemon, it takes \d+ less damage/)) && typesOf(att).includes(r[1]) && /discard this card/.test(tt)) { s.players[k].discard.push(t.tool); t.tool = null; }
-  if (/^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon/.test(tt) && att.energy.length && P.bench.length) {
-    const to = P.bench.slice().sort((a, b) => a.energy.length - b.energy.length)[0]; to.energy.push(att.energy.shift()); I.log(s, 'Handheld Fan moved an Energy to ' + nm(to)); }
+  // 3.4.9: Handheld Fan and Lucky Helmet start with the same words, so each is read by its whole sentence (Lucky Helmet used to
+  // move an Energy as if it were Handheld Fan). Both only work from the Active Spot, and the log names the Tool that did it.
+  const onActive = s.players[k].active === t, fan = /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, move an energy from the attacking pokemon to 1 of your opponent's benched pokemon$/;
+  if (onActive && fan.test(tt) && att.energy.length && P.bench.length) {
+    const to = P.bench.slice().sort((a, b) => a.energy.length - b.energy.length)[0]; to.energy.push(att.energy.shift()); I.log(s, tool.card.name + ' moved an Energy to ' + nm(to)); }
+  if (onActive && (r = tt.match(/^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, draw (\d+) cards$/))) {
+    I.log(s, tool.card.name + ' on ' + nm(t) + ' took effect', true); I.drawN(s, s.players[k], +r[1]); }
 });
 // Pokemon Checkup: Pecharunt's Toxic Subjugation, Froslass's Freezing Shroud.
 G.HOOKS_END.push(s => {

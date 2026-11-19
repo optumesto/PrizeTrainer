@@ -170,6 +170,8 @@ function artHTML(c, cls, big) {
   const urls = ok ? [ok].concat(list.filter(u => u !== ok)) : list;
   const ph = `<span class="ph t-${TYPE_L[(c.types || [])[0]] ? c.types[0] : 'colorless'}" data-no-tr>${esc(c.name)}</span>`;
   if (!urls.length) return `<span class="art ${cls} noart">${ph}</span>`;
+  // 3.4.9: art that has loaded before shows at once, with no fade, so the board doesn't flicker each time it redraws.
+  if (ok) return `<span class="art ${cls} loaded seen">${ph}<img src="${esc(ok)}" data-a="${esc(list.filter(u => u !== ok).join('|'))}" data-k="${esc(key)}" alt="" decoding="sync" onerror="RdyPlay.ie(this)"></span>`;
   return `<span class="art ${cls}">${ph}<img src="${esc(urls[0])}" data-a="${esc(urls.slice(1).join('|'))}" data-k="${esc(key)}" alt="" loading="lazy" decoding="async" onerror="RdyPlay.ie(this)" onload="RdyPlay.il(this)"></span>`;
 }
 function hpLine(s, m) { const hp = E.maxHp(s, m), left = Math.max(0, hp - m.dmg); return `${left} of ${hp} HP`; }
@@ -212,8 +214,10 @@ function readyAttacks(s) {
 // Both sides the same way: Active, then Bench, then the piles. Your opponent's hand shows as a count only.
 function sideHTML(s, k, okSet) {
   const P = s.players[k], you = k === 0;
-  const head = `<div class="sh"><span>${you ? 'You' : 'Opponent'}</span><span class="pr">${P.prizes.length} Prize card${P.prizes.length === 1 ? '' : 's'} left</span></div>`;
-  const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <span>Discard pile</span> ${P.discard.length}</div>`;
+  // Prize cards left as small card outlines (the RdyDeck logo's card shape); taken ones stay as faint slots.
+  const n = P.prizes.length, slots = Array.from({ length: Math.max(6, n) }, (_, i) => `<i${i < n ? '' : ' class="gone"'}></i>`).join('');
+  const head = `<div class="sh"><span>${you ? 'You' : 'Opponent'}</span><span class="pr"><span class="pz" aria-hidden="true">${slots}</span><span class="vh">${n} Prize card${n === 1 ? '' : 's'} left</span></span></div>`;
+  const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <button type="button" class="lk" onclick="RdyPlay.pile(${k})"><span>Discard pile</span> ${P.discard.length}</button></div>`;
   const act = `<div class="zl">Active</div>${P.active ? monRow(s, P.active, k, true, okSet) : '<div class="empty">No Active Pokémon</div>'}`;
   const bench = `<div class="zl"><span>Bench</span> <span>${P.bench.length} of 5</span></div>${P.bench.length ? `<div class="bench">${P.bench.map(m => monRow(s, m, k, false, null)).join('')}</div>` : '<div class="empty">Empty</div>'}`;
   return `<div class="side ${you ? 'me' : 'opp'}">${head}${act}${bench}${piles}</div>`;
@@ -222,11 +226,21 @@ function handHTML(s) {
   const P = s.players[0], g = new Map();
   P.hand.forEach(r => { const k = r.card.key; if (!g.has(k)) g.set(k, { r, n: 0 }); g.get(k).n++; });
   const tiles = [...g.values()].map(x => `<button type="button" class="hc" onclick="RdyPlay.card('h',${x.r.uid})">${artHTML(x.r.card, 'h')}<span class="hn" data-no-tr>${esc(x.r.card.name)}</span>${x.n > 1 ? `<b class="hx" data-no-tr>×${x.n}</b>` : ''}</button>`).join('');
-  return `<div class="hand"><div class="zl"><span>Your hand</span> <span>${P.hand.length}</span></div>${tiles ? `<div class="tiles">${tiles}</div>` : '<span class="empty">Empty</span>'}</div>`;
+  return `<div class="hand"><div class="zl hz"><span>Your hand</span><span class="ct" data-no-tr>${P.hand.length}</span></div>${tiles ? `<div class="tiles">${tiles}</div>` : '<span class="empty">Empty</span>'}</div>`;
+}
+/* ---------------- A discard pile: every card in it, newest first, grouped by name ---------------- */
+function pileHTML(s, k) {
+  const P = s.players[k], g = new Map();
+  P.discard.slice().reverse().forEach(r => { const key = r.card.key || r.card.name; if (!g.has(key)) g.set(key, { r, n: 0 }); g.get(key).n++; });
+  const tiles = [...g.values()].map(x => `<button type="button" class="hc" onclick="RdyPlay.card('c',${x.r.uid},${k})">${artHTML(x.r.card, 'h')}<span class="hn" data-no-tr>${esc(x.r.card.name)}</span>${x.n > 1 ? `<b class="hx" data-no-tr>×${x.n}</b>` : ''}</button>`).join('');
+  const title = k === 0 ? 'Your discard pile' : "Opponent's discard pile";
+  return `<div class="sheet-bg" onclick="RdyPlay.shut()"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="sh"><span><span>${title}</span> <span class="ct" data-no-tr>${P.discard.length}</span></span><button type="button" class="btn ghost x" onclick="RdyPlay.shut()">Close</button></div>
+    ${tiles ? `<p class="note">Newest first. Tap a card to read it.</p><div class="tiles pile">${tiles}</div>` : '<p class="empty">No cards yet.</p>'}</div>`;
 }
 /* ---------------- The card sheet: one card's full text ---------------- */
 const KIND = { item: 'Item', supporter: 'Supporter', stadium: 'Stadium', tool: 'Pokémon Tool' };
-function sheetHTML(s, ref, m, k) {
+function sheetHTML(s, ref, m, k, back) {
   const c = ref.card, rows = [];
   if (c.cat === 'pokemon') {
     const stage = c.stage === 'stage1' ? 'Stage 1' : c.stage === 'stage2' ? 'Stage 2' : 'Basic';
@@ -247,9 +261,10 @@ function sheetHTML(s, ref, m, k) {
     if (cantDo(s, ref)) rows.push(`<p class="note">Sparring can't do this card's text yet. You can still play it, and nothing happens.</p>`);
   } else {
     rows.push(`<div class="sl"><span>Energy</span> · ${pip(eType(ref).t, eType(ref).sp)}</div>${c.rtext ? `<p class="tx" data-no-tr>${esc(c.rtext)}</p>` : ''}`);
+    if (cantDo(s, ref)) rows.push(`<p class="note">Sparring can't do all of this card's text yet. It still counts as Energy.</p>`);
   }
   return `<div class="sheet-bg" onclick="RdyPlay.shut()"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(c.name)}">
-    <div class="sh"><b data-no-tr>${esc(c.name)}</b><button type="button" class="btn ghost x" onclick="RdyPlay.shut()">Close</button></div>
+    <div class="sh"><b data-no-tr>${esc(c.name)}</b><button type="button" class="btn ghost x" onclick="RdyPlay.shut()">${back != null ? 'Back' : 'Close'}</button></div>
     <div class="sbody">${artHTML(c, 'big', true)}<div class="sinfo">${rows.join('')}</div></div></div>`;
 }
 // Cards Sparring can't play the text of (so playing them does nothing), checked once per card.
@@ -264,12 +279,13 @@ function showSheet() {
   const s = S && S.s, o = S && S.open;
   let ref = null, m = null, k = 0;
   if (s && o) {
+    if (o.t === 'd') { el.className = 'open'; el.innerHTML = pileHTML(s, o.id); return; }
     if (o.t === 'm') { const f = monById(s, o.id); if (f) { m = f.m; k = f.k; ref = E.topOf(m); } }
     else ref = s.players[0].hand.find(y => y.uid === o.id) || (s.stadium && s.stadium.ref.uid === o.id ? s.stadium.ref : null) || cardRef(s, o.id);
   }
   if (!ref) { el.innerHTML = ''; el.className = ''; if (S) S.open = null; return; }
   el.className = 'open';
-  el.innerHTML = sheetHTML(s, ref, m, k);
+  el.innerHTML = sheetHTML(s, ref, m, k, o.back);
 }
 function actionsHTML(s) {
   if (S.over) return resultHTML();
@@ -285,6 +301,7 @@ function actionsHTML(s) {
   const acts = E.legalActions(s, { why: true });
   let h = '';
   if (promoting) return promoteHTML(s, X);
+  if (s.pending && s.pending.ask && s.pending.ask.kind === 'search' && s.cur === 0) return multiHTML(s, X, true);
   if (s.pending && s.pending.ask && /^(cost|search|recover|look)$/.test(s.pending.ask.kind) && X.actions.length > 6) return multiHTML(s, X);
   if (s.pending && s.pending.ask) {
     return `<div class="q">${askText(s)}</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${(l => l[0] === OPT_TEXT ? cn(l.slice(1)) : esc(cap(l)))(pickLabel(s, a.v))}</button>`).join('')}</div>`;
@@ -309,13 +326,25 @@ function promoteHTML(s, X) {
 }
 // Picking several cards (search, discard for a cost): tap cards to add them, then confirm, instead of one button per mix.
 function pickKey(s, v) { return v.map(u => refName(s, u)).sort().join('|'); }
-function multiHTML(s, X) {
+function multiHTML(s, X, deck) {
   const sel = S.sel || (S.sel = {}), keys = X.actions.map(a => pickKey(s, a.v)), max = {};
   keys.forEach(k => { const c = {}; (k ? k.split('|') : []).forEach(n => { c[n] = (c[n] || 0) + 1; }); for (const n in c) max[n] = Math.max(max[n] || 0, c[n]); });
   const chosen = Object.keys(sel).flatMap(n => Array(sel[n]).fill(n)).sort().join('|'), hit = keys.indexOf(chosen);
   const chips = Object.keys(max).sort().map(n => `<button class="btn${sel[n] ? ' primary' : ''}" onclick="RdyPlay.tog(${esc(JSON.stringify(n))})">${cn(n)}${max[n] > 1 ? ` (<span>${sel[n] || 0} of ${max[n]}</span>)` : ''}</button>`).join('');
   const none = keys.indexOf('');
-  return `<div class="q">${askText(s)}</div><div class="btns">${chips}</div><div class="btns" style="margin-top:10px">` +
+  // 3.4.9: a search shows your whole deck, sorted (Pokémon, Trainers, Energy), as the real card lets you look. Cards
+  // this search can take are tappable; the rest are dimmed. Tap a card again to take one more, or to drop it.
+  let pick = `<div class="btns">${chips}</div>`;
+  if (deck) {
+    const g = new Map(), rank = { pokemon: 0, trainer: 1, energy: 2 };
+    s.players[0].deck.forEach(r => { const n = r.card.name; if (!g.has(n)) g.set(n, { r, n: 0 }); g.get(n).n++; });
+    const tiles = [...g.values()].sort((a, b) => (rank[a.r.card.cat] ?? 3) - (rank[b.r.card.cat] ?? 3) || a.r.card.name.localeCompare(b.r.card.name)).map(x => {
+      const n = x.r.card.name, can = max[n] > 0, on = sel[n] || 0;
+      return `<button type="button" class="hc${can ? '' : ' off'}${on ? ' on' : ''}"${can ? ` onclick="RdyPlay.tog(${esc(JSON.stringify(n))})" aria-pressed="${on ? 'true' : 'false'}"` : ' disabled'}>${artHTML(x.r.card, 'h')}<span class="hn" data-no-tr>${esc(n)}</span>${on ? `<b class="hx pk" data-no-tr>✓${max[n] > 1 ? ' ' + on : ''}</b>` : x.n > 1 ? `<b class="hx" data-no-tr>×${x.n}</b>` : ''}</button>`;
+    }).join('');
+    pick = `<p class="note">Your whole deck (${s.players[0].deck.length} cards). Cards this can take are bright; tap one to choose it.</p><div class="tiles pile deck">${tiles}</div>`;
+  }
+  return `<div class="q">${askText(s)}</div>${pick}<div class="btns" style="margin-top:10px">` +
     (hit >= 0 && chosen ? `<button class="btn primary" onclick="RdyPlay.do(${hit})">${s.pending.ask.kind === 'cost' ? 'Discard' : 'Take'} ${esc(names(s, X.actions[hit].v))}</button>` : chosen ? '<span class="note">That mix isn\'t allowed. Tap a card again to drop it.</span>' : '') +
     (none >= 0 ? ` <button class="btn ghost" onclick="RdyPlay.do(${none})">${s.pending.ask.kind === 'cost' ? 'Discard nothing' : 'Take nothing'}</button>` : '') + '</div>';
 }
@@ -368,7 +397,8 @@ function checkOver() {
   return false;
 }
 function oppStep() {
-  // The opponent acts one move at a time, with a short pause, so you can follow what it does.
+  // The opponent acts one move at a time, with a calm pause (no more than about 2 board changes a second), so you can
+  // follow what it does. Card art that has loaded stays put between moves (see artHTML), so nothing flashes.
   const s = S.s, X = G.next(s);
   if (checkOver()) { S.busy = false; render(); return; }
   if (X.who !== 1) { S.busy = false; if (S.oppTurn) { S.oppLog = S.s.log.slice(S.oppTurn.from); S.oppTurn = null; } save(); render(); return; }
@@ -380,7 +410,7 @@ function oppStep() {
     const a = S.ai.choose(S.s, 1);
     S.s = G.step(S.s, a); rec(a);
     oppStep();
-  }, s.cur === 1 ? 350 : 50);
+  }, s.cur === 1 ? 600 : 50);
 }
 /* ---------------- Keeping a game through a reload ----------------
  * A game is saved as its seed, both setups and every move in order (yours and the opponent's), and played
@@ -440,11 +470,13 @@ const api = {
   go() { S.oppLog = null; save(); render(); if (checkOver()) render(); },
   logT(open) { if (S) S.logOpen = !!open; },
   // A card's full text: 'm' a Pokémon in play (by id), 'h' a card in your hand, 'c' any other card you can see (by uid).
-  card(t, id) { if (!S) return; S.open = { t, id }; showSheet(); },
-  shut() { if (S) S.open = null; showSheet(); },
+  card(t, id, back) { if (!S) return; S.open = { t, id, back }; showSheet(); },
+  pile(k) { if (!S) return; S.open = { t: 'd', id: k }; showSheet(); },
+  // From a card opened in a discard pile, Back goes to the pile; anything else closes.
+  shut() { if (S) S.open = S.open && S.open.back != null ? { t: 'd', id: S.open.back } : null; showSheet(); },
   _s() { return S && S.s; }, // tests: the game state
   // Card pictures: on a failed link try the next one; remember the one that loads.
-  ie(img) { const a = (img.getAttribute('data-a') || '').split('|').filter(Boolean); if (a.length) { img.setAttribute('data-a', a.slice(1).join('|')); img.src = a[0]; } else { img.remove(); } },
+  ie(img) { img.parentNode.classList.remove('seen'); const a = (img.getAttribute('data-a') || '').split('|').filter(Boolean); if (a.length) { img.setAttribute('data-a', a.slice(1).join('|')); img.src = a[0]; } else { img.remove(); } },
   il(img) { const k = img.getAttribute('data-k'); if (k) ART_OK[k] = img.getAttribute('src'); img.parentNode.classList.add('loaded'); },
   start(opts, seedIn) {
     const seed = seedIn != null ? seedIn : Math.floor(Math.random() * 2 ** 31);

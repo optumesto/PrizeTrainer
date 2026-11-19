@@ -35,19 +35,20 @@ let ownBad = 0;
 if (OWNDECKS) {
   const h = el('app').innerHTML, note = el('m-note').innerHTML.replace(/<[^>]+>/g, '');
   const want = [[/<optgroup label="Your decks">/.test(h), 'menu lists your decks'], [/<optgroup label="Tournament decks">/.test(h), 'menu lists tournament decks'],
-    [el('m-a').value === 'o' + (OWNDECKS.length - 1), 'the deck open in RdyDeck is picked'], [/Not every card does all of its text yet: Odd /.test(note), 'odd cards named: ' + note],
+    [el('m-a').value === 'o' + (OWNDECKS.length - 1), 'the deck open in RdyDeck is picked'], [/Not every card does all of its text yet: (Mist Energy, )?Odd /.test(note), 'odd cards named: ' + note],
     [el('m-go').disabled === false, 'start allowed']];
   el('m-a').value = 'o' + (OWNDECKS.length - 3); el('m-a').onchange();
   want.push([/This deck has 58 cards\. Sparring needs 60\./.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')) && el('m-go').disabled === true, 'short deck held back']);
   el('m-a').value = 'o' + (OWNDECKS.length - 2); el('m-a').onchange();
   want.push([/no card data for these cards yet: Mystery Card\./.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')) && el('m-go').disabled === true, 'no-data deck held back']);
   el('m-a').value = 'o0'; el('m-b').value = 'o2'; el('m-b').onchange();
-  want.push([/^Your deck: Every card in this deck plays in full\.Opponent's deck: Every card/.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')), 'both sides noted: ' + el('m-note').innerHTML.replace(/<[^>]+>/g, '')]);
+  // 3.4.9: Legacy and Rocky Fighting Energy pay as their own type; only their extra text is listed.
+  want.push([/^Your deck: Every card in this deck plays in full\.Opponent's deck: (Every card|Not every card does all of its text yet: Legacy Energy, Rocky Fighting Energy\.)/.test(el('m-note').innerHTML.replace(/<[^>]+>/g, '')), 'both sides noted: ' + el('m-note').innerHTML.replace(/<[^>]+>/g, '')]);
   want.forEach(([ok, what]) => { if (!ok) { ownBad++; console.log('OWN MENU', what); } });
 }
 const run = () => { let n = 0; while (timers.length && n++ < 100000) timers.shift()(); };
 let rnd = 7; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
-let multi = 0, setups = 0, sheets = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
+let multi = 0, setups = 0, sheets = 0, piles = 0, searches = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
 for (let g = 0; g < N; g++) {
   const mode = modeArg || (g % 2 ? 'full' : '5turn'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
   const D = ctx.RdyOppDecks.decks;
@@ -73,6 +74,17 @@ for (let g = 0; g < N; g++) {
         const sh = el('sheet').innerHTML, txt = sh.replace(/<[^>]+>/g, ' ');
         if (!/class="sheet"/.test(sh) || /undefined|NaN|\[object/.test(txt)) { bad++; console.log('SHEET', g, t[0], txt.slice(0, 200)); }
         ctx.RdyPlay.shut(); if (el('sheet').innerHTML) { bad++; console.log('SHEET NOT CLOSED'); } }
+      // 3.4.9: both discard piles open; a card opened from a pile goes Back to the pile, then the pile closes.
+      if (st && r() < 0.3) { const k = r() < 0.5 ? 0 : 1; ctx.RdyPlay.pile(k); piles++;
+        const sh = el('sheet').innerHTML, P = st.players[k], txt = sh.replace(/<[^>]+>/g, ' ');
+        if (!/class="sheet"/.test(sh) || /undefined|NaN|\[object/.test(txt) || (P.discard.length ? !/class="tiles pile"/.test(sh) : !/No cards yet/.test(sh))) { bad++; console.log('PILE', g, k, txt.slice(0, 200)); }
+        const c = sh.match(/RdyPlay\.card\('c',(\d+),(\d)\)/);
+        if (c) { ctx.RdyPlay.card('c', +c[1], +c[2]); if (!/>Back</.test(el('sheet').innerHTML)) { bad++; console.log('PILE CARD NO BACK'); } ctx.RdyPlay.shut(); if (!/class="tiles pile"/.test(el('sheet').innerHTML)) { bad++; console.log('BACK NOT TO PILE'); } }
+        ctx.RdyPlay.shut(); if (el('sheet').innerHTML) { bad++; console.log('PILE NOT CLOSED'); } }
+      // A search shows every distinct card in your deck.
+      if (st && st.pending && st.pending.ask && st.pending.ask.kind === 'search' && st.cur === 0) { searches++;
+        const want = new Set(st.players[0].deck.map(y => y.card.name)).size, got = ((h.split('class="tiles pile deck">')[1] || '').split('</div>')[0].match(/class="hc( off)?( on)?"/g) || []).length;
+        if (want !== got) { bad++; console.log('SEARCH VIEW', g, 'distinct', want, 'tiles', got); } }
     }
     if (/class="result"/.test(h)) { const t = h.match(/<div class="q">([^<]*)/)[1]; if (/You win/.test(t)) out.win++; else if (/opponent wins/.test(t)) out.lose++; else out.pressure++; if (process.env.V) console.log(g, mode, level, t); break; }
     if (/RdyPlay\.go\(\)/.test(h)) { ctx.RdyPlay.go(); run(); continue; }
@@ -102,5 +114,5 @@ for (let g = 0; g < N; g++) {
   }
 }
 bad += ownBad;
-console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}, card sheets ${sheets}`);
+console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}, card sheets ${sheets}, discard piles ${piles}, deck searches ${searches}`);
 if (process.env.LABELS) console.log([...labels].sort().join('\n'));

@@ -126,6 +126,9 @@ function build(d, known) {
   recs.forEach((r, name) => {
     let bad = [];
     try { bad = E.cardProblems(s, { card: r, uid: -1 }, true); } catch (_) { bad = [name]; }
+    // 3.4.9: a Special Energy whose type is read but whose extra text isn't (Mist, Legacy...) still pays as its own
+    // type, so it goes in the "not in full" list; only Energy whose type can't be read plays as 1 Colorless.
+    if (r.cat === 'energy' && bad.length && E.internals.provides && E.internals.provides({ card: r, uid: -1 })) { plain.add(name); return; }
     if (r.cat === 'energy' && bad.length) { out.colorless.push(name); recs.set(name, Object.assign({}, r, { plainEnergy: true })); return; }
     if (r.cat === 'pokemon') (r.attacks || []).forEach(a => { const R = E.readAttack(a); if (R && R.partial) bad.push(name + ': ' + a.name); });
     if (bad.length) plain.add(name);
