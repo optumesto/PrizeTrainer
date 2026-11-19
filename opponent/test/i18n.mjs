@@ -1,4 +1,4 @@
-// 5turn in every language: loads the hidden page (opponent/play.html) in jsdom with js/i18n.js and the
+// Sparring in every language: loads the page (opponent/play.html) in jsdom with js/i18n.js and the
 // language files, plays games in Spanish, Portuguese, French, German and Italian through the page's own
 // buttons, and lists any app text still showing in English. Card, attack and Ability names stay English
 // and are not counted. Fails (exit 1) when any English app text is left.
@@ -34,7 +34,7 @@ const D = w.RdyOppDecks, names = new Set();
 Object.values(D.cards).forEach(c => { names.add(c.name); (c.attacks || []).forEach(a => names.add(a.name)); (c.abil || []).forEach(a => names.add(a[0])); });
 const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const NAMES = new RegExp('(' + [...names].sort((a, b) => b.length - a.length).map(esc).join('|') + ')', 'g');
-const KEEP = /^(RdyDeck|5turn|Pokémon|ex|OK|No|Tool)$/;
+const KEEP = /^(RdyDeck|5turn|Sparring|Pokémon|ex|OK|No|Tool)$/;
 const SKIP = w.eval('I18N_SKIP');
 
 function english(lang, found) {

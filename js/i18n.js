@@ -359,7 +359,7 @@ const I18N_ES = {
   "Practice openings and share lists": "Practica aperturas y comparte listas",
   "Open a deck and use the Hand tab to drill turn 1 lines. The link button at the top gives you a link that opens the list in RdyDeck.": "Abre una baraja y usa la pestaña Mano para practicar jugadas del turno 1. El botón de enlace arriba te da un enlace que abre la lista en RdyDeck.",
   "Goldfish, drills and notes": "Goldfish, ejercicios y notas",
-  "Each has its own tab on a deck. Hand can goldfish your first three turns. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.": "Cada uno tiene su pestaña en la baraja. Mano puede hacer goldfish de tus primeros tres turnos. Entreno tiene conteo de recursos y lectura de premios del rival. Notas guarda planes de enfrentamientos, un historial de cada cambio de cartas y una vista para comparar. El arte de las cartas que ya viste se guarda para jugar sin conexión.",
+  "Each has its own tab on a deck. Hand can goldfish your first three turns, and Sparring plays five turns against a computer opponent with tournament decks. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.": "Cada uno tiene su pestaña en la baraja. Mano puede hacer goldfish de tus primeros tres turnos, y Sparring juega cinco turnos contra un rival de la computadora con barajas de torneo. Entreno tiene conteo de recursos y lectura de premios del rival. Notas guarda planes de enfrentamientos, un historial de cada cambio de cartas y una vista para comparar. El arte de las cartas que ya viste se guarda para jugar sin conexión.",
   "Top finishes for the most played decks at big online tournaments, not Regionals. Lists as of 15 Nov 2026. Load one to start practicing right away, then edit it to match your own build.": "Mejores resultados de las barajas más jugadas en torneos online grandes, no Regionales. Listas del 15 nov 2026. Carga una para practicar de inmediato y luego edítala para que coincida con tu versión.",
   "Most played right now": "Lo más jugado ahora",
   "Paste my own": "Pegar la mía",
@@ -677,6 +677,7 @@ const I18N_ES = {
   "Flex": "Flexibles",
   "Turn 1 line": "Jugada del turno 1",
   "Goldfish 3 turns": "Goldfish 3 turnos",
+  "Sparring": "Sparring",
   "Opening hand": "Mano inicial",
   "A random 7 from this list. Pick the line you would build on turn 1, lock it in, then see how often it comes together.": "7 cartas al azar de esta lista. Elige la jugada que prepararías en el turno 1, confírmala y luego mira qué tan seguido te sale.",
   "Kept the first 7": "Te quedaste con las primeras 7",
@@ -1137,6 +1138,7 @@ const I18N_ES = {
   "Puzzle deck search fixed": "Búsqueda en la baraja del puzzle corregida",
   "Added: share your puzzle score": "Nuevo: comparte tu resultado del puzzle",
   "Added: goldfish guide": "Nuevo: guía de Goldfish",
+  "Added: Sparring": "Nuevo: Sparring",
   "Added: watch out for box": "Nuevo: recuadro Ojo con",
   "Share your puzzle score": "Comparte tu resultado del puzzle",
   "The link opens today's puzzle, so friends play the same board.": "El enlace abre el puzzle de hoy, así tus amigos juegan el mismo tablero.",
@@ -1469,7 +1471,7 @@ const I18N_PT = {
   "Practice openings and share lists": "Treine aberturas e compartilhe listas",
   "Open a deck and use the Hand tab to drill turn 1 lines. The link button at the top gives you a link that opens the list in RdyDeck.": "Abra um deck e use a aba Mão para treinar jogadas do turno 1. O botão de link no topo dá um link que abre a lista no RdyDeck.",
   "Goldfish, drills and notes": "Goldfish, treinos e notas",
-  "Each has its own tab on a deck. Hand can goldfish your first three turns. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.": "Cada um tem sua aba no deck. Mão faz goldfish dos seus três primeiros turnos. Treinos tem contagem de recursos e leitura dos prêmios do oponente. Notas guarda planos de confronto, um histórico de cada mudança de cartas e uma comparação. A arte das cartas que você já viu fica salva para jogar offline.",
+  "Each has its own tab on a deck. Hand can goldfish your first three turns, and Sparring plays five turns against a computer opponent with tournament decks. Drills has resource counts and an opponent prize read. Notes keeps matchup plans, an edit log of every card change, and a compare view. Card art you have seen is saved for offline play.": "Cada um tem sua aba no deck. Mão faz goldfish dos seus três primeiros turnos, e Sparring joga cinco turnos contra um oponente do computador com decks de torneio. Treinos tem contagem de recursos e leitura dos prêmios do oponente. Notas guarda planos de confronto, um histórico de cada mudança de cartas e uma comparação. A arte das cartas que você já viu fica salva para jogar offline.",
   "Top finishes for the most played decks at big online tournaments, not Regionals. Lists as of 15 Nov 2026. Load one to start practicing right away, then edit it to match your own build.": "Melhores resultados dos decks mais jogados em grandes torneios online, não Regionais. Listas de 15 nov 2026. Carregue uma para treinar na hora e depois edite para ficar igual à sua versão.",
   "Most played right now": "Mais jogados agora",
   "Paste my own": "Colar a minha",
@@ -1787,6 +1789,7 @@ const I18N_PT = {
   "Flex": "Flex",
   "Turn 1 line": "Jogada do turno 1",
   "Goldfish 3 turns": "Goldfish 3 turnos",
+  "Sparring": "Sparring",
   "Opening hand": "Mão inicial",
   "A random 7 from this list. Pick the line you would build on turn 1, lock it in, then see how often it comes together.": "7 cartas aleatórias desta lista. Escolha a jogada que você montaria no turno 1, confirme e veja com que frequência ela sai.",
   "Kept the first 7": "Ficou com as 7 primeiras",
@@ -2247,6 +2250,7 @@ const I18N_PT = {
   "Puzzle deck search fixed": "Busca no deck do puzzle corrigida",
   "Added: share your puzzle score": "Novo: compartilhe seu resultado do puzzle",
   "Added: goldfish guide": "Novo: guia de Goldfish",
+  "Added: Sparring": "Novo: Sparring",
   "Added: watch out for box": "Novo: quadro Cuidado com",
   "Share your puzzle score": "Compartilhe seu resultado do puzzle",
   "The link opens today's puzzle, so friends play the same board.": "O link abre o puzzle de hoje, então seus amigos jogam o mesmo tabuleiro.",
@@ -4904,7 +4908,7 @@ function i18nPzSent(s, l) {
 }
 I18N_PAT.unshift([I18N_PZ_PRE, m => i18nPzSent(m, 'es'), m => i18nPzSent(m, 'pt')]);
 
-// ═══════════ 5turn (opponent/play.html): the AI opponent page ═══════════
+// ═══════════ Sparring (opponent/play.html): the AI opponent page ═══════════
 // Its screens, game log and reasons, in every language. Each row is the English (an exact string, or a
 // regex whose captures are card names or numbers) and then Spanish, Portuguese, French, German and
 // Italian, with $1, $2 for the captures. Card, attack and Ability names stay English, as everywhere.
@@ -4920,6 +4924,7 @@ const I18N_FT_ROWS = [
   ['Contested: attacks and messes with you', 'Reñido: ataca y te complica la partida', 'Disputado: ataca e atrapalha você', 'Disputé : attaque et vous met des bâtons dans les roues', 'Umkämpft: greift an und stört dich', 'Combattuto: attacca e ti mette i bastoni tra le ruote'],
   ['Aggressive: plays the best line it finds', 'Agresivo: juega la mejor línea que encuentra', 'Agressivo: joga a melhor linha que encontra', 'Agressif : joue la meilleure ligne qu\'il trouve', 'Aggressiv: spielt den besten Zug, den es findet', 'Aggressivo: gioca la linea migliore che trova'],
   ['Private preview. Not on rdydeck.com.', 'Vista previa privada. No está en rdydeck.com.', 'Prévia privada. Não está no rdydeck.com.', 'Aperçu privé. Pas sur rdydeck.com.', 'Private Vorschau. Nicht auf rdydeck.com.', 'Anteprima privata. Non è su rdydeck.com.'],
+  ['Back to RdyDeck', 'Volver a RdyDeck', 'Voltar ao RdyDeck', 'Retour à RdyDeck', 'Zurück zu RdyDeck', 'Torna a RdyDeck'],
   ['Way to play', 'Modo de juego', 'Modo de jogo', 'Mode de jeu', 'Spielmodus', 'Modalità di gioco'],
   ['Full game', 'Partida completa', 'Partida completa', 'Partie complète', 'Ganzes Spiel', 'Partita completa'],
   ['Opponent level', 'Nivel del rival', 'Nível do oponente', 'Niveau de l\'adversaire', 'Stufe des Gegners', 'Livello dell\'avversario'],
@@ -5216,7 +5221,7 @@ function i18nFtOwn(x, l, prep) {
   const T = I18N_FT_OWN[l][/^y/i.test(m[1]) ? 'mine' : 'theirs'], w = T[prep || ''] || T[''];
   return w.replace('$', m[2]);
 }
-/** One 5turn text in language l, or null. A card name in it stays as it is. */
+/** One Sparring text in language l, or null. A card name in it stays as it is. */
 function i18nFtSent(s, l) {
   const i = I18N_FT_LANGS.indexOf(l) + 1; if (!i) return null;
   if (Object.prototype.hasOwnProperty.call(I18N_FT_EXACT, s)) return I18N_FT_EXACT[s][i];
@@ -5228,7 +5233,7 @@ function i18nFtSent(s, l) {
   }
   return null;
 }
-// Only on the 5turn page (opponent/play.js sets RD_FT), so these broad rows never touch the app's own text.
+// Only on the Sparring page (opponent/play.js sets RD_FT), so these broad rows never touch the app's own text.
 const I18N_FT_ON = typeof window !== 'undefined' && !!window.RD_FT;
 if (I18N_FT_ON) I18N_PAT.unshift([I18N_FT_PRE, m => i18nFtSent(m, 'es'), m => i18nFtSent(m, 'pt')]);
 

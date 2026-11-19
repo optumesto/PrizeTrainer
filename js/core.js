@@ -5501,6 +5501,7 @@ function renderNotes() {
 }
 
 // ═══════════ GOLDFISH (v23, inside the Hand tab; v58 plays card text) ═══════════
+// 3.4.6: the Hand tab's mode bar also links to Sparring (opponent/play.html), five turns against the AI opponent.
 // Play your first three turns alone with real draws (3.4.5: back to three, as 3.4.0's five was a mistake). It deals the same way
 // the Hand tab does (redeal hands with no Basic, six prizes), and the
 // summary scores what you built against the Hand tab's odds count.
@@ -5981,6 +5982,7 @@ function handModeBar() {
   return `<div class="seg hm-seg" role="group" aria-label="Hand practice mode">
     <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 line</div>
     <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish 3 turns</div>
+    <a class="mode-opt hm-spar" href="opponent/play.html">Sparring</a>
   </div>`;
 }
 function gfIsBasic(x) { const c = x.card; return cardCategory(c) === 'pokemon' && (c.stage === 'basic' || (!c.stage && !c.evolvesFrom)); }
@@ -8759,21 +8761,21 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.5',
+  version: 'v3.4.6',
   date: 'Nov 19, 2026',
   kind: 'small',
   items: [
-    { t: 'Goldfish is back to 3 turns' }
+    { t: 'Added: Sparring' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.4.5', date: 'Nov 19, 2026', kind: 'small', items: [
+    { t: 'Goldfish is back to 3 turns' }
+  ] },
   { version: 'v3.4.4', date: 'Nov 19, 2026', kind: 'small', items: [
     { t: 'Added: watch out for box' }
-  ] },
-  { version: 'v3.4.3', date: 'Nov 19, 2026', kind: 'small', items: [
-    { t: 'Send feedback fixed' }
   ] }
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11737,7 +11739,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.5';
+const PT_VERSION = 'v3.4.6';
 const PT_BUILD = 133;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.

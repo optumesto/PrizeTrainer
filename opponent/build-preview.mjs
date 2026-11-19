@@ -1,4 +1,4 @@
-// One-file preview of the hidden play page, for review outside the site (nothing here is published by the site).
+// One-file preview of the Sparring page, for review outside the site (nothing here is published by the site).
 // node opponent/build-preview.mjs <out.html>
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -15,13 +15,12 @@ const js = ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/
   'js/i18n.js', 'js/i18n-fr.js', 'js/i18n-de.js', 'js/i18n-it.js']
   .map(f => readFileSync(join(root, f), 'utf8').replace('const OPP_ON = false;', 'const OPP_ON = true;').replace(/<\/script/gi, '<\\/script'))
   .map(t => `<script>\n${t}\n</script>`).join('\n');
-const html = `<title>5turn | RdyDeck</title>
+const html = `<title>Sparring | RdyDeck</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap">
 <style>${css}</style>
-<h1 data-no-tr><span class="r">Rdy</span>Deck 5turn</h1>
-<p class="note">Private preview. Not on rdydeck.com.</p>
+<h1 data-no-tr><span class="r">Rdy</span>Deck Sparring</h1>
 <div id="app"></div>
 ${js}
 <script>['fr', 'de', 'it'].forEach(l => rdI18n.add(l)); rdI18n.addCardNames(Object.keys(RdyOppDecks.cards));</script>

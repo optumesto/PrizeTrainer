@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.6 (build 135): Sparring (19 Nov 2026)
+
+Changed files: opponent/ (new: play.html, play.js, game.js, effects.js, ai.js, decks.js, build-decks.mjs, build-preview.mjs, test/), puzzle/engine.js (steps used only in Sparring games, gated by state.real), js/core.js (Sparring link in the Hand tab, version, What's new), index.html (help text, link style, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (Sparring page text, help text, What's new item), about.html (Sparring line), sw.js (cache name prize-trainer-v135).
+
+- Sparring: play five of your turns with a tournament deck against a computer opponent at Easy, Contested or Aggressive. You set up your own Active and Bench; the opponent's turn is summed up after each of its turns.
+- Every card in the meta lists plays by its own text. Card, attack and Ability names stay in English; everything else is in all 6 languages.
+- The Hand tab links to Sparring next to Goldfish. The page is opponent/play.html (noindex for now). A full game to the end is kept for tests and opens only with ?full.
+
 # RdyDeck 3.4.5 (build 134): Goldfish back to 3 turns (19 Nov 2026)
 
 Changed files: js/core.js (GF_TURNS 3, mode button, version, What's new), index.html (help text, version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (3 turns wording, What's new item), goldfish.html, faq.html, about.html (3 turns wording), tests/goldfish-check.cjs (3 turns), sw.js (cache name prize-trainer-v134).

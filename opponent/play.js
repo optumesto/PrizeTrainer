@@ -1,12 +1,12 @@
-// The hidden play page (opponent/play.html): you against the AI opponent, on RdyDeck's own list layout.
-// 5turn: your deck against the AI opponent for 5 of your turns. The opponent's side is one line, and
+// Sparring (opponent/play.html): you against the AI opponent, on RdyDeck's own list layout.
+// Sparring: your deck against the AI opponent for 5 of your turns. The opponent's side is one line, and
 // after each of its turns a short "Opponent's turn" card says what it did to you. You set up your own
 // Active and Bench from your opening hand.
 // A full game (both sides shown, played to the end) is kept for tests and opens only with ?full.
-// Not linked from the app. OPP_ON stays false until Mason says it goes live.
+// 3.4.6: live, linked from the Hand tab next to Goldfish. Inside the code the mode is still called '5turn'.
 (function () {
 'use strict';
-const OPP_ON = false; // until then the page only opens with ?try
+const OPP_ON = true; // false would hide the page again unless it opens with ?try
 window.RD_FT = true; // js/i18n.js turns on this page's own translations (I18N_FT_ROWS)
 const E = window.RdyPuzzle, G = window.RdyGame, AI = window.RdyAI, D = window.RdyOppDecks;
 const PRESS_TURNS = 5;
@@ -269,7 +269,7 @@ function menu() {
   const opt = D.decks.map((d, i) => `<option value="${i}">${esc(d.name)}</option>`).join('');
   const langs = typeof I18N_LANGS === 'object' && window.rdI18n ? `<div class="zl">Language</div><div class="btns lang" id="i18n-lang">${I18N_LANGS.map(([l, n]) => `<button type="button" class="btn${rdI18n.lang === l ? ' primary' : ''}" data-no-tr data-l="${l}" onclick="RdyPlay.lang('${l}')">${n}</button>`).join('')}</div>` : '';
   $('app').innerHTML = `<div class="menu">
-    ${/[?&]full\b/.test(location.search) ? '<label>Way to play<select id="m-mode"><option value="5turn">5turn</option><option value="full">Full game</option></select></label>' : ''}
+    ${/[?&]full\b/.test(location.search) ? '<label>Way to play<select id="m-mode"><option value="5turn">Sparring</option><option value="full">Full game</option></select></label>' : ''}
     <label>Opponent level<select id="m-level"><option value="easy">Easy: only places cards</option><option value="contested" selected>Contested: attacks and messes with you</option><option value="aggressive">Aggressive: plays the best line it finds</option></select></label>
     <label>Your deck<select id="m-a" data-no-tr>${opt}</select></label>
     <label>Opponent's deck<select id="m-b" data-no-tr>${opt}</select></label>
