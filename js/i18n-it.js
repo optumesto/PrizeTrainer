@@ -2412,6 +2412,7 @@ I18N_MORE.it.pat.push([/^[\s\S]+$/, m => i18nGtSent(m, 'it')]);
 I18N_MORE.it.pat.unshift([/^This counts .+ in hand, not at full power: [\s\S]+$/, m => i18nGtSent(m, 'it')]);
 // Puzzle buttons and the builder's card facts line, ahead of the patterns that would take part of them.
 I18N_MORE.it.pat.unshift([I18N_PZ_PRE, m => i18nPzSent(m, 'it')]);
+if (I18N_FT_ON) I18N_MORE.it.pat.unshift([I18N_FT_PRE, m => i18nFtSent(m, 'it')]);
 // Watch out for (hidden box on the Grade tab, js/v83-watch-out.js).
 Object.assign(I18N_MORE.it.dict, {
   "Watch out for": "Attenzione a",

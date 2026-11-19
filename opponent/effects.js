@@ -756,7 +756,7 @@ H.ko.push((s, m, k, wasActive) => {
 });
 H.need.push((s, need) => {
   let m;
-  if ((m = need.match(/^any of your (.+?)'s pokemon were knocked out during your opponent's last turn$/))) return hopsKO(s, s.cur, new RegExp('^' + m[1] + "'s ")) ? '' : 'None of your ' + m[1] + "'s Pokémon were Knocked Out last turn.";
+  if ((m = need.match(/^any of your (.+?)'s pokemon were knocked out during your opponent's last turn$/))) return hopsKO(s, s.cur, new RegExp('^' + m[1] + "'s ")) ? '' : 'None of your ' + m[1].replace(/\b\w/g, c => c.toUpperCase()) + "'s Pokémon were Knocked Out last turn.";
   if (/^(?:when )?it is the last card in your hand$/.test(need)) return s.players[s.cur].hand.length === 1 ? '' : 'It has to be the last card in your hand.';
   return null;
 });

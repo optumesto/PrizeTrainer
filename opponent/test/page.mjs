@@ -18,9 +18,9 @@ for (const f of ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'oppo
 ctx._ready();
 const run = () => { let n = 0; while (timers.length && n++ < 100000) timers.shift()(); };
 let rnd = 7; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
-let multi = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
+let multi = 0, setups = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
 for (let g = 0; g < N; g++) {
-  const mode = modeArg || (g % 2 ? 'full' : 'pressure'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
+  const mode = modeArg || (g % 2 ? 'full' : '5turn'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
   const D = ctx.RdyOppDecks.decks;
   ctx.RdyPlay.start({ mode, level, deckA: D[g % D.length], deckB: D[(g * 7 + 3) % D.length] }); run();
   let presses = 0;
@@ -29,11 +29,17 @@ for (let g = 0; g < N; g++) {
     if (/undefined|NaN|\[object/.test(h.replace(/<[^>]+>/g, ' '))) { bad++; console.log('BAD TEXT', g, h.replace(/<[^>]+>/g, ' ').match(/.{0,60}(undefined|NaN|\[object).{0,30}/)[0]); }
     if (/class="result"/.test(h)) { const t = h.match(/<div class="q">([^<]*)/)[1]; if (/You win/.test(t)) out.win++; else if (/opponent wins/.test(t)) out.lose++; else out.pressure++; if (process.env.V) console.log(g, mode, level, t); break; }
     if (/RdyPlay\.go\(\)/.test(h)) { ctx.RdyPlay.go(); run(); continue; }
+    if (/RdyPlay\.su\(/.test(h)) { // setup: an Active, then some of the other Basics on the Bench, then start
+      const su = [...h.matchAll(/RdyPlay\.su\((\d+)\)/g)].map(m => +m[1]);
+      if (!/RdyPlay\.sgo\(\)/.test(h)) { ctx.RdyPlay.su(su[Math.floor(r() * su.length)]); continue; }
+      [...h.matchAll(/RdyPlay\.sb\((\d+)\)/g)].forEach(m => { if (r() < 0.6) ctx.RdyPlay.sb(+m[1]); });
+      ctx.RdyPlay.sgo(); run(); setups++; continue;
+    }
     if (/RdyPlay\.tog\(/.test(h)) { // several cards at once: tap one or two, then take them (or take nothing)
       const un = t => t.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
       const chips = [...h.matchAll(/RdyPlay\.tog\(&quot;(.*?)&quot;\)/g)].map(m => JSON.parse('"' + un(m[1]) + '"'));
       let h2 = h, take = null; multi++;
-      for (let j = 0; j < 60 && !take; j++) { ctx.RdyPlay.tog(chips[Math.floor(r() * chips.length)]); h2 = el('app').innerHTML; if (j >= 1 || r() < 0.5) take = h2.match(/RdyPlay\.do\((\d+)\)">Take [^n]/); }
+      for (let j = 0; j < 60 && !take; j++) { ctx.RdyPlay.tog(chips[Math.floor(r() * chips.length)]); h2 = el('app').innerHTML; if (j >= 1 || r() < 0.5) take = h2.match(/RdyPlay\.do\((\d+)\)">(?:Take|Discard) [^n]/); }
       take = take || h2.match(/RdyPlay\.do\((\d+)\)">/);
       if (!take) { console.log('NO TAKE', g, h2.slice(0, 300)); bad++; break; }
       ctx.RdyPlay.do(+take[1]); run(); continue;
@@ -48,5 +54,5 @@ for (let g = 0; g < N; g++) {
     if (++presses > 3000) { console.log('TOO LONG', g); bad++; break; }
   }
 }
-console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}`);
+console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}`);
 if (process.env.LABELS) console.log([...labels].sort().join('\n'));

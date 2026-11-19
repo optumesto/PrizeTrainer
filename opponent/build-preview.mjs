@@ -10,18 +10,21 @@ const css = page.match(/<style>([\s\S]*?)<\/style>/)[1]
   .replace(/@font-face[^}]*}/, '')
   .replace("font-family:'Saira', system-ui, sans-serif;", "font-family:'Saira', system-ui, sans-serif;")
   .replace(/body \{ padding:16px;/, 'body { padding-block:16px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));');
-const js = ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/play.js']
+const js = ['puzzle/text.js', 'puzzle/engine.js', 'opponent/game.js', 'opponent/effects.js', 'opponent/ai.js', 'opponent/decks.js', 'opponent/play.js',
+  // the app's translations, every language loaded up front (the site loads French, German and Italian on demand)
+  'js/i18n.js', 'js/i18n-fr.js', 'js/i18n-de.js', 'js/i18n-it.js']
   .map(f => readFileSync(join(root, f), 'utf8').replace('const OPP_ON = false;', 'const OPP_ON = true;').replace(/<\/script/gi, '<\\/script'))
   .map(t => `<script>\n${t}\n</script>`).join('\n');
-const html = `<title>RdyDeck Practice Opponent</title>
+const html = `<title>5turn | RdyDeck</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap">
 <style>${css}</style>
-<h1><span class="r">Rdy</span>Deck practice opponent</h1>
+<h1 data-no-tr><span class="r">Rdy</span>Deck 5turn</h1>
 <p class="note">Private preview. Not on rdydeck.com.</p>
 <div id="app"></div>
 ${js}
+<script>['fr', 'de', 'it'].forEach(l => rdI18n.add(l)); rdI18n.addCardNames(Object.keys(RdyOppDecks.cards));</script>
 <script>if (document.readyState !== 'loading') document.dispatchEvent(new Event('DOMContentLoaded'));</script>
 `;
 writeFileSync(out, html);

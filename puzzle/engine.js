@@ -302,7 +302,7 @@ function needWhy(s, need, selfUid) {
   if ((m = need.match(/^you have (\d+) or fewer cards in your hand(?:, not counting this card| other than this card)?$/))) return P.hand.length - 1 <= +m[1] ? '' : `Needs ${m[1]} or fewer other cards in your hand.`;
   if ((m = need.match(/^you have (\d+) or more cards in your hand(?:, not counting this card| other than this card)?$/))) return P.hand.length - 1 >= +m[1] ? '' : `Needs ${m[1]} or more other cards in your hand.`;
   if ((m = need.match(/^you have (?:any |a |an )?(.+?) pokemon in play$/))) { const w = m[1].replace(/^any /, '');
-    return mons(P).some(z => { const t = topOf(z); return T.gfKey(t).includes(w) || T.gfSubs(t).includes(w) || T.gfTypes(t).includes(w); }) ? '' : 'Needs ' + w + ' Pokémon in play.'; }
+    return mons(P).some(z => { const t = topOf(z); return T.gfKey(t).includes(w) || T.gfSubs(t).includes(w) || T.gfTypes(t).includes(w); }) ? '' : 'Needs ' + (/^[aeiou]/.test(w) ? 'an ' : 'a ') + w.replace(/ pokemon ex$/, '').replace(/\b\w/g, c => c.toUpperCase()) + (/ pokemon ex$/.test(w) ? ' Pokémon ex' : ' Pokémon') + ' in play.'; }
   if ((m = need.match(/^your bench has (\d+) or more pokemon$|^you have (\d+) or more benched pokemon$/))) { const k = +(m[1] || m[2]); return P.bench.length >= k ? '' : `Needs ${k} or more Benched Pokémon.`; }
   if (REAL) for (const h of HOOKS.need) { const w = h(s, need, selfUid); if (w != null) return w; }
   return '?';
@@ -341,7 +341,7 @@ function abilWhy(s, m, A, handRef) {
   if (A.limitHas && Object.keys(P.lim).some(k => k.startsWith('has:') && k.includes(A.limitHas.toLowerCase()) && P.lim[k] === s.turn)) return 'Only 1 of those a turn.';
   if (A.tera && !mons(P).some(z => T.gfSubs(topOf(z)).includes('tera'))) return 'Needs a Tera Pokémon in play.';
   if (A.mega && !mons(P).some(z => T.gfIsMega(topOf(z)) && isEx(topOf(z)) && (A.mega === 'any' || T.gfTypes(topOf(z)).includes(A.mega)))) return 'Needs a Mega Evolution Pokémon ex in play.';
-  if (A.energy && m && !m.energy.some(e => T.gfEType(e) === A.energy)) return 'Needs ' + A.energy + ' Energy attached.';
+  if (A.energy && m && !m.energy.some(e => T.gfEType(e) === A.energy)) return 'Needs ' + A.energy.charAt(0).toUpperCase() + A.energy.slice(1) + ' Energy attached.';
   if (A.cost && P.hand.filter(y => !handRef || y.uid !== handRef.uid).length < A.cost) return 'Needs a card in hand to discard.';
   if (A.when === 'hand' && A.steps.some(x => x.t === 'benchSelf') && P.bench.length >= benchMax(s, P)) return 'Your Bench is full.';
   return '';
