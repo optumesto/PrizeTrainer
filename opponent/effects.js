@@ -110,9 +110,12 @@ function hit(s, att, target, n, noWR) {
   const isA = s.players.some(p => p.active === target);
   const d = E.damageTo(s, att, { base: n, noWR: noWR || !isA }, target, isA && !noWR);
   target.dmg += d;
-  I.log(s, d + ' damage to ' + nm(target));
+  I.log(s, I.hitLine(d, target, !isA));
 }
-function drawFor(s, P, n) { for (let i = 0; i < n && P.deck.length; i++) P.hand.push(P.deck.shift()); }
+// Draws from card effects log what was drawn (card names for you, a count for your opponent).
+function drawFor(s, P, n) { if (n <= 0) return; const got = []; for (let i = 0; i < n && P.deck.length; i++) { const x = P.deck.shift(); P.hand.push(x); got.push(x); } I.logDraw(s, s.players.indexOf(P), got); }
+// "Did 60 more damage": an attack's extra damage added after its main hit (discarding Energy for more).
+function moreLine(s, d, m) { if (d > 0) I.log(s, d + ' more damage to ' + nm(m)); }
 function setCond(m, c, s, owner) {
   if (c === 'poisoned') m.poison = 1; else if (c === 'burned') m.burn = 1;
   else { m.cond = c; if (c === 'paralyzed') m.paraUntil = s.turns[owner] + 1; }
@@ -126,7 +129,7 @@ S.bothDraw = { run(s, st, c, P, O) { drawFor(s, P, st.me); drawFor(s, O, st.opp)
 S.bothShuffleDraw = { run(s, st, c, P, O) { S.bothShuffle.run(s, st, c, P, O); drawFor(s, P, st.n); drawFor(s, O, st.n); c.drew += st.n; } };
 S.bothBottom = { run(s, st, c, P, O) { c.bottomed = P.hand.length + O.hand.length > 0; [P, O].forEach(Q => { const h = Q.hand.splice(0); I.reshuffle(s, { deck: h }); Q.deck = Q.deck.concat(h); }); } };
 S.bothDrawPrizes = { run(s, st, c, P, O) { if (!c.bottomed) return; drawFor(s, P, P.prizes.length); drawFor(s, O, O.prizes.length); } };
-S.oppBottom = { run(s, st, c, P, O) { c.oppBottomed = O.hand.length > 0; const h = O.hand.splice(0); I.reshuffle(s, { deck: h }); O.deck = O.deck.concat(h); I.log(s, 'Opponent put their hand on the bottom of their deck'); } };
+S.oppBottom = { run(s, st, c, P, O) { c.oppBottomed = O.hand.length > 0; const h = O.hand.splice(0); I.reshuffle(s, { deck: h }); O.deck = O.deck.concat(h); I.log(s, "Your opponent's hand went to the bottom of the deck"); } };
 S.oppDrawIf = { run(s, st, c, P, O) { if (c.oppBottomed) drawFor(s, O, st.n); } };
 S.oppEnergyOff = {
   run(s, st, c, P, O) { const out = []; (st.active ? [O.active] : mons(O)).filter(Boolean).forEach(m => { const seen = new Set(); m.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); out.push({ mon: m.id, uid: e.uid }); }); }); return out; },
@@ -134,7 +137,7 @@ S.oppEnergyOff = {
 };
 S.oppDiscardTo = {
   run(s, st, c, P, O) { if (O.hand.length <= st.n) return; const seen = new Set(), out = []; O.hand.forEach(y => { if (seen.has(y.card)) return; seen.add(y.card); out.push(y.uid); }); return { choices: out, who: 1 - s.cur }; },
-  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); O.discard.push(x); I.log(s, 'Opponent discarded ' + x.card.name); return S.oppDiscardTo.run(s, st, c, P, O); },
+  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); O.discard.push(x); I.log(s, 'Your opponent discarded ' + x.card.name); return S.oppDiscardTo.run(s, st, c, P, O); },
 };
 S.toolOff = {
   run(s, st, c) { if ((c.tools || 0) >= st.n) return; const out = []; s.players.forEach(Q => mons(Q).forEach(m => { if (m.tool) out.push(m.id); })); return out.length ? out.concat([null]) : null; },
@@ -195,12 +198,12 @@ S.pushOut = { run(s, st, c, P, O) { if (!O.active || !O.bench.length) return; co
 S.itemLock = { run(s, st, c, P, O) { O.lim.itemLock = s.turns[1 - s.cur] + 1; } };
 S.optBoost = { run(s, st, c) { const m = self(s, c); return m && m.energy.filter(e => T.gfEType(e) === st.type).length >= st.n ? [true, false] : null; },
   answer(s, st, c, v, P, O) { if (!v) return; const m = self(s, c); let k = 0; m.energy = m.energy.filter(e => { if (k < st.n && T.gfEType(e) === st.type) { k++; P.discard.push(e); return false; } return true; });
-    if (O.active) { const a = E.damageTo(s, m, { base: st.more * 2 }, O.active, true) - E.damageTo(s, m, { base: st.more }, O.active, true); O.active.dmg += a; } } };
+    if (O.active) { const a = E.damageTo(s, m, { base: st.more * 2 }, O.active, true) - E.damageTo(s, m, { base: st.more }, O.active, true); O.active.dmg += a; moreLine(s, a, O.active); } } };
 S.bolt = { run(s, st, c, P) { const n = mons(P).reduce((a, z) => a + z.energy.filter(e => T.gfEType(e)).length, 0); return Array.from({ length: n + 1 }, (_, i) => i); },
   answer(s, st, c, v, P, O) { let left = v; const order = P.bench.concat([P.active]).filter(Boolean);
     for (const m of order) m.energy = m.energy.filter(e => { if (left > 0 && T.gfEType(e)) { left--; P.discard.push(e); return false; } return true; });
-    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, d + ' damage to ' + nm(O.active)); } } };
-S.countersActive = { run(s, st, c, P, O) { if (O.active) O.active.dmg += 10 * st.per * P.hand.length; } };
+    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); } } };
+S.countersActive = { run(s, st, c, P, O) { if (O.active && P.hand.length) { O.active.dmg += 10 * st.per * P.hand.length; I.log(s, 'Put ' + st.per * P.hand.length + ' damage counters on ' + nm(O.active)); } } };
 S.pump = { run(s, st, c) { const m = self(s, c); return m && m.energy.length >= st.n && s.players[s.cur].bench && oppOf(s).bench.length ? [true, false] : null; },
   answer(s, st, c, v, P) { if (!v) return; const m = self(s, c); P.deck = P.deck.concat(m.energy.splice(0, st.n)); I.reshuffle(s, P); c.pumped = true; } };
 
@@ -594,7 +597,7 @@ S.moveOff.run = (s, st, c, P, O) => { if (s.players.some((Q, k) => anyOn(s, k, /
 const condRun = S.cond.run;
 S.cond.run = (s, st, c, P, O) => { if (st.ifKO && !(st.ifKO === true ? P.koLastTurn : hopsKO(s, s.cur, new RegExp('^' + st.ifKO + "'s ")))) return; if (O.active && shielded(s, O.active)) return; return condRun(s, st, c, P, O); };
 S.handPick = { run(s, st, c, P, O) { const seen = new Set(), o = []; O.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
-  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); if (st.to === 'bottom') O.deck.push(x); else O.discard.push(x); I.log(s, (st.to === 'bottom' ? 'Put ' : 'Discarded ') + x.card.name + " from your opponent's hand"); } };
+  answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); if (st.to === 'bottom') O.deck.push(x); else O.discard.push(x); I.log(s, (st.to === 'bottom' ? 'Put ' : 'Discarded ') + x.card.name + " from your opponent's hand" + (st.to === 'bottom' ? " on the bottom of your opponent's deck" : '')); } };
 S.guard = { run(s, st, c) { const m = self(s, c); if (m) m.guard = { t: stTurn(s, 1 - s.cur) + 1, all: !!st.all, n: st.n || 0 }; } };
 S.exactKO = { run(s, st, c, P, O) { if (O.active && O.active.dmg === 10 * st.n && !shielded(s, O.active)) { O.active.dmg = E.maxHp(s, O.active); I.log(s, nm(O.active) + ' is Knocked Out by the effect'); } } };
 S.handToDeck = { run(s, st, c, P) { P.deck = P.deck.concat(P.hand.splice(0)); I.reshuffle(s, P); } };
@@ -629,8 +632,8 @@ S.copy = { run(s, st, c, P, O) { if (c.copied) return; const o = copyChoices(s, 
     const src = v.mon != null ? topOf(I.findMon(s, v.mon).m) : v.opp != null ? topOf(I.findMon(s, v.opp).m) : P.discard.find(z => z.uid === v.top);
     const a = src.card.attacks[v.i], R = E.readAttack(a), att = self(s, c); I.log(s, 'Used ' + a.name);
     if (!R || !att) return; if (R.pre) R.pre(s, att);
-    if (O.active) { const d = E.damageTo(s, att, R, O.active, true); O.active.dmg += d; I.log(s, d + ' damage to ' + nm(O.active)); }
-    if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { m.dmg += E.damageTo(s, att, { base: R.bench.n }, m, false); });
+    if (O.active) { const d = E.damageTo(s, att, R, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); }
+    if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { const d = E.damageTo(s, att, { base: R.bench.n }, m, false); m.dmg += d; I.log(s, I.hitLine(d, m, true)); });
     if (R.fx && R.fx.length) { const Rn = s.pending; Rn.steps = Rn.steps.slice(0, Rn.i + 1).concat(R.fx, Rn.steps.slice(Rn.i + 1)); } } };
 const raidRun = S.raid.run;
 S.raid = Object.assign({}, S.raid, { run(s, st, c, P, O) { const m = self(s, c); if (m && st.discardN && !c.paid) { c.paid = true; P.discard.push.apply(P.discard, m.energy.splice(0, st.discardN)); } return raidRun(s, st, c, P, O); } });
@@ -638,13 +641,13 @@ S.raid = Object.assign({}, S.raid, { run(s, st, c, P, O) { const m = self(s, c);
 const optRun = S.optBoost.run, optAns = S.optBoost.answer;
 S.optBoost = { run(s, st, c, P, O) { if (!st.all) return optRun(s, st, c, P, O); const m = self(s, c); return m && m.energy.length ? [true, false] : null; },
   answer(s, st, c, v, P, O) { if (!st.all) return optAns(s, st, c, v, P, O); if (!v) return; const m = self(s, c); P.discard.push.apply(P.discard, m.energy.splice(0));
-    if (O.active) O.active.dmg += E.damageTo(s, m, { base: st.more * 2 }, O.active, true) - E.damageTo(s, m, { base: st.more }, O.active, true); } };
+    if (O.active) { const a = E.damageTo(s, m, { base: st.more * 2 }, O.active, true) - E.damageTo(s, m, { base: st.more }, O.active, true); O.active.dmg += a; moreLine(s, a, O.active); } } };
 // Bolt: discard Energy for damage, from the Bench only, of one type, from this Pokemon only, or up to a number.
 S.bolt = { run(s, st, c, P) { const pool = st.self ? [self(s, c)].filter(Boolean) : st.bench ? P.bench : mons(P);
     const n = pool.reduce((a, z) => a + z.energy.filter(e => st.any ? true : st.type ? T.gfEType(e) === st.type : T.gfEType(e)).length, 0); return Array.from({ length: Math.min(n, st.max || 99) + 1 }, (_, i) => i); },
   answer(s, st, c, v, P, O) { let left = v; const pool = st.self ? [self(s, c)].filter(Boolean) : st.bench ? P.bench.slice() : P.bench.concat([P.active]).filter(Boolean);
     for (const m of pool) m.energy = m.energy.filter(e => { if (left > 0 && (st.any || (st.type ? T.gfEType(e) === st.type : T.gfEType(e)))) { left--; P.discard.push(e); return false; } return true; });
-    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, d + ' damage to ' + nm(O.active)); } } };
+    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); } } };
 
 /* Rules on the board */
 H.passive.push(

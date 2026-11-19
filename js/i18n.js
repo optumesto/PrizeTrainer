@@ -4867,7 +4867,7 @@ const I18N_PZ = {
     benchX: x => `Placer ${x} sur le Banc`, evolve: (m, x) => `Faire évoluer ${m} en ${x}`, candy: (m, x) => `Rare Candy : ${m} en ${x}`,
     to: (x, m) => `${x} sur ${m}`, attach: (x, m) => `Attacher ${x} à ${m}`, use: x => `Utiliser ${x}`, retreat: (m, p) => `Battre en retraite vers ${m}` + (p ? `, en défaussant ${p}` : ''),
     make: m => `Rendre ${m} Actif`, swIn: m => `Faire entrer ${m}`, bring: m => `Faire venir ${m}`, move: (x, a, b) => `${x} de ${a} sur ${b}`, from: (x, a) => `${x} de ${a}`,
-    none: 'Ne rien prendre', hand: (x, a) => `${x} depuis ta main : ${a}` },
+    none: 'Ne rien prendre', hand: (x, a) => `${x} depuis votre main : ${a}` },
   it: { act: 'Attivo', bench: 'Panchina', their: n => n + ' avversario', aMon: 'un Pokémon', aCard: 'una carta', hp: 'PS',
     benchX: x => `Mettere ${x} in Panchina`, evolve: (m, x) => `Far evolvere ${m} in ${x}`, candy: (m, x) => `Rare Candy: ${m} in ${x}`,
     to: (x, m) => `${x} a ${m}`, attach: (x, m) => `Assegnare ${x} a ${m}`, use: x => `Usare ${x}`, retreat: (m, p) => `Ritirarsi su ${m}` + (p ? `, scartando ${p}` : ''),
@@ -4994,7 +4994,7 @@ const I18N_FT_ROWS = [
     'Touchez un Pokémon pour le placer sur votre Banc. Touchez-le à nouveau pour le retirer.',
     'Tippe auf ein Pokémon, um es auf deine Bank zu legen. Tippe noch einmal, um es wieder wegzunehmen.',
     'Tocca un Pokémon per metterlo in Panchina. Toccalo di nuovo per toglierlo.'],
-  ['No other Basic Pokémon in your hand for your Bench.', 'No tienes otros Pokémon Básicos en la mano para tu Banca.', 'Não há outros Pokémon Básicos na sua mão para o seu Banco.', 'Aucun autre Pokémon de base dans votre main pour votre Banc.', 'Keine weiteren Basis-Pokémon auf deiner Hand für deine Bank.', 'Nessun altro Pokémon Base in mano per la tua Panchina.'],
+  ['No other Basic Pokémon in your hand for your Bench.', 'No tienes otros Pokémon Básicos en la mano para tu Banca.', 'Não há outros Pokémon Básicos na sua mão para o seu Banco.', 'Aucun autre Pokémon de base dans votre main pour votre Banc.', 'Keine weiteren Basis-Pokémon auf deiner Hand für deine Bank.', 'Nessun altro Pokémon Base in mano da mettere in Panchina.'],
   ['Start the game', 'Empezar la partida', 'Começar a partida', 'Commencer la partie', 'Spiel starten', 'Inizia la partita'],
   // The board
   [/^(\d+) of (\d+) HP$/, '$1 de $2 PS', '$1 de $2 PS', '$1 PV sur $2', '$1 von $2 KP', '$1 di $2 PS'],
@@ -5120,10 +5120,10 @@ const I18N_FT_ROWS = [
   [/^Needs a Pokémon with (\d+) or more Energy\.$/, 'Necesita un Pokémon con $1 o más Energías.', 'Precisa de um Pokémon com $1 ou mais Energias.', 'Il faut un Pokémon avec $1 Énergies ou plus.', 'Braucht ein Pokémon mit $1 oder mehr Energie.', 'Serve un Pokémon con $1 o più Energie.'],
   [/^Needs a Benched Pokémon with (\d+) or more Energy\.$/, 'Necesita un Pokémon en Banca con $1 o más Energías.', 'Precisa de um Pokémon no Banco com $1 ou mais Energias.', 'Il faut un Pokémon de Banc avec $1 Énergies ou plus.', 'Braucht ein Pokémon auf der Bank mit $1 oder mehr Energie.', 'Serve un Pokémon in Panchina con $1 o più Energie.'],
   [/^Needs your opponent at 1 Prize card( or fewer)?\.$/, 'Necesita que al rival le quede 1 carta de Premio.', 'Precisa que o oponente esteja com 1 carta de Prêmio.', 'Il faut que l\'adversaire ait 1 carte Récompense.', 'Der Gegner darf nur noch 1 Preiskarte haben.', 'L\'avversario deve avere 1 carta Premio.'],
-  [/^Needs your opponent at (\d+) Prize cards or fewer\.$/, 'Necesita que al rival le queden $1 cartas de Premio o menos.', 'Precisa que o oponente esteja com $1 cartas de Prêmio ou menos.', 'Il faut que l\'adversaire ait $1 cartes Récompense ou moins.', 'Der Gegner darf höchstens $1 Preiskarten haben.', 'L\'avversario deve avere $1 carte Premio o meno.'],
+  [/^Needs your opponent at (\d+) Prize cards or fewer\.$/, 'Necesita que al rival le queden $1 cartas de Premio o menos.', 'Precisa que o oponente esteja com $1 cartas de Prêmio ou menos.', 'Il faut que l\'adversaire ait $1 cartes Récompense ou moins.', 'Der Gegner darf höchstens $1 Preiskarten haben.', 'L\'avversario deve avere $1 o meno carte Premio.'],
   [/^Needs your opponent at (\d+) Prize cards\.$/, 'Necesita que al rival le queden $1 cartas de Premio.', 'Precisa que o oponente esteja com $1 cartas de Prêmio.', 'Il faut que l\'adversaire ait $1 cartes Récompense.', 'Der Gegner muss genau $1 Preiskarten haben.', 'L\'avversario deve avere $1 carte Premio.'],
   [/^Needs you at 1 Prize card( or fewer)?\.$/, 'Necesita que te quede 1 carta de Premio.', 'Precisa que você esteja com 1 carta de Prêmio.', 'Il faut que vous ayez 1 carte Récompense.', 'Du darfst nur noch 1 Preiskarte haben.', 'Devi avere 1 carta Premio.'],
-  [/^Needs you at (\d+) Prize cards or fewer\.$/, 'Necesita que te queden $1 cartas de Premio o menos.', 'Precisa que você esteja com $1 cartas de Prêmio ou menos.', 'Il faut que vous ayez $1 cartes Récompense ou moins.', 'Du darfst höchstens $1 Preiskarten haben.', 'Devi avere $1 carte Premio o meno.'],
+  [/^Needs you at (\d+) Prize cards or fewer\.$/, 'Necesita que te queden $1 cartas de Premio o menos.', 'Precisa que você esteja com $1 cartas de Prêmio ou menos.', 'Il faut que vous ayez $1 cartes Récompense ou moins.', 'Du darfst höchstens $1 Preiskarten haben.', 'Devi avere $1 o meno carte Premio.'],
   [/^Needs you at (\d+) Prize cards\.$/, 'Necesita que te queden $1 cartas de Premio.', 'Precisa que você esteja com $1 cartas de Prêmio.', 'Il faut que vous ayez $1 cartes Récompense.', 'Du musst genau $1 Preiskarten haben.', 'Devi avere $1 carte Premio.'],
   [/^Needs (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal|Dragon|Colorless|Fairy) Energy attached\.$/, t => ['Necesita Energía $T unida.', 'Precisa de Energia $T ligada.', 'Il faut une Énergie $T attachée.', 'Braucht angelegte $T-Energie.', 'Serve Energia $T assegnata.']],
   // The game log
@@ -5131,8 +5131,87 @@ const I18N_FT_ROWS = [
   ['Your turn ends', 'Tu turno termina', 'Seu turno termina', 'Votre tour se termine', 'Dein Zug endet', 'Il tuo turno finisce'],
   [/^Your turn (\d+)$/, 'Tu turno $1', 'Seu turno $1', 'Votre tour $1', 'Dein Zug $1', 'Il tuo turno $1'],
   [/^Your opponent's turn (\d+)$/, 'Turno del rival $1', 'Turno do oponente $1', 'Tour de l\'adversaire $1', 'Zug des Gegners $1', 'Turno dell\'avversario $1'],
-  [/^You drew (\d+) for mulligans$/, 'Robaste $1 por los mulligans', 'Você comprou $1 pelos mulligans', 'Vous avez pioché $1 pour les mulligans', 'Du hast $1 für die Mulligans gezogen', 'Hai pescato $1 per i mulligan'],
-  [/^Your opponent drew (\d+) for mulligans$/, 'El rival robó $1 por los mulligans', 'O oponente comprou $1 pelos mulligans', 'L\'adversaire a pioché $1 pour les mulligans', 'Der Gegner hat $1 für die Mulligans gezogen', 'L\'avversario ha pescato $1 per i mulligan'],
+  ['You drew 1 for mulligans', 'Robaste 1 carta por los mulligans', 'Você comprou 1 carta pelos mulligans', 'Vous avez pioché 1 carte pour les mulligans', 'Du hast 1 Karte für die Mulligans gezogen', 'Hai pescato 1 carta per i mulligan'],
+  [/^You drew (\d+) for mulligans$/, 'Robaste $1 cartas por los mulligans', 'Você comprou $1 cartas pelos mulligans', 'Vous avez pioché $1 cartes pour les mulligans', 'Du hast $1 Karten für die Mulligans gezogen', 'Hai pescato $1 carte per i mulligan'],
+  ['Your opponent drew 1 for mulligans', 'El rival robó 1 carta por los mulligans', 'O oponente comprou 1 carta pelos mulligans', 'L\'adversaire a pioché 1 carte pour les mulligans', 'Der Gegner hat 1 Karte für die Mulligans gezogen', 'L\'avversario ha pescato 1 carta per i mulligan'],
+  [/^Your opponent drew (\d+) for mulligans$/, 'El rival robó $1 cartas por los mulligans', 'O oponente comprou $1 cartas pelos mulligans', 'L\'adversaire a pioché $1 cartes pour les mulligans', 'Der Gegner hat $1 Karten für die Mulligans gezogen', 'L\'avversario ha pescato $1 carte per i mulligan'],
+  // 3.4.7: the full game log. Damage says why, draws and searches say what and where, and
+  // the opponent's turn reads from your side ("Put Iono into their hand").
+  [/^(\d+) damage to (.+?)( on the Bench)?(?: \((base \d+, .+)\))?$/, { fn: (m, l) => i18nFtDmg(l, m[1], m[2], !!m[3], m[4], false) }],
+  [/^(\d+) more damage to (.+)$/, { fn: (m, l) => i18nFtDmg(l, m[1], m[2], false, null, true) }],
+  ['Drew nothing, the deck is empty', 'No robó nada, la baraja está vacía', 'Não comprou nada, o deck está vazio', 'N\'a rien pioché, le deck est vide', 'Nichts gezogen, das Deck ist leer', 'Non ha pescato nulla, il mazzo è vuoto'],
+  ['Your opponent drew nothing, the deck is empty', 'El rival no robó nada, su baraja está vacía', 'O oponente não comprou nada, o deck dele está vazio', 'L\'adversaire n\'a rien pioché, son deck est vide', 'Der Gegner hat nichts gezogen, sein Deck ist leer', 'L\'avversario non ha pescato nulla, il suo mazzo è vuoto'],
+  ['You drew nothing, the deck is empty', 'No robaste nada, tu baraja está vacía', 'Você não comprou nada, seu deck está vazio', 'Vous n\'avez rien pioché, votre deck est vide', 'Du hast nichts gezogen, dein Deck ist leer', 'Non hai pescato nulla, il tuo mazzo è vuoto'],
+  ['Drew 1 card', 'Robó 1 carta', 'Comprou 1 carta', 'A pioché 1 carte', '1 Karte gezogen', 'Ha pescato 1 carta'],
+  [/^Drew (\d+) cards$/, 'Robó $1 cartas', 'Comprou $1 cartas', 'A pioché $1 cartes', '$1 Karten gezogen', 'Ha pescato $1 carte'],
+  [/^Drew (.+)$/, 'Robó $1', 'Comprou $1', 'A pioché $1', '$1 gezogen', 'Ha pescato $1'],
+  ['Your opponent drew a card', 'El rival robó una carta', 'O oponente comprou uma carta', 'L\'adversaire a pioché une carte', 'Der Gegner hat eine Karte gezogen', 'L\'avversario ha pescato una carta'],
+  ['Your opponent drew 1 card', 'El rival robó 1 carta', 'O oponente comprou 1 carta', 'L\'adversaire a pioché 1 carte', 'Der Gegner hat 1 Karte gezogen', 'L\'avversario ha pescato 1 carta'],
+  [/^Your opponent drew (\d+) cards$/, 'El rival robó $1 cartas', 'O oponente comprou $1 cartas', 'L\'adversaire a pioché $1 cartes', 'Der Gegner hat $1 Karten gezogen', 'L\'avversario ha pescato $1 carte'],
+  [/^You drew (.+)$/, 'Robaste $1', 'Você comprou $1', 'Vous avez pioché $1', 'Du hast $1 gezogen', 'Hai pescato $1'],
+  [/^Evolved (.+?) into (.+)$/, 'Evolucionó a $1 en $2', 'Evoluiu $1 para $2', 'A fait évoluer $1 en $2', '$1 zu $2 entwickelt', 'Ha fatto evolvere $1 in $2'],
+  [/^Rare Candy: (.+?) into (.+)$/, 'Rare Candy: $1 evolucionó a $2', 'Rare Candy: $1 evoluiu para $2', 'Rare Candy : $1 a évolué en $2', 'Rare Candy: $1 zu $2 entwickelt', 'Rare Candy: $1 si è evoluto in $2'],
+  [/^Retreated (.+?) for the other (.+?), discarding (.+)$/, 'Retiró a $1 y entró el otro $2, descartando $3', 'Recuou $1 e entrou o outro $2, descartando $3', 'A fait battre en retraite $1 pour l\'autre $2, en défaussant $3', '$1 zurückgezogen, das andere $2 kommt, $3 abgelegt', 'Ha ritirato $1 per l\'altro $2, scartando $3'],
+  [/^Retreated (.+?) for (.+?), discarding (.+)$/, 'Retiró a $1 y entró $2, descartando $3', 'Recuou $1 e entrou $2, descartando $3', 'A fait battre en retraite $1 pour $2, en défaussant $3', '$1 zurückgezogen, $2 kommt, $3 abgelegt', 'Ha ritirato $1 per $2, scartando $3'],
+  [/^Retreated (.+?) for the other (.+?), with no Energy to pay$/, 'Retiró a $1 y entró el otro $2, sin Energía que pagar', 'Recuou $1 e entrou o outro $2, sem Energia para pagar', 'A fait battre en retraite $1 pour l\'autre $2, sans Énergie à payer', '$1 zurückgezogen, das andere $2 kommt, ohne Energie zu bezahlen', 'Ha ritirato $1 per l\'altro $2, senza Energia da pagare'],
+  [/^Retreated (.+?) for (.+?), with no Energy to pay$/, 'Retiró a $1 y entró $2, sin Energía que pagar', 'Recuou $1 e entrou $2, sem Energia para pagar', 'A fait battre en retraite $1 pour $2, sans Énergie à payer', '$1 zurückgezogen, $2 kommt, ohne Energie zu bezahlen', 'Ha ritirato $1 per $2, senza Energia da pagare'],
+  [/^Searched for (.+?) into your hand$/, 'Buscó en la baraja y puso en tu mano: $1', 'Buscou no deck e colocou na sua mão: $1', 'A cherché dans le deck et mis dans votre main : $1', 'Im Deck gesucht und auf deine Hand genommen: $1', 'Ha cercato nel mazzo e messo nella tua mano: $1'],
+  [/^Searched for (.+?) into their hand$/, 'Buscó en la baraja y puso en la mano del rival: $1', 'Buscou no deck e colocou na mão do oponente: $1', 'A cherché dans le deck et mis dans la main adverse : $1', 'Im Deck gesucht und auf die Hand des Gegners genommen: $1', 'Ha cercato nel mazzo e messo nella mano dell\'avversario: $1'],
+  [/^Searched for (.+?) onto your Bench$/, 'Buscó en la baraja y puso en tu Banca: $1', 'Buscou no deck e colocou no seu Banco: $1', 'A cherché dans le deck et placé sur votre Banc : $1', 'Im Deck gesucht und auf deine Bank gelegt: $1', 'Ha cercato nel mazzo e messo nella tua Panchina: $1'],
+  [/^Searched for (.+?) onto their Bench$/, 'Buscó en la baraja y puso en la Banca del rival: $1', 'Buscou no deck e colocou no Banco do oponente: $1', 'A cherché dans le deck et placé sur le Banc adverse : $1', 'Im Deck gesucht und auf die Bank des Gegners gelegt: $1', 'Ha cercato nel mazzo e messo nella Panchina dell\'avversario: $1'],
+  [/^Searched for (.+?) on top of your deck$/, 'Buscó en la baraja y puso encima de tu baraja: $1', 'Buscou no deck e colocou no topo do seu deck: $1', 'A cherché dans le deck et placé sur le dessus de votre deck : $1', 'Im Deck gesucht und oben auf dein Deck gelegt: $1', 'Ha cercato nel mazzo e messo in cima al tuo mazzo: $1'],
+  [/^Searched for (.+?) on top of their deck$/, 'Buscó en la baraja y puso encima de la baraja del rival: $1', 'Buscou no deck e colocou no topo do deck do oponente: $1', 'A cherché dans le deck et placé sur le dessus du deck adverse : $1', 'Im Deck gesucht und oben auf das Deck des Gegners gelegt: $1', 'Ha cercato nel mazzo e messo in cima al mazzo dell\'avversario: $1'],
+  ['Took back nothing, no card fit', 'No recuperó nada, ninguna carta cumplía', 'Não recuperou nada, nenhuma carta servia', 'N\'a rien récupéré, aucune carte ne convenait', 'Nichts zurückgeholt, keine Karte passte', 'Non ha recuperato nulla, nessuna carta andava bene'],
+  [/^Took back (.+?) into your hand$/, 'Recuperó para tu mano: $1', 'Recuperou para a sua mão: $1', 'A récupéré dans votre main : $1', 'Zurück auf deine Hand geholt: $1', 'Ha recuperato nella tua mano: $1'],
+  [/^Took back (.+?) into their hand$/, 'Recuperó para la mano del rival: $1', 'Recuperou para a mão do oponente: $1', 'A récupéré dans la main adverse : $1', 'Zurück auf die Hand des Gegners geholt: $1', 'Ha recuperato nella mano dell\'avversario: $1'],
+  [/^Took back (.+) into their deck$/, 'Devolvió $1 a la baraja', 'Devolveu $1 ao deck', 'A remis $1 dans le deck', '$1 zurück ins Deck gemischt', 'Ha rimesso $1 nel mazzo'],
+  [/^Took (.+?) into your hand$/, 'Puso en tu mano: $1', 'Colocou na sua mão: $1', 'A mis dans votre main : $1', 'Auf deine Hand genommen: $1', 'Ha messo nella tua mano: $1'],
+  [/^Took (.+?) into their hand$/, 'Puso en la mano del rival: $1', 'Colocou na mão do oponente: $1', 'A mis dans la main adverse : $1', 'Auf die Hand des Gegners genommen: $1', 'Ha messo nella mano dell\'avversario: $1'],
+  [/^Took (.+?) and attached (?:it|them) to (.+)$/, 'Tomó y unió a $2: $1', 'Pegou e ligou a $2: $1', 'A pris et attaché à $2 : $1', 'Genommen und an $2 angelegt: $1', 'Ha preso e assegnato a $2: $1'],
+  [/^Took (.+?) and discarded (?:it|them)$/, 'Tomó y descartó: $1', 'Pegou e descartou: $1', 'A pris et défaussé : $1', 'Genommen und abgelegt: $1', 'Ha preso e scartato: $1'],
+  [/^Discarded the rest: (.+)$/, 'Descartó el resto: $1', 'Descartou o resto: $1', 'A défaussé le reste : $1', 'Den Rest abgelegt: $1', 'Ha scartato il resto: $1'],
+  ['Shuffled the rest into your deck', 'Barajó el resto en tu baraja', 'Embaralhou o resto no seu deck', 'A mélangé le reste dans votre deck', 'Den Rest in dein Deck gemischt', 'Ha rimescolato il resto nel tuo mazzo'],
+  ['Shuffled the rest into their deck', 'Barajó el resto en la baraja del rival', 'Embaralhou o resto no deck do oponente', 'A mélangé le reste dans le deck adverse', 'Den Rest in das Deck des Gegners gemischt', 'Ha rimescolato il resto nel mazzo dell\'avversario'],
+  ['Put the rest on the bottom of your deck', 'Puso el resto debajo de tu baraja', 'Colocou o resto embaixo do seu deck', 'A placé le reste sous votre deck', 'Den Rest unter dein Deck gelegt', 'Ha messo il resto in fondo al tuo mazzo'],
+  ['Put the rest on the bottom of their deck', 'Puso el resto debajo de la baraja del rival', 'Colocou o resto embaixo do deck do oponente', 'A placé le reste sous le deck adverse', 'Den Rest unter das Deck des Gegners gelegt', 'Ha messo il resto in fondo al mazzo dell\'avversario'],
+  ["Your opponent's hand went to the bottom of the deck", 'La mano del rival fue al fondo de su baraja', 'A mão do oponente foi para o fundo do deck dele', 'La main adverse est allée sous son deck', 'Die Hand des Gegners kam unter sein Deck', 'La mano dell\'avversario è finita in fondo al suo mazzo'],
+  ['Your hand went to the bottom of the deck', 'Tu mano fue al fondo de tu baraja', 'Sua mão foi para o fundo do seu deck', 'Votre main est allée sous votre deck', 'Deine Hand kam unter dein Deck', 'La tua mano è finita in fondo al tuo mazzo'],
+  [/^Your opponent discarded (.+)$/, 'El rival descartó $1', 'O oponente descartou $1', 'L\'adversaire a défaussé $1', 'Der Gegner hat $1 abgelegt', 'L\'avversario ha scartato $1'],
+  [/^You discarded (.+)$/, 'Descartaste $1', 'Você descartou $1', 'Vous avez défaussé $1', 'Du hast $1 abgelegt', 'Hai scartato $1'],
+  [/^Put (.+?) from your opponent's hand on the bottom of your opponent's deck$/, 'Puso $1 de la mano del rival debajo de su baraja', 'Colocou $1 da mão do oponente embaixo do deck dele', 'A placé $1 de la main adverse sous son deck', '$1 aus der Hand des Gegners unter sein Deck gelegt', 'Ha messo $1 della mano dell\'avversario in fondo al suo mazzo'],
+  [/^Put (.+?) from your hand on the bottom of your deck$/, 'Puso $1 de tu mano debajo de tu baraja', 'Colocou $1 da sua mão embaixo do seu deck', 'A placé $1 de votre main sous votre deck', '$1 aus deiner Hand unter dein Deck gelegt', 'Ha messo $1 della tua mano in fondo al tuo mazzo'],
+  [/^(.+?) from your hand: (.+)$/, '$1 desde tu mano: $2', '$1 da sua mão: $2', '$1 depuis votre main : $2', '$1 aus deiner Hand: $2', '$1 dalla tua mano: $2'],
+  [/^Discarded (.+?) from your hand$/, 'Descartó $1 de tu mano', 'Descartou $1 da sua mão', 'A défaussé $1 de votre main', '$1 aus deiner Hand abgelegt', 'Ha scartato $1 dalla tua mano'],
+  [/^Put (.+?) into their hand$/, 'Puso $1 en la mano del rival', 'Colocou $1 na mão do oponente', 'A mis $1 dans la main adverse', '$1 auf die Hand des Gegners genommen', 'Ha messo $1 nella mano dell\'avversario'],
+  [/^Put (.+?) back into their hand$/, 'Devolvió $1 a la mano del rival', 'Devolveu $1 para a mão do oponente', 'A remis $1 dans la main adverse', '$1 zurück auf die Hand des Gegners genommen', 'Ha rimesso $1 nella mano dell\'avversario'],
+  [/^Put (.+?) on top of their deck$/, 'Puso $1 encima de la baraja del rival', 'Colocou $1 no topo do deck do oponente', 'A placé $1 sur le dessus du deck adverse', '$1 oben auf das Deck des Gegners gelegt', 'Ha messo $1 in cima al mazzo dell\'avversario'],
+  [/^Put (.+?) on your Bench$/, 'Puso a $1 en tu Banca', 'Colocou $1 no seu Banco', 'A placé $1 sur votre Banc', '$1 auf deine Bank gelegt', 'Ha messo $1 nella tua Panchina'],
+  [/^Put (.+?) on their Bench$/, 'Puso a $1 en la Banca del rival', 'Colocou $1 no Banco do oponente', 'A placé $1 sur le Banc adverse', '$1 auf die Bank des Gegners gelegt', 'Ha messo $1 nella Panchina dell\'avversario'],
+  ['Only while it is in your hand.', 'Solo mientras está en tu mano.', 'Só enquanto estiver na sua mão.', 'Seulement tant qu\'il est dans votre main.', 'Nur solange es auf deiner Hand ist.', 'Solo mentre è nella tua mano.'],
+  ['Their turn ends', 'El turno del rival termina', 'O turno do oponente termina', 'Le tour de l\'adversaire se termine', 'Der Zug des Gegners endet', 'Il turno dell\'avversario finisce'],
+  ['Chose not to switch', 'Decidió no cambiar', 'Decidiu não trocar', 'A choisi de ne pas échanger', 'Hat sich gegen einen Wechsel entschieden', 'Ha scelto di non scambiare'],
+  // Effects that would do nothing now are not offered, with the reason.
+  [/^No Basic (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal) Energy in your hand\.$/, { fn: (m, l) => ({ es: `No tienes Energía ${I18N_FT_TYPES.es[m[1]]} Básica en la mano.`, pt: `Você não tem Energia ${I18N_FT_TYPES.pt[m[1]]} Básica na mão.`, fr: `Aucune Énergie ${I18N_FT_TYPES.fr[m[1]]} de base dans votre main.`, de: `Keine Basis-${I18N_FT_TYPES.de[m[1]]}-Energie auf deiner Hand.`, it: `Nessuna Energia ${I18N_FT_TYPES.it[m[1]]} base in mano.` })[l] }],
+  [/^No Basic (Grass|Fire|Water|Lightning|Psychic|Fighting|Darkness|Metal) Energy in your discard pile\.$/, { fn: (m, l) => ({ es: `No hay Energía ${I18N_FT_TYPES.es[m[1]]} Básica en tu pila de descartes.`, pt: `Não há Energia ${I18N_FT_TYPES.pt[m[1]]} Básica na sua pilha de descarte.`, fr: `Aucune Énergie ${I18N_FT_TYPES.fr[m[1]]} de base dans votre pile de défausse.`, de: `Keine Basis-${I18N_FT_TYPES.de[m[1]]}-Energie auf deinem Ablagestapel.`, it: `Nessuna Energia ${I18N_FT_TYPES.it[m[1]]} base nella tua pila degli scarti.` })[l] }],
+  ['No Basic Energy in your hand.', 'No tienes Energía Básica en la mano.', 'Você não tem Energia Básica na mão.', 'Aucune Énergie de base dans votre main.', 'Keine Basis-Energie auf deiner Hand.', 'Nessuna Energia base in mano.'],
+  ['No Basic Energy in your discard pile.', 'No hay Energía Básica en tu pila de descartes.', 'Não há Energia Básica na sua pilha de descarte.', 'Aucune Énergie de base dans votre pile de défausse.', 'Keine Basis-Energie auf deinem Ablagestapel.', 'Nessuna Energia base nella tua pila degli scarti.'],
+  ['No Benched Pokémon it can attach to.', 'No hay Pokémon en tu Banca a los que pueda unirse.', 'Não há Pokémon no seu Banco a que possa ser ligada.', 'Aucun Pokémon de votre Banc ne peut la recevoir.', 'Kein Pokémon auf deiner Bank kann sie erhalten.', 'Nessun Pokémon in Panchina a cui assegnarla.'],
+  ['No Pokémon in play it can attach to.', 'No hay Pokémon en juego a los que pueda unirse.', 'Não há Pokémon em jogo a que possa ser ligada.', 'Aucun Pokémon en jeu ne peut la recevoir.', 'Kein Pokémon im Spiel kann sie erhalten.', 'Nessun Pokémon in gioco a cui assegnarla.'],
+  ['Nothing in your discard pile it can take back.', 'No hay nada en tu pila de descartes que pueda recuperar.', 'Não há nada na sua pilha de descarte que possa recuperar.', 'Rien dans votre pile de défausse qu\'elle puisse récupérer.', 'Nichts auf deinem Ablagestapel, das sie zurückholen kann.', 'Niente nella tua pila degli scarti da poter recuperare.'],
+  // The screens around a game
+  ['Game setup', 'Preparación de la partida', 'Preparação da partida', 'Mise en place de la partie', 'Spielaufbau', 'Preparazione della partita'],
+  ['Start a game', 'Empezar una partida', 'Começar uma partida', 'Commencer une partie', 'Ein Spiel starten', 'Inizia una partita'],
+  ['You won the coin flip, so you go first.', 'Ganaste el lanzamiento de moneda, así que empiezas tú.', 'Você ganhou no cara ou coroa, então começa você.', 'Vous avez gagné à pile ou face, vous commencez donc.', 'Du hast den Münzwurf gewonnen, also fängst du an.', 'Hai vinto il lancio della moneta, quindi inizi tu.'],
+  ['Your opponent won the coin flip, so they go first.', 'El rival ganó el lanzamiento de moneda, así que empieza primero.', 'O oponente ganhou no cara ou coroa, então começa primeiro.', 'L\'adversaire a gagné à pile ou face, il commence donc.', 'Der Gegner hat den Münzwurf gewonnen, also fängt er an.', 'L\'avversario ha vinto il lancio della moneta, quindi inizia per primo.'],
+  ['A card', 'Una carta', 'Uma carta', 'Une carte', 'Eine Karte', 'Una carta'],
+  ['a card', 'una carta', 'uma carta', 'une carte', 'eine Karte', 'una carta'],
+  ['Take your turn', 'Juega tu turno', 'Jogue seu turno', 'Jouez votre tour', 'Spiel deinen Zug', 'Gioca il tuo turno'],
+  ['Full game log', 'Registro completo de la partida', 'Registro completo da partida', 'Journal complet de la partie', 'Vollständiges Spielprotokoll', 'Registro completo della partita'],
+  [/^Opponent's turn (\d+) of (\d+)$/, 'Turno del rival $1 de $2', 'Turno do oponente $1 de $2', 'Tour de l\'adversaire $1 sur $2', 'Zug des Gegners $1 von $2', 'Turno dell\'avversario $1 di $2'],
+  ['You win on Prize cards.', 'Ganaste por cartas de Premio.', 'Você venceu por cartas de Prêmio.', 'Vous avez gagné aux cartes Récompense.', 'Du hast nach Preiskarten gewonnen.', 'Hai vinto per carte Premio.'],
+  ['Your opponent wins on Prize cards.', 'Ganó el rival por cartas de Premio.', 'O oponente venceu por cartas de Prêmio.', 'L\'adversaire a gagné aux cartes Récompense.', 'Der Gegner hat nach Preiskarten gewonnen.', 'Ha vinto l\'avversario per carte Premio.'],
+  ["It's a draw.", 'Es un empate.', 'Deu empate.', 'Match nul.', 'Unentschieden.', 'È un pareggio.'],
+  [/^After (\d+) turns each, you took (\d+) Prize cards? and your opponent took (\d+)\.$/, { fn: (m, l) => I18N_FT_AFTER[l](+m[1], +m[2], +m[3]) }],
   ['You could not draw a card and lose', 'No pudiste robar una carta y pierdes', 'Você não pôde comprar uma carta e perde', 'Vous n\'avez pas pu piocher de carte et vous perdez', 'Du konntest keine Karte ziehen und verlierst', 'Non hai potuto pescare una carta e perdi'],
   ['Your opponent could not draw a card and lose', 'El rival no pudo robar una carta y pierde', 'O oponente não pôde comprar uma carta e perde', 'L\'adversaire n\'a pas pu piocher de carte et perd', 'Der Gegner konnte keine Karte ziehen und verliert', 'L\'avversario non ha potuto pescare una carta e perde'],
   ['Each player shuffled their hand into their deck', 'Cada jugador barajó su mano en su baraja', 'Cada jogador embaralhou a mão no próprio deck', 'Chaque joueur a mélangé sa main avec son deck', 'Jeder Spieler hat seine Hand in sein Deck gemischt', 'Ogni giocatore ha rimescolato la mano nel proprio mazzo'],
@@ -5246,17 +5325,56 @@ const I18N_FT_OWN = {
   it: { mine: { '': 'il tuo $', di: 'del tuo $', su: 'sul tuo $', a: 'al tuo $' }, theirs: { '': '$ avversario', di: 'di $ avversario', su: 'su $ avversario', a: 'a $ avversario' } },
 };
 function i18nFtOwn(x, l, prep) {
-  const m = /^(your|their) (.+)$/i.exec(x);
+  const m = /^(your|their) (.+?)( \((?:Active|Bench \d+)\))?$/i.exec(x);
   if (!m) return (prep ? prep + ' ' : '') + x;
   const T = I18N_FT_OWN[l][/^y/i.test(m[1]) ? 'mine' : 'theirs'], w = T[prep || ''] || T[''];
-  return w.replace('$', m[2]);
+  // Its spot when two of that name are in play: "(Bench 2)" reads "(Banca 2)".
+  const Z = I18N_PZ[l], spot = !m[3] ? '' : / \(Active\)/.test(m[3]) ? ` (${Z.act})` : ` (${Z.bench} ${m[3].replace(/\D/g, '')})`;
+  return w.replace('$', m[2]) + spot;
 }
+// The damage line, with its reasons in brackets: "120 damage to Gible (base 20, plus 100 from the attack's text)".
+const I18N_FT_HIT = {
+  es: { to: (n, x) => `${n} de daño a ${x}`, more: (n, x) => `${n} de daño más a ${x}`, bench: ' en la Banca', plus: 'más', minus: 'menos', base: 'base',
+    text: 'por el texto del ataque', weak: 'por Debilidad', res: 'por Resistencia', fx: 'por otros efectos', double: 'el doble por Debilidad', times: n => `multiplicado por ${n} por Debilidad`, off: 'evitado por un efecto' },
+  pt: { to: (n, x) => `${n} de dano em ${x}`, more: (n, x) => `mais ${n} de dano em ${x}`, bench: ' no Banco', plus: 'mais', minus: 'menos', base: 'base',
+    text: 'pelo texto do ataque', weak: 'pela Fraqueza', res: 'pela Resistência', fx: 'por outros efeitos', double: 'dobrado pela Fraqueza', times: n => `multiplicado por ${n} pela Fraqueza`, off: 'evitado por um efeito' },
+  fr: { to: (n, x) => `${n} dégâts à ${x}`, more: (n, x) => `${n} dégâts de plus à ${x}`, bench: ' sur le Banc', plus: 'plus', minus: 'moins', base: 'base',
+    text: 'par le texte de l\'attaque', weak: 'par la Faiblesse', res: 'par la Résistance', fx: 'par d\'autres effets', double: 'doublés par la Faiblesse', times: n => `multipliés par ${n} par la Faiblesse`, off: 'empêchés par un effet' },
+  de: { to: (n, x) => `${n} Schaden an ${x}`, more: (n, x) => `${n} zusätzlicher Schaden an ${x}`, bench: ' auf der Bank', plus: 'plus', minus: 'minus', base: 'Basis',
+    text: 'durch den Angriffstext', weak: 'durch Schwäche', res: 'durch Resistenz', fx: 'durch andere Effekte', double: 'verdoppelt durch Schwäche', times: n => `mal ${n} durch Schwäche`, off: 'durch einen Effekt verhindert' },
+  it: { to: (n, x) => `${n} danni a ${x}`, more: (n, x) => `altri ${n} danni a ${x}`, bench: ' in Panchina', plus: 'più', minus: 'meno', base: 'base',
+    text: 'dal testo dell\'attacco', weak: 'dalla Debolezza', res: 'dalla Resistenza', fx: 'da altri effetti', double: 'raddoppiati dalla Debolezza', times: n => `moltiplicati per ${n} dalla Debolezza`, off: 'impediti da un effetto' },
+};
+function i18nFtDmg(l, n, x, bench, why, more) {
+  const H = I18N_FT_HIT[l], who = i18nFtOwn(x, l, '');
+  let out = (more ? H.more : H.to)(n, who) + (bench ? H.bench : '');
+  if (!why) return out;
+  const part = p => { let m;
+    if ((m = /^base (\d+)$/.exec(p))) return H.base + ' ' + m[1];
+    if (p === 'prevented by an effect') return H.off;
+    if (p === 'doubled by Weakness') return H.double;
+    if ((m = /^times (\d+) from Weakness$/.exec(p))) return H.times(m[1]);
+    if ((m = /^(plus|minus) (\d+) from (the attack's text|Weakness|Resistance|other effects)$/.exec(p)))
+      return H[m[1]] + ' ' + m[2] + ' ' + H[{ "the attack's text": 'text', Weakness: 'weak', Resistance: 'res', 'other effects': 'fx' }[m[3]]];
+    return null; };
+  const parts = why.split(', ').map(part);
+  return parts.every(Boolean) ? out + ' (' + parts.join(', ') + ')' : null;
+}
+// The note under the result: Italian agrees the past participle with the cards taken ("ne ha presa 1").
+const I18N_FT_AFTER = {
+  es: (t, a, b) => `Tras ${t} turnos cada uno, tomaste ${a} ${a === 1 ? 'carta' : 'cartas'} de Premio y el rival tomó ${b}.`,
+  pt: (t, a, b) => `Depois de ${t} turnos cada um, você pegou ${a} ${a === 1 ? 'carta' : 'cartas'} de Prêmio e o oponente pegou ${b}.`,
+  fr: (t, a, b) => `Après ${t} tours chacun, vous avez pris ${a} ${a === 1 ? 'carte' : 'cartes'} Récompense et l'adversaire en a pris ${b}.`,
+  de: (t, a, b) => `Nach je ${t} Zügen hast du ${a} ${a === 1 ? 'Preiskarte' : 'Preiskarten'} genommen und der Gegner ${b}.`,
+  it: (t, a, b) => `Dopo ${t} turni a testa, hai preso ${a} ${a === 1 ? 'carta' : 'carte'} Premio e l'avversario ${b === 0 ? 'nessuna' : b === 1 ? 'ne ha presa 1' : 'ne ha prese ' + b}.`,
+};
 /** One Sparring text in language l, or null. A card name in it stays as it is. */
 function i18nFtSent(s, l) {
   const i = I18N_FT_LANGS.indexOf(l) + 1; if (!i) return null;
   if (Object.prototype.hasOwnProperty.call(I18N_FT_EXACT, s)) return I18N_FT_EXACT[s][i];
   for (const r of I18N_FT_RE) {
     const m = r[0].exec(s); if (!m) continue;
+    if (r[1] && r[1].fn) { const out = r[1].fn(m, l); return out && out.charAt(0).toUpperCase() + out.slice(1); }
     if (typeof r[1] === 'function') { const T = I18N_FT_TYPES[l][m[1]]; return T ? r[1]()[i - 1].replace('$T', T) : null; }
     const out = r[i].replace(/\{([^:}]+):\$(\d)\}/g, (x, p, n) => i18nFtOwn(m[+n] || '', l, p)).replace(/\$(\d)/g, (x, n) => m[+n] == null ? '' : i18nFtOwn(m[+n], l, ''));
     return out.charAt(0).toUpperCase() + out.slice(1);

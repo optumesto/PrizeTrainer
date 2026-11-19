@@ -74,6 +74,7 @@ export function playGame(listA, listB, ctl, seed, meter) {
     if (t.ko && !took && process.env.MISS) console.log('MISSED KO', ctlName[t.k], 'seat', t.k, 'turn', s.turns.join('/'), '\n  ' + s.log.slice(t.logAt).join('\n  '));
     if (t.win && G.winner(s) === t.k) M.winTaken++;
     if (t.attackable) M.attackAvail++;
+    if (t.attackable && !t.attacked && process.env.MISSA && /contested|aggressive/.test(ctlName[t.k])) console.log('NO ATTACK', ctlName[t.k], 'turn', s.turns.join('/'), '\n  ' + s.log.slice(t.logAt).join('\n  '));
     if (t.attackable && t.attacked) M.attacked++;
     if (t.gusted) { M.gusts++; if (s.koIds.length > t.kos) M.gustKO++; }
     // Setup: Stage 2 Pokemon in play at the end of its own turn 4 (decks that run Stage 2s).

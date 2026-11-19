@@ -305,10 +305,18 @@ function plan(s0, k, L, rnd, opts) {
     const sc = value(node.s, k) + (L.noise ? (rnd() - 0.5) * 2 * L.noise : 0);
     if (!best || sc > best.score) best = { line: node.line, sigs: node.sigs, score: sc };
   };
-  const endNow = node => { // close an open line by ending the turn
-    const end = G.next(node.s).actions.find(a => a.t === 'end');
-    if (!end || node.s.cur !== k) return;
-    try { const s2 = G.step(node.s, end); finish({ s: s2, line: node.line.concat([end]), sigs: node.sigs.concat([sig(s2, k)]) }); } catch (e) { /* skip */ }
+  // Close an open line (depth or time ran out) by attacking with each attack it can pay, or by ending the turn,
+  // so a line that sets up and then attacks is never scored as setting up and passing.
+  const endNow = node => {
+    if (node.s.cur !== k) return;
+    const X = G.next(node.s);
+    const close = X.actions.filter(a => a.t === 'attack').concat(X.actions.filter(a => a.t === 'end').slice(0, 1));
+    for (const a of close) {
+      try {
+        const s1 = G.step(node.s, a), s2 = a.t === 'attack' ? afterAttack(s1, k) : s1;
+        finish({ s: s2, line: node.line.concat([a]), sigs: node.sigs.concat([sig(s1, k)]) });
+      } catch (e) { /* skip */ }
+    }
   };
   for (let depth = 0; depth < L.depth && beam.length; depth++) {
     const width = depth === 0 ? 1e9 : L.width; // every first move gets looked at
@@ -358,16 +366,61 @@ Player.prototype.choose = function (s, k, opts) {
   if (s.cur !== k) { const t0 = Date.now(); const a = answerFor(s, k); this.stats.ms += Date.now() - t0; return a; }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const c = this.cache;
+  let a = null;
   if (c && c.line.length && c.at === sig(s, k)) {
     const real = X.actions.find(b => same(c.line[0], b));
-    if (real) { this.cache = { line: c.line.slice(1), at: c.sigs[0], sigs: c.sigs.slice(1) }; return real; }
+    if (real) { this.cache = { line: c.line.slice(1), at: c.sigs[0], sigs: c.sigs.slice(1) }; a = real; }
   }
-  const P = plan(s, k, this.L, this.rnd, opts);
-  this.stats.plans++; this.stats.ms += P.ms; this.stats.nodes += P.nodes;
-  const first = P.line[0] && X.actions.find(b => same(P.line[0], b));
-  // Keep the rest of the line while the board looks the way the plan expected after each step.
-  this.cache = first ? { line: P.line.slice(1), at: P.sigs[0], sigs: P.sigs.slice(1) } : null;
-  return first || this.greedy(s, k, X);
+  if (!a) {
+    const P = plan(s, k, this.L, this.rnd, opts);
+    this.stats.plans++; this.stats.ms += P.ms; this.stats.nodes += P.nodes;
+    const first = P.line[0] && X.actions.find(b => same(P.line[0], b));
+    // Keep the rest of the line while the board looks the way the plan expected after each step.
+    this.cache = first ? { line: P.line.slice(1), at: P.sigs[0], sigs: P.sigs.slice(1) } : null;
+    a = first || this.greedy(s, k, X);
+  }
+  // Contested and Aggressive never pass up an attack: before ending the turn they attack if they can,
+  // or attach the Energy that lets the Active attack.
+  if (a && a.t === 'end') { const f = this.mustAttack(s, k, X); if (f) { this.cache = null; return f; } }
+  // Nor do they retreat away from an attack into a Pokemon that can't attack this turn.
+  if (a && a.t === 'retreat' && X.actions.some(b => b.t === 'attack')
+      && !(this.cache && this.cache.line.some(b => b.t === 'attack')) && !this.canHitAfter(s, k, a)) {
+    const f = this.mustAttack(s, k, X); if (f) { this.cache = null; return f; }
+  }
+  return a;
+};
+
+/** Play out an attack's own choices (the first one offered) and the other player's answers, to score it. */
+function afterAttack(s, k) {
+  let n = 0;
+  while (G.winner(s) < 0 && s.cur === k && n++ < 20) {
+    const Y = G.next(s); if (!Y.actions.length) break;
+    s = G.step(s, Y.who === k ? Y.actions[0] : answerFor(s, Y.who));
+  }
+  return s;
+}
+/** The attack to use instead of ending the turn (the one that scores best), or an Energy for the Active that makes one possible. */
+Player.prototype.mustAttack = function (s, k, X) {
+  const v = view(s, k, this.rnd), atk = X.actions.filter(b => b.t === 'attack');
+  let best = null, bv = -Infinity;
+  for (const b of atk) { let x; try { x = value(afterAttack(G.step(v, b), k), k); } catch (e) { continue; } if (x > bv) { bv = x; best = b; } }
+  if (best || atk.length) return best || atk[0];
+  const A = s.players[k].active; if (!A) return null;
+  for (const b of X.actions.filter(b => b.t === 'energy' && b.mon === A.id)) {
+    try { if (G.next(G.step(v, b)).actions.some(y => y.t === 'attack')) return b; } catch (e) { /* skip */ }
+  }
+  return null;
+};
+
+/** After action a, can the Active still attack this turn, directly or with one Energy attached? */
+Player.prototype.canHitAfter = function (s, k, a) {
+  try {
+    const v = G.step(view(s, k, this.rnd), a), Y = G.next(v);
+    if (Y.who !== k) return true; // a choice is pending; leave it to the plan
+    if (Y.actions.some(b => b.t === 'attack')) return true;
+    const A = v.players[k].active; if (!A) return false;
+    return Y.actions.filter(b => b.t === 'energy' && b.mon === A.id).some(b => G.next(G.step(v, b)).actions.some(y => y.t === 'attack'));
+  } catch (e) { return true; }
 };
 
 /** One step ahead, on what k can see: for a choice the plan didn't foresee. */

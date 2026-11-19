@@ -25,13 +25,23 @@ let OWN_ACTIVE = null; // the deck open in RdyDeck when you left it
 
 /* ---------------- Names for what is on the screen ---------------- */
 function monById(s, id) { for (let k = 0; k < 2; k++) { const m = E.mons(s.players[k]).find(z => z.id === id); if (m) return { m, k }; } return null; }
-function monName(s, id) { const f = monById(s, id); if (!f) return 'a Pokémon'; return (f.k === 0 ? 'your ' : 'their ') + E.topOf(f.m).card.name; }
-function refName(s, uid) {
-  for (const P of s.players) for (const z of [P.hand, P.deck, P.discard, P.prizes]) { const r = z.find(y => y.uid === uid); if (r) return r.card.name; }
-  for (const P of s.players) for (const m of E.mons(P)) { const r = m.energy.concat(m.tool ? [m.tool] : [], m.stack).find(y => y.uid === uid); if (r) return r.card.name; }
-  const L = s.pending && s.pending.ctx && s.pending.ctx.looked; if (L) { const r = L.find(y => y.uid === uid); if (r) return r.card.name; }
-  return 'a card';
+// A Pokémon's name, with its spot when the same side has two of that name in play ("your Chikorita (Bench 2)"),
+// so two buttons that look alike say which one they act on.
+function monName(s, id) {
+  const f = monById(s, id); if (!f) return 'a Pokémon';
+  const P = s.players[f.k], n = E.topOf(f.m).card.name, twin = E.mons(P).filter(z => E.topOf(z).card.name === n).length > 1;
+  const spot = !twin ? '' : P.active === f.m ? ' (Active)' : ' (Bench ' + (P.bench.indexOf(f.m) + 1) + ')';
+  return (f.k === 0 ? 'your ' : 'their ') + n + spot;
 }
+function cardRef(s, uid) {
+  for (const P of s.players) for (const z of [P.hand, P.deck, P.discard, P.prizes]) { const r = z.find(y => y.uid === uid); if (r) return r; }
+  for (const P of s.players) for (const m of E.mons(P)) { const r = m.energy.concat(m.tool ? [m.tool] : [], m.stack).find(y => y.uid === uid); if (r) return r; }
+  // Cards a card effect holds while you choose (the top cards of a deck you look at).
+  const c = s.pending && s.pending.ctx;
+  if (c) for (const k in c) if (Array.isArray(c[k])) { const r = c[k].find(y => y && typeof y === 'object' && y.uid === uid && y.card); if (r) return r; }
+  return null;
+}
+function refName(s, uid) { const r = cardRef(s, uid); return r ? r.card.name : 'a card'; }
 function names(s, uids) { const g = new Map(); uids.forEach(u => { const n = refName(s, u); g.set(n, (g.get(n) || 0) + 1); }); return [...g].map(([n, c]) => (c > 1 ? c + ' ' : '') + n).join(', '); }
 function label(s, a) {
   const P = s.players[s.cur], card = uid => refName(s, uid), mon = id => monName(s, id).replace(/^your /, '');
@@ -53,8 +63,15 @@ function label(s, a) {
   return a.t;
 }
 // Choices inside the card effects of a full game (opponent/effects.js) say what kind of thing they pick.
-const HOOK_MON = /^(heal|wally|snipe|toolOff|switchOpt|energyToBench|perCounter|raid|benchSwap|topAttach|discardAttach)$/;
-const HOOK_CARD = /^(oppDiscardTo|gwynn|kinds|eri|pokeBack)$/;
+const HOOK_MON = /^(heal|wally|snipe|toolOff|switchOpt|swapOut|energyToBench|perCounter|raid|benchSwap|topAttach|discardAttach)$/;
+const HOOK_CARD = /^(oppDiscardTo|gwynn|kinds|eri|pokeBack|comfey|handPick)$/;
+// Any other card effect choice is a Pokémon or a card: whichever every one of its choices is.
+function hookKind(s, st) {
+  if (HOOK_MON.test(st.t)) return 'mon'; if (HOOK_CARD.test(st.t)) return 'card';
+  const ch = G.next(s).actions.map(a => a.v).filter(v => typeof v === 'number');
+  const isMon = ch.length && ch.every(v => monById(s, v)), isCard = ch.length && ch.every(v => cardRef(s, v));
+  return isCard && !isMon ? 'card' : isMon ? 'mon' : 'card';
+}
 // A "Choose 1" option is the card's own text, so it shows as printed (card text is never translated):
 // the bullet of the card whose words match the engine's lowercased option.
 const OPT_TEXT = '\u0001';
@@ -76,8 +93,7 @@ function pickLabel(s, v) {
       if (v.n != null) return `${v.n} damage counter${v.n === 1 ? '' : 's'} on ${mon(v.mon)}`;
       return `${refName(s, v.uid)} from ${mon(v.mon)}`;
     }
-    if (HOOK_CARD.test(st.t)) return refName(s, v);
-    if (HOOK_MON.test(st.t)) return mon(v);
+    if (typeof v === 'number') return hookKind(s, st) === 'card' ? refName(s, v) : mon(v);
     return String(v);
   }
   switch (A.kind) {
@@ -136,17 +152,17 @@ function handHTML(s) {
 function actionsHTML(s) {
   if (S.over) return resultHTML();
   if (S.busy) return `<div class="q">Opponent is playing…</div>`;
-  if (S.oppLog) {
-    return `<div class="oppturn"><div class="q">Opponent's turn</div><ol>${S.oppLog.map(t => `<li>${esc(t)}</li>`).join('') || '<li>It passed.</li>'}</ol>
-      <button class="btn primary" onclick="RdyPlay.go()">Your turn</button></div>`;
-  }
   const X = G.next(s);
+  // After a Knock Out in the opponent's turn you choose your new Active right away, under what the opponent did.
+  const promoting = X.who === 0 && s.promote && s.promote.length;
+  if (S.oppLog) {
+    return `<div class="oppturn"><div class="q">Opponent's turn</div><ol>${S.oppLog.map(t => `<li>${esc(t)}</li>`).join('') || '<li>It passed.</li>'}</ol>` +
+      (promoting ? '' : `<button class="btn primary" onclick="RdyPlay.go()">Take your turn</button>`) + '</div>' + (promoting ? promoteHTML(s, X) : '');
+  }
   if (X.who !== 0) return '';
   const acts = E.legalActions(s, { why: true });
   let h = '';
-  if (s.promote && s.promote.length) {
-    return `<div class="q">Choose your new Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}</button>`).join('')}</div>`;
-  }
+  if (promoting) return promoteHTML(s, X);
   if (s.pending && s.pending.ask && /^(cost|search|recover|look)$/.test(s.pending.ask.kind) && X.actions.length > 6) return multiHTML(s, X);
   if (s.pending && s.pending.ask) {
     return `<div class="q">${askText(s)}</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${(l => l[0] === OPT_TEXT ? cn(l.slice(1)) : esc(cap(l)))(pickLabel(s, a.v))}</button>`).join('')}</div>`;
@@ -164,6 +180,9 @@ function actionsHTML(s) {
   if (no.length) h += `<details class="no"><summary>Can't do right now (${no.length})</summary><ul>${no.map(x => `<li><b>${esc(x.l)}</b> <span>${esc(x.a.why)}</span></li>`).join('')}</ul></details>`;
   return h;
 }
+function promoteHTML(s, X) {
+  return `<div class="q">Choose your new Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}</button>`).join('')}</div>`;
+}
 // Picking several cards (search, discard for a cost): tap cards to add them, then confirm, instead of one button per mix.
 function pickKey(s, v) { return v.map(u => refName(s, u)).sort().join('|'); }
 function multiHTML(s, X) {
@@ -176,23 +195,23 @@ function multiHTML(s, X) {
     (hit >= 0 && chosen ? `<button class="btn primary" onclick="RdyPlay.do(${hit})">${s.pending.ask.kind === 'cost' ? 'Discard' : 'Take'} ${esc(names(s, X.actions[hit].v))}</button>` : chosen ? '<span class="note">That mix isn\'t allowed. Tap a card again to drop it.</span>' : '') +
     (none >= 0 ? ` <button class="btn ghost" onclick="RdyPlay.do(${none})">${s.pending.ask.kind === 'cost' ? 'Discard nothing' : 'Take nothing'}</button>` : '') + '</div>';
 }
+// The end: who won. At the turn limit, whoever took more Prize cards wins, and the same number is a draw.
 function resultHTML() {
-  const s = S.s, w = G.winner(s), P = s.players;
-  const took = [6 - P[0].prizes.length, 6 - P[1].prizes.length];
-  let head;
-  if (S.mode === '5turn' && w < 0) head = `Five turns done. You took ${took[0]} Prize card${took[0] === 1 ? '' : 's'}; your opponent took ${took[1]}.`;
-  else head = w === 0 ? 'You win.' : w === 1 ? 'Your opponent wins.' : 'Game over.';
-  return `<div class="result"><div class="q">${esc(head)}</div><div class="line"><span>Opponent level:</span> <span>${esc(S.levelName)}</span> · <span>Opponent's deck:</span> ${cn(S.deckB.name)}</div>
+  const s = S.s, R = G.result(s) || { winner: -1, took: [6 - s.players[0].prizes.length, 6 - s.players[1].prizes.length], by: 'game' }, t = R.took;
+  const head = R.by === 'prizes' ? (R.winner === 0 ? 'You win on Prize cards.' : R.winner === 1 ? 'Your opponent wins on Prize cards.' : "It's a draw.")
+    : R.winner === 0 ? 'You win.' : R.winner === 1 ? 'Your opponent wins.' : 'Game over.';
+  const sub = R.by === 'prizes' ? `After ${PRESS_TURNS} turns each, you took ${t[0]} Prize card${t[0] === 1 ? '' : 's'} and your opponent took ${t[1]}.` : '';
+  return `<div class="result"><div class="q">${esc(head)}</div>${sub ? `<p class="note">${esc(sub)}</p>` : ''}<div class="line"><span>Opponent level:</span> <span>${esc(S.levelName)}</span> · <span>Opponent's deck:</span> ${cn(S.deckB.name)}</div>
     <button class="btn primary" onclick="RdyPlay.again()">Play again</button> <button class="btn ghost" onclick="RdyPlay.menu()">Change decks</button></div>`;
 }
 // Setup: your opening hand, then your Active and Bench, before anything is shown of the opponent.
 function setupHTML(s) {
   const P = s.players[0], U = S.setup, B = G.setupChoices(s, 0);
   const nm = r => cn(r.card.name);
-  const notes = [s.firstPlayer === 0 ? 'You go first.' : 'Your opponent goes first.'];
+  const notes = [s.firstPlayer === 0 ? 'You won the coin flip, so you go first.' : 'Your opponent won the coin flip, so they go first.'];
   if (s.mulls[0]) notes.push(s.mulls[0] === 1 ? 'You took 1 mulligan.' : `You took ${s.mulls[0]} mulligans.`);
   if (s.mulls[1]) notes.push(s.mulls[1] === 1 ? 'Your opponent took 1 mulligan, so you draw 1 more card after setup.' : `Your opponent took ${s.mulls[1]} mulligans, so you draw ${s.mulls[1]} more cards after setup.`);
-  let h = `<div class="turn"><span>Set up</span> · <span>${esc(S.levelName)}</span></div>` + notes.map(x => `<p class="note">${x}</p>`).join('') + (S.deckA.own ? deckNote(S.deckA, false) : '') + handHTML(s);
+  let h = `<div class="turn"><span>Game setup</span> · <span>${esc(S.levelName)}</span></div>` + notes.map(x => `<p class="note">${x}</p>`).join('') + (S.deckA.own ? deckNote(S.deckA, false) : '') + handHTML(s);
   h += `<div class="acts"><div class="q">Choose your Active Pokémon</div><div class="btns">${B.map(r => `<button class="btn${U.active === r.uid ? ' primary' : ''}" onclick="RdyPlay.su(${r.uid})">${nm(r)}</button>`).join('')}</div>`;
   if (U.active != null) {
     const rest = B.filter(r => r.uid !== U.active);
@@ -205,55 +224,103 @@ function setupHTML(s) {
 function render() {
   if (S.setup) { $('app').innerHTML = setupHTML(S.s); return; }
   const s = S.s, compact = S.mode === '5turn';
-  const turn = `<div class="turn"><span>${S.mode === '5turn' ? `Your turn ${Math.min(s.turns[0], PRESS_TURNS)} of ${PRESS_TURNS}` : `Turn ${s.turns[0] + s.turns[1]}`}</span> · <span>${esc(S.levelName)}</span> · ${s.stadium ? '<span>Stadium:</span> ' + cn(s.stadium.ref.card.name) : '<span>No Stadium</span>'}</div>`;
+  // Whose turn it is, counted from 1 for each player ("Your turn 1 of 5" before your first turn too).
+  const n = k => Math.max(1, Math.min(s.turns[k], PRESS_TURNS));
+  const head = S.mode !== '5turn' ? `Turn ${s.turns[0] + s.turns[1]}` : s.cur === 1 && !S.over ? `Opponent's turn ${n(1)} of ${PRESS_TURNS}` : `Your turn ${n(0)} of ${PRESS_TURNS}`;
+  const turn = `<div class="turn"><span>${head}</span> · <span>${esc(S.levelName)}</span> · ${s.stadium ? '<span>Stadium:</span> ' + cn(s.stadium.ref.card.name) : '<span>No Stadium</span>'}</div>`;
   $('app').innerHTML = turn + sideHTML(s, 1, compact) + sideHTML(s, 0, false) + handHTML(s) + `<div class="acts">${actionsHTML(s)}</div>` +
-    `<details class="log"><summary>Game log</summary><ol>${s.log.slice(-80).map(t => `<li>${esc(t)}</li>`).join('')}</ol></details>`;
+    // The whole game, every line, from the first.
+    `<details class="log"${S.logOpen ? ' open' : ''} ontoggle="RdyPlay.logT(this.open)"><summary>Full game log</summary><ol>${s.log.map(t => `<li>${esc(t)}</li>`).join('')}</ol></details>`;
 }
 
 /* ---------------- Playing ---------------- */
 function checkOver() {
   const s = S.s;
-  if (G.winner(s) >= 0) { S.over = true; return true; }
-  if (S.mode === '5turn' && s.cur === 0 && s.turns[0] > PRESS_TURNS) { S.over = true; return true; }
+  if (G.winner(s) >= 0 || s.gameOver != null || s.timeUp) { S.over = true; return true; }
   return false;
 }
 function oppStep() {
   // The opponent acts one move at a time, with a short pause, so you can follow what it does.
   const s = S.s, X = G.next(s);
   if (checkOver()) { S.busy = false; render(); return; }
-  if (X.who !== 1) { S.busy = false; if (S.oppTurn) { S.oppLog = S.s.log.slice(S.oppTurn.from); S.oppTurn = null; } render(); return; }
+  if (X.who !== 1) { S.busy = false; if (S.oppTurn) { S.oppLog = S.s.log.slice(S.oppTurn.from); S.oppTurn = null; } save(); render(); return; }
   if (s.cur === 1 && !S.oppTurn) S.oppTurn = { from: s.log.length - 1 };
   S.busy = true; render();
+  const at = S;
   setTimeout(() => {
+    if (S !== at) return; // the game was left or started again meanwhile
     const a = S.ai.choose(S.s, 1);
-    S.s = G.step(S.s, a);
+    S.s = G.step(S.s, a); rec(a);
     oppStep();
   }, s.cur === 1 ? 350 : 50);
 }
+/* ---------------- Keeping a game through a reload ----------------
+ * A game is saved as its seed, both setups and every move in order (yours and the opponent's), and played
+ * again from those on the next visit. The same seed deals the same cards, so the board comes back as it was.
+ * Saved in this browser only (localStorage), with the decks by name or id, never the cards.
+ */
+const SAVE_KEY = 'rd_spar_game', MENU_KEY = 'rd_spar_menu', SAVE_V = 1;
+const store = { get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }, del(k) { try { localStorage.removeItem(k); } catch (_) {} } };
+function deckCards(d) { if (d.cards) return d.cards.slice(); const out = []; d.list.forEach(([k, n]) => { for (let i = 0; i < n; i++) out.push(D.cards[k]); }); return out; }
+// Your deck by id, with its card names, so a deck changed since the game started doesn't come back as a different game.
+function deckRef(d) { return d.own ? { o: String(d.id), sig: d.cards.map(c => c.name).join('|') } : { m: D.decks.indexOf(d) }; }
+function deckOf(r) {
+  if (!r) return null;
+  if (r.m != null) return D.decks[r.m] || null;
+  const d = (OWN || []).find(x => String(x.id) === r.o && !x.block);
+  return d && d.cards.map(c => c.name).join('|') === r.sig ? d : null;
+}
+function rec(a) { if (S && S.rec) S.rec.acts.push(a); save(); }
+function save() { if (!S || !S.rec) return; S.rec.oppLog = S.oppLog || null; S.rec.oppTurn = S.oppTurn || null; S.rec.sel = S.sel || null; store.set(SAVE_KEY, S.rec); }
+function drop() { store.del(SAVE_KEY); }
+/** The saved game, played again move by move. False when there is none, or it can't come back the same. */
+function resume() {
+  const R = store.get(SAVE_KEY);
+  if (!R || R.v !== SAVE_V) return false;
+  const a = deckOf(R.a), b = deckOf(R.b);
+  if (!a || !b || !AI.LEVELS[R.level]) { drop(); return false; }
+  try {
+    let s = G.newGame([deckCards(a), deckCards(b)], { seed: R.seed, maxTurns: R.mode === '5turn' ? PRESS_TURNS : 0 });
+    s = G.setUp(s, 1, R.opp.active, R.opp.bench);
+    const opts = { mode: R.mode, level: R.level, deckA: a, deckB: b };
+    S = { s, mode: R.mode, level: R.level, levelName: AI.LEVELS[R.level].name, ai: new AI.Player(R.level, (R.seed + 1 + R.acts.length) >>> 0), deckA: a, deckB: b, busy: false, oppLog: null, over: false, opts, rec: R };
+    if (!R.me) { S.setup = { active: null, bench: [] }; render(); return true; }
+    s = G.setUp(s, 0, R.me.active, R.me.bench);
+    for (const x of R.acts) s = G.step(s, x);
+    S.s = s; S.oppLog = R.oppLog || null; S.oppTurn = R.oppTurn || null; S.sel = R.sel || null;
+  } catch (e) { S = null; drop(); return false; }
+  if (checkOver()) { render(); return true; }
+  oppStep();
+  return true;
+}
+
 const api = {
   do(i) {
     if (!S || S.busy || S.over) return;
     const X = G.next(S.s); const a = X.actions[i]; if (!a || X.who !== 0) return;
-    S.s = G.step(S.s, a); S.sel = null;
-    if (checkOver()) { render(); return; }
+    S.s = G.step(S.s, a); S.sel = null; rec(a);
+    if (checkOver()) { save(); render(); return; }
     oppStep();
   },
   tog(n) {
     const sel = S.sel || (S.sel = {}), X = G.next(S.s), keys = X.actions.map(a => pickKey(S.s, a.v));
     const most = Math.max(...keys.map(k => k.split('|').filter(x => x === n).length));
     sel[n] = (sel[n] || 0) + 1; if (sel[n] > most) delete sel[n];
-    render();
+    save(); render();
   },
-  go() { S.oppLog = null; render(); if (checkOver()) render(); },
-  start(opts) {
-    const deck = d => { if (d.cards) return d.cards.slice(); const out = []; d.list.forEach(([k, n]) => { for (let i = 0; i < n; i++) out.push(D.cards[k]); }); return out; };
-    const seed = Math.floor(Math.random() * 2 ** 31);
-    let s = G.newGame([deck(opts.deckA), deck(opts.deckB)], { seed });
+  go() { S.oppLog = null; save(); render(); if (checkOver()) render(); },
+  logT(open) { if (S) S.logOpen = !!open; },
+  start(opts, seedIn) {
+    const seed = seedIn != null ? seedIn : Math.floor(Math.random() * 2 ** 31);
+    let s = G.newGame([deckCards(opts.deckA), deckCards(opts.deckB)], { seed, maxTurns: opts.mode === '5turn' ? PRESS_TURNS : 0 });
     S = { s, mode: opts.mode, level: opts.level, levelName: AI.LEVELS[opts.level].name, ai: new AI.Player(opts.level, seed + 1), deckA: opts.deckA, deckB: opts.deckB, busy: false, oppLog: null, over: false, opts };
     // The opponent sets up first, out of sight; then you pick your own Active and Bench from your opening hand.
     const them = AI.setupPick(s, 1, opts.level, G.rngFrom(seed + 3));
     S.s = G.setUp(s, 1, them.active, them.bench);
     S.setup = { active: null, bench: [] };
+    S.rec = { v: SAVE_V, seed, mode: opts.mode, level: opts.level, a: deckRef(opts.deckA), b: deckRef(opts.deckB), opp: them, me: null, acts: [] };
+    save();
     render();
   },
   // Setup: tap a Basic to make it your Active, then tap Basics to put them on your Bench.
@@ -261,12 +328,14 @@ const api = {
   sb(uid) { if (!S || !S.setup || S.setup.active == null) return; const U = S.setup; if (U.bench.includes(uid)) U.bench = U.bench.filter(u => u !== uid); else if (U.bench.length < 5) U.bench.push(uid); render(); },
   sgo() {
     if (!S || !S.setup || S.setup.active == null) return;
+    S.rec.me = { active: S.setup.active, bench: S.setup.bench.slice() };
     S.s = G.setUp(S.s, 0, S.setup.active, S.setup.bench); S.setup = null;
+    save();
     oppStep();
   },
   again() { api.start(S.opts); },
   lang(l) { rdI18n.set(l, true); Promise.resolve(rdI18n.ready).then(() => { if (!S) menu(); }); },
-  menu() { S = null; menu(); },
+  menu() { S = null; drop(); menu(); },
 };
 window.RdyPlay = api;
 
@@ -300,30 +369,40 @@ function menu() {
     : 'You have no saved decks here yet. Save a deck in RdyDeck to spar with it.') : `You play ${PRESS_TURNS} turns against the opponent. Card names and text come from the decks' tournament lists.`;
   $('app').innerHTML = `<div class="menu">
     ${/[?&]full\b/.test(location.search) ? '<label>Way to play<select id="m-mode"><option value="5turn">Sparring</option><option value="full">Full game</option></select></label>' : ''}
-    <label>Opponent level<select id="m-level"><option value="easy">Easy: only places cards</option><option value="contested" selected>Contested: attacks and messes with you</option><option value="aggressive">Aggressive: plays the best line it finds</option></select></label>
+    <label>Opponent level<select id="m-level"><option value="easy">Easy: only places cards</option><option value="contested">Contested: attacks and messes with you</option><option value="aggressive">Aggressive: plays the best line it finds</option></select></label>
     <label>Your deck<select id="m-a" data-no-tr>${opt}</select></label>
     <label>Opponent's deck<select id="m-b" data-no-tr>${opt}</select></label>
     <div id="m-note"></div>
-    <button class="btn primary" id="m-go">Start</button>
+    <button class="btn primary" id="m-go">Start a game</button>
     <p class="note">${foot}</p>${langs}</div>`;
   // Your deck: the one open in RdyDeck when there is one, then your first saved deck; the opponent a tournament deck.
   const at = mine.findIndex(d => OWN_ACTIVE != null && String(d.id) === String(OWN_ACTIVE));
   $('m-a').value = mine.length ? 'o' + Math.max(0, at) : 'm0';
   $('m-b').value = 'm1';
+  $('m-level').value = 'contested';
+  // The choices from your last game come back: both decks and the level.
+  const last = store.get(MENU_KEY), back = r => { if (!r) return null; if (r.m != null) return D.decks[r.m] ? 'm' + r.m : null; const i = mine.findIndex(d => String(d.id) === r.o); return i >= 0 ? 'o' + i : null; };
+  if (last) { const a = back(last.a), b = back(last.b); if (a) $('m-a').value = a; if (b) $('m-b').value = b; if (AI.LEVELS[last.level]) $('m-level').value = last.level; }
   $('m-a').onchange = $('m-b').onchange = menuNotes;
   menuNotes();
-  $('m-go').onclick = () => { const a = pickDeck($('m-a').value), b = pickDeck($('m-b').value); if (a.block || b.block) return; api.start({ mode: $('m-mode') ? $('m-mode').value : '5turn', level: $('m-level').value, deckA: a, deckB: b }); };
+  $('m-go').onclick = () => { const a = pickDeck($('m-a').value), b = pickDeck($('m-b').value); if (a.block || b.block) return;
+    store.set(MENU_KEY, { a: deckRef(a), b: deckRef(b), level: $('m-level').value });
+    api.start({ mode: $('m-mode') ? $('m-mode').value : '5turn', level: $('m-level').value, deckA: a, deckB: b }); };
 }
 // Your saved decks are read once, then the menu is drawn again with them (and again once the language file is in).
+// A game in progress comes back after a reload: right away for tournament decks, once your saved decks are read for yours.
 function boot() {
-  menu();
-  if (window.rdI18n && rdI18n.ready) Promise.resolve(rdI18n.ready).then(() => { if (!S) menu(); });
-  if (!ownOn() || !window.RdyOwn) return;
+  const R = store.get(SAVE_KEY), needOwn = !!(R && ((R.a && R.a.o != null) || (R.b && R.b.o != null)));
+  if (!needOwn) resume();
+  if (!S) menu();
+  if (window.rdI18n && rdI18n.ready) Promise.resolve(rdI18n.ready).then(() => { if (!S) menu(); else render(); });
+  if (!ownOn() || !window.RdyOwn) { if (needOwn) drop(); return; }
   RdyOwn.readSaved().then(p => {
     const list = p ? p.decks.filter(d => d && Array.isArray(d.cards) && d.cards.length) : [];
     OWN_ACTIVE = p ? p.activeDeckId : null;
     OWN = list.map(d => { try { return RdyOwn.build(d, D.cards); } catch (e) { return { name: String(d.name || ''), own: true, block: 'data', missing: ['?'], plain: [], colorless: [] }; } });
     if (window.rdI18n && rdI18n.addCardNames) rdI18n.addCardNames([...new Set(OWN.flatMap(d => (d.cards || []).map(c => c.name)))]);
+    if (needOwn && !S) resume();
     if (!S) menu();
   });
 }
