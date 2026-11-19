@@ -1200,6 +1200,7 @@ I18N_MORE.fr = {
     "Added: Setup in How it plays": "Nouveau : Mise en place dans Comment il joue",
     "Upgrades bug fixed": "Bug des Améliorations corrigé",
     "Card data bug fixed": "Bug des données de cartes corrigé",
+    "Send feedback fixed": "Envoi d'avis corrigé",
     "Each card's price and your list's total, from TCGdex, with a cheapest first option.": "Le prix de chaque carte et le total de votre liste, via TCGdex, avec un tri du moins cher au plus cher.",
     "Added: how accurate the grades are": "Nouveau : la précision des notes",
     "Each week, how closely grades rank decks against their real online win rates, per set.": "Chaque semaine, à quel point les notes classent les decks comme leurs vrais taux de victoire en ligne, par extension.",

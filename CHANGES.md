@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.3 (build 132): Send feedback sends the message itself (19 Nov 2026)
+
+Changed files: js/feedback-send.js (new), worker/rdydeck-worker.js (POST /api/feedback), worker/README.md, js/i18n.js, js/i18n-de.js, js/i18n-fr.js, js/i18n-it.js, privacy.html, terms.html, tests/feedback-check.mjs (new), js/core.js (version, What's new, PT_BUILD back in step with sw.js), index.html (script, version, stamps), sw.js (cache name prize-trainer-v132).
+
+- Send feedback only opened a mail link. With no email app set up nothing opened, and the sheet closed with the message lost.
+- Now it posts to /api/feedback on rdydeck.com. The Worker emails it to us through Cloudflare Email Routing (send_email binding FEEDBACK, var FEEDBACK_TO), from feedback@rdydeck.com. Only rdydeck.com may post; 10 a minute per IP, 200 a day in all; a hidden honeypot field.
+- The player sees Sending, then Thanks, it's sent, or a plain reason it did not send, with the message kept, Try again, Send by email and Copy message. Off rdydeck.com it goes straight to email or copy.
+- No new personal data: no name, no email address. Privacy policy and terms describe the form.
+- What's new: Send feedback fixed.
+
 # RdyDeck 3.4.2 (build 131): card lookups stop asking pokemontcg.io while it is down (19 Nov 2026)
 
 Changed files: js/tcg-enrich.js, js/v31-tcgdex.js, js/core.js (version, What's new), index.html (version, stamps), sw.js (cache name prize-trainer-v131, API hosts skipped).
