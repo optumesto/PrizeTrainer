@@ -141,9 +141,25 @@ S.toolOff = {
   run(s, st, c) { if ((c.tools || 0) >= st.n) return; const out = []; s.players.forEach(Q => mons(Q).forEach(m => { if (m.tool) out.push(m.id); })); return out.length ? out.concat([null]) : null; },
   answer(s, st, c, v) { if (v == null) return; const f = I.findMon(s, v); s.players[f.owner].discard.push(f.m.tool); I.log(s, 'Discarded ' + f.m.tool.card.name); f.m.tool = null; c.tools = (c.tools || 0) + 1; return S.toolOff.run(s, st, c); },
 };
+// Healing. Steps come from the app's own reader (puzzle/text.js: who is self, target, active, one,
+// bench, each or mega, with all and per) or from the patterns above (who any, active with minE).
+function healAmt(st, P, m) {
+  let n = st.all ? m.dmg : st.n;
+  if (st.per) n += st.per.n * P.discard.filter(y => y.card.name.toLowerCase() === st.per.name.toLowerCase()).length;
+  return Math.min(m.dmg, n);
+}
+function healOne(s, st, c, P, m) { const h = healAmt(st, P, m); if (h <= 0) return; m.dmg -= h; c.healed = m.id; I.log(s, 'Healed ' + h + ' from ' + nm(m)); }
 S.heal = {
-  run(s, st, c, P) { const pool = (st.who === 'active' ? [P.active] : mons(P)).filter(m => m && m.dmg > 0 && m.energy.length >= (st.minE || 0)); return pool.map(m => m.id); },
-  answer(s, st, c, v) { const m = I.findMon(s, v).m; const h = Math.min(m.dmg, st.n); m.dmg -= h; m.cond = null; m.poison = 0; m.burn = 0; I.log(s, 'Healed ' + h + ' from ' + nm(m)); },
+  run(s, st, c, P) {
+    if (st.who === 'each') { mons(P).forEach(m => healOne(s, st, c, P, m)); return; }
+    if (st.who === 'self' || st.who === 'target' || st.who === 'active') {
+      const m = st.who === 'self' ? self(s, c) : st.who === 'active' ? P.active : (c.target != null && (I.findMon(s, c.target) || {}).m);
+      if (m && m.energy.length >= (st.minE || 0)) healOne(s, st, c, P, m); return;
+    }
+    const pool = st.who === 'bench' ? P.bench : st.who === 'mega' ? mons(P).filter(m => T.gfIsMega(topOf(m)) && T.gfIsEx(topOf(m))) : mons(P);
+    return pool.filter(m => m && m.dmg > 0 && m.energy.length >= (st.minE || 0)).map(m => m.id);
+  },
+  answer(s, st, c, v, P) { healOne(s, st, c, P, I.findMon(s, v).m); },
 };
 S.healTarget = { run(s, st, c) { const f = c.target != null && I.findMon(s, c.target); if (f) f.m.dmg = Math.max(0, f.m.dmg - st.n); } };
 S.wally = {
@@ -172,7 +188,9 @@ S.energyToBench = { run(s, st, c, P) { const m = self(s, c); if (!m || !m.energy
   answer(s, st, c, v) { const m = self(s, c), b = I.findMon(s, v).m; b.energy.push(m.energy.shift()); } };
 S.reviveBench = { run(s, st, c, P) { const left = st.n - (c.revived || 0); if (left <= 0 || P.bench.length >= I.benchMax(s, P)) return; return P.discard.some(y => y.card.name.toLowerCase() === st.name.toLowerCase()) ? [true, false] : null; },
   answer(s, st, c, v, P) { if (!v) return; const i = P.discard.findIndex(y => y.card.name.toLowerCase() === st.name.toLowerCase()); const m = I.newMon(s, P.discard.splice(i, 1)[0], s.cur); P.bench.push(m); c.revived = (c.revived || 0) + 1; return S.reviveBench.run(s, st, c, P); } };
-S.energyToHand = { run(s, st, c, P) { const m = self(s, c); if (m && m.energy.length) P.hand.push(m.energy.shift()); } };
+S.energyToHand = { run(s, st, c, P) {
+  if (st.ifHealed) { const f = c.healed != null && I.findMon(s, c.healed); if (f && f.m.energy.length) { P.hand.push.apply(P.hand, f.m.energy.splice(0)); I.log(s, 'Put the Energy from ' + nm(f.m) + ' into the hand'); } return; }
+  const m = self(s, c); if (m && m.energy.length) P.hand.push(m.energy.shift()); } };
 S.discardDraw = { run(s, st, c, P) { P.hand.splice(0).forEach(y => P.discard.push(y)); drawFor(s, P, st.n); } };
 S.pushOut = { run(s, st, c, P, O) { if (!O.active || !O.bench.length) return; const old = O.active; O.active = null; O.bench.push(old); s.noPromote = old.id; s.promote = (s.promote || []).concat(1 - s.cur); } };
 S.itemLock = { run(s, st, c, P, O) { O.lim.itemLock = s.turns[1 - s.cur] + 1; } };
@@ -301,7 +319,14 @@ S.topAttach = { run(s, st, c, P) { if (!c.top) { c.top = P.deck.splice(0, st.n);
     if (i < 0 || !mons(P).length) { P.deck = P.deck.concat(c.top); c.top = null; return; } return mons(P).map(m => m.id).concat([null]); },
   answer(s, st, c, v, P) { const i = c.top.findIndex(y => T.gfEType(y) === st.type), x = c.top.splice(i, 1)[0]; if (v == null) { P.deck = P.deck.concat(c.top, [x]); c.top = null; return; }
     I.findMon(s, v).m.energy.push(x); return S.topAttach.run(s, st, c, P); } };
-S.selfDmg = { run(s, st, c) { const m = self(s, c); if (m) m.dmg += st.n; } };
+S.selfDmg = { run(s, st, c) { const m = st.who === 'target' ? (c.target != null && (I.findMon(s, c.target) || {}).m) : self(s, c); if (m) m.dmg += st.d != null ? st.d : st.n; } };
+// Move up to n damage counters from 1 of your Pokemon to 1 of your opponent's (Munkidori's Adrena-Brain).
+S.moveOff = {
+  run(s, st, c, P, O) { if (c.moved) return; const out = []; mons(P).filter(m => m.dmg > 0).forEach(f => { const most = Math.min(st.n, f.dmg / 10);
+    mons(O).forEach(t => { const toKo = Math.ceil((E.maxHp(s, t) - t.dmg) / 10); new Set([1, most, Math.min(most, toKo)]).forEach(n => { if (n >= 1 && n <= most) out.push({ from: f.id, to: t.id, n }); }); }); });
+    return out.length ? out.concat([null]) : null; },
+  answer(s, st, c, v) { c.moved = true; if (v == null) return; const f = I.findMon(s, v.from).m, t = I.findMon(s, v.to).m; f.dmg -= 10 * v.n; t.dmg += 10 * v.n; I.log(s, 'Moved ' + v.n + ' damage counters from ' + nm(f) + ' to ' + nm(t)); },
+};
 S.perCounter = { run(s, st, c, P, O) { return mons(O).filter(m => m.dmg > 0).map(m => m.id); },
   answer(s, st, c, v) { const att = self(s, c), t = I.findMon(s, v).m; if (att) hit(s, att, t, st.n * t.dmg / 10, true); } };
 S.drawTo = { run(s, st, c, P) { drawFor(s, P, Math.max(0, st.n - P.hand.length)); } };

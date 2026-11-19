@@ -497,7 +497,7 @@ function go(s) {
     if (s.gameOver != null) { s.pending = null; return s; } // the game is over: nothing more happens
     if (s.promote && s.promote.length) return s; // wait for a new Active
     const st = R.steps[R.i], c = R.ctx;
-    if ((st.ifHeads && !c.heads) || (st.ifAttached && !c.attached) || (st.ifDrew && !c.drew) || (st.ifSwitched && !c.switched)) { R.i++; continue; }
+    if ((st.ifHeads && !c.heads) || (st.ifAttached && !c.attached) || (st.ifDrew && !c.drew) || (st.ifSwitched && !c.switched) || (REAL && st.ifHealed && c.healed == null)) { R.i++; continue; }
     if (R.ask && R.ask.step === R.i) return s;
     switch (st.t) {
       case 'draw': { let n = st.alt && st.alt.prizes != null && P.prizes.length === st.alt.prizes ? st.alt.n : st.n; c.drew += drawN(s, P, n); break; }
