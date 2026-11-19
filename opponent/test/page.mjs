@@ -48,7 +48,7 @@ if (OWNDECKS) {
 }
 const run = () => { let n = 0; while (timers.length && n++ < 100000) timers.shift()(); };
 let rnd = 7; const r = () => (rnd = (rnd * 16807) % 2147483647) / 2147483647;
-let multi = 0, setups = 0, sheets = 0, piles = 0, searches = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
+let multi = 0, setups = 0, sheets = 0, piles = 0, searches = 0, twins = 0; const N = +nArg, out = { win: 0, lose: 0, pressure: 0 }, labels = new Set(); let bad = 0;
 for (let g = 0; g < N; g++) {
   const mode = modeArg || (g % 2 ? 'full' : '5turn'), level = levelArg || ['easy', 'contested', 'aggressive'][g % 3];
   const D = ctx.RdyOppDecks.decks;
@@ -103,6 +103,8 @@ for (let g = 0; g < N; g++) {
       if (!take) { console.log('NO TAKE', g, h2.slice(0, 300)); bad++; break; }
       ctx.RdyPlay.do(+take[1]); run(); continue;
     }
+    // 3.4.10: a button naming one of two same-name Pokémon by its spot also shows that Pokémon's Energy (and Tool).
+    for (const m of h.matchAll(/RdyPlay\.do\(\d+\)">([^<]*\((?:Active|Bench \d+)\)[^<]*)(.*?)<\/button>/g)) { twins++; if (!/class="tw"/.test(m[2])) { bad++; console.log('TWIN NO TAG', g, m[1]); } }
     const btn = [...h.matchAll(/RdyPlay\.do\((\d+)\)">([^<]*)</g)].map(m => ({ i: +m[1], l: m[2] }));
     if (!btn.length) { console.log('NO BUTTONS', g, h.slice(0, 400)); bad++; break; }
     btn.forEach(b => labels.add(b.l.replace(/\d+/g, '#')));
@@ -114,5 +116,5 @@ for (let g = 0; g < N; g++) {
   }
 }
 bad += ownBad;
-console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}, card sheets ${sheets}, discard piles ${piles}, deck searches ${searches}`);
+console.log(`games ${N}: you won ${out.win}, opponent won ${out.lose}, five-turn results ${out.pressure}, problems ${bad}, multi-pick screens ${multi}, setups by hand ${setups}, card sheets ${sheets}, discard piles ${piles}, deck searches ${searches}, matching-Pokémon buttons ${twins}`);
 if (process.env.LABELS) console.log([...labels].sort().join('\n'));

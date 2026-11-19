@@ -32,6 +32,25 @@ function monName(s, id) {
   const spot = !twin ? '' : P.active === f.m ? ' (Active)' : ' (Bench ' + (P.bench.indexOf(f.m) + 1) + ')';
   return (f.k === 0 ? 'your ' : 'their ') + n + spot;
 }
+// 3.4.10: when the same side has two Pokémon of one name, a button that acts on one of them also shows that
+// Pokémon's Energy and Tool under its label, so "Bench 2" and "Active" can be told apart at a glance.
+function isTwin(s, id) { const f = monById(s, id); if (!f) return null; const n = E.topOf(f.m).card.name; return E.mons(s.players[f.k]).filter(z => E.topOf(z).card.name === n).length > 1 ? f.m : null; }
+function twinIds(v) {
+  if (v == null || typeof v === 'boolean') return [];
+  if (typeof v === 'number') return [v];
+  if (Array.isArray(v)) return [];
+  return [v.from, v.mon, v.to].filter(x => typeof x === 'number');
+}
+// A pick's number is a Pokémon only for the asks that choose a Pokémon; otherwise it is a card.
+function pickTw(s, v) {
+  const A = s.pending.ask, st = s.pending.steps[A.step];
+  if (typeof v === 'number') { const mon = A.kind === 'hook' ? hookKind(s, st) === 'mon' : /^(benchMon|oppBench|oppMon|benchHit|pickUp|splitAttach)$/.test(A.kind); if (!mon) return ''; }
+  return twinTag(s, twinIds(v));
+}
+function twinTag(s, ids) {
+  const out = [...new Set(ids)].map(id => isTwin(s, id)).filter(Boolean).map(m => `<span class="en">${energyMarks(m)}</span>${m.tool ? ` <span class="tl"><span>Tool:</span> ${cn(m.tool.card.name)}</span>` : ''}`);
+  return out.length ? `<span class="tw">${out.join(' <span class="ar" data-no-tr>→</span> ')}</span>` : '';
+}
 function cardRef(s, uid) {
   for (const P of s.players) for (const z of [P.hand, P.deck, P.discard, P.prizes]) { const r = z.find(y => y.uid === uid); if (r) return r; }
   for (const P of s.players) for (const m of E.mons(P)) { const r = m.energy.concat(m.tool ? [m.tool] : [], m.stack).find(y => y.uid === uid); if (r) return r; }
@@ -304,7 +323,7 @@ function actionsHTML(s) {
   if (s.pending && s.pending.ask && s.pending.ask.kind === 'search' && s.cur === 0) return multiHTML(s, X, true);
   if (s.pending && s.pending.ask && /^(cost|search|recover|look)$/.test(s.pending.ask.kind) && X.actions.length > 6) return multiHTML(s, X);
   if (s.pending && s.pending.ask) {
-    return `<div class="q">${askText(s)}</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${(l => l[0] === OPT_TEXT ? cn(l.slice(1)) : esc(cap(l)))(pickLabel(s, a.v))}</button>`).join('')}</div>`;
+    return `<div class="q">${askText(s)}</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${(l => l[0] === OPT_TEXT ? cn(l.slice(1)) : esc(cap(l)))(pickLabel(s, a.v))}${pickTw(s, a.v)}</button>`).join('')}</div>`;
   }
   const ok = [], no = [], seen = new Set();
   acts.forEach(a => { const l = label(s, a), key = l + (a.why || ''); if (seen.has(key)) return; seen.add(key); (a.why ? no : ok).push({ a, l, i: X.actions.findIndex(b => JSON.stringify(b) === JSON.stringify({ ...a, why: undefined })) }); });
@@ -315,14 +334,15 @@ function actionsHTML(s) {
     const list = ok.filter(x => kind(x.a) === g && x.i >= 0); if (!list.length) return;
     if (title) h += `<div class="gt">${title}</div>`;
     // A card Sparring can't do yet says so on its button (playing it does nothing).
+    const a2tw = a => a.t === 'attack' || a.t === 'end' ? '' : twinTag(s, typeof a.mon === 'number' ? [a.mon] : []);
     const nope = a => { const r = /^(trainer|stadium|tool)$/.test(a.t) && s.players[0].hand.find(y => y.uid === a.uid); return r && cantDo(s, r) ? '<span class="nt">Does nothing in Sparring yet</span>' : ''; };
-    h += `<div class="btns">${list.map(x => `<button class="btn${g === 'attack' ? ' primary' : g === 'end' ? ' ghost' : ''}" onclick="RdyPlay.do(${x.i})">${esc(x.l)}${nope(x.a)}</button>`).join('')}</div>`;
+    h += `<div class="btns">${list.map(x => `<button class="btn${g === 'attack' ? ' primary' : g === 'end' ? ' ghost' : ''}" onclick="RdyPlay.do(${x.i})">${esc(x.l)}${a2tw(x.a)}${nope(x.a)}</button>`).join('')}</div>`;
   });
   if (no.length) h += `<details class="no"><summary>Can't do right now (${no.length})</summary><ul>${no.map(x => `<li><b>${esc(x.l)}</b> <span>${esc(x.a.why)}</span></li>`).join('')}</ul></details>`;
   return h;
 }
 function promoteHTML(s, X) {
-  return `<div class="q">Choose your new Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}</button>`).join('')}</div>`;
+  return `<div class="q">Choose your new Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}${twinTag(s, typeof a.mon === 'number' ? [a.mon] : [])}</button>`).join('')}</div>`;
 }
 // Picking several cards (search, discard for a cost): tap cards to add them, then confirm, instead of one button per mix.
 function pickKey(s, v) { return v.map(u => refName(s, u)).sort().join('|'); }

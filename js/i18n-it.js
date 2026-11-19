@@ -1424,6 +1424,7 @@ I18N_MORE.it = {
     "Brilliant Blender fixed": "Brilliant Blender corretto",
     "Sparring: discard piles and deck search": "Sparring: pile degli scarti e ricerca nel mazzo",
     "Sparring Tool and Energy fixes": "Sparring: correzioni di Oggetti ed Energie",
+    "Sparring shows Energy on matching Pokémon": "Sparring mostra l'Energia dei Pokémon uguali",
     "Added: watch out for box": "Nuovo: riquadro Attenzione a",
     "Share your puzzle score": "Condividi il tuo risultato del puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Il link apre il puzzle di oggi, così i tuoi amici giocano lo stesso tavolo.",

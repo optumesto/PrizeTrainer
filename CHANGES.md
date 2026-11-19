@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.10 (build 139): Sparring shows Energy on matching Pokémon (19 Nov 2026)
+
+Changed files: opponent/play.js (Energy and Tool on buttons for matching Pokémon), opponent/play.html (style), opponent/test/page.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v139).
+
+- When one side has two Pokémon of the same name, every choice that acts on one of them (attach, retreat, evolve, switch, move Energy and the rest) shows that Pokémon's attached Energy and Tool under its spot.
+
 # RdyDeck 3.4.9 (build 138): Sparring discard piles, deck search and fixes (19 Nov 2026)
 
 Changed files: opponent/play.js (discard piles, whole-deck search, Prize card outlines, hand count, steady card pictures, calmer opponent pace), opponent/play.html (styles, reduced motion), opponent/effects.js (Lucky Helmet and Handheld Fan, Special Energy), puzzle/engine.js (Special Energy text check, Lucky Helmet), opponent/own.js (readable Special Energy keeps its type), opponent/test/rules.mjs, page.mjs and i18n.mjs, js/core.js (version, What's new), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v138).
