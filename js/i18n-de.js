@@ -2536,3 +2536,41 @@ I18N_MORE.de.pat.unshift(
   [/^(\d+) of your Pokemon have 70 HP or less\.$/, (m, n) => n + ' deiner Pokémon haben 70 KP oder weniger.'],
   [/^Win rates are for all (.+) lists, as in Against the meta\.$/, (m, n) => 'Die Siegquoten gelten für alle Listen von ' + n + ', wie unter Gegen das Meta.'],
 );
+
+// 3.4.18: Guess the Grade (js/gtg.js).
+Object.assign(I18N_MORE.de.dict, {
+  "Guess the Grade": "Errate die Note",
+  "Guess the Grade added": "Neu: Errate die Note",
+  "Reading today's list…": "Heutige Liste wird gelesen…",
+  "Guess the Grade needs a connection to read today's list. Try again in a moment.": "Errate die Note braucht eine Verbindung, um die heutige Liste zu lesen. Versuch es gleich noch einmal.",
+  "A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.": "Eine echte Turnierliste, heute für alle gleich. Sieh sie dir an und errate dann die Note von 0 bis 10, die RdyDeck ihr gibt. Du hast 4 Tipps. Jeder sagt dir, ob die Note höher oder niedriger ist, und ob du Heiß (höchstens 0.2 daneben), Warm (höchstens 0.5 daneben) oder Kalt bist.",
+  "Today's list": "Heutige Liste",
+  "Right": "Richtig",
+  "Hot": "Heiß",
+  "Warm": "Warm",
+  "Cold": "Kalt",
+  "Not this time": "Diesmal nicht",
+  "A new list tomorrow.": "Morgen gibt es eine neue Liste.",
+  "Lower guess": "Verringern",
+  "Higher guess": "Erhöhen",
+  "Your guess": "Dein Tipp",
+  "Guess the grade of a real tournament list": "Errate die Note einer echten Turnierliste",
+  "See result": "Ergebnis ansehen",
+  "Your result": "Dein Ergebnis",
+  "Finish today's Guess the Grade first.": "Spiel zuerst das heutige Errate die Note zu Ende.",
+  "Everyone gets the same real tournament list today. Study it, then guess the grade RdyDeck gives it. You get 4 guesses.": "Heute bekommen alle dieselbe echte Turnierliste. Sieh sie dir an und errate dann die Note, die RdyDeck ihr gibt. Du hast 4 Tipps.",
+});
+I18N_MORE.de.pat.unshift(
+  [/^Guess the Grade #(\d+)$/, "Errate die Note #$1"],
+  [/^RdyDeck Guess the Grade #(\d+): got it in (\d+) of (\d+)$/, "RdyDeck Errate die Note #$1: gelöst mit Tipp $2 von $3"],
+  [/^RdyDeck Guess the Grade #(\d+): not solved in (\d+)$/, "RdyDeck Errate die Note #$1: in $2 Tipps nicht gelöst"],
+  [/^(Higher|Lower)\. (Hot: within 0\.2|Warm: within 0\.5|Cold: more than 0\.5 off)\.$/, (m, w, h) => (w === 'Higher' ? 'Höher' : 'Niedriger') + '. ' + { H: 'Heiß: höchstens 0.2 daneben.', W: 'Warm: höchstens 0.5 daneben.', C: 'Kalt: mehr als 0.5 daneben.' }[h[0]]],
+  [/^Got it in (\d+) of (\d+)$/, "Gelöst mit Tipp $1 von $2"],
+  [/^The grade is ([\d.]+)\.$/, "Die Note ist $1."],
+  [/^Guess (\d+) of (\d+)$/, "Tipp $1 von $2"],
+  [/^Guess (\d+\.\d)$/, "$1 tippen"],
+  [/^Between (\d+\.\d) and (\d+\.\d)$/, "Zwischen $1 und $2"],
+  [/^Today: got it in (\d+) of (\d+)$/, "Heute: gelöst mit Tipp $1 von $2"],
+  [/^Today: the grade was (\d+\.\d)$/, "Heute: Die Note war $1"],
+  [/^Today: (\d+) of (\d+) guesses used$/, "Heute: $1 von $2 Tipps genutzt"],
+);

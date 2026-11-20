@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://rdydeck.com/og-app.png">
 <meta name="twitter:image:alt" content="RdyDeck logo next to the Grade screen for a Mega Rayquaza deck: 7.9 out of 10, Strong, with its top fix, Synergy and Power.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.17","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.18","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -3050,18 +3050,54 @@ document.documentElement.classList.add('rd-boot');
   /* v72: on wide screens the update note and the daily puzzle sit in the right column with the
      daily challenge. Before, they fell to the bottom of the left column, under every deck. */
   @media (min-width:1100px) {
-    .home-content { grid-template-rows:repeat(8, auto) 1fr auto auto; }
-    .home-content > .deck-list { grid-row:2 / span 8; }
+    .home-content { grid-template-rows:repeat(9, auto) 1fr auto auto; }
+    .home-content > .deck-list { grid-row:2 / span 9; }
     .home-content > #wn-card { grid-column:2; grid-row:3; }
     .home-content > #daily-card { grid-row:4; }
     .home-content > #pre47-card { grid-column:2; grid-row:5; }
     .home-content > #puzzle-card { grid-column:2; grid-row:6; }
-    .home-content > .home-more { grid-row:7; }
-    .home-content > #pwa-install-btn { grid-row:8; }
-    .home-content > .ad32 { grid-row:10; }
-    .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:11; }
-    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty) { margin-top:1.5rem !important; }
+    .home-content > #gtg-card { grid-column:2; grid-row:7; }
+    .home-content > .home-more { grid-row:8; }
+    .home-content > #pwa-install-btn { grid-row:9; }
+    .home-content > .ad32 { grid-row:11; }
+    .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:12; }
+    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty), .home-content > #gtg-card:not(:empty) { margin-top:1.5rem !important; }
   }
+</style>
+<style id="gtg-css">
+  /* 3.4.18: Guess the Grade (js/gtg.js). The list as a decklist sheet, the guesses in a ruled panel under it. */
+  .gtg-hint { margin:-0.2rem 0 0.75rem; }
+  .gtg-deck { display:flex; align-items:baseline; gap:0.6rem; flex-wrap:wrap; margin:0 0 0.9rem; padding-bottom:0.45rem; border-bottom:2px solid var(--rule, var(--line-2)); }
+  .gtg-deck span { font-size:var(--fs-xs); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); }
+  .gtg-deck b { font-family:var(--display); font-size:var(--fs-lg); font-weight:800; color:var(--text); }
+  .gtg-play { position:sticky; bottom:0; z-index:4; padding:0.7rem 0 0.2rem; background:var(--surface); border-top:2px solid var(--rule, var(--line-2)); }
+  .gtg-tries { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:0.4rem; }
+  .gtg-try { display:flex; flex-direction:column; align-items:center; gap:0.05rem; min-width:0; padding:0.3rem 0.2rem 0.25rem; border:1px solid var(--line-2); border-radius:var(--r-sm); }
+  .gtg-try b { display:flex; align-items:center; gap:0.2rem; font-family:var(--mono); font-size:var(--fs-md); font-weight:700; color:var(--text); }
+  .gtg-try i { font-style:normal; }
+  .gtg-try span { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--fs-xs); font-weight:600; color:var(--text-2); }
+  .gtg-try.empty { border-style:dashed; border-color:var(--line); }
+  .gtg-try.hot { border-color:var(--mark); } .gtg-try.hot i, .gtg-try.hot span { color:var(--mark); }
+  .gtg-try.warm { border-color:var(--electric); } .gtg-try.warm i, .gtg-try.warm span { color:var(--electric); }
+  .gtg-try.cold i, .gtg-try.cold span { color:var(--info); }
+  .gtg-try.hit { background:var(--mark); border-color:var(--mark); } .gtg-try.hit b, .gtg-try.hit span { color:#fff; }
+  .gtg-say { margin:0.55rem 0 0; font-size:var(--fs-sm); font-weight:600; color:var(--text); }
+  .gtg-in { display:flex; align-items:center; gap:0.45rem; margin-top:0.6rem; }
+  .gtg-step { width:44px; min-width:44px; height:44px; padding:0; justify-content:center; font-family:var(--mono); font-size:1.25rem; }
+  .gtg-v { min-width:3.2em; text-align:center; font-family:var(--display); font-size:1.75rem; font-weight:800; line-height:1; color:var(--text); }
+  .gtg-go { flex:1; min-height:44px; justify-content:center; }
+  .gtg-range { width:100%; margin:0.65rem 0 0.15rem; accent-color:var(--mark); }
+  .gtg-streak::before { content: ". "; }
+  .gtg-left { display:flex; justify-content:space-between; gap:0.5rem; flex-wrap:wrap; font-size:var(--fs-xs); color:var(--text-3); }
+  .gtg-done { display:flex; align-items:center; gap:0.9rem; margin-top:0.7rem; }
+  .gtg-ans { flex-shrink:0; display:flex; align-items:baseline; gap:0.1rem; padding:0.35rem 0.7rem; border:2px solid var(--rule, var(--line-2)); border-radius:var(--r-sm); }
+  .gtg-ans span { font-family:var(--display); font-size:2rem; font-weight:800; line-height:1; color:var(--text); }
+  .gtg-ans small { font-size:var(--fs-sm); color:var(--text-3); }
+  .gtg-done-tx { display:flex; flex-direction:column; gap:0.15rem; min-width:0; font-size:var(--fs-sm); color:var(--text-2); line-height:1.4; }
+  .gtg-done-tx b { font-size:var(--fs-md); color:var(--text); }
+  .gtg-acts { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem; }
+  .gtg-acts .btn { flex:1 1 0; justify-content:center; }
+  @media (min-width:700px) { .gtg-acts .btn { flex:0 0 auto; } }
 </style>
 <style id="mc26-css">
   .mc26-tabs { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.6rem; }
@@ -3391,9 +3427,9 @@ document.documentElement.classList.add('rd-boot');
   html.rd-boot #deck-list .st-empty::after { content:''; display:block; height:108px; }
   @media (max-width:1099px) {
     html.rd-boot #daily-card:empty { display:block; min-height:89px; margin-top:1.75rem !important; }
-    html.rd-boot #puzzle-card:empty { display:block; min-height:89px; margin-top:1rem; }
+    html.rd-boot #puzzle-card:empty, html.rd-boot #gtg-card:empty { display:block; min-height:89px; margin-top:1rem; }
   }
-  @media (min-width:700px) and (max-width:1099px) { html.rd-boot #daily-card:empty, html.rd-boot #puzzle-card:empty { min-height:72px; } }
+  @media (min-width:700px) and (max-width:1099px) { html.rd-boot #daily-card:empty, html.rd-boot #puzzle-card:empty, html.rd-boot #gtg-card:empty { min-height:72px; } }
   /* The title and logo start near the size rd38Fit() gives them, which it sets from the fonts. */
   html.rd-boot #screen-home .app-title { font-size:41.39px; }
   html.rd-boot #screen-home .rd-mark { width:41.57px; height:59px; }
@@ -3569,6 +3605,7 @@ document.documentElement.classList.add('rd-boot');
     <div id="wn-card"></div>
     <div id="daily-card"></div>
     <div id="puzzle-card"></div>
+    <div id="gtg-card"></div>
 
     <section class="home-more">
       <h2 class="section-title">More</h2>
@@ -4121,7 +4158,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=8883917e"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=3e525bd7"></script>
 
-<script src="js/core.js?v=753ab2c8"></script>
+<script src="js/core.js?v=77f99364"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4250,9 +4287,10 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=990108dc"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/i18n.js?v=271093dd"></script>
+<script src="js/gtg.js?v=b6eb7226"></script>
+<script src="js/i18n.js?v=b6c96dff"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=5a4c5abb"></script><script src="js/i18n-de.js?v=71d82183"></script><script src="js/i18n-it.js?v=a11d2125"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=d8a83172"></script><script src="js/i18n-de.js?v=48ed9d0f"></script><script src="js/i18n-it.js?v=37f94c32"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=78548daf"></script></template>

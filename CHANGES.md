@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.18 (build 146): Guess the Grade (20 Nov 2026)
+
+Changed files: js/gtg.js (new: the game, its home card and the #guess link), index.html (home card slot, styles, script, version, stamps), js/core.js (version, What's new, PT_BUILD now 146), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v146), tests/gtg-check.mjs (new), tests/i18n-check.mjs (Guess the Grade screens).
+
+- A new daily game on home, under the Daily puzzle. Everyone gets the same real tournament list each day (from the Daily challenge's pool of best placed lists, never the same list as that day's Daily challenge) and has 4 guesses at the grade RdyDeck gives it. Each guess says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold. The slider starts at 5, since real lists grade well above it.
+- The answer is the grade the Grade tab shows for that list imported as a deck, read the same way and kept for the day once the game opens. If the card data cannot be read in full, the game says it needs a connection instead of using a grade that is not final.
+- A streak counts days played in a row. Share sends arrows and colored marks with no grade in them, and the link opens the game. Results stay on the device. No ads in the game.
+- Grade check: no grade moved.
+
 # RdyDeck 3.4.17 (build 145): share card art for 30th Celebration (20 Nov 2026)
 
 Changed files: js/v45-sample-share-daily.js (share card reads TCGdex art when only Limitless has the attacker's picture), js/core.js (version, What's new, PT_BUILD now 145), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v145).

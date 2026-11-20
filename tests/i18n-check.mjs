@@ -365,6 +365,37 @@ const SCREENS = [
     w.eval(`(() => { const R = puzzleStore().results; R[dailyKey()] = { won: false, moves: 5, num: 2, ts: Date.now() }; })()`);
     w.renderHome(); await tick(100);
   }],
+  // 3.4.18: Guess the Grade, from the shared link's sheet through a won and a lost game.
+  ['guess the grade: shared link', async w => { shut(w); w.history.replaceState(null, '', '/#guess'); w.handleGtgHash(); await tick(100); }],
+  // The card data saved for this check does not cover every list, so today's answer is set here; tests/gtg-check.mjs checks the real one.
+  ['guess the grade', async w => { shut(w); w.eval('state.gtg = { results: { [dailyKey()]: { ans: 8.4, g: [], ts: 1 } } }'); await w.openGtg(); await tick(300); }],
+  ['guess the grade: cold and warm', async w => {
+    w.eval(`(() => { const r = gtgStore().results[dailyKey()], a = r.ans, f = v => Math.round(v * 10) / 10;
+      gtgSet(a >= 9 ? f(a - 1) : f(a + 1)); gtgGuess(); gtgSet(a >= 9 ? f(a - 0.3) : f(a + 0.3)); gtgGuess(); })()`);
+    await tick(100);
+  }],
+  ['guess the grade: hot', async w => { w.eval(`(() => { const a = gtgStore().results[dailyKey()].ans; gtgSet(Math.round(a * 10 + (a >= 9 ? -1 : 1)) / 10); gtgGuess(); })()`); await tick(100); }],
+  ['home: guess the grade 3 guesses', async w => { shut(w); w.showScreen('home'); w.renderHome(); await tick(100); }],
+  ['guess the grade: won', async w => {
+    w.eval(`(() => { const R = gtgStore().results; R[dailyKey(Date.now() - 86400000)] = { ans: 8.1, g: [8.1], done: true, won: true, ts: 1 }; })()`);
+    await w.openGtg(); await tick(200);
+    w.eval(`(() => { gtgSet(gtgStore().results[dailyKey()].ans); gtgGuess(); })()`); await tick(100);
+  }],
+  ['guess the grade: share text', async w => {
+    // The English line, so the walker's own translation of it is what is checked (gtgShareText runs the same patterns through rdI18n.t).
+    w.openSheet('<div class="modal-hint">' + w.esc(w.eval('(() => { const t = rdI18n.t; rdI18n.t = s => s; try { return gtgShareText(gtgStore().results[dailyKey()], dailyKey()); } finally { rdI18n.t = t; } })()').split('\n')[0]) + '</div>'); await tick(100);
+  }],
+  ['home: guess the grade won', async w => { shut(w); w.showScreen('home'); w.renderHome(); await tick(100); }],
+  ['guess the grade: lost', async w => {
+    w.eval(`(() => { const R = gtgStore().results; delete R[dailyKey(Date.now() - 86400000)]; R[dailyKey()] = { ans: 7.0, g: [], ts: 1 }; })()`);
+    await w.openGtg(); await tick(200);
+    w.eval(`(() => { for (const v of [9.0, 8.0, 7.5, 6.8]) { gtgSet(v); gtgGuess(); } })()`); await tick(100);
+  }],
+  ['guess the grade: lost share text', async w => {
+    // The English line, so the walker's own translation of it is what is checked (gtgShareText runs the same patterns through rdI18n.t).
+    w.openSheet('<div class="modal-hint">' + w.esc(w.eval('(() => { const t = rdI18n.t; rdI18n.t = s => s; try { return gtgShareText(gtgStore().results[dailyKey()], dailyKey()); } finally { rdI18n.t = t; } })()').split('\n')[0]) + '</div>'); await tick(100);
+  }],
+  ['home: guess the grade lost', async w => { shut(w); w.showScreen('home'); w.renderHome(); await tick(100); w.eval('delete state.gtg'); }],
   // Muse s6 M1: the messy list, imported on its own, then its Grade and Cards tabs.
   ['import a messy list', async w => {
     shut(w); w.showScreen('home'); w._i18nIds = w.eval('state.decks.map(d => String(d.id))');

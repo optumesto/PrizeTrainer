@@ -2469,3 +2469,41 @@ I18N_MORE.it.pat.unshift(
   [/^(\d+) of your Pokemon have 70 HP or less\.$/, (m, n) => n + ' dei tuoi Pokémon hanno 70 PS o meno.'],
   [/^Win rates are for all (.+) lists, as in Against the meta\.$/, (m, n) => 'Le percentuali di vittoria sono di tutte le liste ' + n + ', come in Contro il meta.'],
 );
+
+// 3.4.18: Guess the Grade (js/gtg.js).
+Object.assign(I18N_MORE.it.dict, {
+  "Guess the Grade": "Indovina il voto",
+  "Guess the Grade added": "Nuovo: Indovina il voto",
+  "Reading today's list…": "Lettura della lista di oggi…",
+  "Guess the Grade needs a connection to read today's list. Try again in a moment.": "Indovina il voto ha bisogno di una connessione per leggere la lista di oggi. Riprova tra un attimo.",
+  "A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.": "Una vera lista da torneo, uguale per tutti oggi. Studiala, poi indovina il voto su 10 che le dà RdyDeck. Hai 4 tentativi. Ognuno ti dice se il voto è più alto o più basso, e se sei Caldo (entro 0.2), Tiepido (entro 0.5) o Freddo.",
+  "Today's list": "Lista di oggi",
+  "Right": "Esatto",
+  "Hot": "Caldo",
+  "Warm": "Tiepido",
+  "Cold": "Freddo",
+  "Not this time": "Non stavolta",
+  "A new list tomorrow.": "Domani una nuova lista.",
+  "Lower guess": "Diminuisci",
+  "Higher guess": "Aumenta",
+  "Your guess": "Il tuo tentativo",
+  "Guess the grade of a real tournament list": "Indovina il voto di una vera lista da torneo",
+  "See result": "Vedi il risultato",
+  "Your result": "Il tuo risultato",
+  "Finish today's Guess the Grade first.": "Prima finisci l'Indovina il voto di oggi.",
+  "Everyone gets the same real tournament list today. Study it, then guess the grade RdyDeck gives it. You get 4 guesses.": "Oggi tutti ricevono la stessa vera lista da torneo. Studiala, poi indovina il voto che le dà RdyDeck. Hai 4 tentativi.",
+});
+I18N_MORE.it.pat.unshift(
+  [/^Guess the Grade #(\d+)$/, "Indovina il voto #$1"],
+  [/^RdyDeck Guess the Grade #(\d+): got it in (\d+) of (\d+)$/, "RdyDeck Indovina il voto #$1: indovinato in $2 su $3"],
+  [/^RdyDeck Guess the Grade #(\d+): not solved in (\d+)$/, "RdyDeck Indovina il voto #$1: non indovinato in $2"],
+  [/^(Higher|Lower)\. (Hot: within 0\.2|Warm: within 0\.5|Cold: more than 0\.5 off)\.$/, (m, w, h) => (w === 'Higher' ? 'Più alto' : 'Più basso') + '. ' + { H: 'Caldo: entro 0.2.', W: 'Tiepido: entro 0.5.', C: 'Freddo: oltre 0.5 di distanza.' }[h[0]]],
+  [/^Got it in (\d+) of (\d+)$/, "Indovinato in $1 su $2"],
+  [/^The grade is ([\d.]+)\.$/, "Il voto è $1."],
+  [/^Guess (\d+) of (\d+)$/, "Tentativo $1 di $2"],
+  [/^Guess (\d+\.\d)$/, "Prova $1"],
+  [/^Between (\d+\.\d) and (\d+\.\d)$/, "Tra $1 e $2"],
+  [/^Today: got it in (\d+) of (\d+)$/, "Oggi: indovinato in $1 su $2"],
+  [/^Today: the grade was (\d+\.\d)$/, "Oggi: il voto era $1"],
+  [/^Today: (\d+) of (\d+) guesses used$/, (m, a, b) => 'Oggi: ' + a + (a === '1' ? ' tentativo usato su ' : ' tentativi usati su ') + b],
+);
