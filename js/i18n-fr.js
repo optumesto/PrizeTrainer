@@ -299,7 +299,7 @@ I18N_MORE.fr = {
     "Help and feedback": "Aide et avis",
     "Save and open decks": "Sauvegarde des decks",
     "About RdyDeck": "À propos de RdyDeck",
-    "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.": "RdyDeck est un outil gratuit qui note les decks du JCC Pokémon et entraîne aux cartes Récompense. Collez une liste de Pokémon TCG Live ou Limitless pour voir si les cartes fonctionnent bien ensemble, ce qu'il faut corriger en priorité, vos probabilités d'ouverture et quelles cartes quittent le Standard à la prochaine rotation.",
+    "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next. Grades are based on your cards and, for known decks, results from online and local in-person events.": "RdyDeck est un outil gratuit qui note les decks du JCC Pokémon et entraîne aux cartes Récompense. Collez une liste de Pokémon TCG Live ou Limitless pour voir si les cartes fonctionnent bien ensemble, ce qu'il faut corriger en priorité, vos probabilités d'ouverture et quelles cartes quittent le Standard à la prochaine rotation. La note repose sur vos cartes et, pour les decks connus, sur les résultats de tournois en ligne et locaux en présentiel.",
     "Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.": "Puis entraînez-vous avec le deck : nommez vos six cartes Récompense, piochez des mains de départ, faites des exercices et notez vos match-ups. Les decks restent dans votre navigateur, l'appli fonctionne hors ligne et aucun compte n'est nécessaire.",
     "Questions about RdyDeck": "Questions sur RdyDeck",
     "What is RdyDeck?": "Qu'est-ce que RdyDeck ?",
@@ -2651,6 +2651,7 @@ I18N_MORE.fr.pat.unshift(
 
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.fr.dict, {
+  "Grade source in About": "Source de la note dans À propos de RdyDeck",
   "Grade source on home page": "Source de la note sur l'accueil",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La note repose sur vos cartes et, pour les decks connus, sur les résultats de tournois en ligne et locaux en présentiel.",
   "What's new card fixed": "Carte Nouveautés corrigée",

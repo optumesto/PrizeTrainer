@@ -236,7 +236,7 @@ const I18N_ES = {
   "Help and feedback": "Ayuda y comentarios",
   "Save and open decks": "Guardar y abrir barajas",
   "About RdyDeck": "Acerca de RdyDeck",
-  "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.": "RdyDeck es un calificador de barajas de Pokémon TCG y un entrenador de cartas de Premio, gratis. Pega una lista de Pokémon TCG Live o Limitless para ver qué tan bien funcionan las cartas juntas, qué corregir primero, tus probabilidades de apertura y qué cartas salen del formato Estándar en la próxima rotación.",
+  "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next. Grades are based on your cards and, for known decks, results from online and local in-person events.": "RdyDeck es un calificador de barajas de Pokémon TCG y un entrenador de cartas de Premio, gratis. Pega una lista de Pokémon TCG Live o Limitless para ver qué tan bien funcionan las cartas juntas, qué corregir primero, tus probabilidades de apertura y qué cartas salen del formato Estándar en la próxima rotación. La calificación se basa en tus cartas y, en barajas conocidas, en los resultados de torneos online y presenciales locales.",
   "Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.": "Después practica la baraja: adivina tus seis cartas de Premio, roba manos iniciales, haz ejercicios y anota tus enfrentamientos. Las barajas se quedan en tu navegador, funciona sin conexión y no necesitas crear una cuenta.",
   "Questions about RdyDeck": "Preguntas sobre RdyDeck",
   "What is RdyDeck?": "¿Qué es RdyDeck?",
@@ -1434,7 +1434,7 @@ const I18N_PT = {
   "Help and feedback": "Ajuda e feedback",
   "Save and open decks": "Salvar e abrir decks",
   "About RdyDeck": "Sobre o RdyDeck",
-  "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next.": "O RdyDeck é um avaliador de decks de Pokémon TCG e treinador de cartas de Prêmio, grátis. Cole uma lista do Pokémon TCG Live ou do Limitless para ver se as cartas funcionam bem juntas, o que corrigir primeiro, suas chances de abertura e quais cartas saem do Padrão na próxima rotação.",
+  "RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next. Grades are based on your cards and, for known decks, results from online and local in-person events.": "O RdyDeck é um avaliador de decks de Pokémon TCG e treinador de cartas de Prêmio, grátis. Cole uma lista do Pokémon TCG Live ou do Limitless para ver se as cartas funcionam bem juntas, o que corrigir primeiro, suas chances de abertura e quais cartas saem do Padrão na próxima rotação. A nota se baseia nas suas cartas e, em decks conhecidos, nos resultados de torneios online e presenciais locais.",
   "Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.": "Depois treine o deck: descubra suas seis cartas de Prêmio, compre mãos iniciais, faça treinos e anote seus confrontos. Os decks ficam no seu navegador, funciona offline e não é preciso criar conta.",
   "Questions about RdyDeck": "Perguntas sobre o RdyDeck",
   "What is RdyDeck?": "O que é o RdyDeck?",
@@ -6367,6 +6367,7 @@ I18N_PAT.unshift(
 
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_ES, {
+  "Grade source in About": "Origen de la calificación en Acerca de RdyDeck",
   "Grade source on home page": "Origen de la calificación en Inicio",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La calificación se basa en tus cartas y, en barajas conocidas, en los resultados de torneos online y presenciales locales.",
   "What's new card fixed": "Tarjeta de Novedades arreglada",
@@ -6398,6 +6399,7 @@ Object.assign(I18N_ES, {
   "Result of Guess the Grade": "Resultado de Adivina la calificación",
 });
 Object.assign(I18N_PT, {
+  "Grade source in About": "Origem da nota em Sobre o RdyDeck",
   "Grade source on home page": "Origem da nota no Início",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "A nota se baseia nas suas cartas e, em decks conhecidos, nos resultados de torneios online e presenciais locais.",
   "What's new card fixed": "Cartão de Novidades corrigido",
