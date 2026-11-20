@@ -101,16 +101,25 @@ function rpIndex(cards, mc) {
   const names = new Map();   // key -> shown name
   cards.forEach(c => { const k = rpKey(c.n); if (!names.has(k)) names.set(k, rpShow(c.n)); });
   const card = r => byPrint.get(r[1] + ' ' + r[2]) || byName.get(rpKey(r[0]));
+  // 3.4.27: the printing the top lists run (set and number), for the card art. A name alone can
+  // pick another card of that name (Shaymin DLR 8 for lists that run Shaymin DRI 10).
+  const print = r => r[1] && r[2] ? { s: String(r[1]), no: String(r[2]) } : null;
   const decks = mc.decks.filter(d => Array.isArray(d.cards) && d.cards.length && d.tops > 0);
   decks.forEach(d => d.cards.forEach(r => { const k = rpKey(r[0]); if (!names.has(k)) names.set(k, rpShow(r[0])); }));
   // Scopes: the most played decks one by one, and every deck's top lists together (weighted by top lists).
   const scopes = decks.slice().sort((a, b) => b.lists - a.lists || (a.id < b.id ? -1 : 1)).slice(0, RP_DECKS)
-    .map(d => ({ id: d.id, name: d.name, fits: d.cards.map(r => ({ k: rpKey(r[0]), n: rpShow(r[0]), s: r[6], c: card(r) })) }));
+    .map(d => ({ id: d.id, name: d.name, fits: d.cards.map(r => ({ k: rpKey(r[0]), n: rpShow(r[0]), s: r[6], c: card(r), p: print(r) })) }));
   const tops = decks.reduce((a, d) => a + d.tops, 0) || 1, all = new Map();
   decks.forEach(d => d.cards.forEach(r => {
-    const k = rpKey(r[0]), x = all.get(k) || { k, n: rpShow(r[0]), s: 0, c: card(r) };
-    x.s += r[6] * d.tops / tops; all.set(k, x);
+    const k = rpKey(r[0]), x = all.get(k) || { k, n: rpShow(r[0]), s: 0, c: card(r), p: null, pw: new Map() };
+    const w = r[6] * d.tops / tops, pk = r[1] + ' ' + r[2];
+    x.s += w; all.set(k, x);
+    // across decks, the printing that most of the top lists run (and its kind)
+    const pw = (x.pw.get(pk) || 0) + w; x.pw.set(pk, pw);
+    if (!x.p || pw > (x.pw.get(x.p.s + ' ' + x.p.no) || 0)) { x.p = print(r); x.c = card(r); }
   }));
+  const art = new Map();   // key -> the printing most top lists run, for a pick that does not fit
+  all.forEach((x, k) => { if (x.p) art.set(k, x.p); delete x.pw; });
   const wide = { id: '*', name: '', fits: [...all.values()] };
   const pool = [];
   const ask = (sc, cat) => {
@@ -119,12 +128,12 @@ function rpIndex(cards, mc) {
     if (fits.length < 5) return;
     const mx = Math.max(...fits.map(f => f.s)), mn = Math.max(RP_FLOOR, Math.min(...fits.map(f => f.s)));
     if (mx / mn < 3) return;
-    pool.push({ scope: sc.id, deck: sc.name, cat, mx, mn, fits: fits.map(f => ({ k: f.k, n: f.n, s: f.s })).sort((a, b) => b.s - a.s || (a.k < b.k ? -1 : 1)) });
+    pool.push({ scope: sc.id, deck: sc.name, cat, mx, mn, fits: fits.map(f => ({ k: f.k, n: f.n, s: f.s, p: f.p })).sort((a, b) => b.s - a.s || (a.k < b.k ? -1 : 1)) });
   };
   scopes.forEach(sc => Object.keys(RP_CATS).forEach(cat => { if (!/^t[A-Z]$/.test(cat)) ask(sc, cat); }));
   RP_WIDE.forEach(cat => ask(wide, cat));
   const list = [...names].map(([k, n]) => ({ k, n, f: rpFold(n) })).sort((a, b) => a.f < b.f ? -1 : 1);
-  return { pool, list, names, asOf: mc.asOf || '' };
+  return { pool, list, names, art, asOf: mc.asOf || '' };
 }
 /** A fit's score: 10 for the most common fit, 100 for the rarest, log scale between. */
 function rpScore(p, s) {
@@ -371,6 +380,8 @@ function rpPick(j, timeout) {
   else {
     const f = p.fits.find(x => x.k === hit.k);
     pick = f ? { k: hit.k, n: hit.n, s: f.s, score: rpScore(p, f.s), how: 'fit' } : { k: hit.k, n: hit.n, score: 0, how: rpWhyNot(p, hit.k) };
+    // the card shown: the printing those top lists run, else the one most top lists run
+    pick.p = (f && f.p) || (rpData.art && rpData.art.get(hit.k)) || null;
   }
   rpG.picks[rpG.i] = pick;
   rpReveal(p, pick);

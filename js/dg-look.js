@@ -452,7 +452,11 @@ function dgPzLine() {
 //     rarity's color. One slow sheen crosses the tile when it lands, then the card sways about 12
 //     degrees each way while it sits, so the foil catches the light. Calm: no flashing, and all of it stops
 //     with reduced motion. ═══
-function dgRpCard(k) {
+function dgRpCard(k, p) {
+  // 3.4.27: the printing the top lists run (p), not the first card of that name
+  if (p && p.s && p.no) return p;
+  const a = k && rpData && rpData.art ? rpData.art.get(k) : null;
+  if (a && a.s && a.no) return a;
   const c = k && rpData && rpData.kind ? rpData.kind.get(k) : null;
   return c && c.s && c.no ? c : null;
 }
@@ -468,7 +472,7 @@ function dgFoilCard(c, name, live) {
     try {
       const res = document.querySelector('#rp-body .rp-res');
       const fit = pick && pick.how === 'fit', ix = fit ? rpTierIx(pick.score) : 0;
-      const c = pick && pick.k ? dgRpCard(pick.k) : null;
+      const c = pick && pick.k ? dgRpCard(pick.k, pick.p) : null;
       if (res) {
         res.classList.add('dgf', 'dgf-t' + ix);
         // a card that does not count still shows, dimmed and still, so you see what you named
@@ -490,14 +494,14 @@ function dgFoilCard(c, name, live) {
         row.classList.add('dgf-row');
         row.innerHTML = picks.map(x => {
           const fit = x.how === 'fit', ix = fit ? rpTierIx(x.score) : 0, t = rpTier(fit ? x.score : 0)[1];
-          const c = fit && x.k ? dgRpCard(x.k) : null;
+          const c = fit && x.k ? dgRpCard(x.k, x.p) : null;
           const art = c ? (dgImg(c.s, c.no, 'dgf-img', x.n) || '<span class="dg-noimg"></span>') : rpGem(0);
           return `<span class="dgf-mini dgf-t${ix}${c ? '' : ' dgf-empty'}" title="${esc(t)}"><span class="dgf-mini-art">${art}</span><b>${fit ? x.score : 0}</b></span>`;
         }).join('');
       }
       // the best pull gets a foil tile of its own, in place of its line of text
       const best = picks.filter(x => x.how === 'fit').sort((a, b) => b.score - a.score)[0];
-      const bc = best && best.k ? dgRpCard(best.k) : null;
+      const bc = best && best.k ? dgRpCard(best.k, best.p) : null;
       const line = body && body.querySelector('.rp-end-note b[data-no-tr]');
       if (bc && line) {
         const ix = rpTierIx(best.score);
@@ -508,7 +512,7 @@ function dgFoilCard(c, name, live) {
       }
       // home shows the day's best pull, so keep which card it was
       const r = rpStore().results[dailyKey()];
-      if (first && r && best && !r.bk) { r.bk = best.k; r.bn = best.n; saveState(); }
+      if (first && r && best && !r.bk) { r.bk = best.k; r.bn = best.n; if (best.p) r.bp = best.p.s + ' ' + best.p.no; saveState(); }
     } catch (e) { console.warn('[daily look]', e); }
     return out;
   };
@@ -537,7 +541,8 @@ function dgHomeArt(id) {
     if (id === 'gtg-card') return { s: 'POR', no: '76' };
     if (id === 'rp-card') {
       const r = rpStore().results[dailyKey()];
-      const c = r && r.bk && typeof rpData !== 'undefined' && rpData ? dgRpCard(r.bk) : null;
+      const bp = r && typeof r.bp === 'string' ? r.bp.split(' ') : null;
+      const c = r && r.bk && typeof rpData !== 'undefined' && rpData ? dgRpCard(r.bk, bp && { s: bp[0], no: bp[1] }) : null;
       return c ? { s: c.s, no: c.no } : { s: 'MEG', no: '125' };
     }
   } catch (_) {}

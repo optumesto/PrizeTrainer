@@ -48,6 +48,7 @@ PrizeTrainer/
   tests/creator-kit-check.mjs          the Creator kit and its OBS card (?overlay=1): same grade, no ads, nothing saved
   tests/ads-where-check.mjs            ads for US visitors only: the Worker's /api/where, and no ad code, spot or age question elsewhere
   tests/seo-check.mjs                  search checks: github.io copy noindexed, titles, descriptions, breadcrumbs, tool links, cache times
+  tests/rare-pull-art-check.mjs        Rare Pull: every answer shows the printing the top lists run (set and number), not another card of that name
   tests/package.json, package-lock.json   jsdom, which the check needs to run the app outside a browser
   CHANGES.md, README.md, LICENSE
 ```

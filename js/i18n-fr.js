@@ -2652,6 +2652,7 @@ I18N_MORE.fr.pat.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.fr.dict, {
   "What's new card fixed": "Carte Nouveautés corrigée",
+  "Rare Pull card art fixed": "Image de carte de Rare Pull corrigée",
   "Daily games fixes": "Corrections des Jeux du jour",
   "Daily games new look": "Nouveau look des Jeux du jour",
   "Losing decks grade lower": "Les decks qui perdent sont moins bien notés",
