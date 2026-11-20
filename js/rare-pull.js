@@ -201,7 +201,7 @@ async function rpOpen() {
   const key = dailyKey(), r = rpStore().results[key];
   const prompts = rpDay(key);
   if (prompts.length < RP_N) { showToast('Today\'s prompts could not be made. Try again later.'); return; }
-  openSheet(`<div class="modal-title"><span data-no-tr>Rare Pull</span> #${rpNumber(key)}</div>
+  openSheet(`<div class="modal-title"><span><span data-no-tr>Rare Pull</span> #${rpNumber(key)}</span></div>
     <div class="rp-rules">
       <p>Seven prompts, the same for everyone today. Each asks for a kind of card from a group of top tournament lists.</p>
       <p>Pick a card that fits. The fewer of those top lists run it, the higher it scores, up to 100.</p>
@@ -274,7 +274,7 @@ function rpAsk() {
     <div class="rp-meter" id="rp-meter">${rpMeter(-1)}</div>
     <div class="rp-pick">
       <div class="rp-clock" id="rp-clock" role="timer" aria-label="Seconds left"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5" class="rp-clock-bg"/><circle cx="18" cy="18" r="15.5" class="rp-clock-fg" id="rp-clock-fg"/></svg><b id="rp-clock-n">${RP_SECS}</b></div>
-      <input id="rp-in" class="input rp-in" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Search card names" aria-label="Search card names" oninput="rpFind(this.value)" onkeydown="rpKeys(event)">
+      <input id="rp-in" class="rp-in" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="Search card names" aria-label="Search card names" oninput="rpFind(this.value)" onkeydown="rpKeys(event)">
       <button class="btn rp-pass" onclick="rpPick(null)">Pass</button>
     </div>
     <div class="rp-list" id="rp-list" role="listbox" aria-label="Card names"><div class="rp-hint">Type a few letters, then tap a card.</div></div>
@@ -477,7 +477,10 @@ async function rpShare(k) {
   .rp-step.rp-here { color:var(--mark); }
   .rp-ladder .rp-step { flex:1; opacity:1; color:var(--text-2); }
   .rp-pick { display:flex; align-items:center; gap:0.55rem; }
-  .rp-in { flex:1; min-width:0; font-size:16px; }
+  .rp-in { flex:1; min-width:0; padding:0.6rem 0.75rem; font:inherit; font-size:16px; background:var(--surface-2); color:var(--text); border:1px solid var(--line-2); border-radius:var(--r-sm); outline:none; -webkit-appearance:none; appearance:none; }
+  .rp-in:focus { border-color:var(--text-2); }
+  .rp-in::placeholder { color:var(--text-3, var(--text-2)); }
+  .rp-in::-webkit-search-cancel-button { -webkit-appearance:none; appearance:none; display:none; }
   .rp-pass { flex-shrink:0; }
   .rp-clock { position:relative; width:44px; height:44px; flex-shrink:0; }
   .rp-clock svg { width:100%; height:100%; transform:rotate(-90deg); }
