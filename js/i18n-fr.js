@@ -2651,6 +2651,8 @@ I18N_MORE.fr.pat.unshift(
 
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.fr.dict, {
+  "Grade source on home page": "Source de la note sur l'accueil",
+  "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La note repose sur vos cartes et, pour les decks connus, sur les résultats de tournois en ligne et locaux en présentiel.",
   "What's new card fixed": "Carte Nouveautés corrigée",
   "Rare Pull card art fixed": "Image de carte de Rare Pull corrigée",
   "Daily games fixes": "Corrections des Jeux du jour",

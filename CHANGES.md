@@ -2,12 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.28 (build 156): Grade source on home page (20 Nov 2026)
+
+Changed files: index.html (a line under the header, meta, Open Graph, Twitter and structured data descriptions, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.28, What's new, PT_BUILD now 156), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), llms.txt (results from online and local in-person tournaments count toward the grade), sw.js (cache name prize-trainer-v156).
+
+- The home page now says under the header: "Grades are based on your cards and, for known decks, results from online and local in-person events." The page's search and share descriptions say the same, so search engines and AI tools no longer read the grade as card text alone. The grade itself does not change.
+
 # RdyDeck 3.4.27 (build 155): Rare Pull card art fixed (20 Nov 2026)
 
 Changed files: tests/rare-pull-art-check.mjs (new), README.md, js/rare-pull.js (each fit keeps the printing its top lists run), js/dg-look.js (the foil card, the end row, the best pull and the home art use that printing), js/core.js (PT_VERSION now v3.4.27, What's new, PT_BUILD now 155), index.html (softwareVersion, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new string), sw.js (cache name prize-trainer-v155).
 
 - Rare Pull showed the first card in cards.json with the name you picked, not the printing the top lists run. Naming Shaymin for Dhelmise showed Shaymin DLR 8 (Overrun) where the lists run Shaymin DRI 10 (Flower Curtain). 73 card names showed another card of that name, and many Trainers showed a reprint's art. Each fit now carries the set and number from meta-cards.json. On the every-deck prompts the printing most of those top lists run is shown, and a pick that does not fit shows that same printing. The prompts, the fits, the scores and the rarity tiers do not change.
-- 3.4.26 (anonymous usage counts) is built but not live. If 3.4.27 ships first, renumber the counts to 3.4.28 (build 156) when they ship.
+- 3.4.26 (anonymous usage counts) is built but not live. If 3.4.27 ships first, renumber the counts to 3.4.29 (build 157) when they ship, since 3.4.28 is the grade source line.
 
 # RdyDeck 3.4.25 (build 153): What's new card fixed (20 Nov 2026)
 
