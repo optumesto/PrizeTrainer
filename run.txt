@@ -1,0 +1,3 @@
+phone-dark: puzzle-card:16,789,358,89 rp-card:16,895,358,108 gtg-card:16,1019,358,89; errors none
+phone-light: puzzle-card:16,789,358,89 rp-card:16,895,358,108 gtg-card:16,1019,358,89; errors none
+desktop-dark: puzzle-card:903,434,340,105 rp-card:903,564,340,124 gtg-card:903,712,340,105; errors none
