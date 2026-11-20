@@ -2653,6 +2653,7 @@ I18N_MORE.fr.pat.unshift(
 Object.assign(I18N_MORE.fr.dict, {
   "Daily games fixes": "Corrections des Jeux du jour",
   "Daily games new look": "Nouveau look des Jeux du jour",
+  "Losing decks grade lower": "Les decks qui perdent sont moins bien notés",
   "1 day streak": "Série de 1 jour",
   "Card position": "Position de la carte",
   "Did you mean this card?": "Vouliez-vous dire cette carte ?",

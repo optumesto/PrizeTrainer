@@ -2693,6 +2693,7 @@ I18N_MORE.de.pat.unshift(
 Object.assign(I18N_MORE.de.dict, {
   "Daily games fixes": "Korrekturen bei den Tagesspielen",
   "Daily games new look": "Neuer Look der Tagesspiele",
+  "Losing decks grade lower": "Verlierende Decks bekommen niedrigere Noten",
   "1 day streak": "1 Tag in Folge",
   "Card position": "Kartenposition",
   "Did you mean this card?": "Meintest du diese Karte?",

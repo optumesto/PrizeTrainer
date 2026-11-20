@@ -6369,6 +6369,7 @@ I18N_PAT.unshift(
 Object.assign(I18N_ES, {
   "Daily games fixes": "Arreglos en los juegos diarios",
   "Daily games new look": "Nuevo aspecto de los juegos diarios",
+  "Losing decks grade lower": "Las barajas que pierden califican más bajo",
   "1 day streak": "Racha de 1 día",
   "Card position": "Posición de la carta",
   "Did you mean this card?": "¿Querías decir esta carta?",
@@ -6395,6 +6396,7 @@ Object.assign(I18N_ES, {
 Object.assign(I18N_PT, {
   "Daily games fixes": "Correções nos jogos diários",
   "Daily games new look": "Novo visual dos jogos diários",
+  "Losing decks grade lower": "Decks que perdem recebem notas mais baixas",
   "1 day streak": "Sequência de 1 dia",
   "Card position": "Posição da carta",
   "Did you mean this card?": "Você quis dizer esta carta?",

@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.24 (build 152): Losing decks grade lower (20 Nov 2026)
+
+Changed files: js/v69-grade-blend.js (results score below an average record, full results share at 250 games), js/core.js (version, What's new, PT_BUILD now 152), index.html (FAQ wording, stamps), deck-grader.html and how-grading-works.html (250 games, below-average records, worked example), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (250 games, new string), sw.js (cache name prize-trainer-v152), tests/grade-baseline.json (37 lists move down, all from decks with a below-average record).
+
+- A deck with a below-average record now loses grade twice as fast from its results, and results count for half the grade from 250 games (was 500). Igglybuff (33% wins) goes from about 6.5 to 5.3 and Mega Charizard X (32%) from 8.5 to 7.5. A deck at or above an average record grades exactly as before, so none of the top 24 decks move.
+
 # RdyDeck 3.4.23 (build 151): Daily games new look (20 Nov 2026)
 
 Changed files: js/dg-look.js (new: the daily games' new look and share pictures), index.html (script, version, stamps), js/core.js (version, What's new, PT_BUILD now 151, missed card names on the results screen stay as card names), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), sw.js (cache name prize-trainer-v151), tests/i18n-check.mjs (new screens for the face-down prizes, share pictures and winning line), tests/gtg-check.mjs (gauge and share sheet).
