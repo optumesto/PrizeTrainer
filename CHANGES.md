@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.17 (build 145): share card art for 30th Celebration (20 Nov 2026)
+
+Changed files: js/v45-sample-share-daily.js (share card reads TCGdex art when only Limitless has the attacker's picture), js/core.js (version, What's new, PT_BUILD now 145), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v145).
+
+- Share cards for a deck whose main attacker is a 30th Celebration card (Igglybuff, Mew ex, Greninja ex and the rest) had no card art, because only the Limitless image host had those pictures and it does not let a page draw them. The share card now reads TCGdex's record for that exact printing, checks the name matches (30th Classic Collection cards share the code and numbers 1 to 30), and draws its picture. It gives up after 3 seconds and falls back to the card with no art, as before.
+- With TCGdex art the footer reads "Deck data from Limitless TCG", since the picture is no longer from Limitless.
+- The Cards tab is unchanged. Grade check: no grade moved.
+
 # RdyDeck 3.4.16 (build 144): clearer grade text for local results (20 Nov 2026)
 
 Changed files: js/matchups.js (source words can ignore the picker), js/v69-grade-blend.js (grade line and Grade vs win rate), js/core.js (version, What's new, PT_BUILD now 144), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v144).

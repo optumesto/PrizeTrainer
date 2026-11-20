@@ -142,11 +142,11 @@ function gs261Big(list) {
   const rank = u => /pokemontcg\.io/.test(u) ? 0 : /tcgdex\.net/.test(u) ? 1 : 2;
   return [...new Set(out)].map((u, i) => ({ u, i })).sort((a, b) => rank(a.u) - rank(b.u) || a.i - b.i).map(x => x.u);
 }
-/** 3.4.16: when only the Limitless host has the attacker's art (every 30th Celebration card), the
+/** 3.4.17: when only the Limitless host has the attacker's art (every 30th Celebration card), the
  *  share card cannot read it. TCGdex has those pictures and lets a page read them, so its record for
  *  the card's own printing is read, the name checked (30th Classic Collection cards share the 30C
  *  code and numbers 1 to 30), and its picture tried first. Gives up after 3 seconds. */
-async function gs3416Urls(info) {
+async function gs3417Urls(info) {
   const urls = (info && info.urls) || [], c = info && info.card;
   if (!c || urls.some(u => /tcgdex\.net/.test(u)) || typeof fetch === 'undefined'
     || typeof td30CardId !== 'function' || typeof TD30_API === 'undefined') return urls;
@@ -338,7 +338,7 @@ async function v45ShareGrade() {
 async function gs261Render() {
   const g = _gs45; if (!g) return;
   const tok = ++g.tok;
-  if (!g.artP) g.artP = gs3416Urls(g.info).catch(() => g.info.urls).then(gs261Art).catch(() => null);
+  if (!g.artP) g.artP = gs3417Urls(g.info).catch(() => g.info.urls).then(gs261Art).catch(() => null);
   const art = await g.artP;
   if (g !== _gs45 || tok !== g.tok) return;
   const blob = await gs45Draw(g.deck, g.R, g.size, g.info, art);

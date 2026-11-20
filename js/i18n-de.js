@@ -1446,6 +1446,7 @@ I18N_MORE.de = {
     "Fairer grades for decks with no draw cards": "Fairere Noten für Decks ohne Zieh-Karten",
     "Grades now count local store events": "Noten zählen jetzt lokale Events in Läden",
     "Clearer grade text when showing local results": "Klarerer Notentext bei lokalen Ergebnissen",
+    "Share card art fixed for 30th Celebration": "Kartenbild auf der Teilen-Karte für 30th Celebration korrigiert",
     "Added: watch out for box": "Neu: Achte-auf-Box",
     "Share your puzzle score": "Teile dein Puzzle-Ergebnis",
     "The link opens today's puzzle, so friends play the same board.": "Der Link öffnet das heutige Puzzle, damit deine Freunde dasselbe Spielfeld spielen.",
