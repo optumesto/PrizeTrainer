@@ -35,6 +35,8 @@ const I18N_SKIP = [
   '[data-no-tr]', 'script', 'style', 'textarea', 'input', 'code', 'pre', '[contenteditable="true"]',
   '#review-deck-name', '.review-card-name', '.gf-card', '.pz-card', '.pz-tx', '.mt-nm', '.mt-tool', '.t68-n',
 ].join(',');
+// Inputs keep the player's own words, but their placeholder and labels are ours to translate.
+const I18N_SKIP_ATTRS = I18N_SKIP.split(',').filter(s => s !== 'input' && s !== 'textarea').join(',');
 const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'aria-valuetext'];
 
 /* I18N_DICT_START */
@@ -6546,19 +6548,25 @@ const rdI18n = (function () {
   function skipped(el) {
     try { return !!(el && el.closest && el.closest(I18N_SKIP)); } catch (_) { return false; }
   }
+  function attrSkipped(el) {
+    try { return !!(el && el.closest && el.closest(I18N_SKIP_ATTRS)); } catch (_) { return false; }
+  }
   function walk(root) {
     if (!root) return;
     if (root.nodeType === 3) { if (!skipped(root.parentElement)) doText(root); return; }
     if (root.nodeType !== 1 && root.nodeType !== 11) return;
     if (root.nodeType === 1) {
-      if (skipped(root)) return;
+      if (skipped(root)) { if (!attrSkipped(root)) doAttrs(root); return; }
       doAttrs(root);
     }
     const doc = root.ownerDocument || document;
     const tw = doc.createTreeWalker(root, 5 /* SHOW_ELEMENT | SHOW_TEXT */, {
       acceptNode(n) {
         if (n.nodeType === 1) {
-          if (n.matches(I18N_SKIP)) return 2;   // FILTER_REJECT: skip the whole subtree
+          if (n.matches(I18N_SKIP)) {            // FILTER_REJECT: skip the whole subtree
+            if (!n.matches(I18N_SKIP_ATTRS)) doAttrs(n);   // an input still gets its placeholder and labels
+            return 2;
+          }
           doAttrs(n);
           return 3;                              // FILTER_SKIP: look inside
         }
@@ -6579,7 +6587,7 @@ const rdI18n = (function () {
       } else if (r.type === 'attributes') {
         const el = r.target, m = attrMap.get(el), e = m && m[r.attributeName];
         if (e && el.getAttribute(r.attributeName) === e.t) continue;
-        if (!skipped(el)) doAttrs(el);
+        if (!attrSkipped(el)) doAttrs(el);
       }
     }
   }
