@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.14 (build 142): fairer grades for decks with no draw cards (19 Nov 2026)
+
+Changed files: js/core.js (no draw cut, Energy check, version, What's new, PT_BUILD now 142), js/matchups.js (reads up to 150 archetypes), js/v29-rotation.js (Synergy note), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, how-grading-works.html and .github/pages/how-grading-works.html, sw.js (cache name prize-trainer-v142). 3.4.13 is held for the local store events update.
+
+- A list with no card that draws kept 40% of its Synergy whatever else it ran, so it fell to about a 2 (a Mega Abomasnow list that placed 11th of 85 graded 2.2). Now the cut shrinks with how much it searches: a searching Supporter counts 1 and any other search card half, and 10 of those keep 75%. With that much search it is a warning, not a problem that stops the deck. The Abomasnow list grades 6.2.
+- The app read only the first 60 archetypes in matchups.json, which has 63 (the 40 most played plus every deck played enough since the newest set). Mega Abomasnow, Mega Froslass Dudunsparce and Toxtricity (PFL) lists now get their own results.
+- An attack that does damage for each Energy it discards from the top of the deck (Hammer-lanche) no longer gets Heavy on Energy.
+- Grade check: the 132 test lists do not move on the pinned data. With this week's data, 9 move up 0.1 (the field average now counts the three added archetypes); 51 real Abomasnow lists go from a median of 2.2 to 6.1, none under 3.
+
 # RdyDeck 3.4.12 (build 141): Sparring Energy and game log fixes (19 Nov 2026)
 
 Changed files: puzzle/engine.js, opponent/effects.js, opponent/ai.js, opponent/play.js, opponent/play.html, opponent/test/count.mjs (new), js/core.js (version, What's new, PT_BUILD now 141), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v141).
