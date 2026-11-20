@@ -338,14 +338,14 @@ function g68Blend(R, deck) {
 /** One plain sentence on the results part, for under the grade. */
 function g68Line(R) {
   const r = R && R.res;
-  if (!r) return R && R.noRes ? ' No online tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.' : '';
+  if (!r) return R && R.noRes ? ` No ${typeof mu60SrcWords === 'function' && mu60SrcWords() !== 'online' ? (mu60SrcWords() === 'local in-person' ? 'local in-person' : 'online or local in-person') : 'online'} tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.` : '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
   const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
   // 3.0 (Frankfurt test): this win rate counts games since the newest set three times, and the
   // Grade vs win rate section shows the plain one, so each says which it is.
   const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
   const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s online tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;
@@ -396,7 +396,7 @@ function g79Section(deck) {
   const avg = M ? W / M * 100 : null, n0 = v => v.toLocaleString('en-US'), pct = v => v.toFixed(1) + '%';
   const day = data.cur && data.cur.since ? d30Nice(data.cur.since) : '';
   let h = `<div class="g-sec" id="g79-sec"><div class="g-sec-t">Grade vs win rate</div>
-    <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless online tournaments.</div>
+    <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournaments.</div>
     <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;
   if (n < G79_MIN || avg == null) {
     h += `<p class="mu60-p">Win rate: ${n0(n)} ${n === 1 ? 'game' : 'games'} so far, too few to judge.</p>`;

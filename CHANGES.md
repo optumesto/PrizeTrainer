@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.15 (build 143): grades count local store events (20 Nov 2026)
+
+Changed files: matchups.json and .github/matchups-cache.json (41 local in-person store events added as their own source, online events as live), refresh-matchups.mjs (reads in-person store events, 16 to 63 players with decklists, each organizer checked once), .github/workflows/refresh-data.yml (up to 100 in-person requests a week, still 30 seconds apart), js/matchups.js (source words, picker label Local in person), js/v69-grade-blend.js, js/core.js (help text, version, What's new, PT_BUILD now 143), js/v80-extras.js (What's next: Regionals results), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, build-pages.mjs, faq.html, how-grading-works.html, meta-decks.html, the deck-*.html guides and their .github/pages sources, index.html (help text, version, stamps), sw.js (cache name prize-trainer-v143).
+
+- Limitless also lists smaller in-person store events (League Challenges and the like) with decklists. They now count toward matchups and grades as a second source next to online tournaments, and the Against the meta picker can show either one. Regionals and other big in-person events are not in it yet.
+- The grade, matchup and help text say "online and local in-person tournaments" in all five languages.
+- Grade check: the 132 test lists do not move on the pinned data. Against the live data, 43 of 132 move, each by 0.1 (Dragapult Blaziken, Basic Box and Dhelmise up; Dragapult, Dragapult Dudunsparce and Sharpedo Toxtricity down).
+
 # RdyDeck 3.4.14 (build 142): fairer grades for decks with no draw cards (19 Nov 2026)
 
 Changed files: js/core.js (no draw cut, Energy check, version, What's new, PT_BUILD now 142), js/matchups.js (reads up to 150 archetypes), js/v29-rotation.js (Synergy note), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, how-grading-works.html and .github/pages/how-grading-works.html, sw.js (cache name prize-trainer-v142). 3.4.13 is held for the local store events update.

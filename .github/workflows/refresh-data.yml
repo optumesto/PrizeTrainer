@@ -3,8 +3,8 @@
 # new set codes from TCGdex. Rotation is never changed here; edit it by hand.
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
-# Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments, and from the
-# same reads meta-cards.json (what each deck's lists run, for the deck builder).
+# Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments and local
+# in-person store events (16 to 63 players, with decklists), and from the online reads meta-cards.json (what each deck's lists run, for the deck builder).
 # Then refreshes the facts behind the Grade tab's Watch out for box (watch-out-data.mjs).
 # Last, checks how well grades track those results and writes grade-results.md, and the public
 # scoreboard (accuracy.json, shown on how-grading-works.html and in the app).
@@ -38,7 +38,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # 3.0: Limitless requests go 30 seconds apart (about 30 per 15 minutes), so a full run can take about 70 minutes; a cards_only run reads about 300 requests 5 seconds apart
+    timeout-minutes: 180  # Nov 19 2026: up to 100 more requests for local in-person events. 3.0: Limitless requests go 30 seconds apart (about 30 per 15 minutes), so a full run can take about 70 minutes; a cards_only run reads about 300 requests 5 seconds apart
     env:
       # 3.0: every Limitless request waits 30 seconds, about 30 per 15 minutes (Mason, Nov 13 2026).
       # The one-off cards_only run keeps its own 5 second pace.
@@ -75,6 +75,9 @@ jobs:
           PT_BACKFILL: ${{ inputs.backfill && '1' || '' }}
           PT_CARDS_ONLY: ${{ inputs.cards_only && '1' || '' }}
           PT_SLOW: ${{ inputs.slow && '1' || '' }}
+          # Nov 19 2026: local in-person store events as their own source, up to 100 requests a week (Mason, Nov 19 2026).
+          PT_IP_CALLS: ${{ inputs.cards_only && '' || '100' }}
+          PT_IP_MIN: '16'
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
       - name: Refresh the Watch out for box

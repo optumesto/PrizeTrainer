@@ -27,8 +27,16 @@
 // where a list's finish is 1 for first place and 0 for last (sums in thousandths). The app
 // ranks decks on win rate and finish together, with high finishes weighing more.
 //
-// Built for more than one source: every record is kept per source ("online" today).
-// In-person results can be added later as a second source without changing the app.
+// Built for more than one source: every record is kept per source.
+// - "online": Limitless online tournaments with MIN_PLAYERS or more.
+// - "inperson" (3.5, test, off unless PT_IP_CALLS is set): events that stores and leagues run in
+//   person on Limitless (the event's details say isOnline false), with IP_MIN players or more.
+//   The tournament list does not say which events are in person, so each organizer is looked up
+//   once, through one event's details, and kept in the cache: an organizer whose first event read
+//   is online is skipped from then on. Events of in-person organizers are each checked again
+//   (details), and only those with decklists are read. Newest first, at most PT_IP_CALLS
+//   requests a run on top of the online budget, at the same pace. The deck builder's card
+//   data (meta-cards.json) stays online only.
 //
 // Safety: a run that reads too little keeps last week's matchups.json. The files are
 // only written when something real changed, so a quiet week makes no commit.
@@ -57,6 +65,15 @@ const KNOWN_SETS = [
 ];
 const BACKFILL = !!process.env.PT_BACKFILL;
 const MIN_PLAYERS = 64;    // big enough to mean something
+// 3.5 (test): in-person events, smaller ones too. Off unless PT_IP_CALLS is set.
+const IP_MIN = Number(process.env.PT_IP_MIN) > 0 ? Number(process.env.PT_IP_MIN) : 16;
+const IP_CALLS = Number(process.env.PT_IP_CALLS) > 0 ? Number(process.env.PT_IP_CALLS) : 0;
+// PT_SOURCES=online builds the file from those sources only (to compare, with PT_OFFLINE=1).
+const ONLY_SRC = process.env.PT_SOURCES ? new Set(String(process.env.PT_SOURCES).split(',')) : null;
+const SRC_INFO = {
+  online: { name: 'Limitless online tournaments', url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD' },
+  inperson: { name: 'Limitless local in-person tournaments', url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD' },
+};
 const MAX_EVENTS = 400;    // events in the window looked at, biggest first
 // PT_SLOW=1: about 30 requests per 15 minutes (30 s apart), 25 new events a run, for a gentle catch-up.
 const SLOW = !!process.env.PT_SLOW;
@@ -76,7 +93,7 @@ const SIG_MAX = 10;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0, limitSeen = 'no limit headers';
 async function getJSON(url) {
-  if (calls++ > MAX_CALLS) throw new Error('request budget used up');
+  if (calls++ > MAX_CALLS + IP_CALLS) throw new Error('request budget used up');
   if (!process.env.PT_NO_PAUSE) await sleep(PAUSE);
   const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: AbortSignal.timeout(30000) });
   if (r.status === 429) throw new Error('rate limited by ' + new URL(url).host + ', stopping for this week');
@@ -143,7 +160,7 @@ function placements(standings) {
 }
 
 /** One event's standings and pairings, boiled down to counts. Null when it cannot be used. */
-function digest(t, standings, pairings) {
+function digest(t, standings, pairings, src = 'online') {
   const deckOf = new Map();
   const decks = {};
   for (const s of standings) {
@@ -198,14 +215,16 @@ function digest(t, standings, pairings) {
   }
   if (!matches) return null;
   return {
-    id: String(t.id), src: 'online', date: day(t.date), players: Number(t.players) || 0,
+    id: String(t.id), src, date: day(t.date), players: Number(t.players) || 0,
     name: clean(t.name, 80), decks, pairs, matches, plv: 1,
   };
 }
 
-/** Big finished events in the window, biggest first. */
+/** Big finished events in the window, biggest first. Smaller ones (IP_MIN or more) go in small. */
+let small = [];
 async function eventList(since, now) {
   const out = [];
+  small = [];
   for (let page = 1; page <= MAX_PAGES; page++) {
     const list = await getJSON(`${LIMITLESS}/tournaments?game=PTCG&format=STANDARD&limit=100&page=${page}`);
     if (!Array.isArray(list) || !list.length) break;
@@ -214,7 +233,9 @@ async function eventList(since, now) {
       const d = Date.parse(t && t.date);
       if (!d) continue;
       if (d < since) { older = true; continue; }
-      if (d < now - DAY && Number(t.players) >= MIN_PLAYERS && t.format === 'STANDARD' && /^[A-Za-z0-9]{6,40}$/.test(String(t.id))) out.push(t);
+      if (!(d < now - DAY && t.format === 'STANDARD' && /^[A-Za-z0-9]{6,40}$/.test(String(t.id)))) continue;
+      if (Number(t.players) >= MIN_PLAYERS) out.push(t);
+      else if (Number(t.players) >= IP_MIN) small.push(t);
     }
     if (older) break;
   }
@@ -229,9 +250,12 @@ function build(events, since, until, from, newest) {
   let curEvents = 0, curMatches = 0;
   let nowTotal = 0;
   let total = 0, matches = 0;
+  const srcEvents = {}, srcMatches = {};
   for (const e of events) {
     matches += e.matches;
     const src = e.src || 'online';
+    srcEvents[src] = (srcEvents[src] || 0) + 1;
+    srcMatches[src] = (srcMatches[src] || 0) + e.matches;
     const isCur = !!(newest && e.date >= newest);
     if (isCur) { curEvents++; curMatches += e.matches; }
     for (const [id, d] of Object.entries(e.decks)) {
@@ -297,16 +321,12 @@ function build(events, since, until, from, newest) {
     since: day(since), until: until ? day(until) : day(Date.now()),
     // The oldest set in the window, so the app can say "since 30th Celebration".
     window: from ? { sets: SETS_BACK, from: from.name, code: from.code } : null,
-    note: 'Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless online tournaments. Win rate = wins / matches. Mirrors, byes and no-shows left out. place per source: [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%], finish 1 for first and 0 for last, sums in thousandths.',
-    sources: [{
-      id: 'online',
-      name: 'Limitless online tournaments',
-      url: 'https://play.limitlesstcg.com/tournaments?game=PTCG&format=STANDARD',
-      events: events.length,
-      matches,
-      // Every deck's finishes summed, the same six numbers as each deck's place.
-      place: field.online || [0, 0, 0, 0, 0, 0],
-    }],
+    note: 'Matchup stats for RdyDeck, built weekly by refresh-matchups.mjs from Limitless tournaments (online, and in person when that source is listed). Win rate = wins / matches. Mirrors, byes and no-shows left out. place per source: [lists, sum of finish, sum of finish squared, top 8, top 16, top 10%], finish 1 for first and 0 for last, sums in thousandths.',
+    // Online first, always; in person next when there is any. place: every deck's finishes
+    // summed, the same six numbers as each deck's place.
+    sources: Object.keys(SRC_INFO).filter(id => id === 'online' || srcEvents[id]).map(id => ({
+      id, ...SRC_INFO[id], events: srcEvents[id] || 0, matches: srcMatches[id] || 0, place: field[id] || [0, 0, 0, 0, 0, 0],
+    })),
     cols: cols.filter(c => decks.some(d => d.id === c)),
     // v68: the same totals for the events since the newest set came out (each deck's cur).
     cur: newest && curEvents ? { since: newest, events: curEvents, matches: curMatches, place: curField } : null,
@@ -368,13 +388,39 @@ if (!process.env.PT_OFFLINE && !CARDS_ONLY) try {
     e.plv = 1;
   }
   if (again) notes.push(`placements: ${again} earlier events read again`);
+  // 3.5 (test): in-person events, newest first, within their own request budget.
+  if (IP_CALLS) {
+    const orgs = cache.orgs || (cache.orgs = {});
+    const stop = calls + IP_CALLS;
+    let ipNew = 0, ipOnline = 0, ipNoLists = 0, ipLeft = 0;
+    const todo = small.filter(t => !have.has(String(t.id))).sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+    for (const t of todo) {
+      const org = t.organizerId == null ? '' : String(t.organizerId);
+      if (org && orgs[org] === 'o') continue;
+      if (calls + 3 > stop) { ipLeft++; continue; }
+      const det = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/details`);
+      if (!det || typeof det.isOnline !== 'boolean') continue;
+      if (org && !orgs[org]) orgs[org] = det.isOnline ? 'o' : 'i';
+      // Kept as skipped, so it is not looked at again.
+      if (det.isOnline) { ipOnline++; have.set(String(t.id), { id: String(t.id), date: day(t.date), skip: true, src: 'online' }); continue; }
+      if (det.decklists === false) { ipNoLists++; have.set(String(t.id), { id: String(t.id), date: day(t.date), skip: true, src: 'inperson' }); continue; }
+      const standings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/standings`);
+      if (!Array.isArray(standings)) continue;
+      const pairings = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/pairings`);
+      if (!Array.isArray(pairings)) continue;
+      ipNew++;
+      have.set(String(t.id), digest(t, standings, pairings, 'inperson') || { id: String(t.id), date: day(t.date), skip: true, src: 'inperson' });
+    }
+    const orgN = Object.values(orgs);
+    notes.push(`in person: ${small.length} smaller events listed, ${ipNew} new read, ${ipOnline} found online, ${ipNoLists} without decklists, ${ipLeft} left to read; organizers known: ${orgN.filter(v => v === 'i').length} in person, ${orgN.filter(v => v === 'o').length} online`);
+  }
   notes.push(`window: from ${day(since)}${fromName ? ' (' + fromName.name + ')' : ''}, ${list.length} big events listed`);
   notes.push(`events: ${fresh} new, ${[...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);
 } catch (e) { notes.push('Limitless: ' + e.message + `, kept what was read (${fresh} new events)`); }
 // Card data for events read before 2.6: read them once more, newest first, a few a run.
 let cardAgain = 0;
 if (!process.env.PT_OFFLINE) try {
-  const todo = [...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY && !cardHave.has(e.id))
+  const todo = [...have.values()].filter(e => !e.skip && (e.src || 'online') === 'online' && Date.parse(e.date) >= since - DAY && !cardHave.has(e.id))
     .sort((a, b) => b.date.localeCompare(a.date));
   for (const e of todo) {
     if (cardAgain >= CARDS_AGAIN) break;
@@ -392,11 +438,11 @@ if (!process.env.PT_OFFLINE) try {
 cache.events = [...have.values()].filter(e => Date.parse(e.date) >= since - DAY);
 notes.push(`requests: ${calls} (rate limit: ${limitSeen})`);
 
-const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY);
+const use = (cache.events || []).filter(e => !e.skip && Date.parse(e.date) >= since - DAY && (!ONLY_SRC || ONLY_SRC.has(e.src || 'online')));
 const newest = cache.sets.length ? cache.sets[cache.sets.length - 1].release : null;
 const next = build(use, since, null, fromName, newest);
 const ok = next.cols.length >= 3 && next.sources[0].matches >= 200;
-notes.push(ok ? `matchups: ${next.decks.length} decks, ${next.sources[0].matches} matches` : 'matchups: too little data, kept last copy');
+notes.push(ok ? `matchups: ${next.decks.length} decks, ${next.sources.map(s => `${s.id} ${s.events} events, ${s.matches} matches`).join('; ')}` : 'matchups: too little data, kept last copy');
 
 const strip = d => JSON.stringify(d ? { ...d, asOf: null, until: null } : null);
 if (!CARDS_ONLY) await writeFile(CACHE, JSON.stringify(cache) + '\n');
@@ -407,7 +453,7 @@ else if (ok && strip(next) !== strip(old)) {
 } else notes.push('matchups.json: no change');
 
 // The deck builder's card data, from the same events as matchups.json.
-const inWindow = new Set(use.map(e => e.id));
+const inWindow = new Set(use.filter(e => (e.src || 'online') === 'online').map(e => e.id));
 cardCache.events = [...cardHave.values()].filter(e => inWindow.has(e.id));
 await writeFile(CARDS_CACHE, JSON.stringify(cardCache) + '\n');
 const names = {};
