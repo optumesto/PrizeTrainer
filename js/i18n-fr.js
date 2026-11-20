@@ -2567,3 +2567,40 @@ I18N_MORE.fr.pat.unshift(
   [/^(\d+) of your Pokemon have 70 HP or less\.$/, (m, n) => n + ' de vos Pokémon ont 70 PV ou moins.'],
   [/^Win rates are for all (.+) lists, as in Against the meta\.$/, (m, n) => 'Les taux de victoire portent sur toutes les listes ' + n + ', comme dans Face à la méta.'],
 );
+
+// 3.4.20: Guess the Grade (js/gtg.js).
+Object.assign(I18N_MORE.fr.dict, {
+  "Guess the Grade": "Devinez la note",
+  "Guess the Grade added": "Nouveau : Devinez la note",
+  "Reading today's list…": "Lecture de la liste du jour…",
+  "Guess the Grade needs a connection to read today's list. Try again in a moment.": "Devinez la note a besoin d'une connexion pour lire la liste du jour. Réessayez dans un instant.",
+  "A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.": "Une vraie liste de tournoi, la même pour tout le monde aujourd'hui. Étudiez-la, puis devinez la note sur 10 que RdyDeck lui donne. Vous avez 4 essais. Chacun indique plus haut ou plus bas, et Chaud (à 0.2 près), Tiède (à 0.5 près) ou Froid.",
+  "Today's list": "Liste du jour",
+  "Right": "Exact",
+  "Hot": "Chaud",
+  "Warm": "Tiède",
+  "Cold": "Froid",
+  "Not this time": "Pas cette fois",
+  "A new list tomorrow.": "Nouvelle liste demain.",
+  "Lower guess": "Diminuer",
+  "Higher guess": "Augmenter",
+  "Your guess": "Votre proposition",
+  "Guess the grade of a real tournament list": "Devinez la note d'une vraie liste de tournoi",
+  "Your result": "Votre résultat",
+  "Finish today's Guess the Grade first.": "Terminez d'abord le Devinez la note du jour.",
+  "Everyone gets the same real tournament list today. Study it, then guess the grade RdyDeck gives it. You get 4 guesses.": "Aujourd'hui, tout le monde a la même vraie liste de tournoi. Étudiez-la, puis devinez la note que RdyDeck lui donne. Vous avez 4 essais.",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^Guess the Grade #(\d+)$/, "Devinez la note n°$1"],
+  [/^RdyDeck Guess the Grade #(\d+): got it in (\d+) of (\d+)$/, "RdyDeck Devinez la note n°$1 : trouvé en $2 sur $3"],
+  [/^RdyDeck Guess the Grade #(\d+): not solved in (\d+)$/, "RdyDeck Devinez la note n°$1 : pas trouvé en $2"],
+  [/^(Higher|Lower)\. (Hot: within 0\.2|Warm: within 0\.5|Cold: more than 0\.5 off)\.$/, (m, w, h) => (w === 'Higher' ? 'Plus haut' : 'Plus bas') + '. ' + { H: 'Chaud : à 0.2 près.', W: 'Tiède : à 0.5 près.', C: 'Froid : écart de plus de 0.5.' }[h[0]]],
+  [/^Got it in (\d+) of (\d+)$/, "Trouvé en $1 sur $2"],
+  [/^The grade is ([\d.]+)\.$/, "La note est de $1."],
+  [/^Guess (\d+) of (\d+)$/, "Essai $1 sur $2"],
+  [/^Guess (\d+\.\d)$/, "Proposer $1"],
+  [/^Between (\d+\.\d) and (\d+\.\d)$/, "Entre $1 et $2"],
+  [/^Today: got it in (\d+) of (\d+)$/, "Aujourd'hui : trouvé en $1 sur $2"],
+  [/^Today: the grade was (\d+\.\d)$/, "Aujourd'hui : la note était de $1"],
+  [/^Today: (\d+) of (\d+) guesses used$/, (m, a, b) => "Aujourd'hui : " + a + (a === '1' ? ' essai utilisé sur ' : ' essais utilisés sur ') + b],
+);

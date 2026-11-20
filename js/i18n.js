@@ -6235,6 +6235,64 @@ I18N_PAT.unshift(
   [/^Win rates are for all (.+) lists, as in Against the meta\.$/, 'Los porcentajes de victoria son de todas las listas de $1, como en Contra el meta.', 'As taxas de vitória são de todas as listas de $1, como em Contra o meta.'],
 );
 
+// 3.4.20: Guess the Grade (js/gtg.js).
+Object.assign(I18N_ES, {
+  "Guess the Grade": "Adivina la calificación",
+  "Guess the Grade added": "Nuevo: Adivina la calificación",
+  "Reading today's list…": "Leyendo la lista de hoy…",
+  "Guess the Grade needs a connection to read today's list. Try again in a moment.": "Adivina la calificación necesita conexión para leer la lista de hoy. Vuelve a intentarlo en un momento.",
+  "A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.": "Una lista real de torneo, la misma para todos hoy. Estúdiala y adivina la calificación sobre 10 que le da RdyDeck. Tienes 4 intentos. Cada uno te dice si es más alta o más baja, y si estás Caliente (a 0.2 o menos), Tibio (a 0.5 o menos) o Frío.",
+  "Today's list": "Lista de hoy",
+  "Right": "Exacto",
+  "Hot": "Caliente",
+  "Warm": "Tibio",
+  "Cold": "Frío",
+  "Not this time": "Esta vez no",
+  "A new list tomorrow.": "Mañana, una lista nueva.",
+  "Lower guess": "Bajar el número",
+  "Higher guess": "Subir el número",
+  "Your guess": "Tu intento",
+  "Guess the grade of a real tournament list": "Adivina la calificación de una lista real de torneo",
+  "Your result": "Tu resultado",
+  "Finish today's Guess the Grade first.": "Primero termina el Adivina la calificación de hoy.",
+  "Everyone gets the same real tournament list today. Study it, then guess the grade RdyDeck gives it. You get 4 guesses.": "Hoy todos reciben la misma lista real de torneo. Estúdiala y adivina la calificación que le da RdyDeck. Tienes 4 intentos.",
+});
+Object.assign(I18N_PT, {
+  "Guess the Grade": "Adivinhe a nota",
+  "Guess the Grade added": "Novo: Adivinhe a nota",
+  "Reading today's list…": "Lendo a lista de hoje…",
+  "Guess the Grade needs a connection to read today's list. Try again in a moment.": "O Adivinhe a nota precisa de conexão para ler a lista de hoje. Tente de novo daqui a pouco.",
+  "A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.": "Uma lista real de torneio, a mesma para todos hoje. Estude a lista e adivinhe a nota de 0 a 10 que o RdyDeck dá a ela. Você tem 4 palpites. Cada um diz se a nota é mais alta ou mais baixa, e se você está Quente (até 0.2), Morno (até 0.5) ou Frio.",
+  "Today's list": "Lista de hoje",
+  "Right": "Acertou",
+  "Hot": "Quente",
+  "Warm": "Morno",
+  "Cold": "Frio",
+  "Not this time": "Não foi desta vez",
+  "A new list tomorrow.": "Amanhã tem lista nova.",
+  "Lower guess": "Diminuir o número",
+  "Higher guess": "Aumentar o número",
+  "Your guess": "Seu palpite",
+  "Guess the grade of a real tournament list": "Adivinhe a nota de uma lista real de torneio",
+  "Your result": "Seu resultado",
+  "Finish today's Guess the Grade first.": "Termine primeiro o Adivinhe a nota de hoje.",
+  "Everyone gets the same real tournament list today. Study it, then guess the grade RdyDeck gives it. You get 4 guesses.": "Hoje todos recebem a mesma lista real de torneio. Estude a lista e adivinhe a nota que o RdyDeck dá a ela. Você tem 4 palpites.",
+});
+I18N_PAT.unshift(
+  [/^Guess the Grade #(\d+)$/, "Adivina la calificación #$1", "Adivinhe a nota #$1"],
+  [/^RdyDeck Guess the Grade #(\d+): got it in (\d+) of (\d+)$/, "RdyDeck Adivina la calificación #$1: acerté en $2 de $3", "RdyDeck Adivinhe a nota #$1: acertei em $2 de $3"],
+  [/^RdyDeck Guess the Grade #(\d+): not solved in (\d+)$/, "RdyDeck Adivina la calificación #$1: no acerté en $2", "RdyDeck Adivinhe a nota #$1: não acertei em $2"],
+  [/^(Higher|Lower)\. (Hot: within 0\.2|Warm: within 0\.5|Cold: more than 0\.5 off)\.$/, (m, w, h) => (w === 'Higher' ? 'Más alta' : 'Más baja') + '. ' + { H: 'Caliente: a 0.2 o menos.', W: 'Tibio: a 0.5 o menos.', C: 'Frío: a más de 0.5.' }[h[0]], (m, w, h) => (w === 'Higher' ? 'Mais alta' : 'Mais baixa') + '. ' + { H: 'Quente: até 0.2.', W: 'Morno: até 0.5.', C: 'Frio: mais de 0.5 de diferença.' }[h[0]]],
+  [/^Got it in (\d+) of (\d+)$/, "Acertaste en $1 de $2", "Acertou em $1 de $2"],
+  [/^The grade is ([\d.]+)\.$/, "La calificación es $1.", "A nota é $1."],
+  [/^Guess (\d+) of (\d+)$/, "Intento $1 de $2", "Palpite $1 de $2"],
+  [/^Guess (\d+\.\d)$/, "Adivinar $1", "Chutar $1"],
+  [/^Between (\d+\.\d) and (\d+\.\d)$/, "Entre $1 y $2", "Entre $1 e $2"],
+  [/^Today: got it in (\d+) of (\d+)$/, "Hoy: acertaste en $1 de $2", "Hoje: acertou em $1 de $2"],
+  [/^Today: the grade was (\d+\.\d)$/, "Hoy: la calificación era $1", "Hoje: a nota era $1"],
+  [/^Today: (\d+) of (\d+) guesses used$/, "Hoy: $1 de $2 intentos usados", "Hoje: $1 de $2 palpites usados"],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
