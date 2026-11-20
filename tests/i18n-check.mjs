@@ -334,6 +334,19 @@ const SCREENS = [
   ['log a match', async w => { w.openTlogForm(); await tick(100); }],
   ['daily challenge', async w => { shut(w); w.showScreen('home'); await w.startDaily(); await tick(500); }],
   ['puzzle', async w => { shut(w); await w.openPuzzle(); await tick(300); }],
+  // Rare Pull: the rules, a prompt with search hits, a fit, a pick that is not that kind of card, a pass, the score, home after.
+  ['rare pull: rules', async w => { shut(w); w.showScreen('home'); await w.rpOpen(); await tick(300); }],
+  ['rare pull: prompt', async w => { w.rpStart(); await tick(200); w.rpFind('ball'); await tick(100); }],
+  ['rare pull: a fit', async w => { w.eval(`(() => { const p = rpG.prompts[0], f = p.fits[p.fits.length - 1]; rpG.hits = [{ k: f.k, n: f.n }]; rpPick(0); })()`); await tick(200); }],
+  ['rare pull: not a fit', async w => { w.rpNext(); await tick(100); w.eval(`(() => { const p = rpG.prompts[1], t = RP_CATS[p.cat][1]; const x = rpData.list.find(y => { const c = rpData.kind.get(y.k); return c && !t(c); }); rpG.hits = [x]; rpPick(0); })()`); await tick(200); }],
+  ['rare pull: passed', async w => { w.rpNext(); await tick(100); w.rpPick(null); await tick(200); }],
+  ['rare pull: score', async w => { for (let i = 3; i < 7; i++) { w.rpNext(); w.rpPick(null, i === 6); } w.rpEnd(); await tick(200); }],
+  ['rare pull: replay rules', async w => { await w.rpOpen(); await tick(300); }],
+  ['home: rare pull played', async w => {
+    shut(w); w.rpQuit();
+    w.eval(`(() => { const R = rpStore().results; R[dailyKey(Date.now() - 86400000)] = { score: 300, p: [10, 20, 30, 40, 50, 60, 90], ts: 1 }; })()`);
+    w.renderHome(); await tick(100);
+  }],
   ['deck builder', async w => { shut(w); w.showScreen('home'); await w.openBuilder(); await tick(800); }],
   ['builder: meta deck', async w => { w.bldStartMeta(); await tick(400); }],
   ['builder: a list', async w => { w.eval('bldSheetActs[0]()'); await tick(400); shut(w); await tick(600); }],
