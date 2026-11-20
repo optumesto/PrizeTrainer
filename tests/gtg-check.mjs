@@ -177,7 +177,10 @@ const res = JSON.parse(w.eval('JSON.stringify(gtgStore().results[dailyKey()])'))
 ok(res.done && res.won && res.g.length === 4, 'the fourth guess wins and is saved');
 ok(/Got it in 4 of 4/.test(d.querySelector('#gtg-play .gtg-done-tx').textContent), 'the result says Got it in 4 of 4');
 ok(/Today: got it in 4 of 4/.test(d.querySelector('#gtg-card .dc-s').textContent), 'the home card shows today\'s result');
+ok(d.querySelector('.dgg') && d.querySelectorAll('#gtg-play .dgg-m').length === 4 && d.querySelector('#gtg-play .dgg-ans'), 'the gauge shows 4 guesses and the grade (3.4.23)');
 await w.shareGtg(); await wait(50);
+ok(d.querySelector('#dgs-pic') && /Share your result/.test(d.body.textContent), 'Share opens the picture sheet (3.4.23)');
+await w.dgShareGo(); await wait(50);
 ok(shared && /^RdyDeck Guess the Grade #2: got it in 4 of 4\n(⬆️|⬇️)⚪ (⬆️|⬇️)🟠 (⬆️|⬇️)🔴 ✅$/.test(shared.text), 'share text: ' + JSON.stringify(shared && shared.text));
 ok(shared && !shared.text.includes(ans.toFixed(1)), 'the share text gives no grade away');
 ok(shared && /\?ref=guess#guess$/.test(shared.url), 'the share link opens the game: ' + (shared && shared.url));
