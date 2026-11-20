@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.19 (build 147): Rare Pull daily game (20 Nov 2026)
+
+New daily game beside the puzzle: 7 card prompts a day, the same for everyone, picked from the card list and checked against real card data. Rarer correct answers score more, by how few top tournament lists run the card (meta-cards.json). 30 seconds a prompt, Pass button, score out of 700, streak, spoiler-free share. No ads in the game; nothing leaves the device.
+
+Changed files: js/rare-pull.js (new), index.html (home card, script, wide layout row), js/core.js (version, What's new, PT_BUILD now 147), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, tests/i18n-check.mjs (game screens), sw.js (cache name prize-trainer-v147).
+
 # RdyDeck 3.4.18 (build 146): Sparring game log fixes (20 Nov 2026)
 
 Changed files: puzzle/engine.js (logName: a log line names a twin's spot), opponent/effects.js (effect log lines use it), opponent/play.js (the winner line is logged once), js/i18n.js (spot words in log lines translated, What's new), js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new), js/core.js (version, What's new, PT_BUILD now 146), sw.js (cache v146), index.html (version, stamp), opponent/test/report.mjs and opponent/test/sparring.mjs (new checks).
