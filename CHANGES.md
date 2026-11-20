@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.25 (build 153): What's new card fixed (20 Nov 2026)
+
+Changed files: js/core.js (PT_VERSION now v3.4.25, What's new, PT_BUILD now 153), index.html (softwareVersion, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new string), sw.js (cache name prize-trainer-v153).
+
+- 3.4.23 and 3.4.24 left the app's version at v3.4.22, so returning players never saw the What's new card for either and Settings showed v3.4.22. The version now matches What's new, so the card shows once, with 3.4.24 and 3.4.23 listed below it. Nothing else changes.
+
 # RdyDeck 3.4.24 (build 152): Losing decks grade lower (20 Nov 2026)
 
 Changed files: js/v69-grade-blend.js (results score below an average record, full results share at 250 games), js/core.js (version, What's new, PT_BUILD now 152), index.html (FAQ wording, stamps), deck-grader.html and how-grading-works.html (250 games, below-average records, worked example), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (250 games, new string), sw.js (cache name prize-trainer-v152), tests/grade-baseline.json (37 lists move down, all from decks with a below-average record).

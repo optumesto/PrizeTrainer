@@ -6367,6 +6367,7 @@ I18N_PAT.unshift(
 
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_ES, {
+  "What's new card fixed": "Tarjeta de Novedades arreglada",
   "Daily games fixes": "Arreglos en los juegos diarios",
   "Daily games new look": "Nuevo aspecto de los juegos diarios",
   "Losing decks grade lower": "Las barajas que pierden califican más bajo",
@@ -6394,6 +6395,7 @@ Object.assign(I18N_ES, {
   "Result of Guess the Grade": "Resultado de Adivina la calificación",
 });
 Object.assign(I18N_PT, {
+  "What's new card fixed": "Cartão de Novidades corrigido",
   "Daily games fixes": "Correções nos jogos diários",
   "Daily games new look": "Novo visual dos jogos diários",
   "Losing decks grade lower": "Decks que perdem recebem notas mais baixas",
