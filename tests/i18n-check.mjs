@@ -333,7 +333,19 @@ const SCREENS = [
   ['tournament log', async w => { shut(w); w.showScreen('home'); w.openTlog(); await tick(300); }],
   ['log a match', async w => { w.openTlogForm(); await tick(100); }],
   ['daily challenge', async w => { shut(w); w.showScreen('home'); await w.startDaily(); await tick(500); }],
+  // 3.4.23: the daily games' new look (js/dg-look.js)
+  ['daily challenge: prizes face down', async w => { await w.dailyBegin(); await tick(500); await w.revealPrizes(true); await tick(600); }],
+  ['daily challenge: share picture', async w => { await w.shareDaily(); await tick(200); }],
   ['puzzle', async w => { shut(w); await w.openPuzzle(); await tick(300); }],
+  ['puzzle: winning line', async w => {
+    w.eval(`(() => { pzS.line = ['Bench', 'Evolve', 'Energy', 'Tool', 'Stadium', 'Trainer', 'Ability', 'Retreat', 'Attack'].map(x => ({ c: { name: 'Pikachu', img: '' }, w: x })); })()`);
+    w.openSheet(w.dgPzLine()); await tick(100);
+  }],
+  ['daily games: picture words', async w => {
+    // The English lines the share pictures draw, so the walker's own translation of them is what is checked (the canvas runs them through rdI18n.t).
+    const L = ['of 6 prizes', 'in 2:05', '3 day streak', 'Same deck and shuffle for everyone today. Can you find them all?', 'Daily challenge #9', 'Guess the Grade #9', 'Got it in 2 of 4', 'Not this time', 'A real tournament list, the same for everyone today.', '3 days in a row', 'Cold', 'Warm', 'Hot', 'Right', "Guess the grade of today's list. Can you get it?", 'Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.'];
+    w.openSheet(L.map(x => '<div class="modal-hint">' + w.esc(x) + '</div>').join('')); await tick(100);
+  }],
   ['puzzle: prizes taken', async w => { w.openSheet('<div class="pz-zone mt-handw">' + w.pzHandHTML([{ card: { cat: 'hidden' } }, { card: { cat: 'hidden' } }]) + w.pzHandHTML([{ card: { cat: 'hidden' } }]) + '</div>'); await tick(100); }],
   // Rare Pull: the rules, a prompt with search hits, a fit, a pick that is not that kind of card, a pass, the score, home after.
   ['rare pull: rules', async w => { shut(w); w.showScreen('home'); await w.rpOpen(); await tick(300); }],
@@ -403,6 +415,7 @@ const SCREENS = [
     // The English line, so the walker's own translation of it is what is checked (gtgShareText runs the same patterns through rdI18n.t).
     w.openSheet('<div class="modal-hint">' + w.esc(w.eval('(() => { const t = rdI18n.t; rdI18n.t = s => s; try { return gtgShareText(gtgStore().results[dailyKey()], dailyKey()); } finally { rdI18n.t = t; } })()').split('\n')[0]) + '</div>'); await tick(100);
   }],
+  ['guess the grade: share picture', async w => { await w.shareGtg(); await tick(200); }],
   ['home: guess the grade won', async w => { shut(w); w.showScreen('home'); w.renderHome(); await tick(100); }],
   ['guess the grade: lost', async w => {
     w.eval(`(() => { const R = gtgStore().results; delete R[dailyKey(Date.now() - 86400000)]; R[dailyKey()] = { ans: 7.0, g: [], ts: 1 }; })()`);

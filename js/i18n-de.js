@@ -163,6 +163,7 @@ I18N_MORE.de = {
     "Your score": "Deine Wertung",
     "Today's score stays": "Die heutige Wertung bleibt",
     "Best pull:": "Beste Karte:",
+    "Best pull": "Beste Karte",
     "New prompts tomorrow.": "Morgen gibt es neue Aufgaben.",
     "Share score": "Wertung teilen",
     "Play today's Rare Pull first.": "Spiel zuerst das heutige Rare Pull.",
@@ -2658,9 +2659,40 @@ I18N_MORE.de.pat.unshift(
   [/^in (\d+:\d\d)$/, "in $1 Min."],
 );
 
+// 3.4.23: Daily games new look (js/dg-look.js): share sheets and pictures, face-down prizes, winning line,
+// and the results screen's line on your last games.
+Object.assign(I18N_MORE.de.dict, {
+  "A real tournament list, the same for everyone today.": "Eine echte Turnierliste, heute für alle gleich.",
+  "Found": "Gefunden",
+  "Missed": "Verpasst",
+  "Play today's challenge first.": "Spiel zuerst die heutige Herausforderung.",
+  "Same deck and shuffle for everyone today. Can you find them all?": "Heute für alle dasselbe Deck und dieselbe Mischung. Findest du alle?",
+  "Show all": "Alle zeigen",
+  "Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.": "Inoffizielles Fan-Tool, nicht verbunden mit The Pokémon Company oder Nintendo.",
+  "Tap to see": "Zum Ansehen tippen",
+  "Your winning line": "Dein Weg zum Sieg",
+  "Missed. Tap to see it": "Verpasst. Zum Ansehen tippen",
+  "The link opens today's challenge, so friends get the same deck and shuffle. The picture shows no cards.": "Der Link öffnet die heutige Herausforderung, damit deine Freunde dasselbe Deck und dieselbe Mischung bekommen. Das Bild zeigt keine Karten.",
+  "The picture shows how close each guess got, with no grade and no deck. The link opens today's game.": "Das Bild zeigt, wie nah jeder Tipp lag, ohne Note und ohne Deck. Der Link öffnet das heutige Spiel.",
+  "Share your daily score": "Teile deine Tageswertung",
+  "Share your result": "Teile dein Ergebnis",
+  "of 6 prizes": "von 6 Preiskarten",
+  "Guess the grade of today's list. Can you get it?": "Errate die Note der heutigen Liste. Schaffst du es?",
+  "DECK": "DECK",
+  "accuracy,": "Trefferquote,",
+  "a game.": "pro Spiel.",
+});
+I18N_MORE.de.pat.unshift(
+  [/^Last (\d+) games:$/, "Letzte $1 Spiele:"],
+  [/^Daily challenge #(\d+) scored$/, "Tägliche Herausforderung #$1 gewertet"],
+  [/^(\d+) of 6 in (\d+:\d\d)\. Your first try is the one that counts\.$/, "$1 von 6 in $2. Dein erster Versuch zählt."],
+  [/^Today's score stays (\d+) of 6 in (\d+:\d\d)\.$/, "Die heutige Wertung bleibt $1 von 6 in $2."],
+);
+
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.de.dict, {
   "Daily games fixes": "Korrekturen bei den Tagesspielen",
+  "Daily games new look": "Neuer Look der Tagesspiele",
   "1 day streak": "1 Tag in Folge",
   "Card position": "Kartenposition",
   "Did you mean this card?": "Meintest du diese Karte?",

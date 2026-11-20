@@ -2,6 +2,18 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.23 (build 151): Daily games new look (20 Nov 2026)
+
+Changed files: js/dg-look.js (new: the daily games' new look and share pictures), index.html (script, version, stamps), js/core.js (version, What's new, PT_BUILD now 151, missed card names on the results screen stay as card names), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), sw.js (cache name prize-trainer-v151), tests/i18n-check.mjs (new screens for the face-down prizes, share pictures and winning line), tests/gtg-check.mjs (gauge and share sheet).
+
+- Daily challenge: the result shows your 6 Prize cards face down, marked found or missed. Tap a missed one to turn it over, or Show all. Share opens a picture of your result (wide or square), drawn on your device, with no cards that give the deck away.
+- Guess the Grade: a gauge shows each guess as cold, warm or hot along the 1 to 10 line, and the grade once you finish. Share opens a picture that shows how close each guess got, with no grade and no deck.
+- Daily puzzle: after a win, your winning line shows as small cards with what each step did.
+- Rare Pull: foil. The card you named sits on a tile with a thin foil edge in its rarity's color. One slow sheen crosses it when it lands, then the card sways about 12 degrees each way while idle so the foil catches the light. The end screen shows all seven pulls as small tiles with their scores, and your best pull on a foil tile. No flashing.
+- Home: each daily game row has a color edge and faded card art, and the heading has a ring for how many you played today.
+- With reduced motion on, nothing turns, sweeps or sways. No ads on any game screen. Nothing new leaves the device.
+- Fixed: the Daily challenge's score banner ("Daily challenge #12 scored", "5 of 6 in 0:42") and the results line on your last games ("accuracy", "a game") were left in English in every other language.
+
 # RdyDeck 3.4.22 (build 150): Daily games fixes (20 Nov 2026)
 
 Changed files: index.html (Daily games heading with the date and one streak, easier to read hint and status text, focus ring on the card slider, version, stamps), js/daily-games.js (date, "New today" while any game is open, one streak for all four games), js/core.js (version, What's new, PT_BUILD now 150, Daily puzzle number and labels, card slider keys, Tab no longer pulls focus to the guess box, row button names), js/puzzle-extras.js (share text and image number, date and deck line), js/rare-pull.js (search offers only fits, says why a real card does not fit, closest fit for a slip, end screen total, rules line, row button names), js/gtg.js (home row hides the grade, one line per card name, row button names), js/i18n.js (aria-valuetext translated too, and the hint and label of a search or text box), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), sw.js (cache name prize-trainer-v150), tests/i18n-check.mjs (new Rare Pull, puzzle and streak screens), tests/gtg-check.mjs (streak in the heading, no grade on the row).

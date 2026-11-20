@@ -104,6 +104,7 @@ const I18N_ES = {
   "Your score": "Tu puntuación",
   "Today's score stays": "Tu puntuación de hoy sigue siendo",
   "Best pull:": "Mejor carta:",
+  "Best pull": "Mejor carta",
   "New prompts tomorrow.": "Mañana hay preguntas nuevas.",
   "Share score": "Compartir puntuación",
   "Play today's Rare Pull first.": "Primero juega el Rare Pull de hoy.",
@@ -1301,6 +1302,7 @@ const I18N_PT = {
   "Your score": "Sua pontuação",
   "Today's score stays": "A pontuação de hoje continua",
   "Best pull:": "Melhor carta:",
+  "Best pull": "Melhor carta",
   "New prompts tomorrow.": "Amanhã tem perguntas novas.",
   "Share score": "Compartilhar pontuação",
   "Play today's Rare Pull first.": "Jogue o Rare Pull de hoje primeiro.",
@@ -6312,9 +6314,61 @@ I18N_PAT.unshift(
   [/^in (\d+:\d\d)$/, "en $1", "em $1"],
 );
 
+// 3.4.23: Daily games new look (js/dg-look.js): share sheets and pictures, face-down prizes, winning line,
+// and the results screen's line on your last games.
+Object.assign(I18N_ES, {
+  "A real tournament list, the same for everyone today.": "Una lista real de torneo, la misma para todos hoy.",
+  "Found": "Encontrada",
+  "Missed": "Fallada",
+  "Play today's challenge first.": "Juega primero el desafío de hoy.",
+  "Same deck and shuffle for everyone today. Can you find them all?": "La misma baraja y el mismo barajado para todos hoy. ¿Puedes encontrarlas todas?",
+  "Show all": "Ver todas",
+  "Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.": "Herramienta no oficial hecha por fans, sin afiliación con The Pokémon Company ni Nintendo.",
+  "Tap to see": "Toca para verla",
+  "Your winning line": "Tu jugada ganadora",
+  "Missed. Tap to see it": "Fallada. Toca para verla",
+  "The link opens today's challenge, so friends get the same deck and shuffle. The picture shows no cards.": "El enlace abre el desafío de hoy, así tus amigos tienen la misma baraja y el mismo barajado. La imagen no muestra cartas.",
+  "The picture shows how close each guess got, with no grade and no deck. The link opens today's game.": "La imagen muestra qué tan cerca quedó cada intento, sin la calificación ni la baraja. El enlace abre el juego de hoy.",
+  "Share your daily score": "Comparte tu puntuación diaria",
+  "Share your result": "Comparte tu resultado",
+  "of 6 prizes": "de 6 premios",
+  "Guess the grade of today's list. Can you get it?": "Adivina la calificación de la lista de hoy. ¿Lo logras?",
+  "DECK": "BARAJA",
+  "accuracy,": "de acierto,",
+  "a game.": "por partida.",
+});
+Object.assign(I18N_PT, {
+  "A real tournament list, the same for everyone today.": "Uma lista real de torneio, a mesma para todos hoje.",
+  "Found": "Encontrada",
+  "Missed": "Perdida",
+  "Play today's challenge first.": "Jogue o desafio de hoje primeiro.",
+  "Same deck and shuffle for everyone today. Can you find them all?": "O mesmo deck e o mesmo embaralhamento para todos hoje. Você consegue achar todas?",
+  "Show all": "Ver todas",
+  "Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.": "Ferramenta não oficial feita por fãs, sem afiliação com The Pokémon Company ou Nintendo.",
+  "Tap to see": "Toque para ver",
+  "Your winning line": "Sua jogada vencedora",
+  "Missed. Tap to see it": "Perdida. Toque para ver",
+  "The link opens today's challenge, so friends get the same deck and shuffle. The picture shows no cards.": "O link abre o desafio de hoje, assim seus amigos recebem o mesmo deck e o mesmo embaralhamento. A imagem não mostra cartas.",
+  "The picture shows how close each guess got, with no grade and no deck. The link opens today's game.": "A imagem mostra o quão perto cada palpite chegou, sem a nota e sem o deck. O link abre o jogo de hoje.",
+  "Share your daily score": "Compartilhe sua pontuação diária",
+  "Share your result": "Compartilhe seu resultado",
+  "of 6 prizes": "de 6 prêmios",
+  "Guess the grade of today's list. Can you get it?": "Adivinhe a nota da lista de hoje. Você consegue?",
+  "DECK": "DECK",
+  "accuracy,": "de acerto,",
+  "a game.": "por partida.",
+});
+I18N_PAT.unshift(
+  [/^Last (\d+) games:$/, "Últimas $1 partidas:", "Últimas $1 partidas:"],
+  [/^Daily challenge #(\d+) scored$/, "Desafío diario #$1 registrado", "Desafio diário #$1 registrado"],
+  [/^(\d+) of 6 in (\d+:\d\d)\. Your first try is the one that counts\.$/, "$1 de 6 en $2. Solo cuenta tu primer intento.", "$1 de 6 em $2. Só a sua primeira tentativa conta."],
+  [/^Today's score stays (\d+) of 6 in (\d+:\d\d)\.$/, "Tu puntuación de hoy sigue siendo $1 de 6 en $2.", "A pontuação de hoje continua $1 de 6 em $2."],
+);
+
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_ES, {
   "Daily games fixes": "Arreglos en los juegos diarios",
+  "Daily games new look": "Nuevo aspecto de los juegos diarios",
   "1 day streak": "Racha de 1 día",
   "Card position": "Posición de la carta",
   "Did you mean this card?": "¿Querías decir esta carta?",
@@ -6340,6 +6394,7 @@ Object.assign(I18N_ES, {
 });
 Object.assign(I18N_PT, {
   "Daily games fixes": "Correções nos jogos diários",
+  "Daily games new look": "Novo visual dos jogos diários",
   "1 day streak": "Sequência de 1 dia",
   "Card position": "Posição da carta",
   "Did you mean this card?": "Você quis dizer esta carta?",

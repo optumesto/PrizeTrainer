@@ -8,7 +8,8 @@
 //      shape (Cold a ring, Warm a diamond, Hot a triangle, right a square) and the grade marked when
 //      the game ends. Share makes a picture of how warm each guess got, with no grade and no deck.
 //   3. Daily puzzle: a winning line is shown as the cards you played, in order.
-//   4. Rare Pull: the card you named, framed in its rarity's color. The end screen shows all seven.
+//   4. Rare Pull: foil. The card you named on a tile with a foil edge in its rarity's color,
+//      swaying a few degrees while idle. The end screen shows all seven and the best pull.
 //   5. Home: each daily game's row has its own color edge and faded card art, and the heading has
 //      a ring that fills as the games are played.
 // Moves are short (200 to 400ms, ease out) and nothing loops or flashes; with reduced motion on,
@@ -380,7 +381,7 @@ function dgPzStep(s, a) {
   switch (a.t) {
     case 'bench': return { c: dgPzRef(s, a.uid), w: 'Bench' };
     case 'evolve': return { c: dgPzRef(s, a.uid), w: 'Evolve' };
-    case 'candy': return { c: dgPzRef(s, a.s2), w: 'Rare Candy' };
+    case 'candy': return { c: dgPzRef(s, a.s2), w: 'Evolve' };
     case 'energy': return { c: dgPzRef(s, a.uid), w: 'Energy' };
     case 'tool': return { c: dgPzRef(s, a.uid), w: 'Tool' };
     case 'stadium': return { c: dgPzRef(s, a.uid), w: 'Stadium' };
@@ -447,15 +448,17 @@ function dgPzLine() {
   };
 })();
 
-// ═══ 4. Rare Pull: the card you named, in a frame of its rarity's color ═══
+// ═══ 4. Rare Pull: foil. The card you named sits on a dark tile with a thin foil edge in its
+//     rarity's color. One slow sheen crosses the tile when it lands, then the card sways about 12
+//     degrees each way while it sits, so the foil catches the light. Calm: no flashing, and all of it stops
+//     with reduced motion. ═══
 function dgRpCard(k) {
   const c = k && rpData && rpData.kind ? rpData.kind.get(k) : null;
   return c && c.s && c.no ? c : null;
 }
-function dgRpFrame(k, name, ix, cls) {
-  const c = dgRpCard(k);
-  if (!c) return '';
-  return `<span class="dgr ${cls || ''} dgr-t${ix}">${dgImg(c.s, c.no, 'dgr-img', name)}</span>`;
+/** The card itself, with its glint. live: it sways while idle. */
+function dgFoilCard(c, name, live) {
+  return `<span class="dgf-card${live ? ' dgf-live' : ''}">${dgImg(c.s, c.no, 'dgf-img', name) || '<span class="dg-noimg"></span>'}<i class="dgf-glint" aria-hidden="true"></i></span>`;
 }
 (function () {
   if (typeof rpReveal !== 'function') return;
@@ -463,10 +466,16 @@ function dgRpFrame(k, name, ix, cls) {
   rpReveal = function (p, pick) {
     const out = _rv.apply(this, arguments);
     try {
-      const top = document.querySelector('#rp-body .rp-res-top');
-      // a card that fits gets its rarity's frame; one that scores nothing a plain one
-      const fr = pick && pick.k ? dgRpFrame(pick.k, pick.n, pick.how === 'fit' ? rpTierIx(pick.score) : 0, 'dgr-big') : '';
-      if (top && fr) { top.insertAdjacentHTML('afterbegin', fr); top.classList.add('dgr-has'); }
+      const res = document.querySelector('#rp-body .rp-res');
+      const fit = pick && pick.how === 'fit', ix = fit ? rpTierIx(pick.score) : 0;
+      const c = pick && pick.k ? dgRpCard(pick.k) : null;
+      if (res) {
+        res.classList.add('dgf', 'dgf-t' + ix);
+        // a card that does not count still shows, dimmed and still, so you see what you named
+        if (c) res.insertAdjacentHTML('afterbegin', `<div class="dgf-stage">${dgFoilCard(c, pick.n, fit)}</div>`);
+        if (fit) res.insertAdjacentHTML('afterbegin', '<i class="dgf-sheen" aria-hidden="true"></i>');
+        if (!c) res.classList.add('dgf-flat');
+      }
     } catch (e) { console.warn('[daily look]', e); }
     return out;
   };
@@ -475,18 +484,30 @@ function dgRpFrame(k, name, ix, cls) {
     const first = rpG && rpG.first;
     const out = _end.apply(this, arguments);
     try {
-      const row = document.querySelector('#rp-body .rp-end-row');
+      const body = document.getElementById('rp-body');
+      const row = body && body.querySelector('.rp-end-row');
       if (row && picks.length) {
-        row.classList.add('dgr-row');
+        row.classList.add('dgf-row');
         row.innerHTML = picks.map(x => {
-          const ix = x.how === 'fit' ? rpTierIx(x.score) : 0, t = rpTier(x.how === 'fit' ? x.score : 0)[1];
-          const fr = x.k && x.how === 'fit' ? dgRpFrame(x.k, x.n, ix, 'dgr-sm') : '';
-          return `<span class="dgr-cell rp-r${ix}" title="${esc(t)}">${fr || `<span class="dgr dgr-sm dgr-t0 dgr-none">${rpGem(0)}</span>`}${rpGem(ix)}</span>`;
+          const fit = x.how === 'fit', ix = fit ? rpTierIx(x.score) : 0, t = rpTier(fit ? x.score : 0)[1];
+          const c = fit && x.k ? dgRpCard(x.k) : null;
+          const art = c ? (dgImg(c.s, c.no, 'dgf-img', x.n) || '<span class="dg-noimg"></span>') : rpGem(0);
+          return `<span class="dgf-mini dgf-t${ix}${c ? '' : ' dgf-empty'}" title="${esc(t)}"><span class="dgf-mini-art">${art}</span><b>${fit ? x.score : 0}</b></span>`;
         }).join('');
+      }
+      // the best pull gets a foil tile of its own, in place of its line of text
+      const best = picks.filter(x => x.how === 'fit').sort((a, b) => b.score - a.score)[0];
+      const bc = best && best.k ? dgRpCard(best.k) : null;
+      const line = body && body.querySelector('.rp-end-note b[data-no-tr]');
+      if (bc && line) {
+        const ix = rpTierIx(best.score);
+        line.closest('p').outerHTML = `<div class="dgf dgf-t${ix} dgf-best"><i class="dgf-sheen" aria-hidden="true"></i>
+          ${dgFoilCard(bc, best.n, true)}
+          <div class="dgf-bt"><div class="dgf-k">Best pull</div><div class="dgf-n" data-no-tr>${esc(best.n)}</div><div class="dgf-tier">${esc(rpTier(best.score)[1])} <span data-no-tr>· +${best.score}</span></div></div>
+        </div>`;
       }
       // home shows the day's best pull, so keep which card it was
       const r = rpStore().results[dailyKey()];
-      const best = picks.filter(x => x.how === 'fit').sort((a, b) => b.score - a.score)[0];
       if (first && r && best && !r.bk) { r.bk = best.k; r.bn = best.n; saveState(); }
     } catch (e) { console.warn('[daily look]', e); }
     return out;
@@ -588,7 +609,8 @@ function dgRing(done, all) {
   .dgp-hint { position:absolute; left:0; right:0; bottom:8px; text-align:center; font-size:var(--fs-xs); font-weight:600; color:var(--text-2); pointer-events:none; }
   .dgp:focus-visible { outline:2px solid var(--mark); outline-offset:2px; }
   #prize-reveal-area { position:relative; }
-  #prize-reveal-area .dgp-all { position:absolute; top:-0.2rem; right:0; }
+  #prize-reveal-area .dgp-all { display:flex; width:max-content; margin:-0.7rem 0 0.35rem auto; }
+  #prize-reveal-area .dgp-all[hidden] { display:none; }
 
   /* 2. Guess the Grade: the gauge */
   .dgg { margin:0 0 0.7rem; }
@@ -624,25 +646,61 @@ function dgRing(done, all) {
   .dgz-w { font-family:var(--display); font-weight:700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.03em; color:var(--grass); line-height:1.15; }
   .dgz-n { font-size:0.72rem; color:var(--text-2); line-height:1.2; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
 
-  /* 4. Rare Pull: framed art */
-  .dgr { --dgr:var(--text-3); display:block; flex-shrink:0; aspect-ratio:2.5/3.5; border-radius:4px; overflow:hidden; border:3px solid var(--dgr); background:var(--surface-2); }
-  .dgr-t1 { --dgr:var(--text-3); } .dgr-t2 { --dgr:var(--grass); } .dgr-t3 { --dgr:var(--water); } .dgr-t4 { --dgr:var(--psychic); } .dgr-t5 { --dgr:var(--electric); }
-  .dgr-t0 { --dgr:var(--line-2); }
-  .dgr-t0 img { opacity:0.55; }
-  .dgr-t4, .dgr-t5 { box-shadow:0 0 0 1px var(--surface), 0 0 0 3px color-mix(in srgb, var(--dgr) 40%, transparent); }
-  .dgr img { width:100%; height:100%; object-fit:cover; display:block; }
-  .dgr-big { width:84px; animation:dgUp .35s cubic-bezier(.2,.7,.2,1) both; }
-  .rp-res-top.dgr-has .rp-res-gem .rp-gem { width:26px; height:26px; }
-  .rp-res-top.dgr-has { align-items:center; }
-  .rp-r2 .rp-res-tier { color:var(--grass); } .rp-r3 .rp-res-tier { color:var(--water); } .rp-r4 .rp-res-tier { color:var(--psychic); } .rp-r5 .rp-res-tier { color:var(--electric); }
-  .dgr-row { display:grid !important; grid-template-columns:repeat(7, minmax(0, 52px)); gap:0.4rem; justify-content:center; width:100%; }
-  .dgr-cell { display:flex; flex-direction:column; align-items:center; gap:0.25rem; min-width:0; animation:dgUp .3s cubic-bezier(.2,.7,.2,1) both; }
-  ${[1, 2, 3, 4, 5, 6, 7].map(i => `.dgr-cell:nth-child(${i}) { animation-delay:${(i - 1) * 60}ms; }`).join(' ')}
-  .dgr-sm { width:100%; border-width:2px; }
-  .dgr-none { display:flex; align-items:center; justify-content:center; color:var(--text-3); }
-  .dgr-none .rp-gem { width:60%; height:auto; opacity:0.6; }
-  .dgr-cell > .rp-gem { width:18px; height:18px; }
-  .dgr-cell.rp-r2 > .rp-gem { color:var(--grass); } .dgr-cell.rp-r3 > .rp-gem { color:var(--water); } .dgr-cell.rp-r4 > .rp-gem { color:var(--psychic); } .dgr-cell.rp-r5 > .rp-gem { color:var(--electric); }
+  /* 4. Rare Pull: foil */
+  .dgf { --dgf:var(--line-2); }
+  .dgf-t1 { --dgf:var(--text-3); } .dgf-t2 { --dgf:var(--grass); } .dgf-t3 { --dgf:var(--water); } .dgf-t4 { --dgf:var(--psychic); } .dgf-t5 { --dgf:var(--electric); }
+  html:not(#z) .rp-res.dgf { position:relative; overflow:hidden; text-align:center; border:1.5px solid transparent;
+    background:linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(135deg, var(--dgf), color-mix(in srgb, var(--dgf) 35%, var(--surface)) 45%, var(--dgf) 70%, color-mix(in srgb, var(--dgf) 45%, var(--surface))) border-box; }
+  html:not(#z) .rp-res.dgf-t0 { border-color:var(--line-2); background:var(--surface); }
+  .dgf > :not(.dgf-sheen) { position:relative; z-index:1; }
+  .dgf-sheen { position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .dgf-sheen::before { content:''; position:absolute; top:0; bottom:0; left:-100%; width:300%;
+    background:linear-gradient(115deg, transparent 38%, color-mix(in srgb, var(--dgf) 22%, transparent) 46%, rgba(255,255,255,.06) 50%, color-mix(in srgb, var(--dgf) 16%, transparent) 54%, transparent 62%);
+    transform:translateX(34%); animation:dgfSweep 1.8s cubic-bezier(.3,.6,.2,1) .25s both; }
+  .dgf-stage { display:flex; justify-content:center; padding:0.2rem 0 0.6rem; perspective:700px; }
+  .dgf-card { position:relative; display:block; width:clamp(108px, 30vw, 156px); aspect-ratio:2.5/3.5; border-radius:6px; overflow:hidden; background:var(--surface-2);
+    box-shadow:0 10px 24px rgba(0,0,0,.45), 0 0 0 1px color-mix(in srgb, var(--dgf) 55%, transparent); animation:dgUp .35s cubic-bezier(.2,.7,.2,1) both; }
+  .dgf-card .dgf-img, .dgf-card .dg-noimg { width:100%; height:100%; object-fit:cover; display:block; }
+  .dgf-t0 .dgf-card { width:clamp(88px, 26vw, 112px); }
+  .dgf-t0 .dgf-card img { opacity:0.5; }
+  .dgf-glint { position:absolute; top:0; bottom:0; left:-100%; width:300%; pointer-events:none; opacity:0;
+    background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.13) 47%, color-mix(in srgb, var(--dgf) 30%, transparent) 52%, transparent 62%); }
+  /* the idle sway: a few degrees, slow, and the glint moves with it */
+  .dgf-live { animation:dgUp .35s cubic-bezier(.2,.7,.2,1) both, dgfTilt 7s ease-in-out 1.4s infinite; transform-origin:50% 60%; backface-visibility:hidden; }
+  .dgf-live .dgf-glint { opacity:1; animation:dgfGlint 7s ease-in-out 1.4s infinite; transform:translateX(-20%); }
+  .dgf .rp-res-gem { display:none; }
+  .dgf .rp-res-top { justify-content:center; }
+  .dgf .rp-res-n { font-size:1.35rem; }
+  .dgf .rp-res-tier { color:var(--dgf); }
+  .dgf-t0 .rp-res-tier { color:var(--text-2); }
+  .dgf .rp-res-pts { position:absolute; top:-0.1rem; right:0; color:var(--dgf); }
+  .dgf-t0 .rp-res-pts { color:var(--text-3); }
+  .dgf:not(.dgf-flat) .rp-res-top { position:static; }
+  .dgf:not(.dgf-flat) .rp-res-pts { top:0.75rem; right:0.9rem; }
+  .dgf-flat .rp-res-top { padding-right:2.6rem; }
+  .dgf .rp-facts { text-align:left; }
+  /* end of the day: seven small tiles, then the best pull */
+  .dgf-row { display:grid !important; grid-template-columns:repeat(7, minmax(0, 54px)); gap:0.4rem; justify-content:center; width:100%; }
+  .dgf-mini { --dgf:var(--line-2); display:flex; flex-direction:column; min-width:0; border:1.5px solid var(--dgf); border-radius:5px; overflow:hidden; background:var(--surface); animation:dgUp .3s cubic-bezier(.2,.7,.2,1) both; }
+  .dgf-mini.dgf-t1 { --dgf:var(--text-3); } .dgf-mini.dgf-t2 { --dgf:var(--grass); } .dgf-mini.dgf-t3 { --dgf:var(--water); } .dgf-mini.dgf-t4 { --dgf:var(--psychic); } .dgf-mini.dgf-t5 { --dgf:var(--electric); }
+  ${[1, 2, 3, 4, 5, 6, 7].map(i => `.dgf-mini:nth-child(${i}) { animation-delay:${(i - 1) * 60}ms; }`).join(' ')}
+  .dgf-mini-art { display:flex; align-items:center; justify-content:center; aspect-ratio:2.5/3; overflow:hidden; background:var(--surface-2); color:var(--text-3); }
+  .dgf-mini-art img, .dgf-mini-art .dg-noimg { width:100%; height:100%; object-fit:cover; object-position:50% 18%; display:block; }
+  .dgf-mini-art .rp-gem { width:55%; height:auto; opacity:0.5; }
+  .dgf-mini b { font-family:var(--mono); font-weight:500; font-size:0.78rem; line-height:1; padding:0.28rem 0; text-align:center; color:var(--dgf); border-top:1px solid color-mix(in srgb, var(--dgf) 45%, transparent); }
+  .dgf-mini.dgf-t0 b { color:var(--text-3); }
+  .dgf-best { position:relative; overflow:hidden; display:flex; align-items:center; gap:0.9rem; width:100%; max-width:420px; padding:0.8rem 0.95rem; border-radius:var(--r-lg); text-align:left; border:1.5px solid transparent; perspective:600px;
+    background:linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(135deg, var(--dgf), color-mix(in srgb, var(--dgf) 35%, var(--surface)) 45%, var(--dgf) 70%, color-mix(in srgb, var(--dgf) 45%, var(--surface))) border-box; }
+  .dgf-best .dgf-card { width:64px; flex-shrink:0; border-radius:4px; box-shadow:0 6px 14px rgba(0,0,0,.4), 0 0 0 1px color-mix(in srgb, var(--dgf) 55%, transparent); }
+  .dgf-bt { min-width:0; }
+  .dgf-k { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:var(--fs-xs, 0.8rem); color:var(--text-3); }
+  .dgf-n { font-family:var(--display); font-weight:800; font-size:1.2rem; line-height:1.15; color:var(--text); }
+  .dgf-tier { font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; font-size:var(--fs-sm); color:var(--dgf); }
+  @keyframes dgfSweep { from { transform:translateX(34%); } to { transform:translateX(-34%); } }
+  @keyframes dgfTilt { 0%, 100% { transform:rotateY(-12deg) rotateX(4deg); } 50% { transform:rotateY(12deg) rotateX(-4deg); } }
+  @keyframes dgfGlint { 0%, 100% { transform:translateX(-20%); } 50% { transform:translateX(20%); } }
   .dg-noimg { display:block; width:100%; height:100%; background:var(--surface-2); }
   .dg-noimg span { display:none; }
 
@@ -666,7 +724,10 @@ function dgRing(done, all) {
   .dgg-m, .dgg-ans { --dg-x:-50%; }
   @media (prefers-reduced-motion:reduce) {
     .dgp-in, .dgg-band, .dgh-ring-fg { transition:none; }
-    .dgg-new, .dgg-ans, .dgz-c, .dgr-big, .dgr-cell { animation:none; }
+    .dgg-new, .dgg-ans, .dgz-c, .dgf-card, .dgf-live, .dgf-live .dgf-glint, .dgf-sheen::before, .dgf-mini { animation:none; }
+    .dgf-sheen { display:none; }
+    .dgf-live { transform:none; }
+    .dgf-live .dgf-glint { opacity:0.5; transform:none; }
   }
   `;
   const st = document.createElement('style'); st.id = 'dg-look-css'; st.textContent = css; document.head.appendChild(st);

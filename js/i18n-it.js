@@ -159,6 +159,7 @@ I18N_MORE.it = {
     "Your score": "Il tuo punteggio",
     "Today's score stays": "Il punteggio di oggi resta",
     "Best pull:": "Carta migliore:",
+    "Best pull": "Carta migliore",
     "New prompts tomorrow.": "Domani nuove domande.",
     "Share score": "Condividi il punteggio",
     "Play today's Rare Pull first.": "Gioca prima il Rare Pull di oggi.",
@@ -2591,9 +2592,40 @@ I18N_MORE.it.pat.unshift(
   [/^in (\d+:\d\d)$/, "in $1 min"],
 );
 
+// 3.4.23: Daily games new look (js/dg-look.js): share sheets and pictures, face-down prizes, winning line,
+// and the results screen's line on your last games.
+Object.assign(I18N_MORE.it.dict, {
+  "A real tournament list, the same for everyone today.": "Una vera lista da torneo, uguale per tutti oggi.",
+  "Found": "Trovata",
+  "Missed": "Mancata",
+  "Play today's challenge first.": "Gioca prima la sfida di oggi.",
+  "Same deck and shuffle for everyone today. Can you find them all?": "Stesso mazzo e stessa mescolata per tutti oggi. Riesci a trovarle tutte?",
+  "Show all": "Mostra tutte",
+  "Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.": "Strumento non ufficiale creato da fan, non affiliato con The Pokémon Company o Nintendo.",
+  "Tap to see": "Tocca per vederla",
+  "Your winning line": "La tua linea vincente",
+  "Missed. Tap to see it": "Mancata. Tocca per vederla",
+  "The link opens today's challenge, so friends get the same deck and shuffle. The picture shows no cards.": "Il link apre la sfida di oggi, così i tuoi amici hanno lo stesso mazzo e la stessa mescolata. L'immagine non mostra carte.",
+  "The picture shows how close each guess got, with no grade and no deck. The link opens today's game.": "L'immagine mostra quanto si è avvicinato ogni tentativo, senza voto e senza mazzo. Il link apre il gioco di oggi.",
+  "Share your daily score": "Condividi il tuo punteggio del giorno",
+  "Share your result": "Condividi il tuo risultato",
+  "of 6 prizes": "su 6 Premi",
+  "Guess the grade of today's list. Can you get it?": "Indovina il voto della lista di oggi. Ci riesci?",
+  "DECK": "MAZZO",
+  "accuracy,": "di precisione,",
+  "a game.": "a partita.",
+});
+I18N_MORE.it.pat.unshift(
+  [/^Last (\d+) games:$/, "Ultime $1 partite:"],
+  [/^Daily challenge #(\d+) scored$/, "Sfida del giorno #$1 registrata"],
+  [/^(\d+) of 6 in (\d+:\d\d)\. Your first try is the one that counts\.$/, "$1 su 6 in $2. Conta il primo tentativo."],
+  [/^Today's score stays (\d+) of 6 in (\d+:\d\d)\.$/, "Il punteggio di oggi resta $1 su 6 in $2."],
+);
+
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.it.dict, {
   "Daily games fixes": "Correzioni ai Giochi del giorno",
+  "Daily games new look": "Nuovo aspetto dei Giochi del giorno",
   "1 day streak": "Serie di 1 giorno",
   "Card position": "Posizione della carta",
   "Did you mean this card?": "Intendevi questa carta?",

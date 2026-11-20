@@ -8773,21 +8773,21 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.22',
+  version: 'v3.4.23',
   date: 'Nov 20, 2026',
   kind: 'small',
   items: [
-    { t: 'Daily games fixes' }
+    { t: 'Daily games new look' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.4.22', date: 'Nov 20, 2026', kind: 'small', items: [
+    { t: 'Daily games fixes' }
+  ] },
   { version: 'v3.4.21', date: 'Nov 20, 2026', kind: 'small', items: [
     { t: 'Daily games section' }
-  ] },
-  { version: 'v3.4.20', date: 'Nov 20, 2026', kind: 'small', items: [
-    { t: 'Guess the Grade added' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11052,7 +11052,7 @@ function renderMissedNotes(prizes, usedPrizeIdxs, deck) {
     const card = prizes[i];
     const existing = session.prizes && session.prizes[i] ? (session.prizes[i].note || '') : '';
     return `<div class="mn-row">
-      <div class="mn-card">${esc(cn23(card.apiName || card.name))}</div>
+      <div class="mn-card" data-no-tr>${esc(cn23(card.apiName || card.name))}</div>
       <textarea class="mn-input" data-prize-idx="${i}" aria-label="Note on this missed card" placeholder="Why did I miss this? (e.g. 'didn't expect the tech')">${esc(existing)}</textarea>
     </div>`;
   }).join('');
@@ -11794,7 +11794,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
 const PT_VERSION = 'v3.4.22';
-const PT_BUILD = 150;
+const PT_BUILD = 151;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
