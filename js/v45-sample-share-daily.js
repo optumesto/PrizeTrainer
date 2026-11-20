@@ -122,6 +122,7 @@ function gs261Info(deck, R) {
       let more = [];
       try { more = getImageCandidates(c); } catch (_) {}
       out.urls = gs261Big([c.imageUrl].concat(c.fallbackUrls || [], more));
+      out.card = { set: c.set, num: c.num, name: c.apiName || c.name };
     }
   }
   return out;
@@ -140,6 +141,34 @@ function gs261Big(list) {
   });
   const rank = u => /pokemontcg\.io/.test(u) ? 0 : /tcgdex\.net/.test(u) ? 1 : 2;
   return [...new Set(out)].map((u, i) => ({ u, i })).sort((a, b) => rank(a.u) - rank(b.u) || a.i - b.i).map(x => x.u);
+}
+/** 3.4.16: when only the Limitless host has the attacker's art (every 30th Celebration card), the
+ *  share card cannot read it. TCGdex has those pictures and lets a page read them, so its record for
+ *  the card's own printing is read, the name checked (30th Classic Collection cards share the 30C
+ *  code and numbers 1 to 30), and its picture tried first. Gives up after 3 seconds. */
+async function gs3416Urls(info) {
+  const urls = (info && info.urls) || [], c = info && info.card;
+  if (!c || urls.some(u => /tcgdex\.net/.test(u)) || typeof fetch === 'undefined'
+    || typeof td30CardId !== 'function' || typeof TD30_API === 'undefined') return urls;
+  let id = null;
+  try { id = td30CardId(c.set, c.num); } catch (_) {}
+  if (!id) return urls;
+  const ids = [id].concat(/^30th-/.test(id) ? [id.replace(/^30th-/, '30th-c-')] : []);
+  const ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const t = setTimeout(() => { if (ac) ac.abort(); }, 3000);
+  try {
+    for (const tid of ids) {
+      try {
+        const r = await fetch(TD30_API + '/cards/' + encodeURIComponent(tid), { signal: ac ? ac.signal : undefined });
+        if (!r.ok) continue;
+        const d = await r.json();
+        const same = d && typeof d.name === 'string' && typeof TCGEnrich !== 'undefined' && TCGEnrich.sameCard(c.name, d.name);
+        if (same && typeof d.image === 'string' && /^https:\/\/assets\.tcgdex\.net\/[\w./-]+$/.test(d.image))
+          return gs261Big([d.image + '/low.webp'].concat(urls));
+      } catch (e) { if (e && e.name === 'AbortError') break; }
+    }
+  } finally { clearTimeout(t); }
+  return urls;
 }
 /** The first art that loads as a readable picture, or null. Gives up after 4 seconds in all. */
 async function gs261Art(urls) {
@@ -309,7 +338,7 @@ async function v45ShareGrade() {
 async function gs261Render() {
   const g = _gs45; if (!g) return;
   const tok = ++g.tok;
-  if (!g.artP) g.artP = gs261Art(g.info.urls).catch(() => null);
+  if (!g.artP) g.artP = gs3416Urls(g.info).catch(() => g.info.urls).then(gs261Art).catch(() => null);
   const art = await g.artP;
   if (g !== _gs45 || tok !== g.tok) return;
   const blob = await gs45Draw(g.deck, g.R, g.size, g.info, art);
