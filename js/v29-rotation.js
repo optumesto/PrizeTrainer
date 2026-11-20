@@ -363,7 +363,8 @@ function g67SynWhy(R) {
     if (P.met < P.total) out.push({ d: v - 10, t: `${P.met} of ${P.total} card need${P.total === 1 ? '' : 's'} met. Missing: ${nm(P.unmet)}.` });
     else out.push({ d: 0, t: `${P.total === 1 ? 'The one card need is met' : `All ${P.total} card needs are met`}: every attacker has its Energy and every evolution has what it evolves from.` });
   }
-  if (P.noDraw) { out.push({ d: -v * 0.6, t: 'No real draw engine, so the score is cut to 40%.' }); v *= 0.4; }
+  if (P.noDraw) { const k = typeof P.drawKeep === 'number' ? P.drawKeep : 0.4, pc = Math.round(k * 100);
+    out.push({ d: -v * (1 - k), t: pc === 40 ? 'No real draw engine, so the score is cut to 40%.' : `No real draw engine, so the score is cut to ${pc}%. Cards that search the deck soften the cut.` }); v *= k; }
   if (P.noAtk) { out.push({ d: -v * 0.7, t: 'No clear attacker, so the score is cut to 30%.' }); v *= 0.3; }
   if (P.crits.length) { const d = Math.max(-v, -1.2 * P.crits.length), seen = P.crits.filter(t => P.unmet.includes(t)), other = P.crits.filter(t => !P.unmet.includes(t));
     out.push({ d, t: seen.length === P.crits.length

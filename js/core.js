@@ -1168,8 +1168,17 @@ function gCoherence(deck) {
       p:`${nm} puts ${list} onto your Bench from your discard pile${via ? ` with ${via}` : ''}, so ${one ? 'it needs' : 'they need'} nothing to evolve from. ${outs.join(' and ')} ${outs.length>1 ? 'get' : 'gets'} ${one ? 'it' : 'them'} into your discard pile.` +
         (odds ? ` The whole line comes together in ${odds}.` : '') }); });
   const draw=provided['draw']||0, hasAtk=deck.some(e=>e.card&&e.card.attacks);
-  if (!draw) flaws.push({sev:'crit', t:'No real draw engine',
-    d:'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
+  // 3.4.14: with no draw, the cut depends on how much the list searches. A Supporter that searches the
+  // deck counts 1 and any other search card half; 10 of those (8 searching Supporters and 4 Ultra Ball,
+  // say) halve the cut, from 40% kept to 75% kept. A list with that much search still finds its pieces,
+  // so it is no longer a problem that stops the deck, only a weakness. Before, every list with no draw
+  // fell to about a 2 (a Mega Abomasnow list that placed 11th of 85 graded 2.2).
+  const srchN = draw ? 0 : deck.reduce((a,e)=>a+(e.card&&(e.card.provides||[]).some(p=>p.startsWith('search'))
+    ? e.qty*(e.card.t==='trainer'&&e.card.tt==='supporter' ? 1 : 0.5) : 0),0);
+  const srchF = Math.min(1, srchN/10), drawKeep = draw ? 1 : 0.4+0.35*srchF;
+  if (!draw) flaws.push({sev: srchF>=0.5 ? 'warn' : 'crit', t:'No real draw engine',
+    d: srchF>=0.5 ? 'Nothing in the list draws cards. It can search the deck for what it needs, but a hand that misses still stays bad, so the deck stalls more often than one with draw.'
+      : 'Nothing reliably refills your hand. The deck stalls as soon as your opening cards run dry.'});
   // v57: a list with draw only from Pokemon (Fezandipiti ex after a Knock Out, Squawkabilly ex on turn 1)
   // and no Supporter that draws or searches runs out of cards once the opening hand is spent.
   const supQ = deck.filter(e=>e.card&&e.card.t==='trainer'&&e.card.tt==='supporter'&&(e.card.provides||[]).some(p=>p==='draw'||p.startsWith('search')))
@@ -1184,10 +1193,13 @@ function gCoherence(deck) {
   // Decks whose attacks count Energy (attached, discarded or in the discard pile) are left alone.
   const eQ = deck.reduce((a,e)=>a+(e.card&&e.card.t==='energy'?e.qty:0),0);
   const eScale = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.escale||a.edisc||(a.pile&&a.pile.kind==='energy')||(a.mill&&a.mill.kind==='energy')));
+  // 3.4.14: an attack that does damage for each Energy it discards from the top of the deck (Mega Abomasnow
+  // ex's Hammer-lanche) wants Energy in the deck, not attached, so every Energy is damage and none is excess.
+  const eMill = deck.some(e=>e.card&&(e.card.attacks||[]).some(a=>a.mill&&a.mill.kind==='energy'&&a.mill.per>0));
   if (eQ >= 22 && !eScale) flaws.push({sev:'warn', t:'Heavy on Energy',
     d:`The list runs ${eQ} Energy. Most decks run 8 to 16, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
   // 3.2.8: attacks that use Energy still want it attached, not stuck in hand: past 24 even those lists draw too much of it.
-  else if (eQ >= 24) flaws.push({sev:'warn', t:'Heavy on Energy',
+  else if (eQ >= 24 && !eMill) flaws.push({sev:'warn', t:'Heavy on Energy',
     d:`The list runs ${eQ} Energy. Even decks whose attacks use up Energy rarely run more than 20, so a lot of your draws are Energy you cannot use that turn. Trade some for draw or search cards.`});
   // 3.2.8: too little Energy to attack with. Text only: the attacks it cannot pay already count for nothing in the grade.
   const eAtk = deck.filter(e=>e.card&&e.card.t==='pkmn'&&(e.card.attacks||[]).some(a=>(a.cost||[]).length));
@@ -1226,9 +1238,9 @@ function gCoherence(deck) {
   // Nothing to check is not a fault: with card data read and no needs, nothing is missing.
   let base = reqTotal ? reqMet/reqTotal : (deck.some(e=>e.card&&e.card.t==='pkmn') ? 1 : 0.6);
   // v67: the parts of the score, kept for the note on why Synergy is what it is.
-  const parts = { met:reqMet, total:reqTotal, unmet, base0:base, noDraw:!draw, noAtk:!hasAtk,
+  const parts = { met:reqMet, total:reqTotal, unmet, base0:base, noDraw:!draw, drawKeep, noAtk:!hasAtk,
     crits:flaws.filter(f=>f.sev==='crit').map(f=>f.t) };
-  if (!draw) base*=0.4;
+  if (!draw) base*=drawKeep;
   if (!hasAtk) base*=0.3;
   base -= 0.12*flaws.filter(f=>f.sev==='crit').length;
   return { score:gClamp(base,0,1), synergies, flaws, provided, energyTypes, present, parts, revived };

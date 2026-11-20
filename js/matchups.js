@@ -45,7 +45,9 @@ function mu60Validate(j) {
       events: Number.isInteger(s.events) ? s.events : 0, matches: Number.isInteger(s.matches) ? s.matches : 0,
       place: mu64Pl(s.place),
     } : null).filter(Boolean);
-    const decks = j.decks.slice(0, 60).map(d => {
+    // 3.4.14: up to 150 rows (was 60). refresh-matchups.mjs writes the 40 most played decks plus every deck
+    // played enough since the newest set, 63 on 16 Nov 2026, so the last ones (Mega Abomasnow) were dropped.
+    const decks = j.decks.slice(0, 150).map(d => {
       if (!d || !mu60Id(d.id) || !d30Str(d.name, 50) || !Array.isArray(d.sig)) return null;
       const sig = d.sig.slice(0, 12).filter(s => Array.isArray(s) && d30Str(s[0], 60) && typeof s[2] === 'number' && s[2] > 0 && s[2] <= 1)
         .map(s => [s[0], Number(s[1]) || 0, s[2]]);
