@@ -83,6 +83,7 @@ for (let g = +(process.env.G0 || 0); g < N; g++) {
   }
   const h = pg.html(), log = logOf(h), t = text(h);
   ok(/class="result"/.test(h), `game ${g}: ends on the result screen`);
+  ok(log.filter(x => /^(You win|Your opponent wins)\.?$/.test(x)).length <= 1, `game ${g}: the log names the winner once`);
   const mine = log.filter(x => /^Your turn \d+$/.test(x)).length, theirs = log.filter(x => /^Your opponent's turn \d+$/.test(x)).length;
   ok(mine <= 5 && theirs <= 5, `game ${g}: at most 5 turns each (you ${mine}, opponent ${theirs})`);
   ok(log[0] === 'You go first' || log[0] === 'Your opponent goes first', `game ${g}: the full log starts at the first line`);

@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.18 (build 146): Sparring game log fixes (20 Nov 2026)
+
+Changed files: puzzle/engine.js (logName: a log line names a twin's spot), opponent/effects.js (effect log lines use it), opponent/play.js (the winner line is logged once), js/i18n.js (spot words in log lines translated, What's new), js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new), js/core.js (version, What's new, PT_BUILD now 146), sw.js (cache v146), index.html (version, stamp), opponent/test/report.mjs and opponent/test/sparring.mjs (new checks).
+
+- The game log said "You win" twice at the end of a game won by a Knock Out or the last Prize card. It now says it once; a game decided at the turn limit still gets its "You win on Prize cards" line and the Prize count.
+- When one side has two Pokémon of the same name in play (two Mega Rayquaza ex, say), log lines now name which one by its spot, "(Active)" or "(Bench 2)", the same way the buttons do: damage, Energy attached or moved, damage counters, Knock Outs, evolving, healing, Special Conditions and the rest. Lines that say a Pokémon "is now Active" already say where it is, so they stay as they were.
+- The spot words are translated in all 5 languages. Grade check: no grade moved.
+
 # RdyDeck 3.4.17 (build 145): share card art for 30th Celebration (20 Nov 2026)
 
 Changed files: js/v45-sample-share-daily.js (share card reads TCGdex art when only Limitless has the attacker's picture), js/core.js (version, What's new, PT_BUILD now 145), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v145).

@@ -117,5 +117,13 @@ const abilOf = (s, name) => acts(s).find(a => a.t === 'ability' && E.topOf(I.fin
   ok(s.timeUp && s.turns[0] === 5 && s.turns[1] === 5, 'H1 the game stops after 5 turns each: ' + s.turns);
   const R = G.result(s); ok(R && R.by === 'prizes' && R.winner === -1, 'H2 no Prize cards taken is a draw'); }
 
+// 3.4.18 log: with two Pokémon of one name on a side, the log says which one, by its spot.
+{ let s = board([{ active: ['Dreepy'], bench: ['Dreepy', 'Drakloak'], hand: ['Psychic Energy'] }, { active: ['Shuppet', [], 0], bench: ['Shuppet'] }]);
+  const twin = s.players[0].bench[0], e = acts(s).find(a => a.t === 'energy' && a.mon === twin.id);
+  s = play(s, e); ok(s.log.includes('Attached Psychic Energy to Dreepy (Bench 1)'), '3.4.18 Energy to a twin names its spot: ' + s.log.slice(-1));
+  ok(I.logName(s, s.players[0].active) === 'Dreepy (Active)' && I.logName(s, monOf(s, 0, 'Drakloak')) === 'Drakloak', '3.4.18 Active twin is tagged, a single name is not');
+  ok(I.hitLine(30, s.players[1].active, false, s) === '30 damage to Shuppet (Active)' && I.hitLine(10, s.players[1].bench[0], true, s) === '10 damage to Shuppet (Bench 1)', '3.4.18 damage lines name the spot');
+  s.players[1].bench[0].dmg = 999; I.checkKOs(s); ok(s.log.some(l => /^Shuppet \(Bench 1\) is Knocked Out/.test(l)), '3.4.18 the Knock Out line names the spot: ' + s.log.slice(-2).join(' / ')); }
+
 if (!process.env.NOEXIT) console.log(`report: ${pass} passed, ${fail} failed`);
 if (!process.env.NOEXIT) process.exit(fail ? 1 : 0);

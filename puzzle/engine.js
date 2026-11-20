@@ -65,6 +65,17 @@ function isPokemon(x) { return x.card.cat === 'pokemon'; }
 function isEx(x) { return T.gfIsEx(x); }
 function topOf(m) { return m.stack[m.stack.length - 1]; }
 function monName(m) { return topOf(m).card.name; }
+// 3.4.18: in a Sparring log line, a Pokémon whose side has two of that name in play also names its spot,
+// "Mega Rayquaza ex (Bench 2)", the same way the buttons do, so the log says which one it was.
+function logName(s, m) {
+  const n = monName(m); if (!REAL || !s) return n;
+  for (const P of s.players) {
+    const all = mons(P); if (!all.includes(m)) continue;
+    if (all.filter(z => monName(z) === n).length < 2) return n;
+    return n + (P.active === m ? ' (Active)' : ' (Bench ' + (P.bench.indexOf(m) + 1) + ')');
+  }
+  return n;
+}
 
 /* ---------------- State ----------------
  * state = { turn, cur: 0|1, first: bool, players: [me, opp], stadium: { ref, owner } | null,
@@ -481,7 +492,7 @@ function damageTo(s, att, R, target, isActive) {
   return d;
 }
 /** The game log line for damage just placed on m: "120 damage to Gible (base 20, plus 100 from the attack's text)". */
-function hitLine(d, m, onBench) {
+function hitLine(d, m, onBench, s) {
   const W = HIT_WHY; HIT_WHY = null;
   const why = [];
   if (W) {
@@ -493,7 +504,8 @@ function hitLine(d, m, onBench) {
       if (W.fx) why.push(signed(W.fx) + ' from other effects');
     }
   }
-  return d + ' damage to ' + monName(m) + (onBench ? ' on the Bench' : '') + (why.length ? ' (base ' + W.base + ', ' + why.join(', ') + ')' : '');
+  const who = logName(s, m); // a spot such as "(Bench 2)" already says it is on the Bench
+  return d + ' damage to ' + who + (onBench && who === monName(m) ? ' on the Bench' : '') + (why.length ? ' (base ' + W.base + ', ' + why.join(', ') + ')' : '');
 }
 
 /* ---------------- Knock Outs and Prizes ---------------- */
@@ -502,7 +514,7 @@ function checkKOs(s) {
     const P = s.players[k];
     for (const m of mons(P)) {
       if (m.dmg < maxHp(s, m)) continue;
-      const wasActive = P.active === m;
+      const wasActive = P.active === m, who = logName(s, m);
       if (wasActive) P.active = null; else P.bench = P.bench.filter(z => z !== m);
       m.stack.concat(m.energy, m.tool ? [m.tool] : []).forEach(y => P.discard.push(y));
       const n = prizeValue(s, m), taker = s.players[1 - k];
@@ -512,7 +524,7 @@ function checkKOs(s) {
       if (s.kos) s.kos[k]++;
       s.taken[1 - k] += got.length;
       if (k !== s.cur) s.koIds.push(m.id);
-      log(s, `${monName(m)} is Knocked Out (${got.length} Prize card${got.length !== 1 ? 's' : ''} taken)`);
+      log(s, `${who} is Knocked Out (${got.length} Prize card${got.length !== 1 ? 's' : ''} taken)`);
       // 3.4.12: the Prize cards you take are named (they go to your hand); your opponent's stay hidden.
       if (REAL && 1 - k === 0 && got.length) log(s, 'You took ' + cardList(got) + ' as ' + (got.length === 1 ? 'a Prize card' : 'Prize cards'), true);
       if (wasActive && P.bench.length) s.promote = (s.promote || []).concat(k);
@@ -796,11 +808,11 @@ function apply(s0, a) {
     case 'promote': { const Q = s.players[a.who]; const i = Q.bench.findIndex(m => m.id === a.mon); Q.active = Q.bench.splice(i, 1)[0]; s.promote = s.promote.slice(1); /* a new list: states share it until changed */ log(s, monName(Q.active) + ' is now Active'); return s.pending ? go(s) : s; }
     case 'pick': return answer(s, a.v);
     case 'bench': { const x = take(P.hand, a.uid); const m = newMon(s, x, s.cur); m.trig = true; m.benchTurn = s.turn; P.bench.push(m); benchRuins(s, m); log(s, 'Benched ' + x.card.name); return checkKOs(s); }
-    case 'evolve': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(x); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; log(s, REAL ? 'Evolved ' + was + ' into ' + x.card.name : 'Evolved into ' + x.card.name); return s; }
-    case 'candy': { const cd = take(P.hand, a.uid), s2 = take(P.hand, a.s2), m = findMon(s, a.mon).m, was = monName(m); m.stack.push(s2); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; P.discard.push(cd); log(s, 'Rare Candy: ' + (REAL ? was + ' into ' : '') + s2.card.name); return s; }
-    case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + monName(m));
-      if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) { log(s, x.card.name + ' on ' + monName(m) + ' took effect'); return startRun(s, st, { name: x.card.name, mon: m.id }); } } return s; }
-    case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); if (!passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return s; }
+    case 'evolve': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m, was = logName(s, m); m.stack.push(x); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; log(s, REAL ? 'Evolved ' + was + ' into ' + x.card.name : 'Evolved into ' + x.card.name); return s; }
+    case 'candy': { const cd = take(P.hand, a.uid), s2 = take(P.hand, a.s2), m = findMon(s, a.mon).m, was = logName(s, m); m.stack.push(s2); m.evoTurn = s.turn; m.trig = true; m.evoTurnHand = s.turn; P.discard.push(cd); log(s, 'Rare Candy: ' + (REAL ? was + ' into ' : '') + s2.card.name); return s; }
+    case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + logName(s, m));
+      if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) { log(s, x.card.name + ' on ' + logName(s, m) + ' took effect'); return startRun(s, st, { name: x.card.name, mon: m.id }); } } return s; }
+    case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; log(s, 'Attached ' + x.card.name + ' to ' + logName(s, m)); if (!passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return s; }
     case 'stadium': { const x = take(P.hand, a.uid); if (s.stadium) s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = { ref: x, owner: s.cur }; P.used.stadium = true;
       const TP = readTrainer(x); log(s, 'Played ' + x.card.name); if (!TP.once && !passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return checkKOs(s); }
     case 'stadiumUse': { P.lim.stadiumUse = s.turn; const TP = readTrainer(s.stadium.ref); return startRun(s, TP.steps, { name: s.stadium.ref.card.name }); }
@@ -818,7 +830,7 @@ function apply(s0, a) {
       if (m) m.ab[A.name] = s.turn; else P.lim['hand:' + A.name + ':' + x.uid] = s.turn;
       if (A.limit) P.lim[A.limit] = s.turn;
       if (A.limitHas) P.lim['has:' + A.name.toLowerCase()] = s.turn;
-      log(s, (m ? monName(m) : x.card.name) + ' used ' + A.name);
+      log(s, (m ? logName(s, m) : x.card.name) + ' used ' + A.name);
       const steps = A.steps ? (A.cost ? [{ t: 'cost', n: A.cost, F: { any: true } }] : []).concat(A.steps) : null;
       return startRun(s, steps, { name: A.name, mon: m && m.id, handUid: x && x.uid });
     }
@@ -854,12 +866,12 @@ function answer(s, v) {
       const f = findMon(s, v), m = f.m, isBench = O.active !== m;
       const cage = s.stadium && PASSIVE.battleCage.test(ptext(s.stadium.ref));
       if (!(isBench && cage)) m.dmg += 10 * st.n;
-      log(s, `Put ${st.n} damage counters on ${monName(m)}`); checkKOs(s); return next();
+      log(s, `Put ${st.n} damage counters on ${logName(s, m)}`); checkKOs(s); return next();
     }
     case 'benchHit': {
       const att = findMon(s, c.mon).m, m = findMon(s, v).m;
       const d = damageTo(s, att, { base: st.dmg }, m, false); m.dmg += d; c.done = c.done.concat(m.id); c.left--;
-      log(s, REAL ? hitLine(d, m, true) : `${st.dmg} damage to ${monName(m)} on the Bench`);
+      log(s, REAL ? hitLine(d, m, true, s) : `${st.dmg} damage to ${monName(m)} on the Bench`);
       R.i = A.step;
       if (c.left > 0 && O.bench.some(z => !c.done.includes(z.id))) return ask(s, 'benchHit', { step: A.step });
       checkKOs(s); return next();
@@ -868,16 +880,16 @@ function answer(s, v) {
       const a = findMon(s, v.from).m, b = findMon(s, v.to).m;
       const cage = s.stadium && PASSIVE.battleCage.test(ptext(s.stadium.ref));
       a.dmg -= 10 * v.n; if (!(O.active !== b && cage)) b.dmg += 10 * v.n;
-      log(s, `Moved ${v.n} damage counters from ${monName(a)} to ${monName(b)}`); checkKOs(s); return next();
+      log(s, `Moved ${v.n} damage counters from ${logName(s, a)} to ${logName(s, b)}`); checkKOs(s); return next();
     }
-    case 'moveEnergy': { const a = findMon(s, v.from).m, b = findMon(s, v.to).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${monName(a)} to ${monName(b)}`); return next(); }
-    case 'moveToSelf': { if (v == null) return next(); const a = findMon(s, v.from).m, b = findMon(s, c.mon).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${monName(a)} to ${monName(b)}`); R.ask = null; return ask(s, 'moveToSelf', { step: A.step }); }
-    case 'pickUp': { const m = findMon(s, v).m; log(s, 'Put ' + monName(m) + ' back into your hand'); if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
+    case 'moveEnergy': { const a = findMon(s, v.from).m, b = findMon(s, v.to).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${logName(s, a)} to ${logName(s, b)}`); return next(); }
+    case 'moveToSelf': { if (v == null) return next(); const a = findMon(s, v.from).m, b = findMon(s, c.mon).m, x = take(a.energy, v.uid); b.energy.push(x); log(s, `Moved ${x.card.name} from ${logName(s, a)} to ${logName(s, b)}`); R.ask = null; return ask(s, 'moveToSelf', { step: A.step }); }
+    case 'pickUp': { const m = findMon(s, v).m; log(s, 'Put ' + logName(s, m) + ' back into your hand'); if (P.active === m) { P.active = null; if (P.bench.length) s.promote = [s.cur]; } else P.bench = P.bench.filter(z => z !== m);
       P.hand.push.apply(P.hand, m.stack); (st.keep ? P.hand : P.discard).push.apply(st.keep ? P.hand : P.discard, m.energy.concat(m.tool ? [m.tool] : [])); return next(); }
     case 'attach': {
       if (v == null) return next();
       const src = st.from === 'discard' ? P.discard : P.hand, x = take(src, v.uid), m = findMon(s, v.mon).m;
-      m.energy.push(x); log(s, 'Attached ' + x.card.name + ' to ' + monName(m)); c.attached++; c.left--; if (st.each) c.done = c.done.concat(m.id); else c.target = m.id;
+      m.energy.push(x); log(s, 'Attached ' + x.card.name + ' to ' + logName(s, m)); c.attached++; c.left--; if (st.each) c.done = c.done.concat(m.id); else c.target = m.id;
       R.i = A.step; if (c.left > 0 && attachChoices(s).length) return ask(s, 'attach', { step: A.step });
       return next();
     }
@@ -900,7 +912,7 @@ function answer(s, v) {
     }
     case 'splitHand': { const [a, b] = c.splitPair, keep = a.uid === v.uid ? a : b; P.hand.push(keep); c.splitRef = keep === a ? b : a; c.splitPair = null;
       log(s, 'Put ' + keep.card.name + ' into your hand'); R.i = A.step; return ask(s, 'splitAttach', { step: A.step }); }
-    case 'splitAttach': { const m = findMon(s, v).m; m.energy.push(c.splitRef); log(s, 'Attached ' + c.splitRef.card.name + ' to ' + monName(m)); c.splitRef = null; return next(); }
+    case 'splitAttach': { const m = findMon(s, v).m; m.energy.push(c.splitRef); log(s, 'Attached ' + c.splitRef.card.name + ' to ' + logName(s, m)); c.splitRef = null; return next(); }
     case 'recover': { const got = v.map(uid => take(P.discard, uid)); if (st.dest === 'deck') { P.deck = P.deck.concat(got); reshuffle(s, P); } else got.forEach(x => P.hand.push(x));
       log(s, got.length ? 'Took back ' + got.map(x => x.card.name).join(', ') + (st.dest === 'deck' ? ' into your deck' : REAL ? ' into your hand' : '') : REAL ? 'Took back nothing, no card fit' : 'Took back nothing'); return next(); }
     case 'topFromHand': { const x = take(P.hand, v); P.deck.unshift(x); log(s, 'Put ' + x.card.name + ' on top of your deck'); return next(); }
@@ -913,7 +925,7 @@ function answer(s, v) {
       if (!REAL) log(s, got.length ? 'Took ' + got.map(x => x.card.name).join(', ') : 'Took nothing');
       else {
         const f = st.dest === 'self' && findMon(s, c.mon);
-        log(s, got.length ? 'Took ' + cardList(got) + (st.dest === 'self' ? (f ? (got.length > 1 ? ' and attached them to ' : ' and attached it to ') + monName(f.m) : got.length > 1 ? ' and discarded them' : ' and discarded it') : ' into your hand') : 'Took nothing');
+        log(s, got.length ? 'Took ' + cardList(got) + (st.dest === 'self' ? (f ? (got.length > 1 ? ' and attached them to ' : ' and attached it to ') + logName(s, f.m) : got.length > 1 ? ' and discarded them' : ' and discarded it') : ' into your hand') : 'Took nothing');
         if (rest.length) log(s, st.rest === 'discard' ? 'Discarded the rest: ' + cardList(rest) : st.rest === 'shuffle' ? 'Shuffled the rest into your deck' : 'Put the rest on the bottom of your deck');
       }
       return next();
@@ -928,21 +940,21 @@ function attack(s, i, via) {
   const twice = REAL && !s.mods.again && HOOKS.twice.some(h => h(s, att));
   if (REAL && s.mods.again) s.mods.again = null;
   const R = readAttack(a);
-  log(s, monName(att) + ' used ' + a.name);
+  log(s, logName(s, att) + ' used ' + a.name);
   if (!R) { markUnread(s, monName(att) + ': ' + a.name); if (REAL) log(s, "Sparring can't do " + a.name + "'s text yet, so nothing happened", true); return endTurn(s); }
   if (REAL && R.partial) log(s, '(Not played: ' + R.partial.join('; ') + ')');
   if (REAL) { for (const h of HOOKS.preAttack) if (h(s, att, a) === 'fail') { checkKOs(s); return endTurn(s); } if (R.pre) R.pre(s, att); }
   if (R.luck) s.luck = true;
-  if (O.active) { const d = damageTo(s, att, R, O.active, true); O.active.dmg += d; if (REAL && (d || R.base || HIT_WHY && HIT_WHY.off)) log(s, hitLine(d, O.active)); HIT_WHY = null; if (REAL) HOOKS.hit.forEach(h => h(s, att, O.active, d)); }
+  if (O.active) { const d = damageTo(s, att, R, O.active, true); O.active.dmg += d; if (REAL && (d || R.base || HIT_WHY && HIT_WHY.off)) log(s, hitLine(d, O.active, false, s)); HIT_WHY = null; if (REAL) HOOKS.hit.forEach(h => h(s, att, O.active, d)); }
   // "1 (or 2) of your opponent's Benched Pokémon": with that many or fewer on the Bench each one is hit;
   // with more, the player chooses which, and Knock Outs are checked once all the damage is placed.
   const nb = R.bench && R.bench.who !== 'each' ? +R.bench.who : 0, chooseBench = nb > 0 && O.bench.length > nb;
-  if (R.bench && !chooseBench) O.bench.forEach(m => { const d = damageTo(s, att, { base: R.bench.n }, m, false); m.dmg += d; if (REAL) log(s, hitLine(d, m, true)); });
+  if (R.bench && !chooseBench) O.bench.forEach(m => { const d = damageTo(s, att, { base: R.bench.n }, m, false); m.dmg += d; if (REAL) log(s, hitLine(d, m, true, s)); });
   if (R.edisc) { const k = att.energy.filter(e => !R.edisc.type || T.gfEType(e) === R.edisc.type).slice(0, R.edisc.n); k.forEach(e => { take(att.energy, e.uid); P.discard.push(e); }); }
   const fx = (chooseBench ? [{ t: 'benchHit', n: nb, dmg: R.bench.n }] : []).concat(REAL && R.fx ? R.fx : []);
   if (fx.length && s.gameOver == null) return startRun(s, fx, { name: a.name, mon: att.id, left: nb, done: [], endTurn: twice ? 'again' : true, atk: true });
   checkKOs(s);
-  if (twice && s.gameOver == null) { s.mods.again = att.id; log(s, monName(att) + ' can attack again'); return s; }
+  if (twice && s.gameOver == null) { s.mods.again = att.id; log(s, logName(s, att) + ' can attack again'); return s; }
   return endTurn(s);
 }
 /** The attacks a Pokemon can use: its own, then (full games) any it can borrow, such as Mew ex's Memory Helix. */
@@ -1075,7 +1087,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const internals = { provides, hitLine, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const internals = { provides, hitLine, logName, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
 const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;

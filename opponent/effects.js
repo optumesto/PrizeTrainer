@@ -10,6 +10,8 @@ const E = root.RdyPuzzle && root.RdyPuzzle.internals ? root.RdyPuzzle : require(
 const G = root.RdyGame || require('./game.js');
 const H = E.HOOKS, I = E.internals, T = E.T;
 const mons = E.mons, topOf = E.topOf, nm = m => topOf(m).card.name;
+// A log line's name for a Pokémon: with its spot, "(Bench 2)", when its side has two of that name in play.
+const ln = (s, m) => I.logName(s, m);
 const oppOf = s => s.players[1 - s.cur];
 
 /* ---------- Sentences in Trainers and Abilities ---------- */
@@ -112,16 +114,16 @@ function hit(s, att, target, n, noWR) {
   const isA = s.players.some(p => p.active === target);
   const d = E.damageTo(s, att, { base: n, noWR: noWR || !isA }, target, isA && !noWR);
   target.dmg += d;
-  I.log(s, I.hitLine(d, target, !isA));
+  I.log(s, I.hitLine(d, target, !isA, s));
 }
 // Draws from card effects log what was drawn (card names for you, a count for your opponent).
 function drawFor(s, P, n) { if (n <= 0) return; const got = []; for (let i = 0; i < n && P.deck.length; i++) { const x = P.deck.shift(); P.hand.push(x); got.push(x); } I.logDraw(s, s.players.indexOf(P), got); }
 // "Did 60 more damage": an attack's extra damage added after its main hit (discarding Energy for more).
-function moreLine(s, d, m) { if (d > 0) I.log(s, d + ' more damage to ' + nm(m)); }
+function moreLine(s, d, m) { if (d > 0) I.log(s, d + ' more damage to ' + ln(s, m)); }
 function setCond(m, c, s, owner) {
   if (c === 'poisoned') m.poison = 1; else if (c === 'burned') m.burn = 1;
   else { m.cond = c; if (c === 'paralyzed') m.paraUntil = s.turns[owner] + 1; }
-  I.log(s, nm(m) + ' is now ' + c[0].toUpperCase() + c.slice(1));
+  I.log(s, ln(s, m) + ' is now ' + c[0].toUpperCase() + c.slice(1));
 }
 const S = H.step;
 S.noop = { run() {} };
@@ -135,7 +137,7 @@ S.oppBottom = { run(s, st, c, P, O) { c.oppBottomed = O.hand.length > 0; const h
 S.oppDrawIf = { run(s, st, c, P, O) { if (c.oppBottomed) drawFor(s, O, st.n); } };
 S.oppEnergyOff = {
   run(s, st, c, P, O) { const out = []; (st.active ? [O.active] : mons(O)).filter(Boolean).forEach(m => { const seen = new Set(); m.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); out.push({ mon: m.id, uid: e.uid }); }); }); return out; },
-  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + nm(m)); },
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + ln(s, m)); },
 };
 // Up to n cards from your deck to your discard pile, picked one at a time (Done stops early). The deck is shuffled after.
 S.deckDiscard = {
@@ -162,7 +164,7 @@ function healAmt(st, P, m) {
   if (st.per) n += st.per.n * P.discard.filter(y => y.card.name.toLowerCase() === st.per.name.toLowerCase()).length;
   return Math.min(m.dmg, n);
 }
-function healOne(s, st, c, P, m) { const h = healAmt(st, P, m); if (h <= 0) return; m.dmg -= h; c.healed = m.id; I.log(s, 'Healed ' + h + ' from ' + nm(m)); }
+function healOne(s, st, c, P, m) { const h = healAmt(st, P, m); if (h <= 0) return; m.dmg -= h; c.healed = m.id; I.log(s, 'Healed ' + h + ' from ' + ln(s, m)); }
 S.heal = {
   run(s, st, c, P) {
     if (st.who === 'each') { mons(P).forEach(m => healOne(s, st, c, P, m)); return; }
@@ -178,7 +180,7 @@ S.heal = {
 S.healTarget = { run(s, st, c) { const f = c.target != null && I.findMon(s, c.target); if (f) f.m.dmg = Math.max(0, f.m.dmg - st.n); } };
 S.wally = {
   run(s, st, c, P) { return mons(P).filter(m => m.dmg > 0 && T.gfIsMega(topOf(m)) && T.gfIsEx(topOf(m))).map(m => m.id); },
-  answer(s, st, c, v, P) { const m = I.findMon(s, v).m; m.dmg = 0; P.hand.push.apply(P.hand, m.energy.splice(0)); I.log(s, 'Healed all damage from ' + nm(m)); },
+  answer(s, st, c, v, P) { const m = I.findMon(s, v).m; m.dmg = 0; P.hand.push.apply(P.hand, m.energy.splice(0)); I.log(s, 'Healed all damage from ' + ln(s, m)); },
 };
 S.typeBoost = { run(s, st) { s.mods.typeBoost = { type: st.type, n: st.n }; } };
 H.dmg.push((s, att, target, isA, d) => { const b = s.mods.typeBoost; return b && isA && d > 0 && T.gfTypes(topOf(att)).includes(b.type) ? d + b.n : d; });
@@ -186,15 +188,15 @@ S.snipe = {
   run(s, st, c, P, O) { if (st.ifPumped && !c.pumped) return; const done = c.sniped || []; if (done.length >= st.k) return; const pool = (st.bench ? O.bench : mons(O)).filter(m => !done.includes(m.id)); return pool.map(m => m.id); },
   answer(s, st, c, v) { const att = self(s, c), t = I.findMon(s, v).m; if (att) hit(s, att, t, st.n, st.noWR); c.sniped = (c.sniped || []).concat(v); const more = S.snipe.run(s, st, c, s.players[s.cur], oppOf(s)); if (!more || !more.length) c.sniped = null; return more; },
 };
-S.selfToHand = { run(s, st, c, P) { const m = self(s, c); if (!m) return; if (P.active === m) { P.active = null; if (P.bench.length) s.promote = (s.promote || []).concat(s.cur); } else P.bench = P.bench.filter(z => z !== m);
-  P.hand.push.apply(P.hand, m.stack.concat(m.energy, m.tool ? [m.tool] : [])); I.log(s, nm(m) + ' went back to the hand'); } };
+S.selfToHand = { run(s, st, c, P) { const m = self(s, c); if (!m) return; const who = ln(s, m); if (P.active === m) { P.active = null; if (P.bench.length) s.promote = (s.promote || []).concat(s.cur); } else P.bench = P.bench.filter(z => z !== m);
+  P.hand.push.apply(P.hand, m.stack.concat(m.energy, m.tool ? [m.tool] : [])); I.log(s, who + ' went back to the hand'); } };
 S.cond = { run(s, st, c, P, O) { if (st.ifHeads && !c.heads) return; if (O.active) st.c.forEach(x => setCond(O.active, x, s, 1 - s.cur)); } };
 S.switchOpt = { run(s, st, c, P) { return P.bench.length ? P.bench.map(m => m.id).concat([null]) : null; },
   answer(s, st, c, v, P) { if (v == null) return; const i = P.bench.findIndex(m => m.id === v); const m = P.bench[i]; P.bench[i] = P.active; P.active = m; I.log(s, nm(m) + ' is now Active'); } };
 S.spread = {
   run(s, st, c, P, O) { const left = st.n - (c.placed || 0); if (left <= 0) { c.placed = 0; return; } const pool = st.bench ? O.bench : mons(O); if (!pool.length) return;
     const out = []; pool.forEach(m => { const toKo = Math.ceil((E.maxHp(s, m) - m.dmg) / 10); new Set([1, left, Math.min(left, toKo)]).forEach(n => { if (n >= 1 && n <= left) out.push({ mon: m.id, n }); }); }); return out; },
-  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m; m.dmg += 10 * v.n; c.placed = (c.placed || 0) + v.n; I.log(s, 'Put ' + v.n + ' damage counters on ' + nm(m)); return S.spread.run(s, st, c, P, O); },
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m; m.dmg += 10 * v.n; c.placed = (c.placed || 0) + v.n; I.log(s, 'Put ' + v.n + ' damage counters on ' + ln(s, m)); return S.spread.run(s, st, c, P, O); },
 };
 S.healAll = { run(s, st, c, P) { mons(P).forEach(m => { m.dmg = Math.max(0, m.dmg - st.n); }); } };
 S.healSelf = { run(s, st, c) { const m = self(s, c); if (m) m.dmg = Math.max(0, m.dmg - st.n); } };
@@ -203,7 +205,7 @@ S.energyToBench = { run(s, st, c, P) { const m = self(s, c); if (!m || !m.energy
 S.reviveBench = { run(s, st, c, P) { const left = st.n - (c.revived || 0); if (left <= 0 || P.bench.length >= I.benchMax(s, P)) return; return P.discard.some(y => y.card.name.toLowerCase() === st.name.toLowerCase()) ? [true, false] : null; },
   answer(s, st, c, v, P) { if (!v) return; const i = P.discard.findIndex(y => y.card.name.toLowerCase() === st.name.toLowerCase()); const m = I.newMon(s, P.discard.splice(i, 1)[0], s.cur); P.bench.push(m); c.revived = (c.revived || 0) + 1; return S.reviveBench.run(s, st, c, P); } };
 S.energyToHand = { run(s, st, c, P) {
-  if (st.ifHealed) { const f = c.healed != null && I.findMon(s, c.healed); if (f && f.m.energy.length) { P.hand.push.apply(P.hand, f.m.energy.splice(0)); I.log(s, 'Put the Energy from ' + nm(f.m) + ' into the hand'); } return; }
+  if (st.ifHealed) { const f = c.healed != null && I.findMon(s, c.healed); if (f && f.m.energy.length) { P.hand.push.apply(P.hand, f.m.energy.splice(0)); I.log(s, 'Put the Energy from ' + ln(s, f.m) + ' into the hand'); } return; }
   const m = self(s, c); if (m && m.energy.length) P.hand.push(m.energy.shift()); } };
 S.discardDraw = { run(s, st, c, P) { P.hand.splice(0).forEach(y => P.discard.push(y)); drawFor(s, P, st.n); } };
 S.pushOut = { run(s, st, c, P, O) { if (!O.active || !O.bench.length) return; const old = O.active; O.active = null; O.bench.push(old); s.noPromote = old.id; s.promote = (s.promote || []).concat(1 - s.cur); } };
@@ -214,8 +216,8 @@ S.optBoost = { run(s, st, c) { const m = self(s, c); return m && m.energy.filter
 S.bolt = { run(s, st, c, P) { const n = mons(P).reduce((a, z) => a + z.energy.filter(e => T.gfEType(e)).length, 0); return Array.from({ length: n + 1 }, (_, i) => i); },
   answer(s, st, c, v, P, O) { let left = v; const order = P.bench.concat([P.active]).filter(Boolean);
     for (const m of order) m.energy = m.energy.filter(e => { if (left > 0 && T.gfEType(e)) { left--; P.discard.push(e); return false; } return true; });
-    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); } } };
-S.countersActive = { run(s, st, c, P, O) { if (O.active && P.hand.length) { O.active.dmg += 10 * st.per * P.hand.length; I.log(s, 'Put ' + st.per * P.hand.length + ' damage counters on ' + nm(O.active)); } } };
+    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active, false, s)); } } };
+S.countersActive = { run(s, st, c, P, O) { if (O.active && P.hand.length) { O.active.dmg += 10 * st.per * P.hand.length; I.log(s, 'Put ' + st.per * P.hand.length + ' damage counters on ' + ln(s, O.active)); } } };
 S.pump = { run(s, st, c) { const m = self(s, c); return m && m.energy.length >= st.n && s.players[s.cur].bench && oppOf(s).bench.length ? [true, false] : null; },
   answer(s, st, c, v, P) { if (!v) return; const m = self(s, c); P.deck = P.deck.concat(m.energy.splice(0, st.n)); I.reshuffle(s, P); c.pumped = true; } };
 
@@ -227,7 +229,7 @@ H.retreatWhy.push((s, m) => m.cond === 'asleep' ? nm(m) + ' is Asleep.' : m.cond
 H.preAttack.push((s, att) => {
   if (att.cond !== 'confused') return;
   const h = s.rng() < 0.5; I.log(s, 'Confused: ' + (h ? 'heads' : 'tails'));
-  if (!h) { att.dmg += 30; I.log(s, 'The attack failed, and ' + nm(att) + ' took 3 damage counters'); return 'fail'; }
+  if (!h) { att.dmg += 30; I.log(s, 'The attack failed, and ' + ln(s, att) + ' took 3 damage counters'); return 'fail'; }
 });
 // Team Rocket's Watchtower: Colorless Pokemon have no Abilities.
 H.abilOff.push((s, m) => s.stadium && /^colorless pokemon in play have no abilities$/.test(I.ptext(s.stadium.ref)) && T.gfTypes(topOf(m)).includes('colorless') ? s.stadium.ref.card.name + ' is in play, so Colorless Pokémon have no Abilities.' : '');
@@ -290,12 +292,12 @@ H.preAttack.push((s, att) => { const b = att.energy.filter(e => eWith({ energy: 
 G.HOOKS_END.push(s => {
   const b = s.mods && s.mods.boom; if (!b) return; s.mods.boom = null;
   const f = I.findMon(s, b.mon), P = s.players[s.cur]; if (!f || f.owner !== s.cur) return;
-  b.uids.forEach(u => { const i = P.discard.findIndex(y => y.uid === u); if (i >= 0) { f.m.energy.push(P.discard.splice(i, 1)[0]); I.log(s, 'Boomerang Energy was attached to ' + nm(f.m) + ' again', true); } });
+  b.uids.forEach(u => { const i = P.discard.findIndex(y => y.uid === u); if (i >= 0) { f.m.energy.push(P.discard.splice(i, 1)[0]); I.log(s, 'Boomerang Energy was attached to ' + ln(s, f.m) + ' again', true); } });
 });
 H.hit.push((s, att, t, d) => {
   if (d <= 0 || s.players[1 - s.cur].active !== t) return;
   const n = eWith(t, /, put 2 damage counters on the attacking pokemon$/); if (!n) return;
-  att.dmg += 20 * n; I.log(s, 'Spiky Energy put ' + 2 * n + ' damage counters on ' + nm(att), true);
+  att.dmg += 20 * n; I.log(s, 'Spiky Energy put ' + 2 * n + ' damage counters on ' + ln(s, att), true);
 });
 
 /* ---------- Between turns ---------- */
@@ -303,14 +305,14 @@ G.HOOKS_END.push(s => {
   s.atkHeads = null;
   const k = s.cur, P = s.players[k];
   // Ignition Energy and the like: discarded at the end of your turn.
-  mons(P).forEach(m => { m.energy = m.energy.filter(e => { if (/discard it at the end of your turn/.test(I.ptext(e))) { P.discard.push(e); I.log(s, e.card.name + ' on ' + nm(m) + ' was discarded at the end of the turn'); return false; } return true; }); });
+  mons(P).forEach(m => { m.energy = m.energy.filter(e => { if (/discard it at the end of your turn/.test(I.ptext(e))) { P.discard.push(e); I.log(s, e.card.name + ' on ' + ln(s, m) + ' was discarded at the end of the turn'); return false; } return true; }); });
   // Pokemon Checkup, both Active Pokemon.
   s.players.forEach((Q, j) => {
     const m = Q.active; if (!m) return;
-    if (m.poison) { m.dmg += 10; I.log(s, nm(m) + ' took 1 damage counter from Poison'); }
-    if (m.burn) { m.dmg += 20; I.log(s, nm(m) + ' took 2 damage counters from Burn'); if (s.rng() < 0.5) { m.burn = 0; I.log(s, nm(m) + ' is no longer Burned'); } }
-    if (m.cond === 'asleep' && s.rng() < 0.5) { m.cond = null; I.log(s, nm(m) + ' woke up'); }
-    if (m.cond === 'paralyzed' && j === k && s.turns[k] >= (m.paraUntil || 0)) { m.cond = null; I.log(s, nm(m) + ' is no longer Paralyzed'); }
+    if (m.poison) { m.dmg += 10; I.log(s, ln(s, m) + ' took 1 damage counter from Poison'); }
+    if (m.burn) { m.dmg += 20; I.log(s, ln(s, m) + ' took 2 damage counters from Burn'); if (s.rng() < 0.5) { m.burn = 0; I.log(s, ln(s, m) + ' is no longer Burned'); } }
+    if (m.cond === 'asleep' && s.rng() < 0.5) { m.cond = null; I.log(s, ln(s, m) + ' woke up'); }
+    if (m.cond === 'paralyzed' && j === k && s.turns[k] >= (m.paraUntil || 0)) { m.cond = null; I.log(s, ln(s, m) + ' is no longer Paralyzed'); }
   });
 });
 /** Special Conditions end when a Pokemon goes to the Bench or evolves (called by game.step). */
@@ -395,7 +397,7 @@ S.moveOff = {
   run(s, st, c, P, O) { if (c.moved) return; const out = []; mons(P).filter(m => m.dmg > 0).forEach(f => { const most = Math.min(st.n, f.dmg / 10);
     mons(O).forEach(t => { const toKo = Math.ceil((E.maxHp(s, t) - t.dmg) / 10); new Set([1, most, Math.min(most, toKo)]).forEach(n => { if (n >= 1 && n <= most) out.push({ from: f.id, to: t.id, n }); }); }); });
     return out.length ? out.concat([null]) : null; },
-  answer(s, st, c, v) { c.moved = true; if (v == null) return; const f = I.findMon(s, v.from).m, t = I.findMon(s, v.to).m; f.dmg -= 10 * v.n; t.dmg += 10 * v.n; I.log(s, 'Moved ' + v.n + ' damage counters from ' + nm(f) + ' to ' + nm(t)); },
+  answer(s, st, c, v) { c.moved = true; if (v == null) return; const f = I.findMon(s, v.from).m, t = I.findMon(s, v.to).m; f.dmg -= 10 * v.n; t.dmg += 10 * v.n; I.log(s, 'Moved ' + v.n + ' damage counters from ' + ln(s, f) + ' to ' + ln(s, t)); },
 };
 S.perCounter = { run(s, st, c, P, O) { return mons(O).filter(m => m.dmg > 0).map(m => m.id); },
   answer(s, st, c, v) { const att = self(s, c), t = I.findMon(s, v).m; if (att) hit(s, att, t, st.n * t.dmg / 10, true); } };
@@ -595,7 +597,7 @@ S.countersActive = { run(s, st, c, P, O) { if (!O.active || shielded(s, O.active
 /* Steps */
 const ids = a => a.map(m => m.id);
 const may = o => o.length ? o.concat([null]) : null;
-function attachFromDeck(s, P, m, F) { const y = P.deck.find(z => T.gfFit(z, F)); if (!y) return false; m.energy.push(I.take(P.deck, y.uid)); I.log(s, 'Attached ' + y.card.name + ' to ' + nm(m)); return true; }
+function attachFromDeck(s, P, m, F) { const y = P.deck.find(z => T.gfFit(z, F)); if (!y) return false; m.energy.push(I.take(P.deck, y.uid)); I.log(s, 'Attached ' + y.card.name + ' to ' + ln(s, m)); return true; }
 const basicE = type => ({ cat: 'energy', basic: true, type: type || '' });
 S.mod = { run(s, st) { s.mods[st.k] = st.v != null ? st.v : true; } };
 S.recover = { run(s, st, c) { const m = self(s, c); if (m) { m.cond = null; m.poison = 0; m.burn = 0; } } };
@@ -631,15 +633,15 @@ S.salvatore = { run(s, st, c, P) { return evoChoices(s, P, (m, y) => !(y.card.ab
   answer(s, st, c, v, P) { evolveWith(s, P, v); I.reshuffle(s, P); } };
 S.ascend = { run(s, st, c, P) { return evoChoices(s, P, m => m.id === c.mon); }, answer(s, st, c, v, P) { evolveWith(s, P, v); I.reshuffle(s, P); } };
 S.ruffian = { run(s, st, c, P, O) { return mons(O).filter(m => !shielded(s, m) && (m.tool || m.energy.some(special))).map(m => m.id); },
-  answer(s, st, c, v, P, O) { const m = I.findMon(s, v).m; if (m.tool) { O.discard.push(m.tool); m.tool = null; } const e = m.energy.find(special); if (e) O.discard.push(I.take(m.energy, e.uid)); I.log(s, 'Discarded from ' + nm(m)); } };
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v).m; if (m.tool) { O.discard.push(m.tool); m.tool = null; } const e = m.energy.find(special); if (e) O.discard.push(I.take(m.energy, e.uid)); I.log(s, 'Discarded from ' + ln(s, m)); } };
 S.hammer = { run(s, st, c, P, O) { const o = []; (st.active ? [O.active] : mons(O)).filter(m => m && !shielded(s, m)).forEach(m => { const e = m.energy.find(special); if (e) o.push({ mon: m.id, uid: e.uid }); }); return o; },
-  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + nm(m)); } };
+  answer(s, st, c, v, P, O) { const m = I.findMon(s, v.mon).m, x = I.take(m.energy, v.uid); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + ' from ' + ln(s, m)); } };
 S.ticket = { run(s, st, c, P) { const n = P.prizes.length; const old = P.prizes.splice(0); I.reshuffle(s, { deck: old }); P.deck = P.deck.concat(old); P.prizes = P.deck.splice(0, n); } };
 S.pickOne = { run(s, st, c, P) { return ids(mons(P)); }, answer(s, st, c, v) { c.one = v; } };
 S.acerola = { run(s, st, c) { const f = c.one != null && I.findMon(s, c.one); if (f) f.m.acerola = stTurn(s, 1 - s.cur) + 1; } };
 S.larry = { run(s, st, c, P) { P.discard.push.apply(P.discard, P.hand.splice(0)); st.spec.alts[0].forEach(q => { for (let i = 0; i < q.n; i++) { const y = P.deck.find(z => T.gfFit(z, q.F)); if (y) P.hand.push(I.take(P.deck, y.uid)); } }); I.reshuffle(s, P); } };
 S.devolve = { run(s, st, c, P) { return mons(P).filter(m => m.stack.length > 1 && typesOf(m).includes(st.type)).map(m => m.id); },
-  answer(s, st, c, v, P) { const m = I.findMon(s, v).m; while (m.stack.length > 1) P.hand.push(m.stack.pop()); m.evoTurn = s.turn; I.log(s, nm(m) + ' was devolved'); } };
+  answer(s, st, c, v, P) { const m = I.findMon(s, v).m; while (m.stack.length > 1) P.hand.push(m.stack.pop()); m.evoTurn = s.turn; I.log(s, ln(s, m) + ' was devolved'); } };
 S.drawOppBench = { run(s, st, c, P, O) { drawFor(s, P, O.bench.length); } };
 S.flute = { run(s, st, c, P, O) { const top = O.deck.splice(0, st.n), room = () => O.bench.length < I.benchMax(s, O);
     top.filter(y => y.card.cat === 'pokemon' && y.card.stage === 'basic').forEach(y => { if (!room()) return; top.splice(top.indexOf(y), 1); O.bench.push(I.newMon(s, y, 1 - s.cur)); I.log(s, 'Put ' + y.card.name + " on your opponent's Bench"); });
@@ -665,9 +667,9 @@ S.comfey = { run(s, st, c, P) { c.top = P.deck.splice(0, st.n); if (!c.top.lengt
     if (!rest.length) I.log(s, s.cur === 0 ? 'Put ' + x.card.name + ' into your hand' : 'Your opponent put 1 card into their hand', true);
     else I.log(s, s.cur === 0 ? 'Put ' + x.card.name + ' into your hand and ' + restW + ' ' + where : 'Your opponent put 1 card into their hand and ' + restW + ' ' + where, true); } };
 S.moveType = { run(s, st, c, P) { const o = []; mons(P).forEach(a => { const e = a.energy.find(x => T.gfEType(x) === st.type); if (e) mons(P).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); return o; },
-  answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, 'Moved Energy from ' + nm(a) + ' to ' + nm(b)); } };
+  answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, 'Moved Energy from ' + ln(s, a) + ' to ' + ln(s, b)); } };
 S.countersOn = { run(s, st, c, P, O) { return mons(O).filter(m => !shielded(s, m, true)).map(m => m.id); },
-  answer(s, st, c, v) { const m = I.findMon(s, v).m; m.dmg += 10 * st.n; I.log(s, 'Put ' + st.n + ' damage counters on ' + nm(m)); } };
+  answer(s, st, c, v) { const m = I.findMon(s, v).m; m.dmg += 10 * st.n; I.log(s, 'Put ' + st.n + ' damage counters on ' + ln(s, m)); } };
 const moveOffRun = S.moveOff.run;
 S.moveOff.run = (s, st, c, P, O) => { if (s.players.some((Q, k) => anyOn(s, k, /^damage counters on each pokemon can't be moved to other pokemon/).length)) return; const r = moveOffRun(s, st, c, P, O); return r && r.filter(v => v == null || !shielded(s, I.findMon(s, v.to).m, true)); };
 const condRun = S.cond.run;
@@ -675,7 +677,7 @@ S.cond.run = (s, st, c, P, O) => { if (st.ifKO && !(st.ifKO === true ? P.koLastT
 S.handPick = { run(s, st, c, P, O) { const seen = new Set(), o = []; O.hand.forEach(y => { if (!seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o; },
   answer(s, st, c, v, P, O) { const x = I.take(O.hand, v); if (st.to === 'bottom') O.deck.push(x); else O.discard.push(x); I.log(s, (st.to === 'bottom' ? 'Put ' : 'Discarded ') + x.card.name + " from your opponent's hand" + (st.to === 'bottom' ? " on the bottom of your opponent's deck" : '')); } };
 S.guard = { run(s, st, c) { const m = self(s, c); if (m) m.guard = { t: stTurn(s, 1 - s.cur) + 1, all: !!st.all, n: st.n || 0 }; } };
-S.exactKO = { run(s, st, c, P, O) { if (O.active && O.active.dmg === 10 * st.n && !shielded(s, O.active)) { O.active.dmg = E.maxHp(s, O.active); I.log(s, nm(O.active) + ' is Knocked Out by the effect'); } } };
+S.exactKO = { run(s, st, c, P, O) { if (O.active && O.active.dmg === 10 * st.n && !shielded(s, O.active)) { O.active.dmg = E.maxHp(s, O.active); I.log(s, ln(s, O.active) + ' is Knocked Out by the effect'); } } };
 S.handToDeck = { run(s, st, c, P) { const n = P.hand.length; P.deck = P.deck.concat(P.hand.splice(0)); I.reshuffle(s, P); I.log(s, n === 1 ? 'Shuffled 1 card from your hand into your deck' : 'Shuffled ' + n + ' cards from your hand into your deck'); } };
 S.oppMoveE = { run(s, st, c, P, O) { const o = []; mons(O).filter(m => !shielded(s, m)).forEach(a => { const seen = new Set(); a.energy.forEach(e => { if (seen.has(e.card.key)) return; seen.add(e.card.key); mons(O).filter(b => b !== a).forEach(b => o.push({ from: a.id, uid: e.uid, to: b.id })); }); }); return o; },
   answer(s, st, c, v) { const a = I.findMon(s, v.from).m, b = I.findMon(s, v.to).m; b.energy.push(I.take(a.energy, v.uid)); I.log(s, "Moved an Energy on your opponent's side"); } };
@@ -689,7 +691,7 @@ S.feathers = { run(s, st, c, P) { const o = P.hand.filter(y => y.card.kind === s
   answer(s, st, c, v, P, O) { for (let i = 0; i < v; i++) { const y = P.hand.find(z => z.card.kind === st.kind && nameOf(z).includes(st.name)); P.discard.push(I.take(P.hand, y.uid)); }
     const att = self(s, c); if (att && O.active && v) hit(s, att, O.active, st.per * v); } };
 S.torment = { run(s, st, c, P, O) { return O.active && !shielded(s, O.active) ? topOf(O.active).card.attacks.map(a => a.name) : null; },
-  answer(s, st, c, v, P, O) { O.active.torment = { name: v, t: stTurn(s, 1 - s.cur) + 1 }; I.log(s, nm(O.active) + " can't use " + v + ' next turn'); } };
+  answer(s, st, c, v, P, O) { O.active.torment = { name: v, t: stTurn(s, 1 - s.cur) + 1 }; I.log(s, ln(s, O.active) + " can't use " + v + ' next turn'); } };
 S.salvo = { run(s, st, c, P, O) { if ((c.salvo || 0) >= st.k) return; return ids(mons(O)); },
   answer(s, st, c, v, P, O) { const att = self(s, c); if (att) hit(s, att, I.findMon(s, v).m, st.n, true); c.salvo = (c.salvo || 0) + 1; return S.salvo.run(s, st, c, P, O); } };
 S.matcha = { run(s, st, c, P, O) { if (sneakers(P) < st.k) return; mons(O).filter(m => !shielded(s, m)).forEach(m => { m.dmg += 10 * st.n; }); } };
@@ -708,8 +710,8 @@ S.copy = { run(s, st, c, P, O) { if (c.copied) return; const o = copyChoices(s, 
     const src = v.mon != null ? topOf(I.findMon(s, v.mon).m) : v.opp != null ? topOf(I.findMon(s, v.opp).m) : P.discard.find(z => z.uid === v.top);
     const a = src.card.attacks[v.i], R = E.readAttack(a), att = self(s, c); I.log(s, 'Used ' + a.name);
     if (!R || !att) return; if (R.pre) R.pre(s, att);
-    if (O.active) { const d = E.damageTo(s, att, R, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); }
-    if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { const d = E.damageTo(s, att, { base: R.bench.n }, m, false); m.dmg += d; I.log(s, I.hitLine(d, m, true)); });
+    if (O.active) { const d = E.damageTo(s, att, R, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active, false, s)); }
+    if (R.bench && R.bench.who === 'each') O.bench.forEach(m => { const d = E.damageTo(s, att, { base: R.bench.n }, m, false); m.dmg += d; I.log(s, I.hitLine(d, m, true, s)); });
     if (R.fx && R.fx.length) { const Rn = s.pending; Rn.steps = Rn.steps.slice(0, Rn.i + 1).concat(R.fx, Rn.steps.slice(Rn.i + 1)); } } };
 const raidRun = S.raid.run;
 S.raid = Object.assign({}, S.raid, { run(s, st, c, P, O) { const m = self(s, c); if (m && st.discardN && !c.paid) { c.paid = true; P.discard.push.apply(P.discard, m.energy.splice(0, st.discardN)); } return raidRun(s, st, c, P, O); } });
@@ -723,7 +725,7 @@ S.bolt = { run(s, st, c, P) { const pool = st.self ? [self(s, c)].filter(Boolean
     const n = pool.reduce((a, z) => a + z.energy.filter(e => st.any ? true : st.type ? T.gfEType(e) === st.type : T.gfEType(e)).length, 0); return Array.from({ length: Math.min(n, st.max || 99) + 1 }, (_, i) => i); },
   answer(s, st, c, v, P, O) { let left = v; const pool = st.self ? [self(s, c)].filter(Boolean) : st.bench ? P.bench.slice() : P.bench.concat([P.active]).filter(Boolean);
     for (const m of pool) m.energy = m.energy.filter(e => { if (left > 0 && (st.any || (st.type ? T.gfEType(e) === st.type : T.gfEType(e)))) { left--; P.discard.push(e); return false; } return true; });
-    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active)); } } };
+    const att = self(s, c); if (att && O.active && v) { const d = E.damageTo(s, att, { base: st.per * v }, O.active, true); O.active.dmg += d; I.log(s, I.hitLine(d, O.active, false, s)); } } };
 
 /* Rules on the board */
 H.passive.push(
@@ -831,7 +833,7 @@ H.ko.push((s, m, k, wasActive) => {
   s.koLog = (s.koLog || []).slice(-11).concat({ k, by: s.cur, t: stTurn(s, s.cur), name: nmL(m) });
   if (k === s.cur || !wasActive || s.mods.atkMon == null) return;
   const r = I.abilTexts(m).map(x => x.t.match(/^if this pokemon is in the active spot and is knocked out by damage from an attack from your opponent's pokemon, put (\d+) damage counters on the attacking pokemon$/)).find(Boolean);
-  const att = s.players[s.cur].active; if (r && att && att.id === s.mods.atkMon) { att.dmg += 10 * +r[1]; I.log(s, nm(att) + ' took ' + r[1] + ' damage counters'); }
+  const att = s.players[s.cur].active; if (r && att && att.id === s.mods.atkMon) { att.dmg += 10 * +r[1]; I.log(s, ln(s, att) + ' took ' + r[1] + ' damage counters'); }
 });
 H.need.push((s, need) => {
   let m;
@@ -857,14 +859,14 @@ H.hit.push((s, att, t, d) => {
   // move an Energy as if it were Handheld Fan). Both only work from the Active Spot, and the log names the Tool that did it.
   const onActive = s.players[k].active === t, fan = /^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, move an energy from the attacking pokemon to 1 of your opponent's benched pokemon$/;
   if (onActive && fan.test(tt) && att.energy.length && P.bench.length) {
-    const to = P.bench.slice().sort((a, b) => a.energy.length - b.energy.length)[0]; to.energy.push(att.energy.shift()); I.log(s, tool.card.name + ' moved an Energy to ' + nm(to)); }
+    const to = P.bench.slice().sort((a, b) => a.energy.length - b.energy.length)[0]; to.energy.push(att.energy.shift()); I.log(s, tool.card.name + ' moved an Energy to ' + ln(s, to)); }
   if (onActive && (r = tt.match(/^if the pokemon this card is attached to is in the active spot and is damaged by an attack from your opponent's pokemon\s*(?:\(even if this pokemon is knocked out\))?\s*, draw (\d+) cards$/))) {
-    I.log(s, tool.card.name + ' on ' + nm(t) + ' took effect', true); I.drawN(s, s.players[k], +r[1]); }
+    I.log(s, tool.card.name + ' on ' + ln(s, t) + ' took effect', true); I.drawN(s, s.players[k], +r[1]); }
 });
 // Pokemon Checkup: Pecharunt's Toxic Subjugation, Froslass's Freezing Shroud.
 G.HOOKS_END.push(s => {
   s.players.forEach((Q, j) => { const m = Q.active; if (!m || !m.poison) return; const o = s.players[1 - j].active;
-    if (o && abilOn(s, o, 1 - j, /^as long as this pokemon is in the active spot, put 5 more damage counters on your opponent's poisoned pokemon/)) { m.dmg += 50; I.log(s, nm(m) + ' took 5 more damage counters from Poison'); } });
+    if (o && abilOn(s, o, 1 - j, /^as long as this pokemon is in the active spot, put 5 more damage counters on your opponent's poisoned pokemon/)) { m.dmg += 50; I.log(s, ln(s, m) + ' took 5 more damage counters from Poison'); } });
   const fro = [0, 1].reduce((a, k) => a + anyOn(s, k, /^during pokemon checkup, put 1 damage counter on each pokemon that has an ability/).length, 0);
   if (fro) s.players.forEach((Q, j) => mons(Q).forEach(m => { if (!/^froslass/.test(nmL(m)) && I.abilTexts(m).length && !shielded(s, m, true)) m.dmg += 10 * fro; }));
 });

@@ -1154,6 +1154,7 @@ const I18N_ES = {
   "Sparring Energy and game log fixes": "Arreglos de Energía y del registro de partida en Sparring",
   "Fairer grades for decks with no draw cards": "Calificaciones más justas para barajas sin cartas de robo",
   "Grades now count local store events": "Las calificaciones ahora cuentan eventos locales en tiendas",
+  "Sparring game log fixes": "Correcciones en el registro de partida de Sparring",
   "Clearer grade text when showing local results": "Texto de la calificación más claro al ver resultados locales",
   "Share card art fixed for 30th Celebration": "Imagen de la carta arreglada en la tarjeta para compartir de 30th Celebration",
   "Added: watch out for box": "Nuevo: recuadro Ojo con",
@@ -2283,6 +2284,7 @@ const I18N_PT = {
   "Sparring Energy and game log fixes": "Correções de Energia e do registro da partida no Sparring",
   "Fairer grades for decks with no draw cards": "Notas mais justas para decks sem cartas de compra",
   "Grades now count local store events": "As notas agora contam eventos locais em lojas",
+  "Sparring game log fixes": "Correções no registro da partida do Sparring",
   "Clearer grade text when showing local results": "Texto da nota mais claro ao ver resultados locais",
   "Share card art fixed for 30th Celebration": "Imagem da carta corrigida no cartão de compartilhar da 30th Celebration",
   "Added: watch out for box": "Novo: quadro Cuidado com",
@@ -5422,7 +5424,12 @@ const I18N_FT_OWN = {
 };
 function i18nFtOwn(x, l, prep) {
   const m = /^(your|their) (.+?)( \((?:Active|Bench \d+)\))?$/i.exec(x);
-  if (!m) return (prep ? prep + ' ' : '') + x;
+  if (!m) {
+    // 3.4.18: a log line's Pokémon with its spot and no "your" or "their": "Mega Rayquaza ex (Bench 2)".
+    const t = /^(.+?) \((?:Active|Bench (\d+))\)$/.exec(x), Z = I18N_PZ[l];
+    if (t && Z) x = t[1] + (t[2] ? ` (${Z.bench} ${t[2]})` : ` (${Z.act})`);
+    return (prep ? prep + ' ' : '') + x;
+  }
   const T = I18N_FT_OWN[l][/^y/i.test(m[1]) ? 'mine' : 'theirs'], w = T[prep || ''] || T[''];
   // Its spot when two of that name are in play: "(Bench 2)" reads "(Banca 2)".
   const Z = I18N_PZ[l], spot = !m[3] ? '' : / \(Active\)/.test(m[3]) ? ` (${Z.act})` : ` (${Z.bench} ${m[3].replace(/\D/g, '')})`;

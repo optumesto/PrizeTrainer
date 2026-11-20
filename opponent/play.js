@@ -458,8 +458,12 @@ function render() {
 function checkOver() {
   const s = S.s;
   if (G.winner(s) >= 0 || s.gameOver != null || s.timeUp) {
-    // 3.4.12: the result goes in the game log too, once.
-    if (!S.over) { const r = resultText(s); s.log.push(r.head); if (r.sub) s.log.push(r.sub); }
+    // 3.4.12: the result goes in the game log too, once. 3.4.18: the game itself already logs "You win" or
+    // "Your opponent wins" when a Knock Out or the last Prize card ends it, so that line is not said twice.
+    if (!S.over) {
+      const r = resultText(s), bare = t => String(t).replace(/\.$/, ''), said = s.log.slice(-8).some(t => bare(t) === bare(r.head));
+      if (!said) s.log.push(r.head); if (r.sub) s.log.push(r.sub);
+    }
     S.over = true; return true;
   }
   return false;

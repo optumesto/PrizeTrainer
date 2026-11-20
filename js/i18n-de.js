@@ -1445,6 +1445,7 @@ I18N_MORE.de = {
     "Sparring Energy and game log fixes": "Korrekturen bei Energie und Spielprotokoll in Sparring",
     "Fairer grades for decks with no draw cards": "Fairere Noten für Decks ohne Zieh-Karten",
     "Grades now count local store events": "Noten zählen jetzt lokale Events in Läden",
+    "Sparring game log fixes": "Korrekturen am Spielprotokoll von Sparring",
     "Clearer grade text when showing local results": "Klarerer Notentext bei lokalen Ergebnissen",
     "Share card art fixed for 30th Celebration": "Kartenbild auf der Teilen-Karte für 30th Celebration korrigiert",
     "Added: watch out for box": "Neu: Achte-auf-Box",
