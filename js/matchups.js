@@ -14,10 +14,10 @@ const MU60_FEW = 20;      // fewer matches than this is too few to trust
 const MU60_CLOSE = 0.45;  // how alike a deck must be to count as that archetype
 const MU60_SRC = { online: 'Online', inperson: 'Local in person' };
 let mu60Data = null, mu60Busy = false, mu60Tried = false, mu60Src = '';
-/** Which results the numbers on screen come from, in words: 'online', 'local in-person', or both. */
-function mu60SrcWords(data) {
-  const d = data || mu60Data, ids = d && Array.isArray(d.sources) ? d.sources.map(s => s.id) : ['online'];
-  const on = ids.includes('online') && (!mu60Src || mu60Src === 'online'), ip = ids.includes('inperson') && (!mu60Src || mu60Src === 'inperson');
+/** Which results the numbers on screen come from, in words: 'online', 'local in-person', or both. With all set, the picker is ignored (the grade always uses every source). */
+function mu60SrcWords(data, all) {
+  const d = data || mu60Data, ids = d && Array.isArray(d.sources) ? d.sources.map(s => s.id) : ['online'], src = all ? '' : mu60Src;
+  const on = ids.includes('online') && (!src || src === 'online'), ip = ids.includes('inperson') && (!src || src === 'inperson');
   return on && ip ? 'online and local in-person' : ip ? 'local in-person' : 'online';
 }
 

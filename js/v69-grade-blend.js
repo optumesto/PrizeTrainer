@@ -338,14 +338,14 @@ function g68Blend(R, deck) {
 /** One plain sentence on the results part, for under the grade. */
 function g68Line(R) {
   const r = R && R.res;
-  if (!r) return R && R.noRes ? ` No ${typeof mu60SrcWords === 'function' && mu60SrcWords() !== 'online' ? (mu60SrcWords() === 'local in-person' ? 'local in-person' : 'online or local in-person') : 'online'} tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.` : '';
+  if (!r) return R && R.noRes ? ` No ${typeof mu60SrcWords === 'function' && mu60SrcWords(null, true) !== 'online' ? (mu60SrcWords(null, true) === 'local in-person' ? 'local in-person' : 'online or local in-person') : 'online'} tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.` : '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
   const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
   // 3.0 (Frankfurt test): this win rate counts games since the newest set three times, and the
   // Grade vs win rate section shows the plain one, so each says which it is.
   const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
   const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s ${typeof mu60SrcWords === 'function' ? mu60SrcWords(null, true) : 'online'} tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;
@@ -404,7 +404,7 @@ function g79Section(deck) {
     const p = all[0] / n * 100;
     // 3.0: the plain win rate over every game, and the one the grade uses when the two differ.
     const used = st && st.wrUsed != null && arch.cur ? st.wrUsed * 100 : null;
-    const also = used != null && used.toFixed(1) !== p.toFixed(1) ? ` The grade counts games since the newest set three times, which makes it ${pct(used)}.` : '';
+    const also = (typeof mu60Src === 'undefined' || !mu60Src) && used != null && used.toFixed(1) !== p.toFixed(1) ? ` The grade counts games since the newest set three times, which makes it ${pct(used)}.` : '';
     h += `<p class="mu60-p">Win rate: <b>${pct(p)}</b> over all ${n0(n)} games, against ${pct(avg)} for all decks in these results.${also}</p>`;
     const cur = arch.cur ? mu60Sum(arch.cur.rec) : [0, 0, 0], cn = cur[0] + cur[1] + cur[2], pn = n - cn;
     if (day) {
