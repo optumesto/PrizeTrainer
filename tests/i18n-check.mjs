@@ -334,9 +334,14 @@ const SCREENS = [
   ['log a match', async w => { w.openTlogForm(); await tick(100); }],
   ['daily challenge', async w => { shut(w); w.showScreen('home'); await w.startDaily(); await tick(500); }],
   ['puzzle', async w => { shut(w); await w.openPuzzle(); await tick(300); }],
+  ['puzzle: prizes taken', async w => { w.openSheet('<div class="pz-zone mt-handw">' + w.pzHandHTML([{ card: { cat: 'hidden' } }, { card: { cat: 'hidden' } }]) + w.pzHandHTML([{ card: { cat: 'hidden' } }]) + '</div>'); await tick(100); }],
   // Rare Pull: the rules, a prompt with search hits, a fit, a pick that is not that kind of card, a pass, the score, home after.
   ['rare pull: rules', async w => { shut(w); w.showScreen('home'); await w.rpOpen(); await tick(300); }],
   ['rare pull: prompt', async w => { w.rpStart(); await tick(200); w.rpFind('ball'); await tick(100); }],
+  // 3.4.22: the list offers only fits; a real card that does not fit says why, and a slip of a letter gets the closest fit.
+  ['rare pull: not that kind', async w => { w.eval(`(() => { const p = rpG.prompts[0], t = RP_CATS[p.cat][1]; const x = rpData.list.find(y => { const c = rpData.kind.get(y.k); return c && !t(c) && y.n.length > 5; }); rpFind(x.n); })()`); await tick(100); }],
+  ['rare pull: a slip', async w => { w.eval(`(() => { const f = rpG.prompts[0].fits.find(x => x.n.length >= 7) || rpG.prompts[0].fits[0]; const q = f.n.slice(0, 6), i = 3; rpFind(q.slice(0, i) + (q[i] === 'x' ? 'z' : 'x') + q.slice(i + 1)); })()`); await tick(100); }],
+  ['rare pull: no such card', async w => { w.rpFind('qqzzqq'); await tick(100); }],
   ['rare pull: a fit', async w => { w.eval(`(() => { const p = rpG.prompts[0], f = p.fits[p.fits.length - 1]; rpG.hits = [{ k: f.k, n: f.n }]; rpPick(0); })()`); await tick(200); }],
   ['rare pull: not a fit', async w => { w.rpNext(); await tick(100); w.eval(`(() => { const p = rpG.prompts[1], t = RP_CATS[p.cat][1]; const x = rpData.list.find(y => { const c = rpData.kind.get(y.k); return c && !t(c); }); rpG.hits = [x]; rpPick(0); })()`); await tick(200); }],
   ['rare pull: passed', async w => { w.rpNext(); await tick(100); w.rpPick(null); await tick(200); }],
@@ -422,6 +427,11 @@ const SCREENS = [
     shut(w); w.eval('(() => { const k = dailyKey(); puzzleStore().results[k] = { won: true, moves: 3, num: 1, ts: Date.now() }; gtgStore().results[k] = { ans: 8.1, g: [8.1], done: true, won: true, ts: 1 }; })()');
     w.showScreen('home'); w.renderHome(); await tick(100);
     w.eval('(() => { const k = dailyKey(); [k, dailyKey(Date.now() - 864e5), dailyKey(Date.now() - 2 * 864e5)].forEach(d => delete dailyStore().results[d]); delete rpStore().results[k]; delete puzzleStore().results[k]; delete state.gtg; })()');
+  }],
+  ['home: daily games 1 day streak', async w => {
+    shut(w); w.eval('(() => { const k = dailyKey(); delete state.gtg; [state.daily, state.puzzle, rpStore()].forEach(st => { if (st && st.results) for (const d in st.results) delete st.results[d]; }); rpStore().results[k] = { score: 210, p: [30], ts: Date.now() }; })()');
+    w.showScreen('home'); w.renderHome(); await tick(100);
+    w.eval('delete rpStore().results[dailyKey()]');
   }],
   // Muse s6 M1: the messy list, imported on its own, then its Grade and Cards tabs.
   ['import a messy list', async w => {

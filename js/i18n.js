@@ -35,7 +35,7 @@ const I18N_SKIP = [
   '[data-no-tr]', 'script', 'style', 'textarea', 'input', 'code', 'pre', '[contenteditable="true"]',
   '#review-deck-name', '.review-card-name', '.gf-card', '.pz-card', '.pz-tx', '.mt-nm', '.mt-tool', '.t68-n',
 ].join(',');
-const I18N_ATTRS = ['placeholder', 'title', 'aria-label'];
+const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'aria-valuetext'];
 
 /* I18N_DICT_START */
 const I18N_ES = {
@@ -6308,6 +6308,64 @@ I18N_PAT.unshift(
   [/^All (\d+) played$/, "Los $1 jugados", "Os $1 jogados"],
   [/^(\d+) of (\d+) played$/, "$1 de $2 jugados", "$1 de $2 jogados"],  // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
   [/^in (\d+:\d\d)$/, "en $1", "em $1"],
+);
+
+// 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
+Object.assign(I18N_ES, {
+  "Daily games fixes": "Arreglos en los juegos diarios",
+  "1 day streak": "Racha de 1 día",
+  "Card position": "Posición de la carta",
+  "Did you mean this card?": "¿Querías decir esta carta?",
+  "No card by that name fits.": "No hay ninguna carta con ese nombre que encaje.",
+  "is not that kind of card.": "no es ese tipo de carta.",
+  "is that kind of card, but fewer than 1 in 20 of those top lists run it.": "es de ese tipo, pero la llevan menos de 1 de cada 20 de esas listas top.",
+  "Passing or running out of time scores 0.": "Pasar o quedarte sin tiempo da 0 puntos.",
+  "Replay: today's result is already saved.": "Repetición: el resultado de hoy ya está guardado.",
+  "1 Prize card taken": "1 carta de Premio tomada",
+  "Share Daily challenge result": "Compartir el resultado del Desafío diario",
+  "Play Daily challenge": "Jugar el Desafío diario",
+  "Replay Daily challenge": "Repetir el Desafío diario",
+  "Share Daily puzzle result": "Compartir el resultado del Puzzle diario",
+  "Play Daily puzzle": "Jugar el Puzzle diario",
+  "Replay Daily puzzle": "Repetir el Puzzle diario",
+  "Share Rare Pull result": "Compartir el resultado de Rare Pull",
+  "Play Rare Pull": "Jugar a Rare Pull",
+  "Replay Rare Pull": "Repetir Rare Pull",
+  "Share Guess the Grade result": "Compartir el resultado de Adivina la calificación",
+  "Play Guess the Grade": "Jugar a Adivina la calificación",
+  "Continue Guess the Grade": "Continuar Adivina la calificación",
+  "Result of Guess the Grade": "Resultado de Adivina la calificación",
+});
+Object.assign(I18N_PT, {
+  "Daily games fixes": "Correções nos jogos diários",
+  "1 day streak": "Sequência de 1 dia",
+  "Card position": "Posição da carta",
+  "Did you mean this card?": "Você quis dizer esta carta?",
+  "No card by that name fits.": "Nenhuma carta com esse nome se encaixa.",
+  "is not that kind of card.": "não é esse tipo de carta.",
+  "is that kind of card, but fewer than 1 in 20 of those top lists run it.": "é desse tipo, mas menos de 1 em cada 20 dessas listas top a usam.",
+  "Passing or running out of time scores 0.": "Passar ou ficar sem tempo vale 0 pontos.",
+  "Replay: today's result is already saved.": "Repetição: o resultado de hoje já está salvo.",
+  "1 Prize card taken": "1 carta de Prêmio pega",
+  "Share Daily challenge result": "Compartilhar o resultado do Desafio diário",
+  "Play Daily challenge": "Jogar o Desafio diário",
+  "Replay Daily challenge": "Repetir o Desafio diário",
+  "Share Daily puzzle result": "Compartilhar o resultado do Puzzle diário",
+  "Play Daily puzzle": "Jogar o Puzzle diário",
+  "Replay Daily puzzle": "Repetir o Puzzle diário",
+  "Share Rare Pull result": "Compartilhar o resultado do Rare Pull",
+  "Play Rare Pull": "Jogar Rare Pull",
+  "Replay Rare Pull": "Repetir Rare Pull",
+  "Share Guess the Grade result": "Compartilhar o resultado de Adivinhe a nota",
+  "Play Guess the Grade": "Jogar Adivinhe a nota",
+  "Continue Guess the Grade": "Continuar Adivinhe a nota",
+  "Result of Guess the Grade": "Resultado de Adivinhe a nota",
+});
+I18N_PAT.unshift(
+  [/^Daily puzzle #(\d+)$/, "Puzzle diario #$1", "Puzzle diário #$1"],
+  [/^(\d+) Prize cards taken$/, "$1 cartas de Premio tomadas", "$1 cartas de Prêmio pegas"],
+  [/^Cards from top lists\. Yours: (.+)\. Theirs: (.+)\.$/, "Cartas de listas top. La tuya: $1. La del rival: $2.", "Cartas de listas top. A sua: $1. A do oponente: $2."],
+  [/^Today: not solved in (\d+)$/, "Hoy: sin acertar en $1", "Hoje: não acertou em $1"],
 );
 
 const rdI18n = (function () {

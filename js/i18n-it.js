@@ -2590,3 +2590,36 @@ I18N_MORE.it.pat.unshift(
   // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
   [/^in (\d+:\d\d)$/, "in $1 min"],
 );
+
+// 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
+Object.assign(I18N_MORE.it.dict, {
+  "Daily games fixes": "Correzioni ai Giochi del giorno",
+  "1 day streak": "Serie di 1 giorno",
+  "Card position": "Posizione della carta",
+  "Did you mean this card?": "Intendevi questa carta?",
+  "No card by that name fits.": "Nessuna carta con questo nome è adatta.",
+  "is not that kind of card.": "non è quel tipo di carta.",
+  "is that kind of card, but fewer than 1 in 20 of those top lists run it.": "è del tipo giusto, ma la gioca meno di 1 su 20 di quelle liste top.",
+  "Passing or running out of time scores 0.": "Passare o finire il tempo vale 0 punti.",
+  "Replay: today's result is already saved.": "Partita ripetuta: il risultato di oggi è già salvato.",
+  "1 Prize card taken": "1 carta Premio presa",
+  "Share Daily challenge result": "Condividi il risultato della Sfida del giorno",
+  "Play Daily challenge": "Gioca la Sfida del giorno",
+  "Replay Daily challenge": "Rigioca la Sfida del giorno",
+  "Share Daily puzzle result": "Condividi il risultato del Puzzle del giorno",
+  "Play Daily puzzle": "Gioca il Puzzle del giorno",
+  "Replay Daily puzzle": "Rigioca il Puzzle del giorno",
+  "Share Rare Pull result": "Condividi il risultato di Rare Pull",
+  "Play Rare Pull": "Gioca a Rare Pull",
+  "Replay Rare Pull": "Rigioca a Rare Pull",
+  "Share Guess the Grade result": "Condividi il risultato di Indovina il voto",
+  "Play Guess the Grade": "Gioca a Indovina il voto",
+  "Continue Guess the Grade": "Continua Indovina il voto",
+  "Result of Guess the Grade": "Risultato di Indovina il voto",
+});
+I18N_MORE.it.pat.unshift(
+  [/^Daily puzzle #(\d+)$/, "Puzzle del giorno #$1"],
+  [/^(\d+) Prize cards taken$/, "$1 carte Premio prese"],
+  [/^Cards from top lists\. Yours: (.+)\. Theirs: (.+)\.$/, "Carte da liste top. La tua: $1. Quella avversaria: $2."],
+  [/^Today: not solved in (\d+)$/, "Oggi: non indovinato in $1"],
+);

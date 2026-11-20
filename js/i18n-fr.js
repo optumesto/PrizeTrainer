@@ -2617,3 +2617,36 @@ I18N_MORE.fr.pat.unshift(
   // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
   [/^in (\d+:\d\d)$/, "en $1"],
 );
+
+// 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
+Object.assign(I18N_MORE.fr.dict, {
+  "Daily games fixes": "Corrections des Jeux du jour",
+  "1 day streak": "Série de 1 jour",
+  "Card position": "Position de la carte",
+  "Did you mean this card?": "Vouliez-vous dire cette carte ?",
+  "No card by that name fits.": "Aucune carte de ce nom ne convient.",
+  "is not that kind of card.": "n'est pas ce type de carte.",
+  "is that kind of card, but fewer than 1 in 20 of those top lists run it.": "est bien de ce type, mais moins de 1 de ces meilleures listes sur 20 la jouent.",
+  "Passing or running out of time scores 0.": "Passer ou manquer de temps rapporte 0.",
+  "Replay: today's result is already saved.": "Partie rejouée : le résultat du jour est déjà enregistré.",
+  "1 Prize card taken": "1 carte Récompense prise",
+  "Share Daily challenge result": "Partager le résultat du Défi du jour",
+  "Play Daily challenge": "Jouer au Défi du jour",
+  "Replay Daily challenge": "Rejouer le Défi du jour",
+  "Share Daily puzzle result": "Partager le résultat du Puzzle du jour",
+  "Play Daily puzzle": "Jouer au Puzzle du jour",
+  "Replay Daily puzzle": "Rejouer le Puzzle du jour",
+  "Share Rare Pull result": "Partager le résultat de Rare Pull",
+  "Play Rare Pull": "Jouer à Rare Pull",
+  "Replay Rare Pull": "Rejouer à Rare Pull",
+  "Share Guess the Grade result": "Partager le résultat de Devinez la note",
+  "Play Guess the Grade": "Jouer à Devinez la note",
+  "Continue Guess the Grade": "Continuer Devinez la note",
+  "Result of Guess the Grade": "Résultat de Devinez la note",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^Daily puzzle #(\d+)$/, "Puzzle du jour n°$1"],
+  [/^(\d+) Prize cards taken$/, "$1 cartes Récompense prises"],
+  [/^Cards from top lists\. Yours: (.+)\. Theirs: (.+)\.$/, "Cartes issues de listes du top. La vôtre : $1. Celle d'en face : $2."],
+  [/^Today: not solved in (\d+)$/, "Aujourd'hui : pas trouvé en $1"],
+);

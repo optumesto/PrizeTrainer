@@ -92,10 +92,10 @@ function pzScoreWords(r, best) {
   return { won: false, plays: 0, best: best || null, over: null, head: r.peek ? 'Looked at the answer' : 'No win on the first try', col: GS45.band['Fixable'] };
 }
 function pzShareTextFor(r, key, W) {
-  const st = puzzleStats(), runs = puzzleStreakText(st), num = r.num || puzzleNumber(key);
+  const st = puzzleStats(), runs = puzzleStreakText(st), num = puzzleNumber(key);
   const score = W.won ? `won this turn in ${W.plays} play${W.plays === 1 ? '' : 's'}` + (W.best ? (W.over === 0 ? ', the shortest win' : `. Best possible: ${W.best}`) : '')
     : (r.peek ? 'I needed the answer today' : 'no win on my first try') + (W.best ? `. Best possible: ${W.best} play${W.best === 1 ? '' : 's'}` : '');
-  return `RdyDeck Daily Puzzle, my #${num}: ${score}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today. Can you match it?`;
+  return `RdyDeck Daily Puzzle #${num}: ${score}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today. Can you match it?`;
 }
 async function pz83Draw(g, size) {
   try {
@@ -127,7 +127,7 @@ async function pz83Draw(g, size) {
   x.fillStyle = GS45.text; x.fillText('DECK', lx + x.measureText('RDY').width, ly);
   // Top right: which puzzle.
   x.font = `700 ${sq ? 34 : 30}px ${D}`; x.fillStyle = GS45.text2;
-  const tag = `DAILY PUZZLE #${g.num}`;
+  const tag = `DAILY PUZZLE #${g.num}${g.date ? ' \u00b7 ' + g.date.toUpperCase() : ''}`;
   x.fillText(tag, R - x.measureText(tag).width, ly);
 
   // The headline and the board's two decks.
@@ -200,8 +200,10 @@ async function pzShareScore(k) {
   const info = here || await pzBestFor(key);
   if (g !== _pz83) return;
   g.W = pzScoreWords(r, r.best || (info && info.best));
-  g.num = r.num || puzzleNumber(key);
-  g.decks = info && info.mine && info.theirs ? `${info.mine} against ${info.theirs}` : '';
+  g.num = puzzleNumber(key);
+  g.date = new Date(pzKeyTs(key)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  // 3.4.22: the board's cards come from these two lists; it need not show either deck's main Pokémon.
+  g.decks = info && info.mine && info.theirs ? `Cards from top ${info.mine} and ${info.theirs} lists` : '';
   g.text = pzShareTextFor(r, key, g.W);
   g.alt = `Daily puzzle #${g.num}: ${g.W.head}` + (g.W.best ? `, best possible ${g.W.best} plays` : '');
   pz83Render();

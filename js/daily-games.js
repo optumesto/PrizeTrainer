@@ -15,6 +15,19 @@ function dgPlayedToday() {
     'gtg-card': has(typeof gtgStore === 'function' ? gtgStore() : null, true),
   };
 }
+// 3.4.22: one streak for the section. A day counts when any of the four games was played that day
+// (Guess the Grade once it is finished), shown from the first day.
+function dgDayPlayed(k) {
+  const has = (st, done) => { try { const r = st && st.results && st.results[k]; return !!(r && (!done || r.done)); } catch (_) { return false; } };
+  return has(state.daily) || has(state.puzzle) || has(typeof rpStore === 'function' ? rpStore() : null) || has(typeof gtgStore === 'function' ? gtgStore() : null, true);
+}
+function dgStreak() {
+  let n = 0; const d = new Date();
+  if (!dgDayPlayed(dailyKey(d.getTime()))) d.setDate(d.getDate() - 1);
+  while (n < 3660 && dgDayPlayed(dailyKey(d.getTime()))) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+function dgStreakText(n) { return n === 1 ? '1 day streak' : `${n} day streak`; }
 function dgRenderHead() {
   const n = document.getElementById('dg51-n');
   if (!n) return;
@@ -27,7 +40,18 @@ function dgRenderHead() {
   });
   const all = done === ids.length;
   n.classList.toggle('all', all);
-  n.textContent = !done ? 'New today' : all ? `All ${ids.length} played` : `${done} of ${ids.length} played`;
+  // "New today" stays up while any game is still open today.
+  n.textContent = all ? `All ${ids.length} played` : 'New today';
+  const dt = document.getElementById('dg51-date');
+  if (dt) dt.textContent = shortDate23(Date.now());
+  const meta = document.getElementById('dg51-meta');
+  if (meta) {
+    const st = dgStreak(), bits = [];
+    if (done && !all) bits.push(`<span>${done} of ${ids.length} played</span>`);
+    if (st) bits.push(`<span class="dg51-st">${dgStreakText(st)}</span>`);
+    meta.innerHTML = bits.join('');
+    meta.hidden = !bits.length;
+  }
 }
 // The rows are drawn with the Daily puzzle's (js/rare-pull.js and js/gtg.js hook in the same way),
 // so the heading is counted after every row is drawn.

@@ -185,7 +185,9 @@ ok(shared && /\?ref=guess#guess$/.test(shared.url), 'the share link opens the ga
 // ── 4. A lost game on the next day, and the streak ──
 w.eval(`(() => { const R = gtgStore().results, k = dailyKey(Date.now() - 864e5); R[k] = { ans: 8.1, g: [8.0], done: true, won: false, ts: 1 }; })()`);
 w.renderHome(); await wait(50);
-ok(/2 days in a row/.test(d.querySelector('#gtg-card .dc-s').textContent), 'two days played in a row: 2 days in a row');
+// 3.4.22: one streak for all four games sits in the section's heading; the row never shows the grade.
+ok(/2 day streak/.test((d.getElementById('dg51-meta') || {}).textContent || ''), 'two days played in a row: 2 day streak in the Daily games heading');
+ok(!/\d\.\d/.test(d.querySelector('#gtg-card .dc-s').textContent), 'the home row shows no grade: ' + d.querySelector('#gtg-card .dc-s').textContent);
 const lost = JSON.parse(w.eval(`(() => { const k = dailyKey(Date.now() + 864e5); _gtgKey = k;
   gtgStore().results[k] = { ans: 7.0, g: [], ts: 1 };
   for (const v of [9.0, 8.0, 7.5, 6.8]) { _gtgV = v; gtgGuess(); }

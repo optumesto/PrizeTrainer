@@ -8731,13 +8731,13 @@ async function shareDaily(k) {
 function renderDailyCard() {
   const el = document.getElementById('daily-card');
   if (!el) return;
-  const key = dailyKey(), r = dailyStore().results[key], streak = dailyStreak();
+  const key = dailyKey(), r = dailyStore().results[key];
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('calendar')}</div>
     <div class="dc-tx"><div class="dc-t">Daily challenge #${dailyNumber(key)}</div>
-      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> <span>in ${formatTime(r.time)}</span>` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}${streak > 1 ? `<span class="rp-streak">${streak} day streak</span>` : ''}</div></div>
-    ${r ? `<button class="btn btn-sm" onclick="shareDaily()">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
+      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> <span>in ${formatTime(r.time)}</span>` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}</div></div>
+    ${r ? `<button class="btn btn-sm" onclick="shareDaily()" aria-label="Share Daily challenge result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="startDaily()" aria-label="${r ? 'Replay Daily challenge' : 'Play Daily challenge'}">${r ? 'Replay' : 'Play'}</button>
   </div>`;
   renderPuzzleCard();
   renderWhatsNewCard();
@@ -8752,7 +8752,7 @@ function dailyAfterReveal(score, elapsed) {
   const r = store.results[key];
   const b = document.createElement('div');
   b.id = 'daily-banner'; b.className = 'dc-banner';
-  b.innerHTML = `<div><b>${first ? `Daily challenge #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}${dailyStreak() > 1 ? ' ' + dailyStreak() + ' day streak.' : ''}</span></div>
+  b.innerHTML = `<div><b>${first ? `Daily challenge #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}</span>${typeof dgStreak === 'function' && dgStreak() ? `<span class="rp-streak">${dgStreakText(dgStreak())}</span>` : ''}</div>
     <button class="btn btn-sm btn-primary" onclick="shareDaily('${key}')">${ic23('share')}Share score</button>`;
   area.parentElement.insertBefore(b, area);
 }
@@ -8773,21 +8773,21 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.21',
+  version: 'v3.4.22',
   date: 'Nov 20, 2026',
   kind: 'small',
   items: [
-    { t: 'Daily games section' }
+    { t: 'Daily games fixes' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.4.21', date: 'Nov 20, 2026', kind: 'small', items: [
+    { t: 'Daily games section' }
+  ] },
   { version: 'v3.4.20', date: 'Nov 20, 2026', kind: 'small', items: [
     { t: 'Guess the Grade added' }
-  ] },
-  { version: 'v3.4.19', date: 'Nov 20, 2026', kind: 'small', items: [
-    { t: 'New daily game: Rare Pull' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -8863,13 +8863,22 @@ function puzzleBoardDay(key) {
   return isNaN(n) || n < 1 ? 1 : n;
 }
 function puzzleStore() { return (state.puzzle = state.puzzle || { results: {} }); }
-// Your own puzzle number: #1 is the first day you played, then one more each day you play.
-// Kept on this device with the rest of your saved data.
-function puzzleNumber(key) {
-  key = key || dailyKey();
-  const R = puzzleStore().results;
-  if (R[key] && R[key].num) return R[key].num;
-  return Object.keys(R).filter(k => k < key).length + 1;
+/** Noon on a day key ("2026-11-20"), for showing that day's date. */
+function pzKeyTs(key) { const p = String(key || '').split('-').map(Number); const d = new Date(p[0], p[1] - 1, p[2], 12); return isNaN(d) ? Date.now() : d.getTime(); }
+// 3.4.22: the puzzle's number is the board's day, the same for everyone (as the Daily challenge's),
+// not a count of the days you played. Old results keep their saved num, but it is no longer shown.
+function puzzleNumber(key) { return puzzleBoardDay(key || dailyKey()); }
+/** The event a puzzle's list came from, without sign-up notes like "[50 CODES]" or "(Late Registration)". */
+function pzEventName(e) {
+  let t = String(e || '').replace(/\[[^\]]*\]/g, ' ').replace(/\([^)]*\)/g, ' ');
+  try { t = t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, ' '); } catch (_) {}
+  return t.replace(/\s+/g, ' ').replace(/[\s,:;!]+$/, '').trim();
+}
+/** Where today's board comes from, in words: both lists, and the event of yours. */
+function pzSourceText(from) {
+  if (!from) return '';
+  const ev = pzEventName(from.event);
+  return `Cards from top lists. Yours: ${from.mine}${ev ? ', ' + ev : ''}. Theirs: ${from.theirs}.`;
 }
 // Days in a row, counted back from today (or yesterday, while today is still open).
 function puzzleRun(test) {
@@ -8901,15 +8910,16 @@ function loadPuzzleKit() {
 function renderPuzzleCard() {
   const el = document.getElementById('puzzle-card');
   if (!el) return;
-  const key = dailyKey(), r = puzzleStore().results[key], st = puzzleStats(), runs = puzzleStreakText(st);
+  const key = dailyKey(), r = puzzleStore().results[key];
+  // 3.4.22: before you play, the row says what the game is; your tally and runs stay on the result screen.
   const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}${r.best ? (r.moves <= r.best ? ', the shortest win' : `, best ${r.best}`) : ''}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
-    : st.played ? `${st.won} solved of ${st.played} played` : 'Win this turn from a real tournament board';
+    : 'Win this turn from a real tournament board';
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('target')}</div>
-    <div class="dc-tx"><div class="dc-t">Your puzzle #${puzzleNumber(key)}</div>
-      <div class="dc-s">${sub}${runs ? '. ' + runs : ''}</div></div>
-    ${r ? `<button class="btn btn-sm" onclick="sharePuzzle()">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="openPuzzle()">${r ? 'Replay' : 'Play'}</button>
+    <div class="dc-tx"><div class="dc-t">Daily puzzle #${puzzleNumber(key)}</div>
+      <div class="dc-s">${sub}</div></div>
+    ${r ? `<button class="btn btn-sm" onclick="sharePuzzle()" aria-label="Share Daily puzzle result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="openPuzzle()" aria-label="${r ? 'Replay Daily puzzle' : 'Play Daily puzzle'}">${r ? 'Replay' : 'Play'}</button>
   </div>`;
 }
 async function openPuzzle() {
@@ -9021,7 +9031,8 @@ function pzHandHTML(list) {
   const g = new Map(); let hidden = 0;
   list.forEach(r => { if (r.card.cat === 'hidden') { hidden++; return; } const k = r.card.key; if (!g.has(k)) g.set(k, { c: r.card, n: 0 }); g.get(k).n++; });
   const tiles = [...g.values()].map(x => `<button class="mt-card" onclick="pzHandSheet('${esc(x.c.key)}')"><span class="mt-cimg">${x.c.img ? `<img src="${esc(x.c.img)}" alt="" loading="lazy">` : `<span class="mt-cph">${esc(x.c.name)}</span>`}${x.n > 1 ? `<span class="mt-cnt">×${x.n}</span>` : ''}</span><span class="mt-cnm">${esc(x.c.name)}</span></button>`);
-  if (hidden) tiles.push(`<span class="mt-card off"><span class="mt-cimg mt-back"></span><span class="mt-cnm">${hidden} face down</span></span>`);
+  // 3.4.22: the face-down cards in your hand are the Prize cards you took this turn, so say so.
+  if (hidden) tiles.push(`<span class="mt-card off"><span class="mt-cimg mt-back"></span><span class="mt-cnm">${hidden === 1 ? '1 Prize card taken' : hidden + ' Prize cards taken'}</span></span>`);
   return tiles.length ? `<div class="mt-hand">${tiles.join('')}</div>` : '<span class="pz-none">Empty</span>';
 }
 function pzCards(list, opts) {
@@ -9055,13 +9066,13 @@ function renderPuzzle() {
   const el = document.getElementById('pz-body');
   if (!el || !pzS) return;
   const { E, s, p } = pzS;
-  document.getElementById('pz-title').textContent = `Your puzzle #${pzS.n}`;
+  document.getElementById('pz-title').textContent = `Daily puzzle #${pzS.n}`;
   const R = puzzleStore().results[pzS.key];
   let h = `<div class="pz-wrap">`;
   // The goal names the Prize cards you started with, so it still reads right after you take them.
   const pzLeft = (pzS.s0 || s).players[0].prizes.length;
   h += `<div class="pz-goal"><b>Win this turn.</b> Take your last ${pzLeft === 1 ? 'Prize card' : pzLeft + ' Prize cards'} before your turn ends. Tap any card to read it.
-    <span>Lists: ${esc(p.from.mine)} against ${esc(p.from.theirs)}${p.from.event ? `, from ${esc(p.from.event)}` : ''}.${R && !pzS.over ? ' Replay: today\'s result is already saved.' : ''}</span></div>`;
+    <span class="pz-src"><span class="pz-date">${esc(shortDate23(pzKeyTs(pzS.key)))}</span> <span>${esc(pzSourceText(p.from))}</span>${R && !pzS.over ? ' <span>Replay: today\'s result is already saved.</span>' : ''}</span></div>`;
   h += `<div class="mt-mat pz-mat">${pzSide(s, 1)}
     <div class="mt-mid">${s.stadium ? `<span class="mt-lbl">Stadium</span><button class="pz-chip mt-stad" onclick="pzKeySheet('${esc(s.stadium.ref.card.key)}')">${esc(s.stadium.ref.card.name)}</button>` : '<span class="mt-lbl">No Stadium in play</span>'}</div>
     ${pzSide(s, 0)}</div>`;
@@ -9181,7 +9192,7 @@ function pzTally() {
 }
 function puzzleShareText(r, key) {
   const st = puzzleStats(), runs = puzzleStreakText(st);
-  return `RdyDeck Daily Puzzle, my #${r.num || puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
+  return `RdyDeck Daily Puzzle #${puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
 async function sharePuzzle(k) {
   if (typeof pzShareScore === 'function') return pzShareScore(k); // 3.3.9: picture of your score against the best (puzzle-extras.js)
@@ -9697,8 +9708,9 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { navigate(1); e.preventDefault(); }
   }
 
-  // Tab: focus guess input
-  if (e.key === 'Tab' && !inputFocused) { e.preventDefault(); input.focus(); }
+  // Tab: focus guess input, when nothing else has focus (3.4.22: Tab still reaches the card slider and buttons)
+  const ae = document.activeElement;
+  if (e.key === 'Tab' && !inputFocused && (!ae || ae === document.body || ae === document.documentElement)) { e.preventDefault(); input.focus(); }
 
   // R: reveal (only when not typing)
   if (e.key === 'r' && !inputFocused) { revealPrizes(); e.preventDefault(); }
@@ -10504,6 +10516,14 @@ function renderProgressDots() {
   // Remove-then-add guarantees exactly one listener regardless of call count
   container.removeEventListener('click', handleProgressDotClick);
   container.addEventListener('click', handleProgressDotClick);
+  // 3.4.22: the track is a slider you can reach with Tab and move with the arrow keys, Home and End.
+  container.setAttribute('role', 'slider');
+  container.setAttribute('tabindex', '0');
+  container.setAttribute('aria-label', 'Card position');
+  container.setAttribute('aria-valuemin', '1');
+  container.setAttribute('aria-valuemax', String(Math.max(1, count)));
+  container.removeEventListener('keydown', handleProgressDotKey);
+  container.addEventListener('keydown', handleProgressDotKey);
   updateProgressDots();
 }
 
@@ -10514,6 +10534,28 @@ function updateProgressDots() {
     if (i === game.currentIdx) d.classList.add('current');
     else if (i < game.currentIdx) d.classList.add('seen');
   });
+  const box = document.getElementById('progress-dots'), n = (game.visible || []).length;
+  if (box && n) {
+    box.setAttribute('aria-valuenow', String(game.currentIdx + 1));
+    box.setAttribute('aria-valuetext', `Card ${game.currentIdx + 1} of ${n}`);
+  }
+}
+function handleProgressDotKey(e) {
+  const n = (game.visible || []).length;
+  if (!n) return;
+  let idx = game.currentIdx;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') idx--;
+  else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') idx++;
+  else if (e.key === 'Home') idx = 0;
+  else if (e.key === 'End') idx = n - 1;
+  else if (e.key === 'PageDown') idx += 10;
+  else if (e.key === 'PageUp') idx -= 10;
+  else return;
+  e.preventDefault(); e.stopPropagation();
+  idx = Math.max(0, Math.min(n - 1, idx));
+  if (idx === game.currentIdx) return;
+  game.currentIdx = idx;
+  renderCard();
 }
 
 // Touch swipe support
@@ -11751,8 +11793,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.21';
-const PT_BUILD = 149;
+const PT_VERSION = 'v3.4.22';
+const PT_BUILD = 150;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

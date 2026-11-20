@@ -2657,3 +2657,36 @@ I18N_MORE.de.pat.unshift(
   // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
   [/^in (\d+:\d\d)$/, "in $1 Min."],
 );
+
+// 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
+Object.assign(I18N_MORE.de.dict, {
+  "Daily games fixes": "Korrekturen bei den Tagesspielen",
+  "1 day streak": "1 Tag in Folge",
+  "Card position": "Kartenposition",
+  "Did you mean this card?": "Meintest du diese Karte?",
+  "No card by that name fits.": "Keine Karte mit diesem Namen passt.",
+  "is not that kind of card.": "ist nicht diese Kartenart.",
+  "is that kind of card, but fewer than 1 in 20 of those top lists run it.": "ist die richtige Kartenart, aber weniger als 1 von 20 dieser Top-Listen spielen sie.",
+  "Passing or running out of time scores 0.": "Passen oder Zeit ablaufen lassen bringt 0 Punkte.",
+  "Replay: today's result is already saved.": "Wiederholung: Das heutige Ergebnis ist schon gespeichert.",
+  "1 Prize card taken": "1 Preiskarte genommen",
+  "Share Daily challenge result": "Ergebnis der Täglichen Herausforderung teilen",
+  "Play Daily challenge": "Tägliche Herausforderung spielen",
+  "Replay Daily challenge": "Tägliche Herausforderung wiederholen",
+  "Share Daily puzzle result": "Ergebnis des Täglichen Puzzles teilen",
+  "Play Daily puzzle": "Tägliches Puzzle spielen",
+  "Replay Daily puzzle": "Tägliches Puzzle wiederholen",
+  "Share Rare Pull result": "Ergebnis von Rare Pull teilen",
+  "Play Rare Pull": "Rare Pull spielen",
+  "Replay Rare Pull": "Rare Pull wiederholen",
+  "Share Guess the Grade result": "Ergebnis von Errate die Note teilen",
+  "Play Guess the Grade": "Errate die Note spielen",
+  "Continue Guess the Grade": "Errate die Note weiterspielen",
+  "Result of Guess the Grade": "Ergebnis von Errate die Note",
+});
+I18N_MORE.de.pat.unshift(
+  [/^Daily puzzle #(\d+)$/, "Tägliches Puzzle #$1"],
+  [/^(\d+) Prize cards taken$/, "$1 Preiskarten genommen"],
+  [/^Cards from top lists\. Yours: (.+)\. Theirs: (.+)\.$/, "Karten aus Top-Listen. Deine Liste: $1. Gegnerliste: $2."],
+  [/^Today: not solved in (\d+)$/, "Heute: in $1 Tipps nicht gelöst"],
+);

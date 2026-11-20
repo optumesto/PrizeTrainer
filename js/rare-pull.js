@@ -170,13 +170,13 @@ function rpDay(key, plain) {
 function rpRenderCard() {
   const el = document.getElementById('rp-card');
   if (!el) return;
-  const key = dailyKey(), r = rpStore().results[key], streak = rpStreak();
+  const key = dailyKey(), r = rpStore().results[key];
   el.innerHTML = `<div class="dc-card rp-home">
     <div class="dc-ic rp-ic">${rpGem(r ? rpTierIx(Math.max(...(r.p || [0]))) : 3)}</div>
     <div class="dc-tx"><div class="dc-t"><span data-no-tr>Rare Pull</span> #${rpNumber(key)}</div>
-      <div class="dc-s">${r ? `<span>Today:</span> <b>${r.score}/700</b>` : '<span>Name cards from top lists. The rarer the pick, the higher it scores</span>'}${streak > 1 ? `<span class="rp-streak">${streak} day streak</span>` : ''}</div></div>
-    ${r ? `<button class="btn btn-sm" onclick="rpShare()">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="rpOpen()">${r ? 'Replay' : 'Play'}</button>
+      <div class="dc-s">${r ? `<span>Today:</span> <b>${r.score}/700</b>` : '<span>Name cards from top lists. The rarer the pick, the higher it scores</span>'}</div></div>
+    ${r ? `<button class="btn btn-sm" onclick="rpShare()" aria-label="Share Rare Pull result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="rpOpen()" aria-label="${r ? 'Replay Rare Pull' : 'Play Rare Pull'}">${r ? 'Replay' : 'Play'}</button>
   </div>`;
 }
 /** A small card with a rarity mark: 0 no pull, 1 common … 5 secret rare. */
@@ -206,6 +206,7 @@ async function rpOpen() {
       <p>Seven prompts, the same for everyone today. Each asks for a kind of card from a group of top tournament lists.</p>
       <p>Pick a card that fits. The fewer of those top lists run it, the higher it scores, up to 100.</p>
       <p>You have 30 seconds for each prompt. Pass skips it.</p>
+      <p>Passing or running out of time scores 0.</p>
       <div class="rp-ladder" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<div class="rp-step rp-on rp-s${i}">${rpGem(i)}<span>${RP_TIERS[RP_TIERS.length - 1 - i][1]}</span></div>`).join('')}</div>
       <p class="rp-fine"><span>${r ? 'This replay is practice. Your score for today is already in.' : 'Your first try is your score.'}</span> <span>A card counts when at least 1 in 20 of those top lists run it.</span></p>
     </div>
@@ -299,18 +300,53 @@ function rpClock() {
   fg.style.strokeDashoffset = String(len * (1 - left / RP_SECS));
   w.classList.toggle('rp-low', left <= 5);
 }
+// 3.4.22: the list offers only cards that fit the prompt (the right kind, run by at least 1 in 20 of
+// those top lists). A real card that does not fit gets a line saying why, and a one-letter slip
+// gets the closest name that fits.
+function rpHint(t) { return `<div class="rp-hint">${t}</div>`; }
+/** How far apart two short strings are: letters added, removed, changed or swapped. */
+function rpDist(a, b) {
+  const m = a.length, n = b.length, d = [];
+  for (let i = 0; i <= m; i++) { d[i] = [i]; for (let j = 1; j <= n; j++) d[i][j] = i ? 0 : j; }
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[m][n];
+}
+/** Search order: names that start with what you typed, then a word that does, then the rest; shorter first. */
+function rpRank(f, words) {
+  return x => x.f.startsWith(f) ? 0 : x.f.split(/[\s'-]+/).some(w => w.startsWith(words[0])) ? 1 : 2;
+}
 function rpFind(q) {
   rpG.q = q; rpG.sel = -1;
   const el = document.getElementById('rp-list');
   const f = rpFold(q).trim();
-  if (f.length < 2) { el.innerHTML = '<div class="rp-hint">Type a few letters, then tap a card.</div>'; rpG.hits = []; return; }
-  const words = f.split(/\s+/);
-  const hits = rpData.list.filter(x => words.every(w => x.f.includes(w)));
-  hits.sort((a, b) => (a.f.startsWith(f) ? 0 : 1) - (b.f.startsWith(f) ? 0 : 1) || a.f.length - b.f.length || (a.f < b.f ? -1 : 1));
+  if (f.length < 2) { el.innerHTML = rpHint('Type a few letters, then tap a card.'); rpG.hits = []; return; }
+  const p = rpG.prompts[rpG.i], fit = new Set(p.fits.map(x => x.k));
+  const words = f.split(/\s+/), rank = rpRank(f, words);
+  const sortBy = (a, b) => rank(a) - rank(b) || a.f.length - b.f.length || (a.f < b.f ? -1 : 1);
+  const all = rpData.list.filter(x => words.every(w => x.f.includes(w))).sort(sortBy);
+  let hits = all.filter(x => fit.has(x.k)), note = '';
+  if (!hits.length && all.length) {
+    // a real card that does not fit: say why, rather than "no card by that name"
+    const x = all[0];
+    note = `<b data-no-tr>${esc(x.n)}</b> <span>${rpWhyNot(p, x.k) === 'kind' ? 'is not that kind of card.' : 'is that kind of card, but fewer than 1 in 20 of those top lists run it.'}</span>`;
+  } else if (!hits.length && f.length >= 3) {
+    // a slip of a letter or two: the closest name that fits, by its start or a whole word
+    const lim = f.length >= 6 ? 2 : 1;
+    let best = null, bd = lim + 1;
+    p.fits.forEach(z => {
+      const zf = rpFold(z.n);
+      const tries = [zf.slice(0, f.length), zf].concat(zf.split(/\s+/));
+      const dd = Math.min(...tries.map(t => rpDist(f, t)));
+      if (dd < bd || (dd === bd && best && zf.length < rpFold(best.n).length)) { bd = dd; best = z; }
+    });
+    if (best && bd <= lim) { hits = [{ k: best.k, n: best.n, f: rpFold(best.n) }]; note = 'Did you mean this card?'; }
+  }
   rpG.hits = hits.slice(0, 8);
-  el.innerHTML = rpG.hits.length
-    ? rpG.hits.map((x, j) => `<button class="rp-opt" role="option" id="rp-o${j}" onclick="rpPick(${j})" data-no-tr>${esc(x.n)}</button>`).join('')
-    : '<div class="rp-hint">No card by that name.</div>';
+  const opts = rpG.hits.map((x, j) => `<button class="rp-opt" role="option" id="rp-o${j}" onclick="rpPick(${j})" data-no-tr>${esc(x.n)}</button>`).join('');
+  el.innerHTML = rpG.hits.length ? (note ? rpHint(note) : '') + opts : rpHint(note || 'No card by that name fits.');
 }
 function rpKeys(e) {
   const hits = rpG && rpG.hits || [];
@@ -393,15 +429,17 @@ function rpEnd() {
   rpG.over = true;
   const key = rpG.key, store = rpStore(), score = rpTotal(), p = rpG.picks.map(x => x.score);
   if (!store.results[key]) { store.results[key] = { score, p, ts: Date.now() }; saveState(); }
-  const r = store.results[key], streak = rpStreak();
+  const r = store.results[key], streak = typeof dgStreak === 'function' ? dgStreak() : rpStreak();
   const best = rpG.picks.reduce((b, x) => x.score > (b ? b.score : 0) ? x : b, null);
+  // 3.4.22: the running total in the bar would repeat the big score below, so it goes.
+  const tot = document.getElementById('rp-total'); if (tot) tot.innerHTML = '';
   document.getElementById('rp-body').innerHTML = `<div class="rp-wrap rp-end">
     <div class="rp-end-k">${rpG.first ? 'Your score' : 'Practice replay'}</div>
     <div class="rp-end-score">${score}<small>/700</small></div>
     <div class="rp-end-row">${p.map(s => `<span class="rp-end-g rp-r${rpTierIx(s)}" title="${rpTier(s)[1]}">${rpGem(rpTierIx(s))}</span>`).join('')}</div>
     ${!rpG.first ? `<p class="rp-end-note"><span>Today's score stays</span> <b>${r.score}/700</b></p>` : ''}
     ${best ? `<p class="rp-end-note"><span>Best pull:</span> <b data-no-tr>${esc(best.n)}</b> <b>+${best.score}</b></p>` : ''}
-    ${streak > 1 ? `<p class="rp-end-note"><span class="rp-streak">${streak} day streak</span></p>` : ''}
+    ${streak ? `<p class="rp-end-note"><span class="rp-streak">${streak === 1 ? '1 day streak' : streak + ' day streak'}</span></p>` : ''}
     <p class="rp-end-note rp-fine">New prompts tomorrow.</p>
     <div class="rp-next">
       <button class="btn" onclick="rpQuit()">Back to decks</button>

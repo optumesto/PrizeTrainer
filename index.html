@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://rdydeck.com/og-app.png">
 <meta name="twitter:image:alt" content="RdyDeck logo next to the Grade screen for a Mega Rayquaza deck: 7.9 out of 10, Strong, with its top fix, Synergy and Power.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.21","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.22","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -3097,13 +3097,24 @@ document.documentElement.classList.add('rd-boot');
   .gtg-acts .btn { flex:1 1 0; justify-content:center; }
   @media (min-width:700px) { .gtg-acts .btn { flex:0 0 auto; } }
 </style>
+<style id="v3422-css">
+  /* 3.4.22: easier to read hint and status text in a game, and a focus ring on the card slider. */
+  html:not(#z) body .kb-hints, html:not(#z) body .kb-hints span { color:var(--text-2); }
+  html:not(#z) body .guess-feedback:not(.good):not(.bad) { color:var(--text-2); }
+  .progress-dots:focus-visible { outline:2px solid var(--mark); outline-offset:3px; border-radius:6px; }
+  .pz-src .pz-date { font-weight:600; color:var(--text); }
+</style>
 <style id="dg51-css">
   /* 3.4.21: Daily games. The four daily games as one ruled list under the decks, like More below it:
      a slim row each, the games still to play keep the filled Play button, played ones go quiet. */
   .dg51-head { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
-  .dg51-head .section-title { flex:1; min-width:0; margin:0; }
-  .dg51-n { flex-shrink:0; font-size:var(--fs-xs); font-weight:600; color:var(--text-3); font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .dg51-n.all { color:var(--mark); }
+  .dg51-head .section-title { flex:0 1 auto; min-width:0; margin:0; }
+  .dg51-date { flex:1; min-width:0; font-size:var(--fs-xs); font-weight:600; color:var(--text-2); white-space:nowrap; }
+  .dg51-meta { display:flex; flex-wrap:wrap; gap:0.25rem 0.9rem; margin:-0.35rem 0 0.55rem; font-size:var(--fs-xs); font-weight:600; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .dg51-meta[hidden] { display:none; }
+  .dg51-meta .dg51-st { color:var(--mark); }
+  .dg51-n { flex-shrink:0; font-size:var(--fs-xs); font-weight:600; color:var(--mark); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .dg51-n.all { color:var(--text-2); }
   .dg51-list { border-top:1px solid var(--line-2); }
   .dg51-list > div:empty { display:none; }
   html:not(#z) .dg51-list .dc-card { flex-wrap:nowrap; gap:0.7rem; margin:0; padding:0.5rem 0.1rem; min-height:61px; border:0; border-bottom:1px solid var(--line-2); border-radius:0; background:transparent; box-shadow:none; }
@@ -3629,7 +3640,8 @@ document.documentElement.classList.add('rd-boot');
     <div id="wn-card"></div>
     <div id="pre47-card"></div>
     <section class="dg51" id="daily-games" aria-labelledby="dg51-h">
-      <div class="dg51-head"><h2 class="section-title" id="dg51-h">Daily games</h2><span class="dg51-n" id="dg51-n"></span></div>
+      <div class="dg51-head"><h2 class="section-title" id="dg51-h">Daily games</h2><span class="dg51-date" id="dg51-date"></span><span class="dg51-n" id="dg51-n"></span></div>
+      <div class="dg51-meta" id="dg51-meta" hidden></div>
       <div class="dg51-list">
         <div id="daily-card"></div>
         <div id="puzzle-card"></div>
@@ -4189,7 +4201,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=8883917e"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=3e525bd7"></script>
 
-<script src="js/core.js?v=526e0c18"></script>
+<script src="js/core.js?v=bb04da77"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4308,8 +4320,8 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/grade-history.js?v=6183afe5"></script>
 <script src="js/v80-extras.js?v=bc7227e0"></script>
 <script src="js/feedback-send.js?v=d6a6758d"></script>
-<script src="js/puzzle-extras.js?v=1c7f5380"></script>
-<script src="js/rare-pull.js?v=b7e01bfd"></script>
+<script src="js/puzzle-extras.js?v=b6620af9"></script>
+<script src="js/rare-pull.js?v=4cc058fc"></script>
 <script src="js/easier-first-visit.js?v=d07af246"></script>
 <script src="js/v301-fixes.js?v=2065ae81"></script>
 <script src="js/card-details.js?v=cd66d067"></script>
@@ -4319,11 +4331,11 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/fold-sections.js?v=1992138c"></script>
 <script src="js/creator-kit.js?v=990108dc"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
-<script src="js/gtg.js?v=83885743"></script>
-<script src="js/daily-games.js?v=a0b9a946"></script>
-<script src="js/i18n.js?v=af8defea"></script>
+<script src="js/gtg.js?v=dd58d289"></script>
+<script src="js/daily-games.js?v=23a5242e"></script>
+<script src="js/i18n.js?v=e7d6b624"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=18700a3d"></script><script src="js/i18n-de.js?v=469d7e91"></script><script src="js/i18n-it.js?v=51041a25"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=a00db2e2"></script><script src="js/i18n-de.js?v=638dc330"></script><script src="js/i18n-it.js?v=1ef7b697"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=78548daf"></script></template>

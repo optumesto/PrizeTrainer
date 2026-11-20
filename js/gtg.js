@@ -110,7 +110,7 @@ async function openGtg() {
   const r = S.results[key];
   const { lo, hi } = gtgRange(r);
   _gtgV = Math.min(hi, Math.max(lo, r.g.length ? _gtgV : GTG_START));
-  const groups = dly33Groups(deck.cards);
+  const groups = dly33Groups(gtgMerge(deck.cards));
   openSheet(`<div class="modal-title">Guess the Grade #${gtgNumber(key)}</div>
     <div class="modal-hint gtg-hint">A real tournament list, the same for everyone today. Study it, then guess the grade RdyDeck gives it out of 10. You get 4 guesses. Each one says higher or lower, and Hot (within 0.2), Warm (within 0.5) or Cold.</div>
     <div class="gtg-deck"><span>Today's list</span><b data-no-tr>${esc(deck.name)}</b></div>
@@ -119,6 +119,17 @@ async function openGtg() {
         <div class="review-cards">${g.cards.map(dly33Card).join('')}</div></div>`).join('')}
     </div>
     <div class="gtg-play" id="gtg-play" aria-live="polite">${gtgPlayHtml()}</div>`, true);
+}
+/** 3.4.22: one line per card name, so two prints of a card (Lillie's Determination twice) read as one. */
+function gtgMerge(cards) {
+  const out = [], at = new Map();
+  (cards || []).forEach(c => {
+    const nm = typeof cn23 === 'function' ? cn23(c.apiName || c.name) : (c.apiName || c.name);
+    const k = (typeof cardCategory === 'function' ? cardCategory(c) : '') + '|' + String(nm || '').toLowerCase().replace(/[\u2018\u2019`]/g, "'").replace(/\s+/g, ' ').trim();
+    if (at.has(k)) { at.get(k).count += c.count || 0; return; }
+    const x = Object.assign({}, c); at.set(k, x); out.push(x);
+  });
+  return out;
 }
 function gtgTryHtml(g, ans) {
   if (g == null) return '<div class="gtg-try empty" aria-hidden="true"><b>&nbsp;</b><span>&nbsp;</span></div>';
@@ -140,12 +151,12 @@ function gtgPlayHtml() {
   const tries = Array.from({ length: GTG_TRIES }, (_, i) => gtgTryHtml(r.g[i], r.ans)).join('');
   let h = `<div class="gtg-tries">${tries}</div>`;
   if (r.done) {
-    const streak = gtgStreak();
+    const streak = typeof dgStreak === 'function' ? dgStreak() : gtgStreak();
     h += `<div class="gtg-done">
       <div class="gtg-ans" aria-hidden="true"><span>${gtgF(r.ans)}</span><small>/10</small></div>
       <div class="gtg-done-tx"><b>${r.won ? `Got it in ${r.g.length} of ${GTG_TRIES}` : 'Not this time'}</b>
         <span>The grade is ${gtgF(r.ans)}.</span><span>${esc(gtgBand(r.ans))}</span>
-        ${streak > 1 ? `<span>${streak} days in a row</span>` : ''}<span>A new list tomorrow.</span></div>
+        ${streak ? `<span>${streak === 1 ? '1 day streak' : streak + ' day streak'}</span>` : ''}<span>A new list tomorrow.</span></div>
     </div>
     <div class="gtg-acts"><button class="btn" onclick="closeSheet()">Done</button><button class="btn btn-primary" onclick="shareGtg()">${ic23('share')}Share</button></div>`;
     return h;
@@ -223,18 +234,17 @@ function renderGtgCard() {
     el.id = 'gtg-card';
     pz.parentNode.insertBefore(el, pz.nextSibling);
   }
-  const key = dailyKey(), r = gtgStore().results[key], streak = gtgStreak();
+  const key = dailyKey(), r = gtgStore().results[key];
   const g = r && Array.isArray(r.g) ? r.g.length : 0;
-  let sub = r && r.done ? (r.won ? `Today: got it in ${g} of ${GTG_TRIES}` : `Today: the grade was ${gtgF(r.ans)}`)
+  let sub = r && r.done ? (r.won ? `Today: got it in ${g} of ${GTG_TRIES}` : `Today: not solved in ${GTG_TRIES}`)
     : g ? `Today: ${g} of ${GTG_TRIES} guesses used` : 'Guess the grade of a real tournament list';
-  // The streak is its own text, worded as the Daily puzzle's, so each part is translated on its own.
-  if (streak > 1) sub += `<span class="gtg-streak">${streak} days in a row</span>`;
+  // 3.4.22: the row never shows the grade (that stays behind Result), and the streak moved to the section heading.
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('award')}</div>
     <div class="dc-tx"><div class="dc-t">Guess the Grade #${gtgNumber(key)}</div>
       <div class="dc-s">${sub}</div></div>
-    ${r && r.done ? `<button class="btn btn-sm" onclick="shareGtg()">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="openGtg()">${r && r.done ? 'Result' : g ? 'Continue' : 'Play'}</button>
+    ${r && r.done ? `<button class="btn btn-sm" onclick="shareGtg()" aria-label="Share Guess the Grade result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="openGtg()" aria-label="${r && r.done ? 'Result of Guess the Grade' : g ? 'Continue Guess the Grade' : 'Play Guess the Grade'}">${r && r.done ? 'Result' : g ? 'Continue' : 'Play'}</button>
   </div>`;
 }
 (function () {
