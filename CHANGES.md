@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.21 (build 149): Daily games section (20 Nov 2026)
+
+Changed files: index.html (Daily games section on home, its styles, wide-screen grid, version, stamps), js/daily-games.js (new: marks the games played today and counts them), js/core.js (version, What's new, PT_BUILD now 149, Daily challenge row's time and streak each their own text), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v149), tests/i18n-check.mjs (home with none, some and all games played).
+
+- The four daily games (Daily challenge, Daily puzzle, Rare Pull, Guess the Grade) sit in one Daily games section on home, under the decks and the import buttons, so the grader stays first. Each game is a slim ruled row, like More below it. The heading counts today's games played ("2 of 4 played"). Games still to play keep the filled Play button; played ones go quiet. Share is the share icon alone in the row.
+- On a wide screen the section sits in the right column under the buttons.
+- The prerelease card keeps its own spot above the section.
+- Fixed: the Daily challenge row's time ("in 0:42") and its streak were left in English in every other language.
+- No ads in the section. Nothing new leaves the device. Grade check: no grade moved.
+
 # RdyDeck 3.4.20 (build 148): Guess the Grade (20 Nov 2026)
 
 Changed files: js/gtg.js (new: the game, its home card and the #guess link), index.html (home card slot, styles, script, version, stamps), js/core.js (version, What's new, PT_BUILD now 148), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v148), tests/gtg-check.mjs (new), tests/i18n-check.mjs (Guess the Grade screens).

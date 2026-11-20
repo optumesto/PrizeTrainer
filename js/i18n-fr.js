@@ -2604,3 +2604,16 @@ I18N_MORE.fr.pat.unshift(
   [/^Today: the grade was (\d+\.\d)$/, "Aujourd'hui : la note était de $1"],
   [/^Today: (\d+) of (\d+) guesses used$/, (m, a, b) => "Aujourd'hui : " + a + (a === '1' ? ' essai utilisé sur ' : ' essais utilisés sur ') + b],
 );
+
+// 3.4.21: Daily games section on home (js/daily-games.js).
+Object.assign(I18N_MORE.fr.dict, {
+  "Daily games": "Jeux du jour",
+  "Daily games section": "Section Jeux du jour",
+  "New today": "Nouveaux aujourd'hui",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^All (\d+) played$/, "Les $1 joués"],
+  [/^(\d+) of (\d+) played$/, "$1 sur $2 joués"],
+  // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
+  [/^in (\d+:\d\d)$/, "en $1"],
+);

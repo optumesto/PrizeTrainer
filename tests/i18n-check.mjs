@@ -409,6 +409,20 @@ const SCREENS = [
     w.openSheet('<div class="modal-hint">' + w.esc(w.eval('(() => { const t = rdI18n.t; rdI18n.t = s => s; try { return gtgShareText(gtgStore().results[dailyKey()], dailyKey()); } finally { rdI18n.t = t; } })()').split('\n')[0]) + '</div>'); await tick(100);
   }],
   ['home: guess the grade lost', async w => { shut(w); w.showScreen('home'); w.renderHome(); await tick(100); w.eval('delete state.gtg'); }],
+  // 3.4.21: the Daily games heading, with none, some and all of today's games played.
+  ['home: daily games none played', async w => {
+    shut(w); w.eval('(() => { const k = dailyKey(); [state.daily, state.puzzle, state.gtg].forEach(st => { if (st && st.results) delete st.results[k]; }); delete rpStore().results[k]; dailyStore().results[dailyKey(Date.now() - 864e5)] = { score: 6, time: 75, ts: 1 }; dailyStore().results[dailyKey(Date.now() - 2 * 864e5)] = { score: 4, time: 90, ts: 1 }; })()');
+    w.showScreen('home'); w.renderHome(); await tick(100);
+  }],
+  ['home: daily games 2 played', async w => {
+    shut(w); w.eval('(() => { const k = dailyKey(); dailyStore().results[k] = { score: 5, time: 42, ts: Date.now() }; rpStore().results[k] = { score: 320, p: [40, 60], ts: Date.now() }; })()');
+    w.showScreen('home'); w.renderHome(); await tick(100);
+  }],
+  ['home: daily games all played', async w => {
+    shut(w); w.eval('(() => { const k = dailyKey(); puzzleStore().results[k] = { won: true, moves: 3, num: 1, ts: Date.now() }; gtgStore().results[k] = { ans: 8.1, g: [8.1], done: true, won: true, ts: 1 }; })()');
+    w.showScreen('home'); w.renderHome(); await tick(100);
+    w.eval('(() => { const k = dailyKey(); [k, dailyKey(Date.now() - 864e5), dailyKey(Date.now() - 2 * 864e5)].forEach(d => delete dailyStore().results[d]); delete rpStore().results[k]; delete puzzleStore().results[k]; delete state.gtg; })()');
+  }],
   // Muse s6 M1: the messy list, imported on its own, then its Grade and Cards tabs.
   ['import a messy list', async w => {
     shut(w); w.showScreen('home'); w._i18nIds = w.eval('state.decks.map(d => String(d.id))');

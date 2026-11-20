@@ -8735,7 +8735,7 @@ function renderDailyCard() {
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('calendar')}</div>
     <div class="dc-tx"><div class="dc-t">Daily challenge #${dailyNumber(key)}</div>
-      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> in ${formatTime(r.time)}` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}${streak > 1 ? `. ${streak} day streak` : ''}</div></div>
+      <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> <span>in ${formatTime(r.time)}</span>` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}${streak > 1 ? `<span class="rp-streak">${streak} day streak</span>` : ''}</div></div>
     ${r ? `<button class="btn btn-sm" onclick="shareDaily()">${ic23('share')}Share</button>` : ''}
     <button class="btn btn-sm btn-primary" onclick="startDaily()">${r ? 'Replay' : 'Play'}</button>
   </div>`;
@@ -8773,21 +8773,21 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.20',
+  version: 'v3.4.21',
   date: 'Nov 20, 2026',
   kind: 'small',
   items: [
-    { t: 'Guess the Grade added' }
+    { t: 'Daily games section' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.4.20', date: 'Nov 20, 2026', kind: 'small', items: [
+    { t: 'Guess the Grade added' }
+  ] },
   { version: 'v3.4.19', date: 'Nov 20, 2026', kind: 'small', items: [
     { t: 'New daily game: Rare Pull' }
-  ] },
-  { version: 'v3.4.18', date: 'Nov 20, 2026', kind: 'small', items: [
-    { t: 'Sparring game log fixes' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11751,8 +11751,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.20';
-const PT_BUILD = 148;
+const PT_VERSION = 'v3.4.21';
+const PT_BUILD = 149;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

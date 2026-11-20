@@ -6293,6 +6293,23 @@ I18N_PAT.unshift(
   [/^Today: (\d+) of (\d+) guesses used$/, "Hoy: $1 de $2 intentos usados", "Hoje: $1 de $2 palpites usados"],
 );
 
+// 3.4.21: Daily games section on home (js/daily-games.js).
+Object.assign(I18N_ES, {
+  "Daily games": "Juegos diarios",
+  "Daily games section": "Sección de juegos diarios",
+  "New today": "Nuevos hoy",
+});
+Object.assign(I18N_PT, {
+  "Daily games": "Jogos diários",
+  "Daily games section": "Seção de jogos diários",
+  "New today": "Novos hoje",
+});
+I18N_PAT.unshift(
+  [/^All (\d+) played$/, "Los $1 jugados", "Os $1 jogados"],
+  [/^(\d+) of (\d+) played$/, "$1 de $2 jugados", "$1 de $2 jogados"],  // the Daily challenge's time on home ("Today: 5 of 6 in 0:42")
+  [/^in (\d+:\d\d)$/, "en $1", "em $1"],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

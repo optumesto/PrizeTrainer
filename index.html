@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://rdydeck.com/og-app.png">
 <meta name="twitter:image:alt" content="RdyDeck logo next to the Grade screen for a Mega Rayquaza deck: 7.9 out of 10, Strong, with its top fix, Synergy and Power.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.20","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://rdydeck.com/#app","name":"RdyDeck","alternateName":["RdyDeck Pokémon TCG Deck Checker","RdyDeck Deck Rater"],"url":"https://rdydeck.com/","image":{"@type":"ImageObject","url":"https://rdydeck.com/og-app.png","width":1200,"height":630,"caption":"RdyDeck grading a Mega Rayquaza deck"},"screenshot":[{"@type":"ImageObject","url":"https://rdydeck.com/screens/grade.jpg","width":1080,"height":1920,"caption":"Grade tab: the deck rated out of 10 with its top fix, Synergy and Power"},{"@type":"ImageObject","url":"https://rdydeck.com/screens/odds.jpg","width":1080,"height":1920,"caption":"Odds tab: mulligan, draw card and attacker odds for the exact list"}],"inLanguage":"en","description":"Free Pokémon TCG deck checker and prize card trainer. Rate a 60 card decklist out of 10, check its opening odds and Standard rotation, then practice naming your prize cards.","applicationCategory":"GameApplication","softwareVersion":"3.4.21","operatingSystem":"Any","browserRequirements":"Requires JavaScript","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["Deck rating out of 10 from Synergy and Power","What to fix first","Opening hand odds by turn 2 and 3","Standard rotation and legality check by regulation mark","Prize card memory game with 4, 6 or 8 prizes","Goldfish: play your first turns alone with real draws","Sparring: five turns against a computer opponent","Opening hand practice and drills","Matchup notes and tournament log","Works offline, no account"],"about":[{"@type":"Thing","name":"Pokémon Trading Card Game"}],"sameAs":["https://www.instagram.com/rdydeck/"],"publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"WebSite","@id":"https://rdydeck.com/#site","name":"RdyDeck","url":"https://rdydeck.com/","inLanguage":"en","publisher":{"@id":"https://rdydeck.com/#org"}},{"@type":"Organization","@id":"https://rdydeck.com/#org","name":"Optume Ventures LLC","url":"https://optumeventures.com/","logo":{"@type":"ImageObject","url":"https://rdydeck.com/icon-512x512.png","width":512,"height":512},"email":"mmmilliard@optumeventures.com","sameAs":["https://www.instagram.com/rdydeck/"]}]}
 </script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#131210">
@@ -1824,8 +1824,7 @@
   /* Home order: decks first, then add a deck, then daily */
   .home-cta-row { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
   .home-cta-row .btn { width:100%; }
-  #daily-card { margin-top:1.25rem; }
-  #daily-card:empty { display:none; }
+  #daily-games { margin-top:1.25rem; }
   .st-empty { display:flex; flex-direction:column; align-items:center; gap:0.35rem; padding:1.5rem 1rem; }
   .st-empty b { font-family:var(--display); font-size:var(--fs-lg); color:var(--text); }
   .st-empty span { font-size:var(--fs-sm); color:var(--text-2); max-width:280px; line-height:1.45; }
@@ -1965,7 +1964,7 @@
   .home-content > * + * { margin-top:var(--sp-4); }
   .home-content > .section-head { margin-top:var(--sp-5); margin-bottom:0; }
   .home-content > .section-head:first-child { margin-top:var(--sp-2); }
-  #daily-card { margin-top:var(--sp-4); }
+  #daily-games { margin-top:var(--sp-4); }
   .home-more { margin-top:var(--sp-6); }
   .home-actions, .deck-list { gap:var(--sp-3); }
   .home-cta-row { gap:var(--sp-3); }
@@ -2668,7 +2667,7 @@
   .home-content { padding-top:1.5rem; padding-bottom:2.5rem; }
   .home-content > .section-head:first-child { margin-top:0; }
   .home-cta { margin-top:1.5rem !important; gap:0.6rem; }
-  #daily-card:not(:empty) { margin-top:1.75rem !important; }
+  #daily-games { margin-top:1.75rem !important; }
   .home-more { margin-top:2.25rem !important; }
   .home-more .section-title { margin-bottom:0.6rem; }
 
@@ -2748,7 +2747,7 @@
     .home-content > .deck-list { grid-row:2 / span 4; }
     .home-content > .home-cta { grid-column:2; grid-row:1 / span 2; flex-direction:column; align-self:start; }
     .home-content > .home-cta .btn { width:100%; min-width:0; }
-    .home-content > #daily-card { grid-column:2; grid-row:3; margin-top:1.5rem !important; }
+    .home-content > #daily-games { grid-column:2; grid-row:3; margin-top:1.5rem !important; }
     .home-content > .home-more { grid-column:2; grid-row:4; margin-top:1.75rem !important; }
     .home-content > .about38 { grid-column:1 / -1; grid-row:6; margin-top:3rem !important; }
     .home-content > #pwa-install-btn { grid-column:2; grid-row:5; width:100%; margin-top:1.5rem !important; }
@@ -3053,16 +3052,14 @@ document.documentElement.classList.add('rd-boot');
     .home-content { grid-template-rows:repeat(10, auto) 1fr auto auto; }
     .home-content > .deck-list { grid-row:2 / span 10; }
     .home-content > #wn-card { grid-column:2; grid-row:3; }
-    .home-content > #daily-card { grid-row:4; }
-    .home-content > #pre47-card { grid-column:2; grid-row:5; }
-    .home-content > #puzzle-card { grid-column:2; grid-row:6; }
-    .home-content > #rp-card { grid-column:2; grid-row:7; }
-    .home-content > #gtg-card { grid-column:2; grid-row:8; }
+    /* 3.4.21: the four daily games are one section (#daily-games); rows 6 to 8 stay empty. */
+    .home-content > #pre47-card { grid-column:2; grid-row:4; }
+    .home-content > #daily-games { grid-row:5; }
     .home-content > .home-more { grid-row:9; }
     .home-content > #pwa-install-btn { grid-row:10; }
     .home-content > .ad32 { grid-row:12; }
     .home-content > .about38, .home-content > .ad32 ~ .about38 { grid-row:13; }
-    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty), .home-content > #puzzle-card:not(:empty), .home-content > #rp-card:not(:empty), .home-content > #gtg-card:not(:empty) { margin-top:1.5rem !important; }
+    .home-content > #wn-card:not(:empty), .home-content > #pre47-card:not(:empty) { margin-top:1.5rem !important; }
   }
 </style>
 <style id="gtg-css">
@@ -3099,6 +3096,35 @@ document.documentElement.classList.add('rd-boot');
   .gtg-acts { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem; }
   .gtg-acts .btn { flex:1 1 0; justify-content:center; }
   @media (min-width:700px) { .gtg-acts .btn { flex:0 0 auto; } }
+</style>
+<style id="dg51-css">
+  /* 3.4.21: Daily games. The four daily games as one ruled list under the decks, like More below it:
+     a slim row each, the games still to play keep the filled Play button, played ones go quiet. */
+  .dg51-head { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
+  .dg51-head .section-title { flex:1; min-width:0; margin:0; }
+  .dg51-n { flex-shrink:0; font-size:var(--fs-xs); font-weight:600; color:var(--text-3); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .dg51-n.all { color:var(--mark); }
+  .dg51-list { border-top:1px solid var(--line-2); }
+  .dg51-list > div:empty { display:none; }
+  html:not(#z) .dg51-list .dc-card { flex-wrap:nowrap; gap:0.7rem; margin:0; padding:0.5rem 0.1rem; min-height:61px; border:0; border-bottom:1px solid var(--line-2); border-radius:0; background:transparent; box-shadow:none; }
+  html:not(#z) .dg51-list .dc-ic { width:26px; height:26px; background:none; color:var(--mark); }
+  .dg51-list .dc-ic svg, .dg51-list .dc-ic .rp-gem { width:22px; height:22px; }
+  .dg51-list .dc-tx { flex:1 1 auto; }
+  html:not(#z) .dg51-list .dc-t { font-size:var(--fs-md); line-height:1.25; }
+  html:not(#z) body .dg51-list .dc-s { font-size:var(--fs-xs); line-height:1.35; margin-top:0.1rem; }
+  .dg51-list .dc-card > .btn { flex-shrink:0; }
+  .dg51-list .dc-card > .btn-primary { min-width:5.5rem; font-size:1rem; padding:0 0.8rem; }
+  /* Share: the icon alone here; the word stays as the button's name for screen readers and translation. */
+  .dg51-list .dc-card > .btn:not(.btn-primary) { width:44px; min-width:44px; padding:0; gap:0; font-size:0; }
+  .dg51-list .dc-card > .btn:not(.btn-primary) svg { width:18px; height:18px; }
+  .dg51-list > [data-dg-done] .dc-card > .btn-primary { background:transparent; color:var(--text); border-color:var(--line-2); }
+  .dg51-list > [data-dg-done] .dc-ic { color:var(--text-3); }
+  @media (pointer:coarse), (max-width:520px) { .dg51-list .dc-card > .btn:not(.btn-primary) { width:48px; min-width:48px; } }
+  /* Small phones: a smaller Play button so the game's name keeps room, in every language. */
+  @media (max-width:430px) {
+    .dg51-list .dc-card { gap:0.55rem; }
+    .dg51-list .dc-card > .btn-primary { min-width:4.5rem; padding:0 0.6rem; font-size:0.875rem; letter-spacing:0.03em; }
+  }
 </style>
 <style id="mc26-css">
   .mc26-tabs { display:flex; gap:4px; padding:4px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--line); margin:0 0 0.6rem; }
@@ -3426,11 +3452,8 @@ document.documentElement.classList.add('rd-boot');
 <style>
   /* 2.7.4: room kept for what home adds on its first draw (removed right after it). */
   html.rd-boot #deck-list .st-empty::after { content:''; display:block; height:108px; }
-  @media (max-width:1099px) {
-    html.rd-boot #daily-card:empty { display:block; min-height:89px; margin-top:1.75rem !important; }
-    html.rd-boot #puzzle-card:empty, html.rd-boot #gtg-card:empty { display:block; min-height:89px; margin-top:1rem; }
-  }
-  @media (min-width:700px) and (max-width:1099px) { html.rd-boot #daily-card:empty, html.rd-boot #puzzle-card:empty, html.rd-boot #gtg-card:empty { min-height:72px; } }
+  /* 3.4.21: each daily game row keeps its height until its game draws it. */
+  html.rd-boot .dg51-list > div:empty { min-height:61px; border-bottom:1px solid var(--line-2); }
   /* The title and logo start near the size rd38Fit() gives them, which it sets from the fonts. */
   html.rd-boot #screen-home .app-title { font-size:41.39px; }
   html.rd-boot #screen-home .rd-mark { width:41.57px; height:59px; }
@@ -3604,10 +3627,16 @@ document.documentElement.classList.add('rd-boot');
       <button class="btn" onclick="openStarterPicker()"><svg class="ic"><use href="#i-cards"/></svg>Starter decks</button>
     <button class="btn bld-cta" id="bld-cta" onclick="openBuilder()"><svg class="ic"><use href="#i-edit"/></svg>Build a deck</button></div>
     <div id="wn-card"></div>
-    <div id="daily-card"></div>
-    <div id="puzzle-card"></div>
-    <div id="rp-card"></div>
-    <div id="gtg-card"></div>
+    <div id="pre47-card"></div>
+    <section class="dg51" id="daily-games" aria-labelledby="dg51-h">
+      <div class="dg51-head"><h2 class="section-title" id="dg51-h">Daily games</h2><span class="dg51-n" id="dg51-n"></span></div>
+      <div class="dg51-list">
+        <div id="daily-card"></div>
+        <div id="puzzle-card"></div>
+        <div id="rp-card"></div>
+        <div id="gtg-card"></div>
+      </div>
+    </section>
 
     <section class="home-more">
       <h2 class="section-title">More</h2>
@@ -4160,7 +4189,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/report-errors.js?v=8883917e"></script>
 <script id="tcg-enrich-inline" src="js/tcg-enrich.js?v=3e525bd7"></script>
 
-<script src="js/core.js?v=86d061b3"></script>
+<script src="js/core.js?v=526e0c18"></script>
 
 <!-- SHARE MODAL -->
 <div class="modal-overlay" id="share-modal-overlay">
@@ -4291,9 +4320,10 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/creator-kit.js?v=990108dc"></script>
 <script src="js/offline-starters.js?v=51e73c16"></script>
 <script src="js/gtg.js?v=83885743"></script>
-<script src="js/i18n.js?v=42120538"></script>
+<script src="js/daily-games.js?v=a0b9a946"></script>
+<script src="js/i18n.js?v=af8defea"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=ee42a20e"></script><script src="js/i18n-de.js?v=24c3b977"></script><script src="js/i18n-it.js?v=c9416491"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=18700a3d"></script><script src="js/i18n-de.js?v=469d7e91"></script><script src="js/i18n-it.js?v=51041a25"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=78548daf"></script></template>
