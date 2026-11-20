@@ -1439,6 +1439,7 @@ I18N_MORE.fr = {
     "Sparring Energy and game log fixes": "Corrections de l'Énergie et du journal de partie dans Sparring",
     "Fairer grades for decks with no draw cards": "Notes plus justes pour les decks sans cartes de pioche",
     "Grades now count local store events": "Les notes comptent désormais les événements locaux en boutique",
+    "Clearer grade text when showing local results": "Texte de la note plus clair avec les résultats locaux",
     "Added: watch out for box": "Nouveau : encadré Attention à",
     "Share your puzzle score": "Partagez votre résultat du puzzle",
     "The link opens today's puzzle, so friends play the same board.": "Le lien ouvre le puzzle du jour, pour que vos amis jouent le même plateau.",

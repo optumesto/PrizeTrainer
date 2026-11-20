@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.16 (build 144): clearer grade text for local results (20 Nov 2026)
+
+Changed files: js/matchups.js (source words can ignore the picker), js/v69-grade-blend.js (grade line and Grade vs win rate), js/core.js (version, What's new, PT_BUILD now 144), index.html (version, stamps), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache name prize-trainer-v144).
+
+- With Against the meta set to Local in person (or Online), the grade sentence said the grade came from those results only. The grade always uses every source, so it now always says "online and local in-person". The picker still changes the meta numbers.
+- Grade vs win rate no longer adds the grade's all-source win rate next to a one-source win rate.
+- Grade check: no grade moved.
+
 # RdyDeck 3.4.15 (build 143): grades count local store events (20 Nov 2026)
 
 Changed files: matchups.json and .github/matchups-cache.json (41 local in-person store events added as their own source, online events as live), refresh-matchups.mjs (reads in-person store events, 16 to 63 players with decklists, each organizer checked once), .github/workflows/refresh-data.yml (up to 100 in-person requests a week, still 30 seconds apart), js/matchups.js (source words, picker label Local in person), js/v69-grade-blend.js, js/core.js (help text, version, What's new, PT_BUILD now 143), js/v80-extras.js (What's next: Regionals results), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, build-pages.mjs, faq.html, how-grading-works.html, meta-decks.html, the deck-*.html guides and their .github/pages sources, index.html (help text, version, stamps), sw.js (cache name prize-trainer-v143).
