@@ -11,7 +11,11 @@
 // v71: an average record scores 8.0 on results (was 8.5), so an average deck no longer reads as
 // Tournament-ready on its record alone. Checked on the 130 test lists: grades fall 0.1 to 0.3, and
 // the rank match with win rates holds (+0.79 all results, +0.49 since the newest set).
-const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 500, G68_SLOPE = 0.07, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
+// 3.4.24: a losing record moved the grade too little, so the last-place decks still graded near 7 (Igglybuff,
+// 33% wins over 777 games, 6.5; Mega Charizard X, 32% over 167 games, 8.5). Below an average record the results
+// score now falls twice as fast (G68_SLOPE_LO), and results reach their full share at 250 games, not 500. A deck
+// at or above an average record scores exactly as before, so the top decks keep their grades.
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.07, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
@@ -42,7 +46,7 @@ function g68Strength(data) {
       const idx = 100 * Math.sqrt(wr / fw * q / fq);
       const curR = x.d.cur ? Object.values(x.d.cur.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]) : [0, 0, 0];
       const all = Object.values(x.d.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]);
-      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + G68_SLOPE * (idx - 100), 3, 10), wrUsed: m ? x.r[0] / m : null,
+      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + (idx < 100 ? G68_SLOPE_LO : G68_SLOPE) * (idx - 100), 3, 10), wrUsed: m ? x.r[0] / m : null,
         wr: (all[0] + all[1] + all[2]) ? all[0] / (all[0] + all[1] + all[2]) : null, games: all[0] + all[1] + all[2],
         curGames: curR[0] + curR[1] + curR[2], curWr: (curR[0] + curR[1] + curR[2]) ? curR[0] / (curR[0] + curR[1] + curR[2]) : null };
     }
@@ -319,8 +323,8 @@ function g68Blend(R, deck) {
   const st = g68Strength(mu60Data)[arch.id];
   if (!st) { R.noRes = true; return R; }
   const card = R.overall;
-  // 2.7.8: results and cards count evenly once an archetype has 500 games, and the share rises in a
-  // straight line before that (100 games 10%, 250 games 25%), so a few games cannot swing a grade.
+  // 2.7.8: results and cards count evenly once an archetype has enough games (3.4.24: 250, was 500), and the
+  // share rises in a straight line before that (100 games 20%), so a few games cannot swing a grade.
   // 2.7.9: games since the newest set count three times here too, as in the results score, so a deck
   // with a poor record is not lifted just because most of its games came before the newest set.
   let w = G68_WMAX * Math.min(1, st.n / G68_FULL) * (b ? b.fit : 1);
