@@ -2630,6 +2630,7 @@ Object.assign(I18N_MORE.it.dict, {
   "Rare Pull colors and score picture": "Rare Pull: colori e immagine del punteggio",
   "Photo import fixed": "Importazione da foto corretta",
   "Card guides kept out of search": "Guide alle carte escluse dai motori di ricerca",
+  "Card guides: pictures, odds and win records": "Guide alle carte: immagini, probabilità e record di vittorie",
   "Deck guides and How grading works in More": "Guide ai mazzi e Come funziona il voto in Altro",
   "Grade source on home page": "Origine del voto nella Home",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Il voto si basa sulle tue carte e, per i mazzi noti, sui risultati dei tornei online e locali dal vivo.",

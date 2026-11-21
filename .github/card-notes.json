@@ -1,0 +1,718 @@
+{
+ "schema": 1,
+ "note": "A few sentences per card in RdyDeck's own words: what the card does and why decks play it. Read by build-pages.mjs for the In plain words section of each card guide. Only claims the card's text or RdyDeck's own numbers back up.",
+ "notes": {
+  "Rare Candy": [
+   "Rare Candy lets a Basic Pokémon skip its Stage 1 and become its Stage 2 in one step. That saves a turn and the Stage 1 card, which is why 20 of the decks RdyDeck tracks run it in at least a quarter of their top lists. Not every Stage 2 deck does: Dragapult lists skip it and evolve through Drakloak, using its Recon Directive Ability on the way up.",
+   "It has two limits worth planning around. You can't play it on your first turn, and you can't use it on a Basic that came into play this same turn, so the Basic has to be on your Bench a turn early. You also need the Stage 2 in your hand when you play it, which is why decks pair it with cards that search for Pokémon."
+  ],
+  "Dragapult ex": [
+   "Dragapult ex is a Stage 2 attacker. Its main attack, Phantom Dive, costs one Fire and one Psychic Energy, does 200 damage to the Active Pokémon and puts 6 more damage counters anywhere on your opponent's Bench. That Bench damage sets up Knock Outs on later turns, often two Prize cards at a time against Pokémon ex.",
+   "Its Tera rule keeps it safe while it sits on your Bench, since attacks can't damage it there. It still gives up two Prize cards when Knocked Out, as a Pokémon ex, and it needs a Dreepy and a Drakloak or Rare Candy to get into play, which is why its decks run four Dreepy and four Drakloak."
+  ],
+  "Abra": [
+   "Abra is a Basic Psychic Pokémon with 50 HP that evolves into Kadabra. Decks play it to start the line toward Alakazam, which evolves from Kadabra. Both Alakazam Dusknoir and Alakazam Dudunsparce run it in every top list, usually four copies.",
+   "Its one attack, Teleportation Attack, costs a single Psychic Energy, does 10 damage and then switches Abra with one of your Benched Pokémon. That gives you a way to change your Active Pokémon without paying a Retreat Cost. With only 50 HP it can't take much damage, so the aim is to evolve it quickly."
+  ],
+  "Academy at Night": [
+   "Academy at Night is a Stadium that lets a player put one card from their hand on top of their deck, once during each of their turns. Slowking decks play it in every top list, usually four copies, because choosing the top card of your deck sets up what Slowking copies.",
+   "The effect works for both players, so your opponent can use it on their turn too. Only one Stadium can be in play at a time, and it is discarded when another Stadium comes into play, which is one reason to run more than one copy."
+  ],
+  "Adventure Lantern": [
+   "Adventure Lantern is a Pokémon Tool whose text searches your deck for one Basic Fire Energy card and one Basic Lightning Energy card and puts both into your hand. It finds two Energy of different types with a single card.",
+   "It always looks for one of each type, so it does the most in a deck that wants both Fire and Lightning Energy. Both decks that play it use a single copy: Iron Thorns in every top list and Mega Rayquaza in about three quarters of its lists."
+  ],
+  "Air Balloon": [
+   "Air Balloon is a Pokémon Tool that lowers the Retreat Cost of the Pokémon holding it by two Colorless Energy. A Pokémon with a Retreat Cost of two or less can then retreat for free, so you can swap Pokémon without spending Energy. Six of the decks RdyDeck tracks play it in most of their top lists.",
+   "Each Pokémon can hold only one Pokémon Tool, so Air Balloon takes the place of any other Tool on that Pokémon, and it stays attached. Toucannon usually runs four, Seaking Festival Lead three, and Lucario Hariyama, Mega Greninja and Mega Chandelure two."
+  ],
+  "Alakazam": [
+   "Alakazam is a Stage 2 Pokémon that evolves from Kadabra. When you play it from your hand to evolve, its Psychic Draw Ability lets you draw 3 cards. Its attack, Powerful Hand, costs one Psychic Energy and puts 2 damage counters on your opponent's Active Pokémon for each card in your hand.",
+   "That makes your hand size the source of its damage: 6 cards in hand means 12 damage counters. Psychic Draw adds cards on the turn Alakazam comes into play, which feeds the attack. Alakazam Dusknoir and Alakazam Dudunsparce play it in every top list, usually three copies."
+  ],
+  "Annihilape": [
+   "Annihilape is a Stage 2 Fighting Pokémon that evolves from Primeape. Tantrum does 130 damage for one Fighting Energy but leaves Annihilape Confused. Destined Fight, for one Fighting and one Colorless Energy, Knocks Out both Active Pokémon at once.",
+   "Destined Fight removes your opponent's Active Pokémon no matter its HP, but it costs you your own Active Pokémon as well, so it fits best when that trade favors you. Slowking decks play a single copy in about half of their top lists."
+  ],
+  "Applin": [
+   "Applin is a Basic Grass Pokémon that evolves into Dipplin. Decks play it to get Dipplin into play, and both Ogerpon Meganium Hydrapple and Festival Lead run it in every top list.",
+   "Its attack, Tumbling Attack, costs one Grass Energy and does 10 damage, or 30 if you flip heads. With 40 HP it is fragile, so its job is to evolve rather than to attack. Festival Lead usually plays four copies, while Ogerpon Meganium Hydrapple usually plays two."
+  ],
+  "Area Zero Underdepths": [
+   "Area Zero Underdepths is a Stadium that lets a player have up to 8 Pokémon on their Bench instead of 5, as long as they have a Tera Pokémon in play. More Bench space means more Pokémon set up at once, which is why Basic Box and Clefairy Ogerpon play it in every top list and Mew Box usually runs four.",
+   "The extra space has a cost if things change. If your last Tera Pokémon leaves play, you discard down to 5 Benched Pokémon. When the Stadium leaves play, both players discard down to 5, and whoever played it discards first. Your opponent gets the extra space too if they have a Tera Pokémon."
+  ],
+  "Azurill": [
+   "Azurill is a Basic Pokémon whose only attack, Bouncy-Bounce Charge, costs no Energy. It searches your deck for any Energy card and attaches it to one of your Benched Pokémon, so Azurill can power up another Pokémon while it sits in the Active Spot.",
+   "The attack does no damage, so Azurill is a setup piece rather than a threat. It has 30 HP, which makes it easy to Knock Out, and a Retreat Cost of zero, so it can leave the Active Spot for free. Crustle decks play a single copy in just over half of their top lists."
+  ],
+  "Banette": [
+   "Banette is a Stage 1 Pokémon that evolves from Shuppet. Its attack, Puppet Pull, costs one Psychic Energy, does 80 damage and lets you search your deck for any card. That mix of damage and a search is why Dhelmise decks play four copies in every top list.",
+   "Its Ability, Hide 'n' Sneak, prevents the effects of your opponent's attacks and Abilities on Banette. It still takes damage, since damage is not an effect, so the Ability guards against the extra parts of an attack rather than the hit itself. Mega Chandelure plays one copy in under a third of its top lists."
+  ],
+  "Battle Cage": [
+   "Battle Cage is a Stadium that stops attacks and Abilities from putting damage counters on Benched Pokémon when those counters come from the other player's Pokémon. It shields your Bench from decks that spread damage counters, and Okidogi Barbaracle, Alakazam Dudunsparce and Lopunny Dudunsparce play it in nearly every top list.",
+   "It protects both players' Benches, so it also blocks your own Pokémon from placing damage counters on your opponent's Bench. Regular attack damage still goes through. Only one Stadium can be in play, so your opponent can replace it with their own. Toucannon usually runs four copies, and most other decks run two or three."
+  ],
+  "Bayleef": [
+   "Bayleef is the Stage 1 step between Chikorita and Meganium. Decks play it to reach Meganium, and Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple, Ogerpon Meganium and Mega Venusaur all run it in nearly every top list.",
+   "Each of those decks usually plays two copies. Its attack, Push Down, costs one Grass and one Colorless Energy, does 50 damage and sends your opponent's Active Pokémon to the Bench, though your opponent picks the replacement. With 110 HP it can take a hit while it waits to evolve."
+  ],
+  "Beldum": [
+   "Beldum is a Basic Metal Pokémon that evolves into Metang. Decks play it to start that line, and both Mega Excadrill and Cinccino run four copies in nearly every top list.",
+   "Its attacks are small. Dig Claws does 10 damage for one Metal Energy, and Iron Tackle does 50 for three Energy but also does 10 damage to Beldum. The aim is to evolve it rather than attack with it. At 70 HP it fits the limit of Buddy-Buddy Poffin, which searches for Basic Pokémon with 70 HP or less."
+  ],
+  "Binding Mochi": [
+   "Binding Mochi is a Pokémon Tool that adds 40 damage to attacks against your opponent's Active Pokémon, but only while the Pokémon holding it is Poisoned. Sharpedo Toxtricity plays it in every top list, usually three copies, and Mega Darkrai and N's Zoroark usually run two.",
+   "The catch is that your own Pokémon has to be Poisoned for the bonus to apply, so it pays off in a deck that can Poison its own attackers. The extra damage is added before Weakness and Resistance. Each Pokémon can hold only one Tool, so it competes with other Tools for that spot."
+  ],
+  "Black Belt's Training": [
+   "Black Belt's Training is a Supporter that adds 40 damage to your attacks for the rest of the turn, but only against your opponent's Active Pokémon ex. It helps you reach a Knock Out on a Pokémon ex that your attack would otherwise fall short of.",
+   "It uses your one Supporter for the turn and does nothing against Pokémon that aren't Pokémon ex. N's Zoroark plays a single copy in nearly every top list. Igglybuff, Mega Darkrai and Palafin usually run two when they play it, and Talonflame Dusknoir runs one in half of its lists."
+  ],
+  "Blaziken ex": [
+   "Blaziken ex is a Stage 2 Pokémon ex that evolves from Combusken. Its Seething Spirit Ability lets you attach a Basic Energy card from your discard pile to one of your Pokémon once each turn. That extra Energy every turn is the main reason Dragapult Blaziken and Mega Dragonite play it.",
+   "Its attack, Smolder-sault, does 200 damage for one Fire and one Colorless Energy, but Blaziken ex can't attack during your next turn after using it. It has 320 HP, though as a Pokémon ex it gives up two Prize cards when Knocked Out. Mega Dragonite usually runs three copies and Dragapult Blaziken two."
+  ],
+  "Bloodmoon Ursaluna ex": [
+   "Bloodmoon Ursaluna ex is a Basic Pokémon ex whose attack, Blood Moon, does 240 damage. The attack normally costs five Colorless Energy, but its Seasoned Skill Ability lowers that by one for each Prize card your opponent has taken. The further behind you are, the cheaper it gets.",
+   "After using Blood Moon it can't attack during your next turn, and as a Pokémon ex it gives up two Prize cards when Knocked Out. Decks play it as a single copy: Talonflame Dusknoir in nearly every top list, and Dhelmise, Mega Darkrai and Lopunny Dusknoir in over half of theirs."
+  ],
+  "Boomerang Energy": [
+   "Boomerang Energy is a Special Energy that provides one Colorless Energy. If an attack from the Pokémon it is attached to discards it, the card goes right back onto that Pokémon after the attack. That lets you use attacks that discard Energy without losing this one.",
+   "It only returns when the discard comes from an attack by the Pokémon holding it, so other discard effects send it away for good. It provides only Colorless Energy, so it can't pay a typed Energy cost. Slowking decks play it in most top lists, usually two copies."
+  ],
+  "Boss's Orders": [
+   "Boss's Orders is a Supporter that lets you pick one of your opponent's Benched Pokémon and move it into the Active Spot. You choose what your attack hits, so you can go after a Pokémon that is damaged, still setting up, or worth more Prize cards.",
+   "It uses your one Supporter for the turn, so you give up a draw or search Supporter to play it. It appears in every top list of Dragapult, Dragapult Blaziken, Dragapult Dusknoir, Sharpedo Toxtricity and Lucario Hariyama. Sharpedo Toxtricity usually runs four, the Dragapult decks three, and Alakazam Dusknoir one."
+  ],
+  "Brave Bangle": [
+   "Brave Bangle is a Pokémon Tool that adds 30 damage to attacks against your opponent's Active Pokémon ex. It only works on a Pokémon without a Rule Box, so a Pokémon ex can't use it. It helps attackers without a Rule Box reach Knock Outs on bigger Pokémon ex.",
+   "The bonus applies to each attack, so in Festival Lead it can add 30 more than once in a turn, up to 60. Igglybuff usually runs four copies, Seaking Festival Lead three, and Ethan's Typhlosion and Festival Lead two. Each Pokémon can hold only one Pokémon Tool."
+  ],
+  "Briar": [
+   "Briar is a Supporter you can only play when your opponent has exactly 2 Prize cards left. If your Tera Pokémon then Knocks Out their Active Pokémon with attack damage that turn, you take 1 extra Prize card. It helps you catch up when your opponent is close to winning.",
+   "Both conditions matter: the attacker has to be a Tera Pokémon, and the Knock Out has to come from damage from an attack. Decks play it as a single copy, Ogerpon Meganium Arboliva and Ogerpon Meganium Hydrapple in most top lists and Ceruledge in about a third."
+  ],
+  "Brock's Scouting": [
+   "Brock's Scouting is a Supporter that searches your deck for Pokémon. You choose either up to 2 Basic Pokémon or 1 Evolution Pokémon and put them into your hand. That choice lets it find Basics early in a game and an evolution later on.",
+   "It uses your one Supporter for the turn and draws no other cards, so it trades draw power for a sure search. Mega Excadrill plays it in most top lists, usually two copies. Kangaskhan Bouffalant plays it in under a third of its lists but usually runs four when it does, and Igglybuff sometimes runs two."
+  ],
+  "Bronzong": [
+   "Bronzong is a Stage 1 Pokémon that evolves from Bronzor. Its first attack, Evolution Jammer, does 30 damage for one Psychic Energy and stops your opponent from playing Pokémon from their hand to evolve during their next turn. Against a deck that needs to evolve, that can delay its setup by a turn.",
+   "Its second attack, Super Psy Bolt, does 100 damage for three Energy. Bronzong has 110 HP and a Retreat Cost of three, so moving it out of the Active Spot is costly. Lopunny Dusknoir plays two in most top lists, alongside two Bronzor."
+  ],
+  "Bronzor": [
+   "Bronzor is a Basic Psychic Pokémon that evolves into Bronzong. Decks play it to get Bronzong and its Evolution Jammer attack into play. Lopunny Dusknoir runs two in most top lists, matching its two Bronzong.",
+   "Its attack, Mirror Attack, costs one Psychic Energy and does 10 damage, or 40 if your opponent's Active Pokémon is a Psychic Pokémon. It has 80 HP but a Retreat Cost of three, which makes it slow to move once it is in the Active Spot."
+  ],
+  "Buddy-Buddy Poffin": [
+   "Buddy-Buddy Poffin is an Item that puts up to 2 Basic Pokémon with 70 HP or less from your deck straight onto your Bench. It fills your Bench quickly at the start of a game, so your evolution lines are in place and ready to evolve later.",
+   "Since it is an Item, you can play it in the same turn as your Supporter. Dragapult decks use it to Bench two Dreepy at once on the first turn. It is a four-copy card in every top list of Dragapult, Dragapult Blaziken, Dragapult Dusknoir, Sharpedo Toxtricity and Cynthia's Garchomp. It can't find a Basic with more than 70 HP."
+  ],
+  "Budew": [
+   "Budew is a Basic Pokémon whose attack, Itchy Pollen, costs no Energy, does 10 damage and stops your opponent from playing Item cards during their next turn. It slows your opponent down for a turn while you set up your own Pokémon.",
+   "Because the attack is free, Budew can use it before you have attached any Energy. With 30 HP it is easy to Knock Out. It shows up in nearly every top list of Dragapult, Dragapult Blaziken, Dragapult Dusknoir, Alakazam Dusknoir, Grimmsnarl Froslass and Ogerpon Meganium Arboliva, usually as one or two copies."
+  ],
+  "Bug Catching Set": [
+   "Bug Catching Set is an Item that looks at the top 7 cards of your deck and lets you take up to 2 Grass Pokémon or Basic Grass Energy cards, in any mix, into your hand. It gives Grass decks one card that can find both Pokémon and Energy.",
+   "It only sees 7 cards, so it can come up empty, and the cards you don't take are shuffled back into your deck. Being an Item, it doesn't use your Supporter for the turn. Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple and Mega Venusaur play four in every top list, and Beedrill runs four in most of its lists."
+  ],
+  "Buneary": [
+   "Buneary is a Basic Pokémon that evolves into Mega Lopunny ex. Decks play it to get there, and every top list of Mega Lopunny, Lopunny Dusknoir and Lopunny Dudunsparce includes it.",
+   "Mega Lopunny usually runs four copies, while Lopunny Dusknoir and Lopunny Dudunsparce usually run two. Its Run Around attack costs one Colorless Energy and switches Buneary with a Benched Pokémon, and Kick does 20 damage for two Energy. Its 70 HP fits the limit of Buddy-Buddy Poffin."
+  ],
+  "Carvanha": [
+   "Carvanha is a Basic Darkness Pokémon that evolves into Mega Sharpedo ex. Decks play it to get there, and Sharpedo Toxtricity runs it in every top list, usually three copies.",
+   "Its attack, Reckless Charge, does 30 damage for one Darkness Energy but also does 10 damage to Carvanha. Its 70 HP is low, but it fits the 70 HP limit of Buddy-Buddy Poffin, which Sharpedo Toxtricity plays four of in every top list."
+  ],
+  "Celebi": [
+   "Celebi is a Basic Grass Pokémon whose Traverse Time attack, for one Grass Energy, searches your deck for up to 3 cards in any mix of Grass Pokémon and Stadium cards. It turns an early attack into a large search for the Pokémon and Stadiums your deck needs.",
+   "Using Traverse Time means Celebi does no damage that turn. Its other attack, Solar Cutter, does 30 damage for one Grass Energy. Ogerpon Meganium Hydrapple plays one copy in nearly every top list, and Mega Venusaur plays one in most of its lists."
+  ],
+  "Chien-Pao": [
+   "Chien-Pao is a Basic Water Pokémon with the Snow Sink Ability: when you put it onto your Bench from your hand during your turn, you may discard a Stadium in play. Decks play a single copy as an answer to Stadiums, and Basic Box and Clefairy Ogerpon run it in nearly all of their top lists.",
+   "Snow Sink only triggers as you bench it from your hand, so a Chien-Pao already in play can't use it again. Its attack, Icicle Loop, does 120 for two Water and one Colorless Energy, but you return one of its attached Energy to your hand each time."
+  ],
+  "Chikorita": [
+   "Chikorita is a Basic Grass Pokémon that evolves into Bayleef. Decks play it to start that evolution line, and every top list of Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple and Ogerpon Meganium includes it, with Mega Venusaur close behind at 97%.",
+   "Most of these decks run 2 copies, and Ogerpon Meganium usually runs 3. If it has to attack, Growl costs one Colorless Energy and makes the Defending Pokémon's attacks do 20 less damage during your opponent's next turn. Seed Bomb does 30 for two Grass Energy."
+  ],
+  "Ciphermaniac's Codebreaking": [
+   "Ciphermaniac's Codebreaking is a Supporter that finds any 2 cards in your deck and puts them on top in the order you choose. They don't go to your hand, so it sets up your next draws instead of your current turn. Slowking plays it in every top list, usually 4 copies.",
+   "It takes your Supporter for the turn, so it works best when you know what you need next turn. Basic Box and Mew Box also run it in more than 90% of top lists, at one or two copies, and Talonflame Dusknoir plays one in 69%."
+  ],
+  "Combusken": [
+   "Combusken is the Stage 1 between Torchic and Blaziken ex. Decks play it so Torchic can evolve into Blaziken ex. Dragapult Blaziken runs it in 99% of top lists, usually as a single copy, and Mega Dragonite runs it in 91%, usually 2.",
+   "Its own attacks are small. Combustion does 20 for one Colorless Energy, and Double Kick flips 2 coins and does 40 for each heads. With 100 HP and a Retreat Cost of 2, it is mainly a step on the way to Blaziken ex."
+  ],
+  "Crispin": [
+   "Crispin is a Supporter that searches your deck for up to 2 Basic Energy of different types. You put one into your hand and attach the other to one of your Pokémon right away, so decks that use two Energy types get both from one card.",
+   "The two Energy must be different types, so it does less for a deck with only one type. Dragapult, Dragapult Blaziken, Dragapult Dudunsparce and Mega Rayquaza run 2 in every top list, while Basic Box usually plays 4. The attachment also helps an attacker get ready sooner."
+  ],
+  "Crushing Hammer": [
+   "Crushing Hammer is an Item that flips a coin. On heads, you discard an Energy from one of your opponent's Pokémon, which can slow down their attacks. Iron Thorns plays it in every top list and Dragapult in 90%, both usually 4 copies.",
+   "On tails it does nothing. Every deck that plays it usually runs 4 copies, and since it is an Item, you can play several in one turn. Rocket's Spidops runs it in 69% of top lists, and Igglybuff, Dragapult Dusknoir and Mega Zygarde play it in about a quarter to a third of theirs."
+  ],
+  "Crustle": [
+   "Crustle is a Stage 1 Pokémon that evolves from Dwebble. Its Mysterious Rock Inn Ability prevents all damage done to it by attacks from your opponent's Pokémon ex, so an opponent who relies on Pokémon ex has to find another attacker to deal with it. The Crustle deck plays 3 in every top list.",
+   "Superb Scissors does 120 for one Grass and two Colorless Energy, and effects on your opponent's Active Pokémon don't change that damage. Mysterious Rock Inn does nothing against Pokémon that are not ex, and Crustle has a Fire Weakness."
+  ],
+  "Cynthia's Gabite": [
+   "Cynthia's Gabite is the Stage 1 between Cynthia's Gible and Cynthia's Garchomp ex. Its Champion's Call Ability lets you search your deck once during your turn for any Cynthia's Pokémon and put it into your hand.",
+   "Champion's Call can find any Cynthia's Pokémon, so it can fetch Cynthia's Garchomp ex to evolve into or another piece such as Cynthia's Roserade. The Cynthia's Garchomp deck plays 4 in every top list. If it has to attack, Dragonslice does 40 for one Fighting Energy."
+  ],
+  "Cynthia's Garchomp ex": [
+   "Cynthia's Garchomp ex is a Stage 2 Pokémon ex and the main attacker of the Cynthia's Garchomp deck, which runs 3 in every top list. Draconic Buster does 260 damage for two Fighting Energy, but you discard all Energy from it afterward.",
+   "Corkscrew Dive costs one Fighting Energy, does 100 and lets you draw until you have 6 cards in hand. It has 330 HP and no Retreat Cost, and Cynthia's Power Weight can raise that HP by 70. As a Pokémon ex it gives up 2 Prize cards when Knocked Out."
+  ],
+  "Cynthia's Gible": [
+   "Cynthia's Gible is a Basic Pokémon that evolves into Cynthia's Gabite. The Cynthia's Garchomp deck plays 4 in every top list so it can build toward Cynthia's Garchomp ex.",
+   "Its own attack, Rock Hurl, does 20 for one Fighting Energy and isn't affected by Resistance. It has only 70 HP. As a Cynthia's Pokémon, it can hold Cynthia's Power Weight, and Cynthia's Gabite's Champion's Call can search for more of it."
+  ],
+  "Cynthia's Power Weight": [
+   "Cynthia's Power Weight is a Pokémon Tool that gives the Cynthia's Pokémon it is attached to 70 more HP. It only works on Cynthia's Pokémon, and the Cynthia's Garchomp deck is the one that plays it, with 3 in every top list.",
+   "On Cynthia's Garchomp ex it raises 330 HP to 400, which makes it much harder to Knock Out in one attack. Each Pokémon can hold only one Pokémon Tool, so it takes that spot on whichever Pokémon you choose."
+  ],
+  "Cynthia's Roselia": [
+   "Cynthia's Roselia is a Basic Pokémon that evolves into Cynthia's Roserade. The Cynthia's Garchomp deck plays it in 99% of top lists, usually 4 copies, to get Roserade's damage boost into play.",
+   "Its only attack, Spike Sting, does 20 for one Colorless Energy, and it has 70 HP. Since it is a Cynthia's Pokémon, Cynthia's Gabite's Champion's Call can search your deck for it, which makes it easier to find early."
+  ],
+  "Cynthia's Roserade": [
+   "Cynthia's Roserade is a Stage 1 Pokémon that evolves from Cynthia's Roselia. Its Cheer On to Glory Ability makes attacks from your Cynthia's Pokémon do 30 more damage to your opponent's Active Pokémon, before Weakness and Resistance.",
+   "With it in play, Cynthia's Garchomp ex's Draconic Buster goes from 260 to 290 and Corkscrew Dive from 100 to 130. The Cynthia's Garchomp deck runs it in 99% of top lists, usually 3 copies. If Roserade has to attack, Leaf Step does 80."
+  ],
+  "Cynthia's Spiritomb": [
+   "Cynthia's Spiritomb is a Basic Pokémon whose Raging Curse attack costs one Colorless Energy and does 10 damage for each damage counter on your Benched Cynthia's Pokémon. Weakness doesn't change that damage.",
+   "It does nothing when your Benched Cynthia's Pokémon have no damage counters, so it is a card for the turns after your opponent has hit your Bench. The Cynthia's Garchomp deck plays one copy in 97% of top lists. It has 70 HP."
+  ],
+  "Cyrano": [
+   "Cyrano is a Supporter that searches your deck for up to 3 Pokémon ex and puts them into your hand. Decks that rely on several Pokémon ex use it to find them with one card.",
+   "It only finds Pokémon ex, so the other Pokémon in your deck need another way out. Mega Rayquaza runs 4 in 98% of top lists, while Basic Box, N's Zoroark and Raging Bolt Ogerpon usually play 2. Absol Audino and Mew Box usually play 1."
+  ],
+  "Dawn": [
+   "Dawn is a Supporter that searches your deck for one Basic Pokémon, one Stage 1 Pokémon and one Stage 2 Pokémon and puts all three into your hand. It can gather a full evolution line, or pieces of different lines, with one card.",
+   "Alakazam Dusknoir and Alakazam Dudunsparce run 4 in every top list, and Ogerpon Meganium Arboliva runs 2. Dragapult Blaziken and Dragapult Dusknoir usually play a single copy. It takes your Supporter for the turn, so decks play it on turns when finding Pokémon matters more than drawing."
+  ],
+  "Dhelmise": [
+   "Dhelmise is a Basic Pokémon whose attack, Vengeful Anchor, costs one Psychic Energy and does 30 damage. If you have 4 or more Pokémon with the Hide 'n' Sneak Ability in your discard pile, it does 140 more, for 170 total.",
+   "The Dhelmise deck is built around this, with 4 in every top list. The big hit depends on getting Hide 'n' Sneak Pokémon into your discard pile first, so plan those turns early. It has 140 HP but a Retreat Cost of 3."
+  ],
+  "Dipplin": [
+   "Dipplin is a Stage 1 Pokémon that evolves from Applin and into Hydrapple ex. Its attack, Do the Wave, costs one Grass Energy and does 20 damage for each of your Benched Pokémon, so a fuller Bench means more damage.",
+   "Its Festival Lead Ability lets it attack twice in a turn while Festival Grounds is in play, and if the first attack Knocks Out the Active Pokémon, the second can hit the new one. The Festival Lead deck plays 3 in every top list, and Ogerpon Meganium Hydrapple plays 2 on the way to Hydrapple ex."
+  ],
+  "Drakloak": [
+   "Drakloak is the Stage 1 between Dreepy and Dragapult ex. Its Recon Directive Ability lets you look at the top 2 cards of your deck once during your turn, keep one and put the other on the bottom.",
+   "That extra card each turn adds up while you build toward Dragapult ex. Dragapult, Dragapult Blaziken, Dragapult Dusknoir and Dragapult Dudunsparce all run 4 in every top list. Its own attack, Dragon Headbutt, does 70 for one Fire and one Psychic Energy, and it has 90 HP."
+  ],
+  "Dreepy": [
+   "Dreepy is a Basic Pokémon that evolves into Drakloak. Decks play it to reach Drakloak and its Recon Directive Ability, on the way to Dragapult ex.",
+   "Dragapult, Dragapult Blaziken, Dragapult Dusknoir and Dragapult Dudunsparce all run 4 in every top list, and Ethan's Typhlosion plays 2 in 71% of its lists. Its attacks are small: Petty Grudge does 10 for one Psychic Energy, and Bite does 40 for one Fire and one Psychic. It has 70 HP."
+  ],
+  "Drilbur": [
+   "Drilbur is a Basic Pokémon that evolves into Mega Excadrill ex. Its Call for Family attack costs one Colorless Energy and puts up to 2 Basic Pokémon from your deck onto your Bench, which helps you set up early.",
+   "Mega Excadrill runs 3 in every top list, using it both to fill the Bench and to evolve. Ceruledge (94% of top lists) and Steven's Metagross (70%) usually play a single copy. Dig Claws does 50 for three Colorless Energy, and it has 70 HP."
+  ],
+  "Dudunsparce": [
+   "Dudunsparce is a Stage 1 Pokémon that evolves from Dunsparce. Its Run Away Draw Ability draws you 3 cards once during your turn, then shuffles Dudunsparce and everything attached to it back into your deck.",
+   "Because it goes back into the deck, you can find it and evolve it again on a later turn for another 3 cards. Anything attached to it is shuffled in too, so avoid attaching cards you need to keep. Beedrill and Lopunny Dudunsparce usually run 3, Alakazam Dudunsparce runs 2, and Dragapult and Dragapult Dudunsparce usually play 1."
+  ],
+  "Dudunsparce ex": [
+   "Dudunsparce ex is a Stage 1 Pokémon ex that evolves from Dunsparce. Tenacious Tail costs one Colorless Energy and does 60 damage for each of your opponent's Pokémon ex in play, so it hits hardest against decks with several of them.",
+   "Destructive Drill does 150 for three Colorless Energy, and effects on your opponent's Active Pokémon don't change that damage. It has 270 HP but gives up 2 Prize cards when Knocked Out. Decks usually play one copy: Dragapult Dudunsparce in every top list, and Lopunny Dudunsparce and Yanmega in about three quarters of theirs."
+  ],
+  "Dunsparce": [
+   "Dunsparce is a Basic Pokémon that evolves into Dudunsparce or Dudunsparce ex. Decks play it to reach Dudunsparce's Run Away Draw Ability or the attacks of Dudunsparce ex.",
+   "Its Trading Places attack costs one Colorless Energy and switches it with one of your Benched Pokémon. Beedrill runs 4 in every top list, while Alakazam Dudunsparce and Lopunny Dudunsparce usually play 3. Dragapult Dudunsparce usually plays 2 and Dragapult 1. It has 70 HP."
+  ],
+  "Dusclops": [
+   "Dusclops is the Stage 1 between Duskull and Dusknoir. Its Cursed Blast Ability puts 5 damage counters on any one of your opponent's Pokémon during your turn, and then Dusclops is Knocked Out.",
+   "Since Dusclops is Knocked Out, your opponent takes a Prize card for it, so use Cursed Blast when the 5 counters finish a Knock Out or set one up. All six decks that play it usually run 2, in 98% or more of their top lists. It is also the step you need to reach Dusknoir."
+  ],
+  "Dusknoir": [
+   "Dusknoir is a Stage 2 Pokémon that evolves from Dusclops. Its Cursed Blast Ability puts 13 damage counters on any one of your opponent's Pokémon during your turn, and then Dusknoir is Knocked Out. That lets you finish off a damaged Pokémon on the Bench as well as the Active Spot.",
+   "Your opponent takes a Prize card for Dusknoir, so the best targets are worth more, such as a Pokémon ex. Talonflame Dusknoir runs 4 and Lopunny Dusknoir 3 in every top list, while Dragapult Dusknoir and Starmie Dusknoir usually play 1. Shadow Bind does 150 and stops the Defending Pokémon from retreating during your opponent's next turn."
+  ],
+  "Duskull": [
+   "Duskull is a Basic Pokémon that evolves into Dusclops, the first step toward Dusknoir. Every deck that plays it runs it in 98% or more of top lists, to reach the Cursed Blast Ability of Dusclops and Dusknoir.",
+   "Its Come and Get You attack costs one Psychic Energy and puts up to 3 Duskull from your discard pile onto your Bench. That helps you rebuild the line later, since Cursed Blast Knocks Out the Pokémon that uses it. Alakazam Dusknoir, Lopunny Dusknoir and Talonflame Dusknoir usually run 4."
+  ],
+  "Dwebble": [
+   "Dwebble is a Basic Pokémon that evolves into Crustle. Its only attack, Ascension, costs one Colorless Energy, searches your deck for a card that evolves from Dwebble and evolves it right away.",
+   "In the Crustle deck that card is Crustle, so you don't need to draw into it. The deck runs 3 Dwebble in every top list. Ascension does no damage, so it is a setup turn, and Dwebble has 70 HP and a Retreat Cost of 2."
+  ],
+  "Energy Recycler": [
+   "Energy Recycler is an Item that shuffles up to 5 Basic Energy cards from your discard pile back into your deck. Decks that use up a lot of Energy play it to keep enough in the deck for later turns.",
+   "The Energy go into your deck, so you still need a draw or search card to get them into your hand. Steven's Metagross and Toxtricity Box run 2 in every top list. Mega Excadrill, Yanmega and Cinccino usually play 1."
+  ],
+  "Energy Switch": [
+   "Energy Switch is an Item that moves a Basic Energy from one of your Pokémon to another. Decks use it to get an attacker ready faster or to shift Energy onto a different attacker.",
+   "It only moves Basic Energy, so any other Energy stays where it is. Mega Rayquaza and Basic Box usually run 4, and Absol Audino plays 3 in every top list. Since it is an Item, you can play several in one turn."
+  ],
+  "Enriching Energy": [
+   "Enriching Energy is a Special Energy that counts as one Colorless Energy and draws you 4 cards the moment you attach it from your hand. That makes your normal Energy attachment double as a draw card, which is why Lopunny Dusknoir and Alakazam Dudunsparce play it in nearly all of their top lists.",
+   "It is an ACE SPEC, so you get only one copy, and every deck that plays it runs exactly that one. The draw only happens when it comes from your hand, so attaching it by another effect gives you no cards."
+  ],
+  "Eri": [
+   "Eri is a Supporter that makes your opponent show you their hand. You then pick up to 2 Item cards from it and discard them. Crustle plays it in most of its top lists, usually 2 copies, to strip the Items an opponent was saving for their next turn.",
+   "It only touches Items, so Supporters, Pokémon and Energy in their hand stay put. Even when they hold no Items, you still learn exactly what they are holding, which helps you plan the next few turns. It also uses your Supporter for the turn."
+  ],
+  "Ethan's Ho-Oh ex": [
+   "Ethan's Ho-Oh ex is a Basic Fire Pokémon ex with 230 HP. Its Golden Flame Ability lets you attach up to 2 Basic Fire Energy from your hand to one of your Benched Ethan's Pokémon once a turn. Mega Rayquaza plays it in 94% of its top lists, usually 2 copies, to power up attackers faster.",
+   "The Energy has to come from your hand and can only go to a Benched Pokémon with Ethan's in its name. Its own attack, Shining Feathers, needs four Fire Energy for 160 damage and heals 50 from each of your Pokémon. As a Pokémon ex it gives up two Prize cards."
+  ],
+  "Explorer's Guidance": [
+   "Explorer's Guidance is a Supporter that shows you the top 6 cards of your deck. You keep 2 of them and discard the rest. It lets you pick the two cards you need most out of six, which is why Dhelmise plays it in 92% of top lists and Ceruledge in about two thirds.",
+   "The four cards you don't keep go to the discard pile, so it costs you deck cards each time. Dhelmise usually runs 2 copies, while Ceruledge lists that play it usually run 4. It is an Ancient card and uses your Supporter for the turn."
+  ],
+  "Fan Rotom": [
+   "Fan Rotom is a Basic Colorless Pokémon with 70 HP. Its Fan Call Ability searches your deck for up to 3 Colorless Pokémon with 100 HP or less and puts them in your hand. Toucannon, Beedrill and Lopunny Dudunsparce play it in most top lists to set up quickly.",
+   "Fan Call only works during your first turn, and only one Fan Call can be used each turn, so extra copies don't add more searches. Its attack, Assault Landing, does 70 for one Colorless Energy but does nothing unless a Stadium is in play. Mega Lopunny lists that play it usually run 3."
+  ],
+  "Festival Grounds": [
+   "Festival Grounds is a Stadium. Any Pokémon with Energy attached, on either side, is cured of Special Conditions and can't be affected by them while it stays in play. Seaking Festival Lead and Festival Lead play 4 copies in every top list because Goldeen's Festival Lead Ability only lets it attack twice while Festival Grounds is in play.",
+   "Since a new Stadium discards it, those decks run four to keep it in play. The Special Condition protection helps your opponent's Pokémon too, as long as they have Energy attached. Crustle also plays a single copy in about half its top lists."
+  ],
+  "Fezandipiti ex": [
+   "Fezandipiti ex is a Basic Darkness Pokémon ex with 210 HP. Its Flip the Script Ability draws you 3 cards if one of your Pokémon was Knocked Out during your opponent's last turn. That makes it a catch-up draw card, and Dragapult, Mega Rayquaza, Alakazam Dusknoir and several other decks play one copy in almost every top list.",
+   "Only one Flip the Script can be used each turn, which is why decks run a single copy. Its attack, Cruel Arrow, costs three Colorless Energy and does 100 damage to any one of your opponent's Pokémon, Bench included. It still gives up two Prize cards when Knocked Out."
+  ],
+  "Fighting Gong": [
+   "Fighting Gong is an Item that searches your deck for either a Basic Fighting Energy or a Basic Fighting Pokémon and puts it in your hand. Fighting decks use it to find whichever piece they are missing, and Lucario Hariyama, Mega Lucario, Okidogi Barbaracle, Ceruledge and Mega Zygarde play it in every top list.",
+   "Most of those decks run 4 copies, and Cynthia's Garchomp usually runs 3. It only finds Basic cards, so it can't fetch an Evolution Pokémon or a Special Energy. Because it is an Item, you can play several in one turn alongside your Supporter."
+  ],
+  "Forest of Vitality": [
+   "Forest of Vitality is a Stadium that lets Grass Pokémon evolve into Grass Pokémon on the same turn they were played, instead of waiting a turn. That speeds up Grass evolution decks, and Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple, Beedrill and Mega Venusaur play 4 copies in every top list.",
+   "It does not work during a player's first turn, and it helps your opponent's Grass Pokémon too. A new Stadium discards it, which is one reason those decks run four. Festival Lead plays one copy in half its top lists, and Lopunny Dudunsparce in about a third."
+  ],
+  "Genesect": [
+   "Genesect is a Basic Metal Pokémon with 110 HP. Its ACE Nullifier Ability stops your opponent from playing ACE SPEC cards from their hand, as long as Genesect has a Pokémon Tool attached. Alakazam Dudunsparce plays one copy in 78% of top lists, and Toucannon in just over half, to shut off those cards.",
+   "It does nothing without a Tool, so plan to attach one when it hits the Bench. It only blocks ACE SPEC cards played from the hand. Its attack, Magnetic Blast, does 100 damage for one Metal and two Colorless Energy, and it is not a Pokémon ex."
+  ],
+  "Genesect ex": [
+   "Genesect ex is a Basic Metal Pokémon ex with 220 HP. Its Metallic Signal Ability searches your deck for up to 2 Evolution Metal Pokémon once a turn. Mega Excadrill and Steven's Metagross play 2 copies in every top list to find their evolutions, and Cinccino plays it in 95% of lists.",
+   "It only finds Evolution Pokémon of the Metal type, so it can't grab Basics. Its attack, Protect Charge, does 150 for two Metal and one Colorless Energy and cuts the damage it takes next turn by 30. As a Pokémon ex, it gives up two Prize cards when Knocked Out."
+  ],
+  "Gladion's Final Battle": [
+   "Gladion's Final Battle is a Supporter you can play only when it is the last card in your hand. For the rest of that turn, attacks from your Pokémon without a Rule Box do 80 more damage to your opponent's Active Pokémon. Seaking Festival Lead and Festival Lead play it in every top list.",
+   "You need to empty your hand first, so it works best late in a turn. The bonus lasts the whole turn, so a Pokémon that attacks twice through Goldeen's Festival Lead Ability gets the extra 80 on each attack. Pokémon ex and other Rule Box Pokémon get no bonus."
+  ],
+  "Glass Trumpet": [
+   "Glass Trumpet is an Item that picks up to 2 of your Benched Colorless Pokémon and attaches a Basic Energy from your discard pile to each. It turns spent Energy into fresh attachments, which is why Basic Box plays one copy in 88% of top lists and Raging Bolt Ogerpon usually plays 2.",
+   "You can only play it while you have a Tera Pokémon in play. The targets must be Colorless Pokémon on your Bench, and only Basic Energy in your discard pile counts, so it does nothing early if no Energy has been discarded yet."
+  ],
+  "Goldeen": [
+   "Goldeen is a Basic Water Pokémon that evolves into Seaking, and decks play it partly to get there. Its Festival Lead Ability is the bigger reason: while Festival Grounds is in play, Goldeen can use its attack twice in one turn. Seaking Festival Lead plays 4 copies and Festival Lead plays 2.",
+   "The second attack only happens if the first one Knocks Out the Active Pokémon, after your opponent picks a new one. Its own attack, Whirlpool, does 10 damage for two Colorless Energy and may discard an Energy on heads. With 50 HP it needs Festival Grounds in play to do much."
+  ],
+  "Gravity Mountain": [
+   "Gravity Mountain is a Stadium that gives every Stage 2 Pokémon in play 30 less HP, yours and your opponent's. Decks play it to bring big Stage 2 attackers into easier Knock Out range. Lucario Hariyama plays it in 97% of top lists and Mega Lucario in 77%, usually 2 copies.",
+   "It hits your own Stage 2 Pokémon as well, so it fits decks with few of them. Several other decks, including Sharpedo Toxtricity, Greninja and Mega Excadrill, play a single copy in about half their lists. Like any Stadium, it is discarded when another Stadium comes into play."
+  ],
+  "Grookey": [
+   "Grookey is a Basic Grass Pokémon that evolves into Thwackey. Decks play it to get to Thwackey, and Seaking Festival Lead and Festival Lead both play it in every top list, usually 4 and 3 copies.",
+   "It has 70 HP and no Ability. Its attacks are small: Smash Kick does 10 for one Grass Energy, and Branch Poke does 30 for two. Since it has little to do on its own, you will usually want to evolve it as soon as you can. It has a Retreat Cost of one."
+  ],
+  "Growing Grass Energy": [
+   "Growing Grass Energy is a Special Energy that provides Grass Energy and gives the Grass Pokémon it is attached to 20 more HP. That extra HP can keep an attacker alive through a hit, which is why Crustle and Mega Golisopod play 4 copies in every top list.",
+   "The HP bonus only applies to Grass Pokémon, though it still provides Grass Energy on anything. Festival Lead plays it in 76% of top lists and Lopunny Dudunsparce in 39%, both usually 2 copies."
+  ],
+  "Gwynn": [
+   "Gwynn is a Supporter that lets you discard up to 2 Pokémon from your hand and draw 3 cards for each one. Discard two and you draw six. Alakazam Dusknoir and Dhelmise play it in every top list, and Grimmsnarl Froslass in 86%, to turn spare Pokémon into fresh cards.",
+   "The Pokémon you discard can't have a Rule Box, so Pokémon ex don't count. If you have no eligible Pokémon in hand, you draw nothing. Dhelmise usually runs 4 copies, Alakazam Dusknoir 3, and most other decks that play it run 2."
+  ],
+  "Hariyama": [
+   "Hariyama is a Stage 1 Fighting Pokémon that evolves from Makuhita. When you evolve into it from your hand, its Heave-Ho Catcher Ability lets you pull one of your opponent's Benched Pokémon into the Active Spot. Lucario Hariyama plays 2 copies in every top list to drag out a target.",
+   "The Ability only works at the moment you evolve, so a Hariyama already in play can't use it again. Its attack, Wild Press, does 210 damage for three Fighting Energy but also does 70 to itself. It has 150 HP and a Retreat Cost of three."
+  ],
+  "Hero's Cape": [
+   "Hero's Cape is a Pokémon Tool that gives the Pokémon holding it 100 more HP. That can push an attacker out of reach of a Knock Out for a turn or more. Crustle plays it in every top list, and Mega Absol Box in 79%.",
+   "It is an ACE SPEC, so you get one copy and it takes your ACE SPEC slot. Each Pokémon can hold only one Tool. A Stadium like Jamming Tower makes Tools have no effect, which would switch the extra HP off while it is in play."
+  ],
+  "Hilda": [
+   "Hilda is a Supporter that searches your deck for one Evolution Pokémon and one Energy card and puts both in your hand. It finds an attacker and the Energy to power it in one card. Alakazam Dusknoir, Lopunny Dusknoir and Greninja play it in every top list.",
+   "It can't find Basic Pokémon, only Evolution Pokémon. The Energy can be any Energy card, so in Lopunny Dusknoir it can fetch Enriching Energy, which draws 4 more cards when you attach it. Alakazam Dusknoir and Lopunny Dusknoir usually run 4 copies."
+  ],
+  "Hydrapple ex": [
+   "Hydrapple ex is a Stage 2 Grass Pokémon ex that evolves from Dipplin and has 330 HP. Its Ripening Charge Ability attaches a Basic Grass Energy from your hand to one of your Pokémon once a turn and heals 30 from that Pokémon. Ogerpon Meganium Hydrapple plays 2 copies in every top list.",
+   "Its attack, Syrup Storm, costs two Colorless Energy and does 30 plus 30 more for each Grass Energy across all your Pokémon, so every extra attachment raises its damage. The same deck plays 4 Forest of Vitality to speed up evolving. It gives up two Prize cards when Knocked Out."
+  ],
+  "Iron Crown ex": [
+   "Iron Crown ex is a Basic Psychic Pokémon ex with 220 HP. Its Cobalt Command Ability makes attacks from your other Future Pokémon do 20 more damage to your opponent's Active Pokémon. Mew Box plays one copy in 92% of top lists, and Clefairy Ogerpon in 70%, for that boost.",
+   "The bonus does not apply to Iron Crown ex's own attacks. Future attackers like Iron Leaves ex and Iron Thorns ex can use it. Its attack, Twin Shotels, does 50 damage to two of your opponent's Pokémon and ignores Weakness, Resistance and effects on them."
+  ],
+  "Iron Leaves ex": [
+   "Iron Leaves ex is a Basic Grass Pokémon ex with 220 HP. When you play it from your hand to your Bench, its Rapid Vernier Ability can swap it into the Active Spot and move any amount of Energy from your other Pokémon onto it. Clefairy Ogerpon plays one copy in every top list.",
+   "That lets it attack the turn it comes down. Its attack, Prism Edge, does 180 for two Grass and one Colorless Energy, but it can't attack on your next turn. The Ability only triggers when played from your hand. Basic Box plays it in 85% of top lists."
+  ],
+  "Iron Thorns ex": [
+   "Iron Thorns ex is a Basic Lightning Pokémon ex with 230 HP. While it is your Active Pokémon, its Initialization Ability turns off the Abilities of every Pokémon with a Rule Box, on both sides, except Future Pokémon. The Iron Thorns deck plays 4 copies in every top list.",
+   "It also shuts off your own non-Future Rule Box Pokémon, such as Fezandipiti ex. Its attack, Volt Cyclone, does 140 and moves an Energy from it to one of your Benched Pokémon. It has a Retreat Cost of four. Mega Rayquaza plays one copy in 67% of top lists."
+  ],
+  "Jamming Tower": [
+   "Jamming Tower is a Stadium that makes every Pokémon Tool in play have no effect, on both sides. Decks play it to turn off Tools that boost HP or damage on the other side. Talonflame Dusknoir plays it in 86% of top lists and Lopunny Dusknoir in 79%, usually 2 copies.",
+   "It also switches off your own Tools, so it suits decks that run few of them. Hero's Cape is one Tool it would shut down. Like any Stadium, it is discarded when another Stadium comes into play. Dragapult Dusknoir plays one copy in 67% of lists."
+  ],
+  "Janine's Secret Art": [
+   "Janine's Secret Art is a Supporter that picks up to 2 of your Darkness Pokémon and attaches a Basic Darkness Energy from your deck to each. It puts two Energy into play from one card. Mega Darkrai plays it in 92% of top lists and Mega Absol Box in 86%.",
+   "If one of the Energy goes on your Active Pokémon, that Pokémon is now Poisoned, so you can avoid that by choosing Benched Pokémon. It only works on Darkness Pokémon with Basic Darkness Energy. Mega Absol Box usually runs 4 copies, Mega Darkrai and Toxtricity 3."
+  ],
+  "Judge": [
+   "Judge is a Supporter that has both players shuffle their hands into their decks and draw 4 cards. It cuts an opponent's large hand down to 4 random cards while giving you a new hand. Sharpedo Toxtricity plays it in 97% of top lists, usually 3 copies.",
+   "You also end up with 4 cards, so it helps most when your hand is small or poor. Lucario Hariyama and Mega Rayquaza play it in 95% of lists, usually 2, while Dragapult decks often play one. It uses your Supporter for the turn."
+  ],
+  "Jumbo Ice Cream": [
+   "Jumbo Ice Cream is an Item that heals 80 damage from your Active Pokémon, as long as that Pokémon has 3 or more Energy attached. It helps big attackers survive another turn. Crustle and Kangaskhan Bouffalant play 4 copies in every top list.",
+   "It only heals the Active Pokémon, and only one with at least 3 Energy, so it does nothing for lightly powered Pokémon. Absol Audino, Mega Excadrill and Iron Thorns usually play 2 copies. Since it is an Item, you can play more than one in a turn."
+  ],
+  "Kadabra": [
+   "Kadabra is a Stage 1 Psychic Pokémon that evolves from Abra and into Alakazam. When you evolve into it from your hand, its Psychic Draw Ability draws you 2 cards. Alakazam Dusknoir and Alakazam Dudunsparce play 4 copies in every top list, both to reach Alakazam and for the draw.",
+   "The draw only happens at the moment you evolve from your hand, so a Kadabra already in play gives no more cards. It has just 80 HP and a small attack, Super Psy Bolt, for 30 damage with one Psychic Energy, so it rarely stays in play long."
+  ],
+  "Kieran": [
+   "Kieran is a Supporter that gives you a choice of two effects. You can switch your Active Pokémon with one of your Benched Pokémon, or you can have your attacks this turn do 30 more damage to your opponent's Active Pokémon ex or Active Pokémon V.",
+   "Most decks that play it run a single copy, as in Festival Lead (95% of top lists) and Ethan's Typhlosion (84%). Hop's Trevenant and Steven's Metagross usually play 2. Because it uses your Supporter for the turn, plan your draw before you play it, and pick the bonus only when the extra 30 changes a Knock Out."
+  ],
+  "Koraidon ex": [
+   "Koraidon ex is a Basic Fighting attacker with 230 HP. Orichalcum Fang costs two Energy and does 50, or 170 if one of your Pokémon was Knocked Out by an attack during your opponent's last turn. Impact Blow does a flat 200 for three Energy, but you can't use it again on your next turn.",
+   "As a Tera Pokémon, it takes no damage from attacks while it sits on your Bench, so it can wait there safely until you need a strong answer after losing a Pokémon. It still gives up 2 Prize cards when Knocked Out. Basic Box plays it in about two thirds of top lists, usually as 1 copy."
+  ],
+  "Kyurem": [
+   "Kyurem is a Basic Dragon Pokémon whose attack, Trifrost, does 110 damage to 3 of your opponent's Pokémon at once and then discards all Energy from Kyurem. Normally Trifrost costs five Energy, which is a lot to build.",
+   "Its Ability, Plasma Bane, drops that cost to a single Colorless Energy as long as your opponent has a card with Colress in the name in their discard pile. The only deck that plays it is Slowking, in every top list and usually 2 copies, where Trifrost is the attack the deck usually copies."
+  ],
+  "Lana's Aid": [
+   "Lana's Aid is a Supporter that takes up to 3 cards back from your discard pile into your hand. They can be any mix of Basic Energy cards and Pokémon without a Rule Box, so Pokémon ex and other Rule Box Pokémon can't come back with it.",
+   "Decks play it as a single copy to recover pieces they lost earlier in the game. It shows up in nearly every top list of Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple and Mega Chandelure. Because it is your Supporter for the turn, it works best when you already have a way to draw."
+  ],
+  "Latias ex": [
+   "Latias ex is a Basic Psychic Pokémon whose Ability, Skyliner, gives all of your Basic Pokémon in play no Retreat Cost. That lets you move a Basic out of the Active Spot for free and bring up a different attacker in the same turn.",
+   "It appears in every top list of Mega Rayquaza, Basic Box, Slowking and Absol Audino. In Mega Rayquaza, a Basic like Mega Kangaskhan ex can draw from the Active Spot and then retreat for free so Rayquaza can attack. Latias ex can also attack with Eon Blade for 200, but then it can't attack on your next turn."
+  ],
+  "Legacy Energy": [
+   "Legacy Energy is an ACE SPEC Special Energy that counts as every type of Energy, one at a time. If the Pokémon it is attached to is Knocked Out by damage from your opponent's attack, your opponent takes 1 fewer Prize card. That Prize effect only works once per game.",
+   "Since it is an ACE SPEC, it is the only ACE SPEC your deck can include. Decks play it to slow the Prize race by one card, which is why it is in almost every top list of Okidogi Barbaracle (98%) and Dhelmise (92%). Put it on a Pokémon your opponent is likely to Knock Out early to get the most from it."
+  ],
+  "Legendary Pyroduct": [
+   "Legendary Pyroduct is a Stadium that turns off the Abilities of every Evolution Pokémon in play, yours and your opponent's. Basic Pokémon keep their Abilities.",
+   "Two decks play it as 4 copies: Mega Rayquaza (94% of top lists) and Iron Thorns (100%). In Mega Rayquaza, the key Pokémon are Basic, including Mega Rayquaza ex, Mega Kangaskhan ex and Latias ex, so their Abilities keep working while your opponent's Evolution Pokémon lose theirs. Your opponent can remove it by playing a different Stadium."
+  ],
+  "Lillie's Clefairy ex": [
+   "Lillie's Clefairy ex is a Basic Psychic Pokémon. Its Ability, Fairy Zone, changes the Weakness of each of your opponent's Dragon Pokémon in play to Psychic, so your Psychic attacks do double damage to them. Its attack, Full Moon Rondo, does 20 plus 20 more for each Benched Pokémon on both sides.",
+   "Many decks play it mainly for Fairy Zone, including every top list of Basic Box, Hop's Trevenant and Dhelmise. It gives up 2 Prize cards when Knocked Out, but as a Lillie's Pokémon it can hold Lillie's Pearl, which makes your opponent take 1 fewer."
+  ],
+  "Lillie's Determination": [
+   "Lillie's Determination is a draw Supporter. You shuffle your hand into your deck and draw 6 cards, or 8 cards if you still have exactly 6 Prize cards left.",
+   "The 8 card draw usually happens early, before you have taken any Prize cards, which is when you need the most cards to set up. It is a core draw card for many decks: Dragapult Blaziken, Sharpedo Toxtricity, Lucario Hariyama, Dragapult and Cynthia's Garchomp run it in every top list, usually 4 copies. Play your useful Items first, since the rest of your hand goes back into your deck."
+  ],
+  "Lillie's Pearl": [
+   "Lillie's Pearl is a Pokémon Tool for Lillie's Pokémon. If the Lillie's Pokémon holding it is Knocked Out by damage from your opponent's attack, your opponent takes 1 fewer Prize card.",
+   "It only helps Pokémon with Lillie's in their name, such as Lillie's Clefairy ex, which would give up 1 Prize card instead of 2 with it attached. Lillie's Clefairy and Clefairy Ogerpon play it in every top list, usually 2 copies, and Alakazam Dudunsparce runs 3 in most lists. Each Pokémon can hold only one Tool, so it competes with other Tools for that spot."
+  ],
+  "Lucky Helmet": [
+   "Lucky Helmet is a Pokémon Tool that draws you 2 cards when the Pokémon holding it is in the Active Spot and takes damage from your opponent's attack. It still draws even if that Pokémon is Knocked Out.",
+   "Decks use it to turn a hit on their Active Pokémon into extra cards for the next turn. It only works in the Active Spot, so put it on a Pokémon you expect to sit there and take attacks. Slowking plays 1 in most top lists, and Mega Lucario usually runs 3 in about a quarter of its lists."
+  ],
+  "Lumiose City": [
+   "Lumiose City is a Stadium that lets each player, once during their turn, search their deck for a Basic Pokémon and put it onto their Bench. The catch is that using it ends your turn right away.",
+   "Because it ends your turn, it is most useful when you have nothing else to do, such as a slow start, or after you have already done everything else you need. Both players can use it while it is in play. Mega Dragonite plays it in every top list, usually 2, and Kangaskhan Bouffalant usually runs 3 when it plays it."
+  ],
+  "Lunatone": [
+   "Lunatone is a Basic Fighting Pokémon played for its Ability, Lunar Cycle. Once during your turn, if you have Solrock in play, you can discard a Basic Fighting Energy card from your hand to draw 3 cards. Only one Lunar Cycle can be used each turn, so a second Lunatone adds no extra draw.",
+   "You need Solrock in play for it to work. Lucario Hariyama, Okidogi Barbaracle, Mega Lucario and Ceruledge all play it in every top list, usually 2 copies. In Mega Lucario, the discarded Fighting Energy is not wasted, since Mega Lucario ex's Aura Jab can attach Basic Fighting Energy from your discard pile."
+  ],
+  "Makuhita": [
+   "Makuhita is a Basic Fighting Pokémon that evolves into Hariyama. Decks play it to get Hariyama into play.",
+   "Its own attacks are small: Corkscrew Punch does 10 for one Fighting Energy and Confront does 30 for two, so it is not meant to attack for long. With 80 HP, it is easy to Knock Out while it waits on your Bench. Lucario Hariyama plays it in every top list, usually 2 copies."
+  ],
+  "Mega Excadrill ex": [
+   "Mega Excadrill ex is a Stage 1 Metal attacker that evolves from Drilbur and has 340 HP. Undermine does 90 for two Metal Energy and discards the top 2 cards of your opponent's deck. Maximum Drilling does 200 for three Metal Energy, or 330 if it has at least 2 extra Energy attached.",
+   "It needs five Energy for the full 330, so decks pair it with ways to attach Energy quickly. The Mega Excadrill deck plays 4 Metang, whose Metal Maker Ability attaches Metal Energy from the top of your deck. With a Retreat Cost of 4, it is hard to move once Active, and it gives up 3 Prize cards when Knocked Out."
+  ],
+  "Mega Kangaskhan ex": [
+   "Mega Kangaskhan ex is a Basic Colorless Pokémon with 300 HP. Its Ability, Run Errand, draws you 2 cards once during your turn while it is in the Active Spot. Its attack, Rapid-Fire Combo, does 200 for three Colorless Energy, plus 50 for each heads before you flip tails.",
+   "Decks use it as steady draw from the Active Spot, then attack with it or retreat. Its Retreat Cost of 3 is high, which is why Mega Rayquaza pairs it with Latias ex, whose Skyliner gives Basic Pokémon no Retreat Cost. It gives up 3 Prize cards when Knocked Out. Mega Rayquaza, Basic Box and Crustle usually run 4."
+  ],
+  "Mega Lopunny ex": [
+   "Mega Lopunny ex is a Stage 1 Colorless attacker that evolves from Buneary and has 330 HP. Gale Thrust costs one Colorless Energy and does 60, or 230 if Mega Lopunny ex moved from your Bench to the Active Spot this turn. Spiky Hopper does 160 for two Energy and ignores any effects on your opponent's Active Pokémon.",
+   "To get the full Gale Thrust, you need to move it up from the Bench that turn, for example by retreating your Active Pokémon or with a switching card. Spiky Hopper is the backup when it is already Active. It gives up 3 Prize cards when Knocked Out. Lopunny Dusknoir, Lopunny Dudunsparce and Mega Lopunny play it in every top list."
+  ],
+  "Mega Lucario ex": [
+   "Mega Lucario ex is a Stage 1 Fighting attacker that evolves from Riolu and has 340 HP. Aura Jab does 130 for one Fighting Energy and attaches up to 3 Basic Fighting Energy from your discard pile to your Benched Pokémon. Mega Brave does 270 for two Fighting Energy, but you can't use it again on your next turn.",
+   "Aura Jab powers up your Bench while it attacks, which sets up the next attacker. It pairs with Lunatone, whose Lunar Cycle discards a Basic Fighting Energy that Aura Jab can then bring back. It gives up 3 Prize cards when Knocked Out. Lucario Hariyama and Mega Lucario both play it in every top list, usually 3."
+  ],
+  "Mega Rayquaza ex": [
+   "Mega Rayquaza ex is a Basic Colorless attacker with 280 HP. Storm Emerald does 50 damage for each Fire Energy and each Lightning Energy attached to all of your Pokémon, so it grows as you add those Energy anywhere on your side. Its Ability, Ruler's Roar, looks at your top 4 cards when you bench it from your hand and attaches a Basic Energy found there.",
+   "Storm Emerald needs a Fire, a Lightning and one more Energy on Mega Rayquaza ex itself, and Ruler's Roar can give it one of those for free. It gives up 3 Prize cards when Knocked Out. The Mega Rayquaza deck plays it in every top list, usually 2 copies."
+  ],
+  "Mega Sharpedo ex": [
+   "Mega Sharpedo ex is a Stage 1 Darkness attacker that evolves from Carvanha and has 330 HP. Greedy Fang does 70 for one Darkness Energy and draws 2 cards. Hungry Jaws does 120 for two Darkness Energy, or 270 if Mega Sharpedo ex has any damage counters on it.",
+   "Its big damage comes after it has been hit, so its 330 HP matters: it can take an attack and then answer with 270. It has no Retreat Cost, which makes it easy to swap in and out. It gives up 3 Prize cards when Knocked Out. Sharpedo Toxtricity plays it in every top list, usually 3."
+  ],
+  "Mega Skarmory ex": [
+   "Mega Skarmory ex is a Basic Metal Pokémon with 260 HP. Its attack, Sonic Ripper, does 220 damage to any one of your opponent's Pokémon, including a Benched one, and then shuffles all Energy on Mega Skarmory ex back into your deck.",
+   "Decks play one copy to reach a Pokémon on the Bench that would otherwise be hard to hit. Since it loses its Energy after attacking, it needs a fresh three Energy each time. The Mega Excadrill and Steven's Metagross decks each play it in most top lists. It has no Retreat Cost, and it gives up 3 Prize cards when Knocked Out."
+  ],
+  "Meganium": [
+   "Meganium is a Stage 2 Grass Pokémon that evolves from Bayleef. Its Ability, Wild Growth, makes every Basic Grass Energy attached to your Pokémon count as two Grass Energy. A second Meganium doesn't double it again.",
+   "Decks play it to pay big Grass attack costs with half the Energy cards. It is in every top list of Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple and Ogerpon Meganium, usually 2 copies. Meganium can attack too, with Solar Beam for 140, but it is mostly kept on the Bench so Wild Growth keeps working."
+  ],
+  "Meowth ex": [
+   "Meowth ex is a Basic Colorless Pokémon played for its Ability, Last-Ditch Catch. When you play it from your hand onto your Bench, you can search your deck for any Supporter card and put it into your hand.",
+   "Decks use it to find the right Supporter at the right time. Its attack, Tuck Tail, returns it and its attached cards to your hand, so you can play it again later to search once more. It gives up 2 Prize cards when Knocked Out, so the Bench is a risky place for it. Most decks run 1, and Mega Rayquaza usually plays 2."
+  ],
+  "Metagross": [
+   "Metagross is a Stage 2 Metal Pokémon that evolves from Metang. Bounce Back does 60 for one Metal Energy and forces your opponent's Active Pokémon to the Bench, with your opponent choosing the replacement. Metallic Hammer does 150 for four Energy, or 300 if you discard 3 Metal Energy from Metagross.",
+   "The 300 damage option costs a lot of Energy, so it pairs with Metang's Metal Maker, which attaches Basic Metal Energy from your top 4 cards each turn. Slowking plays it in every top list, usually 2, and Mega Excadrill runs 1 in every top list."
+  ],
+  "Metang": [
+   "Metang is a Stage 1 Metal Pokémon that evolves from Beldum and into Metagross. Its Ability, Metal Maker, lets you look at your top 4 cards once during your turn and attach any Basic Metal Energy you find there to your Pokémon.",
+   "Decks play it for that steady Energy, even when they never evolve it further. Mega Excadrill and Cinccino both usually run 4 copies, and Mega Excadrill uses it to load the five Energy that Maximum Drilling needs for full damage. Each Metang has its own Metal Maker, so having more than one in play gives you more looks."
+  ],
+  "Mist Energy": [
+   "Mist Energy is a Special Energy that provides one Colorless Energy. It also prevents all effects of your opponent's attacks on the Pokémon it is attached to. Damage still gets through, since damage is not an effect, and effects already in place stay.",
+   "Decks play it to block the extra effects your opponent's attacks would put on that Pokémon. It is a full set in many decks: Hop's Trevenant, Crustle, Lopunny Dudunsparce, Kangaskhan Bouffalant and others usually run 4. It fits best on attackers that only need Colorless Energy."
+  ],
+  "Moltres": [
+   "Moltres is a Basic Fire Pokémon with a cheap attack. Fighting Wings costs one Fire Energy and does 20, or 110 if your opponent's Active Pokémon is a Pokémon ex.",
+   "Decks run a single copy as a low-cost answer to Pokémon ex, since 110 damage for one Energy can finish a damaged ex or add up over turns. Okidogi Barbaracle plays it in most top lists, and several other decks, such as Dragapult Dusknoir and Lillie's Clefairy, use it in part of theirs."
+  ],
+  "Munkidori": [
+   "Munkidori is a Basic Psychic Pokémon played for its Ability, Adrena-Brain. Once during your turn, if it has any Darkness Energy attached, you can move up to 3 damage counters from one of your Pokémon to one of your opponent's Pokémon.",
+   "That does two jobs: it heals your Pokémon and adds 30 damage to your opponent's side, which can finish off Pokémon left damaged by spread attacks. It needs Darkness Energy attached to work. Dragapult Blaziken, Sharpedo Toxtricity, Dragapult and Dragapult Dudunsparce usually run 2, and Grimmsnarl Froslass usually plays 4."
+  ],
+  "N's Castle": [
+   "N's Castle is a Stadium that gives every N's Pokémon in play no Retreat Cost. It applies to both players' N's Pokémon.",
+   "Decks built around N's Pokémon play it so they can move between Active and Bench for free each turn. N's Zoroark plays it in most top lists, usually 2 copies. Like any Stadium, it stays until a different Stadium replaces it, so your opponent can remove it with one of their own."
+  ],
+  "N's PP Up": [
+   "N's PP Up is an Item that takes a Basic Energy card from your discard pile and attaches it to one of your Benched N's Pokémon.",
+   "Since it is an Item, you can play several in one turn, which helps power up attackers on the Bench quickly. It only works on Benched Pokémon with N's in the name, and it needs Basic Energy already in your discard pile. N's Zoroark plays it in every top list, usually 3 copies."
+  ],
+  "N's Reshiram": [
+   "N's Reshiram is a Basic Dragon Pokémon with 130 HP and two attacks. Powerful Rage costs one Fire and one Lightning Energy and does 20 damage for each damage counter already on it, so it hits harder the more it has been hurt. Virtuous Flame costs four Energy and does a flat 170 damage.",
+   "N's Zoroark lists play it in 80% of top lists, usually as a single copy. Sitting on your Bench as an N's Pokémon, it gives N's Zoroark ex more attacks to choose from with Night Joker."
+  ],
+  "N's Zekrom": [
+   "N's Zekrom is a Basic Dragon Pokémon with 130 HP. Shred does 70 damage for three Colorless Energy, and that damage ignores any effects on your opponent's Active Pokémon. Rampaging Thunder does 250 damage, but this Pokémon can't attack during your next turn.",
+   "Every N's Zoroark top list plays it, usually two copies. Those lists keep it on the Bench so N's Zoroark ex can copy its attacks with Night Joker, and Rampaging Thunder is the attack they copy most. If Zekrom uses Rampaging Thunder itself, plan for a turn without its attacks."
+  ],
+  "N's Zoroark ex": [
+   "N's Zoroark ex is a Stage 1 Darkness Pokémon with 280 HP that evolves from N's Zorua. Its Trade Ability lets you discard a card from your hand to draw 2 cards, once during your turn. Its attack, Night Joker, costs two Darkness Energy and uses one of the attacks of an N's Pokémon on your Bench.",
+   "Every N's Zoroark top list plays it, usually four copies. Night Joker does nothing on its own, so the deck keeps N's Pokémon such as N's Zekrom on the Bench to copy. As a Pokémon ex it gives up two Prize cards when Knocked Out, and it is weak to Grass."
+  ],
+  "N's Zorua": [
+   "N's Zorua is a Basic Darkness Pokémon with 70 HP that evolves into N's Zoroark ex. Decks play it to get there. Its only attack, Scratch, does 20 damage for one Darkness Energy.",
+   "Every N's Zoroark top list plays it, usually four copies, the same count as N's Zoroark ex. With 70 HP it is easy to Knock Out, so get it onto your Bench early and evolve it on a later turn rather than leaving it in the Active Spot."
+  ],
+  "Neo Upper Energy": [
+   "Neo Upper Energy is an ACE SPEC Special Energy. On most Pokémon it gives one Colorless Energy. On a Stage 2 Pokémon it gives 2 Energy at once, and those can be any type, which helps pay for big attacks with mixed costs.",
+   "You can only run one ACE SPEC card in your deck, so playing it means giving up any other ACE SPEC. It shows up as a single copy in 82% of Mega Greninja top lists, 63% of Cynthia's Garchomp lists, 52% of Mega Chandelure lists and 44% of Talonflame Dusknoir lists."
+  ],
+  "Night Stretcher": [
+   "Night Stretcher is an Item that takes one card from your discard pile and puts it into your hand. You choose either a Pokémon or a Basic Energy card, so it can bring back a Knocked Out attacker or the Energy you need this turn.",
+   "It gets back only one card, so pick the one that matters most right now. Dragapult plays it in every top list, usually three copies. Dragapult Blaziken, Dragapult Dusknoir, Alakazam Dusknoir and Grimmsnarl Froslass play two in every top list, and Sharpedo Toxtricity plays one in 94% of lists."
+  ],
+  "Pecharunt ex": [
+   "Pecharunt ex is a Basic Darkness Pokémon ex with 190 HP. Its Subjugating Chains Ability lets you switch one of your Benched Darkness Pokémon, other than a Pecharunt ex, into the Active Spot once during your turn. The new Active Pokémon becomes Poisoned. Its attack, Irritated Outburst, does 60 damage for each Prize card your opponent has taken.",
+   "Only one Subjugating Chains can be used each turn, so extra copies do not give extra switches. Sharpedo Toxtricity plays three in 99% of top lists. N's Zoroark plays one in 94% of lists, where the Poison turns on Binding Mochi. As a Pokémon ex it gives up two Prize cards."
+  ],
+  "Poké Pad": [
+   "Poké Pad is an Item that searches your deck for any Pokémon without a Rule Box and puts it into your hand. That covers most evolution pieces and support Pokémon, but not Pokémon ex or other Rule Box Pokémon.",
+   "Decks that run it almost always play four. It is in every top list of Dragapult Blaziken, Sharpedo Toxtricity and Alakazam Dusknoir, and in 98% or more of Dragapult Dusknoir, Lucario Hariyama and Dragapult lists. The card goes to your hand, not the Bench, so you still need to play it down afterward."
+  ],
+  "Pokégear 3.0": [
+   "Pokégear 3.0 is an Item that looks at the top 7 cards of your deck. If there is a Supporter among them, you may put it into your hand, and the rest go back into your deck. It works as a way to find the Supporter you need this turn.",
+   "It can miss if no Supporter is in those 7 cards. Absol Audino plays four in 96% of top lists, and Crustle and Mega Starmie usually play three. Hop's Trevenant and Okidogi Barbaracle play two in over 90% of lists, and Cynthia's Garchomp in half of them."
+  ],
+  "Poltchageist": [
+   "Poltchageist is a Basic Grass Pokémon with 30 HP that evolves into Sinistcha. Decks play it to get there. Its Hide 'n' Sneak Ability stops the effects of your opponent's attacks and Abilities on it, though damage still applies. Furtive Drop places 1 damage counter on your opponent's Active Pokémon for one Colorless Energy.",
+   "Dhelmise plays four in every top list, and Igglybuff plays four in 83% of lists. Sinistcha's Matcha Spin needs 6 or more Pokémon with Hide 'n' Sneak in your discard pile, and Poltchageist counts toward that."
+  ],
+  "Premium Power Pro": [
+   "Premium Power Pro is an Item that makes your Fighting Pokémon's attacks do 30 more damage to your opponent's Active Pokémon for the rest of the turn. Decks use it to reach Knock Outs that their attacks would fall just short of.",
+   "The extra 30 is added before Weakness and Resistance, and it only boosts damage to the Active Pokémon, not the Bench. Lucario Hariyama and Mega Lucario play four in every top list. Cynthia's Garchomp plays two in 81% of lists, and Okidogi Barbaracle and Mega Zygarde sometimes run one."
+  ],
+  "Prime Catcher": [
+   "Prime Catcher is an ACE SPEC Item. It brings one of your opponent's Benched Pokémon into their Active Spot, and then you switch your own Active Pokémon with one of your Benched Pokémon. That lets you pick the target and your attacker in one card.",
+   "You only get your own switch if the first part happens, so your opponent needs a Benched Pokémon. As an ACE SPEC it takes your deck's only ACE SPEC slot. Alakazam Dusknoir plays it in 96% of top lists and Mew Box in 85%, and several other decks run it in about a third to just over half of their lists."
+  ],
+  "Prism Tower": [
+   "Prism Tower is a Stadium. Once during each player's turn, that player may discard 2 cards from their hand to draw 1 card. It turns cards you can't use into a fresh draw and puts cards in your discard pile.",
+   "Your opponent can use it too while it stays in play, and each use leaves you one card down in hand. Dhelmise plays three in every top list, and Rocket's Spidops plays one in every list. Ceruledge, Rocket's Mewtwo and Crustle run one in about half of their lists."
+  ],
+  "Psyduck": [
+   "Psyduck is a Basic Water Pokémon with 70 HP. Its Damp Ability turns off any Ability that requires the Pokémon using it to Knock Out itself, for every Pokémon in play on both sides. Decks play it to shut down those Abilities on the other side of the table.",
+   "Damp works only while Psyduck is in play, and it also affects your own Pokémon, so check your deck has no such Ability. Absol Audino runs one in 94% of top lists, Seaking Festival Lead in 75% and Festival Lead in 58%. Mega Chandelure, Lopunny Dudunsparce and Grimmsnarl Froslass run one in 27% to 38% of lists."
+  ],
+  "Rabsca": [
+   "Rabsca is a Stage 1 Grass Pokémon with 70 HP that evolves from Rellor. Its Spherical Shield Ability prevents all damage from and effects of your opponent's attacks on your Benched Pokémon. Its attack, Psychic, does 10 damage plus 30 more for each Energy on your opponent's Active Pokémon.",
+   "The shield covers attacks only, not Abilities, and it does not protect your Active Pokémon. Festival Lead plays one in 87% of top lists, and Seaking Festival Lead in 49%. With only 70 HP and a Fire Weakness, it is safest kept on the Bench."
+  ],
+  "Raging Bolt ex": [
+   "Raging Bolt ex is a Basic Dragon Pokémon ex with 240 HP. Burst Roar costs one Colorless Energy and lets you discard your hand and draw 6 cards. Bellowing Thunder costs one Lightning and one Fighting Energy, and does 70 damage for each Basic Energy you choose to discard from your Pokémon.",
+   "Bellowing Thunder can hit very hard, but the Energy you discard is gone from the board, so you need to attach more for the next attack. Raging Bolt Ogerpon plays two in every top list, and Basic Box plays one in 92%. It gives up two Prize cards and has a Retreat Cost of 3."
+  ],
+  "Rellor": [
+   "Rellor is a Basic Grass Pokémon with 50 HP that evolves into Rabsca. Decks play it to get there. Its attack, Slight Intrusion, does 30 damage for one Colorless Energy but also does 10 damage to Rellor itself.",
+   "Festival Lead plays one in 87% of top lists, and Seaking Festival Lead in 49%, matching the single Rabsca. With only one copy and 50 HP, losing it early means no Rabsca, so keep it out of the Active Spot when you can."
+  ],
+  "Riolu": [
+   "Riolu is a Basic Fighting Pokémon with 80 HP that evolves into Mega Lucario ex. Decks play it to get there. Its attack, Accelerating Stab, does 30 damage for one Fighting Energy, but Riolu can't use it again during your next turn.",
+   "Mega Lucario plays four in every top list, and Lucario Hariyama plays three in every list. Accelerating Stab is a cheap early attack while you set up, though it can't be used two turns in a row. Riolu is weak to Psychic and has a Retreat Cost of 2."
+  ],
+  "Risky Ruins": [
+   "Risky Ruins is a Stadium. Whenever a player puts a Basic Pokémon that isn't Darkness type onto their Bench during their turn, 2 damage counters go on it. Decks use it to soften your opponent's new Pokémon before they can evolve or attack.",
+   "It hits your own Basics too, unless they are Darkness type. Dragapult Dudunsparce plays two in 98% of top lists, where the counters add to the spread. Dragapult plays two in 90% and Starmie Froslass in 85%. Mega Golisopod usually runs three."
+  ],
+  "Rocky Fighting Energy": [
+   "Rocky Fighting Energy is a Special Energy that provides Fighting Energy. While it is attached to a Fighting Pokémon, it prevents all effects of your opponent's attacks on that Pokémon. Damage still applies, and effects already in place stay.",
+   "The protection only works on Fighting Pokémon and only against attacks, not Abilities. Cynthia's Garchomp plays four in 96% of top lists. Mega Zygarde and Mega Lucario usually play two in over 85% of lists, and Lucario Hariyama plays two in half of its lists."
+  ],
+  "Rosa's Encouragement": [
+   "Rosa's Encouragement is a Supporter that attaches up to 2 Basic Energy cards from your discard pile to one of your Stage 2 Pokémon. Decks use it to power up a fresh attacker in one turn.",
+   "You can only play it when you have more Prize cards remaining than your opponent, so it is a card for when you are behind. It also needs Basic Energy already in your discard pile. Dragapult Dudunsparce, Dragapult and Dragapult Dusknoir each run one copy in most top lists, where it refuels a new Dragapult ex."
+  ],
+  "Sacred Ash": [
+   "Sacred Ash is an Item that shuffles up to 5 Pokémon from your discard pile back into your deck. It refills your deck with Pokémon you have lost so you can find and play them again.",
+   "The Pokémon go into your deck, not your hand, so you still need draw or search cards to get them out. Decks run one copy. It appears in over 90% of Alakazam Dudunsparce and Alakazam Dusknoir top lists, 87% of Seaking Festival Lead lists, and 62% to 77% of Beedrill, Ethan's Typhlosion and Toucannon lists."
+  ],
+  "Salvatore": [
+   "Salvatore is a Supporter that searches your deck for an Evolution card with no Abilities and puts it straight onto the matching Pokémon. It works even on a Pokémon you put down during setup or one that came into play this turn, so you can evolve without waiting a turn.",
+   "The Evolution card must have no Abilities, so check which Pokémon in your deck qualify. It uses your Supporter for the turn. Mega Starmie plays four in 81% of top lists, and Starmie Dusknoir plays two in 65%. Starmie Froslass and Lopunny Dusknoir usually run one."
+  ],
+  "Seaking": [
+   "Seaking is a Stage 1 Water Pokémon with 110 HP that evolves from Goldeen. Its Festival Lead Ability lets it use an attack twice if Festival Grounds is in play. If the first attack Knocks Out your opponent's Active Pokémon, you may attack again after they choose a new one. Rapid Draw does 60 damage and draws 2 cards for one Colorless Energy.",
+   "With Festival Grounds out, Rapid Draw can do 60 twice and draw 2 each time. Without it, Seaking attacks only once. Seaking Festival Lead plays three in every top list, and Festival Lead plays one in every list."
+  ],
+  "Secret Box": [
+   "Secret Box is an ACE SPEC Item. You discard 3 other cards from your hand, then search your deck for one Item, one Pokémon Tool, one Supporter and one Stadium and put them into your hand. It gathers a full turn's worth of Trainer cards at once.",
+   "You need 3 other cards in hand to play it, and it takes your deck's only ACE SPEC slot. Hop's Trevenant plays it in every top list. Seaking Festival Lead, Grimmsnarl Froslass, Slowking and Ethan's Typhlosion run it in 77% to 89% of lists, and Lucario Hariyama in 28%."
+  ],
+  "Shaymin": [
+   "Shaymin is a Basic Grass Pokémon with 80 HP. Its Flower Curtain Ability prevents all damage done by your opponent's attacks to your Benched Pokémon that don't have a Rule Box. Decks play it to keep their support Pokémon and future attackers safe on the Bench.",
+   "It does not protect your Active Pokémon or any Pokémon ex or other Rule Box Pokémon. Decks run a single copy. It is in every Ethan's Typhlosion top list, 98% of Hop's Trevenant lists and 93% of Alakazam Dusknoir lists, and in a third to two thirds of several other decks."
+  ],
+  "Shuppet": [
+   "Shuppet is a Basic Psychic Pokémon with 50 HP that evolves into Banette. Decks play it to get there. Its Hide 'n' Sneak Ability stops the effects of your opponent's attacks and Abilities on it, though damage still applies. Hang Down does 10 damage for one Psychic Energy.",
+   "Dhelmise plays four in every top list, and Mega Chandelure runs one in 29%. Dhelmise lists also play Sinistcha, whose Matcha Spin needs 6 or more Pokémon with Hide 'n' Sneak in your discard pile, and Shuppet counts toward that."
+  ],
+  "Sinistcha": [
+   "Sinistcha is a Stage 1 Grass Pokémon with 60 HP that evolves from Poltchageist. It has the Hide 'n' Sneak Ability, which stops the effects of your opponent's attacks and Abilities on it. Its attack, Matcha Spin, costs one Colorless Energy and places 4 damage counters on each of your opponent's Pokémon once you have 6 or more Pokémon with Hide 'n' Sneak in your discard pile.",
+   "Dhelmise plays two in every top list, along with four Poltchageist and four Shuppet, which both have Hide 'n' Sneak. Until 6 of them are in the discard pile, Matcha Spin does nothing."
+  ],
+  "Slowking": [
+   "Slowking is a Stage 1 Psychic Pokémon with 120 HP that evolves from Slowpoke. Seek Inspiration discards the top card of your deck. If that card is a Pokémon without a Rule Box, you choose one of its attacks and use it. Super Psy Bolt does a flat 120 damage for three Energy.",
+   "Seek Inspiration depends on what is on top of your deck, and it does nothing if the card is not a qualifying Pokémon. Super Psy Bolt is the steady backup. The Slowking deck plays three in every top list. Its Retreat Cost of 3 makes it slow to move out of the Active Spot."
+  ],
+  "Slowpoke": [
+   "Slowpoke is a Basic Psychic Pokémon with 80 HP that evolves into Slowking. Decks play it to get there. Dangle Tail costs one Colorless Energy and puts a Pokémon from your discard pile into your hand, and Tackle does 30 damage.",
+   "The Slowking deck plays four in every top list. Slowking's Seek Inspiration discards cards from the top of your deck, so Dangle Tail can bring back a Pokémon that ended up in the discard pile that way."
+  ],
+  "Solrock": [
+   "Solrock is a Basic Fighting Pokémon with one attack, Cosmic Beam. For a single Fighting Energy it does 70 damage, and Weakness and Resistance don't change that number. The catch is that the attack does nothing unless you have Lunatone on your Bench.",
+   "Every top list for Lucario Hariyama, Okidogi Barbaracle, Mega Lucario and Ceruledge plays it, usually two or three copies. RdyDeck's Mega Lucario guide notes that Solrock also turns on Lunar Cycle, so plan to have Lunatone on the Bench beside it. Its Retreat Cost of 1 keeps it easy to move."
+  ],
+  "Special Red Card": [
+   "Special Red Card is an Item that disrupts your opponent's hand late in the game. Your opponent shuffles their hand, puts it on the bottom of their deck, and draws 3 new cards. A big hand they built up is gone, and they are left with 3 cards to work with.",
+   "You can play it only once your opponent has 3 or fewer Prize cards left, so it waits in your hand early on. If their hand is empty, they draw nothing. Most decks run a single copy, including Dragapult Dusknoir, Grimmsnarl Froslass, Mega Rayquaza and Lopunny Dusknoir. Alakazam Dusknoir plays it in every top list, usually 2."
+  ],
+  "Spiky Energy": [
+   "Spiky Energy is a Special Energy that counts as one Colorless Energy. When the Pokémon it is attached to is in the Active Spot and takes damage from your opponent's attack, the attacking Pokémon gets 2 damage counters, even if your Pokémon is Knocked Out.",
+   "That puts a cost on every attack into your Active Pokémon. It only works in the Active Spot and only against damage from attacks, so it does nothing on the Bench. Crustle plays it in nearly every top list and Toucannon in most, both usually 4 copies. Iron Thorns plays it less often, usually 2."
+  ],
+  "Strange Timepiece": [
+   "Strange Timepiece is an Item that devolves one of your own evolved Psychic Pokémon. You take any number of the Evolution cards stacked on it back into your hand, and the Pokémon underneath stays in play.",
+   "Getting those Evolution cards back lets you play them again on a later turn. The devolved Pokémon can't evolve again the same turn, so plan for the Evolution cards to wait a turn in your hand. It only works on Psychic Pokémon. Alakazam Dusknoir is the one deck that plays it, in 91% of top lists, usually 3 copies."
+  ],
+  "Switch": [
+   "Switch is an Item that swaps your Active Pokémon with one of your Benched Pokémon. You get the effect of retreating without paying any Retreat Cost, and since it is an Item you can play it in the same turn as your Supporter.",
+   "Decks use it to pull a damaged or trapped Pokémon out of the Active Spot, or to bring an attacker up. Lopunny Dusknoir leans on it most, usually 4 copies in nearly every top list. Mega Rayquaza usually plays 2, and Lucario Hariyama, Greninja, Cynthia's Garchomp and Hop's Trevenant usually play 1."
+  ],
+  "Talonflame ex": [
+   "Talonflame ex is a Stage 2 Pokémon ex that evolves from Fletchinder, but its Excited Dive Ability lets you skip that. Once during your turn, if you have a Colorless Mega Evolution Pokémon ex in play, you can put Talonflame ex from your hand straight onto your Bench.",
+   "Its attack, Talon Hunt, costs two Colorless Energy, does 150 damage and lets you search your deck for up to 2 cards. It has no Retreat Cost, and as a Pokémon ex it gives up 2 Prize cards when Knocked Out. Talonflame Dusknoir plays 4 and Mega Rayquaza plays 2 in every top list, and Basic Box usually plays 1."
+  ],
+  "Tapu Bulu": [
+   "Tapu Bulu is a Basic Grass Pokémon with one attack, Wood Hammer. It costs two Grass and two Colorless Energy and does 220 damage, then does 30 damage to Tapu Bulu itself.",
+   "The self-damage adds up across turns on its 140 HP, and its Retreat Cost of 3 makes it slow to move out of the Active Spot. It is also weak to Fire. Ogerpon Meganium Hydrapple is the one deck that plays it, as a single copy in about two thirds of its top lists."
+  ],
+  "Tasty Rice Ball": [
+   "Tasty Rice Ball is an Item that heals 30 damage from your Active Pokémon. It gets stronger as you use more of them: it heals 30 more for each other Tasty Rice Ball already in your discard pile.",
+   "So the first one heals 30, the second 60, the third 90 and the fourth 120. It only heals the Active Pokémon, so it does nothing for damage on your Bench. Crustle is the one deck that plays it, in 60% of top lists, and those lists usually run 4 copies to get the most from the growing heal."
+  ],
+  "Tatsugiri": [
+   "Tatsugiri is a Basic Dragon Pokémon played for its Attract Customers Ability. Once during your turn, while it is in the Active Spot, you look at the top 6 cards of your deck and take a Supporter from them into your hand. The rest are shuffled back in.",
+   "It only works from the Active Spot and can miss if no Supporter is in those 6 cards. Its Retreat Cost of 1 makes it easy to move after use, and its Surf attack does 50 for a Fire and a Water Energy. Sharpedo Toxtricity plays it in nearly every top list, usually 2, and Toucannon also usually plays 2. Mega Dragonite, Gengar, N's Zoroark and Grimmsnarl Froslass usually play 1."
+  ],
+  "Teal Mask Ogerpon ex": [
+   "Teal Mask Ogerpon ex is a Basic Grass Pokémon ex. Its Teal Dance Ability lets you attach a Basic Grass Energy from your hand to it once during your turn, and then draw a card. Its attack, Myriad Leaf Shower, does 30 plus 30 more for each Energy on both Active Pokémon, so it hits harder as Energy builds up.",
+   "As a Tera Pokémon it takes no damage from attacks while on your Bench, but it gives up 2 Prize cards when Knocked Out. Every top list of its six decks plays it. Ogerpon Meganium Arboliva, Ogerpon Meganium Hydrapple and Mega Venusaur usually run 4, Raging Bolt Ogerpon 3, and Basic Box and Clefairy Ogerpon 2."
+  ],
+  "Team Rocket's Factory": [
+   "Team Rocket's Factory is a Stadium that adds draw to Team Rocket Supporters. Once during each player's turn, if that player played a Supporter with Team Rocket in its name from their hand that turn, they may draw 2 cards.",
+   "It works for both players, so it only helps your opponent if they also play Team Rocket Supporters. Like any Stadium, it is discarded when another Stadium comes into play. Rocket's Honchkrow plays it in every top list, usually 3, while Rocket's Mewtwo and Rocket's Spidops usually play 2. Kangaskhan Bouffalant plays it less often but usually runs 3."
+  ],
+  "Team Rocket's Petrel": [
+   "Team Rocket's Petrel is a Supporter that searches your deck for any one Trainer card and puts it into your hand. That can be the Item, Stadium, Pokémon Tool or Supporter your turn needs.",
+   "It uses your Supporter for the turn, so you trade drawing cards for one exact pick. Since it has Team Rocket in its name, it also counts for Team Rocket's Factory. Hop's Trevenant plays 4 in every top list, Grimmsnarl Froslass usually plays 2, and Sharpedo Toxtricity, Rocket's Mewtwo, Lucario Hariyama and Cynthia's Garchomp usually play 1."
+  ],
+  "Team Rocket's Watchtower": [
+   "Team Rocket's Watchtower is a Stadium that turns off the Abilities of every Colorless Pokémon in play, yours and your opponent's. Decks play it to shut down Colorless Pokémon whose Abilities the other player relies on.",
+   "It hits your own Colorless Pokémon too, so check your list before you play it. It stays in play until another Stadium replaces it. N's Zoroark, Absol Audino and Sharpedo Toxtricity play it in more than 90% of top lists, usually 2. Dragapult Blaziken and Dragapult Dusknoir usually play 1, and Cynthia's Garchomp usually 2."
+  ],
+  "Telepathic Psychic Energy": [
+   "Telepathic Psychic Energy is a Special Energy that counts as Psychic Energy. When you attach it from your hand to a Psychic Pokémon, you also search your deck for up to 2 Basic Psychic Pokémon and put them onto your Bench.",
+   "One attachment both powers a Pokémon and fills your Bench. The search only happens when you attach it from your hand, and only onto a Psychic Pokémon. Every deck that plays it runs 4 in nearly all of its top lists: Alakazam Dusknoir, Lopunny Dusknoir, Hop's Trevenant, Slowking, Alakazam Dudunsparce and Mega Chandelure."
+  ],
+  "Thwackey": [
+   "Thwackey is a Stage 1 Grass Pokémon that evolves from Grookey. Its Boom Boom Groove Ability lets you search your deck for any one card once during your turn, as long as your Active Pokémon has the Festival Lead Ability.",
+   "Without a Festival Lead Pokémon in the Active Spot the Ability does nothing, so the decks that play it build around keeping one there. Seaking Festival Lead and Festival Lead both play 4 in every top list. Its own attack, Beat, does 50 for two Grass Energy."
+  ],
+  "Torchic": [
+   "Torchic is a Basic Fire Pokémon that evolves into Combusken, and decks play it to start that evolution line. Its Collect attack draws a card for one Colorless Energy, and Combustion does 10 damage for one Fire Energy.",
+   "With 70 HP it is fragile, so it helps to get it onto your Bench early and evolve it soon. Collect gives you something useful to do if it starts in the Active Spot. Dragapult Blaziken plays 2 in every top list, and Mega Dragonite usually plays 3 in 91% of top lists."
+  ],
+  "Toxel": [
+   "Toxel is a Basic Darkness Pokémon that evolves into Toxtricity, and decks play it to get there. Its Call for Family attack, for one Darkness Energy, searches your deck for up to 2 Basic Pokémon and puts them onto your Bench.",
+   "That makes it a useful Pokémon to have in the Active Spot early, since one attack can fill your Bench. Playful Kick does 20 for a Darkness and a Colorless Energy. Toxtricity Box plays 4 in every top list, Toxtricity plays 3, and Sharpedo Toxtricity, Gengar and Mega Darkrai usually play 2."
+  ],
+  "Toxtricity": [
+   "Toxtricity is a Stage 1 Darkness Pokémon that evolves from Toxel. Its Sinister Surge Ability searches your deck for a Basic Darkness Energy once during your turn and attaches it to one of your Benched Darkness Pokémon, then puts 2 damage counters on that Pokémon.",
+   "The extra Energy comes with damage as its cost, and it can only go to a Benched Darkness Pokémon. RdyDeck's Sharpedo Toxtricity guide notes that those counters turn on Hungry Jaws. Toxtricity Box plays 4 in every top list, Toxtricity 3, and Sharpedo Toxtricity, Gengar and Mega Darkrai usually 2."
+  ],
+  "Ultra Ball": [
+   "Ultra Ball is an Item that searches your deck for any Pokémon and puts it into your hand. To play it, you discard 2 other cards from your hand. Since it finds any Pokémon, it can get a Basic, an Evolution card or the attacker you need.",
+   "The 2-card discard is the price, so you need 2 other cards in hand to play it. Most decks that play it run 4: Dragapult Blaziken, Dragapult Dusknoir, Sharpedo Toxtricity, Lucario Hariyama and Mega Rayquaza usually play 4 in nearly every top list, and Dragapult usually plays 3."
+  ],
+  "Unfair Stamp": [
+   "Unfair Stamp is an ACE SPEC Item for coming back after a Knock Out. You can play it only if one of your Pokémon was Knocked Out during your opponent's last turn. Both players shuffle their hands into their decks, then you draw 5 cards and your opponent draws 2.",
+   "That refreshes your hand and shrinks theirs at once. As an ACE SPEC it uses your deck's one ACE SPEC slot. Dragapult Blaziken, Dragapult and Ogerpon Meganium Arboliva play it in more than 95% of top lists, and Dragapult Dusknoir and Sharpedo Toxtricity in more than 80%. Lucario Hariyama plays it in half."
+  ],
+  "Wally's Compassion": [
+   "Wally's Compassion is a Supporter that heals all damage from one of your Mega Evolution Pokémon ex. If it healed any damage, all Energy attached to that Pokémon goes back into your hand.",
+   "Losing the Energy from the Pokémon is the cost, but the cards stay in your hand to attach again. It only works on Mega Evolution Pokémon ex and uses your Supporter for the turn. Mega Starmie plays 4 in nearly every top list, Lopunny Dudunsparce usually 3, and Starmie Froslass usually 2. RdyDeck's Lopunny Dudunsparce guide uses it on Mega Lopunny ex."
+  ],
+  "Wellspring Mask Ogerpon ex": [
+   "Wellspring Mask Ogerpon ex is a Basic Water Pokémon ex. Sob does 20 for one Energy and stops the Defending Pokémon from retreating during your opponent's next turn. Torrential Pump does 100, and you can shuffle 3 of its attached Energy into your deck to also do 120 to one of your opponent's Benched Pokémon.",
+   "Using that Bench damage means building its Energy up again afterward. As a Tera Pokémon it takes no damage from attacks on your Bench, but it gives up 2 Prize cards when Knocked Out. Most decks run 1, including Basic Box in every top list, while Mew Box and Lillie's Clefairy usually play 2."
+  ],
+  "Wondrous Patch": [
+   "Wondrous Patch is an Item that takes a Basic Psychic Energy from your discard pile and attaches it to one of your Benched Psychic Pokémon. Decks use it to reuse discarded Energy and power up a Benched attacker.",
+   "It needs a Basic Psychic Energy already in your discard pile, and it can only target a Benched Psychic Pokémon, not your Active one. Special Energy such as Telepathic Psychic Energy can't be picked. Lillie's Clefairy plays 4 in every top list, and Slowking, Alakazam Dudunsparce and Mew Box usually play 3."
+  ],
+  "Xerosic's Machinations": [
+   "Xerosic's Machinations is a Supporter that makes your opponent discard cards from their hand until they have 3 left. They choose which cards go, but a big hand gets cut down to 3.",
+   "It does nothing if your opponent already has 3 or fewer cards, and it uses your Supporter for the turn without drawing you any cards. Most decks run 1, including Absol Audino and Crustle in more than 90% of top lists and Mega Lopunny in 80%. Mega Chandelure usually plays 2."
+  ],
+  "Yveltal": [
+   "Yveltal is a Basic Darkness Pokémon with no Retreat Cost. Clutch does 20 for one Darkness Energy and stops the Defending Pokémon from retreating during your opponent's next turn. Dark Feather does 110 for two Darkness and one Colorless Energy.",
+   "Clutch can keep a Pokémon stuck in the Active Spot for a turn, and the free retreat makes Yveltal easy to move in and out. Most decks run 1: Absol Audino plays it in 98% of top lists, Grimmsnarl Froslass in 89% and N's Zoroark in 70%. Mega Absol Box usually plays 2."
+  ],
+  "Zeraora": [
+   "Zeraora is a Basic Lightning Pokémon with an attack aimed at Benched Pokémon ex. Thunder Raid costs three Lightning Energy, discards all Energy from Zeraora, and does 210 damage to one of your opponent's Benched Pokémon ex, with no Weakness or Resistance applied.",
+   "It only hits a Benched Pokémon ex, so it has no target if your opponent's Bench has none. Since it discards all its Energy, it must be powered up again before the next Thunder Raid. Scratch does 20 for one Energy. Slowking plays 1 in 69% of top lists, and Manectric Eelektrik plays 1 in 44%."
+  ]
+ }
+}

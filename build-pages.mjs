@@ -100,7 +100,14 @@ const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-d
   .crumbs { font-size:0.875rem; color:var(--text-3); margin:0.8rem 0 0; }
   .crumbs a { color:var(--text-2); }
   .crumbs span[aria-hidden] { margin:0 0.4rem; }
-  footer a { color:var(--text-2); }`;
+  footer a { color:var(--text-2); }
+  .card-top { display:flex; gap:1.2rem; align-items:flex-start; margin:1rem 0 0.4rem; }
+  .card-top .tw { flex:1; min-width:0; }
+  .card-top table { margin:0; }
+  tr.you td { color:var(--text); font-weight:600; }
+  .card-art { flex:0 0 auto; width:180px; margin:0; }
+  .card-art img { display:block; width:100%; height:auto; aspect-ratio:274/381; border-radius:4.5%; background:var(--line); }
+  @media (max-width:520px) { .card-top { flex-direction:column; align-items:center; } .card-art { width:min(240px, 70vw); } .card-top .tw { width:100%; } }`;
 
 export function footerHtml(up = '') {
   const a = ([h, t]) => `<a href="${up}${h}">${t}</a>`;
@@ -685,17 +692,19 @@ ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to
 
 // ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
-// 3.4.33: card guides stay out of search (noindex, follow) and out of sitemap.xml. Each is mostly the
-// card's own printed text, so to Google they read as many short look-alike pages, which AdSense's
-// review counts as low-value content. Players still reach them from the deck guides and the app.
+// 3.4.33 kept card guides out of search while they were mostly the card's printed text. 3.4.34 built
+// them out (notes in our words, draw odds, trends, win records), so they are back in search and the
+// sitemap. A page can still pass index: false to stay out of both.
 const NOINDEX_HERE = '<meta name="robots" content="noindex, follow">';
-const OUT_OF_SITEMAP = f => f.startsWith('cards/');
+const OUT_OF_SITEMAP = () => false;
 
 // ── 3.2: one guide page per card (cards/*.html), from .github/card-pages.json ──────────────────
 // The text is the card's own, from pokemon-tcg-data (card-pages-data.mjs writes the file). What
 // each deck does with it is from deck-guides.json (our own words) and meta-cards.json (counts).
 const cp = existsSync(path.join(ROOT, '.github/card-pages.json')) ? read('.github/card-pages.json') : { cards: [] };
 const cardByName = Object.fromEntries(cp.cards.map(c => [c.name, c]));
+// 3.4.34: a few sentences per card in our own words, what it does and why decks play it (.github/card-notes.json).
+const cardNotes = existsSync(path.join(ROOT, '.github/card-notes.json')) ? read('.github/card-notes.json').notes : {};
 /** The card's name, linked to its guide page when it has one. up is '../' from inside cards/. */
 const cardLink = (name, up = '') => cardByName[name] ? `<a href="${up}cards/${cardByName[name].slug}.html">${esc(name)}</a>` : esc(name);
 const guideByTitle = Object.fromEntries(guides.decks.map(g => [g.id, g]));
@@ -750,6 +759,94 @@ function cardDecks(name) {
 const costWords = cost => cost.length ? cost.map(x => ENERGY[x] || x).join(', ') : 'no Energy';
 const dLink = (d, up) => guideByTitle[d.id] ? `<a href="${up}deck-${guideByTitle[d.id].slug}.html">${esc(d.name)}</a>` : esc(d.name);
 
+
+// ── 3.4.34: what RdyDeck's own numbers add to each card guide ──────────────────────────────────
+const TOTAL_TOPS = mc.decks.reduce((a, d) => a + d.tops, 0);
+const oppName = Object.fromEntries((mc.opponents || []).map(([id, n]) => [id, n]));
+const pc = x => Math.round(x * 100) + '%';
+/** The card's share of every top list RdyDeck counted, across all tracked decks. */
+const cardShare = name => mc.decks.reduce((a, d) => { const x = d.cards.find(k => k[0] === name); return a + (x ? x[6] * d.tops : 0); }, 0) / (TOTAL_TOPS || 1);
+// Hypergeometric: the chance of at least one of k copies among n cards drawn from a 60 card deck.
+function choose(n, r) { if (r < 0 || r > n) return 0; let v = 1; for (let i = 1; i <= r; i++) v = v * (n - r + i) / i; return v; }
+const atLeastOne = (k, n) => 1 - choose(60 - k, n) / choose(60, n);
+const allOf = (k, n) => choose(60 - k, n - k) / choose(60, n);
+/** Card art from the same picture host the app tries first (Limitless TCG's card images). */
+const artUrl = c => `https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/${c.set}/${c.set}_${String(c.no).replace(/^0+(\d)/, '$1').padStart(3, '0')}_R_EN_SM.png`;
+const copyWord = n => n === 1 ? 'copy' : 'copies';
+function oddsHtml(c, decks) {
+  const top = decks[0];
+  if (!top || !top.count) return '';
+  const k = Math.min(4, top.count);
+  if (c.supertype === 'Energy' && /Basic/.test((c.subtypes || []).join(' '))) return '';
+  const rows = [1, 2, 3, 4];
+  const tr = rows.map(n => `  <tr${n === k ? ' class="you"' : ''}><td>${n} ${copyWord(n)}</td><td class="n">${pc(atLeastOne(n, 7))}</td><td class="n">${pc(atLeastOne(n, 8))}</td><td class="n">${pc(atLeastOne(n, 6))}</td></tr>`).join('\n');
+  const prizedAll = allOf(k, 6);
+  return `
+<h2>Odds of drawing it</h2>
+<p>${esc(top.d.name)} lists usually run ${k} ${copyWord(k)}. With ${k} in a 60 card deck, you start with at least one in your 7 card opening hand ${pc(atLeastOne(k, 7))} of the time, and ${pc(atLeastOne(k, 8))} of the time once you draw for your first turn. At least one ends up in your Prize cards ${pc(atLeastOne(k, 6))} of the time${k > 1 ? `, and ${k === 2 ? 'both' : 'all ' + k} ${prizedAll < 0.001 ? 'less than 0.1%' : (prizedAll * 100).toFixed(1) + '%'} of the time` : ''}.</p>
+<div class="tw"><table><thead><tr><th>Copies</th><th class="n">In opening hand</th><th class="n">After first draw</th><th class="n">At least one prized</th></tr></thead><tbody>
+${tr}
+</tbody></table></div>
+<p class="note">Plain draw odds before mulligans or any card that searches the deck. <a href="../opening-odds.html">Opening odds</a> works these out for your whole list, and the <a href="../prize-trainer.html">prize trainer</a> helps you spot prized cards faster.</p>
+`;
+}
+function trendHtml(c) {
+  const rows = [];
+  for (const d of mc.decks) for (const t of (d.trend && d.trend.cards) || []) {
+    if (t[0] === c.name && Math.abs(t[3] - t[2]) >= 0.1 && d.trend.late >= 50) rows.push({ d, a: t[2], b: t[3], early: d.trend.early, late: d.trend.late });
+  }
+  if (!rows.length) return '';
+  rows.sort((x, y) => Math.abs(y.b - y.a) - Math.abs(x.b - x.a));
+  return `
+<h2>Rising or falling</h2>
+<p>The share of each deck's lists that run it, earlier in the window against the last two weeks (${day(mc.recent.since)} to ${day(mc.recent.until)}), where it moved by 10 points or more:</p>
+<ul>
+${rows.slice(0, 5).map(r => `  <li>${dLink(r.d, '../')}: ${r.b > r.a ? 'up' : 'down'} from ${pc(r.a)} of ${num(r.early)} lists to ${pc(r.b)} of ${num(r.late)}.</li>`).join('\n')}
+</ul>`;
+}
+const MIN_MATCHES = 30;
+function techHtml(c) {
+  const rows = [];
+  for (const d of mc.decks) for (const [opp, v] of Object.entries(d.techs || {})) for (const t of v.cards || []) {
+    const [n, , w1, m1, w0, m0] = t;
+    if (n !== c.name || m1 < MIN_MATCHES || m0 < MIN_MATCHES || !oppName[opp]) continue;
+    rows.push({ d, opp: oppName[opp], w1, m1, w0, m0, gap: w1 / m1 - w0 / m0 });
+  }
+  if (!rows.length) return '';
+  rows.sort((a, b) => b.gap - a.gap);
+  return `
+<h2>Does it win more?</h2>
+<p>Matches from Limitless online tournaments where some lists of a deck ran ${esc(c.name)} and some did not, against the same opponent, with at least ${MIN_MATCHES} matches each way:</p>
+<ul>
+${rows.slice(0, 5).map(r => `  <li>${dLink(r.d, '../')} against ${esc(r.opp)}: with it, won ${r.w1} of ${r.m1} (${pc(r.w1 / r.m1)}). Without it, won ${r.w0} of ${r.m0} (${pc(r.w0 / r.m0)}).</li>`).join('\n')}
+</ul>
+<p class="note">A tie counts as a match that is not a win. These show what happened, not that the card caused it: better players may pick it, and other cards in the list matter too.</p>`;
+}
+function evoHtml(c, up) {
+  if (c.supertype !== 'Pokémon') return '';
+  const into = cp.cards.filter(x => x.evolvesFrom === c.name);
+  if (!c.evolvesFrom && !into.length) return '';
+  const from = c.evolvesFrom ? cardByName[c.evolvesFrom] : null;
+  const back = from && from.evolvesFrom ? cardLink(from.evolvesFrom, up) + ' to ' : '';
+  const parts = [];
+  if (c.evolvesFrom) parts.push(`It evolves from ${back}${cardLink(c.evolvesFrom, up)}.`);
+  if (into.length) parts.push(`${into.map(x => cardLink(x.name, up)).join(' and ')} ${into.length > 1 ? 'evolve' : 'evolves'} from it.`);
+  return `\n<h2>Evolution line</h2>\n<p>${parts.join(' ')}</p>\n`;
+}
+function partnersHtml(c, decks, up) {
+  const top = decks[0];
+  if (!top) return '';
+  const near = top.d.cards.filter(k => k[0] !== c.name && k[6] >= 0.75 && cardByName[k[0]]).slice(0, 10);
+  if (near.length < 2) return '';
+  return `
+<h2>Often played with</h2>
+<p>Other cards in at least three quarters of the ${esc(top.d.name)} top lists, with the usual count:</p>
+<ul class="guides">
+${near.map(k => `  <li>${cardLink(k[0], up)} (${k[4]})</li>`).join('\n')}
+</ul>`;
+}
+const spread = (r, name) => { const h = (r.d.cards.find(k => k[0] === name) || [])[7] || []; return h.length > 1 && h[0][1] < 0.9 ? ` Counts: ${h.filter(([, s]) => s >= 0.05).map(([n, s]) => `${n} in ${pc(s)}`).join(', ')}.` : ''; };
+
 function cardPage(c) {
   const up = '../', file = `cards/${c.slug}.html`, kind = cardKind(c), decks = cardDecks(c.name), rules = cardRulings(c);
   const top = decks[0];
@@ -766,7 +863,15 @@ ${c.abilities.map(a => `  <dt>${esc(a.type || 'Ability')}: ${esc(a.name)}</dt><d
 </dl>`] : []),
     ...c.rules.map(r => `<p>${esc(r)}</p>`),
   ].join('\n');
-  const used = decks.slice(0, 10).map(r => `  <li>${dLink(r.d, up)}: in ${Math.round(r.share * 100)}% of top lists, usually ${r.count} ${r.count === 1 ? 'copy' : 'copies'}.</li>`).join('\n');
+  const used = decks.slice(0, 10).map(r => `  <li>${dLink(r.d, up)}: in ${Math.round(r.share * 100)}% of top lists, usually ${r.count} ${r.count === 1 ? 'copy' : 'copies'}.${spread(r, c.name)}</li>`).join('\n');
+  const share = cardShare(c.name);
+  const glance = [
+    ['Card type', esc(kind)], ['Set', `${esc(c.setName)} (${esc(c.set)} ${esc(c.no)})`],
+    ['Top lists', share >= 0.005 ? `${pc(share)} of all ${num(TOTAL_TOPS)}` : `under 1% of all ${num(TOTAL_TOPS)}`],
+    ['Decks', `${decks.length} run it in a quarter or more of their top lists`],
+    ...(top ? [['Usual count', `${top.count} in ${esc(top.d.name)}`]] : []),
+  ];
+  const art = `<figure class="card-art"><img src="${artUrl(c)}" alt="${esc(c.name)} card, ${esc(c.setName)} ${esc(c.no)}" width="274" height="381" loading="lazy" decoding="async"></figure>`;
   const notes = guides.decks.map(g => [g, (g.keys || []).find(([k]) => k === c.name)]).filter(([, k]) => k)
     .map(([g, k]) => `<h3>In ${esc(g.title)}</h3>\n<p>${esc(k[1])} <a href="${up}deck-${g.slug}.html">Read the ${esc(g.title)} guide</a>.</p>`).join('\n');
   const cite = r => { const s = (rul.sources || []).find(x => x.id === r.src); return s ? ` <span class="note">Source: <a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a>, ${esc(s.publisher)} (${esc([s.edition, r.where].filter(Boolean).join(', '))}).</span>` : ''; };
@@ -774,32 +879,35 @@ ${c.abilities.map(a => `  <dt>${esc(a.type || 'Ability')}: ${esc(a.name)}</dt><d
     + (top ? ` It is played most in ${esc(top.d.name)}, in ${Math.round(top.share * 100)}% of that deck's top lists${decks.length > 1 ? `, and ${decks.length - 1} other ${decks.length === 2 ? 'deck runs' : 'decks run'} it too` : ''}.` : '');
   const body = `
 <p class="lead">${lead}</p>
+<div class="card-top">${art}<div class="tw"><table><tbody>
+${glance.map(([k, v]) => `  <tr><th>${k}</th><td>${v}</td></tr>`).join('\n')}
+</tbody></table></div></div>
 <div class="cta-row"><a class="cta" href="${up}">Grade a deck with ${esc(c.name)}</a></div>
 
 <h2>Card text</h2>
 ${text}
-
+${cardNotes[c.name] ? `\n<h2>In plain words</h2>\n${[].concat(cardNotes[c.name]).map(x => `<p>${esc(x)}</p>`).join('\n')}\n` : ''}
 <h2>Decks that play it</h2>
 ${decks.length ? `<p>From the top lists of Limitless online tournaments from ${day(mc.since)} to ${day(mc.until)}. A deck is listed when at least a quarter of its top lists run the card${decks.length > 10 ? `. These are the 10 that play it most, of ${decks.length}` : ''}.</p>
 <ul>
 ${used}
 </ul>` : `<p>No top deck runs it in at least a quarter of its lists right now.</p>`}
-${notes ? `\n<h2>How it works in these decks</h2>\n${notes}\n` : ''}
+${notes ? `\n<h2>How it works in these decks</h2>\n${notes}\n` : ''}${oddsHtml(c, decks)}${trendHtml(c)}${techHtml(c)}${evoHtml(c, up)}${partnersHtml(c, decks, up)}
 <h2>Official rules for it</h2>
 ${rules.length ? `<dl>
 ${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a></dt>\n  <dd>${esc(r.a)}${cite(r)}</dd>`).join('\n')}
 </dl>` : `<p>No rule in the <a href="${up}rulings.html">rules list</a> is tied to this card yet.</p>`}
 <p>When a rule and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
 
-<p class="note">Card text from <a href="https://github.com/PokemonTCG/pokemon-tcg-data" rel="noopener">pokemon-tcg-data</a>, as printed on ${esc(c.set)} ${esc(c.no)}. Deck numbers from <a href="${esc(data.meta.src)}">Limitless TCG</a>, as of ${day(mc.asOf)}.</p>
+<p class="note">Card text from <a href="https://github.com/PokemonTCG/pokemon-tcg-data" rel="noopener">pokemon-tcg-data</a>, as printed on ${esc(c.set)} ${esc(c.no)}. Card picture from Limitless TCG. Deck numbers from <a href="${esc(data.meta.src)}">Limitless TCG</a>, as of ${day(mc.asOf)}.</p>
 `;
   const say = top ? `played most in ${top.d.name}` : 'its official rules';
-  let desc = `${c.name}, ${/^[AEIOU]/.test(kind) ? 'an' : 'a'} ${kind} in the Pokémon TCG: card text, ${say}, decks that run it and the rules for it.`;
-  if ([...desc].length > 155) desc = `${c.name}: card text, the decks that run it and the official rules for this ${kind}.`;
+  let desc = `${c.name}, ${/^[AEIOU]/.test(kind) ? 'an' : 'a'} ${kind} in the Pokémon TCG: what it does, ${say}, draw odds and win records.`;
+  if ([...desc].length > 155) desc = `${c.name}: what this ${kind} does, the decks that run it, draw odds and win records.`;
   if ([...desc].length > 155) desc = `${c.name} in the Pokémon TCG: card text, decks that run it and official rules.`;
   if ([...desc].length < 70) desc = desc.replace(' in the Pokémon TCG:', ' in the Pokémon TCG, as played today:');
   return page({
-    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body, index: false,
+    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body,
     title: [`${c.name}: Card Text, Decks and Rulings | RdyDeck`, `${c.name}: Card Text and Decks | RdyDeck`, `${c.name} Card Guide | RdyDeck`].find(t => t.length <= 60) || `${c.name} | RdyDeck`,
   });
 }
@@ -808,7 +916,7 @@ function cardIndexPage() {
   if (!cp.cards.length) return null;
   const groups = [['Pokémon', c => c.supertype === 'Pokémon'], ['Trainers', c => c.supertype === 'Trainer'], ['Special Energy', c => c.supertype === 'Energy']];
   const body = `
-<p class="lead">Guides to the Pok&eacute;mon TCG cards that top decks play right now: each card's text, the decks that run it and how often, what it does in those decks, and the official rules that apply to it.</p>
+<p class="lead">Guides to the Pok&eacute;mon TCG cards that top decks play right now: what each card does in plain words, the decks that run it and how many copies, the odds of drawing it or having it prized, whether its play is rising or falling, how lists with it have done, and the official rules that apply to it.</p>
 <p>A card is here when at least half of the top lists of a guided deck, or of one of the 20 most played decks, run it. Numbers are from Limitless online tournaments from ${day(mc.since)} to ${day(mc.until)}.</p>
 ${groups.map(([h, f]) => { const cs = cp.cards.filter(f); return cs.length ? `
 <h2>${h}</h2>
@@ -820,7 +928,7 @@ ${cs.map(c => `  <li><a href="${c.slug}.html">${esc(c.name)}</a></li>`).join('\n
   return page({
     file: 'cards/index.html', title: 'Pokémon TCG Card Guides: Top Meta Cards | RdyDeck', updated: mc.asOf,
     desc: 'Guides to the Pokémon TCG cards top decks play now: card text, which decks run them and how often, and the official rules that apply.',
-    kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website', index: false,
+    kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website',
   });
 }
 
@@ -868,19 +976,12 @@ for (const [file, html] of out) {
   if (CHECK) console.log('Would change: ' + file);
   else { mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, html); }
 }
-// Every built page except the card guides is in sitemap.xml (a new page joins with today's date; update-sitemap.mjs keeps dates current).
+// Every built page is in sitemap.xml (a new page joins with today's date; update-sitemap.mjs keeps dates current).
 {
   const sm = path.join(ROOT, 'sitemap.xml');
   let xml = readFileSync(sm, 'utf8');
   const listed = out.map(([f]) => f).filter(f => !OUT_OF_SITEMAP(f));
   const add = listed.map(f => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
-  // Pages kept out of search are taken out of the sitemap too.
-  const drop = /\s*<url>\s*<loc>https:\/\/rdydeck\.com\/cards\/[^<]*<\/loc>[\s\S]*?<\/url>/g;
-  if (drop.test(xml)) {
-    changed++;
-    if (CHECK) console.log('In sitemap.xml but kept out of search: card guides');
-    else { xml = xml.replace(drop, ''); writeFileSync(sm, xml); }
-  }
   if (add.length) {
     changed++;
     if (CHECK) console.log('Not in sitemap.xml: ' + add.join(', '));

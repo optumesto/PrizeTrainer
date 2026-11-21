@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex" data-mirror>
-<meta name="robots" content="noindex, follow">
 <script>
 // The old GitHub Pages copy of this page sends visitors on to rdydeck.com, the same page.
 if (location.hostname === 'optumesto.github.io') location.replace('https://rdydeck.com/' + location.pathname.replace(/^\/PrizeTrainer\/?/i, '') + location.search + location.hash);
@@ -77,6 +76,13 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   .crumbs a { color:var(--text-2); }
   .crumbs span[aria-hidden] { margin:0 0.4rem; }
   footer a { color:var(--text-2); }
+  .card-top { display:flex; gap:1.2rem; align-items:flex-start; margin:1rem 0 0.4rem; }
+  .card-top .tw { flex:1; min-width:0; }
+  .card-top table { margin:0; }
+  tr.you td { color:var(--text); font-weight:600; }
+  .card-art { flex:0 0 auto; width:180px; margin:0; }
+  .card-art img { display:block; width:100%; height:auto; aspect-ratio:274/381; border-radius:4.5%; background:var(--line); }
+  @media (max-width:520px) { .card-top { flex-direction:column; align-items:center; } .card-art { width:min(240px, 70vw); } .card-top .tw { width:100%; } }
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 <style>.rd-nosocial .rd-social { display:none !important; }
@@ -172,7 +178,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <p class="kicker">Card guides</p>
   <h1>Pok&eacute;mon TCG card guides</h1>
-  <p class="lead">Guides to the Pok&eacute;mon TCG cards that top decks play right now: each card's text, the decks that run it and how often, what it does in those decks, and the official rules that apply to it.</p>
+  <p class="lead">Guides to the Pok&eacute;mon TCG cards that top decks play right now: what each card does in plain words, the decks that run it and how many copies, the odds of drawing it or having it prized, whether its play is rising or falling, how lists with it have done, and the official rules that apply to it.</p>
   <p>A card is here when at least half of the top lists of a guided deck, or of one of the 20 most played decks, run it. Numbers are from Limitless online tournaments from 16 Sep 2026 to 15 Nov 2026.</p>
 
   <h2>Pokémon</h2>

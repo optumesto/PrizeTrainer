@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.34 (build 162): Card guides built out and back in search (21 Nov 2026)
+
+Changed files: build-pages.mjs (card picture, plain words notes, draw odds, trend, win records, evolution line, partner cards; card guides indexable and in sitemap.xml again), .github/card-notes.json (new: two short plain words paragraphs for each of the 178 cards, written for RdyDeck), cards/ (all 179 pages rebuilt), sitemap.xml (card guides back, 217 URLs), tests/seo-check.mjs (every page must be indexable and in the sitemap), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.34, What's new, PT_BUILD now 162), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v162).
+
+- For the AdSense review. 3.4.33 took the thin card guides out of search; this release makes them worth reading and puts them back.
+- Each card guide now has the card picture (from Limitless TCG, the same source the app uses, loaded lazily), an at-a-glance table (card type, set, share of all 3,899 top lists, decks, usual count), an In plain words section written for RdyDeck, opening hand and prize odds for 1 to 4 copies, how its count moved in recent events when it moved, win records with and without it in a matchup when there are at least 30 matches each way, its evolution line and the cards top decks pair it with.
+- The ad spots already on these pages stay inert until AdSense approves.
+- Anonymous usage counts move to 3.4.35 or later.
+
 # RdyDeck 3.4.33 (build 161): Guide buttons in More, card guides kept out of search (21 Nov 2026)
 
 Changed files: index.html (two More tiles and their layout, softwareVersion, stamps), build-pages.mjs (card guides get a noindex, follow line and leave sitemap.xml), cards/ (all 179 pages: one new robots line), sitemap.xml (card guides removed, 38 URLs left), tests/seo-check.mjs (card guides must be noindex and out of the sitemap; every other page indexable and in it), js/core.js (PT_VERSION now v3.4.33, What's new, PT_BUILD now 161), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v161).

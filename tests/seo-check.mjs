@@ -25,8 +25,8 @@ for (const f of files) {
   const n = html.split(MIRROR_NOINDEX).length - 1;
   if (n !== 1) fail(`${f}: github.io noindex line ${n} times, want 1`);
   const home = forHome(html);
-  // 3.4.33: card guides stay out of search and out of sitemap.xml; every other page is in both.
-  const outOfSearch = f.startsWith('cards/');
+  // 3.4.34: every page, card guides included, is in search and in sitemap.xml (3.4.33 kept card guides out).
+  const outOfSearch = false;
   const noindexHere = /name="robots"[^>]*noindex/i.test(home);
   if (outOfSearch && !noindexHere) fail(`${f}: card guide is indexable on rdydeck.com`);
   if (!outOfSearch && noindexHere) fail(`${f}: still noindex on rdydeck.com`);
