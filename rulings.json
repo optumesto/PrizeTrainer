@@ -332,6 +332,137 @@
    "q": "How does Mega Zygarde ex's Nullifying Zero work against a Benched Tera Pokémon?",
    "a": "You flip a coin for each of your opponent's Pokémon in play, in any order, and each heads puts 150 damage on that Pokémon. You still flip for a Benched Tera Pokémon, but it takes no damage while it is on the Bench.",
    "checked": "2026-11-16"
+  },
+  {
+   "id": "rare-candy",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Rare Candy"
+   ],
+   "src": "rb",
+   "where": "p. 11",
+   "q": "What carries over when Rare Candy evolves a Pokémon?",
+   "a": "The same as any evolution: the Pokémon keeps its damage counters and attached cards, and Special Conditions and effects of attacks on it end. The rulebook's limits hold too: no evolving on your first turn or on a Pokémon that came into play this turn, and Rare Candy's own text repeats both.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "salvatore",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Salvatore"
+   ],
+   "src": "rb",
+   "where": "p. 11",
+   "q": "Why can Salvatore evolve a Pokémon that just came into play?",
+   "a": "The rulebook says a Pokémon can't evolve on the turn it came into play unless a card says otherwise. Salvatore's text says otherwise: it can evolve a Pokémon you put down during setup or one put into play this turn.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "forest-of-vitality",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Forest of Vitality"
+   ],
+   "src": "rb",
+   "where": "p. 11",
+   "q": "Does Forest of Vitality let you evolve on your first turn?",
+   "a": "No. The rulebook bars evolving on your first turn unless a card says otherwise, and Forest of Vitality keeps that limit. It lets Grass Pokémon evolve into Grass Pokémon on the turn they were played, except during your first turn.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "cursed-blast",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Dusknoir",
+    "Dusclops"
+   ],
+   "src": "rb",
+   "where": "pp. 14 and 20",
+   "q": "Do Weakness and Resistance change Cursed Blast?",
+   "a": "No. Cursed Blast puts damage counters on a Pokémon, and the rulebook says that is not doing damage, so Weakness, Resistance and effects that change damage do not apply. Dusknoir puts exactly 13 counters and Dusclops 5, on an Active or a Benched Pokémon.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "powerful-hand",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Alakazam"
+   ],
+   "src": "rb",
+   "where": "pp. 14 and 20",
+   "q": "Does Weakness change Alakazam's Powerful Hand?",
+   "a": "No. Powerful Hand places 2 damage counters for each card in your hand, and the rulebook says placing damage counters is not doing damage. Weakness, Resistance and effects that change damage leave the count as it is.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "phantom-dive",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Dragapult ex"
+   ],
+   "src": "rb",
+   "where": "pp. 14 and 20",
+   "q": "Which part of Dragapult ex's Phantom Dive does Weakness change?",
+   "a": "Only the 200 damage to the Active Pokémon. The 6 damage counters on the Bench are not damage, so the rulebook says Weakness, Resistance and effects that change damage do not apply to them.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "subjugating-chains",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Pecharunt ex"
+   ],
+   "src": "rb",
+   "where": "pp. 15 and 16",
+   "q": "How does the Poison from Pecharunt ex's Subjugating Chains end?",
+   "a": "Like any Special Condition: it ends when that Pokémon moves to the Bench or evolves.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "tantrum",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Annihilape"
+   ],
+   "src": "rb",
+   "where": "pp. 15 and 16",
+   "q": "How does Annihilape stop being Confused after Tantrum?",
+   "a": "Confused is a Special Condition, so it ends when Annihilape moves to the Bench or evolves.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "poffin-up-to",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Buddy-Buddy Poffin"
+   ],
+   "src": "rbu26",
+   "where": "\"Up to\" change",
+   "q": "Can you play Buddy-Buddy Poffin and choose no Pokémon?",
+   "a": "Not if you can choose one. Since the February 2026 rule book update, a Trainer card that says up to must choose at least 1 when something can be chosen. So if your deck has a Basic Pokémon with 70 HP or less, at least 1 goes onto your Bench.",
+   "checked": "2026-11-16"
+  },
+  {
+   "id": "boss-first-turn",
+   "topic": "Cards, by the rulebook",
+   "tags": [],
+   "cards": [
+    "Boss's Orders"
+   ],
+   "src": "rb",
+   "where": "pp. 12 and 13",
+   "q": "Can you play Boss's Orders on your first turn?",
+   "a": "Not if you go first: the player going first cannot play a Supporter on their first turn. The player going second can.",
+   "checked": "2026-11-16"
   }
  ]
 }

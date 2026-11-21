@@ -100,9 +100,9 @@ function cd31Tags(c, f) {
   const nm = String((f && f.name) || c.name || '');
   const sub = (c.sub || []).map(x => String(x).toLowerCase());
   const kind = cd31Kind(c, f);
-  if (/ ex$/.test(nm) && !/^mega /i.test(nm)) t.add('ex');
+  if (/ ex$/.test(nm)) t.add('ex');
   if (sub.includes('tera')) t.add('tera');
-  if (kind.includes('ACE SPEC')) t.add('ace');
+  if (kind.includes('ACE SPEC') || sub.includes('ace spec')) t.add('ace');
   if (kind.includes('Pokémon Tool')) t.add('tool');
   if (kind.includes('Stadium')) t.add('stadium');
   if (kind.includes('Supporter')) t.add('supporter');
@@ -110,6 +110,7 @@ function cd31Tags(c, f) {
   const abs = f ? f.abilities : (c.atext || []).map(([n, x]) => ({ name: n, text: x }));
   if (abs.length) t.add('ability');
   const text = [].concat(abs.map(a => a.text), f ? f.attacks.map(a => a.text) : [], f ? f.effect : (c.rtext || c.etext || '')).join(' ');
+  if (String(f ? f.cat : c.supertype || '').toLowerCase().startsWith('trainer') && /\bevolve/i.test(text)) t.add('evolution');
   if (/damage counters? on/i.test(text)) t.add('counters');
   if (/Benched Pok[eé]mon/i.test(text) && /damage/i.test(text)) t.add('bench');
   if (/\b(Asleep|Burned|Confused|Paralyzed|Poisoned)\b/.test(text)) t.add('condition');
@@ -225,7 +226,7 @@ function cd31Html(c, f, opts) {
   } catch (_) {}
   h += '</div>';
 
-  h += `<div id="cd31-here"></div><div id="cd31-rul"></div>`;
+  h += `<div id="cd31-here"></div><div id="cd31-guide"></div><div id="cd31-rul"></div>`;
   if (!f) h += `<p class="cd31-note" id="cd31-note">${o.reading ? 'Reading the full card text…' : 'The full card text shows once you open this card with a signal.'}</p>`;
   else h += `<p class="cd31-note">${f.other ? 'Card text from TCGdex, read from another printing of this card.' : 'Card text from TCGdex.'}</p>`;
   return h + `</div></div><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`;
@@ -267,6 +268,22 @@ function cd31RulHtml(list, R) {
   }).join('')}<a class="btn btn-sm cd31-all" href="rulings.html${typeof PT_PLAY !== 'undefined' && PT_PLAY ? '?src=play' : ''}#${esc(list[0].id)}" target="_blank" rel="noopener">All rules</a></div>`;
 }
 
+// 3.4.35: cards with a guide page (card-guides.json, written by build-pages.mjs) get a Read the guide link.
+// Like All rules, it opens in a new tab and carries ?src=play inside the Play app, so the guide shows no ads there.
+let _cd31Guides = null, _cd31GuidesP = null;
+function cd31GuideList() {
+  if (_cd31Guides) return Promise.resolve(_cd31Guides);
+  if (!_cd31GuidesP) _cd31GuidesP = fetch('card-guides.json').then(r => r.ok ? r.json() : null)
+    .then(j => { const g = {}; for (const [n, slug] of Object.entries((j && j.guides) || {})) g[cd31Nm(n)] = slug; _cd31Guides = g; return g; })
+    .catch(() => { _cd31GuidesP = null; return {}; });
+  return _cd31GuidesP;
+}
+function cd31GuideHtml(c, G) {
+  const slug = G && (G[cd31Nm(c.apiName || c.name)] || G[cd31Nm(c.name)]);
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return '';
+  return `<div class="cd31-sec"><a class="btn btn-sm cd31-guide" href="cards/${slug}.html${typeof PT_PLAY !== 'undefined' && PT_PLAY ? '?src=play' : ''}" target="_blank" rel="noopener">Read the guide</a></div>`;
+}
+
 function cd31Deck() { return state.decks.find(d => String(d.id) === String(state.activeDeckId)) || (typeof _op30Deck !== 'undefined' ? _op30Deck : null); }
 
 /** Open the card a Cards tab tile shows. */
@@ -296,6 +313,11 @@ async function cd31Show(deck, c) {
     const cat = String(c.supertype || '').toLowerCase();
     const here = document.getElementById('cd31-here');
     if (here && (cat === 'trainer' || (cat === 'energy' && !c.basic))) here.innerHTML = cd31HereHtml(cd31Here(deck, c));
+    cd31GuideList().then(G => {
+      if (_cd31Open !== tok) return;
+      const box = document.getElementById('cd31-guide');
+      if (box) box.innerHTML = cd31GuideHtml(c, G);
+    });
     cd31Rulings().then(R => {
       if (_cd31Open !== tok) return;
       const box = document.getElementById('cd31-rul');

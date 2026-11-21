@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.35 (build 163): Thin card guides out of search, Read the guide, rulebook notes (21 Nov 2026)
+
+Changed files: build-pages.mjs (thin card guides get noindex, follow and leave sitemap.xml; card-guides.json; Mega ex, ACE SPEC Special Energy and Trainers that evolve get their rules), cards/ (21 thin guides marked, 10 gain a rule for that card, Mega ex and ACE SPEC pages gain their rule), card-guides.json (new: card name to guide page), rulings.json and rulings.html (10 card questions answered from the rulebook, new topic Cards, by the rulebook), sitemap.xml (196 URLs), tests/seo-check.mjs (only card guides may be noindex, and those must be out of the sitemap), js/card-details.js (Read the guide link, same rule tags as the pages), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.35, What's new, PT_BUILD now 163), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (Read the guide and What's new strings), sw.js (cache name prize-trainer-v163, card-guides.json kept offline).
+
+- Thin card guides: a guide played by 2 decks or fewer whose own text is under 560 words is kept out of search (noindex, follow) and out of sitemap.xml. That is 21 of 178, mostly Basic Pokémon that only evolve and one-deck techs. They stay up and linked, and join search again on their own once they have more to say.
+- Read the guide: tapping a card in a deck opens its details; cards with a guide now show Read the guide, which opens the guide in a new tab. In the Play app the link carries ?src=play, so the guide shows no ads there.
+- Rulebook notes: 10 cards that are often misread get a question answered from the rulebook's general rules, citing the page (Rare Candy, Salvatore, Forest of Vitality, Dusknoir and Dusclops, Alakazam, Dragapult ex, Pecharunt ex, Annihilape, Buddy-Buddy Poffin, Boss's Orders). They use the rulebook pages already cited and checked on 16 Nov 2026, not card by card rulings.
+- Mega Evolution Pokémon ex now show the Prize card rule, ACE SPEC Special Energy the ACE SPEC rule, and Trainers that evolve (Rare Candy) the evolving rule, in the guides and in the app.
+- Anonymous usage counts move to 3.4.36 or later.
+
 # RdyDeck 3.4.34 (build 162): Card guides built out and back in search (21 Nov 2026)
 
 Changed files: build-pages.mjs (card picture, plain words notes, draw odds, trend, win records, evolution line, partner cards; card guides indexable and in sitemap.xml again), .github/card-notes.json (new: two short plain words paragraphs for each of the 178 cards, written for RdyDeck), cards/ (all 179 pages rebuilt), sitemap.xml (card guides back, 217 URLs), tests/seo-check.mjs (every page must be indexable and in the sitemap), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.34, What's new, PT_BUILD now 162), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v162).

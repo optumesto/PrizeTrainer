@@ -1,6 +1,6 @@
 // RdyDeck service worker (cache names keep the old prize-trainer prefix)
 // Bump CACHE_NAME on every deploy so clients pull fresh files.
-const CACHE_NAME = 'prize-trainer-v162';
+const CACHE_NAME = 'prize-trainer-v163';
 // How long a page open waits for the network before using the saved copy.
 const HTML_WAIT = 3000;
 
@@ -56,6 +56,8 @@ const CORE_ASSETS = [
   // 3.1: the official rules the card details show, and their page.
   './rulings.json',
   './rulings.html',
+  // 3.4.35: which cards have a guide, for the card details' Read the guide link.
+  './card-guides.json',
 ];
 
 // Saved copies are kept under the address without its query, so links with

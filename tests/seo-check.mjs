@@ -25,11 +25,11 @@ for (const f of files) {
   const n = html.split(MIRROR_NOINDEX).length - 1;
   if (n !== 1) fail(`${f}: github.io noindex line ${n} times, want 1`);
   const home = forHome(html);
-  // 3.4.34: every page, card guides included, is in search and in sitemap.xml (3.4.33 kept card guides out).
-  const outOfSearch = false;
+  // 3.4.35: every page is in search and in sitemap.xml, except card guides with too little to say yet
+  // (build-pages.mjs marks those noindex, follow). A noindex page must be a card guide and out of the sitemap.
   const noindexHere = /name="robots"[^>]*noindex/i.test(home);
-  if (outOfSearch && !noindexHere) fail(`${f}: card guide is indexable on rdydeck.com`);
-  if (!outOfSearch && noindexHere) fail(`${f}: still noindex on rdydeck.com`);
+  const outOfSearch = noindexHere;
+  if (noindexHere && !/^cards\/(?!index\.html)/.test(f)) fail(`${f}: noindex on rdydeck.com, and only thin card guides may be`);
   const loc = `<loc>https://rdydeck.com/${f.replace(/(^|\/)index\.html$/, '$1')}</loc>`;
   if (outOfSearch && SITEMAP.includes(loc)) fail(`${f}: card guide is in sitemap.xml`);
   if (!outOfSearch && !SITEMAP.includes(loc)) fail(`${f}: not in sitemap.xml`);

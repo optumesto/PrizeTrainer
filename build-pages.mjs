@@ -694,9 +694,11 @@ ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
 // 3.4.33 kept card guides out of search while they were mostly the card's printed text. 3.4.34 built
 // them out (notes in our words, draw odds, trends, win records), so they are back in search and the
-// sitemap. A page can still pass index: false to stay out of both.
+// sitemap. 3.4.35 keeps out the thinnest ones (see thinCard): they stay up and linked, with noindex,
+// follow, and leave the sitemap until they have more to say.
 const NOINDEX_HERE = '<meta name="robots" content="noindex, follow">';
-const OUT_OF_SITEMAP = () => false;
+const THIN_FILES = new Set();
+const OUT_OF_SITEMAP = f => THIN_FILES.has(f);
 
 // ── 3.2: one guide page per card (cards/*.html), from .github/card-pages.json ──────────────────
 // The text is the card's own, from pokemon-tcg-data (card-pages-data.mjs writes the file). What
@@ -722,13 +724,16 @@ function cardKind(c) {
 // Which rulings.json rules apply, the same way the app picks them when you tap a card (js/card-details.js).
 function cardTags(c) {
   const t = new Set(), sub = (c.subtypes || []).map(x => x.toLowerCase()), kind = cardKind(c);
-  if (/ ex$/.test(c.name) && !/^mega /i.test(c.name)) t.add('ex');
+  // 3.4.35: Mega Evolution Pokémon ex get the ex rule too (its answer gives their 3 Prize cards), and an
+  // ACE SPEC is read from its subtypes, so ACE SPEC Special Energy gets the ACE SPEC rule.
+  if (/ ex$/.test(c.name)) t.add('ex');
   if (sub.includes('tera')) t.add('tera');
-  if (kind.includes('ACE SPEC')) t.add('ace');
+  if (kind.includes('ACE SPEC') || sub.includes('ace spec')) t.add('ace');
   if (kind.includes('Pokémon Tool')) t.add('tool');
   if (kind.includes('Stadium')) t.add('stadium');
   if (kind.includes('Supporter')) t.add('supporter');
   if (sub.includes('stage 1') || sub.includes('stage 2')) t.add('evolution');
+  if (c.supertype === 'Trainer' && /\bevolve/i.test(c.rules.join(' '))) t.add('evolution');
   if (c.abilities.length) t.add('ability');
   const text = [...c.abilities.map(a => a.text), ...c.attacks.map(a => a.text), ...(c.supertype === 'Pokémon' ? [] : c.rules)].join(' ');
   if (/damage counters? on/i.test(text)) t.add('counters');
@@ -847,8 +852,14 @@ ${near.map(k => `  <li>${cardLink(k[0], up)} (${k[4]})</li>`).join('\n')}
 }
 const spread = (r, name) => { const h = (r.d.cards.find(k => k[0] === name) || [])[7] || []; return h.length > 1 && h[0][1] < 0.9 ? ` Counts: ${h.filter(([, s]) => s >= 0.05).map(([n, s]) => `${n} in ${pc(s)}`).join(', ')}.` : ''; };
 
+/** A card guide with little of its own: played by 2 decks or fewer, and a short page (under THIN_WORDS words of
+ *  its own, counted without the site header and footer). Mostly Basic Pokémon that only evolve and one-deck techs. */
+const THIN_WORDS = 560;
+const pageWords = body => body.replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ').split(/\s+/).filter(Boolean).length;
+const thinCard = (decks, body) => decks.length <= 2 && pageWords(body) < THIN_WORDS;
 function cardPage(c) {
   const up = '../', file = `cards/${c.slug}.html`, kind = cardKind(c), decks = cardDecks(c.name), rules = cardRulings(c);
+
   const top = decks[0];
   const fields = c.supertype === 'Pokémon' ? [
     ['HP', c.hp], ['Type', (c.types || []).join(', ')], ['Evolves from', c.evolvesFrom ? cardLink(c.evolvesFrom, up) : ''],
@@ -901,13 +912,16 @@ ${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a>
 
 <p class="note">Card text from <a href="https://github.com/PokemonTCG/pokemon-tcg-data" rel="noopener">pokemon-tcg-data</a>, as printed on ${esc(c.set)} ${esc(c.no)}. Card picture from Limitless TCG. Deck numbers from <a href="${esc(data.meta.src)}">Limitless TCG</a>, as of ${day(mc.asOf)}.</p>
 `;
+  const thin = thinCard(decks, body);
+  if (thin) THIN_FILES.add(file);
+  if (process.env.THIN_REPORT) console.log('words', pageWords(body), decks.length, file);
   const say = top ? `played most in ${top.d.name}` : 'its official rules';
   let desc = `${c.name}, ${/^[AEIOU]/.test(kind) ? 'an' : 'a'} ${kind} in the Pokémon TCG: what it does, ${say}, draw odds and win records.`;
   if ([...desc].length > 155) desc = `${c.name}: what this ${kind} does, the decks that run it, draw odds and win records.`;
   if ([...desc].length > 155) desc = `${c.name} in the Pokémon TCG: card text, decks that run it and official rules.`;
   if ([...desc].length < 70) desc = desc.replace(' in the Pokémon TCG:', ' in the Pokémon TCG, as played today:');
   return page({
-    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body,
+    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body, index: !thin,
     title: [`${c.name}: Card Text, Decks and Rulings | RdyDeck`, `${c.name}: Card Text and Decks | RdyDeck`, `${c.name} Card Guide | RdyDeck`].find(t => t.length <= 60) || `${c.name} | RdyDeck`,
   });
 }
@@ -963,6 +977,8 @@ const out = [
   ...(rulingsPage() ? [['rulings.html', rulingsPage()]] : []),
   ...(cardIndexPage() ? [['cards/index.html', cardIndexPage()]] : []),
   ...cp.cards.map(c => [`cards/${c.slug}.html`, cardPage(c)]),
+  // 3.4.35: which cards have a guide, so the app's card sheet can link "Read the guide" (js/card-details.js).
+  ...(cp.cards.length ? [['card-guides.json', JSON.stringify({ schema: 1, note: 'Card name to its guide at cards/<slug>.html. Written by build-pages.mjs.', guides: Object.fromEntries(cp.cards.map(c => [c.name, c.slug])) }, null, 1) + '\n']] : []),
 ];
 const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');
@@ -980,8 +996,14 @@ for (const [file, html] of out) {
 {
   const sm = path.join(ROOT, 'sitemap.xml');
   let xml = readFileSync(sm, 'utf8');
-  const listed = out.map(([f]) => f).filter(f => !OUT_OF_SITEMAP(f));
+  const listed = out.map(([f]) => f).filter(f => f.endsWith('.html') && !OUT_OF_SITEMAP(f));
   const add = listed.map(f => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  const drop = [...THIN_FILES].filter(f => xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  if (drop.length) {
+    changed++;
+    if (CHECK) console.log('In sitemap.xml but kept out of search: ' + drop.join(', '));
+    else { for (const f of drop) xml = xml.replace(new RegExp(`  <url><loc>https://rdydeck\\.com/${f.replace(/[.]/g, '\\.')}</loc>.*?</url>\n`), ''); writeFileSync(sm, xml); }
+  }
   if (add.length) {
     changed++;
     if (CHECK) console.log('Not in sitemap.xml: ' + add.join(', '));
