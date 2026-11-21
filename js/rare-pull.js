@@ -262,7 +262,8 @@ function rpHead() {
   if (t) t.innerHTML = `<b>${rpTotal()}</b>`;
   const pips = rpG.prompts.map((_, j) => {
     const p = rpG.picks[j];
-    return `<span class="rp-pip${j === rpG.i && !p ? ' rp-now' : ''}${p ? ' rp-done' : ''}">${p ? rpGem(rpTierIx(p.score)) : ''}</span>`;
+    // 3.4.32: a played prompt keeps its rarity's color (the foil colors), so the row reads as a history
+    return `<span class="rp-pip${j === rpG.i && !p ? ' rp-now' : ''}${p ? ' rp-done rp-t' + rpTierIx(p.score) : ''}">${p ? rpGem(rpTierIx(p.score)) : ''}</span>`;
   }).join('');
   return `<div class="rp-pips" aria-hidden="true">${pips}</div>`;
 }
@@ -508,9 +509,12 @@ async function rpShare(k) {
   .rp-wrap { max-width:640px; margin:0 auto; padding:0.9rem var(--pad-x, 1rem) 2rem; display:flex; flex-direction:column; gap:0.9rem; }
   .rp-total { margin-left:auto; font-family:var(--mono); font-size:1.15rem; color:var(--text); min-width:3ch; text-align:right; }
   .rp-pips { display:flex; gap:0.35rem; justify-content:center; }
-  .rp-pip { width:26px; height:34px; border:1px solid var(--line-2); border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; color:var(--text-3); transition:border-color .4s ease, background .4s ease; }
+  .rp-pip { width:26px; height:34px; border:1px solid var(--line-2); border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; color:var(--text-3); transition:border-color .4s ease, background .4s ease, color .4s ease; }
   .rp-pip.rp-now { border-color:var(--text); box-shadow:inset 0 -3px 0 var(--mark); }
   .rp-pip .rp-gem { width:18px; height:18px; }
+  .rp-pip.rp-done { --rpc:var(--text-2); color:var(--rpc); border-color:color-mix(in srgb, var(--rpc) 70%, transparent); background:color-mix(in srgb, var(--rpc) 13%, transparent); }
+  .rp-pip.rp-t0 { --rpc:var(--text-3); border-color:var(--line-2); background:none; }
+  .rp-pip.rp-t2 { --rpc:var(--grass); } .rp-pip.rp-t3 { --rpc:var(--water); } .rp-pip.rp-t4 { --rpc:var(--psychic); } .rp-pip.rp-t5 { --rpc:var(--electric); }
   .rp-q { border-top:3px solid var(--rule); border-bottom:1px solid var(--line-2); padding:0.8rem 0 0.9rem; }
   .rp-q-n { font-family:var(--mono); font-size:var(--fs-sm); color:var(--text-3); letter-spacing:0.06em; }
   .rp-q-t { font-family:var(--display); font-weight:800; font-size:clamp(1.55rem, 5.4vw, 2.1rem); line-height:1.1; color:var(--text); margin:0.25rem 0 0.4rem; }

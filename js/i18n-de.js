@@ -2678,6 +2678,8 @@ Object.assign(I18N_MORE.de.dict, {
   "Share your result": "Teile dein Ergebnis",
   "of 6 prizes": "von 6 Preiskarten",
   "Guess the grade of today's list. Can you get it?": "Errate die Note der heutigen Liste. Schaffst du es?",
+  "The picture shows how rare each pull was, with no card names, so today's prompts stay a surprise.": "Das Bild zeigt, wie selten jede Karte war, ohne Kartennamen, damit die heutigen Aufgaben eine Überraschung bleiben.",
+  "Same prompts for everyone. How rare can you go?": "Dieselben Aufgaben für alle. Wie selten schaffst du es?",
   "DECK": "DECK",
   "accuracy,": "Trefferquote,",
   "a game.": "pro Spiel.",
@@ -2692,6 +2694,7 @@ I18N_MORE.de.pat.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.de.dict, {
   "Grade source in About": "Herkunft der Note in Über RdyDeck",
+  "Rare Pull colors and score picture": "Rare Pull: Farben und Ergebnisbild",
   "Photo import fixed": "Deck-Import per Foto korrigiert",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",

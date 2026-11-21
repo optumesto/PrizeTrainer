@@ -2611,6 +2611,8 @@ Object.assign(I18N_MORE.it.dict, {
   "Share your result": "Condividi il tuo risultato",
   "of 6 prizes": "su 6 Premi",
   "Guess the grade of today's list. Can you get it?": "Indovina il voto della lista di oggi. Ci riesci?",
+  "The picture shows how rare each pull was, with no card names, so today's prompts stay a surprise.": "L'immagine mostra quanto era rara ogni carta, senza nomi di carte, così le domande di oggi restano una sorpresa.",
+  "Same prompts for everyone. How rare can you go?": "Le stesse domande per tutti. Quanto in alto arrivi con la rarità?",
   "DECK": "MAZZO",
   "accuracy,": "di precisione,",
   "a game.": "a partita.",
@@ -2625,6 +2627,7 @@ I18N_MORE.it.pat.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.it.dict, {
   "Grade source in About": "Origine del voto in Info su RdyDeck",
+  "Rare Pull colors and score picture": "Rare Pull: colori e immagine del punteggio",
   "Photo import fixed": "Importazione da foto corretta",
   "Grade source on home page": "Origine del voto nella Home",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Il voto si basa sulle tue carte e, per i mazzi noti, sui risultati dei tornei online e locali dal vivo.",

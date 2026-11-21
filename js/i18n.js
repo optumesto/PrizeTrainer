@@ -6333,6 +6333,8 @@ Object.assign(I18N_ES, {
   "Share your result": "Comparte tu resultado",
   "of 6 prizes": "de 6 premios",
   "Guess the grade of today's list. Can you get it?": "Adivina la calificación de la lista de hoy. ¿Lo logras?",
+  "The picture shows how rare each pull was, with no card names, so today's prompts stay a surprise.": "La imagen muestra qué tan rara fue cada carta, sin nombres de cartas, así las preguntas de hoy siguen siendo una sorpresa.",
+  "Same prompts for everyone. How rare can you go?": "Las mismas preguntas para todos. ¿Qué tan rara puede ser tu carta?",
   "DECK": "BARAJA",
   "accuracy,": "de acierto,",
   "a game.": "por partida.",
@@ -6354,6 +6356,8 @@ Object.assign(I18N_PT, {
   "Share your result": "Compartilhe seu resultado",
   "of 6 prizes": "de 6 prêmios",
   "Guess the grade of today's list. Can you get it?": "Adivinhe a nota da lista de hoje. Você consegue?",
+  "The picture shows how rare each pull was, with no card names, so today's prompts stay a surprise.": "A imagem mostra o quão rara foi cada carta, sem nomes de cartas, assim as perguntas de hoje continuam uma surpresa.",
+  "Same prompts for everyone. How rare can you go?": "As mesmas perguntas para todos. Até onde vai a sua raridade?",
   "DECK": "DECK",
   "accuracy,": "de acerto,",
   "a game.": "por partida.",
@@ -6368,6 +6372,7 @@ I18N_PAT.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_ES, {
   "Grade source in About": "Origen de la calificación en Acerca de RdyDeck",
+  "Rare Pull colors and score picture": "Colores y foto de puntuación en Rare Pull",
   "Photo import fixed": "Importación desde foto arreglada",
   "Grade source on home page": "Origen de la calificación en Inicio",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La calificación se basa en tus cartas y, en barajas conocidas, en los resultados de torneos online y presenciales locales.",
@@ -6401,6 +6406,7 @@ Object.assign(I18N_ES, {
 });
 Object.assign(I18N_PT, {
   "Grade source in About": "Origem da nota em Sobre o RdyDeck",
+  "Rare Pull colors and score picture": "Cores e imagem da pontuação no Rare Pull",
   "Photo import fixed": "Importação por foto corrigida",
   "Grade source on home page": "Origem da nota no Início",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "A nota se baseia nas suas cartas e, em decks conhecidos, nos resultados de torneios online e presenciais locais.",

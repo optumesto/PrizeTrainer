@@ -518,6 +518,95 @@ function dgFoilCard(c, name, live) {
   };
 })();
 
+// 3.4.32: Rare Pull's share picture: the score and the seven pulls, each a card in its rarity's
+// color with its mark and points (the colors of the end screen). No card names or art, so today's
+// prompts stay a surprise for friends. Save image downloads it; Share sends it with the score line.
+const DG_RP_TIER = ['rgba(237,232,222,0.30)', '#bdb6a9', '#6aae6a', '#6f9fd0', '#b77ac4', '#d9b24a'];
+/** A rarity mark on the canvas, like rpGem: a card outline with the tier's mark, in a box of s by s. */
+function dgRpGem(x, ix, cx, cy, s, col) {
+  const k = s / 24;
+  x.save(); x.translate(cx - s / 2, cy - s / 2); x.scale(k, k);
+  x.strokeStyle = col; x.fillStyle = col; x.lineWidth = 1.6; x.lineJoin = 'round';
+  dgRR(x, 5, 2.5, 14, 19, 2); x.stroke();
+  const star = 'M12 8l1.5 3.2 3.4.4-2.5 2.3.7 3.4-3.1-1.8-3.1 1.8.7-3.4-2.5-2.3 3.4-.4z';
+  if (ix === 0) { x.beginPath(); x.arc(12, 13, 3.2, 0, Math.PI * 2); x.stroke(); }
+  else if (ix === 1) { x.beginPath(); x.arc(12, 13, 3.4, 0, Math.PI * 2); x.fill(); }
+  else if (ix === 2) { x.fill(new Path2D('M12 8.6l4 4.4-4 4.4-4-4.4z')); }
+  else if (ix === 3 || ix === 5) { x.fill(new Path2D(star)); }
+  else if (ix === 4) { x.lineWidth = 1.3; x.stroke(new Path2D(star)); x.beginPath(); x.arc(12, 13, 1.3, 0, Math.PI * 2); x.fill(); }
+  x.restore();
+}
+async function dgRpDraw(r, key, size) {
+  const g = await dgCanvas(size, DG_CV.rp, `Rare Pull #${rpNumber(key)}`);
+  if (!g) return null;
+  const { x, sq, D, B, L, R } = g;
+  const ps = (r.p || []).slice(0, RP_N);
+  // the score, out of 700
+  const y0 = sq ? 330 : 212;
+  x.font = `800 ${sq ? 156 : 108}px ${D}`; x.fillStyle = GS45.text;
+  const sc = String(r.score);
+  x.fillText(sc, L - 4, y0);
+  const scw = x.measureText(sc).width;
+  x.font = `700 ${sq ? 60 : 44}px ${D}`; x.fillStyle = GS45.text2;
+  x.fillText('/700', L + scw + 10, y0);
+  // the best pull's rarity and the streak
+  const top = Math.max(0, ...ps), st = typeof dgStreak === 'function' ? dgStreak() : 0;
+  const parts = [];
+  if (top > 0) parts.push(`${dgT('Best pull')}: ${dgT(rpTier(top)[1])} +${top}`);
+  if (st > 1) parts.push(dgT(dgStreakText(st)));
+  if (parts.length) {
+    x.font = `400 ${sq ? 34 : 30}px ${B}`; x.fillStyle = GS45.text2;
+    x.fillText(gs45Fit(x, parts.join('  ·  '), R - L), L, y0 + (sq ? 66 : 46));
+  }
+  // the seven pulls: a card per prompt, edged and marked in its rarity's color, points underneath
+  const n = RP_N, gap = sq ? 18 : 20;
+  const cw = Math.floor(((R - L) - gap * (n - 1)) / n), art = Math.round(cw * (sq ? 1.42 : 1.06)), strip = sq ? 64 : 50, ch = art + strip;
+  const cy = sq ? 490 : 294;
+  for (let i = 0; i < n; i++) {
+    const v = ps[i] || 0, ix = v > 0 ? rpTierIx(v) : 0, col = DG_RP_TIER[ix], cx = L + i * (cw + gap);
+    dgRR(x, cx, cy, cw, ch, 10);
+    x.fillStyle = ix ? col : 'rgba(237,232,222,0.04)'; x.globalAlpha = ix ? 0.13 : 1; x.fill(); x.globalAlpha = 1;
+    x.strokeStyle = col; x.lineWidth = ix ? 3 : 2; x.stroke();
+    x.fillStyle = col; x.globalAlpha = ix ? 0.45 : 1; x.fillRect(cx + 2, cy + art, cw - 4, 2); x.globalAlpha = 1;
+    dgRpGem(x, ix, cx + cw / 2, cy + art / 2, Math.min(cw * 0.62, art * 0.62), ix ? col : 'rgba(237,232,222,0.34)');
+    x.font = `600 ${sq ? 34 : 28}px ${B}`; x.fillStyle = ix ? col : 'rgba(237,232,222,0.42)';
+    const t = String(v);
+    x.fillText(t, cx + (cw - x.measureText(t).width) / 2, cy + art + strip / 2 + (sq ? 12 : 10));
+  }
+  // the square picture has room for the rarity key under the row
+  if (sq) {
+    const ky = cy + ch + 100;
+    x.font = `700 24px ${D}`;
+    const keys = [1, 2, 3, 4, 5].map(i => { const t = gs45Fit(x, dgT(RP_TIERS[RP_TIERS.length - 1 - i][1]).toUpperCase(), 150); return { i, t, w: 46 + x.measureText(t).width }; });
+    const gapK = Math.max(16, ((R - L) - keys.reduce((a, k) => a + k.w, 0)) / 4);
+    let kx = L;
+    keys.forEach(k => {
+      const col = DG_RP_TIER[k.i];
+      dgRpGem(x, k.i, kx + 18, ky - 9, 38, col);
+      x.fillStyle = col; x.fillText(k.t, kx + 46, ky);
+      kx += k.w + gapK;
+    });
+  }
+  dgCanvasFoot(g, 'Same prompts for everyone. How rare can you go?');
+  return dgBlob(g.c);
+}
+(function () {
+  if (typeof rpShare !== 'function') return;
+  rpShare = async function (k) {
+    const key = dailyOkKey(k) || dailyKey(), r = rpStore().results[key];
+    if (!r) { showToast('Play today\'s Rare Pull first.'); return; }
+    // the score line without its last line (rdydeck.com): the link takes its place
+    const text = rpShareText(r, key).split('\n').filter(l => l && l !== 'rdydeck.com').join('\n');
+    dgShareSheet({
+      title: 'Share your result',
+      hint: 'The picture shows how rare each pull was, with no card names, so today\'s prompts stay a surprise.',
+      text, url: shareBaseUrl() + '?ref=rarepull', name: 'rdydeck-rare-pull',
+      alt: `Rare Pull #${rpNumber(key)}: ${r.score} of 700`,
+      draw: size => dgRpDraw(r, key, size),
+    });
+  };
+})();
+
 // ═══ 5. Home: color edges, faded art and the ring ═══
 /** The art behind each row. None of it gives a game away: the Daily challenge's deck is already
  *  named on its row, Rare Pull shows your own best pull once you have one, and the puzzle and

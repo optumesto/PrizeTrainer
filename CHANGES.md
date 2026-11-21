@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.32 (build 160): Rare Pull colors and score picture (21 Nov 2026)
+
+Changed files: js/rare-pull.js (top row colors), js/dg-look.js (share picture, Share score opens the picture sheet), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.32, What's new, PT_BUILD now 160), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), sw.js (cache name prize-trainer-v160).
+
+- Rare Pull's row of seven tiles at the top keeps each played prompt's rarity color (Common gray, Uncommon green, Rare blue, Ultra Rare purple, Secret Rare gold), the same colors as the result card and the end screen. A miss or pass stays a dim outline. No animation.
+- Share score opens the same sheet as the other daily games: a picture in Wide or Square, Save image (downloads it), Copy link and Share. The picture shows the score out of 700, the best pull's rarity and points, the streak, and the seven pulls in their colors, with no card names or art so the day's prompts are not spoiled. The square one adds a rarity key.
+- Anonymous usage counts stay 3.4.30 (build 158).
+
 # RdyDeck 3.4.31 (build 159): Photo import fixed (21 Nov 2026)
 
 Changed files: js/photo-scan.js (box finding and count reading), tests/photo-scan-check.mjs (new check), .github/workflows/art-index.yml (runs the new check), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.31, What's new, PT_BUILD now 159), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v159).
