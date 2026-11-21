@@ -12,6 +12,7 @@ on:
       - js/photo-scan.js
       - tests/photo-import/**
       - tests/photo-import-check.mjs
+      - tests/photo-scan-check.mjs
       - tests/photo-import-ui.mjs
       - js/photo-import.js
       - .github/workflows/art-index.yml
@@ -34,6 +35,8 @@ jobs:
           node-version: '22'
       - name: Install sharp (reads card pictures; not part of the site)
         run: npm install --no-save --no-package-lock sharp@0.34.3
+      - name: Check box finding and count badges (drawn pictures, no card art needed)
+        run: node tests/photo-scan-check.mjs
       - name: Build the art index
         run: node build-art-index.mjs art-index.json art-index.bin data.json
       - name: Make test screenshots

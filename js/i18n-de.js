@@ -2692,6 +2692,7 @@ I18N_MORE.de.pat.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_MORE.de.dict, {
   "Grade source in About": "Herkunft der Note in Über RdyDeck",
+  "Photo import fixed": "Deck-Import per Foto korrigiert",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",
   "What's new card fixed": "Neuigkeiten-Karte korrigiert",

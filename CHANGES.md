@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.31 (build 159): Photo import fixed (21 Nov 2026)
+
+Changed files: js/photo-scan.js (box finding and count reading), tests/photo-scan-check.mjs (new check), .github/workflows/art-index.yml (runs the new check), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.31, What's new, PT_BUILD now 159), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v159).
+
+- A deck image with cards in a tight grid and a red count badge read 65 cards for 60. Two cards were found twice and counted twice; now a box that mostly covers one already found is the same card.
+- A faint mark read first could hide the badge (a 3 read as 4); now the clearer read of a spot wins.
+- A badge digit beside a bright edge read as two digits (a 2 read as 24); each digit is now also a read of its own, so the badge digit wins on its spot. A real 10 or 13 still reads.
+- That deck image now reads 60 cards with every count right. The TCG Live screenshot tests read the same as before.
+- Anonymous usage counts stay 3.4.30 (build 158).
+
 # RdyDeck 3.4.29 (build 157): Grade source in About (20 Nov 2026)
 
 Changed files: index.html (About RdyDeck paragraph, the header line fits one row on wide screens, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.29, What's new, PT_BUILD now 157), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (About paragraph, new string), sw.js (cache name prize-trainer-v157).

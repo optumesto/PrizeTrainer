@@ -6368,6 +6368,7 @@ I18N_PAT.unshift(
 // 3.4.22: Daily games fixes (js/daily-games.js, js/core.js, js/rare-pull.js, js/gtg.js).
 Object.assign(I18N_ES, {
   "Grade source in About": "Origen de la calificación en Acerca de RdyDeck",
+  "Photo import fixed": "Importación desde foto arreglada",
   "Grade source on home page": "Origen de la calificación en Inicio",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La calificación se basa en tus cartas y, en barajas conocidas, en los resultados de torneos online y presenciales locales.",
   "What's new card fixed": "Tarjeta de Novedades arreglada",
@@ -6400,6 +6401,7 @@ Object.assign(I18N_ES, {
 });
 Object.assign(I18N_PT, {
   "Grade source in About": "Origem da nota em Sobre o RdyDeck",
+  "Photo import fixed": "Importação por foto corrigida",
   "Grade source on home page": "Origem da nota no Início",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "A nota se baseia nas suas cartas e, em decks conhecidos, nos resultados de torneios online e presenciais locais.",
   "What's new card fixed": "Cartão de Novidades corrigido",

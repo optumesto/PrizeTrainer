@@ -312,7 +312,7 @@
     if (fromSingles) {
       const f = s.f, full = { px, W, H, bg: y => m.bg(y / f), cut: m.cut };
       return {
-        cards: fromSingles.boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
+        cards: oneBoxEach(fromSingles.boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f }))),
         cardW: fromSingles.cw * f, cardH: fromSingles.ch * f,
       };
     }
@@ -409,9 +409,25 @@
     boxes.sort((a, b) => (Math.abs(a.y - b.y) < ch * 0.4 ? a.x - b.x : a.y - b.y));
     const f = s.f, full = { px, W, H, bg: y => m.bg(y / f), cut: m.cut };
     return {
-      cards: boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f })),
+      cards: oneBoxEach(boxes.map(b => snap(full, { x: b.x * f, y: b.y * f, w: b.w * f, h: b.h * f }))),
       cardW: cw * f, cardH: ch * f,
     };
+  }
+
+  /** 3.4.31: one box for each card. Two pieces of the picture can both reach the same grid spot
+   *  (a row read as two pieces), and that card was then read, and counted, twice. A box that
+   *  mostly covers one already kept is the same card. */
+  function oneBoxEach(boxes) {
+    const kept = [];
+    for (const b of boxes) {
+      const same = kept.some(k => {
+        const ix = Math.max(0, Math.min(k.x + k.w, b.x + b.w) - Math.max(k.x, b.x));
+        const iy = Math.max(0, Math.min(k.y + k.h, b.y + b.h) - Math.max(k.y, b.y));
+        return ix * iy > Math.min(k.w * k.h, b.w * b.h) * 0.5;
+      });
+      if (!same) kept.push(b);
+    }
+    return kept;
   }
 
   /** Steady spacing of positions v (one per card standing alone): step and start, fitted over
@@ -660,10 +676,20 @@
           if (run.length >= 3) break;
         }
         let txt = '', s = 0, k = 0;
+        const one = [];
         for (const g of run) {
           const r = readGlyph(ink, w, g);
           if (r.ch === 'x') { if (txt === '') continue; else break; }
           txt += r.ch; s += r.s; k++;
+          one.push({ g, r });
+        }
+        // 3.4.31: each digit of a two digit read is also a read of its own, a little less trusted.
+        // A badge digit beside a mark of the card (a 2 beside a bright edge read as 24) then sits
+        // on the badge spot by itself, and the count read near that spot wins. A real 10 or 13
+        // stays ahead, since the two digits together are centred on the spot.
+        if (one.length === 2) for (const { g, r } of one) {
+          const n1 = parseInt(r.ch, 10);
+          if (n1 >= 1) found.push({ n: n1, s: r.s - 0.1, cx: x0 + g.x + g.w / 2, cy: y0 + g.y + g.h / 2, hgt: g.h, pol, single: true });
         }
         if (!k || txt.length > 2 || (txt.length > 1 && txt[0] === '0')) continue;   // no count starts with 0
         const n = parseInt(txt, 10);
@@ -686,8 +712,12 @@
       const R = { x: b.x - b.w * 0.12, y: b.y - b.h * 0.08, w: b.w * 1.24, h: b.h * 1.32 };
       const out = [];
       for (const gh of [b.h * 0.05, b.h * 0.07, b.h * 0.12]) for (const c of numbersIn(px, W, H, R, gh)) {
-        if (out.some(o => Math.abs(o.cx - c.cx) < c.hgt * 0.5 && Math.abs(o.cy - c.cy) < c.hgt * 0.5)) continue;
-        out.push(Object.assign(c, { rx: (c.cx - b.x) / b.w, ry: (c.cy - b.y) / b.h, rh: c.hgt / b.h }));
+        // 3.4.31: two reads of one spot keep the clearer one. Keeping the first found let a faint
+        // misread from the smallest size hide the badge itself (a 3 read as 4).
+        const o = out.findIndex(o => Math.abs(o.cx - c.cx) < Math.max(o.hgt, c.hgt) * 0.5 && Math.abs(o.cy - c.cy) < Math.max(o.hgt, c.hgt) * 0.5);
+        const cc = Object.assign(c, { rx: (c.cx - b.x) / b.w, ry: (c.cy - b.y) / b.h, rh: c.hgt / b.h });
+        if (o < 0) out.push(cc);
+        else if (c.s > out[o].s) out[o] = cc;
       }
       return out;
     });
@@ -792,7 +822,7 @@
   /** For tests: how well print i matches the card in box r (no shifting). */
   function scorePrint(idx, px, W, H, r, i) { const q = query(feat(px, W, H, r)); return scoreOne(idx, q.qy, q.qc, i); }
 
-  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, flagRepeats, shrink, scorePrint, foreground, parts, numbersIn };
+  const api = { FEAT, CARD_AR, feat, loadIndex, matchBox, findCards, readCounts, readDeck, flagRepeats, shrink, scorePrint, foreground, parts, numbersIn, oneBoxEach };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PhotoScan = api;
 })(typeof self !== 'undefined' ? self : this);
