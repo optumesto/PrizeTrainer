@@ -35,8 +35,12 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     } });
   const w = dom.window, d = w.document;
   await new Promise(r => setTimeout(r, 3500));
+  // 3.4.22: the puzzle's number is the board's day, the same for everyone (day 1 is Mon 9 Nov 2026),
+  // not a count of your own days played. Worked out here from the date, not from the app's own function.
+  const BOARD_DAY = (([y, m, dd]) => Math.round((Date.UTC(y, m - 1, dd) - Date.UTC(2026, 10, 9)) / 864e5) + 1)(w.dailyKey().split('-').map(Number));
+  const numRe = new RegExp('Daily puzzle #' + BOARD_DAY + '\\b');
   const card = d.getElementById('puzzle-card');
-  ok(card && /Your puzzle #1\b/.test(card.textContent), 'home card: ' + (card && card.textContent.replace(/\s+/g, ' ').trim()));
+  ok(card && numRe.test(card.textContent) && /Win this turn from a real tournament board/.test(card.textContent), 'home card: ' + (card && card.textContent.replace(/\s+/g, ' ').trim()));
   ok(/Build a deck/.test(d.querySelector('.home-cta-row').textContent), 'home has the deck builder button next to the puzzle card');
   // What's new: a brand new user never gets the home card.
   ok(d.getElementById('wn-card').innerHTML === '' && w.localStorage.getItem('rd_seen_version') === w.eval('PT_VERSION'), "new user: no What's new card, version marked seen");
@@ -91,20 +95,22 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   const P = w.eval('state').puzzle; const today = pz.key;
   const dayKey = back => { const d = new w.Date(); d.setDate(d.getDate() - back); return w.dailyKey(d.getTime()); };
   P.results = { [dayKey(5)]: { won: true, moves: 3, num: 1 }, [dayKey(2)]: { won: true, moves: 2, num: 2 }, [dayKey(1)]: { won: true, moves: 4, num: 3 } };
-  ok(w.puzzleNumber(today) === 4, 'your next puzzle is your #4 after three days played (' + w.puzzleNumber(today) + ')');
+  ok(w.puzzleNumber(today) === BOARD_DAY, 'the number is the board\'s day (#' + BOARD_DAY + '), whatever days you played (' + w.puzzleNumber(today) + ')');
   w.renderHome();
   const cardTxt = () => d.getElementById('puzzle-card').textContent.replace(/\s+/g, ' ').trim();
-  ok(/Your puzzle #4/.test(cardTxt()) && /3 solved of 3 played/.test(cardTxt()) && /2 wins in a row/.test(cardTxt()), 'home card before playing: ' + cardTxt());
+  // Before you play, the home row says what the game is; your tally and runs stay on the result screen.
+  ok(numRe.test(cardTxt()) && /Win this turn from a real tournament board/.test(cardTxt()) && !/solved of|in a row/.test(cardTxt()), 'home card before playing: ' + cardTxt());
+  ok(/3 solved of 3 played, 2 wins in a row/.test(w.pzTally()), 'tally before playing: ' + w.pzTally());
   await w.openPuzzle();
   for (const a of S.line) { const cur = w.eval('pzS').s; const L = E.legalActions(cur, { why: true }); const i = L.findIndex(x => !x.why && E.sig(cur, x) === E.sig(cur, a)); if (i >= 0) w.pzDo(i); }
   R = P.results[today];
-  ok(R && R.num === 4 && R.won, 'today saved as your #4, won');
+  ok(R && R.num === BOARD_DAY && R.won, 'today saved as #' + BOARD_DAY + ', won');
   ok(/4 solved of 4 played, 3 wins in a row/.test(body.textContent), 'result banner: ' + (body.querySelector('.pz-res span') || {}).textContent);
   console.log('     share: ' + w.puzzleShareText(R, today));
-  ok(/my #4: won this turn in \d+ plays?\. 3 wins in a row\./.test(w.puzzleShareText(R, today)), 'share text has your number and streak');
+  ok(new RegExp('Daily Puzzle #' + BOARD_DAY + ': won this turn in \\d+ plays?\\. 3 wins in a row\\.').test(w.puzzleShareText(R, today)), 'share text has the day\'s number and your streak');
   w.showScreen('home'); w.renderHome(); console.log('     card: ' + cardTxt());
   P.results[today] = { won: false, moves: 5, num: 4 }; w.renderHome();
-  ok(/3 days in a row/.test(cardTxt()) && !/wins in a row/.test(cardTxt()), 'a loss today ends the win streak, keeps the days streak: ' + cardTxt());
+  ok(/no win/.test(cardTxt()) && /3 days in a row/.test(w.pzTally()) && !/wins in a row/.test(w.pzTally()), 'a loss today ends the win streak, keeps the days streak: ' + cardTxt() + ' / ' + w.pzTally());
   // Card sheet opens for a Pokémon and a hand card.
   w.showScreen('puzzle');
   w.pzReset(); w.showScreen('puzzle'); w.renderPuzzle();
@@ -141,6 +147,9 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
       const t = Date.now(); w.pzDo(i); if (Date.now() - t > 1500) slow++;
     }
     if (E.goalMet(w.eval('pzS').s)) uiWon++;
+    // Let the page's MutationObservers run between boards, as they do between taps in a browser.
+    // Without this, every replaced board waits in their queue until the loop ends (over 4 GB by now).
+    await new Promise(r => setTimeout(r, 0));
   }
   ok(uiWon === pack.puzzles.length, `all puzzles won through the screen (${uiWon}); ${oppPicks} opponent choices made by the screen; ${slow} taps over 1.5s`);
   // Searching your deck finds the real cards (3.3.9): Cyrano on the 18 Nov board, picked one card at a time.
