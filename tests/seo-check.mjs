@@ -16,6 +16,7 @@ const SKIP = new Set(['404.html', 'offline.html']);
 const files = [...readdirSync(ROOT).filter(f => f.endsWith('.html') && !/^google[0-9a-f]+\.html$/.test(f)),
   ...(() => { try { return readdirSync(path.join(ROOT, 'cards')).filter(f => f.endsWith('.html')).map(f => 'cards/' + f); } catch (_) { return []; } })()];
 const descs = new Map();
+const SITEMAP = readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
 const TOOLS = ['deck-grader.html', 'opening-odds.html', 'rotation.html', 'prize-trainer.html', 'rulings.html', 'improve-your-deck.html'];
 
 for (const f of files) {
@@ -24,7 +25,14 @@ for (const f of files) {
   const n = html.split(MIRROR_NOINDEX).length - 1;
   if (n !== 1) fail(`${f}: github.io noindex line ${n} times, want 1`);
   const home = forHome(html);
-  if (/name="robots"[^>]*noindex/i.test(home)) fail(`${f}: still noindex on rdydeck.com`);
+  // 3.4.33: card guides stay out of search and out of sitemap.xml; every other page is in both.
+  const outOfSearch = f.startsWith('cards/');
+  const noindexHere = /name="robots"[^>]*noindex/i.test(home);
+  if (outOfSearch && !noindexHere) fail(`${f}: card guide is indexable on rdydeck.com`);
+  if (!outOfSearch && noindexHere) fail(`${f}: still noindex on rdydeck.com`);
+  const loc = `<loc>https://rdydeck.com/${f.replace(/(^|\/)index\.html$/, '$1')}</loc>`;
+  if (outOfSearch && SITEMAP.includes(loc)) fail(`${f}: card guide is in sitemap.xml`);
+  if (!outOfSearch && !SITEMAP.includes(loc)) fail(`${f}: not in sitemap.xml`);
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
   const desc = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || '';
   if (!title) fail(`${f}: no title`);

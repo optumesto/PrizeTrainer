@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.33 (build 161): Guide buttons in More, card guides kept out of search (21 Nov 2026)
+
+Changed files: index.html (two More tiles and their layout, softwareVersion, stamps), build-pages.mjs (card guides get a noindex, follow line and leave sitemap.xml), cards/ (all 179 pages: one new robots line), sitemap.xml (card guides removed, 38 URLs left), tests/seo-check.mjs (card guides must be noindex and out of the sitemap; every other page indexable and in it), js/core.js (PT_VERSION now v3.4.33, What's new, PT_BUILD now 161), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v161).
+
+- For the AdSense review. The 178 card guides were about 80% of the sitemap, and each is mostly the card's own printed text with a short list of decks. To Google that reads as many short look-alike pages, which AdSense counts as low-value content. They now carry noindex, follow and are out of sitemap.xml, so Google judges the site by the deck guides, tools and help pages. The pages still work and the deck guides still link to them.
+- Home, More: two new tiles, Deck guides (meta-decks.html) and How grading works (how-grading-works.html), as real links so Google and the AdSense review can follow them. Before this, the only way to the guides was a small text link at the bottom of the home screen. Six tiles sit two across on phones and three across on wider screens. Labels already had translations in all five languages.
+- The github.io-only noindex line is unchanged; the Worker still takes it out, and the card guides' own noindex line stays.
+- Anonymous usage counts stay 3.4.30 (build 158).
+
 # RdyDeck 3.4.32 (build 160): Rare Pull colors and score picture (21 Nov 2026)
 
 Changed files: js/rare-pull.js (top row colors), js/dg-look.js (share picture, Share score opens the picture sheet), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.32, What's new, PT_BUILD now 160), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new strings), sw.js (cache name prize-trainer-v160).

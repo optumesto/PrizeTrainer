@@ -117,7 +117,7 @@ const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&eacute;/g, '\u00e
 // The question and answer pairs (<dt> then <dd>) on a page, so Google and AI assistants can read them as an FAQ.
 const faqPairs = body => [...String(body).matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)].map(m => [plain(m[1]), plain(m[2])]);
 
-function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [] }) {
+function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [], index = true }) {
   const url = 'https://rdydeck.com/' + file.replace(/(^|\/)index\.html$/, '$1');
   const up = '../'.repeat(file.split('/').length - 1);
   const qa = faq ? faqPairs(body) : [];
@@ -148,7 +148,7 @@ function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex" data-mirror>
-<script>
+${index ? '' : NOINDEX_HERE + '\n'}<script>
 // The old GitHub Pages copy of this page sends visitors on to rdydeck.com, the same page.
 if (location.hostname === 'optumesto.github.io') location.replace('https://rdydeck.com/' + location.pathname.replace(/^\\/PrizeTrainer\\/?/i, '') + location.search + location.hash);
 </script>
@@ -685,6 +685,12 @@ ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to
 
 // ── pages written by hand in .github/pages/*.html (kept out of the site's own folders, so the bare source is never served as a page) ──────────────────────────────────────────────────────
 // Each starts with one comment line of JSON: {"file", "title", "desc", "kicker", "h1"}.
+// 3.4.33: card guides stay out of search (noindex, follow) and out of sitemap.xml. Each is mostly the
+// card's own printed text, so to Google they read as many short look-alike pages, which AdSense's
+// review counts as low-value content. Players still reach them from the deck guides and the app.
+const NOINDEX_HERE = '<meta name="robots" content="noindex, follow">';
+const OUT_OF_SITEMAP = f => f.startsWith('cards/');
+
 // ── 3.2: one guide page per card (cards/*.html), from .github/card-pages.json ──────────────────
 // The text is the card's own, from pokemon-tcg-data (card-pages-data.mjs writes the file). What
 // each deck does with it is from deck-guides.json (our own words) and meta-cards.json (counts).
@@ -793,7 +799,7 @@ ${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a>
   if ([...desc].length > 155) desc = `${c.name} in the Pokémon TCG: card text, decks that run it and official rules.`;
   if ([...desc].length < 70) desc = desc.replace(' in the Pokémon TCG:', ' in the Pokémon TCG, as played today:');
   return page({
-    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body,
+    file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body, index: false,
     title: [`${c.name}: Card Text, Decks and Rulings | RdyDeck`, `${c.name}: Card Text and Decks | RdyDeck`, `${c.name} Card Guide | RdyDeck`].find(t => t.length <= 60) || `${c.name} | RdyDeck`,
   });
 }
@@ -814,7 +820,7 @@ ${cs.map(c => `  <li><a href="${c.slug}.html">${esc(c.name)}</a></li>`).join('\n
   return page({
     file: 'cards/index.html', title: 'Pokémon TCG Card Guides: Top Meta Cards | RdyDeck', updated: mc.asOf,
     desc: 'Guides to the Pokémon TCG cards top decks play now: card text, which decks run them and how often, and the official rules that apply.',
-    kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website',
+    kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website', index: false,
   });
 }
 
@@ -862,11 +868,19 @@ for (const [file, html] of out) {
   if (CHECK) console.log('Would change: ' + file);
   else { mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, html); }
 }
-// Every built page is in sitemap.xml (a new card page joins with today's date; update-sitemap.mjs keeps dates current).
+// Every built page except the card guides is in sitemap.xml (a new page joins with today's date; update-sitemap.mjs keeps dates current).
 {
   const sm = path.join(ROOT, 'sitemap.xml');
   let xml = readFileSync(sm, 'utf8');
-  const add = out.map(([f]) => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  const listed = out.map(([f]) => f).filter(f => !OUT_OF_SITEMAP(f));
+  const add = listed.map(f => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  // Pages kept out of search are taken out of the sitemap too.
+  const drop = /\s*<url>\s*<loc>https:\/\/rdydeck\.com\/cards\/[^<]*<\/loc>[\s\S]*?<\/url>/g;
+  if (drop.test(xml)) {
+    changed++;
+    if (CHECK) console.log('In sitemap.xml but kept out of search: card guides');
+    else { xml = xml.replace(drop, ''); writeFileSync(sm, xml); }
+  }
   if (add.length) {
     changed++;
     if (CHECK) console.log('Not in sitemap.xml: ' + add.join(', '));

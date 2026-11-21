@@ -2696,6 +2696,8 @@ Object.assign(I18N_MORE.de.dict, {
   "Grade source in About": "Herkunft der Note in Über RdyDeck",
   "Rare Pull colors and score picture": "Rare Pull: Farben und Ergebnisbild",
   "Photo import fixed": "Deck-Import per Foto korrigiert",
+  "Card guides kept out of search": "Kartenratgeber nicht mehr in Suchmaschinen",
+  "Deck guides and How grading works in More": "Deck-Guides und So funktioniert die Note unter Mehr",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",
   "What's new card fixed": "Neuigkeiten-Karte korrigiert",
