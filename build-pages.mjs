@@ -324,6 +324,42 @@ function stats(g) {
 }
 
 const PART_NAME = { P: 'Pok&eacute;mon', T: 'Trainers', E: 'Energy' };
+// 3.4.36: small card pictures in the deck guides, from the same picture host as the card guides.
+const LTCG = 'https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/';
+function thumbUrls(x) {
+  const clean = String(x[2]).replace(/^0+(\d)/, '$1'), pad = clean.padStart(3, '0');
+  return [`${LTCG}${x[1]}/${x[1]}_${pad}_R_EN_XS.png`, `${LTCG}${x[1]}/${x[1]}_${clean}_R_EN_XS.png`, `${LTCG}${x[1]}/${x[1]}_${pad}_R_EN_SM.png`];
+}
+/** A card's cell in a deck guide table: its small picture, then its name. data-f holds the fallbacks (CARD_IMG_FALLBACK). */
+function cardCell(x) {
+  const [src, ...f] = thumbUrls(x);
+  return `<span class="ci"><img src="${src}" data-f="${f.join(' ')}" alt="" width="34" height="47" loading="lazy" decoding="async">${cardLink(x[0])}</span>`;
+}
+/** Tries the next picture in data-f when one fails, and hides the picture when none is left. */
+const DECK_PIC_CSS = `<style>
+.deck-top { margin-top:0.4rem; }
+.deck-top .card-art { width:170px; }
+.deck-top .card-art figcaption { font-size:0.8rem; color:var(--text-3); text-align:center; margin-top:0.35rem; }
+.deck-top .lead { margin-top:0; }
+.ci { display:flex; align-items:center; gap:0.55rem; }
+.ci img { flex:0 0 auto; width:34px; height:auto; aspect-ratio:136/189; border-radius:3px; background:var(--line); }
+@media (max-width:520px) { .deck-top .card-art { width:min(190px, 52vw); } .ci img { width:28px; } }
+</style>`;
+const CARD_IMG_FALLBACK = `<script>document.addEventListener('error', function (e) { var i = e.target; if (!i || i.tagName !== 'IMG' || !i.hasAttribute('data-f')) return; var f = i.getAttribute('data-f').split(' ').filter(Boolean); if (f.length) { i.setAttribute('data-f', f.slice(1).join(' ')); i.src = f[0]; } else { i.removeAttribute('data-f'); i.style.visibility = 'hidden'; } }, true);</script>`;
+/** The deck's lead card picture: the first key card that is a Pokémon, as its card guide shows it. */
+function deckHero(g, c) {
+  for (const [k] of g.keys) {
+    const cp1 = cardByName[k];
+    const x = c.cards.filter(y => y[0] === k && y[3] === 'P').sort((a, b) => b[6] - a[6])[0];
+    if (!(cp1 ? /Pok/.test(cp1.supertype) : x)) continue;
+    const set = cp1 ? cp1.set : x[1], no = cp1 ? cp1.no : x[2];
+    const label = `${k}, ${set} ${no}`;
+    const sm = artUrl({ set, no });
+    return `<figure class="card-art"><img src="${sm}" data-f="${sm.replace('_SM.png', '.png')}" alt="${esc(k)} card, ${esc(set)} ${esc(no)}" width="274" height="381" decoding="async"><figcaption>${esc(label)}</figcaption></figure>`;
+  }
+  return '';
+}
+
 function coreTables(c) {
   const core = c.cards.filter(x => x[6] >= 0.9), flex = c.cards.filter(x => x[6] >= 0.25 && x[6] < 0.9);
   let h = '';
@@ -335,7 +371,7 @@ function coreTables(c) {
 <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardLink(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
+${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardCell(x)}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
   </tbody>
 </table></div>
 `;
@@ -345,7 +381,7 @@ ${rows.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardLink(x[0])}</td><td
 <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-${flex.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardLink(x[0])}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
+${flex.map(x => `    <tr><td class="n">${x[4]}</td><td>${cardCell(x)}</td><td>${esc(x[1])} ${esc(x[2])}</td><td class="n">${Math.round(x[6] * 100)}%</td></tr>`).join('\n')}
   </tbody>
 </table></div>
 `;
@@ -381,11 +417,17 @@ function deckPage(g) {
     ? `since ${esc(curName)} came out`
     : `since ${day(mu.since)}${s.curGames ? `, and ${pct(s.cur[0], s.curGames)} over ${num(s.curGames)} games since ${esc(curName)}` : ''}`}.</li>`);
   if (s.grade) facts.push(`<li><strong>RdyDeck grade:</strong> ${r1(s.grade.g)} out of 10 for its top lists.</li>`);
-  const body = `
-<p class="lead">${esc(g.lead)}</p>
+  const hero = deckHero(g, c);
+  const top = `<p class="lead">${esc(g.lead)}</p>
 <ul>
 ${facts.map(f => '  ' + f).join('\n')}
-</ul>
+</ul>`;
+  const body = `
+${DECK_PIC_CSS}
+${CARD_IMG_FALLBACK}
+${hero ? `<div class="card-top deck-top">${hero}<div class="tw">
+${top}
+</div></div>` : top}
 <div class="cta-row"><a class="cta" href="./">Grade my ${esc(g.title)} list</a></div>
 
 <h2>Game plan</h2>

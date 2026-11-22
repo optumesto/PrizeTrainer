@@ -2660,6 +2660,7 @@ Object.assign(I18N_MORE.fr.dict, {
   "Card guides kept out of search": "Guides de cartes retirés des moteurs de recherche",
   "Card guides: pictures, odds and win records": "Guides de cartes : images, probabilités et bilans de victoires",
   "Card guide link and rulebook notes on cards": "Lien vers le guide et notes du livret de règles sur les cartes",
+  "Card pictures in the deck guides": "Images des cartes dans les guides de decks",
   "Deck guides and How grading works in More": "Guides de decks et Comment marche la note dans Plus",
   "Grade source on home page": "Source de la note sur l'accueil",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La note repose sur vos cartes et, pour les decks connus, sur les résultats de tournois en ligne et locaux en présentiel.",

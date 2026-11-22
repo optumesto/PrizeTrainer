@@ -76,6 +76,13 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   .crumbs a { color:var(--text-2); }
   .crumbs span[aria-hidden] { margin:0 0.4rem; }
   footer a { color:var(--text-2); }
+  .card-top { display:flex; gap:1.2rem; align-items:flex-start; margin:1rem 0 0.4rem; }
+  .card-top .tw { flex:1; min-width:0; }
+  .card-top table { margin:0; }
+  tr.you td { color:var(--text); font-weight:600; }
+  .card-art { flex:0 0 auto; width:180px; margin:0; }
+  .card-art img { display:block; width:100%; height:auto; aspect-ratio:274/381; border-radius:4.5%; background:var(--line); }
+  @media (max-width:520px) { .card-top { flex-direction:column; align-items:center; } .card-art { width:min(240px, 70vw); } .card-top .tw { width:100%; } }
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 <style>.rd-nosocial .rd-social { display:none !important; }
@@ -171,12 +178,24 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <p class="kicker">Deck guide</p>
   <h1>Dhelmise deck guide</h1>
+  <style>
+  .deck-top { margin-top:0.4rem; }
+  .deck-top .card-art { width:170px; }
+  .deck-top .card-art figcaption { font-size:0.8rem; color:var(--text-3); text-align:center; margin-top:0.35rem; }
+  .deck-top .lead { margin-top:0; }
+  .ci { display:flex; align-items:center; gap:0.55rem; }
+  .ci img { flex:0 0 auto; width:34px; height:auto; aspect-ratio:136/189; border-radius:3px; background:var(--line); }
+  @media (max-width:520px) { .deck-top .card-art { width:min(190px, 52vw); } .ci img { width:28px; } }
+  </style>
+  <script>document.addEventListener('error', function (e) { var i = e.target; if (!i || i.tagName !== 'IMG' || !i.hasAttribute('data-f')) return; var f = i.getAttribute('data-f').split(' ').filter(Boolean); if (f.length) { i.setAttribute('data-f', f.slice(1).join(' ')); i.src = f[0]; } else { i.removeAttribute('data-f'); i.style.visibility = 'hidden'; } }, true);</script>
+  <div class="card-top deck-top"><figure class="card-art"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_039_R_EN_SM.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_039_R_EN.png" alt="Dhelmise card, PBL 39" width="274" height="381" decoding="async"><figcaption>Dhelmise, PBL 39</figcaption></figure><div class="tw">
   <p class="lead">Dhelmise's Vengeful Anchor does 170 damage for a single Psychic Energy once you have 4 Pokémon with the Hide 'n' Sneak Ability in your discard pile. The deck fills its own discard pile on purpose.</p>
   <ul>
   <li><strong>Field share:</strong> 3.2% of players in the 5 Limitless online events in the 14 days to 16 Nov 2026 (1,022 players).</li>
   <li><strong>Tournament record:</strong> 51.0% wins over 5,711 games since 16 Sep 2026, and 46.6% over 549 games since Delta Reign.</li>
   <li><strong>RdyDeck grade:</strong> 8.4 out of 10 for its top lists.</li>
   </ul>
+  </div></div>
   <div class="cta-row"><a class="cta" href="./">Grade my Dhelmise list</a></div>
 
   <h2>Game plan</h2>
@@ -200,51 +219,51 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td><a href="cards/banette.html">Banette</a></td><td>PBL 34</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/dhelmise.html">Dhelmise</a></td><td>PBL 39</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/poltchageist.html">Poltchageist</a></td><td>PBL 5</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/shuppet.html">Shuppet</a></td><td>PBL 33</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/lillies-clefairy-ex.html">Lillie's Clefairy ex</a></td><td>JTG 56</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/sinistcha.html">Sinistcha</a></td><td>PBL 6</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_034_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_34_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_034_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/banette.html">Banette</a></span></td><td>PBL 34</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_039_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_39_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_039_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/dhelmise.html">Dhelmise</a></span></td><td>PBL 39</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_005_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_5_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_005_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/poltchageist.html">Poltchageist</a></span></td><td>PBL 5</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_033_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_33_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_033_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/shuppet.html">Shuppet</a></span></td><td>PBL 33</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_056_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_56_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_056_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/lillies-clefairy-ex.html">Lillie's Clefairy ex</a></span></td><td>JTG 56</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_006_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_6_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_006_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/sinistcha.html">Sinistcha</a></span></td><td>PBL 6</td><td class="n">100%</td></tr>
   </tbody>
   </table></div>
   <h3>Trainers (27)</h3>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td><a href="cards/gwynn.html">Gwynn</a></td><td>PBL 78</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/lillies-determination.html">Lillie's Determination</a></td><td>MEG 119</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/poke-pad.html">Poké Pad</a></td><td>POR 81</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/ultra-ball.html">Ultra Ball</a></td><td>MEG 131</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/bosss-orders.html">Boss's Orders</a></td><td>MEG 114</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/night-stretcher.html">Night Stretcher</a></td><td>ASC 196</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/prism-tower.html">Prism Tower</a></td><td>CRI 80</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/explorers-guidance.html">Explorer's Guidance</a></td><td>TEF 147</td><td class="n">92%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_078_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_78_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_078_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/gwynn.html">Gwynn</a></span></td><td>PBL 78</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/lillies-determination.html">Lillie's Determination</a></span></td><td>MEG 119</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_081_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_81_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_081_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/poke-pad.html">Poké Pad</a></span></td><td>POR 81</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/ultra-ball.html">Ultra Ball</a></span></td><td>MEG 131</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_114_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_114_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_114_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/bosss-orders.html">Boss's Orders</a></span></td><td>MEG 114</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/night-stretcher.html">Night Stretcher</a></span></td><td>ASC 196</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_080_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_80_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_080_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/prism-tower.html">Prism Tower</a></span></td><td>CRI 80</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_147_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_147_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_147_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/explorers-guidance.html">Explorer's Guidance</a></span></td><td>TEF 147</td><td class="n">92%</td></tr>
   </tbody>
   </table></div>
   <h3>Energy (7)</h3>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td><a href="cards/telepathic-psychic-energy.html">Telepathic Psychic Energy</a></td><td>POR 88</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td>Psychic Energy</td><td>MEE 13</td><td class="n">100%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/legacy-energy.html">Legacy Energy</a></td><td>TWM 167</td><td class="n">92%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_088_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_88_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_088_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/telepathic-psychic-energy.html">Telepathic Psychic Energy</a></span></td><td>POR 88</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_013_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_13_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_013_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Psychic Energy</span></td><td>MEE 13</td><td class="n">100%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_167_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_167_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_167_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/legacy-energy.html">Legacy Energy</a></span></td><td>TWM 167</td><td class="n">92%</td></tr>
   </tbody>
   </table></div>
   <p>That is 54 of the 60 cards. The rest of each list is made of flex slots, and these are the most common choices:</p>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">1</td><td><a href="cards/latias-ex.html">Latias ex</a></td><td>SSP 76</td><td class="n">87%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/bloodmoon-ursaluna-ex.html">Bloodmoon Ursaluna ex</a></td><td>TWM 141</td><td class="n">67%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/dudunsparce.html">Dudunsparce</a></td><td>TEF 129</td><td class="n">64%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/dunsparce.html">Dunsparce</a></td><td>JTG 120</td><td class="n">64%</td></tr>
-    <tr><td class="n">1</td><td>Spiritomb</td><td>PBL 35</td><td class="n">41%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/dudunsparce-ex.html">Dudunsparce ex</a></td><td>JTG 121</td><td class="n">38%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/pokegear-30.html">Pokégear 3.0</a></td><td>SVI 186</td><td class="n">33%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/yveltal.html">Yveltal</a></td><td>30C 100</td><td class="n">33%</td></tr>
-    <tr><td class="n">2</td><td>Naveen</td><td>POR 79</td><td class="n">28%</td></tr>
-    <tr><td class="n">1</td><td>Patrat</td><td>CRI 70</td><td class="n">26%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_076_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_76_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_076_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/latias-ex.html">Latias ex</a></span></td><td>SSP 76</td><td class="n">87%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_141_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_141_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_141_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/bloodmoon-ursaluna-ex.html">Bloodmoon Ursaluna ex</a></span></td><td>TWM 141</td><td class="n">67%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_129_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_129_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_129_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/dudunsparce.html">Dudunsparce</a></span></td><td>TEF 129</td><td class="n">64%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_120_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_120_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_120_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/dunsparce.html">Dunsparce</a></span></td><td>JTG 120</td><td class="n">64%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_035_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_35_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PBL/PBL_035_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Spiritomb</span></td><td>PBL 35</td><td class="n">41%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_121_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_121_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_121_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/dudunsparce-ex.html">Dudunsparce ex</a></span></td><td>JTG 121</td><td class="n">38%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SVI/SVI_186_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SVI/SVI_186_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SVI/SVI_186_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/pokegear-30.html">Pokégear 3.0</a></span></td><td>SVI 186</td><td class="n">33%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_100_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_100_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_100_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/yveltal.html">Yveltal</a></span></td><td>30C 100</td><td class="n">33%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_079_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_79_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_079_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Naveen</span></td><td>POR 79</td><td class="n">28%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_070_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_70_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_070_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Patrat</span></td><td>CRI 70</td><td class="n">26%</td></tr>
   </tbody>
   </table></div>
 

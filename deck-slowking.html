@@ -76,6 +76,13 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   .crumbs a { color:var(--text-2); }
   .crumbs span[aria-hidden] { margin:0 0.4rem; }
   footer a { color:var(--text-2); }
+  .card-top { display:flex; gap:1.2rem; align-items:flex-start; margin:1rem 0 0.4rem; }
+  .card-top .tw { flex:1; min-width:0; }
+  .card-top table { margin:0; }
+  tr.you td { color:var(--text); font-weight:600; }
+  .card-art { flex:0 0 auto; width:180px; margin:0; }
+  .card-art img { display:block; width:100%; height:auto; aspect-ratio:274/381; border-radius:4.5%; background:var(--line); }
+  @media (max-width:520px) { .card-top { flex-direction:column; align-items:center; } .card-art { width:min(240px, 70vw); } .card-top .tw { width:100%; } }
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 <style>.rd-nosocial .rd-social { display:none !important; }
@@ -171,12 +178,24 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 
   <p class="kicker">Deck guide</p>
   <h1>Slowking deck guide</h1>
+  <style>
+  .deck-top { margin-top:0.4rem; }
+  .deck-top .card-art { width:170px; }
+  .deck-top .card-art figcaption { font-size:0.8rem; color:var(--text-3); text-align:center; margin-top:0.35rem; }
+  .deck-top .lead { margin-top:0; }
+  .ci { display:flex; align-items:center; gap:0.55rem; }
+  .ci img { flex:0 0 auto; width:34px; height:auto; aspect-ratio:136/189; border-radius:3px; background:var(--line); }
+  @media (max-width:520px) { .deck-top .card-art { width:min(190px, 52vw); } .ci img { width:28px; } }
+  </style>
+  <script>document.addEventListener('error', function (e) { var i = e.target; if (!i || i.tagName !== 'IMG' || !i.hasAttribute('data-f')) return; var f = i.getAttribute('data-f').split(' ').filter(Boolean); if (f.length) { i.setAttribute('data-f', f.slice(1).join(' ')); i.src = f[0]; } else { i.removeAttribute('data-f'); i.style.visibility = 'hidden'; } }, true);</script>
+  <div class="card-top deck-top"><figure class="card-art"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_058_R_EN_SM.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_058_R_EN.png" alt="Slowking card, SCR 58" width="274" height="381" decoding="async"><figcaption>Slowking, SCR 58</figcaption></figure><div class="tw">
   <p class="lead">Slowking borrows other Pokémon's attacks. Its Seek Inspiration discards the top card of your deck and, if that card is a Pokémon without a Rule Box, uses one of its attacks. The deck sets up the top of its own deck so it knows what Slowking will copy.</p>
   <ul>
   <li><strong>Field share:</strong> 4.5% of players in the 5 Limitless online events in the 14 days to 16 Nov 2026 (1,022 players).</li>
   <li><strong>Tournament record:</strong> 51.3% wins over 6,005 games since 16 Sep 2026, and 49.5% over 899 games since Delta Reign.</li>
   <li><strong>RdyDeck grade:</strong> 8.5 out of 10 for its top lists.</li>
   </ul>
+  </div></div>
   <div class="cta-row"><a class="cta" href="./">Grade my Slowking list</a></div>
 
   <h2>Game plan</h2>
@@ -200,50 +219,50 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td><a href="cards/slowpoke.html">Slowpoke</a></td><td>SCR 57</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/slowking.html">Slowking</a></td><td>SCR 58</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/kyurem.html">Kyurem</a></td><td>SFA 47</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/latias-ex.html">Latias ex</a></td><td>SSP 76</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/metagross.html">Metagross</a></td><td>CRI 61</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/mega-kangaskhan-ex.html">Mega Kangaskhan ex</a></td><td>MEG 104</td><td class="n">98%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/fezandipiti-ex.html">Fezandipiti ex</a></td><td>ASC 142</td><td class="n">98%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/lillies-clefairy-ex.html">Lillie's Clefairy ex</a></td><td>JTG 56</td><td class="n">98%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/meowth-ex.html">Meowth ex</a></td><td>POR 62</td><td class="n">95%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_057_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_57_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_057_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/slowpoke.html">Slowpoke</a></span></td><td>SCR 57</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_058_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_58_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SCR/SCR_058_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/slowking.html">Slowking</a></span></td><td>SCR 58</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_047_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_47_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_047_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/kyurem.html">Kyurem</a></span></td><td>SFA 47</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_076_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_76_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_076_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/latias-ex.html">Latias ex</a></span></td><td>SSP 76</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_061_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_61_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_061_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/metagross.html">Metagross</a></span></td><td>CRI 61</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_104_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_104_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_104_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/mega-kangaskhan-ex.html">Mega Kangaskhan ex</a></span></td><td>MEG 104</td><td class="n">98%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_142_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_142_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_142_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/fezandipiti-ex.html">Fezandipiti ex</a></span></td><td>ASC 142</td><td class="n">98%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_056_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_56_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/JTG/JTG_056_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/lillies-clefairy-ex.html">Lillie's Clefairy ex</a></span></td><td>JTG 56</td><td class="n">98%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_062_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_62_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_062_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/meowth-ex.html">Meowth ex</a></span></td><td>POR 62</td><td class="n">95%</td></tr>
   </tbody>
   </table></div>
   <h3>Trainers (26)</h3>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td><a href="cards/academy-at-night.html">Academy at Night</a></td><td>SFA 54</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/ciphermaniacs-codebreaking.html">Ciphermaniac's Codebreaking</a></td><td>TEF 145</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/lillies-determination.html">Lillie's Determination</a></td><td>MEG 119</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/poke-pad.html">Poké Pad</a></td><td>POR 81</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/ultra-ball.html">Ultra Ball</a></td><td>MEG 131</td><td class="n">100%</td></tr>
-    <tr><td class="n">3</td><td><a href="cards/wondrous-patch.html">Wondrous Patch</a></td><td>PFL 94</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/night-stretcher.html">Night Stretcher</a></td><td>ASC 196</td><td class="n">100%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/switch.html">Switch</a></td><td>MEG 130</td><td class="n">95%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_054_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_54_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SFA/SFA_054_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/academy-at-night.html">Academy at Night</a></span></td><td>SFA 54</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_145_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_145_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TEF/TEF_145_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/ciphermaniacs-codebreaking.html">Ciphermaniac's Codebreaking</a></span></td><td>TEF 145</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_119_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/lillies-determination.html">Lillie's Determination</a></span></td><td>MEG 119</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_081_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_81_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_081_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/poke-pad.html">Poké Pad</a></span></td><td>POR 81</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_131_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/ultra-ball.html">Ultra Ball</a></span></td><td>MEG 131</td><td class="n">100%</td></tr>
+    <tr><td class="n">3</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PFL/PFL_094_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PFL/PFL_94_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/PFL/PFL_094_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/wondrous-patch.html">Wondrous Patch</a></span></td><td>PFL 94</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/ASC/ASC_196_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/night-stretcher.html">Night Stretcher</a></span></td><td>ASC 196</td><td class="n">100%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_130_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_130_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEG/MEG_130_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/switch.html">Switch</a></span></td><td>MEG 130</td><td class="n">95%</td></tr>
   </tbody>
   </table></div>
   <h3>Energy (10)</h3>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">4</td><td>Psychic Energy</td><td>MEE 13</td><td class="n">100%</td></tr>
-    <tr><td class="n">4</td><td><a href="cards/telepathic-psychic-energy.html">Telepathic Psychic Energy</a></td><td>POR 88</td><td class="n">100%</td></tr>
-    <tr><td class="n">2</td><td><a href="cards/boomerang-energy.html">Boomerang Energy</a></td><td>TWM 166</td><td class="n">92%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_013_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_13_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/MEE/MEE_013_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Psychic Energy</span></td><td>MEE 13</td><td class="n">100%</td></tr>
+    <tr><td class="n">4</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_088_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_88_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/POR/POR_088_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/telepathic-psychic-energy.html">Telepathic Psychic Energy</a></span></td><td>POR 88</td><td class="n">100%</td></tr>
+    <tr><td class="n">2</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_166_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_166_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_166_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/boomerang-energy.html">Boomerang Energy</a></span></td><td>TWM 166</td><td class="n">92%</td></tr>
   </tbody>
   </table></div>
   <p>That is 55 of the 60 cards. The rest of each list is made of flex slots, and these are the most common choices:</p>
   <div class="tw"><table>
   <thead><tr><th class="n">Count</th><th>Card</th><th>Set</th><th class="n">In lists</th></tr></thead>
   <tbody>
-    <tr><td class="n">1</td><td><a href="cards/secret-box.html">Secret Box</a></td><td>TWM 163</td><td class="n">79%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/zeraora.html">Zeraora</a></td><td>DRI 78</td><td class="n">69%</td></tr>
-    <tr><td class="n">1</td><td>Mew ex</td><td>30C 66</td><td class="n">67%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/lucky-helmet.html">Lucky Helmet</a></td><td>TWM 158</td><td class="n">62%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/annihilape.html">Annihilape</a></td><td>SSP 100</td><td class="n">51%</td></tr>
-    <tr><td class="n">1</td><td><a href="cards/special-red-card.html">Special Red Card</a></td><td>CRI 82</td><td class="n">25%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_163_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_163_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_163_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/secret-box.html">Secret Box</a></span></td><td>TWM 163</td><td class="n">79%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/DRI/DRI_078_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/DRI/DRI_78_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/DRI/DRI_078_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/zeraora.html">Zeraora</a></span></td><td>DRI 78</td><td class="n">69%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_066_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_66_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/30C/30C_066_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async">Mew ex</span></td><td>30C 66</td><td class="n">67%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_158_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_158_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/TWM/TWM_158_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/lucky-helmet.html">Lucky Helmet</a></span></td><td>TWM 158</td><td class="n">62%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_100_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_100_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/SSP/SSP_100_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/annihilape.html">Annihilape</a></span></td><td>SSP 100</td><td class="n">51%</td></tr>
+    <tr><td class="n">1</td><td><span class="ci"><img src="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_082_R_EN_XS.png" data-f="https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_82_R_EN_XS.png https://limitlesstcg.nyc3.digitaloceanspaces.com/tpci/CRI/CRI_082_R_EN_SM.png" alt="" width="34" height="47" loading="lazy" decoding="async"><a href="cards/special-red-card.html">Special Red Card</a></span></td><td>CRI 82</td><td class="n">25%</td></tr>
   </tbody>
   </table></div>
 

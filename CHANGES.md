@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.36 (build 164): Card pictures in the deck guides (22 Nov 2026)
+
+Changed files: build-pages.mjs (deck guides get the lead Pokémon's picture at the top and a small picture beside each card in the core and flex lists), deck-*.html (all 20 deck guides rebuilt; the hand-set grades on Greninja, Mega Rayquaza and Talonflame Dusknoir kept as they were), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.36, What's new, PT_BUILD now 164), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v164).
+
+- Deck guides had no card pictures, unlike the card guides. Each one now shows its first key Pokémon at the top, with the card's set and number, and a small picture beside every card in its lists.
+- Pictures come from Limitless TCG, the same source as the app and the card guides. The list pictures are the small size, sized ahead so the page does not jump, and loaded lazily. A picture that fails tries the next size, then is hidden.
+- Anonymous usage counts move to 3.4.37 or later.
+
 # RdyDeck 3.4.35 (build 163): Thin card guides out of search, Read the guide, rulebook notes (21 Nov 2026)
 
 Changed files: build-pages.mjs (thin card guides get noindex, follow and leave sitemap.xml; card-guides.json; Mega ex, ACE SPEC Special Energy and Trainers that evolve get their rules), cards/ (21 thin guides marked, 10 gain a rule for that card, Mega ex and ACE SPEC pages gain their rule), card-guides.json (new: card name to guide page), rulings.json and rulings.html (10 card questions answered from the rulebook, new topic Cards, by the rulebook), sitemap.xml (196 URLs), tests/seo-check.mjs (only card guides may be noindex, and those must be out of the sitemap), js/card-details.js (Read the guide link, same rule tags as the pages), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.35, What's new, PT_BUILD now 163), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (Read the guide and What's new strings), sw.js (cache name prize-trainer-v163, card-guides.json kept offline).
