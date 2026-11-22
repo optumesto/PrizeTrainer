@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.37 (build 165): Grade image named after deck (22 Nov 2026)
+
+Changed files: js/v45-sample-share-daily.js (saved and shared grade picture file name), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.37, What's new, PT_BUILD now 165), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v165).
+
+- Save image and Share now name the grade picture after the deck, e.g. rdydeck-grade-dragapult-ex.png, for Wide and Square alike. Accents and apostrophes are dropped, anything else that is not a letter or number becomes a hyphen, and the name stops at 60 characters. A deck with no usable name keeps rdydeck-grade.png.
+- Anonymous usage counts move to 3.4.38 or later.
+
 # RdyDeck 3.4.36 (build 164): Card pictures in the deck guides (22 Nov 2026)
 
 Changed files: build-pages.mjs (deck guides get the lead Pokémon's picture at the top and a small picture beside each card in the core and flex lists), deck-*.html (all 20 deck guides rebuilt; the hand-set grades on Greninja, Mega Rayquaza and Talonflame Dusknoir kept as they were), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.36, What's new, PT_BUILD now 164), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v164).

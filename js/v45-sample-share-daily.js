@@ -345,7 +345,7 @@ async function gs261Render() {
   if (g !== _gs45 || tok !== g.tok) return;
   if (g.img) { try { URL.revokeObjectURL(g.img); } catch (_) {} }
   g.blob = blob;
-  g.file = blob && typeof File !== 'undefined' ? new File([blob], gs261Name(g.size), { type: 'image/png' }) : null;
+  g.file = blob && typeof File !== 'undefined' ? new File([blob], gs261Name(g.deck), { type: 'image/png' }) : null;
   g.img = blob ? URL.createObjectURL(blob) : '';
   const pic = document.getElementById('gs261-pic');
   if (pic) pic.innerHTML = g.img ? `<img class="gs45-img" src="${g.img}" alt="${esc(g.alt)}">`
@@ -353,7 +353,13 @@ async function gs261Render() {
   const sv = document.getElementById('gs261-save');
   if (sv) sv.disabled = !g.img;
 }
-function gs261Name(size) { return size === 'square' ? 'rdydeck-grade-square.png' : 'rdydeck-grade.png'; }
+// 3.4.37: the saved picture is named after the deck, e.g. rdydeck-grade-dragapult-ex.png.
+// Accents and apostrophes dropped, anything but a to z and 0 to 9 becomes one hyphen, 60 characters at most.
+function gs261Slug(name) {
+  return String(name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/['\u2019]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
+}
+function gs261Name(deck) { const s = gs261Slug(deck && deck.name); return s ? 'rdydeck-grade-' + s + '.png' : 'rdydeck-grade.png'; }
 function gs261SetSize(s) {
   const g = _gs45; if (!g || !GS261_SIZES[s] || g.size === s) return;
   g.size = s;
@@ -386,6 +392,6 @@ async function gs45Copy() {
 function gs45Save() {
   const g = _gs45; if (!g || !g.img) return;
   const a = document.createElement('a');
-  a.href = g.img; a.download = gs261Name(g.size);
+  a.href = g.img; a.download = gs261Name(g.deck);
   document.body.appendChild(a); a.click(); a.remove();
 }

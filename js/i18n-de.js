@@ -2701,6 +2701,7 @@ Object.assign(I18N_MORE.de.dict, {
   "Card guides: pictures, odds and win records": "Kartenratgeber: Bilder, Wahrscheinlichkeiten und Siegbilanzen",
   "Card guide link and rulebook notes on cards": "Ratgeber-Link und Regelbuch-Hinweise bei den Karten",
   "Card pictures in the deck guides": "Kartenbilder in den Deck-Guides",
+  "Grade image named after deck": "Bewertungsbild mit dem Namen des Decks",
   "Deck guides and How grading works in More": "Deck-Guides und So funktioniert die Note unter Mehr",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",

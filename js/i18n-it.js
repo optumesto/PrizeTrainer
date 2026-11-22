@@ -2634,6 +2634,7 @@ Object.assign(I18N_MORE.it.dict, {
   "Card guides: pictures, odds and win records": "Guide alle carte: immagini, probabilità e record di vittorie",
   "Card guide link and rulebook notes on cards": "Link alla guida e note del regolamento sulle carte",
   "Card pictures in the deck guides": "Immagini delle carte nelle guide ai mazzi",
+  "Grade image named after deck": "Immagine del voto con il nome del mazzo",
   "Deck guides and How grading works in More": "Guide ai mazzi e Come funziona il voto in Altro",
   "Grade source on home page": "Origine del voto nella Home",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Il voto si basa sulle tue carte e, per i mazzi noti, sui risultati dei tornei online e locali dal vivo.",
