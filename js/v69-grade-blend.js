@@ -15,6 +15,8 @@
 // 33% wins over 777 games, 6.5; Mega Charizard X, 32% over 167 games, 8.5). Below an average record the results
 // score now falls twice as fast (G68_SLOPE_LO), and results reach their full share at 250 games, not 500. A deck
 // at or above an average record scores exactly as before, so the top decks keep their grades.
+// 3.4.38: below this many games, Tourney strength shows N/A and the grade reads the cards alone (Mason, 23 Nov 2026).
+const G68_MIN_GAMES = 20;
 const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.07, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
@@ -312,8 +314,14 @@ function g88Line(R) {
 }
 function g68Blend(R, deck) {
   if (!R || !deck || !mu60Data) return R;
-  if (deck.format === 'expanded' || deck.format === 'prerelease' || isDailyChallenge(deck) || R.rawOverall != null) return R;
+  if (deck.format === 'expanded' || deck.format === 'prerelease' || isDailyChallenge(deck)) return R;
   if (!(deck.cards || []).some(c => c.supertype)) return R;
+  // 3.4.38: a list held at the legality cap borrows no results, but its Tourney strength still shows.
+  if (R.rawOverall != null) {
+    const mc = g68Arch(deck, mu60Data, R), sc = mc && g68Strength(mu60Data)[mc.deck.id];
+    if (sc) R.tour = { name: mc.deck.name, games: sc.games, score: sc.games >= G68_MIN_GAMES ? sc.score : null };
+    return R;
+  }
   const m = g68Arch(deck, mu60Data, R);
   // 3.2.8 (Muse M1): no tournament results match this deck, so the grade is the cards alone. It says so
   // and is never called Tournament-ready (gBand), since a tidy list that loses grades like a winning one.
@@ -322,6 +330,10 @@ function g68Blend(R, deck) {
   const b = g88Apply(R, deck, arch, m);
   const st = g68Strength(mu60Data)[arch.id];
   if (!st) { R.noRes = true; return R; }
+  // 3.4.38: the split scores. Tourney strength is the results score alone, for the archetype this list
+  // matches. Under G68_MIN_GAMES games it shows N/A, and the grade takes nothing from those results.
+  R.tour = { name: arch.name, games: st.games, score: st.games >= G68_MIN_GAMES ? st.score : null };
+  if (st.games < G68_MIN_GAMES) { R.noRes = true; R.fewRes = st.games; return R; }
   const card = R.overall;
   // 2.7.8: results and cards count evenly once an archetype has enough games (3.4.24: 250, was 500), and the
   // share rises in a straight line before that (100 games 20%), so a few games cannot swing a grade.
@@ -342,6 +354,7 @@ function g68Blend(R, deck) {
 /** One plain sentence on the results part, for under the grade. */
 function g68Line(R) {
   const r = R && R.res;
+  if (!r && R && R.fewRes != null) return ` Only ${R.fewRes} ${R.fewRes === 1 ? 'game' : 'games'} from ${typeof mu60SrcWords === 'function' ? mu60SrcWords(null, true) : 'online'} tournament results match this deck so far, under the ${G68_MIN_GAMES} the grade needs, so the grade reads the cards alone. Until it has more, it is not called Tournament-ready.`;
   if (!r) return R && R.noRes ? ` No ${typeof mu60SrcWords === 'function' && mu60SrcWords(null, true) !== 'online' ? (mu60SrcWords(null, true) === 'local in-person' ? 'local in-person' : 'online or local in-person') : 'online'} tournament results match this deck yet, so the grade reads the cards alone and cannot see how the list does in real games. Until it has results, it is not called Tournament-ready.` : '';
   const pct = Math.round(r.w * 100), wr = r.wr != null ? (r.wr * 100).toFixed(1) + '%' : '';
   const asOf = r.asOf && typeof d30Nice === 'function' ? ' (as of ' + esc(d30Nice(r.asOf)) + ')' : '';
@@ -447,3 +460,14 @@ function g79Section(deck) {
     return r;
   };
 })();
+
+// ═══════════ 3.4.38: Deck strength and Tourney strength ═══════════
+// Deck strength is the card grade (Synergy times Power, less any build check): how the list plays on
+// its own. Tourney strength is the results score alone for the archetype the list matches, the same
+// score the grade blends in. It is N/A when no archetype matches or it has under G68_MIN_GAMES games.
+function g338Split(R) {
+  if (!R) return null;
+  const deck = R.res ? R.cardOverall : (R.build ? R.build.after : R.overall);
+  const t = R.tour || null;
+  return { deck: gR1(deck), tour: t && t.score != null ? gR1(t.score) : null, games: t ? t.games : 0, name: t ? t.name : '', few: !!(t && t.score == null) };
+}

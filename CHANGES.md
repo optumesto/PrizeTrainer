@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.38 (build 166): Deck strength and Tourney strength (23 Nov 2026)
+
+Changed files: js/v69-grade-blend.js (split scores, 20 game rule), js/v29-rotation.js (grade screen), js/v45-sample-share-daily.js (share card and shared text), index.html (styles, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.38, What's new, PT_BUILD now 166), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new labels and What's new), sw.js (cache name prize-trainer-v166).
+
+- Every grade now shows two scores under the overall grade: Deck strength (the card grade: Synergy times Power, less any build check, so how the list plays on its own) and Tourney strength (the results score alone for the archetype the list matches, the same score the grade blends in). Synergy and Power stay on the screen as one line under Deck strength.
+- Tourney strength shows N/A when no archetype with results matches the list, or the matched archetype has fewer than 20 games. Under 20 games the grade also takes nothing from those results and reads the cards alone (no archetype in this week's results is that small, so no current grade moves).
+- The share card shows Deck strength and Tourney strength in place of Synergy and Power, with an empty bar for N/A.
+- A list held at the legality cap still shows its Tourney strength.
+- Anonymous usage counts move to 3.4.39 or later.
+
 # RdyDeck 3.4.37 (build 165): Grade image named after deck (22 Nov 2026)
 
 Changed files: js/v45-sample-share-daily.js (saved and shared grade picture file name), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.37, What's new, PT_BUILD now 165), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v165).

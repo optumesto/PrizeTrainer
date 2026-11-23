@@ -516,10 +516,7 @@ renderGrade = function () {
     <div class="g-band" style="--col:${brk.length ? 'var(--red)' : col}">${band}</div>
     <p class="g29-verdict">${esc(brk.length ? g29Legal(R, brk.length) : g29Verdict(R, means))}</p>
     ${jumps.length ? `<div class="g29-jump">${jumps.join('')}</div>` : ''}
-    <div class="g29-parts">
-      ${part('Synergy', synV, 'Do the cards work together')}
-      ${part('Power', powV, 'Can it win a game')}
-    </div>
+    ${g338Parts(R, synV, powV, part)}
     <div class="g29-how">${g67HowLine(R, synV, powV)}${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
     ${g67WhyHtml(R, synV, powV)}
     <div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div>
@@ -559,6 +556,21 @@ renderGrade = function () {
 
   el.innerHTML = h;
 };
+
+// 3.4.38: the two split scores lead the parts. Deck strength carries Synergy and Power as one small line,
+// so the hero still shows what holds the list back. Without the split helper the old parts show.
+function g338Parts(R, synV, powV, part) {
+  const S = typeof g338Split === 'function' ? g338Split(R) : null;
+  if (!S) return `<div class="g29-parts">${part('Synergy', synV, 'Do the cards work together')}${part('Power', powV, 'Can it win a game')}</div>`;
+  const sp = `<div class="g338-sp"><span><span>Synergy</span> <b>${synV.toFixed(1)}</b></span><span><span>Power</span> <b>${powV.toFixed(1)}</b></span></div>`;
+  const na = `<div class="g29-part g338-na"><div class="g29-pl">Tourney strength</div><div class="g29-pv">N/A</div>
+      <div class="g-meter"><span style="width:0"></span></div>
+      <div class="g29-ps">${S.games ? 'Fewer than 20 event games' : 'No event results match'}</div></div>`;
+  return `<div class="g29-parts g338-parts">
+      ${part('Deck strength', S.deck, sp)}
+      ${S.tour == null ? na : part('Tourney strength', S.tour, 'How decks like it do at events')}
+    </div>`;
+}
 
 // 3.3.6: How the grade works opens the answer from Questions about RdyDeck (#faq-grade on home),
 // so the explanation is written once. Already translated text stays as it is.

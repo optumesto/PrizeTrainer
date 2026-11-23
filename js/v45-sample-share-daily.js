@@ -269,19 +269,23 @@ async function gs45Draw(deck, R, size, info, art) {
   x.font = `700 ${Math.round(gSize * 0.23)}px ${D}`; x.fillStyle = col;
   x.fillText(band, 64, gY + Math.round(gSize * 0.33));
 
-  // Synergy and Power with their bars.
+  // 3.4.38: Deck strength and Tourney strength with their bars (Synergy and Power before). N/A when the
+  // archetype has too few games, with an empty bar. Without the split helper the old pair shows.
   const part = (lbl, v, px, y, pw, big) => {
     x.font = `600 ${big ? 30 : 26}px ${B}`; x.fillStyle = GS45.text2; x.fillText(lbl, px, y);
-    x.font = `800 ${big ? 60 : 44}px ${D}`; x.fillStyle = GS45.band[gs45Band(v)];
-    const t = v.toFixed(1); x.fillText(t, px + pw - x.measureText(t).width, y + 4);
+    const t = v == null ? 'N/A' : v.toFixed(1);
+    x.font = `800 ${big ? 60 : 44}px ${D}`; x.fillStyle = v == null ? GS45.text2 : GS45.band[gs45Band(v)];
+    x.fillText(t, px + pw - x.measureText(t).width, y + 4);
     const by = y + (big ? 22 : 16), bh = big ? 12 : 8;
     x.fillStyle = GS45.line; x.fillRect(px, by, pw, bh);
-    x.fillStyle = GS45.band[gs45Band(v)]; x.fillRect(px, by, pw * Math.max(0, Math.min(1, v / 10)), bh);
+    if (v != null) { x.fillStyle = GS45.band[gs45Band(v)]; x.fillRect(px, by, pw * Math.max(0, Math.min(1, v / 10)), bh); }
   };
-  if (!sq && !hasArt) { part('Synergy', synV, 700, 262, 436, true); part('Power', powV, 700, 392, 436, true); }
-  else if (!sq) { part('Synergy', synV, 64, 474, 320, false); part('Power', powV, 424, 474, 320, false); }
-  else if (hasArt) { part('Synergy', synV, 64, 690, 496, true); part('Power', powV, 64, 800, 496, true); }
-  else { part('Synergy', synV, 64, 760, 456, true); part('Power', powV, 560, 760, 456, true); }
+  const S = typeof g338Split === 'function' ? g338Split(R) : null;
+  const P = S ? [['Deck strength', S.deck], ['Tourney strength', S.tour]] : [['Synergy', synV], ['Power', powV]];
+  if (!sq && !hasArt) { part(P[0][0], P[0][1], 700, 262, 436, true); part(P[1][0], P[1][1], 700, 392, 436, true); }
+  else if (!sq) { part(P[0][0], P[0][1], 64, 474, 320, false); part(P[1][0], P[1][1], 424, 474, 320, false); }
+  else if (hasArt) { part(P[0][0], P[0][1], 64, 690, 496, true); part(P[1][0], P[1][1], 64, 800, 496, true); }
+  else { part(P[0][0], P[0][1], 64, 760, 456, true); part(P[1][0], P[1][1], 560, 760, 456, true); }
 
   // Footer: a note when the grade is held back, the tag line, the address, and the
   // Limitless credit when its deck data or card image is on the card.
@@ -306,6 +310,12 @@ async function gs45Draw(deck, R, size, info, art) {
   return new Promise(res => { try { c.toBlob(b => res(b), 'image/png'); } catch (_) { res(null); } });
 }
 
+/** 3.4.38: the split scores for the shared text, Synergy and Power when the split is not there. */
+function gs338Text(R) {
+  const S = typeof g338Split === 'function' ? g338Split(R) : null;
+  if (!S) return `Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}.`;
+  return `Deck strength ${S.deck.toFixed(1)}, Tourney strength ${S.tour == null ? 'N/A' : S.tour.toFixed(1)}.`;
+}
 async function v45ShareGrade() {
   const deck = state.decks.find(d => d.id === state.activeDeckId);
   if (!deck) return;
@@ -316,7 +326,7 @@ async function v45ShareGrade() {
   if (typeof rules34Breaches === 'function' && rules34Breaches(deck).length) { showToast('This list breaks a deck building rule. Fix it in Edit deck, then share the grade.'); return; }
   const band = gs45Band(R.overall, R.noRes);
   const url = shareBaseUrl() + '?ref=grade#deck=' + (await encodeDeckShare(deck)) + '&g=1' + (typeof deck.atk === 'string' && deck.atk ? '&a=' + encodeURIComponent(deck.atk) : '');
-  const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}. Can Your Deck Win?`;
+  const text = `My ${cleanSharedText(deck.name, 60).replace(/\n/g, ' ')} grades ${R.overall.toFixed(1)} out of 10 (${band}) on RdyDeck. ${gs338Text(R)} Can Your Deck Win?`;
   if (_gs45 && _gs45.img) { try { URL.revokeObjectURL(_gs45.img); } catch (_) {} }
   const info = gs261Info(deck, R), size = gs261Size();
   _gs45 = { deck, R, info, url, text, size, blob: null, file: null, img: '', artP: null, tok: 0,
