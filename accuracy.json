@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "asOf": "2026-11-16",
+ "asOf": "2026-11-23",
  "note": "How closely RdyDeck grades rank decks against their Limitless online win rates, per set. Rank correlation (Spearman): 1 means the grades put the decks in exactly the order of their win rates, 0 means no link. shown is the grade the app shows (it counts these same results, so it runs high), cards is the grade from the cards alone. Written by tests/grade-check.mjs --results --board.",
  "source": "Limitless online tournaments",
  "lists": 130,
@@ -10,20 +10,20 @@
    "from": "2026-09-16",
    "to": "2026-11-05",
    "decks": 32,
-   "games": 49987,
+   "games": 49316,
    "min": 300,
-   "shown": 0.81,
-   "cards": 0.12
+   "shown": 0.75,
+   "cards": 0.1
   },
   {
    "name": "Delta Reign",
    "from": "2026-11-06",
-   "to": "2026-11-16",
-   "decks": 30,
-   "games": 9077,
+   "to": "2026-11-23",
+   "decks": 33,
+   "games": 15095,
    "min": 100,
-   "shown": 0.79,
-   "cards": 0.27
+   "shown": 0.69,
+   "cards": 0.23
   }
  ]
 }
