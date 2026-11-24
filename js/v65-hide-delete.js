@@ -10,9 +10,9 @@ function dd65Rows(deck) {
   const tl = typeof tl82Copy === 'function' && (deck.cards || []).length;
   if (tl && tl82Missing(deck)) tl82Data();
   return `<div class="st38-sec st38-rows">
-      ${tl ? r('tl82Copy', 'Copy list for TCG Live', 'clipboard') : ''}
-      ${r('dd65Hide', deck.hidden ? 'Show deck' : 'Hide deck', deck.hidden ? 'eye' : 'eye-off')}
-      ${r('dd65Ask', 'Delete deck', 'trash', 'st38-danger')}
+      ${tl ? r('tl82Copy', 'Copy List for TCG Live', 'clipboard') : ''}
+      ${r('dd65Hide', deck.hidden ? 'Show deck' : 'Hide Deck', deck.hidden ? 'eye' : 'eye-off')}
+      ${r('dd65Ask', 'Delete Deck', 'trash', 'st38-danger')}
     </div>`;
 }
 function dd65Menu() {
@@ -77,7 +77,7 @@ function hx67Open(i) {
       <div class="pg-tile"><div class="pl">Score</div><div class="pv">${h.score}/${pc}</div><div class="ps">${h.score === pc ? 'Perfect' : (pc - h.score) + ' missed'}</div></div>
       <div class="pg-tile"><div class="pl">Time</div><div class="pv">${formatTime(h.time)}</div><div class="ps">${esc(h.date || '')}</div></div>
     </div>
-    ${rows ? `<div class="hp-lbl">Prize cards</div><div class="hx67-list" id="hx67-list">${rows}</div>` : '<div class="nt-empty">This game was saved before prize cards were kept.</div>'}
+    ${rows ? `<div class="hp-lbl">Prize Cards</div><div class="hx67-list" id="hx67-list">${rows}</div>` : '<div class="nt-empty">This game was saved before prize cards were kept.</div>'}
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`);
   const list = document.getElementById('hx67-list');
   if (!list) return;

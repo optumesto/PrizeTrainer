@@ -171,7 +171,7 @@ function gh72Html(deck) {
   if (!log) return '';
   const e = log.e, first = e[0], last = e[e.length - 1];
   // 3.5.4: folded by default; the folded line says where the grade went.
-  if (e.length === 1) return `<details class="g-sec g29-fold" id="gh72-sec"><summary><span class="g-sec-t">Grade history</span><span class="g29-n">1</span></summary>
+  if (e.length === 1) return `<details class="g-sec g29-fold" id="gh72-sec"><summary><span class="g-sec-t">Grade History</span><span class="g29-n">1</span></summary>
     <div class="g-sec-i">The first saved grade is ${first.g.toFixed(1)}. Each time you change this list, its new grade is kept here, so you can see it climb.</div></details>`;
   const dlt = gR1(last.g - first.g), edits = e.filter(x => x.w === 'e').length;
   const sum = dlt > 0 ? `Up ${dlt.toFixed(1)}, from ${first.g.toFixed(1)} to ${last.g.toFixed(1)}`
@@ -183,7 +183,7 @@ function gh72Html(deck) {
       <p>${esc(i ? gh72Why(x) : gh72Why({ w: 's' }))}${x.n ? ' Held at this grade until the list is legal.' : ''}</p></li>`;
   }).reverse().join('');
   const cut = e.length >= GH72_MAX ? `<p class="gh72-note">The first version and the newest ${GH72_MAX - 1} are kept.</p>` : '';
-  return `<details class="g-sec g29-fold" id="gh72-sec"><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Grade history</span><span class="g29-n">${e.length}</span></span><span class="r38-line">Grade over ${e.length} versions, from ${first.g.toFixed(1)} to ${last.g.toFixed(1)}</span></span></summary>
+  return `<details class="g-sec g29-fold" id="gh72-sec"><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Grade History</span><span class="g29-n">${e.length}</span></span><span class="r38-line">Grade over ${e.length} versions, from ${first.g.toFixed(1)} to ${last.g.toFixed(1)}</span></span></summary>
     <div class="g-sec-i">${sum} over ${e.length} versions${edits ? `, ${edits} of them your edits` : ''}. Open dots are changes you did not make, like new tournament results.</div>
     ${gh72Chart(e)}
     <ol class="gh72-list">${rows}</ol>${cut}

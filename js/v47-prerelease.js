@@ -411,12 +411,12 @@ function pre47GradeHtml(deck) {
   const k = pre47Check(deck);
   const li = a => `<ul class="pre47-ul">${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
   return `<div class="g-sec">
-      <div class="g-sec-t">Prerelease check</div>
+      <div class="g-sec-t">Prerelease Check</div>
       <div class="g-sec-i">${k.rules.length ? 'This list breaks the prerelease rules:' : 'This list follows the prerelease rules: 40 cards, any number of copies.'}</div>
       ${k.rules.length ? li(k.rules) : ''}
     </div>
     <div class="g-sec">
-      <div class="g-sec-t">What is in it</div>
+      <div class="g-sec-t">What Is in It</div>
       ${li([`${k.mon} Pokémon, ${k.tr} Trainer, ${k.en} Energy.`, `${k.basics} Basic Pokémon.`])}
     </div>
     <div class="g-sec">

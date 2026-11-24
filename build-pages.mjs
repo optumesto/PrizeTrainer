@@ -51,15 +51,15 @@ const r1 = x => (Math.round(x * 10) / 10).toFixed(1);
 
 // ── the page shell, the same look as the guide pages already on the site ──────────────────────
 const NAV = [
-  ['./', 'RdyDeck'], ['meta-decks.html', 'Deck guides'], ['how-grading-works.html', 'How grading works'],
+  ['./', 'RdyDeck'], ['meta-decks.html', 'Deck Guides'], ['how-grading-works.html', 'How Grading Works'],
   ['faq.html', 'FAQ'], ['about.html', 'About'], ['contact.html', 'Contact'],
-  ['terms.html', 'Terms of Service'], ['privacy.html', 'Privacy Policy'], ['delete-data.html', 'Delete your data'],
+  ['terms.html', 'Terms of Service'], ['privacy.html', 'Privacy Policy'], ['delete-data.html', 'Delete Your Data'],
 ];
 // The free tools and guides, linked from every guide page so search engines and readers find them.
 const TOOLS = [
-  ['deck-grader.html', 'Deck checker'], ['improve-your-deck.html', 'Improve your deck'], ['opening-odds.html', 'Opening hand odds'],
-  ['rotation.html', 'Rotation check'], ['prize-trainer.html', 'Prize trainer'], ['rulings.html', 'Rules and rulings'],
-  ['cards/', 'Card guides'], ['first-deck.html', 'Your first deck'], ['goldfish.html', 'Goldfish your deck'],
+  ['deck-grader.html', 'Deck Checker'], ['improve-your-deck.html', 'Improve Your Deck'], ['opening-odds.html', 'Opening Hand Odds'],
+  ['rotation.html', 'Rotation Check'], ['prize-trainer.html', 'Prize Trainer'], ['rulings.html', 'Rules and Rulings'],
+  ['cards/', 'Card Guides'], ['first-deck.html', 'Your First Deck'], ['goldfish.html', 'Goldfish Your Deck'],
 ];
 const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
   @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
@@ -436,15 +436,15 @@ ${top}
 </div></div>` : top}
 <div class="cta-row"><a class="cta" href="./">Grade my ${esc(g.title)} list</a></div>
 
-<h2>Game plan</h2>
+<h2>Game Plan</h2>
 ${g.plan.map(p => `<p>${esc(p)}</p>`).join('\n')}
 
-<h2>Key cards</h2>
+<h2>Key Cards</h2>
 <dl>
 ${g.keys.map(([k, v]) => `  <dt>${cardLink(k)}</dt><dd>${esc(v)}</dd>`).join('\n')}
 </dl>
 
-<h2>The core list</h2>
+<h2>The Core List</h2>
 <p>These cards are in at least 90% of ${esc(g.title)} lists, at their usual count. They come from ${basis}, ${num(c.tops)} lists in all, on Limitless online tournaments.</p>
 ${coreTables(c)}
 <h2>Matchups</h2>
@@ -452,13 +452,13 @@ ${coreTables(c)}
 ${matchupTable(g, s)}
 <p class="note">These are results for decks like this one, not one exact list.</p>
 
-<h2>How RdyDeck grades it</h2>
+<h2>How RdyDeck Grades It</h2>
 ${s.grade ? `<p>${s.grade.n === 1 ? `RdyDeck grades the one ${esc(g.title)} list in its test set, a top 16 finish${s.gradeDates ? ` on ${day(s.gradeDates[0])}` : ''}, at ${r1(s.grade.g)} out of 10. Its Synergy is ${r1(s.grade.s)} and its Power is ${r1(s.grade.p)}.` : `RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}.`} The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
-<p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How grading works</a> explains each part.</p>
+<p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How Grading Works</a> explains each part.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 <p>To test your own copy before an event, <a href="goldfish.html">goldfish it</a>: play its first turns alone in RdyDeck with real draws and see how often ${esc(g.title)} sets up on time.</p>
 
-<h2>More deck guides</h2>
+<h2>More Deck Guides</h2>
 <ul class="guides">
 ${guides.decks.filter(x => x.id !== g.id).map(x => `  <li><a href="deck-${x.slug}.html">${esc(x.title)}</a></li>`).join('\n')}
 </ul>
@@ -486,7 +486,7 @@ function indexPage() {
 <p class="lead">Guides to the decks winning Pok&eacute;mon TCG tournaments right now: what each one runs, how it plays, what it beats, and how RdyDeck grades it.</p>
 <p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them${MU_IP ? ' and in local in-person store events' : ''} since ${day(mu.since)}, and the grades from RdyDeck's own deck checker run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
 
-<h2>The decks</h2>
+<h2>The Decks</h2>
 <div class="tw"><table>
   <thead><tr><th>Deck</th><th class="n">Field share</th><th class="n">Win rate</th><th class="n">Grade</th></tr></thead>
   <tbody>
@@ -495,11 +495,11 @@ ${rows.join('\n')}
 </table></div>
 <p class="note">Field share is the share of players ${FIELD}. Win rate is wins over all games since ${day(mu.since)}, as of ${day(mu.asOf)}. Grade is RdyDeck's grade for the deck's top lists, out of 10.</p>
 
-<h2>Reading the numbers</h2>
+<h2>Reading the Numbers</h2>
 <p>A win rate a little over 50% is good in a format this crowded: most decks sit between 47% and 53%, and only a handful stay above 55% over thousands of games. A deck with a small share and a high win rate can be a strong pick that few people have found yet, or a deck that has only played a few events, so check the number of games before reading much into it.</p>
-<p>The grade and the record measure different things. The grade reads the cards in a list: do they work together, and can the plan win. The record shows how the deck has actually done. RdyDeck blends the two, and <a href="how-grading-works.html">How grading works</a> explains how much each one counts.</p>
+<p>The grade and the record measure different things. The grade reads the cards in a list: do they work together, and can the plan win. The record shows how the deck has actually done. RdyDeck blends the two, and <a href="how-grading-works.html">How Grading Works</a> explains how much each one counts.</p>
 
-<h2>Rate your own list</h2>
+<h2>Rate Your Own List</h2>
 <p>Paste your list from Pok&eacute;mon TCG Live or Limitless into RdyDeck and it rates it out of 10, matches it to the closest of these decks, and shows what to fix first. It is free, needs no account and works offline.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 <p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> ${MU_IP ? 'online tournaments and local in-person store events' : 'online tournaments'}, read once a week and credited to them.</p>
@@ -533,16 +533,16 @@ function improvePage() {
   const body = `<p class="lead">To improve a Pok&eacute;mon TCG deck, check it in this order: every card is legal, every attacker can pay for its attack and every evolution has what it evolves from, the deck has a steady way to draw and search, its counts sit near what winning lists run, and it has a plan against the decks you will face. RdyDeck, a free deck checker, runs these checks for you: paste your decklist and it rates the deck out of 10 and names what to fix first.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck free</a></div>
 
-<h2>1. Make sure every card is legal</h2>
+<h2>1. Make Sure Every Card Is Legal</h2>
 <p>A card that is not Standard legal makes the deck unplayable at an event, so fix this first. Check each card's regulation mark. An older printing is still legal when a reprint with the same name, attacks and Abilities is legal now. The <a href="rotation.html">rotation checker</a> marks which cards are legal now and which may rotate next.</p>
 
-<h2>2. Give every card what it needs</h2>
+<h2>2. Give Every Card What It Needs</h2>
 <p>Every attacker needs the Energy its attacks cost, and every evolution needs the Pok&eacute;mon it evolves from. A Stage 2 line also wants Rare Candy or enough search to find both stages. These gaps are the most common reason a deck stalls, and they are easy to miss when you build from a list of favourite cards.</p>
 
-<h2>3. Build a steady way to draw and search</h2>
+<h2>3. Build a Steady Way to Draw and Search</h2>
 <p>A deck needs to find the same few cards every game: draw Supporters, search Items, or a Pok&eacute;mon with a draw or search Ability. Without one, even strong attackers sit in the deck. A deck with a draw engine but single copies of cards it needs often will still miss them, so run more copies of what you need every game and fewer one of a kind ideas.</p>
 
-<h2>4. Compare your counts with winning lists</h2>
+<h2>4. Compare Your Counts with Winning Lists</h2>
 <p>Across ${n} top 16 lists from ${events} Limitless online tournaments ${when}, covering ${decks} different decks, the typical split was:</p>
 <div class="tw"><table>
   <thead><tr><th>Part</th><th class="n">Typical count</th><th class="n">Middle half of lists</th></tr></thead>
@@ -561,16 +561,16 @@ ${rows.join('\n')}
 </table></div>
 <p>The <a href="meta-decks.html">deck guides</a> show what top lists of each deck run, card by card.</p>
 
-<h2>5. Check your opening odds</h2>
-<p>How often you mulligan, start without your attacker or put a key card in your prizes is just maths on your list. Too few Basic Pok&eacute;mon means more mulligans. One copy of a key card means it is often prized. <a href="opening-odds.html">Opening odds</a> works these out for your exact list.</p>
+<h2>5. Check Your Opening Odds</h2>
+<p>How often you mulligan, start without your attacker or put a key card in your prizes is just maths on your list. Too few Basic Pok&eacute;mon means more mulligans. One copy of a key card means it is often prized. <a href="opening-odds.html">Opening Odds</a> works these out for your exact list.</p>
 
-<h2>6. Plan for the decks you will face</h2>
+<h2>6. Plan for the Decks You Will Face</h2>
 <p>A deck that wins the prize race against the most played decks will do well even if it loses to a rare one. Look at which decks are popular now, how your attacker trades against them, and whether a tech card would swing a common matchup. The <a href="meta-decks.html">deck guides</a> list each top deck's record and matchups from real tournament games.</p>
 
-<h2>7. Practice with the deck</h2>
+<h2>7. Practice with the Deck</h2>
 <p>A better list only helps if you play it well. Knowing which cards went to your prizes changes what you search for. The <a href="prize-trainer.html">prize trainer</a> drills this with your own deck.</p>
 
-<h2>Common questions</h2>
+<h2>Common Questions</h2>
 <dl>
   <dt>Is there a free tool that rates my Pok&eacute;mon deck?</dt>
   <dd>Yes. RdyDeck rates a 60 card Pok&eacute;mon TCG deck out of 10 for free, with no account. Paste a list from Pok&eacute;mon TCG Live or Limitless TCG and it scores Synergy and Power, compares the deck with recent tournament results and lists what to fix first.</dd>
@@ -582,8 +582,8 @@ ${rows.join('\n')}
   <dd>No. RdyDeck rates 60 card decks for the Pok&eacute;mon Trading Card Game, played with paper cards or in Pok&eacute;mon TCG Live. Pok&eacute;mon TCG Pocket decks have 20 cards and different rules.</dd>
 </dl>
 
-<h2>Rate your deck now</h2>
-<p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How grading works</a> explains exactly what the grade measures.</p>
+<h2>Rate Your Deck Now</h2>
+<p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How Grading Works</a> explains exactly what the grade measures.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
     file: 'improve-your-deck.html',
@@ -615,7 +615,7 @@ function firstDeckPage() {
   const body = `<p class="lead">A Pok&eacute;mon TCG deck has exactly 60 cards, no more than 4 cards with the same name except Basic Energy, and at least 1 Basic Pok&eacute;mon. Inside those rules, a good first deck is built around one main attacker, the Pok&eacute;mon and Energy it needs, and the draw and search cards nearly every winning deck plays.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 
-<h2>The deck building rules</h2>
+<h2>The Deck Building Rules</h2>
 <ul>
   <li><strong>Exactly 60 cards.</strong> Not 59 and not 61.</li>
   <li><strong>No more than 4 cards with the same name,</strong> except Basic Energy, which has no limit. Cards with the same name count together even if their attacks are different.</li>
@@ -625,13 +625,13 @@ function firstDeckPage() {
 ${src('pp. 22 and 23')}
 <p>For tournaments, every card also has to be legal in the format you play. In Standard that is set by each card's regulation mark, and the <a href="rotation.html">rotation checker</a> marks which of your cards are legal now. The <a href="rulings.html">rules page</a> answers more rules questions, each with its source.</p>
 
-<h2>Start from a deck that already works</h2>
+<h2>Start from a Deck That Already Works</h2>
 <p>The rulebook's own advice is to take a ready-made ex Battle Deck you like and change it, keeping it at exactly 60 cards. You can do the same with a winning list: the <a href="meta-decks.html">deck guides</a> show the cards top players run in each deck, and RdyDeck has starter decks built in, so you can open one and change it card by card.</p>
 
-<h2>Pick one attacker and one or two Energy types</h2>
+<h2>Pick One Attacker and One or Two Energy Types</h2>
 <p>Choose the Pok&eacute;mon you want to attack with, then put in its whole evolution line and the Energy its attack costs. The rulebook suggests one or two Energy types at most, and ${twoOrFewer} of the ${n} top 16 lists we test with play two types of Basic Energy or fewer. A second attacker for matchups where the first one struggles is the next thing to add.</p>
 
-<h2>How many Pok&eacute;mon, Trainers and Energy</h2>
+<h2>How Many Pok&eacute;mon, Trainers and Energy</h2>
 <p>The rulebook's starting point is 12 to 15 Energy and about 20 to 25 Trainer cards, with the rest Pok&eacute;mon. Winning lists today lean further toward Trainers. Across ${n} recent top 16 lists from Limitless online tournaments, the typical deck ran:</p>
 <div class="tw"><table>
   <thead><tr><th>Part</th><th class="n">Rulebook starting point</th><th class="n">Typical top 16 list</th></tr></thead>
@@ -644,7 +644,7 @@ ${src('pp. 22 and 23')}
 ${src('p. 22')}
 <p>The extra Trainers are mostly draw and search, which find your attacker every game. If you are just starting, a few more Energy than the top lists run is fine while you learn the deck.</p>
 
-<h2>The Trainers most decks play</h2>
+<h2>The Trainers Most Decks Play</h2>
 <p>These Trainer cards are played in more of those ${n} lists than any others, whatever the deck. They are a good first set of slots to fill:</p>
 <div class="tw"><table>
   <thead><tr><th>Trainer</th><th class="n">Share of top lists</th></tr></thead>
@@ -653,11 +653,11 @@ ${rows.join('\n')}
   </tbody>
 </table></div>
 
-<h2>Check the deck before you play it</h2>
+<h2>Check the Deck Before You Play It</h2>
 <p>Paste your list into RdyDeck and it rates the deck out of 10, names what to fix first, such as an attacker that cannot pay for its attack or an evolution with nothing to evolve from, and shows how often you will mulligan. It is free, needs no account and works offline. <a href="improve-your-deck.html">How to improve your deck</a> walks through the same checks by hand.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 
-<h2>Common questions</h2>
+<h2>Common Questions</h2>
 <dl>
   <dt>How many cards are in a Pok&eacute;mon TCG deck?</dt>
   <dd>Exactly 60. The deck can have no more than 4 cards with the same name, except Basic Energy, and needs at least 1 Basic Pok&eacute;mon.</dd>
@@ -696,7 +696,7 @@ ${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc
   <dd>${esc(r.a)}<br>${cite(r)}</dd>`).join('\n')}
 </dl>`).join('\n')}
 
-<h2>What is not here yet</h2>
+<h2>What Is Not Here Yet</h2>
 <p>Pok&eacute;mon also rules on how two specific cards work together. Most of those rulings are not on this page yet: RdyDeck only adds one when The Pok&eacute;mon Company International has published it where anyone can read it. When a rule here and a card's text disagree, the card's text wins, and a judge at your event has the final word.</p>
 <p class="note">Rules as of ${day(rul.asOf)}. RdyDeck is an unofficial fan-made app, not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
@@ -726,7 +726,7 @@ function accuracyHtml() {
   if (!sets.length) return '';
   const a = sets[0].min, b = sets[sets.length - 1].min;
   const mins = a && b && a !== b ? `${num(a)} games in a set, or ${num(b)} in the newest one` : `${num(a || b || 0)} games in a set`;
-  return `<h2 id="accuracy">How accurate the grades are</h2>
+  return `<h2 id="accuracy">How Accurate the Grades Are</h2>
 <p>${accCount()} RdyDeck checks the order its grades put those decks in against how the decks actually win in ${esc(acc.source || 'Limitless online tournaments')}. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
 <div class="tw"><table>
   <thead><tr><th>Set</th><th>Dates</th><th class="n">Decks</th><th class="n">Games</th><th class="n">Grade as shown</th><th class="n">Cards alone</th></tr></thead>
@@ -834,12 +834,12 @@ function oddsHtml(c, decks) {
   const tr = rows.map(n => `  <tr${n === k ? ' class="you"' : ''}><td>${n} ${copyWord(n)}</td><td class="n">${pc(atLeastOne(n, 7))}</td><td class="n">${pc(atLeastOne(n, 8))}</td><td class="n">${pc(atLeastOne(n, 6))}</td></tr>`).join('\n');
   const prizedAll = allOf(k, 6);
   return `
-<h2>Odds of drawing it</h2>
+<h2>Odds of Drawing It</h2>
 <p>${esc(top.d.name)} lists usually run ${k} ${copyWord(k)}. With ${k} in a 60 card deck, you start with at least one in your 7 card opening hand ${pc(atLeastOne(k, 7))} of the time, and ${pc(atLeastOne(k, 8))} of the time once you draw for your first turn. At least one ends up in your Prize cards ${pc(atLeastOne(k, 6))} of the time${k > 1 ? `, and ${k === 2 ? 'both' : 'all ' + k} ${prizedAll < 0.001 ? 'less than 0.1%' : (prizedAll * 100).toFixed(1) + '%'} of the time` : ''}.</p>
 <div class="tw"><table><thead><tr><th>Copies</th><th class="n">In opening hand</th><th class="n">After first draw</th><th class="n">At least one prized</th></tr></thead><tbody>
 ${tr}
 </tbody></table></div>
-<p class="note">Plain draw odds before mulligans or any card that searches the deck. <a href="../opening-odds.html">Opening odds</a> works these out for your whole list, and the <a href="../prize-trainer.html">prize trainer</a> helps you spot prized cards faster.</p>
+<p class="note">Plain draw odds before mulligans or any card that searches the deck. <a href="../opening-odds.html">Opening Odds</a> works these out for your whole list, and the <a href="../prize-trainer.html">prize trainer</a> helps you spot prized cards faster.</p>
 `;
 }
 function trendHtml(c) {
@@ -850,7 +850,7 @@ function trendHtml(c) {
   if (!rows.length) return '';
   rows.sort((x, y) => Math.abs(y.b - y.a) - Math.abs(x.b - x.a));
   return `
-<h2>Rising or falling</h2>
+<h2>Rising or Falling</h2>
 <p>The share of each deck's lists that run it, earlier in the window against the last two weeks (${day(mc.recent.since)} to ${day(mc.recent.until)}), where it moved by 10 points or more:</p>
 <ul>
 ${rows.slice(0, 5).map(r => `  <li>${dLink(r.d, '../')}: ${r.b > r.a ? 'up' : 'down'} from ${pc(r.a)} of ${num(r.early)} lists to ${pc(r.b)} of ${num(r.late)}.</li>`).join('\n')}
@@ -883,7 +883,7 @@ function evoHtml(c, up) {
   const parts = [];
   if (c.evolvesFrom) parts.push(`It evolves from ${back}${cardLink(c.evolvesFrom, up)}.`);
   if (into.length) parts.push(`${into.map(x => cardLink(x.name, up)).join(' and ')} ${into.length > 1 ? 'evolve' : 'evolves'} from it.`);
-  return `\n<h2>Evolution line</h2>\n<p>${parts.join(' ')}</p>\n`;
+  return `\n<h2>Evolution Line</h2>\n<p>${parts.join(' ')}</p>\n`;
 }
 function partnersHtml(c, decks, up) {
   const top = decks[0];
@@ -891,7 +891,7 @@ function partnersHtml(c, decks, up) {
   const near = top.d.cards.filter(k => k[0] !== c.name && k[6] >= 0.75 && cardByName[k[0]]).slice(0, 10);
   if (near.length < 2) return '';
   return `
-<h2>Often played with</h2>
+<h2>Often Played With</h2>
 <p>Other cards in at least three quarters of the ${esc(top.d.name)} top lists, with the usual count:</p>
 <ul class="guides">
 ${near.map(k => `  <li>${cardLink(k[0], up)} (${k[4]})</li>`).join('\n')}
@@ -942,16 +942,16 @@ ${glance.map(([k, v]) => `  <tr><th>${k}</th><td>${v}</td></tr>`).join('\n')}
 </tbody></table></div></div>
 <div class="cta-row"><a class="cta" href="${up}">Grade a deck with ${esc(c.name)}</a></div>
 
-<h2>Card text</h2>
+<h2>Card Text</h2>
 ${text}
-${cardNotes[c.name] ? `\n<h2>In plain words</h2>\n${[].concat(cardNotes[c.name]).map(x => `<p>${esc(x)}</p>`).join('\n')}\n` : ''}
-<h2>Decks that play it</h2>
+${cardNotes[c.name] ? `\n<h2>In Plain Words</h2>\n${[].concat(cardNotes[c.name]).map(x => `<p>${esc(x)}</p>`).join('\n')}\n` : ''}
+<h2>Decks That Play It</h2>
 ${decks.length ? `<p>From the top lists of Limitless online tournaments from ${day(mc.since)} to ${day(mc.until)}. A deck is listed when at least a quarter of its top lists run the card${decks.length > 10 ? `. These are the 10 that play it most, of ${decks.length}` : ''}.</p>
 <ul>
 ${used}
 </ul>` : `<p>No top deck runs it in at least a quarter of its lists right now.</p>`}
-${notes ? `\n<h2>How it works in these decks</h2>\n${notes}\n` : ''}${oddsHtml(c, decks)}${trendHtml(c)}${techHtml(c)}${evoHtml(c, up)}${partnersHtml(c, decks, up)}
-<h2>Official rules for it</h2>
+${notes ? `\n<h2>How It Works in These Decks</h2>\n${notes}\n` : ''}${oddsHtml(c, decks)}${trendHtml(c)}${techHtml(c)}${evoHtml(c, up)}${partnersHtml(c, decks, up)}
+<h2>Official Rules for It</h2>
 ${rules.length ? `<dl>
 ${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a></dt>\n  <dd>${esc(r.a)}${cite(r)}</dd>`).join('\n')}
 </dl>` : `<p>No rule in the <a href="${up}rulings.html">rules list</a> is tied to this card yet.</p>`}

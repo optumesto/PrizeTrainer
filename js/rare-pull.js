@@ -228,7 +228,7 @@ function rpScreen() {
   s.id = 'screen-rarepull'; s.className = 'screen';
   s.innerHTML = `<div class="ws-header">
       <button class="icon-btn" onclick="rpQuit()" aria-label="Back to decks" title="Back"><svg class="ic"><use href="#i-back"/></svg></button>
-      <div class="bar-titles"><div class="bar-eyebrow">Daily game</div><div class="ws-title" id="rp-title"></div></div>
+      <div class="bar-titles"><div class="bar-eyebrow">Daily Game</div><div class="ws-title" id="rp-title"></div></div>
       <div class="rp-total" id="rp-total" aria-live="polite"></div>
     </div>
     <div class="scrollable" id="rp-body"></div>`;
@@ -446,7 +446,7 @@ function rpEnd() {
   // 3.4.22: the running total in the bar would repeat the big score below, so it goes.
   const tot = document.getElementById('rp-total'); if (tot) tot.innerHTML = '';
   document.getElementById('rp-body').innerHTML = `<div class="rp-wrap rp-end">
-    <div class="rp-end-k">${rpG.first ? 'Your score' : 'Practice replay'}</div>
+    <div class="rp-end-k">${rpG.first ? 'Your Score' : 'Practice replay'}</div>
     <div class="rp-end-score">${score}<small>/700</small></div>
     <div class="rp-end-row">${p.map(s => `<span class="rp-end-g rp-r${rpTierIx(s)}" title="${rpTier(s)[1]}">${rpGem(rpTierIx(s))}</span>`).join('')}</div>
     ${!rpG.first ? `<p class="rp-end-note"><span>Today's score stays</span> <b>${r.score}/700</b></p>` : ''}
@@ -471,7 +471,7 @@ async function rpShare(k) {
   const text = rpShareText(r, key);
   if (navigator.share) { try { await navigator.share({ text }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text); showToast('Score copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your score</div><textarea class="nt-area" readonly onclick="this.select()" data-no-tr>${esc(text)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Score</div><textarea class="nt-area" readonly onclick="this.select()" data-no-tr>${esc(text)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 
 // The kind of every pickable card, for the reason a pick did not fit. Built with the index.

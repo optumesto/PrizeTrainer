@@ -200,7 +200,7 @@ async function bk37Copy() {
 openBackupModal = function () {
   _bk37 = null; _bk37Arm = 0;
   const n = state.decks.length, games = state.decks.reduce((a, d) => a + (d.history || []).length, 0);
-  openSheet(`<div class="modal-title">Save and open decks</div>
+  openSheet(`<div class="modal-title">Save and Open Decks</div>
     <div class="bk37-sec">
       <div class="bk37-h">Save</div>
       <p class="bk37-p">${n ? `Your ${n} deck${n === 1 ? '' : 's'} and ${games} prize game${games === 1 ? '' : 's'} live in this browser only. Save them to a file to keep a copy or move them to a new phone or web address.` : 'Nothing is saved in this browser yet. To bring decks here, open a file you saved before.'}</p>

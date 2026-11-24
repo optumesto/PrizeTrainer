@@ -2,7 +2,7 @@
 // Mason, 24 Nov 2026: "Lets add a section to the homepage of the top rated decks and up and coming
 // decks (based off tourney results)". Two lists from matchups.json, the same file and the same score
 // the grade uses, so the home list and a deck's grade always agree:
-//   Top rated: the archetypes with the highest Tournament strength (g68Strength, results since the
+//   Top rated: the archetypes with the highest Tournament Strength (g68Strength, results since the
 //     newest set counted three times, every source weighed the way the grade weighs it), with at
 //     least TD90_TOP_MIN games, which is where results reach their full share of the grade.
 //   Up and coming: since the newest set came out, an archetype with at least TD90_UP_MIN games that
@@ -147,7 +147,7 @@ function renderTopDecks() {
     ? `<button type="button" class="td90-more" aria-expanded="${td90More}" onclick="td90More=!td90More;renderTopDecks()">${td90More ? 'Show less' : 'Show more'}</button>` : '';
   const how = td90Tab === 'up'
     ? `<span>Since the newest set: at least ${TD90_UP_MIN} games, 50% wins or more, and both its results and its share of lists went up.</span>`
-    : `<span>Scores are Tournament strength out of 10, from ${src} events, updated weekly.</span>`;
+    : `<span>Scores are Tournament Strength out of 10, from ${src} events, updated weekly.</span>`;
   box.querySelector('.td90-body').innerHTML = list + more + `<p class="td90-note">${how} <span>Tap a deck for its guide or to build it.</span></p>`;
 }
 function td90SetTab(t) {

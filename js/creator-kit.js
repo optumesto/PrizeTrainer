@@ -124,7 +124,7 @@ async function ck31Open() {
       <p class="modal-hint">${hint}</p>
       <code class="ck31-code" data-no-tr>${esc(val)}</code>
     </div>`;
-  openSheet(`<div class="modal-title">Creator kit</div>
+  openSheet(`<div class="modal-title">Creator Kit</div>
     <p class="modal-hint">For your stream or videos. The card shows this list's grade with the RdyDeck name, and grades it again each time it loads, so it follows the newest tournament results.</p>
     ${row('obs', 'OBS browser source', 'In OBS, add a Browser source, paste this as its URL and set its size to 560 by 190. The card grades the list again every hour.', obs)}
     ${row('iframe', 'Embed on a website', 'Paste this where your site takes HTML. Tapping the card opens the full grade.', iframe)}

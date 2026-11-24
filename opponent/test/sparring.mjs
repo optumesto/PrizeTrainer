@@ -67,7 +67,7 @@ for (let g = +(process.env.G0 || 0); g < N; g++) {
   for (;;) {
     const h = pg.html();
     ok(!/turn 0 of|turn 6 of/.test(text(h)), `game ${g}: header counts turns 1 to 5`);
-    if (/Opponent's turn/.test(h) && /Choose your new Active Pokémon/.test(h)) promoteSeen++;
+    if (/Opponent's turn/.test(h) && /Choose Your New Active Pokémon/.test(h)) promoteSeen++;
     if (presses === reloadAt) {
       // A reload: a new page in the same browser shows the same board.
       const before = board(h), log0 = logOf(h);

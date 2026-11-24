@@ -2160,7 +2160,7 @@ function gViability(deck, coh, main) {
   const hitsP = twC && !supTxt ? hitsTxt : '';
   const hitsC = twC || supTxt || !hitsTxt ? '' : ' ' + g37Hits(ce, false);
   if (best===0) { closeScore=0.12; findings.push({sev:'crit', t:'Nothing can reliably attack',
-    d:'None of your attackers have the energy they need, so damage output is basically zero.'}); }
+    d:'None of your attackers have the Energy they need, so damage output is basically zero.'}); }
   else if (spreadEngine) { strat='spread'; eff=Math.round(best*1.5)+boost; closeScore=0.9;
     findings.push({sev:'ok', t:'Closes through spread, not one big hit',
     d:`This deck wins on spread math: ${gCap(bestName)} chips the whole board and your counter-movers concentrate it. The single-hit number (${best}) undersells its reach against ${lo} to ${hi} HP threats.`}); }
@@ -4534,11 +4534,11 @@ function renderOdds() {
     const tbN = line.toolbox && (line.why === 'box' ? line.toolbox.length >= 2 : line.why !== 'name' && line.why !== 'pick' && line.toolbox.length >= 4) ? line.toolbox.length : 0;
     // 3.5.5 (Muse brief change 10): the folded heading carries the chance, so a folded section still answers.
     const atkSay = `${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' to '+oPct(AT.search):''}`;
-    h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}<span class="fs325-line">${atkSay}</span></div>
+    h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main Attacker'}<span class="fs325-line">${atkSay}</span></div>
       <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker its meta deck is named for' : line.why === 'pick' ? 'The main attacker you set' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' to '+oPct(AT.search):''}</div>
-        <p>Needs ${parts[0]}. ${S.anySearch&&oPct(AT.search)===oPct(AT.raw)?`${oPct(AT.raw)} from raw draws alone, and your search cards do not raise it.`:`${oPct(AT.raw)} is raw draws alone, the floor.`}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and abilities are not played out.${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' Real games land in between.':''}${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch&&oPct(S.onlineS3)!==oPct(S.online3)?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
+        <p>Needs ${parts[0]}. ${S.anySearch&&oPct(AT.search)===oPct(AT.raw)?`${oPct(AT.raw)} from raw draws alone, and your search cards do not raise it.`:`${oPct(AT.raw)} is raw draws alone, the floor.`}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?` ${oPct(AT.search)} lets every search card you have in time fetch one missing piece, ignoring discard costs and the one Supporter per turn rule, so it is closer to a ceiling.`:''} Draw Supporters and Abilities are not played out.${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' Real games land in between.':''}${T === 2 && S.online3 != null ? ` By turn 3: ${oPct(S.online3)}${S.anySearch&&oPct(S.onlineS3)!==oPct(S.online3)?' to '+oPct(S.onlineS3):''}.` : ''}${line.cond?` This counts ${esc(line.name)} in hand, not at full power: it hits for ${line.now} ${line.sc ? 'with 2 ' + esc(line.two) + ' ' + line.sc.where + ' and ' + line.full + ' once you have ' + line.cond.n : 'until you have ' + line.cond.n + ' ' + esc(line.cond.what) + ' in your discard pile, then ' + line.full}. ${line.sc ? line.sc.fill : 'Filling the discard pile'} is not counted here, so the full hit this early is much less likely than this.`:''}</p></div>
       <div class="g-item ${S.locked<=0.02?'ok':S.locked<=0.06?'warn':'crit'}">
         <div class="gt">Line locked in prizes: ${S.locked===0 && [line.basic,line.s1,line.top].some(i=>i>=0&&S.groups[i].qty<=6) ? '<0.1%' : oPct(S.locked)}</div>
         <p>Games where every copy of a piece the attacker needs is prized, so it cannot come online until you take that prize.</p></div>
@@ -4556,7 +4556,7 @@ function renderOdds() {
     return `<tr><td>${esc(p.name)}${tag}</td><td class="o-qty">${p.qty}</td><td><span class="o-any"><span class="o-bar"><i style="width:${Math.min(100, p.any * 100)}%"></i></span>${oPct1(p.any)}</span></td><td class="${p.all>=0.05?'hi':''}">${oPct1(p.all)}</td></tr>`;
   };
   const head = `<div class="o-table-wrap"><table class="o-table"><thead><tr><th>Card</th><th>Copies</th><th>Any prized</th><th>All prized</th></tr></thead><tbody>`;
-  h += `<div class="g-sec"><div class="g-sec-t">Prize risk</div>
+  h += `<div class="g-sec"><div class="g-sec-t">Prize Risk</div>
     <div class="g-sec-i">Exact chance a card lands in your six prizes, counting only opening hands you keep. <b>All prized</b> means every copy is stuck there, which is the case RdyDeck drills you to spot.</div>`;
   h += head + rows.slice(0, SHOW).map(rowHtml).join('') + `</tbody></table></div>`;
   if (rows.length > SHOW) {
@@ -4943,14 +4943,14 @@ function renderHand() {
   const nm = i => i >= 0 ? esc(groups[i].name) : '';
 
   let h = `<div class="hp-wrap"><div class="g-sec">
-    <div class="g-sec-t">Opening hand</div>
+    <div class="g-sec-t">Opening Hand</div>
     <div class="g-sec-i">A random 7 from this list. Pick the line you would build on turn 1, lock it in, then see how often it comes together.</div>
     <div class="hp-meta">
       ${H.mulls ? `<span class="hp-pill warn">${H.mulls} mulligan${H.mulls !== 1 ? 's' : ''} before this hand</span>` : '<span class="hp-pill">Kept the first 7</span>'}
       ${!H.anyBasic ? '<span class="hp-pill warn">No Basic read, mulligan rule off</span>' : ''}
     </div>
     <div class="hp-hand">${H.hand.map((x, i) => gfIsBasic(x)
-      ? `<button type="button" class="hp-basic" onclick="hpCardSheet(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set up</span></button>`
+      ? `<button type="button" class="hp-basic" onclick="hpCardSheet(${i})" title="Set up ${esc(x.card.name)} and play this hand in Goldfish" aria-label="Set up ${esc(x.card.name)} in Goldfish">${handCardHTML(x.card)}<span class="hp-basic-tag">Set Up</span></button>`
       : `<button type="button" class="hp-card" onclick="hpCardSheet(${i})" aria-label="${esc(x.card.name)}">${handCardHTML(x.card)}</button>`).join('')}</div>
     ${hpNoEnergyLine(H.hand)}
     ${H.hand.some(gfIsBasic) ? '<div class="g-sec-i hp-basic-tip">Tap a Basic to put it in play and carry on in Goldfish with this same hand.</div>' : ''}`;
@@ -4987,7 +4987,7 @@ function renderHand() {
       (need.length ? `Still need: ${need.join(', ')}.${eTxt}` : eTxt || 'Every piece is in your hand.');
   };
 
-  h += `<div class="g-sec-t">Your turn 1 line</div>
+  h += `<div class="g-sec-t">Your Turn 1 Line</div>
     <div class="g-sec-i">Which Pokémon would you set up first with this hand?</div>
     <div class="hp-opts" role="radiogroup">`;
   opts.forEach((l, i) => {
@@ -5038,7 +5038,7 @@ function renderHand() {
       <p>${oPct(sc(best))} by turn ${tH} against ${oPct(sc(pick))} for ${esc(pick.l.name)}. Look at which pieces are already in your hand and which search cards can reach the rest.</p></div>`;
   }
 
-  h += `<div class="g-sec" style="margin-top:1rem"><div class="g-sec-t">Every line from this hand</div>
+  h += `<div class="g-sec" style="margin-top:1rem"><div class="g-sec-t">Every Line from This Hand</div>
     <div class="o-table-wrap"><table class="o-table"><thead><tr><th>Line</th><th>T2 raw</th><th>T2 search</th><th>T3</th></tr></thead><tbody>`;
   res.forEach(r => {
     const tags = (r.i === H.pick ? '<span class="o-tag">Your pick</span>' : '') + (r.i === best.i && r.i !== H.pick ? '<span class="o-tag">Best</span>' : '');
@@ -5057,7 +5057,7 @@ function renderHand() {
     : dealt.s2 ? esc(pick.l.name) + ' was ready by turn 2 using your search cards'
     : tH === 3 && dealt.s3 ? esc(pick.l.name) + ' was ready by turn 3, the earliest it can be'
     : esc(pick.l.name) + ' was not ready by turn ' + tH + ' this time';
-  h += `<div class="g-sec"><div class="g-sec-t">How this deal fell</div>
+  h += `<div class="g-sec"><div class="g-sec-t">How This Deal Fell</div>
     <div class="g-sec-i">The prizes and draws this shuffle actually gave you. Highlighted cards are pieces of your line.</div>
     <div class="hp-lbl">Prizes</div><div class="hp-chips">${pz.map(chip).join('')}</div>
     <div class="hp-lbl">Turn 1 and 2 draws</div><div class="hp-chips">${dr.map(chip).join('')}</div>${tH === 3 ? `<div class="hp-lbl">Turn 3 draw</div><div class="hp-chips">${H.restOrder.slice(8, 9).map(chip).join('')}</div>` : ''}
@@ -5306,7 +5306,7 @@ function renderProgressSection(deck) {
   }
   const totalGames = days.reduce((a, k) => a + deck.daily[k].g, 0);
   let h = `<div class="pg-wrap">
-    <div class="section-title">Progress over time</div>
+    <div class="section-title">Progress Over Time</div>
     <div class="pg-tiles">
       <div class="pg-tile"><div class="pl">Accuracy</div><div class="pv">${accTxt}</div><div class="ps ${accCls}">${accSub}</div></div>
       <div class="pg-tile"><div class="pl">Avg time</div><div class="pv">${formatTime(Math.round(W.now.time))}</div><div class="ps ${spdCls}">${spdSub}</div></div>
@@ -5507,7 +5507,7 @@ function renderEditLog(deck) {
     ? `The log started ${shortDate23(first.ts)}. Changes made before then were not recorded.`
     : first.kind === 'copy' ? `Duplicated${first.from ? ' from ' + esc(first.from) : ''} ${shortDate23(first.ts)}.`
     : `Imported ${shortDate23(first.ts)}.`;
-  let h = `<div class="g-sec" id="el-sec"><div class="g-sec-t">Edit log</div>
+  let h = `<div class="g-sec" id="el-sec"><div class="g-sec-t">Edit Log</div>
     <div class="g-sec-i">Every card change saved from Edit deck, so you can see how the list grew. ${startTxt}</div>`;
   if (v.length === 1) {
     h += `<div class="nt-empty">No changes yet. Save a change in Edit deck and it shows here with the date.</div></div>`;
@@ -5534,7 +5534,7 @@ function matchupFor(deck, opp) {
 }
 function renderMatchups(deck) {
   const list = (deck.matchups || []).slice().sort((a, b) => a.opp.localeCompare(b.opp));
-  let h = `<div class="g-sec"><div class="g-sec-t">Matchup notes</div>
+  let h = `<div class="g-sec"><div class="g-sec-t">Matchup Notes</div>
     <div class="g-sec-i">Your prize plan against each deck you expect to face. Saved on this device only.</div>`;
   if (!list.length) h += `<div class="nt-empty">No notes yet. Add one for the decks you see most at your locals.</div>`;
   list.forEach(m => {
@@ -5553,7 +5553,7 @@ function openMatchupForm(id, presetOpp) {
   if (!deck) return;
   const m = id ? (deck.matchups || []).find(x => x.id === id) : null;
   const opps = [...new Set((state.tlog || []).map(x => x.opp).filter(Boolean))].slice(0, 30);
-  openSheet(`<div class="modal-title">${m ? 'Edit matchup note' : 'New matchup note'}</div>
+  openSheet(`<div class="modal-title">${m ? 'Edit matchup note' : 'New Matchup Note'}</div>
     <div class="mb"><label for="mu-opp">Opposing deck</label>
       <input type="text" id="mu-opp" maxlength="60" placeholder="e.g. Gardevoir ex" list="mu-opp-list" value="${esc(m ? m.opp : presetOpp || '')}">
       <datalist id="mu-opp-list">${opps.map(o => `<option value="${esc(o)}">`).join('')}</datalist></div>
@@ -5618,7 +5618,7 @@ function compareTarget(deck, val) {
 }
 function renderCompare(deck) {
   const opts = compareOptions(deck);
-  let h = `<div class="g-sec" id="cmp-sec"><div class="g-sec-t">Compare lists</div>
+  let h = `<div class="g-sec" id="cmp-sec"><div class="g-sec-t">Compare Lists</div>
     <div class="g-sec-i">This list against an earlier version or another deck: card changes and how the odds move.</div>`;
   if (!opts.length) return h + `<div class="nt-empty">Nothing to compare yet. Save a change in Edit deck, or import a second deck.</div></div>`;
   if (!opts.some(o => o.val === _cmpSel)) _cmpSel = opts[0].val;
@@ -6169,7 +6169,7 @@ function gfAbilWhy(m, A, x) {
 function setHandMode(m) { handMode = m === 'gold' ? 'gold' : 'line'; renderHand(); }
 function handModeBar() {
   return `<div class="seg hm-seg" role="group" aria-label="Hand practice mode">
-    <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 line</div>
+    <div class="mode-opt${handMode === 'line' ? ' active' : ''}" onclick="setHandMode('line')">Turn 1 Line</div>
     <div class="mode-opt${handMode === 'gold' ? ' active' : ''}" onclick="setHandMode('gold')">Goldfish (3 Turns)</div>
     <a class="mode-opt hm-spar" href="opponent/play.html">Sparring (5 Turns)</a>
   </div>`;
@@ -7254,7 +7254,7 @@ function renderGoldfish() {
   if (!gf.anyBasic) { el.innerHTML = `<div class="hp-wrap">${handModeBar()}<div class="g-item warn"><div class="gt">No card data yet</div><p>Goldfish needs each card's stage to know your Basics. Open this deck while online, or open Edit deck and save it, to read them.</p></div></div>`; return; }
   const t = gf.turn;
   let h = `<div class="hp-wrap">${handModeBar()}<div class="g-sec">
-    <div class="g-sec-t">${gf.done ? 'How your ' + GF_TURNS + ' turns went' : t === 0 ? 'Set up' : 'Turn ' + t + ' of ' + GF_TURNS}</div>
+    <div class="g-sec-t">${gf.done ? 'How your ' + GF_TURNS + ' turns went' : t === 0 ? 'Set Up' : 'Turn ' + t + ' of ' + GF_TURNS}</div>
     <div class="g-sec-i">${gf.done ? 'Your board after turn ' + GF_TURNS + ', what came together and when, and how that compares with the odds from this opening hand.'
       : t === 0 ? 'Put a Basic in the Active Spot and any others on your Bench, then start turn 1. You draw at the start of every turn.'
       : 'Tap a card in your hand to play it. Tap a Pokémon in play to retreat, use its Ability or attack. An attack ends your turn.'}</div>
@@ -7459,7 +7459,7 @@ function renderDrills() {
 function renderPrizeGameSec(deck) {
   const n = (deck.history || []).length, id = esc(String(deck.id)), daily = isDailyChallenge(deck);
   const four = typeof pre47Is === 'function' && pre47Is(deck);   // prerelease decks play 4 prizes
-  return `<div class="g-sec" id="pg-sec"><div class="g-sec-t">Prize game</div>
+  return `<div class="g-sec" id="pg-sec"><div class="g-sec-t">Prize Game</div>
     <div class="g-sec-i">${four ? 'Four' : 'Six'} cards go face down and you name them.</div>
     <div class="hp-meta">${n ? `<span class="hp-pill">${n} prize game${n !== 1 ? 's' : ''} played</span>` : ''}</div>
     <div class="hp-actions">${daily ? '' : `<button class="btn" onclick="openModeModal('${id}')">Game modes</button>`}${n && !daily ? `<button class="btn" onclick="openWeakSpots('${id}')">Progress</button>` : ''}<button class="btn btn-primary" onclick="startGameFromReview()" aria-label="Start a prize game with this deck">${ic23('play')}Play</button></div></div>`;
@@ -7511,7 +7511,7 @@ function resCheck() {
 }
 function renderResDrill(deck) {
   const st = deck.drills && deck.drills.res;
-  let h = `<div class="g-sec" id="res-sec"><div class="g-sec-t">Resource count</div>
+  let h = `<div class="g-sec" id="res-sec"><div class="g-sec-t">Resource Count</div>
     <div class="g-sec-i">Your list stays hidden. Here is what you have used so far this game. Say how many of each card you have not used yet, the way you would before a big turn.</div>
     <div class="hp-meta">${statLine(st)}</div>`;
   if (!resDrill || resDrill.deckId !== deck.id) {
@@ -7581,15 +7581,15 @@ function renderReadDrill(deck) {
   if (!srcs.some(s => s.val === _oppSrc)) _oppSrc = srcs.length > 1 ? srcs.find(s => s.val !== 'd:' + deck.id) ? srcs.find(s => s.val !== 'd:' + deck.id).val : srcs[0].val : 'paste';
   const st = state.drillStats && state.drillStats.read;
   const stage = (readDrill && readDrill.stage) || 'late';
-  let h = `<div class="g-sec" id="read-sec"><div class="g-sec-t">Opponent prize read</div>
+  let h = `<div class="g-sec" id="read-sec"><div class="g-sec-t">Opponent Prize Read</div>
     <div class="g-sec-i">Load your opponent's list. You see everything they have shown. Six of the rest are prized and the others are still in their deck or hand. Name the six.</div>
     <div class="hp-meta">${statLine(st)}</div>
     <label for="opp-src">Their list</label>
     <select id="opp-src" class="x-select" onchange="setOppSrc(this.value)">${srcs.map(s => `<option value="${esc(s.val)}"${s.val === _oppSrc ? ' selected' : ''}>${esc(s.label)}</option>`).join('')}</select>
     ${_oppSrc === 'paste' ? `<textarea id="opp-paste" class="nt-area" maxlength="8000" aria-label="Opponent's deck list" placeholder="Paste their 60 card list. It stays on this device and is not saved as a deck.">${esc(_oppPaste)}</textarea>` : ''}
     <div class="seg read-seg" style="margin:0.6rem 0">
-      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late game <small>8 still in deck or hand</small></div>
-      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid game <small>18 still in deck or hand</small></div>
+      <div class="mode-opt${stage === 'late' ? ' active' : ''}" onclick="setReadStage('late')">Late Game <small>8 still in deck or hand</small></div>
+      <div class="mode-opt${stage === 'mid' ? ' active' : ''}" onclick="setReadStage('mid')">Mid Game <small>18 still in deck or hand</small></div>
     </div>`;
   const R = readDrill;
   if (!R || !R.rows || R.src !== _oppSrc) {
@@ -8903,7 +8903,7 @@ async function shareDaily(k) {
   const text = dailyShareText(r, key), url = shareBaseUrl() + '?ref=daily#daily';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Score copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your Prize Check score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Prize Check Score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 function renderDailyCard() {
   const el = document.getElementById('daily-card');
@@ -8950,21 +8950,24 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.11',
+  version: 'v3.5.12',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Faster card loading on school wifi' }
+    { t: 'Titles and headings capitalized the same way everywhere' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.11', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'Faster card loading on school wifi' }
+  ] },
   { version: 'v3.5.10', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Deck guides for Ogerpon Meganium Arboliva and Okidogi Barbaracle' }
   ] },
   { version: 'v3.5.9', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'Top decks on home: top rated and up and coming' }
+    { t: 'Top decks on home: Top Rated and Up and Coming' }
   ] },
   { version: 'v3.5.8', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Daily games renamed: Prize Check and Quickest Win' }
@@ -8991,7 +8994,7 @@ function wnBlock(w, first) {
 function wnMarkSeen() { try { localStorage.setItem(WN_KEY, PT_VERSION); } catch (_) {} }
 function openWhatsNew() {
   wnMarkSeen(); renderWhatsNewCard();
-  openSheet(`<div class="modal-title">What's new</div>
+  openSheet(`<div class="modal-title">What's New</div>
     ${[WHATS_NEW].concat(WHATS_PREV.slice(0, 2)).map((w, i) => wnBlock(w, i === 0)).join('')}
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Got it</button></div>`);
 }
@@ -9098,7 +9101,7 @@ function renderPuzzleCard() {
   if (!el) return;
   const key = dailyKey(), r = puzzleStore().results[key];
   // 3.4.22: before you play, the row says what the game is; your tally and runs stay on the result screen.
-  const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}${r.best ? (r.moves <= r.best ? ', the shortest win' : `, best ${r.best}`) : ''}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
+  const sub = r ? (r.won ? `Today: <b>Won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}${r.best ? (r.moves <= r.best ? ', the shortest win' : `, best ${r.best}`) : ''}` : r.peek ? 'Today: You looked at the answer' : 'Today: <b>No win</b> on your first try')
     : 'Win this turn from a real tournament board';
   el.innerHTML = `<div class="dc-card">
     <div class="dc-ic">${ic23('bolt')}</div>
@@ -9192,7 +9195,7 @@ function pzAskText(s) {
   const R = s.pending, A = R.ask, st = R.steps[A.step], who = R.ctx.name ? esc(R.ctx.name) + ': ' : '';
   const q = {
     yesno: A.q || (st.t === 'switchSelf' ? 'Switch it into the Active Spot?' : 'Do it?'),
-    option: 'Choose one', benchMon: 'Choose your new Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
+    option: 'Choose one', benchMon: 'Choose Your New Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
     oppMon: `Put ${st.n} damage counters on which Pokémon?`, benchHit: `Put ${st.dmg} damage on which Benched Pokémon?`, moveCounters: 'Move damage counters', moveEnergy: 'Move an Energy',
     moveToSelf: 'Move Energy to this Pokémon', pickUp: 'Choose a Pokémon to pick up', attach: 'Attach Energy',
     cost: `Discard ${st.n} card${st.n === 1 ? '' : 's'} from your hand`, search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile',
@@ -9279,7 +9282,7 @@ function pzActions() {
   const acts = E.legalActions(s, { why: true });
   // A new Active comes first (the engine asks for it before any choice an effect is waiting on).
   if (s.promote && s.promote.length) {
-    h += `<div class="pz-q">Choose your new Active Pokémon</div><div class="pz-btns">`;
+    h += `<div class="pz-q">Choose Your New Active Pokémon</div><div class="pz-btns">`;
     acts.forEach((a, i) => { h += `<button class="btn pz-b" onclick="pzDo(${i})">${esc(pzLabel(s, a))}</button>`; });
     return h + `</div>` + tools;
   }
@@ -9298,7 +9301,7 @@ function pzActions() {
   // Grouped in turn order, so a long list on a phone is easy to scan.
   const groups = [['hand', 'From your hand'], ['energy', 'Attach Energy'], ['ability', 'Abilities'], ['retreat', 'Retreat'], ['attack', 'Attack'], ['end', '']];
   const kind = a => a.t === 'attack' ? 'attack' : a.t === 'end' ? 'end' : a.t === 'energy' ? 'energy' : a.t === 'ability' ? 'ability' : a.t === 'retreat' ? 'retreat' : 'hand';
-  h += `<div class="pz-q">Your move</div>`;
+  h += `<div class="pz-q">Your Move</div>`;
   groups.forEach(([g, title]) => {
     const list = ok.filter(x => kind(x.a) === g);
     if (!list.length) return;
@@ -9387,7 +9390,7 @@ async function sharePuzzle(k) {
   const text = puzzleShareText(r, key), url = shareBaseUrl() + '?ref=puzzle#puzzle';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Result copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your Quickest Win result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Quickest Win Result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 function pzTypeWord(t) { return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
 function pzCardHtml(c, extra, acts) {
@@ -9422,7 +9425,7 @@ function pzActsFor(test) {
     (a.why ? no : ok).push({ a, i, label });
   });
   if (!ok.length && !no.length) return '';
-  return `<div class="pz-gt">Your move</div><div class="pz-btns">${ok.map(x => `<button class="btn pz-b${x.a.t === 'attack' ? ' btn-primary' : ''}" onclick="closeSheet();pzDo(${x.i})">${esc(x.label)}</button>`).join('')}</div>`
+  return `<div class="pz-gt">Your Move</div><div class="pz-btns">${ok.map(x => `<button class="btn pz-b${x.a.t === 'attack' ? ' btn-primary' : ''}" onclick="closeSheet();pzDo(${x.i})">${esc(x.label)}</button>`).join('')}</div>`
     + no.slice(0, 3).map(x => `<div class="pz-s"><b>${esc(x.label)}</b> ${esc(x.a.why)}</div>`).join('');
 }
 function pzHandSheet(key) {
@@ -9518,10 +9521,10 @@ function renderProgressExtras(deck) {
     parts.push(`<div class="pg-tile"><div class="pl">List changes</div><div class="pv">${v.length - 1}</div><div class="ps">Last ${shortDate23(lastTs)}${a1 != null && a0 != null ? `, ${a1}% since vs ${a0}% before` : ''}</div></div>`);
   }
   const D = deck.drills || {};
-  const dr = [['res', 'Resource count'], ['gold', 'Goldfish on time'], ['reach', 'Reach check']].filter(([k]) => D[k] && D[k].g);
+  const dr = [['res', 'Resource Count'], ['gold', 'Goldfish on Time'], ['reach', 'Reach Check']].filter(([k]) => D[k] && D[k].g);
   if (dr.length) parts.push(`<div class="pg-tile"><div class="pl">Drills</div><div class="pv">${dr.reduce((a, [k]) => a + D[k].g, 0)}</div><div class="ps">${dr.map(([k, n]) => `${n} ${Math.round(D[k].c / Math.max(1, D[k].n) * 100)}%`).join(', ')}</div></div>`);
   if (!parts.length) return '';
-  return `<div class="pg-wrap pg-extra"><div class="section-title">Matches, list and drills</div><div class="pg-tiles">${parts.join('')}</div>
+  return `<div class="pg-wrap pg-extra"><div class="section-title">Matches, List and Drills</div><div class="pg-tiles">${parts.join('')}</div>
     <div class="hp-actions" style="margin:0.25rem 0 0">${rec.n ? `<button class="btn btn-sm" onclick="openTlog('${deck.id}')">${ic23('trophy')}Tournament log</button>` : ''}${v.length > 1 ? `<button class="btn btn-sm" onclick="openReview('${deck.id}');showReviewTab('notes')">${ic23('edit')}Edit log</button>` : ''}</div></div>`;
 }
 
@@ -9572,10 +9575,10 @@ function renderTlog() {
   const list = all.filter(x => !_tlogDeck || x.deckId === _tlogDeck);
   const rec = tlogRecord(list, () => true);
   const dk = _tlogDeck ? state.decks.find(d => d.id === _tlogDeck) : null;
-  document.getElementById('tlog-title').textContent = dk ? dk.name : 'All decks';
+  document.getElementById('tlog-title').textContent = dk ? dk.name : 'All Decks';
   let h = `<div class="tl-wrap">
     <label for="tl-filter">Deck</label>
-    <select id="tl-filter" class="x-select" onchange="_tlogDeck=this.value;renderTlog()"><option value="">All decks</option>${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === _tlogDeck ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select>
+    <select id="tl-filter" class="x-select" onchange="_tlogDeck=this.value;renderTlog()"><option value="">All Decks</option>${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === _tlogDeck ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select>
     <div class="pg-tiles" style="margin-top:0.75rem">
       <div class="pg-tile"><div class="pl">Record</div><div class="pv">${rec.w}-${rec.l}-${rec.t}</div><div class="ps">${rec.n} match${rec.n !== 1 ? 'es' : ''}</div></div>
       <div class="pg-tile"><div class="pl">Win rate</div><div class="pv">${rec.n ? Math.round(rec.w / rec.n * 100) + '%' : '?'}</div><div class="ps">Ties count as not won</div></div>
@@ -9634,7 +9637,7 @@ function openTlogForm(id) {
   _tlForm = x ? { result: x.result, taken: x.taken, given: x.given } : { result: 'W', taken: 6, given: 0 };
   const deckId = x ? x.deckId : _tlogDeck || (sameDay ? last.deckId : state.decks[0].id);
   const opps = [...new Set((state.tlog || []).map(e => e.opp).concat(...state.decks.map(d => (d.matchups || []).map(m => m.opp))).filter(Boolean))].slice(0, 40);
-  openSheet(`<div class="modal-title">${x ? 'Edit match' : 'Log a match'}</div>
+  openSheet(`<div class="modal-title">${x ? 'Edit match' : 'Log a Match'}</div>
     <div class="tl-two"><div class="mb"><label for="tl-day">Date</label><input type="date" id="tl-day" class="x-date" value="${esc(x ? x.day : today)}"></div>
     <div class="mb"><label for="tl-event">Event</label><input type="text" id="tl-event" maxlength="60" placeholder="League Challenge" value="${esc(x ? x.event : sameDay ? last.event : '')}"></div></div>
     <div class="mb"><label for="tl-deck">Your deck</label><select id="tl-deck" class="x-select" onchange="tlPlanHint()">${state.decks.map(d => `<option value="${esc(d.id)}"${d.id === deckId ? ' selected' : ''}>${esc(d.name)}</option>`).join('')}</select></div>
@@ -10011,8 +10014,8 @@ function buildDeckCard(deck) {
       <div class="deck-actions-col">
         <button class="deck-act" onclick="event.stopPropagation();openReview('${deck.id}')" title="Cards, grade and odds">${ic('grid')}<span>Deck</span></button>
         <button class="deck-act" onclick="event.stopPropagation();openModeModal('${deck.id}')" title="Game modes, hide or delete">${ic('sliders')}<span>Modes</span></button>
-        <button class="deck-act" onclick="event.stopPropagation();openEditModal('${deck.id}')" title="Edit deck">${ic('edit')}<span>Edit</span></button>
-        ${sessions >= 1 ? `<button class="deck-act btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')" title="Progress and weak spots">${ic('trend')}<span>Progress</span></button>` : ''}
+        <button class="deck-act" onclick="event.stopPropagation();openEditModal('${deck.id}')" title="Edit Deck">${ic('edit')}<span>Edit</span></button>
+        ${sessions >= 1 ? `<button class="deck-act btn-weakspot-link" onclick="event.stopPropagation();openWeakSpots('${deck.id}')" title="Progress and Weak Spots">${ic('trend')}<span>Progress</span></button>` : ''}
       </div>
     </div>`;
 }
@@ -10529,8 +10532,8 @@ async function startGame(deckId) {
   const badges = [];
   if (game.prizeCount !== 6) badges.push(`${game.prizeCount} prizes`);
   if (game.timeLimit) badges.push(game.timeLimit + 's timer');
-  if (game.tableCheck && (game.hand || []).length) badges.push('Table check');
-  if (game.reachCheck) badges.push('Reach check');
+  if (game.tableCheck && (game.hand || []).length) badges.push('Table Check');
+  if (game.reachCheck) badges.push('Reach Check');
   if (deckId === DAILY_ID) badges.push('Daily ' + shortDate23(Date.now()));
   badgeWrap.innerHTML = badges.map(b => `<span class="mode-badge">${b}</span>`).join('');
 
@@ -11490,7 +11493,7 @@ function openWeakSpots(deckId) {
     insights.push(`You miss <b>${esc(worstCard.label)}</b> when it's prized ${Math.round(worstCard.rate*100)}% of the time. That is your biggest blind spot.`);
   }
   if (mostPrized && mostPrized.prized >= 3) {
-    insights.push(`<b>${esc(mostPrized.label)}</b> has been a prize card ${mostPrized.prized} times across ${sessions.length} tracked sessions. High variance card.`);
+    insights.push(`<b>${esc(mostPrized.label)}</b> has been a Prize card ${mostPrized.prized} times across ${sessions.length} tracked sessions. High variance card.`);
   }
   const improving = recentSessions.length >= 4 &&
     recentSessions.slice(-2).reduce((a,h)=>a+h.score/(h.prizeCount||6),0) / 2 >
@@ -11504,15 +11507,15 @@ function openWeakSpots(deckId) {
       <div class="ws-summary-grid">
         <div>
           <div class="ws-stat-val">${totalSessions}</div>
-          <div class="ws-stat-lbl">Sessions played</div>
+          <div class="ws-stat-lbl">Sessions Played</div>
         </div>
         <div>
           <div class="ws-stat-val">${avgScore}%</div>
-          <div class="ws-stat-lbl">Average score</div>
+          <div class="ws-stat-lbl">Average Score</div>
         </div>
         <div>
           <div class="ws-stat-val">${perfectCount}</div>
-          <div class="ws-stat-lbl">Perfect runs</div>
+          <div class="ws-stat-lbl">Perfect Runs</div>
         </div>
       </div>
     </div>
@@ -11531,7 +11534,7 @@ function openWeakSpots(deckId) {
     </div>` : ''}
 
     <div class="ws-trend-wrap">
-      <div class="section-title">Score trend</div>
+      <div class="section-title">Score Trend</div>
       <div class="ws-trend-bars">
         ${recentSessions.map(h => {
           const hpc = h.prizeCount || 6;
@@ -11546,7 +11549,7 @@ function openWeakSpots(deckId) {
     </div>
 
     <div class="ws-list">
-    <div class="section-title">Miss rate by card</div>
+    <div class="section-title">Miss Rate by Card</div>
     ${sorted.length === 0
       ? `<div class="ws-card-sub" style="padding:0.25rem 0 0.75rem;">Play more sessions to build miss rate data.</div>`
       : sorted.map(c => {
@@ -11595,7 +11598,7 @@ function openModeModal(deckId) {
   if (_hBtn && _hDeck) {
     _hBtn.innerHTML = _hDeck.hidden
       ? '<svg class="ic ic-sm"><use href="#i-eye"/></svg>Show deck'
-      : '<svg class="ic ic-sm"><use href="#i-eye-off"/></svg>Hide deck';
+      : '<svg class="ic ic-sm"><use href="#i-eye-off"/></svg>Hide Deck';
   }
   const _mdn = document.getElementById('mode-deck-name');
   if (_mdn) _mdn.textContent = _hDeck ? _hDeck.name : '';
@@ -11993,8 +11996,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.11';
-const PT_BUILD = 182;
+const PT_VERSION = 'v3.5.12';
+const PT_BUILD = 183;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -12208,12 +12211,12 @@ async function loadStarterDeck(id) {
 // ── Help and feedback ──
 function openHelpSheet() {
   const row = (fn, icon, t, s) => `<button class="hs-row" onclick="${fn}"><span class="ha-ic">${ic23(icon)}</span><span class="hs-tx"><b>${t}</b><span>${s}</span></span><svg class="ic hs-go"><use href="#i-next"/></svg></button>`;
-  openSheet(`<div class="modal-title">Help and feedback</div>
+  openSheet(`<div class="modal-title">Help and Feedback</div>
     <div class="hs-list">
-      ${row("closeSheet();startTour(true)", 'play', 'Take the tour', 'A one minute walk through the app')}
-      ${row("closeSheet();openHowToPlay()", 'help', 'How to play', 'Every step of a prize game')}
-      ${FEEDBACK_EMAIL ? row("closeSheet();openFeedback()", 'alert', 'Send feedback', 'Report a bug or a missing card') : ''}
-      ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard shortcuts', 'For playing on a computer')}
+      ${row("closeSheet();startTour(true)", 'play', 'Take the Tour', 'A one minute walk through the app')}
+      ${row("closeSheet();openHowToPlay()", 'help', 'How to Play', 'Every step of a prize game')}
+      ${FEEDBACK_EMAIL ? row("closeSheet();openFeedback()", 'alert', 'Send Feedback', 'Report a bug or a missing card') : ''}
+      ${row("closeSheet();openShortcuts()", 'keyboard', 'Keyboard Shortcuts', 'For playing on a computer')}
     </div>
     <div class="modal-hint" style="margin-top:0.9rem">RdyDeck ${PT_VERSION}${PT_PLAY ? ' (Google Play)' : ''}</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
@@ -12223,11 +12226,11 @@ let fbKind = 'Bug';
 function openFeedback() {
   fbKind = 'Bug';
   const deck = state.decks.find(d => d.id === state.activeDeckId) || state.decks[0];
-  openSheet(`<div class="modal-title">Send feedback</div>
+  openSheet(`<div class="modal-title">Send Feedback</div>
     <div class="modal-hint" style="margin-bottom:0.9rem">This opens an email to us in your own email app, with the details filled in. Nothing is sent until you press Send there. Under 13? Ask a parent to send it.</div>
     <div class="field-label">What is it about?</div>
     <div class="seg fb-seg" role="group" aria-label="Feedback type">
-      ${['Bug', 'Missing card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
+      ${['Bug', 'Missing Card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
     </div>
     <div class="mb" style="margin-top:0.9rem">
       <label for="fb-text">Tell us what happened</label>
@@ -12242,15 +12245,15 @@ function setFbKind(btn) {
   document.querySelectorAll('.fb-seg .mode-opt').forEach(b => b.classList.toggle('active', b === btn));
 }
 function feedbackUrl(kind, text, deck) {
-  kind = ['Bug', 'Missing card', 'Idea'].includes(kind) ? kind : 'Bug';
+  kind = ['Bug', 'Missing Card', 'Idea'].includes(kind) ? kind : 'Bug';
   const body = v24Clean(text, 1500).trim();
   const first = (body.split('\n')[0] || '').trim().slice(0, 60);
-  const subject = `RdyDeck ${kind}: ${first || (kind === 'Idea' ? 'Idea' : kind === 'Missing card' ? 'Missing card' : 'Bug report')}`;
+  const subject = `RdyDeck ${kind}: ${first || (kind === 'Idea' ? 'Idea' : kind === 'Missing Card' ? 'Missing Card' : 'Bug report')}`;
   const scr = (document.querySelector('.screen.active') || {}).id || '';
   const ua = navigator.userAgent;
   const device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone or iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
   const lines = [
-    kind === 'Missing card' ? 'Which card is missing or wrong? (name, set code, number)' : kind === 'Idea' ? 'What would you like?' : 'What happened?',
+    kind === 'Missing Card' ? 'Which card is missing or wrong? (name, set code, number)' : kind === 'Idea' ? 'What would you like?' : 'What happened?',
     body || '',
     '',
     kind === 'Bug' ? 'What did you expect?\n\n' : '',

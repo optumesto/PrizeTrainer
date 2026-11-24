@@ -29,8 +29,8 @@ function atk62Section(deck, R) {
     // 3.5.5 (Muse brief change 5): the line says who picked the attacker, never a bare Auto.
     : (cur && R.via.main) ? `<span class="r38-line"><span>Set by you:</span> <span data-no-tr>${esc(gCap(R.via.main.name))}</span></span>`
     : auto ? `<span class="r38-line"><span>Read from the cards:</span> <span data-no-tr>${esc(gCap(auto.name))}</span></span>` : '';
-  return `<details class="g-sec g29-fold" id="atk62-sec"${gone ? ' open' : ''}><summary><span class="r38-t"><span class="g-sec-t">Main attacker</span>${now}</span></summary>
+  return `<details class="g-sec g29-fold" id="atk62-sec"${gone ? ' open' : ''}><summary><span class="r38-t"><span class="g-sec-t">Main Attacker</span>${now}</span></summary>
     <div class="g-sec-i">${say}</div>
-    <select class="x-select" aria-label="Main attacker" onchange="atk62Set(this.value)">${sel}</select>
+    <select class="x-select" aria-label="Main Attacker" onchange="atk62Set(this.value)">${sel}</select>
     ${gone ? '<p class="mu60-p">The Pokemon you set is no longer in the list, so the grade is back on Auto.</p>' : ''}</details>`;
 }

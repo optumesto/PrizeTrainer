@@ -19,11 +19,11 @@
     fbKind = 'Bug';
     fbBusy = false;
     const deck = fbDeck();
-    openSheet(`<div class="modal-title">Send feedback</div>
+    openSheet(`<div class="modal-title">Send Feedback</div>
       <div class="modal-hint" style="margin-bottom:0.9rem">This sends your message straight to us. Please leave out your name and contact details. Under 13? Ask a parent to send it.</div>
       <div class="field-label">What is it about?</div>
       <div class="seg fb-seg" role="group" aria-label="Feedback type">
-        ${['Bug', 'Missing card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
+        ${['Bug', 'Missing Card', 'Idea'].map(k => `<button class="mode-opt${k === fbKind ? ' active' : ''}" data-k="${k}" onclick="setFbKind(this)">${k}</button>`).join('')}
       </div>
       <div class="mb" style="margin-top:0.9rem">
         <label for="fb-text">Tell us what happened</label>

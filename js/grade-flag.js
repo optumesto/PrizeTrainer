@@ -1,4 +1,4 @@
-// ═══════════ 3.0: "This grade looks off" ═══════════
+// ═══════════ 3.0: "This Grade Looks Off" ═══════════
 // Under Share grade, a small button lets a player say a grade seems wrong. They
 // pick one preset reason (no typing, since young players use the app too). What
 // goes to rdydeck.com/api/report: the grade, the archetype the grade matched
@@ -34,7 +34,7 @@ function gf80Open() {
   const g = gf80Now();
   if (!g) return;
   if (gf80Sent()[g.key]) { showToast('Thanks, you already flagged this grade.'); return; }
-  openSheet(`<div class="modal-title">This grade looks off</div>
+  openSheet(`<div class="modal-title">This Grade Looks Off</div>
     <div class="modal-hint gf80-hint">Pick the closest reason. It is sent without your name or your deck list, and helps make grades match real results.</div>
     <div class="gf80-opts">${GF80_REASONS.map(([k, t]) => `<button type="button" class="btn gf80-opt" onclick="gf80Send('${k}')">${t}</button>`).join('')}</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button></div>`);
@@ -120,9 +120,9 @@ if (typeof addEventListener === 'function') {
     if (rows && !document.getElementById('st80-rep')) {
       const sec = document.createElement('div');
       sec.className = 'st38-sec'; sec.id = 'st80-rep';
-      sec.innerHTML = `<div class="st38-h">Error reports</div>
+      sec.innerHTML = `<div class="st38-h">Error Reports</div>
         <p class="st38-p">When something breaks, RdyDeck sends a short report with no name, deck or address in it, so it can be fixed.</p>
-        <div class="st38-seg" role="group" aria-label="Error reports">
+        <div class="st38-seg" role="group" aria-label="Error Reports">
           <button type="button" data-r="on" onclick="st80Rep(true)">On</button>
           <button type="button" data-r="off" onclick="st80Rep(false)">Off</button>
         </div>`;

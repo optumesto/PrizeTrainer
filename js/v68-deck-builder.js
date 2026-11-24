@@ -445,7 +445,7 @@ function bldResultsHtml() {
 function bldAct(i) { const f = bldActs[i]; if (f) { f(); bldChanged(); } }
 
 function bldStartHtml() {
-  return `<div class="bld-sec"><h2 class="bld-h">Start from</h2><div class="bld-start">
+  return `<div class="bld-sec"><h2 class="bld-h">Start From</h2><div class="bld-start">
     <button class="bld-opt" onclick="bldStartMeta()"><b>A meta deck</b><span>The cards most of its top lists run. You fill the rest.</span></button>
     <button class="bld-opt" onclick="bldStartMon()"><b>A Pokémon</b><span>Pick one and its evolution line goes in.</span></button>
     <button class="bld-opt" onclick="bldStartMine()"${state.decks.length ? '' : ' disabled'}><b>One of your decks</b><span>Change a saved list and grade it again.</span></button>
@@ -462,13 +462,13 @@ function bldRender() {
   cnt.textContent = `${total}/60`;
   cnt.className = 'bld-count' + (total === 60 ? ' ok' : total > 60 ? ' over' : '');
   const from = bld.from && state.decks.find(d => d.id === bld.from);
-  document.getElementById('bld-title').textContent = bld.name || (from ? from.name : 'New deck');
+  document.getElementById('bld-title').textContent = bld.name || (from ? from.name : 'New Deck');
   const ref = bldRef();
   const focus = document.activeElement && document.activeElement.id === 'bld-q';
 
   let left = '';
   if (!total) left += bldStartHtml();
-  left += `<div class="bld-sec"><h2 class="bld-h">Add cards</h2>
+  left += `<div class="bld-sec"><h2 class="bld-h">Add Cards</h2>
     <div class="bld-search"><input type="search" id="bld-q" placeholder="Search Standard cards" aria-label="Search Standard cards" autocomplete="off" value="${esc(bldQ)}" oninput="bldQ=this.value;bldDrawResults()"></div>
     <div class="bld-kinds" role="group" aria-label="Card kind">${[['all', 'All'], ['pokemon', 'Pokémon'], ['trainer', 'Trainer'], ['energy', 'Energy']].map(([k, t]) => `<button type="button" class="${bldTab === k ? 'active' : ''}" onclick="bldSetKind('${k}')">${t}</button>`).join('')}</div>
     <div class="bld-small" id="bld-hint" style="margin:0 0 0.4rem${bldQ ? ';display:none' : ''}">${ref ? `Most run in ${esc(ref.d.name)} lists` : 'Most run in top lists'}</div><div class="bld-results" id="bld-results">${bldResultsHtml()}</div></div>`;
@@ -476,7 +476,7 @@ function bldRender() {
     const label = { pokemon: 'Pokémon', trainer: 'Trainer', energy: 'Energy' };
     // A list left in the builder from last time says so, with a plain way to start a new deck empty.
     const resumed = bldResumed && !bld.from ? `<div class="bld-ref"><span>Your last unsaved list.</span><button type="button" class="btn btn-sm btn-ghost" onclick="bldConfirmReplace(() => bldReset([]))">Start new</button></div>` : '';
-    left += `<div class="bld-sec"><h2 class="bld-h">Your list <span class="bld-n">${total} card${total === 1 ? '' : 's'}</span></h2>${resumed}` + ['pokemon', 'trainer', 'energy'].map(k => {
+    left += `<div class="bld-sec"><h2 class="bld-h">Your List <span class="bld-n">${total} card${total === 1 ? '' : 's'}</span></h2>${resumed}` + ['pokemon', 'trainer', 'energy'].map(k => {
       const rows = bldSorted(k);
       if (!rows.length) return '';
       return `<div class="bld-group"><h3 class="bld-h">${label[k]} <span class="bld-n">${rows.reduce((a, x) => a + x.r.count, 0)}</span></h3>${rows.map(x => bldRowHtml(x.r, x.i, ref)).join('')}</div>`;
@@ -550,7 +550,7 @@ function bldStartMeta() {
       const i = bldSheetActs.push(() => { closeSheet(); bldConfirmReplace(() => { const core = bldCore(d), n = core.reduce((a, r) => a + r.count, 0); bldReset(core, { arch: d.id, name: d.name }); showToast(n < 60 ? `${d.name}: the ${n} cards most top lists run. Fill the other ${60 - n} from Suggestions.` : `${d.name}: the cards most top lists run, at their usual counts.`); }); }) - 1;
       return `<div class="bld-row" role="button" tabindex="0" onclick="bldSheetActs[${i}]()">${top ? bldThumb(top[0], top[1], top[2]) : ''}<div class="bld-tx"><div class="bld-nm">${esc(d.name)}</div><div class="bld-sub">${d.lists} top lists</div></div></div>`;
     }).join('');
-    openSheet(`<div class="modal-title">Start from a meta deck</div><div class="bld-list-pick">${rows}</div><p class="bld-small" style="margin-top:0.6rem">${esc(bldMeta.from || '')}.</p>
+    openSheet(`<div class="modal-title">Start from a Meta Deck</div><div class="bld-list-pick">${rows}</div><p class="bld-small" style="margin-top:0.6rem">${esc(bldMeta.from || '')}.</p>
       <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button></div>`, true);
   });
 }
@@ -569,7 +569,7 @@ function bldStartMine() {
     }); }) - 1;
     return `<div class="bld-row" role="button" tabindex="0" onclick="bldSheetActs[${i}]()"><div class="bld-tx"><div class="bld-nm">${esc(d.name)}</div><div class="bld-sub">${n} card${n === 1 ? '' : 's'}</div></div></div>`;
   }).join('');
-  openSheet(`<div class="modal-title">Start from one of your decks</div><div class="bld-list-pick">${rows || '<p class="bld-small">No saved decks yet.</p>'}</div>
+  openSheet(`<div class="modal-title">Start from One of Your Decks</div><div class="bld-list-pick">${rows || '<p class="bld-small">No saved decks yet.</p>'}</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button></div>`, true);
 }
 function bldStartPaste() {
@@ -580,7 +580,7 @@ function bldStartPaste() {
     closeSheet();
     bldConfirmReplace(() => bldReset(cards.map(c => ({ name: c.name, set: c.set || '', num: c.num || '', count: c.count, section: c.section || cardCategory(c) }))));
   }) - 1;
-  openSheet(`<div class="modal-title">Paste a list</div><textarea class="bld-ta" id="bld-paste" placeholder="4 Dreepy TWM 128&#10;4 Drakloak TWM 129&#10;..."></textarea>
+  openSheet(`<div class="modal-title">Paste a List</div><textarea class="bld-ta" id="bld-paste" placeholder="4 Dreepy TWM 128&#10;4 Drakloak TWM 129&#10;..."></textarea>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="bldSheetActs[${i}]()">Use this list</button></div>`);
 }
 function bldMenu() {
@@ -608,7 +608,7 @@ function bldDefaultName() {
   const ref = bldRef();
   if (ref && ref.how !== 'close') return ref.d.name;
   const top = bld.rows.filter(r => bldKind(r) === 'pokemon').sort((a, b) => { const ea = bldEntry(a), eb = bldEntry(b); return ((eb && eb.st) || 0) - ((ea && ea.st) || 0) || ((eb && eb.ex) || 0) - ((ea && ea.ex) || 0) || b.count - a.count; })[0];
-  return top ? top.name : 'New deck';
+  return top ? top.name : 'New Deck';
 }
 function bldSaveSheet() {
   const total = bldTotal();

@@ -265,9 +265,9 @@ async function gs45Draw(deck, R, size, info, art) {
   x.font = `700 ${Math.round(gSize * 0.23)}px ${D}`; x.fillStyle = col;
   x.fillText(band, 64, gY + Math.round(gSize * 0.33));
 
-  // 3.5.1: Card strength (was Deck strength (cards based)).
-  // 3.4.41: labels Deck strength (cards based) and Tournament strength, fitted beside the value.
-  // 3.4.38: Deck strength and Tourney strength with their bars (Synergy and Power before). N/A when the
+  // 3.5.1: Card Strength (was Deck Strength (cards based)).
+  // 3.4.41: labels Deck Strength (cards based) and Tournament Strength, fitted beside the value.
+  // 3.4.38: Deck Strength and Tourney strength with their bars (Synergy and Power before). N/A when the
   // archetype has too few games, with an empty bar. Without the split helper the old pair shows.
   const part = (lbl, v, px, y, pw, big) => {
     const t = v == null ? 'N/A' : v.toFixed(1);
@@ -280,7 +280,7 @@ async function gs45Draw(deck, R, size, info, art) {
     if (v != null) { x.fillStyle = GS45.band[gs45Band(v)]; x.fillRect(px, by, pw * Math.max(0, Math.min(1, v / 10)), bh); }
   };
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
-  const P = S ? [['Card strength', S.deck], ['Tournament strength', S.tour]] : [['Synergy', synV], ['Power', powV]];
+  const P = S ? [['Card Strength', S.deck], ['Tournament Strength', S.tour]] : [['Synergy', synV], ['Power', powV]];
   if (!sq && !hasArt) { part(P[0][0], P[0][1], 700, 262, 436, true); part(P[1][0], P[1][1], 700, 392, 436, true); }
   else if (!sq) { part(P[0][0], P[0][1], 64, 474, 320, false); part(P[1][0], P[1][1], 424, 474, 320, false); }
   else if (hasArt) { part(P[0][0], P[0][1], 64, 690, 496, true); part(P[1][0], P[1][1], 64, 800, 496, true); }
@@ -313,7 +313,7 @@ async function gs45Draw(deck, R, size, info, art) {
 function gs338Text(R) {
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
   if (!S) return `Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}.`;
-  return `Card strength ${S.deck.toFixed(1)}, Tournament strength ${S.tour == null ? 'N/A' : S.tour.toFixed(1)}.`;
+  return `Card Strength ${S.deck.toFixed(1)}, Tournament Strength ${S.tour == null ? 'N/A' : S.tour.toFixed(1)}.`;
 }
 async function v45ShareGrade() {
   const deck = state.decks.find(d => d.id === state.activeDeckId);
@@ -332,7 +332,7 @@ async function v45ShareGrade() {
     alt: `${deck.name}: ${R.overall.toFixed(1)} out of 10, ${band}` };
   const canShare = !!navigator.share;
   const opt = s => `<div class="mode-opt${size === s ? ' active' : ''}" data-sz="${s}" onclick="gs261SetSize('${s}')">${s === 'wide' ? 'Wide' : 'Square'}</div>`;
-  openSheet(`<div class="modal-title">Share your grade</div>
+  openSheet(`<div class="modal-title">Share Your Grade</div>
     <div class="seg gs261-seg" role="group" aria-label="Picture size">${opt('wide')}${opt('square')}</div>
     <div class="gs261-pic" id="gs261-pic" style="aspect-ratio:${GS261_SIZES[size].join(' / ')}"><span>Making your card</span></div>
     <div class="modal-hint" style="margin-bottom:0.9rem">The link opens this list in RdyDeck, so anyone can see its grade and odds for themselves.</div>

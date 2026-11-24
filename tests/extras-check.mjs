@@ -239,7 +239,7 @@ w.closeSheet();
 // What's next from Settings and from Help
 w.openSettings();
 const set = d.getElementById('wx80-set');
-ok(!!set && /What's next/.test(set.textContent), "Settings has What's next");
+ok(!!set && /What's Next/.test(set.textContent), "Settings has What's next");
 set.click();
 const list = d.getElementById('wx80-list');
 const items = list ? [...list.querySelectorAll('li b')].map(x => x.textContent) : [];

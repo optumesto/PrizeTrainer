@@ -63,7 +63,7 @@ renderGrade = function () {
       const box = document.createElement('div');
       box.id = 'rules34'; box.className = 'rules34'; box.setAttribute('role', 'note');
       box.innerHTML = `<div class="rules34-t">Not tournament legal yet</div><ul>${list.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
-        <div class="rules34-s">The grade below scores the list as entered. Fix these in <b>Edit deck</b> before an event.</div>`;
+        <div class="rules34-s">The grade below scores the list as entered. Fix these in <b>Edit Deck</b> before an event.</div>`;
       body.insertBefore(box, body.firstChild);
     }
   } catch (_) {}
