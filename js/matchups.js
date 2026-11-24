@@ -307,7 +307,7 @@ function mc73Chart(rows, data) {
       <div class="mc73-l2" aria-hidden="true"><span class="mc73-bar">${bar}<span class="mc73-mid"></span></span><span class="mc73-n">${pct}, ${x.n} ${x.n === 1 ? 'match' : 'matches'}</span></div>
     </div>`;
   }).join('');
-  return `<div class="mc73-h">Top ${xs.length} decks right now</div>
+  return `<div class="mc73-h">Top ${xs.length} Decks Right Now</div>
     <p class="mc73-sum">${sum}</p>
     <div class="mc73" role="list" aria-label="Matchups against the ${xs.length} decks played most${esc(since)}">${rowsH}</div>
     <p class="mu60-f">The line in each bar is 50%. The light band is the likely range from the games so far. Favored and Unfavored need the whole band on one side of 50%.</p>`;
@@ -334,7 +334,7 @@ function mu60Section(deck) {
   const events = from.reduce((a, s) => a + s.events, 0);
 
   // 3.5.4: folded by default; the folded line gives the record of the deck it is compared with.
-  let h = `<details class="g-sec g29-fold" id="mu60-sec"><summary><span class="r38-t"><span class="g-sec-t">Against the meta</span><!--mu60-say--></span></summary>
+  let h = `<details class="g-sec g29-fold" id="mu60-sec"><summary><span class="r38-t"><span class="g-sec-t">Against the Meta</span><!--mu60-say--></span></summary>
     <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${mu60SrcWords(data)} tournaments, ${span}.</div>
     <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;
 
@@ -363,7 +363,7 @@ function mu60Section(deck) {
     const top = rows.slice(0, MC73_TOP), rest = rows.slice(MC73_TOP);
     if (top.length) h += mc73Chart(top, data);
     let few = false;
-    if (rest.length) h += `<div class="mc73-sub">Other popular decks</div><div class="mu60-t" role="table" aria-label="Win rate against other popular decks">
+    if (rest.length) h += `<div class="mc73-sub">Other Popular Decks</div><div class="mu60-t" role="table" aria-label="Win rate against other popular decks">
       <div class="mu60-r mu60-h" role="row"><span role="columnheader">Against</span><span role="columnheader">Win rate</span><span role="columnheader">Matches</span></div>
       ${rest.map(x => {
         const thin = x.n < MU60_FEW;

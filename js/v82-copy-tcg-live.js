@@ -100,7 +100,7 @@ async function tl82Copy(id) {
     } catch (_) {}
   }
   if (done) { showToast("List copied. Paste it into TCG Live's deck import."); return; }
-  openSheet(`<div class="modal-title">Copy list for TCG Live</div>
+  openSheet(`<div class="modal-title">Copy List for TCG Live</div>
     <p class="st38-p">Your browser blocked the copy. Press and hold the list, choose Select all, then Copy.</p>
     <textarea class="bld-ta" readonly onclick="this.select()" data-no-tr>${esc(text)}</textarea>
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Close</button></div>`);

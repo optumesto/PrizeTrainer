@@ -183,7 +183,7 @@ async function pzShareScore(k) {
   if (_pz83 && _pz83.img) { try { URL.revokeObjectURL(_pz83.img); } catch (_) {} }
   _pz83 = { key, r, url, size, text: '', file: null, img: '', tok: 0 };
   const g = _pz83;
-  openSheet(`<div class="modal-title">Share your Quickest Win score</div>
+  openSheet(`<div class="modal-title">Share Your Quickest Win Score</div>
     <div class="seg gs261-seg pz83-seg" role="group" aria-label="Picture size">${opt('wide')}${opt('square')}</div>
     <div class="gs261-pic" id="pz83-pic" style="aspect-ratio:${GS261_SIZES[size].join(' / ')}"><span>Making your card</span></div>
     <div class="modal-hint" style="margin-bottom:0.9rem">The link opens today's Quickest Win, so friends play the same board.</div>

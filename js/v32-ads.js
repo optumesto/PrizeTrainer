@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(age32Boot, 2200))
 function age32Help() {
   const b = age32Get() || 'skip';
   const younger = { adult: ['teen', 'u13'], teen: ['u13'] }[b] || [];
-  openSheet(`<div class="modal-title">Age setting</div>
+  openSheet(`<div class="modal-title">Age Setting</div>
     <p class="age32-now">Set to <b>${AGE32_LABEL[b]}</b>.</p>
     <div class="modal-hint">It decides which ads you see, and stays on this device.</div>
     ${younger.length ? `<div class="age32-opts">${younger.map(k => `<button class="btn" onclick="age32Set('${k}')">Change to ${AGE32_LABEL[k].toLowerCase()}</button>`).join('')}</div>`
@@ -130,7 +130,7 @@ openHelpSheet = function () {
     const b = document.createElement('button');
     b.id = 'age32-row'; b.className = 'hs-row';
     b.onclick = () => { closeSheet(); age32Help(); };
-    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Age setting</b><span>${AGE32_LABEL[age32Get() || 'skip']}. Sets which ads you see.</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Age Setting</b><span>${AGE32_LABEL[age32Get() || 'skip']}. Sets which ads you see.</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
     add(b);
   }
 };

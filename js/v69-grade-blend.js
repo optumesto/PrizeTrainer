@@ -418,7 +418,7 @@ function g79Section(deck) {
   const avg = M ? W / M * 100 : null, n0 = v => v.toLocaleString('en-US'), pct = v => v.toFixed(1) + '%';
   const day = data.cur && data.cur.since ? d30Nice(data.cur.since) : '';
   // 3.5.4: folded by default; the folded line gives the verdict (filled in below once it is known).
-  let h = `<details class="g-sec g29-fold" id="g79-sec"><summary><span class="r38-t"><span class="g-sec-t">Grade vs win rate</span><!--g79-say--></span></summary>
+  let h = `<details class="g-sec g29-fold" id="g79-sec"><summary><span class="r38-t"><span class="g-sec-t">Grade vs Win Rate</span><!--g79-say--></span></summary>
     <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournaments.</div>
     <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;
   // 3.5.5 (Muse brief change 5): the folded line carries both numbers, not only the verdict.
@@ -473,8 +473,8 @@ function g79Section(deck) {
   };
 })();
 
-// ═══════════ 3.4.38: Deck strength and Tourney strength ═══════════
-// Deck strength is the card grade (Synergy times Power, less any build check): how the list plays on
+// ═══════════ 3.4.38: Deck Strength and Tourney strength ═══════════
+// Deck Strength is the card grade (Synergy times Power, less any build check): how the list plays on
 // its own. Tourney strength is the results score alone for the archetype the list matches, the same
 // score the grade blends in. It is N/A when no archetype matches or it has under G68_MIN_GAMES games.
 function g338Split(R) {

@@ -30,7 +30,7 @@ function openWhatsNext() {
   const items = WHATS_NEXT.map(i => `<li><b>${esc(i.t)}</b>${i.d ? `<span>${esc(i.d)}</span>` : ''}</li>`).join('');
   const fb = typeof FEEDBACK_EMAIL === 'string' && FEEDBACK_EMAIL;
   const dc = wx80Discord();
-  openSheet(`<div class="modal-title">What's next</div>
+  openSheet(`<div class="modal-title">What's Next</div>
     <div class="wn-sub">Planned, in no fixed order. Plans can change.</div>
     <ul class="wn-list" id="wx80-list">${items}</ul>
     <div class="modal-hint" style="margin-top:0.9rem">Want something else? Tell us. Ideas from players decide what comes first.</div>
@@ -58,7 +58,7 @@ function wx80Feedback() {
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'st38-row'; b.id = 'wx80-set';
         b.onclick = () => { closeSheet(); openWhatsNext(); };
-        b.innerHTML = `<span>What's next<small>Planned features</small></span>${go}`;
+        b.innerHTML = `<span>What's Next<small>Planned features</small></span>${go}`;
         wn.parentNode.insertBefore(b, wn.nextSibling);
       }
     } catch (_) {}
@@ -73,7 +73,7 @@ function wx80Feedback() {
         const b = document.createElement('button');
         b.className = 'hs-row'; b.id = 'wx80-help';
         b.onclick = () => { closeSheet(); openWhatsNext(); };
-        b.innerHTML = `<span class="ha-ic">${ic23('trend')}</span><span class="hs-tx"><b>What's next</b><span>Planned features, and a place to ask for yours</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+        b.innerHTML = `<span class="ha-ic">${ic23('trend')}</span><span class="hs-tx"><b>What's Next</b><span>Planned features, and a place to ask for yours</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
         const fb = list.querySelector('.hs-row[onclick*="openFeedback"]');
         list.insertBefore(b, fb ? fb.nextSibling : null);
       }

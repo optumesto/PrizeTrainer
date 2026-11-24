@@ -346,7 +346,7 @@ openHelpSheet = function () {
     b.id = 'cr31-row';
     b.className = 'hs-row';
     b.onclick = () => { closeSheet(); openCredits(); };
-    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Credits and legal</b><span>Where the cards and lists come from</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
+    b.innerHTML = `<span class="ha-ic">${ic23('file')}</span><span class="hs-tx"><b>Credits and Legal</b><span>Where the cards and lists come from</span></span><svg class="ic hs-go"><use href="#i-next"/></svg>`;
     list.appendChild(b);
   }
   const hint = [...document.querySelectorAll('.modal-hint')].find(h => /^(RdyDeck|Prize Trainer) v/.test(h.textContent));
@@ -362,7 +362,7 @@ openHelpSheet = function () {
 function openCredits() {
   const a = (href, t) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${t}</a>`;
   const row = (what, who) => `<li><b>${what}</b><span>${who}</span></li>`;
-  openSheet(`<div class="modal-title">Credits and legal</div>
+  openSheet(`<div class="modal-title">Credits and Legal</div>
     <p class="cr31-legal" id="cr31-legal">${esc(PT31_UNOFFICIAL)}</p>
     <ul class="cr31-list">
       ${row('Card data', `${a('https://tcgdex.dev', 'TCGdex')}, free and open card database (MIT license)`)}

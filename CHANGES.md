@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.10 (build 181): one capitalization rule (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "Lets work on capitalization consisency" and "Topics and Title should be all capitalized, exclaimations like "Won" should be capitalized".
+- English rule: Title Case for headings, section titles, page titles, sheet titles, menu tiles, settings and help rows, deck menu rows, tabs, mode names and footer and nav links (Tournament Log, Share the App, Deck Guides, Opening Odds, Terms of Service). Small words (a, an, the, and, or, of, in, on, at, to, by, for, from, with, vs) stay lowercase unless first. Descriptions, hints, form labels, questions, body text and action buttons stay in sentence case.
+- Result words lead with a capital: Today: Won in 2 plays, No win, You looked at the answer, Got it in 1 of 4, Not solved in 4, Not this time.
+- Score names in every sentence: Overall, Card Strength, Tournament Strength. Card terms as printed: Prize card, Energy, Abilities.
+- Static pages: every English h1 to h3 on the site and card guides in Title Case, nav and footer links too, build-pages.mjs to match. delete-data.html title Delete Your Data. Questions keep sentence case.
+- Other languages keep their own norms. A dictionary key that differs only in case now finds its translation (js/i18n.js, lowKey), so no key renames. Patterns for the result lines and Top N decks match either case. Spanish Premio(s) and Portuguese Prêmio(s) now capitalized like French Récompense, German Preiskarte and Italian Premio; Spanish Habilidades.
+- Also: What's new, PT_VERSION v3.5.10, PT_BUILD 181, softwareVersion 3.5.10, sw.js cache v181, stamps.
+
 # RdyDeck 3.5.9 (build 180): Top decks on home (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "Lets add a section to the homepage of the top rated decks and up and coming decks (based off tourney results)". New section under Daily games (js/v90-top-decks.js, markup and #td90-css in index.html), two tabs, the last one picked kept on the device.

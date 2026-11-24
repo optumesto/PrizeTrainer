@@ -133,7 +133,7 @@ function pickLabel(s, v) {
 const cap = t => t ? t[0].toUpperCase() + t.slice(1) : t;
 function askText(s) {
   const R = s.pending, A = R.ask, who = R.ctx.name ? cn(R.ctx.name) + (window.rdI18n && rdI18n.lang === 'fr' ? ' : ' : ': ') : '';
-  const q = { yesno: 'Do it?', option: 'Choose one', benchMon: 'Choose your new Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
+  const q = { yesno: 'Do it?', option: 'Choose one', benchMon: 'Choose Your New Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
     search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile', look: 'Choose from the cards you looked at', cost: 'Choose cards to discard',
     attach: 'Attach Energy', topFromHand: 'Choose a card to put on top of your deck',
     splitHand: 'Choose the card that goes into your hand. The other one gets attached.', splitAttach: 'Choose the Pokémon to attach the other card to' }[A.kind] || 'Choose';
@@ -339,7 +339,7 @@ function actionsHTML(s) {
   acts.forEach(a => { const l = label(s, a), key = l + (a.why || ''); if (seen.has(key)) return; seen.add(key); (a.why ? no : ok).push({ a, l, i: X.actions.findIndex(b => JSON.stringify(b) === JSON.stringify({ ...a, why: undefined })) }); });
   const groups = [['hand', 'From your hand'], ['energy', 'Attach Energy'], ['ability', 'Abilities'], ['retreat', 'Retreat'], ['attack', 'Attack'], ['end', '']];
   const kind = a => ['attack', 'end', 'energy', 'ability', 'retreat'].includes(a.t) ? a.t : 'hand';
-  h += `<div class="q">Your move</div>`;
+  h += `<div class="q">Your Move</div>`;
   groups.forEach(([g, title]) => {
     const list = ok.filter(x => kind(x.a) === g && x.i >= 0); if (!list.length) return;
     if (title) h += `<div class="gt">${title}</div>`;
@@ -352,7 +352,7 @@ function actionsHTML(s) {
   return h;
 }
 function promoteHTML(s, X) {
-  return `<div class="q">Choose your new Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}${twinTag(s, typeof a.mon === 'number' ? [a.mon] : [])}</button>`).join('')}</div>`;
+  return `<div class="q">Choose Your New Active Pokémon</div><div class="btns">${X.actions.map((a, i) => `<button class="btn" onclick="RdyPlay.do(${i})">${esc(label(s, a))}${twinTag(s, typeof a.mon === 'number' ? [a.mon] : [])}</button>`).join('')}</div>`;
 }
 // Picking several cards (search, discard for a cost): tap cards to add them, then confirm, instead of one button per mix.
 function pickKey(s, v) { return v.map(u => refName(s, u)).sort().join('|'); }
@@ -611,7 +611,7 @@ function menu() {
   if (!OPP_ON && !/[?&]try\b/.test(location.search)) { $('app').innerHTML = '<p class="note">Nothing here yet.</p>'; return; }
   const mine = ownOn() && OWN ? OWN : [];
   const metaOpt = D.decks.map((d, i) => `<option value="m${i}">${esc(d.name)}</option>`).join('');
-  const opt = mine.length ? `<optgroup label="${esc(tr('Your decks'))}">${mine.map((d, i) => `<option value="o${i}">${esc(d.name)}</option>`).join('')}</optgroup><optgroup label="${esc(tr('Tournament decks'))}">${metaOpt}</optgroup>` : metaOpt;
+  const opt = mine.length ? `<optgroup label="${esc(tr('Your Decks'))}">${mine.map((d, i) => `<option value="o${i}">${esc(d.name)}</option>`).join('')}</optgroup><optgroup label="${esc(tr('Tournament Decks'))}">${metaOpt}</optgroup>` : metaOpt;
   const langs = typeof I18N_LANGS === 'object' && window.rdI18n ? `<div class="zl">Language</div><div class="btns lang" id="i18n-lang">${I18N_LANGS.map(([l, n]) => `<button type="button" class="btn${rdI18n.lang === l ? ' primary' : ''}" data-no-tr data-l="${l}" onclick="RdyPlay.lang('${l}')">${n}</button>`).join('')}</div>` : '';
   const foot = ownOn() ? (mine.length ? `You play ${PRESS_TURNS} turns against the opponent. Tournament decks play from their tournament lists, and your decks from the cards RdyDeck saved with them.`
     : 'You have no saved decks here yet. Save a deck in RdyDeck to spar with it.') : `You play ${PRESS_TURNS} turns against the opponent. Card names and text come from the decks' tournament lists.`;

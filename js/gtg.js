@@ -224,7 +224,7 @@ function gtgGuess() {
 function gtgShareText(r, key) {
   const n = gtgNumber(key);
   const marks = r.g.map(g => { const h = gtgHint(g, r.ans); return h.hit ? '✅' : (h.dir === 'up' ? '⬆️' : '⬇️') + (h.heat === 'hot' ? '🔴' : h.heat === 'warm' ? '🟠' : '⚪'); }).join(' ');
-  const head = r.won ? `RdyDeck Guess the Grade #${n}: got it in ${r.g.length} of ${GTG_TRIES}` : `RdyDeck Guess the Grade #${n}: not solved in ${GTG_TRIES}`;
+  const head = r.won ? `RdyDeck Guess the Grade #${n}: Got it in ${r.g.length} of ${GTG_TRIES}` : `RdyDeck Guess the Grade #${n}: Not solved in ${GTG_TRIES}`;
   const t = typeof rdI18n === 'object' && rdI18n && rdI18n.t ? rdI18n.t(head) : head;
   return t + '\n' + marks;
 }
@@ -234,7 +234,7 @@ async function shareGtg(k) {
   const text = gtgShareText(r, key), url = shareBaseUrl() + '?ref=guess#guess';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + '\n' + url); showToast('Result copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + '\n' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + '\n' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 
 // ── Home card ──
@@ -249,7 +249,7 @@ function renderGtgCard() {
   }
   const key = dailyKey(), r = gtgStore().results[key];
   const g = r && Array.isArray(r.g) ? r.g.length : 0;
-  let sub = r && r.done ? (r.won ? `Today: got it in ${g} of ${GTG_TRIES}` : `Today: not solved in ${GTG_TRIES}`)
+  let sub = r && r.done ? (r.won ? `Today: Got it in ${g} of ${GTG_TRIES}` : `Today: Not solved in ${GTG_TRIES}`)
     : g ? `Today: ${g} of ${GTG_TRIES} guesses used` : 'Guess the grade of a real tournament list';
   // 3.4.22: the row never shows the grade (that stays behind Result), and the streak moved to the section heading.
   el.innerHTML = `<div class="dc-card">
