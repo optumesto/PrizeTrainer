@@ -66,6 +66,7 @@ function ptcgAnswer(url) {
 // NET: 'open' (everything answers), 'blocked' (the card databases fail as a network error; the relay answers),
 // 'blocked-norelay' (the databases fail and rdydeck.com has no relay yet: 404).
 let NET = 'open';
+let REAL_TIMEOUTS = false;
 const log = [];
 const RELAY = [['/api/cards/tcgdex/', 'https://api.tcgdex.net/v2/'], ['/api/cards/ptcg/', 'https://api.pokemontcg.io/v2/']];
 async function fakeFetch(input, init) {
@@ -78,6 +79,8 @@ async function fakeFetch(input, init) {
   } else if (CARD_HOSTS.test(url)) {
     log.push('direct');
     if (NET === 'blockpage') return new Response('<html><body>Blocked by your school</body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    // A school network that lets the request hang: no answer until the request's own timeout ends it.
+    if (NET === 'hang') return new Promise((_, rej) => { const sg = init && init.signal; if (sg) sg.addEventListener('abort', () => rej(new DOMException('The operation timed out.', 'TimeoutError'))); });
     if (NET !== 'open') throw new TypeError('Failed to fetch');
   }
   if (CARD_HOSTS.test(url)) {
@@ -111,7 +114,8 @@ const dom = new JSDOM(readAppHtml(), {
     w.fetch = fakeFetch;
     w.Response = Response; w.Request = Request; w.Headers = Headers;
     w.TextEncoder = TextEncoder; w.TextDecoder = TextDecoder;
-    w.AbortSignal.timeout = () => new AbortController().signal;
+    // Request timeouts never end, except in the hang check, where they run in real time.
+    w.AbortSignal.timeout = ms => REAL_TIMEOUTS ? AbortSignal.timeout(ms) : new AbortController().signal;
     w.matchMedia = () => ({ matches: false, media: '', addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
     w.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
     w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
@@ -126,6 +130,8 @@ const dom = new JSDOM(readAppHtml(), {
   },
 });
 const w = dom.window, d = w.document;
+w.__fakeFetch = fakeFetch;
+const ROUTE_SRC = fs.readFileSync(path.join(ROOT, 'js/card-route.js'), 'utf8');
 await wait(3500);
 ok(typeof w.openGtg === 'function' && typeof w.gtgGrade === 'function', 'js/gtg.js loaded');
 
@@ -170,6 +176,34 @@ NET = 'open'; await wait(3100);
 const retry = await open();
 ok(retry.sheet && retry.ans === base.ans, `network open again: Try again opens the game in the same visit (${retry.ans})`);
 w.closeSheet();
+
+// 3.5.11: a network that lets card database requests hang (school wifi), with real 10 second request timeouts.
+fresh(); NET = 'hang'; REAL_TIMEOUTS = true; log.length = 0;
+let t0 = Date.now();
+const viaHang = await open();
+const hangMs = Date.now() - t0 - 300;
+ok(viaHang.sheet && viaHang.ans === base.ans, `card databases hang, relay up: the game opens with the same answer (${viaHang.ans})`);
+ok(hangMs < 6000, `and opens in ${(hangMs / 1000).toFixed(1)} s, not after the 10 second timeouts`);
+ok(w.eval('cardRoute.viaHome()'), 'the rest of the visit goes through rdydeck.com');
+await wait(10500);   // the hung requests time out in the background
+ok(w.eval('cardRoute.onDevice()'), 'once the hung requests time out, this device remembers to go through rdydeck.com');
+w.closeSheet();
+
+// A later visit on the same device: straight to rdydeck.com, no wait.
+const reload = () => w.eval(`window.fetch = window.__fakeFetch; try { sessionStorage.removeItem('cardRoute'); } catch (_) {} delete state.gtg; for (const k in _gtgDecks) delete _gtgDecks[k]; _dataTried.clear(); 0`) || w.eval(ROUTE_SRC);
+reload(); log.length = 0; t0 = Date.now();
+const later = await open();
+ok(later.sheet && later.ans === base.ans && !log.includes('direct'), `a later visit on this device: straight through rdydeck.com, no card database request (${log.length} reads, ${((Date.now() - t0 - 300) / 1000).toFixed(1)} s)`);
+w.closeSheet();
+// A card database that is down answers through rdydeck.com with its own error: that is the answer, no second wait.
+log.length = 0;
+const down = await w.fetch('https://api.pokemontcg.io/v2/cards/zzz-999');
+ok(down.status >= 500 && log.join() === 'relay', `the card database's own error through rdydeck.com is not asked again straight (${down.status}, ${log.join()})`);
+REAL_TIMEOUTS = false;
+
+// An open network for a slow answer only: the visit is sped up, the device is not marked.
+fresh(); NET = 'open'; log.length = 0;
+ok(!w.eval('cardRoute.onDevice()') && !w.eval('cardRoute.viaHome()'), 'forgetting clears the device memory');
 
 // Offline.
 fresh(); NET = 'open';

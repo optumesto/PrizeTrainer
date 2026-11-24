@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.11 (build 182): faster card loading on school wifi (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "guess the grade buffers for a long time on school wifi, but eventually works". His school network lets requests to the card databases hang instead of refusing them, so each read waited out its 10 second timeout (and card reads retry once) before 3.5.7's switch to rdydeck.com.
+- js/card-route.js: a card database request with no answer after 2.5 seconds is also sent through rdydeck.com, and the first card answer is used. The rest of the visit then goes through rdydeck.com.
+- Once a card database is seen blocked on a device (a network error, a timeout or a filter's block page, while rdydeck.com answered), the device remembers it for 7 days (localStorage cardRoute), so later visits go straight through rdydeck.com with no wait. If rdydeck.com stops answering card requests, the device goes back to the databases and forgets.
+- Through rdydeck.com, a card database's own error (pokemontcg.io is often down) is now the answer, instead of a second try straight at the blocked database.
+- Checked: every card data read in the app (grades, Guess the Grade, Upgrades, prices, prerelease, share pictures, evolutions) goes through the same route. Card pictures still load straight from their sites.
+- tests/card-route-check.mjs: a hanging network with real timeouts (opens in 2.5 s, was 10 s), the device memory on a later visit, and a card database error through rdydeck.com.
+- Also: What's new in all 6 languages, PT_VERSION v3.5.11, PT_BUILD 182, softwareVersion 3.5.11, sw.js cache v182, stamps. No Worker change.
+
 # RdyDeck 3.5.10 (build 181): deck guides for every Top deck (24 Nov 2026)
 
 - Mason, 24 Nov 2026: Top decks sent Dragapult Dudunsparce to its guide but Ogerpon Meganium Arboliva to the deck builder; he picked both a consistent screen and guides for all. Every deck now on Top rated and Up and coming has a guide: new deck-ogerpon-meganium-arboliva.html and deck-okidogi-barbaracle.html (deck-guides.json), English like the other guides, card claims from each card's text. Myriad Leaf Shower counting Wild Growth Energy twice follows the TPCi Rules Team ruling of 23 Oct 2025.

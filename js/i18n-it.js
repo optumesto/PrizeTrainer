@@ -2763,3 +2763,6 @@ I18N_MORE.it.pat.unshift(
   [/^(\d+)% wins, ([\d.]+)% of lists, new since the newest set$/, "$1% di vittorie, $2% delle liste, nuovo dalla nuova espansione"],
   [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/, (m, w) => 'I punteggi sono la Forza nei tornei su 10, dai ' + ({ 'online and local in-person': 'tornei online e locali dal vivo', online: 'tornei online', 'local in-person': 'tornei locali dal vivo' })[w] + ', aggiornata ogni settimana.'],
 );
+
+// 3.5.11: faster card loading on school wifi.
+Object.assign(I18N_MORE.it.dict, { "Faster card loading on school wifi": "Caricamento delle carte più veloce sul wifi della scuola" });

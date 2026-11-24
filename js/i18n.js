@@ -6626,6 +6626,10 @@ I18N_PAT.unshift(
     (m, w) => 'As notas são a Força em torneios de 0 a 10, de ' + ({ 'online and local in-person': 'torneios online e presenciais locais', online: 'torneios online', 'local in-person': 'torneios presenciais locais' })[w] + ', atualizada toda semana.'],
 );
 
+// 3.5.11: faster card loading on school wifi.
+Object.assign(I18N_ES, { "Faster card loading on school wifi": "Carga de cartas más rápida en el wifi escolar" });
+Object.assign(I18N_PT, { "Faster card loading on school wifi": "Carregamento de cartas mais rápido no wifi da escola" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
