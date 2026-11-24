@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.41 (build 169): Overall, Deck strength and Tournament strength (24 Nov 2026)
+
+Changed files: js/v29-rotation.js (Overall label on the big grade, score labels), js/v45-sample-share-daily.js (share card and shared text labels, label fitted beside its value), index.html (label spacing, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.41, What's new, PT_BUILD now 169), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new labels and What's new), sw.js (cache name prize-trainer-v169).
+
+- Every grade now names its three scores (Mason, 24 Nov 2026): the big grade is labeled Overall (it already blends the other two), then Deck strength (cards based) and Tournament strength (was Tourney strength). No grade moves.
+- The share card and the shared text use the same names.
+
 # RdyDeck 3.4.40 (build 168): Top decks score higher on Tourney strength (24 Nov 2026)
 
 Changed files: js/v69-grade-blend.js (results scale above an average record, grade note wording), tests/grade-baseline.json (64 lists move up), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.40, What's new, PT_BUILD now 168), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (grade note and What's new), sw.js (cache name prize-trainer-v168).

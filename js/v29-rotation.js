@@ -510,6 +510,7 @@ renderGrade = function () {
   if (plays.length) jumps.push(`<button class="g29-jump-b syn" onclick="g29Jump('g29-syn')">How it plays</button>`);
 
   let h = `<div class="g-hero g29-hero">
+    ${typeof g338Split === 'function' && g338Split(R) ? '<div class="g29-pl g341-ol">Overall</div>' : ''}
     <div class="g-ring" style="--p:${Math.max(0, Math.min(100, R.overall * 10))};--col:${col}">
       <div class="g-score" style="color:${col}">${R.overall.toFixed(1)}<small>/10</small></div>
     </div>
@@ -557,18 +558,20 @@ renderGrade = function () {
   el.innerHTML = h;
 };
 
+// 3.4.41: three labeled scores (Mason, 24 Nov 2026): Overall on the big grade, which blends the other two, then
+// Deck strength (cards based) and Tournament strength (was Tourney strength).
 // 3.4.38: the two split scores lead the parts. Deck strength carries Synergy and Power as one small line,
 // so the hero still shows what holds the list back. Without the split helper the old parts show.
 function g338Parts(R, synV, powV, part) {
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
   if (!S) return `<div class="g29-parts">${part('Synergy', synV, 'Do the cards work together')}${part('Power', powV, 'Can it win a game')}</div>`;
   const sp = `<div class="g338-sp"><span><span>Synergy</span> <b>${synV.toFixed(1)}</b></span><span><span>Power</span> <b>${powV.toFixed(1)}</b></span></div>`;
-  const na = `<div class="g29-part g338-na"><div class="g29-pl">Tourney strength</div><div class="g29-pv">N/A</div>
+  const na = `<div class="g29-part g338-na"><div class="g29-pl">Tournament strength</div><div class="g29-pv">N/A</div>
       <div class="g-meter"><span style="width:0"></span></div>
       <div class="g29-ps">${S.games ? 'Fewer than 20 event games' : 'No event results match'}</div></div>`;
   return `<div class="g29-parts g338-parts">
-      ${part('Deck strength', S.deck, sp)}
-      ${S.tour == null ? na : part('Tourney strength', S.tour, 'How decks like it do at events')}
+      ${part('Deck strength (cards based)', S.deck, sp)}
+      ${S.tour == null ? na : part('Tournament strength', S.tour, 'How decks like it do at events')}
     </div>`;
 }
 
