@@ -2712,6 +2712,8 @@ Object.assign(I18N_MORE.de.dict, {
   "Deck strength and Tourney strength on every grade": "Deckstärke und Turnierstärke bei jeder Bewertung",
   "Better archetype matching": "Bessere Archetyp-Erkennung",
   "Card guide search listing fixed": "Suchmaschinen-Eintrag der Kartenratgeber korrigiert",
+  "Top decks score higher on Tourney strength": "Höhere Turnierstärke für die Top-Decks",
+  "Clearer grade note": "Klarere Erklärung der Bewertung",
   "Deck guides and How grading works in More": "Deck-Guides und So funktioniert die Note unter Mehr",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",

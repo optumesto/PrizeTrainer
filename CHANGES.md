@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.40 (build 168): Top decks score higher on Tourney strength (24 Nov 2026)
+
+Changed files: js/v69-grade-blend.js (results scale above an average record, grade note wording), tests/grade-baseline.json (64 lists move up), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.40, What's new, PT_BUILD now 168), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (grade note and What's new), sw.js (cache name prize-trainer-v168).
+
+- Above an average record, the results score now rises 0.115 for each point of the results index (was 0.07), so the best deck in the field reads about 10. Before, the best index anywhere scored 9.2, and Dragapult (55.2% wins over 14,628 games) read 8.8. Tourney strength on 23 Nov data: Dragapult 8.8 to 9.4, Ogerpon Meganium Hydrapple 8.9 to 9.4, Dragapult Blaziken 8.7 to 9.2, Basic Box 8.5 to 8.9, Dragapult Dudunsparce 9.2 to 10.
+- Checked on two past splits (results up to 9 and 16 Nov, against the weeks after): an above-average edge held up the next week as well as a below-average gap did, so the old half-size slope above average undercounted winning decks. Decks with a losing record do not move, and no deck with under 500 games reaches 9.
+- On the 132 test lists, 64 move up by 0.1 to 0.4 (Dragapult 8.8 to 9.0, Dragapult Dudunsparce 9.0 to 9.4); none move down.
+- When the results leave the grade where the cards put it, the note now says the list stays at that grade, not that 8.8 becomes 8.8.
+
 # RdyDeck 3.4.39 (build 167): Card guide search listing fixed (24 Nov 2026)
 
 Changed files: build-pages.mjs (sitemap follows the noindex line on the page as served), sitemap.xml (Strange Timepiece out, 196 pages), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.39, What's new, PT_BUILD now 167), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v167).
