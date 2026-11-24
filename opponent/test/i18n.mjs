@@ -82,7 +82,7 @@ for (const lang of LANGS) {
     await new Promise(res => setTimeout(res, 20));
     const sel = id => w.document.getElementById(id), n = OWNDECKS.length;
     if (!/<optgroup/.test(sel('m-a').innerHTML)) { errors++; console.log(lang, 'no saved decks in the menu'); }
-    [...sel('m-a').querySelectorAll('optgroup')].forEach(o => { const k = 'optgroup ' + o.label; if (/^(Your decks|Tournament decks)$/.test(o.label)) { if (!found.has(k)) found.set(k, { n: 0, ex: o.label }); found.get(k).n++; } });
+    [...sel('m-a').querySelectorAll('optgroup')].forEach(o => { const k = 'optgroup ' + o.label; if (/^(Your Decks|Tournament Decks)$/.test(o.label)) { if (!found.has(k)) found.set(k, { n: 0, ex: o.label }); found.get(k).n++; } });
     for (let i = 0; i < n; i++) for (const b of ['m1', 'o0']) {
       sel('m-a').value = 'o' + i; sel('m-b').value = b; sel('m-b').dispatchEvent(new w.Event('change'));
       await new Promise(res => setImmediate(res)); english(lang, found);

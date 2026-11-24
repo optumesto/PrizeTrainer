@@ -212,12 +212,12 @@ function tf265Items(deck) {
 }
 function tf265Html(deck) {
   const r = tf265Items(deck);
-  if (!r || !r.items.length) return r && r.wait ? `<div class="tf265" id="tf265"><div class="tf265-h">Top fixes</div><p class="tf265-wait">Checking which changes help most.</p></div>` : '';
+  if (!r || !r.items.length) return r && r.wait ? `<div class="tf265" id="tf265"><div class="tf265-h">Top Fixes</div><p class="tf265-wait">Checking which changes help most.</p></div>` : '';
   const li = r.items.map(it => {
     const body = `<span class="tf265-t">${esc(it.t)}</span>${it.n ? `<span class="tf265-n">${esc(it.n)}</span>` : ''}`;
     return `<li class="${it.tone || ''}">${it.j ? `<button type="button" onclick="g29Jump('${it.j}')">${body}</button>` : `<div>${body}</div>`}</li>`;
   }).join('');
-  const h = r.items.length === 1 ? 'Top fix' : `Top ${r.items.length === 2 ? 'two' : 'three'} fixes`;
+  const h = r.items.length === 1 ? 'Top Fix' : `Top ${r.items.length === 2 ? 'Two' : 'Three'} Fixes`;
   return `<div class="tf265" id="tf265"><div class="tf265-h">${h}</div><ol>${li}</ol></div>`;
 }
 function tf265Place() {

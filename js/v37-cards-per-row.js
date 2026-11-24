@@ -32,9 +32,9 @@ function cz37Bar(host, daily) {
   const first = host.querySelector('.review-group');
   if (!first) return;
   const bar = document.createElement('div');
-  bar.className = 'cz-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Cards per row');
+  bar.className = 'cz-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Cards per Row');
   if (daily) bar.dataset.daily = '1';
-  bar.innerHTML = '<span class="cz-label">Cards per row</span><div class="cz-opts"></div>';
+  bar.innerHTML = '<span class="cz-label">Cards per Row</span><div class="cz-opts"></div>';
   first.parentNode.insertBefore(bar, first);
   cz37Fill(bar);
 }

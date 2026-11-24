@@ -2,6 +2,16 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.12 (build 183): one capitalization rule (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "Lets work on capitalization consisency" and "Topics and Title should be all capitalized, exclaimations like "Won" should be capitalized".
+- English rule: Title Case for headings, section titles, page titles, sheet titles, menu tiles, settings and help rows, deck menu rows, tabs, mode names and footer and nav links (Tournament Log, Share the App, Deck Guides, Opening Odds, Terms of Service). Small words (a, an, the, and, or, of, in, on, at, to, by, for, from, with, vs) stay lowercase unless first. Descriptions, hints, form labels, questions, body text and action buttons stay in sentence case.
+- Result words lead with a capital: Today: Won in 2 plays, No win, You looked at the answer, Got it in 1 of 4, Not solved in 4, Not this time.
+- Score names in every sentence: Overall, Card Strength, Tournament Strength. Card terms as printed: Prize card, Energy, Abilities.
+- Static pages: every English h1 to h3 on the site and card guides in Title Case, nav and footer links too, build-pages.mjs to match. delete-data.html title Delete Your Data. Questions keep sentence case.
+- Other languages keep their own norms. A dictionary key that differs only in case now finds its translation (js/i18n.js, lowKey), so no key renames. Patterns for the result lines and Top N decks match either case. Spanish Premio(s) and Portuguese Prêmio(s) now capitalized like French Récompense, German Preiskarte and Italian Premio; Spanish Habilidades.
+- Also: What's new, PT_VERSION v3.5.12, PT_BUILD 183, softwareVersion 3.5.12, sw.js cache v183, stamps.
+
 # RdyDeck 3.5.11 (build 182): faster card loading on school wifi (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "guess the grade buffers for a long time on school wifi, but eventually works". His school network lets requests to the card databases hang instead of refusing them, so each read waited out its 10 second timeout (and card reads retry once) before 3.5.7's switch to rdydeck.com.

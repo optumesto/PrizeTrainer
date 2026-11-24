@@ -177,12 +177,12 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <nav class="crumbs" aria-label="Breadcrumb"><a href="./">RdyDeck</a><span aria-hidden="true">›</span><span aria-current="page">How RdyDeck grades a deck</span></nav>
 
   <p class="kicker">How grading works</p>
-  <h1>How RdyDeck grades a deck</h1>
+  <h1>How RdyDeck Grades a Deck</h1>
   <p class="lead">RdyDeck grades a 60 card Pok&eacute;mon TCG deck out of 10. This page explains every part of that number: what it reads, how much each part counts, and where it can be wrong.</p>
   <p>The short version: <strong>Synergy</strong> asks whether your cards work together, <strong>Power</strong> asks whether the plan can win, and the grade is Synergy times Power, divided by 10. When your deck matches a deck from recent online and local in-person tournaments, part of the grade also comes from how that deck has actually done.</p>
   <div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
 
-  <h2>What the grade means</h2>
+  <h2>What the Grade Means</h2>
   <div class="tw"><table>
   <thead><tr><th>Grade</th><th>Reading</th><th>What it usually looks like</th></tr></thead>
   <tbody>
@@ -218,11 +218,11 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </tbody>
   </table></div>
 
-  <h2>Why the grade multiplies</h2>
+  <h2>Why the Grade Multiplies</h2>
   <p>The grade is Synergy times Power, divided by 10. A deck with Synergy 9 and Power 9 grades 8.1. A deck with Synergy 9 and Power 5 grades 4.5, not 7. Multiplying means the weaker part pulls the whole grade down, which matches how decks play: a consistent deck that cannot win the prize race loses, and so does a powerful deck that cannot find its cards.</p>
   <p>Both parts have a floor, 0.6 for Synergy and 1.2 for Power, so a broken list still gets a grade that tells you how far it has to go.</p>
 
-  <h2>Tournament results</h2>
+  <h2>Tournament Results</h2>
   <p>Synergy and Power read your list alone. Real results add something card text cannot: how a deck actually does against the decks people play. So when your deck matches a deck from recent Limitless online and local in-person tournaments, by the Pok&eacute;mon it plays, part of the grade comes from that deck's win rate and finishes.</p>
   <ul>
   <li><strong>How much it counts.</strong> More games mean more weight. Once a deck has 250 games, results and cards count evenly, half the grade each. Before that the share grows with the games: 20% at 100 games, 40% at 200. Games since the newest set count three times here too.</li>
@@ -232,17 +232,17 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </ul>
   <p>The results show how decks like yours have done, not your exact list. They update every week.</p>
 
-  <h2>A worked example</h2>
+  <h2>A Worked Example</h2>
   <p>Here is a Mega Rayquaza list that finished 5th in a Limitless online event on 9 Nov 2026. RdyDeck reads its cards at Synergy 8.0 and Power 8.1. Its Synergy loss comes from how tightly the list fits, which does not lower the grade when the fit is close, so the card grade is 10 times 8.1, divided by 10, which is 8.1. Mega Rayquaza had won 49.0% of 726 online games at the time, and that record alone scores 7.0. With games since the newest set counted three times, results make up about half of this grade, so the list's 8.1 becomes 7.6: Strong.</p>
   <p>The app shows the same breakdown for your deck, in plain sentences, under every grade. See the <a href="deck-mega-rayquaza.html">Mega Rayquaza deck guide</a> for more on how the deck plays.</p>
 
-  <h2>What to fix first</h2>
+  <h2>What to Fix First</h2>
   <p>Each grade comes with a short list of findings. Each one names the cards involved and why it matters, for example an attacker that cannot pay for its attack, or a Stage 2 line with no Rare Candy. Fix the top finding, grade the deck again and watch the number move. RdyDeck can also suggest upgrades that keep your main attacker and the plan you built. To run the same checks by hand, see <a href="improve-your-deck.html">how to improve your deck</a>.</p>
 
-  <h2>Where the grade can be wrong</h2>
+  <h2>Where the Grade Can Be Wrong</h2>
   <p>RdyDeck reads card roles from card text. That is usually right and sometimes not, especially for a card with an unusual effect or one that has just come out. So read the findings, not only the number, and do not worry about the decimal place. If a grade looks wrong for a list you know well, the Send feedback button in the app tells us, and those reports are how the grader gets better.</p>
   <p>We check the grader against real results: it grades the same fixed set of top 16 lists from recent events after each change (counted in the next section), so a fix for one deck does not quietly break another.</p>
-  <h2 id="accuracy">How accurate the grades are</h2>
+  <h2 id="accuracy">How Accurate the Grades Are</h2>
   <p>Every week RdyDeck grades the same 132 top 16 lists from recent events. 130 of them are used here; the other 2 use cards that have rotated or older printings. RdyDeck checks the order its grades put those decks in against how the decks actually win in Limitless online tournaments. The number is a rank match: 1.0 means the grades put the decks in exactly the order of their results, 0 means no link.</p>
   <div class="tw"><table>
   <thead><tr><th>Set</th><th>Dates</th><th class="n">Decks</th><th class="n">Games</th><th class="n">Grade as shown</th><th class="n">Cards alone</th></tr></thead>
@@ -253,21 +253,21 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   </table></div>
   <p class="note">Grade as shown is the grade the app shows. It counts these same results, so it is partly circular and runs high. Cards alone is the grade from each list's cards with no results, the harder test. Decks is how many different decks those lists make up that have enough games to rank: a deck is ranked once it has 300 games in a set, or 100 in the newest one. Updated 23 Nov 2026.</p>
 
-  <h2>Try it on your deck</h2>
+  <h2>Try It on Your Deck</h2>
   <p>Paste a list from Pok&eacute;mon TCG Live or Limitless TCG, one card per line with the count, name, set code and number. RdyDeck is free, needs no account and works offline once it has loaded.</p>
   <div class="cta-row"><a class="cta" href="./">Grade my deck</a></div>
   <ul class="guides">
-  <li><a href="meta-decks.html">Deck guides</a></li>
-  <li><a href="deck-grader.html">Deck checker</a></li>
-  <li><a href="opening-odds.html">Opening odds</a></li>
-  <li><a href="rotation.html">Rotation checker</a></li>
+  <li><a href="meta-decks.html">Deck Guides</a></li>
+  <li><a href="deck-grader.html">Deck Checker</a></li>
+  <li><a href="opening-odds.html">Opening Odds</a></li>
+  <li><a href="rotation.html">Rotation Checker</a></li>
   <li><a href="faq.html">FAQ</a></li>
   </ul>
 
   <footer>
-    <nav class="tools" aria-label="Free tools"><a href="deck-grader.html">Deck checker</a><a href="improve-your-deck.html">Improve your deck</a><a href="opening-odds.html">Opening hand odds</a><a href="rotation.html">Rotation check</a><a href="prize-trainer.html">Prize trainer</a><a href="rulings.html">Rules and rulings</a><a href="cards/">Card guides</a><a href="first-deck.html">Your first deck</a><a href="goldfish.html">Goldfish your deck</a></nav>
+    <nav class="tools" aria-label="Free tools"><a href="deck-grader.html">Deck Checker</a><a href="improve-your-deck.html">Improve Your Deck</a><a href="opening-odds.html">Opening Hand Odds</a><a href="rotation.html">Rotation Check</a><a href="prize-trainer.html">Prize Trainer</a><a href="rulings.html">Rules and Rulings</a><a href="cards/">Card Guides</a><a href="first-deck.html">Your First Deck</a><a href="goldfish.html">Goldfish Your Deck</a></nav>
     <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company. Card names, text and images are &copy; The Pok&eacute;mon Company, Nintendo, Creatures and GAME FREAK.</p>
-    <nav aria-label="Site"><a href="./">RdyDeck</a><a href="meta-decks.html">Deck guides</a><a href="how-grading-works.html">How grading works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete your data</a><a class="rd-social" href="https://www.instagram.com/rdydeck/" rel="me noopener" target="_blank">Instagram</a></nav>
+    <nav aria-label="Site"><a href="./">RdyDeck</a><a href="meta-decks.html">Deck Guides</a><a href="how-grading-works.html">How Grading Works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete Your Data</a><a class="rd-social" href="https://www.instagram.com/rdydeck/" rel="me noopener" target="_blank">Instagram</a></nav>
   </footer>
 </main>
 <script src="ads.js" defer></script>

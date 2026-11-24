@@ -34,7 +34,7 @@ await new Promise(r => setTimeout(r, 0)); await new Promise(r => setImmediate(r)
 let ownBad = 0;
 if (OWNDECKS) {
   const h = el('app').innerHTML, note = el('m-note').innerHTML.replace(/<[^>]+>/g, '');
-  const want = [[/<optgroup label="Your decks">/.test(h), 'menu lists your decks'], [/<optgroup label="Tournament decks">/.test(h), 'menu lists tournament decks'],
+  const want = [[/<optgroup label="Your Decks">/.test(h), 'menu lists your decks'], [/<optgroup label="Tournament Decks">/.test(h), 'menu lists tournament decks'],
     [el('m-a').value === 'o' + (OWNDECKS.length - 1), 'the deck open in RdyDeck is picked'], [/Not every card does all of its text yet: (Mist Energy, )?Odd /.test(note), 'odd cards named: ' + note],
     [el('m-go').disabled === false, 'start allowed']];
   el('m-a').value = 'o' + (OWNDECKS.length - 3); el('m-a').onchange();

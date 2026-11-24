@@ -189,10 +189,10 @@ openStarterPicker = function () {
   // Lists the weekly job took from online tournaments say so.
   const online = STARTER_DECKS.length > 0 && STARTER_DECKS.every(s => /\bonline\)$/.test(s.event || ''));
   const m = DATA30.meta;
-  const meta = m ? `<div class="hp-lbl d30-lbl">Most played right now</div>
+  const meta = m ? `<div class="hp-lbl d30-lbl">Most Played Right Now</div>
     <div class="d30-meta">${m.decks.slice(0, 8).map((x, i) => `<div class="d30-mrow"><span class="d30-mi">${i + 1}</span><span class="d30-mn">${esc(x.name)}</span>${x.share != null ? `<span class="d30-ms">${x.share}%</span>` : ''}</div>`).join('')}</div>
     <div class="modal-hint">${esc(m.from)}, as of ${d30Nice(m.asOf)}.</div>` : '';
-  openSheet(`<div class="modal-title">Starter decks</div>
+  openSheet(`<div class="modal-title">Starter Decks</div>
     <div class="modal-hint" style="margin-bottom:0.9rem">${online ? 'Top finishes for the most played decks at big online tournaments, not Regionals.' : 'Real Standard lists that placed at recent events.'} Lists as of ${asOf}. Load one to start practicing right away, then edit it to match your own build.</div>
     <div class="st-list">${rows}</div>
     ${meta}

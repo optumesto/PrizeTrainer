@@ -28,7 +28,7 @@ function fs325Set(key, shut) {
   s[key] = shut ? 1 : 0;
   try { localStorage.setItem(FS325_KEY, JSON.stringify(s)); } catch (_) {}
 }
-/** A heading's English words, without counts in child tags (so "Your list 12 cards" is "Your list"). */
+/** A heading's English words, without counts in child tags (so "Your list 12 cards" is "Your List"). */
 function fs325Title(h) {
   let t = '';
   h.childNodes.forEach(n => {
@@ -39,12 +39,12 @@ function fs325Title(h) {
 }
 
 const FS325_SCOPES = [
-  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Main attacker': 1, 'Prize risk': 1 } },
+  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Main Attacker': 1, 'Prize Risk': 1 } },
   { el: 'hand-body', name: 'hand', sec: '.g-sec', head: '.g-sec-t', shut: {} },
-  { el: 'drills-body', name: 'drills', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opponent prize read': 1 } },
-  { el: 'notes-body', name: 'notes', sec: '.g-sec', head: '.g-sec-t', shut: { 'Edit log': 1, 'Compare lists': 1 } },
+  { el: 'drills-body', name: 'drills', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opponent Prize Read': 1 } },
+  { el: 'notes-body', name: 'notes', sec: '.g-sec', head: '.g-sec-t', shut: { 'Edit Log': 1, 'Compare Lists': 1 } },
   { el: 'bld-body', name: 'build', sec: '.bld-sec', head: 'h2.bld-h', shut: { 'Suggestions': 1 },
-    more: (title, root) => title === 'Start from' && !!root.querySelector('.bld-group .bld-row') },
+    more: (title, root) => title === 'Start From' && !!root.querySelector('.bld-group .bld-row') },
 ];
 
 function fs325Paint(sec, head, shut) {

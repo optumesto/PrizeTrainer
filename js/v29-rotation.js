@@ -496,7 +496,7 @@ renderGrade = function () {
   const anyData = (deck.cards || []).some(c => c.supertype);
   if (!anyData) {
     el.innerHTML = `<div class="g-empty">No card data for this deck yet.<br><br>
-      The grade reads each card when a deck is added. Open <b>Edit deck</b> and save it while online
+      The grade reads each card when a deck is added. Open <b>Edit Deck</b> and save it while online
       to read them, then come back.</div>`;
     return;
   }
@@ -528,7 +528,7 @@ renderGrade = function () {
   if (probs.length) jumps.push(`<button class="g29-jump-b ${probs.some(f => f.sev === 'crit') ? 'crit' : 'warn'}" onclick="g29Jump('g29-fix')"><b>${probs.length}</b> to fix</button>`);
   if (rot && rot.chip) jumps.push(`<button class="g29-jump-b ${rot.chipTone}" onclick="g29Jump('r29-sec')">${rot.chip}</button>`);
   if (good.length) jumps.push(`<button class="g29-jump-b ok" onclick="g29Jump('g29-good')"><b>${good.length}</b> working well</button>`);
-  if (plays.length) jumps.push(`<button class="g29-jump-b syn" onclick="g29Jump('g29-syn')">How it plays</button>`);
+  if (plays.length) jumps.push(`<button class="g29-jump-b syn" onclick="g29Jump('g29-syn')">How It Plays</button>`);
 
   let h = `<div class="g-hero g29-hero">
     ${typeof g338Split === 'function' && g338Split(R) ? '<div class="g29-pl g341-ol">Overall</div>' : ''}
@@ -555,7 +555,7 @@ renderGrade = function () {
 
   if (probs.length) {
     const top = probs.slice(0, G29_SHOW), rest = probs.slice(G29_SHOW);
-    h += `<div class="g-sec" id="g29-fix"><div class="g-sec-t">Fix first</div>
+    h += `<div class="g-sec" id="g29-fix"><div class="g-sec-t">Fix First</div>
       <div class="g-sec-i">${top.length === 1 ? 'The problem that costs you the most.' : `The ${top.length} problems that cost you the most, worst first.`}</div>
       ${top.map(f => g29Item(f, f.sev)).join('')}
       ${rest.length ? `<details class="g29-more"><summary>${rest.length} more to fix</summary>${rest.map(f => g29Item(f, f.sev)).join('')}</details>` : ''}
@@ -575,13 +575,13 @@ renderGrade = function () {
 
   // 3.5.5: the folded line under each heading names its first item, so a tap is never blind.
   const fl = (t, n, line) => `<summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">${t}</span><span class="g29-n">${n}</span></span><span class="r38-line">${line}</span></span></summary>`;
-  if (good.length) h += `<details class="g-sec g29-fold" id="g29-good">${fl('Working well', good.length, `<span>${esc(good[0].t)}</span>`)}
+  if (good.length) h += `<details class="g-sec g29-fold" id="g29-good">${fl('Working Well', good.length, `<span>${esc(good[0].t)}</span>`)}
     ${good.map(f => g29Item(f, 'ok')).join('')}</details>`;
 
   // 3.5.5 (Muse brief change 7): the ACE SPEC's note is the same words as under Trainers, so here it points there.
   const trA = R.coh && R.coh.trainers && R.coh.trainers.ace;
   const playP = s => trA && /^ACE SPEC: /.test(s.link || '') && s.p === trA.p ? 'The full note on this ACE SPEC is under Trainers.' : s.p;
-  if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn">${fl('How it plays', plays.length, `<span>${esc(plays[0].link)}</span>`)}
+  if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn">${fl('How It Plays', plays.length, `<span>${esc(plays[0].link)}</span>`)}
     <div class="g-sec-i">${(R.plan || []).length ? 'The main attacker and the combos' : 'Combos'} the grader found between your own cards. This is what the deck is trying to do.</div>
     ${plays.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(playP(s))}</p></div>`).join('')}</details>`;
 
@@ -592,21 +592,21 @@ renderGrade = function () {
 
   // 3.3.6: the full explainer lives in Questions about RdyDeck on home. The deck page keeps one line
   // that opens that same answer in a sheet, with this deck's own note and the accuracy line.
-  h += `<div class="gw336"><button type="button" class="gw336-a" onclick="gw336Open()"><svg class="ic"><use href="#i-help"/></svg>How the grade works</button></div>`;
+  h += `<div class="gw336"><button type="button" class="gw336-a" onclick="gw336Open()"><svg class="ic"><use href="#i-help"/></svg>How the Grade Works</button></div>`;
 
   el.innerHTML = h;
 };
 
 // 3.4.41: three labeled scores (Mason, 24 Nov 2026): Overall on the big grade, which blends the other two, then
-// Deck strength (cards based) and Tournament strength (was Tourney strength).
-// 3.5.1: Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026).
+// Deck Strength (cards based) and Tournament Strength (was Tourney strength).
+// 3.5.1: Deck Strength (cards based) is now Card Strength (Mason, 24 Nov 2026).
 // 3.5.4 (Mason, 24 Nov 2026: the deck tabs were "throw text at you"): what holds the grade back stays in view,
 // and the working out (Synergy times Power, the tournament share) folds under How this grade was worked out.
 /** 3.5.5: the folded line under How this grade was worked out: what the Overall is made of, with the numbers. */
 function go37HowSay(R, synV, powV) {
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
-  if (S && S.tour != null) return `<span class="r38-line">Overall ${R.overall.toFixed(1)}, from Card strength ${S.deck.toFixed(1)} and Tournament strength ${S.tour.toFixed(1)}.</span>`;
-  if (S && S.deck != null) return `<span class="r38-line">Synergy ${synV.toFixed(1)} and Power ${powV.toFixed(1)} make Card strength ${S.deck.toFixed(1)}.</span>`;
+  if (S && S.tour != null) return `<span class="r38-line">Overall ${R.overall.toFixed(1)}, from Card Strength ${S.deck.toFixed(1)} and Tournament Strength ${S.tour.toFixed(1)}.</span>`;
+  if (S && S.deck != null) return `<span class="r38-line">Synergy ${synV.toFixed(1)} and Power ${powV.toFixed(1)} make Card Strength ${S.deck.toFixed(1)}.</span>`;
   return `<span class="r38-line">Synergy ${synV.toFixed(1)} and Power ${powV.toFixed(1)}.</span>`;
 }
 function g36KeyLine(R, weak) {
@@ -615,29 +615,29 @@ function g36KeyLine(R, weak) {
   return t ? `<p class="g36-key">${t}</p>` : '';
 }
 
-// 3.4.38: the two split scores lead the parts. Deck strength carries Synergy and Power as one small line,
+// 3.4.38: the two split scores lead the parts. Deck Strength carries Synergy and Power as one small line,
 // so the hero still shows what holds the list back. Without the split helper the old parts show.
 function g338Parts(R, synV, powV, part) {
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
   if (!S) return `<div class="g29-parts">${part('Synergy', synV, 'Do the cards work together')}${part('Power', powV, 'Can it win a game')}</div>`;
   const sp = `<div class="g338-sp"><span><span>Synergy</span> <b>${synV.toFixed(1)}</b></span><span><span>Power</span> <b>${powV.toFixed(1)}</b></span></div>`;
-  const na = `<div class="g29-part g338-na"><div class="g29-pl">Tournament strength</div><div class="g29-pv">N/A</div>
+  const na = `<div class="g29-part g338-na"><div class="g29-pl">Tournament Strength</div><div class="g29-pv">N/A</div>
       <div class="g-meter"><span style="width:0"></span></div>
       <div class="g29-ps">${S.games ? 'Fewer than 20 event games' : 'No event results match'}</div></div>`;
   return `<div class="g29-parts g338-parts">
-      ${part('Card strength', S.deck, sp)}
-      ${S.tour == null ? na : part('Tournament strength', S.tour, 'How decks like it do at events')}
+      ${part('Card Strength', S.deck, sp)}
+      ${S.tour == null ? na : part('Tournament Strength', S.tour, 'How decks like it do at events')}
     </div>${g342Gap(S)}`;
 }
 
 // 3.4.42: when the two scores sit far apart, one line says why (Mason, 24 Nov 2026: the card based grade stays
-// distinct from event results). Deck strength reads the cards alone, so it can miss what decides games.
+// distinct from event results). Deck Strength reads the cards alone, so it can miss what decides games.
 const G342_GAP = 1.5;
 function g342Gap(S) {
   if (!S || S.tour == null || Math.abs(S.deck - S.tour) < G342_GAP) return '';
   return `<p class="g342-gap">${S.deck > S.tour
-    ? 'Your cards score higher than decks like this do at events. Card strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'
-    : 'Decks like this do better at events than the cards alone show. Card strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'}</p>`;
+    ? 'Your cards score higher than decks like this do at events. Card Strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'
+    : 'Decks like this do better at events than the cards alone show. Card Strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'}</p>`;
 }
 
 // 3.3.6: How the grade works opens the answer from Questions about RdyDeck (#faq-grade on home),
@@ -675,9 +675,9 @@ buildDeckCard = function (deck) {
   const id = deck.id;
   h = h.replace(`<div class="deck-card${deck.hidden ? ' deck-hidden' : ''}" onclick="startGameDefault('${id}')">`,
     `<div class="deck-card${deck.hidden ? ' deck-hidden' : ''}" onclick="openReview('${id}')">`);
-  h = h.replace(`title="Play" aria-label="Play ${esc(deck.name)}"`, `title="Prize game" aria-label="Prize game with ${esc(deck.name)}"`);
+  h = h.replace(`title="Play" aria-label="Play ${esc(deck.name)}"`, `title="Prize Game" aria-label="Prize game with ${esc(deck.name)}"`);
   h = h.replace('<span>Avg <b>', '<span>Prize avg <b>');
-  h = h.replace('title="Cards, grade and odds"><svg class="ic"><use href="#i-grid"/></svg><span>Deck</span>', 'title="Grade, odds and cards"><svg class="ic"><use href="#i-award"/></svg><span>Grade</span>');
+  h = h.replace('title="Cards, grade and odds"><svg class="ic"><use href="#i-grid"/></svg><span>Deck</span>', 'title="Grade, Odds and Cards"><svg class="ic"><use href="#i-award"/></svg><span>Grade</span>');
   h = h.replace(/(\d+) session(s?)<\/span>/, (m, n, pl) => `${n} prize game${pl}</span>`);
   // v71: no number until the card data, the legality check and the results have all loaded.
   const wait = typeof g71Wait === 'function' ? g71Wait(deck) : '';
@@ -714,7 +714,7 @@ buildDeckCard = function (deck) {
   const order = ['grade', 'cards', 'odds', 'practice'];
   if (tabs) order.forEach(k => { const b = document.getElementById('rv-tab-' + k); if (b) tabs.appendChild(b); });
   const play = document.querySelector('#screen-review .play-btn');
-  if (play) { play.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Prize game'; play.setAttribute('aria-label', 'Start a prize game with this deck'); }
+  if (play) { play.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Prize Game'; play.setAttribute('aria-label', 'Start a prize game with this deck'); }
   const md = document.querySelector('meta[name="description"]');
   if (md) md.setAttribute('content', 'Grade your Pokémon TCG deck, check its odds and rotation, then practice prizes, hands and drills. Free, works offline, no account.');
 })();

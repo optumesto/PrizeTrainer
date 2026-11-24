@@ -257,8 +257,8 @@ function olSectionHTML(deck) {
   const st = olLoad(deck, groups);
   const anyRead = groups.some(g => g.read);
   const anyBasic = groups.some(g => g.basic);
-  const turnLbl = t => t === 0 ? 'Opening hand' : 'Turn ' + t;
-  let h = `<div class="g-sec ol-sec" id="ol-sec"><div class="g-sec-t">Ask the odds</div>
+  const turnLbl = t => t === 0 ? 'Opening Hand' : 'Turn ' + t;
+  let h = `<div class="g-sec ol-sec" id="ol-sec"><div class="g-sec-t">Ask the Odds</div>
     <div class="g-sec-i">Pick the cards you need and the turn. Exact counting for this list: a hand with no Basic is redrawn, so only hands you keep count, and both players draw on their first turn.</div>
     <div class="ol-rows">`;
   st.rows.forEach((r, i) => {
@@ -472,7 +472,7 @@ const tlRate = r => r.n ? Math.round(r.w / r.n * 100) + '%' : '?';
 const tlRec = r => `${r.w}-${r.l}${r.t ? '-' + r.t : ''}`;
 
 function tlTurnSeg(id, cur, small) {
-  return `<div class="seg tl-seg${small ? ' tl-sm' : ''}" id="${id}">${[['first', small ? '1st' : 'First'], ['second', small ? '2nd' : 'Second'], ['', small ? '?' : 'Not sure']]
+  return `<div class="seg tl-seg${small ? ' tl-sm' : ''}" id="${id}">${[['first', small ? '1st' : 'First'], ['second', small ? '2nd' : 'Second'], ['', small ? '?' : 'Not Sure']]
     .map(([v, l]) => `<div class="mode-opt${v === cur ? ' active' : ''}" data-val="${v}" onclick="tl28Set('${id}','${v}')"${small && !v ? ' aria-label="Not sure who went first"' : ''}>${l}</div>`).join('')}</div>`;
 }
 function tlResSeg(id, cur) {
@@ -481,7 +481,7 @@ function tlResSeg(id, cur) {
 }
 function tl28Form() {
   const f = _tl28;
-  let h = `<div class="mb"><div class="field-label">Match</div><div class="seg tl-seg" id="tl-bo">${[[1, 'One game'], [3, 'Best of three']]
+  let h = `<div class="mb"><div class="field-label">Match</div><div class="seg tl-seg" id="tl-bo">${[[1, 'One Game'], [3, 'Best of Three']]
     .map(([v, l]) => `<div class="mode-opt${f.bo === v ? ' active' : ''}" data-val="${v}" onclick="tl28Set('tl-bo','${v}')">${l}</div>`).join('')}</div></div>`;
   if (f.bo === 3) {
     h += `<div class="mb"><div class="field-label">Games</div><div class="tl-games">`;
@@ -631,7 +631,7 @@ function tl28Hint() {
       .concat(list.map(x => {
         const d = state.decks.find(z => z.id === x.deckId);
         const gs = x.bo === 3 ? (x.games || []).filter(g => g && ['W', 'L', 'T'].includes(g.r)).map(g => g.r + (TL_TURNS.includes(g.t) ? ' ' + g.t : '') + (tlNum(g.pt) != null || tlNum(g.pg) != null ? ' ' + (tlNum(g.pt) || 0) + '-' + (tlNum(g.pg) || 0) : '')).join(' / ') : '';
-        return [x.day, x.event, x.round || '', d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.bo === 3 ? 'Best of three' : 'One game',
+        return [x.day, x.event, x.round || '', d ? d.name : x.deckName, x.deckVer || '', x.opp, x.result, x.bo === 3 ? 'Best of Three' : 'One Game',
           x.bo === 3 ? '' : went(x.turn), gs, x.taken, x.given, x.notes];
       }));
     const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });

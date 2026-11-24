@@ -26,7 +26,7 @@ function openSettings() {
   const row = (fn, t, s, cls) => `<button type="button" class="st38-row${cls ? ' ' + cls : ''}" onclick="${fn}"><span>${t}${s ? `<small>${s}</small>` : ''}</span>${go}</button>`;
   const link = (href, t) => `<a class="st38-row" href="${href}"><span>${t}</span>${go}</a>`;
   const age = (typeof age32Any === 'function' && age32Any())
-    ? row('closeSheet();age32Help()', 'Age setting', esc(AGE32_LABEL[age32Get() || 'skip']) + '. Sets which ads you see.') : '';
+    ? row('closeSheet();age32Help()', 'Age Setting', esc(AGE32_LABEL[age32Get() || 'skip']) + '. Sets which ads you see.') : '';
   openSheet(`<div class="modal-title">Settings</div>
     <div class="st38-sec">
       <div class="st38-h">Theme</div>
@@ -36,22 +36,22 @@ function openSettings() {
       </div>
     </div>
     <div class="st38-sec">
-      <div class="st38-h">Cards per row</div>
+      <div class="st38-h">Cards per Row</div>
       <p class="st38-p">For the Cards tab and the daily list on this screen size.</p>
-      <div class="st38-seg" id="st38-cols" role="group" aria-label="Cards per row">
+      <div class="st38-seg" id="st38-cols" role="group" aria-label="Cards per Row">
         ${[0, 1, 2, 3].map(i => `<button type="button" data-i="${i}" onclick="st38Cols(${i})">${base + i}</button>`).join('')}
       </div>
     </div>
     <div class="st38-sec st38-rows">
-      ${row('closeSheet();openBackupModal()', 'Save and open decks', 'Move your decks to a new phone or web address')}
+      ${row('closeSheet();openBackupModal()', 'Save and Open Decks', 'Move your decks to a new phone or web address')}
       ${age}
-      ${row('closeSheet();openWhatsNew()', "What's new", wnName())}
-      ${row('closeSheet();openHelpSheet()', 'Help and feedback', '')}
+      ${row('closeSheet();openWhatsNew()', "What's New", wnName())}
+      ${row('closeSheet();openHelpSheet()', 'Help and Feedback', '')}
       ${link('terms.html', 'Terms of Service')}
       ${link('privacy.html', 'Privacy Policy')}
     </div>
     <div class="st38-sec st38-rows">
-      ${row('closeSheet();clearAllData()', 'Clear all data', 'Deletes every deck and score saved in this browser', 'st38-danger')}
+      ${row('closeSheet();clearAllData()', 'Clear All Data', 'Deletes every deck and score saved in this browser', 'st38-danger')}
     </div>
     <div class="st38-ver" data-no-tr>RdyDeck ${String(PT_VERSION).replace(/^v/, '')} (${PT_PLAY ? 'Google Play' : 'Web'})</div>
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
@@ -129,12 +129,12 @@ function dm38Open(id) {
   const played = (deck.history || []).length;
   openSheet(`<div class="modal-title">${esc(deck.name)}</div>
     <div class="st38-sec st38-rows">
-      ${row('openReview', 'Grade, odds and cards', '')}
-      ${row('startGameDefault', 'Prize game', '')}
+      ${row('openReview', 'Grade, Odds and Cards', '')}
+      ${row('startGameDefault', 'Prize Game', '')}
       ${played ? row('openWeakSpots', 'Progress', played + ' prize game' + (played !== 1 ? 's' : '') + ' played') : ''}
-      ${row('openModeModal', 'Game modes', '')}
-      ${row('openEditModal', 'Edit the list', '')}
-      ${row('openThumbPicker', 'Cover card', '')}
+      ${row('openModeModal', 'Game Modes', '')}
+      ${row('openEditModal', 'Edit the List', '')}
+      ${row('openThumbPicker', 'Cover Card', '')}
     </div>
     ${dd65Rows(deck)}
     <div class="modal-actions"><button class="btn" onclick="closeSheet()">Close</button></div>`);
@@ -248,7 +248,7 @@ function dm38Open(id) {
     if (!area) return r;
     if (cmp) cmp.classList.add('r38-hide');
     const h = area.querySelector('.section-title');
-    if (h) h.textContent = 'Your guesses vs the prizes';
+    if (h) h.textContent = 'Your Guesses vs the Prizes';
     let w = document.getElementById('r38-wrong');
     if (!w) { w = document.createElement('div'); w.id = 'r38-wrong'; w.className = 'r38-wrong'; area.appendChild(w); }
     const wrong = (guessResults || []).filter(g => !g.correct).map(g => esc(g.guess));

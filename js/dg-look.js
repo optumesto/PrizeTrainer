@@ -248,7 +248,7 @@ async function dgDailyDraw(r, key, size) {
     const key = dailyOkKey(k) || dailyKey(), r = dailyStore().results[key];
     if (!r) { showToast('Play today\'s Prize Check first.'); return; }
     dgShareSheet({
-      title: 'Share your Prize Check score',
+      title: 'Share Your Prize Check Score',
       hint: 'The link opens today\'s Prize Check, so friends get the same deck and shuffle. The picture shows no cards.',
       text: dailyShareText(r, key), url: shareBaseUrl() + '?ref=daily#daily', name: 'rdydeck-daily',
       alt: `Prize Check #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)}`,
@@ -356,10 +356,10 @@ async function dgGtgDraw(r, key, size) {
     const key = dailyOkKey(k) || dailyKey(), r = gtgStore().results[key];
     if (!r || !r.done) { showToast('Finish today\'s Guess the Grade first.'); return; }
     dgShareSheet({
-      title: 'Share your result',
+      title: 'Share Your Result',
       hint: 'The picture shows how close each guess got, with no grade and no deck. The link opens today\'s game.',
       text: gtgShareText(r, key), url: shareBaseUrl() + '?ref=guess#guess', name: 'rdydeck-guess',
-      alt: `Guess the Grade #${gtgNumber(key)}: ` + (r.won ? `got it in ${r.g.length} of ${GTG_TRIES}` : 'not this time'),
+      alt: `Guess the Grade #${gtgNumber(key)}: ` + (r.won ? `Got it in ${r.g.length} of ${GTG_TRIES}` : 'Not this time'),
       draw: size => dgGtgDraw(r, key, size),
     });
   };
@@ -424,7 +424,7 @@ function dgPzStep(s, a) {
 function dgPzLine() {
   const L = (pzS && pzS.line) || [];
   if (!L.length) return '';
-  return `<div class="dgz"><div class="dgz-t">Your winning line</div>
+  return `<div class="dgz"><div class="dgz-t">Your Winning Line</div>
     <ol class="dgz-row">${L.map((st, i) => {
       const c = st.c || {};
       return `<li class="dgz-c" title="${esc(st.label || '')}">
@@ -503,7 +503,7 @@ function dgFoilCard(c, name, live) {
         const ix = rpTierIx(best.score);
         line.closest('p').outerHTML = `<div class="dgf dgf-t${ix} dgf-best"><i class="dgf-sheen" aria-hidden="true"></i>
           ${dgFoilCard(bc, best.n, true)}
-          <div class="dgf-bt"><div class="dgf-k">Best pull</div><div class="dgf-n" data-no-tr>${esc(best.n)}</div><div class="dgf-tier">${esc(rpTier(best.score)[1])} <span data-no-tr>· +${best.score}</span></div></div>
+          <div class="dgf-bt"><div class="dgf-k">Best Pull</div><div class="dgf-n" data-no-tr>${esc(best.n)}</div><div class="dgf-tier">${esc(rpTier(best.score)[1])} <span data-no-tr>· +${best.score}</span></div></div>
         </div>`;
       }
       // home shows the day's best pull, so keep which card it was
@@ -548,7 +548,7 @@ async function dgRpDraw(r, key, size) {
   // the best pull's rarity and the streak
   const top = Math.max(0, ...ps), st = typeof dgStreak === 'function' ? dgStreak() : 0;
   const parts = [];
-  if (top > 0) parts.push(`${dgT('Best pull')}: ${dgT(rpTier(top)[1])} +${top}`);
+  if (top > 0) parts.push(`${dgT('Best Pull')}: ${dgT(rpTier(top)[1])} +${top}`);
   if (st > 1) parts.push(dgT(dgStreakText(st)));
   if (parts.length) {
     x.font = `400 ${sq ? 34 : 30}px ${B}`; x.fillStyle = GS45.text2;
@@ -594,7 +594,7 @@ async function dgRpDraw(r, key, size) {
     // the score line without its last line (rdydeck.com): the link takes its place
     const text = rpShareText(r, key).split('\n').filter(l => l && l !== 'rdydeck.com').join('\n');
     dgShareSheet({
-      title: 'Share your result',
+      title: 'Share Your Result',
       hint: 'The picture shows how rare each pull was, with no card names, so today\'s prompts stay a surprise.',
       text, url: shareBaseUrl() + '?ref=rarepull', name: 'rdydeck-rare-pull',
       alt: `Rare Pull #${rpNumber(key)}: ${r.score} of 700`,

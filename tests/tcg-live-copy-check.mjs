@@ -145,15 +145,15 @@ function save(w, name, text) {
 
   w.eval('state').activeDeckId = deck.id;
   w.dd65Menu();
-  const row = [...d.querySelectorAll('.st38-row')].find(x => /Copy list for TCG Live/.test(x.textContent));
-  ok(!!row, 'the deck menu has Copy list for TCG Live');
+  const row = [...d.querySelectorAll('.st38-row')].find(x => /Copy List for TCG Live/.test(x.textContent));
+  ok(!!row, 'the deck menu has Copy List for TCG Live');
   row.click(); await wait(50);
   ok(w.clip === LIVE, 'the tap copies the list');
   ok(/List copied\. Paste it into TCG Live's deck import\./.test(d.getElementById('toast').textContent), 'the toast says it was copied');
 
   w.clipBlocked = true;
   w.dd65Menu();
-  [...d.querySelectorAll('.st38-row')].find(x => /Copy list for TCG Live/.test(x.textContent)).click(); await wait(50);
+  [...d.querySelectorAll('.st38-row')].find(x => /Copy List for TCG Live/.test(x.textContent)).click(); await wait(50);
   const ta = d.querySelector('.modal-overlay.active textarea.bld-ta, textarea.bld-ta');
   ok(ta && ta.value === LIVE && ta.hasAttribute('data-no-tr'), 'a blocked clipboard shows the whole list to copy by hand');
   ok(/Press and hold the list/.test(d.body.textContent), 'the fallback says how to copy it');
