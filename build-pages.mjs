@@ -740,7 +740,6 @@ ${sets.map(x => `    <tr><td>${esc(x.name)}</td><td>${day(x.from)} to ${day(x.to
 // follow, and leave the sitemap until they have more to say.
 const NOINDEX_HERE = '<meta name="robots" content="noindex, follow">';
 const THIN_FILES = new Set();
-const OUT_OF_SITEMAP = f => THIN_FILES.has(f);
 
 // ── 3.2: one guide page per card (cards/*.html), from .github/card-pages.json ──────────────────
 // The text is the card's own, from pokemon-tcg-data (card-pages-data.mjs writes the file). What
@@ -1038,9 +1037,18 @@ for (const [file, html] of out) {
 {
   const sm = path.join(ROOT, 'sitemap.xml');
   let xml = readFileSync(sm, 'utf8');
-  const listed = out.map(([f]) => f).filter(f => f.endsWith('.html') && !OUT_OF_SITEMAP(f));
+  // 3.4.39: a page's place in the sitemap follows the noindex line on the page as it is on disk, not this
+  // run's thin check. An --only run (the weekly data refresh) leaves the other pages as they were, so a guide
+  // that grew past THIN_WORDS keeps its noindex until a full build, and must stay out of the sitemap until then.
+  // The page as it will be served: what this run built if it writes (or, with --check, would write) that page,
+  // otherwise the file already on disk.
+  const built = new Map(out);
+  const served = f => CHECK && (!ONLY || f === ONLY) ? built.get(f) : (existsSync(path.join(ROOT, f)) ? readFileSync(path.join(ROOT, f), 'utf8') : built.get(f));
+  const outOfSearch = f => served(f).includes(NOINDEX_HERE);
+  const html = out.map(([f]) => f).filter(f => f.endsWith('.html'));
+  const listed = html.filter(f => !outOfSearch(f));
   const add = listed.map(f => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
-  const drop = [...THIN_FILES].filter(f => xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
+  const drop = html.filter(outOfSearch).filter(f => xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
   if (drop.length) {
     changed++;
     if (CHECK) console.log('In sitemap.xml but kept out of search: ' + drop.join(', '));

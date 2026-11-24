@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.4.39 (build 167): Card guide search listing fixed (24 Nov 2026)
+
+Changed files: build-pages.mjs (sitemap follows the noindex line on the page as served), sitemap.xml (Strange Timepiece out, 196 pages), index.html (softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.39, What's new, PT_BUILD now 167), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (What's new string), sw.js (cache name prize-trainer-v167).
+
+- The weekly data refresh put the Strange Timepiece guide back in sitemap.xml while the page still told search engines to skip it. New data took the page from just under to just over the length cutoff (576 words, cutoff 560), so the refresh judged it no longer thin, but the refresh rebuilds only How grading works, so the guide on the site kept its noindex line.
+- build-pages.mjs now decides each page's place in the sitemap from the page as it will be served (the page it writes, or the one already on disk), so the sitemap and the noindex line always agree. A guide that grows past the cutoff joins search and the sitemap together at the next full build.
+
 # RdyDeck 3.4.38 (build 166): Deck strength and Tourney strength (23 Nov 2026)
 
 Changed files: js/v69-grade-blend.js (split scores, 20 game rule, match threshold on the best fit), js/matchups.js (archetype matching counts copies, near ties go to the more played archetype), tests/grade-baseline.json (5 intended moves), js/v29-rotation.js (grade screen), js/v45-sample-share-daily.js (share card and shared text), index.html (styles, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.38, What's new, PT_BUILD now 166), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new labels and What's new), sw.js (cache name prize-trainer-v166).
