@@ -15,9 +15,12 @@
 // 33% wins over 777 games, 6.5; Mega Charizard X, 32% over 167 games, 8.5). Below an average record the results
 // score now falls twice as fast (G68_SLOPE_LO), and results reach their full share at 250 games, not 500. A deck
 // at or above an average record scores exactly as before, so the top decks keep their grades.
+// 3.4.40 (proposed, 24 Nov 2026): above an average record the results score rises 0.115 a point of the index (was 0.07),
+// so the best archetype in the field reads about 10 and the most played, winning decks read above 9. At 0.07 the
+// best index anywhere (117.5, Dragapult Dudunsparce) scored 9.2 and Dragapult 8.8. Below average is unchanged.
 // 3.4.38: below this many games, Tourney strength shows N/A and the grade reads the cards alone (Mason, 23 Nov 2026).
 const G68_MIN_GAMES = 20;
-const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.07, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.115, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
@@ -362,7 +365,7 @@ function g68Line(R) {
   // Grade vs win rate section shows the plain one, so each says which it is.
   const games = r.games.toLocaleString('en-US'), raw = r.rawWr != null ? (r.rawWr * 100).toFixed(1) + '%' : '';
   const rec = r.curGames && raw ? `${wr} wins with games since the newest set counted three times (${raw} over all ${games} games)` : `${wr} wins over all ${games} games`;
-  return ` ${pct}% of the grade comes from ${esc(r.name)}'s ${typeof mu60SrcWords === 'function' ? mu60SrcWords(null, true) : 'online'} tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list's ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
+  return ` ${pct}% of the grade comes from ${esc(r.name)}'s ${typeof mu60SrcWords === 'function' ? mu60SrcWords(null, true) : 'online'} tournament results${r.since ? ' since ' + esc(r.since) : ''}${asOf}: ${rec}. Those results alone score ${r.score.toFixed(1)}, so the list${R.cardOverall.toFixed(1) === R.overall.toFixed(1) ? ` stays at ${R.overall.toFixed(1)}` : `'s ${R.cardOverall.toFixed(1)} becomes ${R.overall.toFixed(1)}`}.${r.thin ? ' There are few games so far, so results count for little.' : ''}${r.own ? ` This list is built around ${esc(r.own)}, which has no tournament results of its own yet, so these results are borrowed from ${esc(r.name)}, the closest deck that has them.` : ''}${r.alt && r.main ? ` This list's cards sit closest to ${esc(r.name)}, so the grade uses its results, not those of ${esc(r.alt)}, the deck built around ${esc(gCap(r.main))}.` : ''}${r.pick ? '' : ' If that is the wrong deck, pick the right one under Against the meta.'}`;
 }
 (function () {
   const _grade = gradeDeck;
