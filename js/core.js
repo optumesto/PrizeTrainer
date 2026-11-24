@@ -8867,7 +8867,7 @@ function dailyNumber(key) {
 }
 function dailyDeck(key) {
   key = dailyOkKey(key) || dailyOkKey(_dailyViewKey) || dailyKey();
-  if (!_dailyDecks[key]) _dailyDecks[key] = { id: DAILY_ID, name: 'Daily challenge', cards: parseDeckList(dailyPick(key).list), history: [], format: 'standard', daily: true };
+  if (!_dailyDecks[key]) _dailyDecks[key] = { id: DAILY_ID, name: 'Prize Check', cards: parseDeckList(dailyPick(key).list), history: [], format: 'standard', daily: true };
   return _dailyDecks[key];
 }
 // 2.5.1: the day a daily game was dealt on, so a game that runs past midnight is scored to that day.
@@ -8895,26 +8895,26 @@ async function startDaily() {
 }
 function dailyShareText(r, key) {
   const bar = Array.from({ length: 6 }, (_, i) => i < r.score ? '■' : '□').join('');
-  return `RdyDeck Daily #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
+  return `RdyDeck Prize Check #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)} ${bar}. Same deck and shuffle for everyone today.`;
 }
 async function shareDaily(k) {
   const key = dailyOkKey(k) || dailyKey(), r = dailyStore().results[key];
-  if (!r) { showToast('Play today\'s challenge first.'); return; }
+  if (!r) { showToast('Play today\'s Prize Check first.'); return; }
   const text = dailyShareText(r, key), url = shareBaseUrl() + '?ref=daily#daily';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Score copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your daily score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Prize Check score</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 function renderDailyCard() {
   const el = document.getElementById('daily-card');
   if (!el) return;
   const key = dailyKey(), r = dailyStore().results[key];
   el.innerHTML = `<div class="dc-card">
-    <div class="dc-ic">${ic23('calendar')}</div>
-    <div class="dc-tx"><div class="dc-t">Daily challenge #${dailyNumber(key)}</div>
+    <div class="dc-ic">${ic23('prizecheck')}</div>
+    <div class="dc-tx"><div class="dc-t">Prize Check #${dailyNumber(key)}</div>
       <div class="dc-s">${r ? `Today: <b>${r.score} of 6</b> <span>in ${formatTime(r.time)}</span>` : `Today's deck: ${esc(dailyName(key))}. Same shuffle for everyone`}</div></div>
-    ${r ? `<button class="btn btn-sm" onclick="shareDaily()" aria-label="Share Daily challenge result">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="startDaily()" aria-label="${r ? 'Replay Daily challenge' : 'Play Daily challenge'}">${r ? 'Replay' : 'Play'}</button>
+    ${r ? `<button class="btn btn-sm" onclick="shareDaily()" aria-label="Share Prize Check result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="startDaily()" aria-label="${r ? 'Replay Prize Check' : 'Play Prize Check'}">${r ? 'Replay' : 'Play'}</button>
   </div>`;
   renderPuzzleCard();
   renderWhatsNewCard();
@@ -8929,7 +8929,7 @@ function dailyAfterReveal(score, elapsed) {
   const r = store.results[key];
   const b = document.createElement('div');
   b.id = 'daily-banner'; b.className = 'dc-banner';
-  b.innerHTML = `<div><b>${first ? `Daily challenge #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}</span>${typeof dgStreak === 'function' && dgStreak() ? `<span class="rp-streak">${dgStreakText(dgStreak())}</span>` : ''}</div>
+  b.innerHTML = `<div><b>${first ? `Prize Check #${dailyNumber(key)} scored` : 'Practice replay'}</b><span>${first ? `${score} of 6 in ${formatTime(elapsed)}. Your first try is the one that counts.` : `Today's score stays ${r.score} of 6 in ${formatTime(r.time)}.`}</span>${typeof dgStreak === 'function' && dgStreak() ? `<span class="rp-streak">${dgStreakText(dgStreak())}</span>` : ''}</div>
     <button class="btn btn-sm btn-primary" onclick="shareDaily('${key}')">${ic23('share')}Share score</button>`;
   area.parentElement.insertBefore(b, area);
 }
@@ -8937,7 +8937,7 @@ function handleDailyHash() {
   if (!/^#daily\b/.test(location.hash || '')) return;
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   showScreen('home');
-  openSheet(`<div class="modal-title">Daily challenge #${dailyNumber()}</div>
+  openSheet(`<div class="modal-title">Prize Check #${dailyNumber()}</div>
     <div class="modal-hint" style="margin-bottom:1rem">Everyone gets the same ${esc(dailyName(dailyKey()))} list and the same shuffle today. Find the six prizes as fast as you can. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="startDaily()">${ic23('play')}Play</button></div>`);
 }
@@ -8950,24 +8950,24 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.7',
+  version: 'v3.5.8',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'School wifi card loading fixed' }
+    { t: 'Daily games renamed: Prize Check and Quickest Win' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.7', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'School wifi card loading fixed' }
+  ] },
   { version: 'v3.5.6', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'The RdyDeck logo now matches our Instagram picture' }
   ] },
   { version: 'v3.5.5', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'What to fix first now sits right under the grade' }
-  ] },
-  { version: 'v3.5.4', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'Tidier deck tabs with more folding sections' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -9095,18 +9095,18 @@ function renderPuzzleCard() {
   const sub = r ? (r.won ? `Today: <b>won</b> in ${r.moves} play${r.moves === 1 ? '' : 's'}${r.best ? (r.moves <= r.best ? ', the shortest win' : `, best ${r.best}`) : ''}` : r.peek ? 'Today: you looked at the answer' : 'Today: <b>no win</b> on your first try')
     : 'Win this turn from a real tournament board';
   el.innerHTML = `<div class="dc-card">
-    <div class="dc-ic">${ic23('target')}</div>
-    <div class="dc-tx"><div class="dc-t">Daily puzzle #${puzzleNumber(key)}</div>
+    <div class="dc-ic">${ic23('bolt')}</div>
+    <div class="dc-tx"><div class="dc-t">Quickest Win #${puzzleNumber(key)}</div>
       <div class="dc-s">${sub}</div></div>
-    ${r ? `<button class="btn btn-sm" onclick="sharePuzzle()" aria-label="Share Daily puzzle result">${ic23('share')}Share</button>` : ''}
-    <button class="btn btn-sm btn-primary" onclick="openPuzzle()" aria-label="${r ? 'Replay Daily puzzle' : 'Play Daily puzzle'}">${r ? 'Replay' : 'Play'}</button>
+    ${r ? `<button class="btn btn-sm" onclick="sharePuzzle()" aria-label="Share Quickest Win result">${ic23('share')}Share</button>` : ''}
+    <button class="btn btn-sm btn-primary" onclick="openPuzzle()" aria-label="${r ? 'Replay Quickest Win' : 'Play Quickest Win'}">${r ? 'Replay' : 'Play'}</button>
   </div>`;
 }
 async function openPuzzle() {
   closeSheet();
-  showLoading('Loading today\'s puzzle…');
+  showLoading('Loading today\'s Quickest Win…');
   let kit;
-  try { kit = await loadPuzzleKit(); } catch (e) { hideLoading(); showToast('The puzzle needs a connection the first time. Try again in a moment.'); return; }
+  try { kit = await loadPuzzleKit(); } catch (e) { hideLoading(); showToast('Quickest Win needs a connection the first time. Try again in a moment.'); return; }
   hideLoading();
   const key = dailyKey(), n = puzzleNumber(key), list = kit.pack.puzzles;
   const p = list[(puzzleBoardDay(key) - 1) % list.length];
@@ -9246,7 +9246,7 @@ function renderPuzzle() {
   const el = document.getElementById('pz-body');
   if (!el || !pzS) return;
   const { E, s, p } = pzS;
-  document.getElementById('pz-title').textContent = `Daily puzzle #${pzS.n}`;
+  document.getElementById('pz-title').textContent = `Quickest Win #${pzS.n}`;
   const R = puzzleStore().results[pzS.key];
   let h = `<div class="pz-wrap">`;
   // The goal names the Prize cards you started with, so it still reads right after you take them.
@@ -9372,16 +9372,16 @@ function pzTally() {
 }
 function puzzleShareText(r, key) {
   const st = puzzleStats(), runs = puzzleStreakText(st);
-  return `RdyDeck Daily Puzzle #${puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
+  return `RdyDeck Quickest Win #${puzzleNumber(key)}: ${r.won ? `won this turn in ${r.moves} play${r.moves === 1 ? '' : 's'}` : r.peek ? 'I needed the answer today' : 'no win on my first try'}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today.`;
 }
 async function sharePuzzle(k) {
   if (typeof pzShareScore === 'function') return pzShareScore(k); // 3.3.9: picture of your score against the best (puzzle-extras.js)
   const key = dailyOkKey(k) || dailyKey(), r = puzzleStore().results[key];
-  if (!r) { showToast('Play today\'s puzzle first.'); return; }
+  if (!r) { showToast('Play today\'s Quickest Win first.'); return; }
   const text = puzzleShareText(r, key), url = shareBaseUrl() + '?ref=puzzle#puzzle';
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch (_) {} }
   try { await navigator.clipboard.writeText(text + ' ' + url); showToast('Result copied. Paste it anywhere.'); }
-  catch (_) { openSheet(`<div class="modal-title">Your puzzle result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
+  catch (_) { openSheet(`<div class="modal-title">Your Quickest Win result</div><textarea class="nt-area" readonly onclick="this.select()">${esc(text + ' ' + url)}</textarea><div class="modal-actions"><button class="btn btn-primary" onclick="closeSheet()">Done</button></div>`); }
 }
 function pzTypeWord(t) { return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
 function pzCardHtml(c, extra, acts) {
@@ -9447,7 +9447,7 @@ function handlePuzzleHash() {
   if (!/^#puzzle\b/.test(location.hash || '')) return;
   try { history.replaceState(null, '', location.pathname + location.search); } catch (_) {}
   showScreen('home');
-  openSheet(`<div class="modal-title">Daily puzzle</div>
+  openSheet(`<div class="modal-title">Quickest Win</div>
     <div class="modal-hint" style="margin-bottom:1rem">A real board from two top tournament lists, the same for everyone today. You can win this turn if you find the line. Your first try is your score.</div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeSheet()">Not now</button><button class="btn btn-primary" onclick="openPuzzle()">${ic23('play')}Play</button></div>`);
 }
@@ -11987,8 +11987,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.7';
-const PT_BUILD = 178;
+const PT_VERSION = 'v3.5.8';
+const PT_BUILD = 179;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
@@ -12282,7 +12282,7 @@ const TOUR_STEPS = [
   { ic: 'plus', t: 'Add a deck', s: 'Paste a list from Pokémon TCG Live or Limitless, or load one of the starter decks from recent Regionals in one tap.' },
   { ic: 'play', t: 'Play a prize game', s: 'Tap Prizes on a deck to start. Modes changes the prize count, adds a timer, or runs a tournament block of games.' },
   { ic: 'grid', t: 'Study your deck', s: 'Open a deck to see Grade, Odds and Cards. Hand, Drills and Notes hold opening hands, goldfish turns, drills and your matchup notes.' },
-  { ic: 'calendar', t: 'Come back daily', s: 'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour and sends feedback.' },
+  { ic: 'calendar', t: 'Come back daily', s: 'Prize Check is the same shuffle for everyone each day. Log your matches in the tournament log. Help on the home screen replays this tour and sends feedback.' },
 ];
 let tourStep = 0;
 function tourOpen() { const m = document.getElementById('tour-modal'); return !!(m && m.classList.contains('active')); }

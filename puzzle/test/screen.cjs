@@ -38,7 +38,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   // 3.4.22: the puzzle's number is the board's day, the same for everyone (day 1 is Mon 9 Nov 2026),
   // not a count of your own days played. Worked out here from the date, not from the app's own function.
   const BOARD_DAY = (([y, m, dd]) => Math.round((Date.UTC(y, m - 1, dd) - Date.UTC(2026, 10, 9)) / 864e5) + 1)(w.dailyKey().split('-').map(Number));
-  const numRe = new RegExp('Daily puzzle #' + BOARD_DAY + '\\b');
+  const numRe = new RegExp('Quickest Win #' + BOARD_DAY + '\\b');
   const card = d.getElementById('puzzle-card');
   ok(card && numRe.test(card.textContent) && /Win this turn from a real tournament board/.test(card.textContent), 'home card: ' + (card && card.textContent.replace(/\s+/g, ' ').trim()));
   ok(/Build a deck/.test(d.querySelector('.home-cta-row').textContent), 'home has the deck builder button next to the puzzle card');
@@ -107,7 +107,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   ok(R && R.num === BOARD_DAY && R.won, 'today saved as #' + BOARD_DAY + ', won');
   ok(/4 solved of 4 played, 3 wins in a row/.test(body.textContent), 'result banner: ' + (body.querySelector('.pz-res span') || {}).textContent);
   console.log('     share: ' + w.puzzleShareText(R, today));
-  ok(new RegExp('Daily Puzzle #' + BOARD_DAY + ': won this turn in \\d+ plays?\\. 3 wins in a row\\.').test(w.puzzleShareText(R, today)), 'share text has the day\'s number and your streak');
+  ok(new RegExp('Quickest Win #' + BOARD_DAY + ': won this turn in \\d+ plays?\\. 3 wins in a row\\.').test(w.puzzleShareText(R, today)), 'share text has the day\'s number and your streak');
   w.showScreen('home'); w.renderHome(); console.log('     card: ' + cardTxt());
   P.results[today] = { won: false, moves: 5, num: 4 }; w.renderHome();
   ok(/no win/.test(cardTxt()) && /3 days in a row/.test(w.pzTally()) && !/wins in a row/.test(w.pzTally()), 'a loss today ends the win streak, keeps the days streak: ' + cardTxt() + ' / ' + w.pzTally());
@@ -180,7 +180,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     P.results[key] = { won: true, moves: 4, best: 3, num: 7 };
     await w.pzShareScore(key);
     const g = w.eval('_pz83');
-    ok(/Share your puzzle score/.test(d.getElementById('x-modal').textContent), 'share sheet opens');
+    ok(/Share your Quickest Win score/.test(d.getElementById('x-modal').textContent), 'share sheet opens');
     ok(/won this turn in 4 plays\. Best possible: 3/.test(g.text) && g.W.head === '1 play over the best', 'share text: ' + g.text);
     P.results[key] = { won: true, moves: 3, best: 3, num: 7 }; await w.pzShareScore(key);
     ok(/the shortest win/.test(w.eval('_pz83').text) && w.eval('_pz83').W.head === 'Shortest win', 'shortest win: ' + w.eval('_pz83').text);

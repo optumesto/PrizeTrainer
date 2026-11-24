@@ -95,7 +95,7 @@ function pzShareTextFor(r, key, W) {
   const st = puzzleStats(), runs = puzzleStreakText(st), num = puzzleNumber(key);
   const score = W.won ? `won this turn in ${W.plays} play${W.plays === 1 ? '' : 's'}` + (W.best ? (W.over === 0 ? ', the shortest win' : `. Best possible: ${W.best}`) : '')
     : (r.peek ? 'I needed the answer today' : 'no win on my first try') + (W.best ? `. Best possible: ${W.best} play${W.best === 1 ? '' : 's'}` : '');
-  return `RdyDeck Daily Puzzle #${num}: ${score}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today. Can you match it?`;
+  return `RdyDeck Quickest Win #${num}: ${score}${runs ? '. ' + runs.charAt(0).toUpperCase() + runs.slice(1) : ''}. Same board for everyone today. Can you match it?`;
 }
 async function pz83Draw(g, size) {
   try {
@@ -123,7 +123,7 @@ async function pz83Draw(g, size) {
   x.fillStyle = GS45.text; x.fillText('DECK', lx + x.measureText('RDY').width, ly);
   // Top right: which puzzle.
   x.font = `700 ${sq ? 34 : 30}px ${D}`; x.fillStyle = GS45.text2;
-  const tag = `DAILY PUZZLE #${g.num}${g.date ? ' \u00b7 ' + g.date.toUpperCase() : ''}`;
+  const tag = `QUICKEST WIN #${g.num}${g.date ? ' \u00b7 ' + g.date.toUpperCase() : ''}`;
   x.fillText(tag, R - x.measureText(tag).width, ly);
 
   // The headline and the board's two decks.
@@ -175,7 +175,7 @@ const pz83Name = size => size === 'square' ? 'rdydeck-puzzle-square.png' : 'rdyd
 /** Share your puzzle result: a picture of your score next to the best line, a link and the text. */
 async function pzShareScore(k) {
   const key = dailyOkKey(k) || dailyKey(), r = puzzleStore().results[key];
-  if (!r) { showToast('Play today\'s puzzle first.'); return; }
+  if (!r) { showToast('Play today\'s Quickest Win first.'); return; }
   const url = shareBaseUrl() + '?ref=puzzle#puzzle';
   let size = 'wide'; try { size = safeLocalGet(GS261_KEY) === 'square' ? 'square' : 'wide'; } catch (_) {}
   const canShare = !!navigator.share;
@@ -183,10 +183,10 @@ async function pzShareScore(k) {
   if (_pz83 && _pz83.img) { try { URL.revokeObjectURL(_pz83.img); } catch (_) {} }
   _pz83 = { key, r, url, size, text: '', file: null, img: '', tok: 0 };
   const g = _pz83;
-  openSheet(`<div class="modal-title">Share your puzzle score</div>
+  openSheet(`<div class="modal-title">Share your Quickest Win score</div>
     <div class="seg gs261-seg pz83-seg" role="group" aria-label="Picture size">${opt('wide')}${opt('square')}</div>
     <div class="gs261-pic" id="pz83-pic" style="aspect-ratio:${GS261_SIZES[size].join(' / ')}"><span>Making your card</span></div>
-    <div class="modal-hint" style="margin-bottom:0.9rem">The link opens today's puzzle, so friends play the same board.</div>
+    <div class="modal-hint" style="margin-bottom:0.9rem">The link opens today's Quickest Win, so friends play the same board.</div>
     <div class="modal-actions gs45-actions">
       <button class="btn" id="pz83-save" onclick="pz83Save()" disabled>${ic23('save')}Save image</button>
       <button class="btn" onclick="pz83Copy()">${ic23('copy')}Copy link</button>
@@ -201,7 +201,7 @@ async function pzShareScore(k) {
   // 3.4.22: the board's cards come from these two lists; it need not show either deck's main Pokémon.
   g.decks = info && info.mine && info.theirs ? `Cards from top ${info.mine} and ${info.theirs} lists` : '';
   g.text = pzShareTextFor(r, key, g.W);
-  g.alt = `Daily puzzle #${g.num}: ${g.W.head}` + (g.W.best ? `, best possible ${g.W.best} plays` : '');
+  g.alt = `Quickest Win #${g.num}: ${g.W.head}` + (g.W.best ? `, best possible ${g.W.best} plays` : '');
   pz83Render();
 }
 async function pz83Render() {

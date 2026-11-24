@@ -343,7 +343,7 @@ const SCREENS = [
   }],
   ['daily games: picture words', async w => {
     // The English lines the share pictures draw, so the walker's own translation of them is what is checked (the canvas runs them through rdI18n.t).
-    const L = ['of 6 prizes', 'in 2:05', '3 day streak', 'Same deck and shuffle for everyone today. Can you find them all?', 'Daily challenge #9', 'Guess the Grade #9', 'Got it in 2 of 4', 'Not this time', 'A real tournament list, the same for everyone today.', '3 days in a row', 'Cold', 'Warm', 'Hot', 'Right', "Guess the grade of today's list. Can you get it?", 'Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.'];
+    const L = ['of 6 prizes', 'in 2:05', '3 day streak', 'Same deck and shuffle for everyone today. Can you find them all?', 'Prize Check #9', 'Guess the Grade #9', 'Got it in 2 of 4', 'Not this time', 'A real tournament list, the same for everyone today.', '3 days in a row', 'Cold', 'Warm', 'Hot', 'Right', "Guess the grade of today's list. Can you get it?", 'Unofficial fan tool, not affiliated with The Pokémon Company or Nintendo.'];
     w.openSheet(L.map(x => '<div class="modal-hint">' + w.esc(x) + '</div>').join('')); await tick(100);
   }],
   ['puzzle: prizes taken', async w => { w.openSheet('<div class="pz-zone mt-handw">' + w.pzHandHTML([{ card: { cat: 'hidden' } }, { card: { cat: 'hidden' } }]) + w.pzHandHTML([{ card: { cat: 'hidden' } }]) + '</div>'); await tick(100); }],

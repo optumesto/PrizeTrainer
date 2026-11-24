@@ -746,7 +746,7 @@ TOUR_STEPS.splice(0, TOUR_STEPS.length,
   { ic: 'award', t: 'Read the grade', s: 'Tap a deck to open its grade. Fix first lists what costs you the most, and Rotation shows which cards leave Standard next.' },
   { ic: 'chart', t: 'Check the odds', s: 'Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.' },
   { ic: 'target', t: 'Practice', s: 'Prizes on a deck starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.' },
-  { ic: 'calendar', t: 'Come back daily', s: 'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour.' }
+  { ic: 'calendar', t: 'Come back daily', s: 'Prize Check is the same shuffle for everyone each day. Log your matches in the tournament log. Help on the home screen replays this tour.' }
 );
 
 // People who already know the app hear about the change once.

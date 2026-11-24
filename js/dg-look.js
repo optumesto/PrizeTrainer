@@ -209,7 +209,7 @@ function dgPrizeTurn(el, quiet) {
 
 // The Daily challenge's share picture: six Prize rectangles, found or not, with no card art.
 async function dgDailyDraw(r, key, size) {
-  const g = await dgCanvas(size, DG_CV.daily, `Daily challenge #${dailyNumber(key)}`);
+  const g = await dgCanvas(size, DG_CV.daily, `Prize Check #${dailyNumber(key)}`);
   if (!g) return null;
   const { x, sq, D, B, L, R } = g;
   const y0 = sq ? 290 : 186;
@@ -246,12 +246,12 @@ async function dgDailyDraw(r, key, size) {
   if (typeof shareDaily !== 'function') return;
   shareDaily = async function (k) {
     const key = dailyOkKey(k) || dailyKey(), r = dailyStore().results[key];
-    if (!r) { showToast('Play today\'s challenge first.'); return; }
+    if (!r) { showToast('Play today\'s Prize Check first.'); return; }
     dgShareSheet({
-      title: 'Share your daily score',
-      hint: 'The link opens today\'s challenge, so friends get the same deck and shuffle. The picture shows no cards.',
+      title: 'Share your Prize Check score',
+      hint: 'The link opens today\'s Prize Check, so friends get the same deck and shuffle. The picture shows no cards.',
       text: dailyShareText(r, key), url: shareBaseUrl() + '?ref=daily#daily', name: 'rdydeck-daily',
-      alt: `Daily challenge #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)}`,
+      alt: `Prize Check #${dailyNumber(key)}: ${r.score} of 6 prizes in ${formatTime(r.time)}`,
       draw: size => dgDailyDraw(r, key, size),
     });
   };

@@ -2,6 +2,14 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.8 (build 179): the daily games get their own names (24 Nov 2026)
+
+- Icons (Mason, 24 Nov 2026: "we also need to change the small icon for the minigames we changed the names of"): Prize Check now shows a prize card with a check (was a calendar), Quickest Win a lightning bolt (was a target). Two new sprite symbols in index.html, i-prizecheck and i-bolt; the calendar and target symbols stay for their other uses.
+- Mason, 24 Nov 2026: the two first daily games no longer repeat "Daily", since they already sit under Daily games. "Daily challenge" is now Prize Check and "Daily puzzle" is now Quickest Win, numbers kept (Prize Check #16, Quickest Win #16). Changed everywhere they show: the home rows and their button labels, the intro sheets a shared link opens, the score banner, the Quickest Win game screen title, the loading line, the share sheets, share pictures and share text (RdyDeck Prize Check #16, RdyDeck Quickest Win #16), the first visit tour, the Prize trainer page and both Goldfish guide pages. Puzzle mode, Challenge modes and the Prize trainer keep their names. Links, storage and file names stay (#daily, #puzzle).
+- Other languages: Spanish Revisión de Premios and Victoria relámpago, Portuguese Checagem de Prêmios and Vitória relâmpago, French Contrôle des Récompenses and Victoire éclair, German Preiskarten-Check and Blitzsieg, Italian Controllo Premi and Vittoria lampo. The loading line is translated now too.
+- Numbered 3.5.8 so a 3.5.7 Guess the Grade fix can go first. If 3.5.7 is not live when this goes, it can ship as is; if it is, rebase and keep 3.5.8 with 3.5.7 at the top of WHATS_PREV.
+- Also: What's new in five languages, PT_VERSION v3.5.8, PT_BUILD 179, softwareVersion 3.5.8, sw.js cache v179, stamps. Tests updated for the new names (puzzle/test/screen.cjs, tests/i18n-check.mjs).
+
 # RdyDeck 3.5.7 (build 178): card data loads on school and work networks (24 Nov 2026)
 
 - Mason, 24 Nov 2026, on school wifi: Guess the Grade #5 said it "needs a connection", his Dragapult grade stayed Not final and Upgrades said it needed a connection, while he was online. Card data comes from two outside card databases (api.tcgdex.net, then api.pokemontcg.io) read straight from the browser, and a network filter that blocks both makes every card read fail. Reproduced in jsdom with both hosts failing: the same toast; with only TCGdex failing, pokemontcg.io covers it.
