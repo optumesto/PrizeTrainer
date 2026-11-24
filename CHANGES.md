@@ -2,6 +2,12 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.2 (build 173): A tidier home screen on phones (24 Nov 2026)
+
+- Phones (under 560px): the bottom of home is one grid of tiles that runs on from More (Deck checker, Opening odds, Prize trainer, Goldfish guide, Rotation checker, Rules, Improve your deck, Contact, About RdyDeck, FAQ). About and FAQ open in place, so their text stays on the page. The disclaimer and the Terms, Privacy, Delete your data and Credits links stay. Tighter gaps between home sections and on deck rows. Wider screens unchanged (Mason, 24 Nov 2026: "Lets compress it a bit for mobile").
+- Settings version line reads "RdyDeck 3.5.2 (Web)" or "(Google Play)", with no build number (Mason, 24 Nov 2026: "Trim it"). The feedback email still carries the build.
+- Changed files: index.html (tiles, phone CSS, softwareVersion, stamps), js/v38-settings-home.js, js/core.js (What's new, PT_VERSION v3.5.2, PT_BUILD 173), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache v173).
+
 # RdyDeck 3.5.1 (build 172): Card strength (24 Nov 2026)
 
 - Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026: "Lets fix this to only say Card Strength"): the Grade tab, the note when the two scores disagree, the share card, the saved grade image and the shared text, in all 5 languages. The score itself is unchanged. Changed files: js/v29-rotation.js, js/v45-sample-share-daily.js, js/core.js (What's new, PT_VERSION v3.5.1, PT_BUILD 172), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, stamps), sw.js (cache v172).
