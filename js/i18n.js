@@ -6594,6 +6594,7 @@ I18N_PAT.unshift(
 // 3.5.9: Top decks on home.
 Object.assign(I18N_ES, {
   "Top decks": "Mejores barajas",
+  "Top decks on home: top rated and up and coming": "Mejores barajas en el inicio: más fuertes y en ascenso",
   "Top rated": "Más fuertes",
   "Up and coming": "En ascenso",
   "Loading tournament results…": "Cargando resultados de torneos…",
@@ -6604,6 +6605,7 @@ Object.assign(I18N_ES, {
 });
 Object.assign(I18N_PT, {
   "Top decks": "Melhores decks",
+  "Top decks on home: top rated and up and coming": "Melhores decks no início: mais fortes e em ascensão",
   "Top rated": "Mais fortes",
   "Up and coming": "Em ascensão",
   "Loading tournament results…": "Carregando resultados de torneios…",

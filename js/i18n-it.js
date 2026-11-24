@@ -2746,6 +2746,7 @@ I18N_MORE.it.pat.unshift(
 // 3.5.9: Top decks on home.
 Object.assign(I18N_MORE.it.dict, {
   "Top decks": "Mazzi migliori",
+  "Top decks on home: top rated and up and coming": "Mazzi migliori nella home: più forti e in ascesa",
   "Top rated": "Più forti",
   "Up and coming": "In ascesa",
   "Loading tournament results…": "Caricamento dei risultati dei tornei…",

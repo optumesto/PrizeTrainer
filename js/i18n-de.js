@@ -2813,6 +2813,7 @@ I18N_MORE.de.pat.unshift(
 // 3.5.9: Top decks on home.
 Object.assign(I18N_MORE.de.dict, {
   "Top decks": "Top-Decks",
+  "Top decks on home: top rated and up and coming": "Top-Decks auf der Startseite: am stärksten und im Kommen",
   "Top rated": "Am stärksten",
   "Up and coming": "Im Kommen",
   "Loading tournament results…": "Turnierergebnisse werden geladen…",

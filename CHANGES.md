@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.9 (build 180): Top decks on home (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "Lets add a section to the homepage of the top rated decks and up and coming decks (based off tourney results)". New section under Daily games (js/v90-top-decks.js, markup and #td90-css in index.html), two tabs, the last one picked kept on the device.
+- Top rated: the 5 archetypes with the highest Tournament strength (g68Strength on matchups.json, the same score the grade shows), with 250 games or more (G68_FULL).
+- Up and coming: since the newest set, 100 games or more, index 100 or more and 50% wins or more, index higher than before the newest set and share of lists higher than before. Top rated decks left out, ranked by index gain, up to 5. Before and since are each scored by g68Strength on that window alone, so a change to how sources are weighed (the in-person split) carries over.
+- Tap: the deck guide page when there is one, otherwise the deck builder started from the cards most top lists run. No ads in the section.
+- Phones show 3 rows and Show more; desktop shows all 5 in the right column (grid row 6).
+- All 6 languages. Also: What's new, PT_VERSION v3.5.9, PT_BUILD 180, softwareVersion 3.5.9, sw.js cache v180, stamps.
+
 # RdyDeck 3.5.8 (build 179): the daily games get their own names (24 Nov 2026)
 
 - Icons (Mason, 24 Nov 2026: "we also need to change the small icon for the minigames we changed the names of"): Prize Check now shows a prize card with a check (was a calendar), Quickest Win a lightning bolt (was a target). Two new sprite symbols in index.html, i-prizecheck and i-bolt; the calendar and target symbols stay for their other uses.
