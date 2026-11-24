@@ -333,7 +333,8 @@ function mu60Section(deck) {
   const from = data.sources.filter(s => !mu60Src || s.id === mu60Src);
   const events = from.reduce((a, s) => a + s.events, 0);
 
-  let h = `<div class="g-sec" id="mu60-sec"><div class="g-sec-t">Against the meta</div>
+  // 3.5.2: folded by default; the folded line gives the record of the deck it is compared with.
+  let h = `<details class="g-sec g29-fold" id="mu60-sec"><summary><span class="r38-t"><span class="g-sec-t">Against the meta</span><!--mu60-say--></span></summary>
     <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${mu60SrcWords(data)} tournaments, ${span}.</div>
     <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;
 
@@ -343,6 +344,7 @@ function mu60Section(deck) {
     if (st) h += `<p class="mu60-p">Strongest right now, by win rate and finishes: ${st._order.slice(0, 3).map(id => esc(data.decks.find(d => d.id === id).name)).join(', ')}.</p>`;
   } else {
     const all = mu60Sum(arch.rec), n = all[0] + all[1] + all[2], p = mu60Pct(all);
+    if (n) h = h.replace('<!--mu60-say-->', `<span class="r38-line"><span data-no-tr>${esc(arch.name)}</span><span>: ${mu60Fmt(p)} wins over ${n.toLocaleString('en-US')} matches</span></span>`);
     h += n ? `<p class="mu60-p"><b>${esc(arch.name)}</b> won <b>${mu60Fmt(p)}</b> of all ${n.toLocaleString('en-US')} matches against other decks (${all[0]} wins, ${all[1]} losses, ${all[2]} ties).</p>`
       : `<p class="mu60-p">No matches for ${esc(arch.name)} in these results yet.</p>`;
     // v64: placements, weighed with the win rate into one strength rank.
@@ -373,7 +375,7 @@ function mu60Section(deck) {
     if (few) h += `<p class="mu60-f">Gray rows have fewer than ${MU60_FEW} matches, too few to trust.</p>`;
   }
   const src = from[0] && from[0].url ? from[0].url : 'https://play.limitlesstcg.com/';
-  h += `<p class="mu60-f">Data: <a href="${esc(src)}" target="_blank" rel="noopener">Limitless TCG</a>. Ties count as matches, not wins. Mirror matches, byes and no-shows are left out. Updated ${d30Nice(data.asOf)}.</p></div>`;
+  h += `<p class="mu60-f">Data: <a href="${esc(src)}" target="_blank" rel="noopener">Limitless TCG</a>. Ties count as matches, not wins. Mirror matches, byes and no-shows are left out. Updated ${d30Nice(data.asOf)}.</p></details>`;
   return h;
 }
 

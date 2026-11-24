@@ -24,8 +24,12 @@ function atk62Section(deck, R) {
   const say = cur === 'toolbox' ? 'Set as a toolbox deck, so the plan names each attacker. The grade still counts only the hits the cards can make.'
     : cur ? 'The plan, upgrades and draw odds are built around the attacker you set. Auto is what the grade reads from the cards.'
     : 'The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.';
-  return `<div class="g-sec" id="atk62-sec"><div class="g-sec-t">Main attacker</div>
+  // 3.5.2: folded by default, with the attacker in use on the folded line.
+  const now = cur === 'toolbox' ? '<span class="r38-line">Toolbox: several attackers</span>'
+    : (cur && R.via.main) ? `<span class="r38-line" data-no-tr>${esc(gCap(R.via.main.name))}</span>`
+    : auto ? `<span class="r38-line"><span>Auto:</span> <span data-no-tr>${esc(gCap(auto.name))}</span></span>` : '';
+  return `<details class="g-sec g29-fold" id="atk62-sec"${gone ? ' open' : ''}><summary><span class="r38-t"><span class="g-sec-t">Main attacker</span>${now}</span></summary>
     <div class="g-sec-i">${say}</div>
     <select class="x-select" aria-label="Main attacker" onchange="atk62Set(this.value)">${sel}</select>
-    ${gone ? '<p class="mu60-p">The Pokemon you set is no longer in the list, so the grade is back on Auto.</p>' : ''}</div>`;
+    ${gone ? '<p class="mu60-p">The Pokemon you set is no longer in the list, so the grade is back on Auto.</p>' : ''}</details>`;
 }

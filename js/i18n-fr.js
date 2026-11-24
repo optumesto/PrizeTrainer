@@ -2732,3 +2732,12 @@ I18N_MORE.fr.pat.unshift(
   [/^Cards from top lists\. Yours: (.+)\. Theirs: (.+)\.$/, "Cartes issues de listes du top. La vôtre : $1. Celle d'en face : $2."],
   [/^Today: not solved in (\d+)$/, "Aujourd'hui : pas trouvé en $1"],
 );
+
+// 3.5.2: Grade tab sections fold to one line.
+Object.assign(I18N_MORE.fr.dict, {
+  "How this grade was worked out": "Comment cette note a été calculée",
+  "Auto:": "Auto :",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^: ([\d.]+%) wins over ([\d,]+) matches$/, " : $1 de victoires sur $2 matchs"],
+);

@@ -524,7 +524,8 @@ renderGrade = function () {
     <p class="g29-verdict">${esc(brk.length ? g29Legal(R, brk.length) : g29Verdict(R, means))}</p>
     ${jumps.length ? `<div class="g29-jump">${jumps.join('')}</div>` : ''}
     ${g338Parts(R, synV, powV, part)}
-    <div class="g29-how">${g67HowLine(R, synV, powV)}${weak}${R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : ''}</div>
+    ${g36KeyLine(R, weak)}
+    <details class="g29-fold g67-why" id="g36-how"><summary>How this grade was worked out</summary><div class="g29-how">${g67HowLine(R, synV, powV)}</div></details>
     ${g67WhyHtml(R, synV, powV)}
     <div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div>
   </div>`;
@@ -541,6 +542,10 @@ renderGrade = function () {
       ${top.map(f => g29Item(f, f.sev)).join('')}
       ${rest.length ? `<details class="g29-more"><summary>${rest.length} more to fix</summary>${rest.map(f => g29Item(f, f.sev)).join('')}</details>` : ''}
     </div>`;
+  } else if (!brk.length) {
+    // 3.5.2: the verdict above already says no problems were found, so the box saying it again is left out.
+    // The empty section stays as the place later sections are put after.
+    h += `<div class="g-sec g36-none" id="g29-fix"></div>`;
   } else {
     h += `<div class="g-sec" id="g29-fix"><div class="g-item ok"><div class="gt">${brk.length ? 'Nothing else to fix' : 'Nothing to fix'}</div>
       <p>${brk.length ? 'Apart from the deck rules above, the grader found no problem in this list.' : 'The grader found no problem in this list.'} Check the odds and the rotation below before an event.</p></div></div>`;
@@ -567,6 +572,14 @@ renderGrade = function () {
 // 3.4.41: three labeled scores (Mason, 24 Nov 2026): Overall on the big grade, which blends the other two, then
 // Deck strength (cards based) and Tournament strength (was Tourney strength).
 // 3.5.1: Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026).
+// 3.5.2 (Mason, 24 Nov 2026: the deck tabs were "throw text at you"): what holds the grade back stays in view,
+// and the working out (Synergy times Power, the tournament share) folds under How this grade was worked out.
+function g36KeyLine(R, weak) {
+  const held = R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : '';
+  const t = (weak + held).trim();
+  return t ? `<p class="g36-key">${t}</p>` : '';
+}
+
 // 3.4.38: the two split scores lead the parts. Deck strength carries Synergy and Power as one small line,
 // so the hero still shows what holds the list back. Without the split helper the old parts show.
 function g338Parts(R, synV, powV, part) {

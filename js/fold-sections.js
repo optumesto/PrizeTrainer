@@ -6,11 +6,14 @@
 // time and in every language. The Grade tab's sections already fold (Upgrades, Grade history and the
 // rest); now the way they were left is kept too.
 // Open by default: the part each tab is for. Folded by default:
-//   Odds:    Opening Basics, Prize risk
+//   Odds:    Opening Basics, Main attacker (3.5.2), Prize risk
 //   Drills:  Opponent prize read
 //   Notes:   Edit log, Compare lists
 //   Builder: Suggestions, and Start from once the list has cards
 // A tab with only one section (Hand) gets no fold. Nothing here changes a grade.
+// 3.5.2 (Mason, 24 Nov 2026: "Lets do more drop downs/collapsible sections"): on the Grade tab, How this grade
+// was worked out, Main attacker, Grade history, Grade vs win rate, Against the meta and Watch out for start
+// folded too, each with one line that says what is inside. A chip that jumps to a section keeps it open.
 
 const FS325_KEY = 'rd_fold';
 let _fs325 = null;
@@ -36,7 +39,7 @@ function fs325Title(h) {
 }
 
 const FS325_SCOPES = [
-  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Prize risk': 1 } },
+  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Main attacker': 1, 'Prize risk': 1 } },
   { el: 'hand-body', name: 'hand', sec: '.g-sec', head: '.g-sec-t', shut: {} },
   { el: 'drills-body', name: 'drills', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opponent prize read': 1 } },
   { el: 'notes-body', name: 'notes', sec: '.g-sec', head: '.g-sec-t', shut: { 'Edit log': 1, 'Compare lists': 1 } },
@@ -113,6 +116,17 @@ function fs325Grade() {
       if (el) mo.observe(el, { childList: true, subtree: true });
     });
     run();
+    // A chip that jumps to a Grade tab section opens it; keep it open when the grade is drawn again.
+    if (typeof g29Jump === 'function' && !g29Jump._fs) {
+      const _j = g29Jump;
+      g29Jump = function (id) {
+        const r = _j.apply(this, arguments);
+        const d = document.getElementById(id);
+        if (d && d.matches('#grade-body details.g29-fold[id]')) fs325Set('grade:' + id, false);
+        return r;
+      };
+      g29Jump._fs = true;
+    }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
   // Tap, Enter or Space on a heading.

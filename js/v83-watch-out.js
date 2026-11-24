@@ -201,7 +201,9 @@ function wo83Section(deck) {
   if (!R) return '';
   const arch = wo83Arch(deck, data);
   const lines = wo83Lines(deck, R, data, arch);
-  let h = `<details class="g-sec g29-fold" id="wo83-sec" open><summary><span class="g-sec-t">Watch out for</span>${lines.length ? `<span class="g29-n">${lines.length}</span>` : ''}</summary>
+  // 3.5.2: folded by default; the folded line names what to watch for.
+  const what = lines.length ? lines.map(l => `<span>${esc(l.head)}</span>`).join('<span>, </span>') : '<span>Nothing popular right now targets this deck\'s plan.</span>';
+  let h = `<details class="g-sec g29-fold" id="wo83-sec"><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Watch out for</span>${lines.length ? `<span class="g29-n">${lines.length}</span>` : ''}</span><span class="r38-line">${what}</span></span></summary>
     <div class="g-sec-i">What the current meta can use against this deck's plan. It does not change the grade.</div>`;
   if (!lines.length) return h + `<p class="mu60-p">Nothing popular right now targets this deck's plan.</p></details>`;
   let few = false, tbl = false;

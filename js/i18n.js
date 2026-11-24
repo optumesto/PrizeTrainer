@@ -6526,6 +6526,19 @@ I18N_PAT.unshift(
   [/^Today: not solved in (\d+)$/, "Hoy: sin acertar en $1", "Hoje: não acertou em $1"],
 );
 
+// 3.5.2: Grade tab sections fold to one line (js/v29-rotation.js, js/main-attacker.js, js/matchups.js).
+Object.assign(I18N_ES, {
+  "How this grade was worked out": "Cómo se calculó esta calificación",
+  "Auto:": "Auto:",
+});
+Object.assign(I18N_PT, {
+  "How this grade was worked out": "Como esta nota foi calculada",
+  "Auto:": "Auto:",
+});
+I18N_PAT.unshift(
+  [/^: ([\d.]+%) wins over ([\d,]+) matches$/, ": $1 de victorias en $2 partidas", ": $1 de vitórias em $2 partidas"],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

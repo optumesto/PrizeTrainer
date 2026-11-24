@@ -417,7 +417,8 @@ function g79Section(deck) {
   for (const d of data.decks) { const r = mu60Sum(d.rec); W += r[0]; M += r[0] + r[1] + r[2]; }
   const avg = M ? W / M * 100 : null, n0 = v => v.toLocaleString('en-US'), pct = v => v.toFixed(1) + '%';
   const day = data.cur && data.cur.since ? d30Nice(data.cur.since) : '';
-  let h = `<div class="g-sec" id="g79-sec"><div class="g-sec-t">Grade vs win rate</div>
+  // 3.5.2: folded by default; the folded line gives the verdict (filled in below once it is known).
+  let h = `<details class="g-sec g29-fold" id="g79-sec"><summary><span class="r38-t"><span class="g-sec-t">Grade vs win rate</span><!--g79-say--></span></summary>
     <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournaments.</div>
     <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;
   if (n < G79_MIN || avg == null) {
@@ -442,10 +443,12 @@ function g79Section(deck) {
       // 3.3.2 (Muse 3.3.1 retest): the two numbers the Grade tab shows are compared as shown, so equal cards and
       // results grades never read as one beating the other.
       const gap = gR1(gR1(card) - gR1(st.score));
-      h += `<p class="mu60-p"><b>${gap >= G79_GAP ? 'Cards beat its results.' : gap <= -G79_GAP ? 'Results beat its cards.' : 'Cards and results agree.'}</b> ${gap >= G79_GAP ? `${esc(arch.name)} decks win less than their cards suggest.` : gap <= -G79_GAP ? `${esc(arch.name)} decks win more than their cards suggest.` : 'The cards and the record rank this deck about the same.'}</p>`;
+      const say = gap >= G79_GAP ? 'Cards beat its results.' : gap <= -G79_GAP ? 'Results beat its cards.' : 'Cards and results agree.';
+      h = h.replace('<!--g79-say-->', `<span class="r38-line">${say}</span>`);
+      h += `<p class="mu60-p"><b>${say}</b> ${gap >= G79_GAP ? `${esc(arch.name)} decks win less than their cards suggest.` : gap <= -G79_GAP ? `${esc(arch.name)} decks win more than their cards suggest.` : 'The cards and the record rank this deck about the same.'}</p>`;
     }
   }
-  h += `<p class="mu60-f">Win rates are for all ${esc(arch.name)} lists, not your exact list.</p></div>`;
+  h += `<p class="mu60-f">Win rates are for all ${esc(arch.name)} lists, not your exact list.</p></details>`;
   return h;
 }
 (function () {
