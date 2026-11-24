@@ -163,6 +163,7 @@ fresh(); NET = 'blocked-norelay'; log.length = 0;
 const norelay = await open();
 ok(!norelay.sheet, 'blocked with no relay: the game does not open');
 ok(/could not read every card in today's list/.test(norelay.toast), 'the toast says it could not read every card: ' + norelay.toast);
+ok(/School or work wifi can block card data/.test(norelay.toast), 'the toast says school or work wifi can block card data');
 ok(!/needs a connection/.test(norelay.toast), 'the toast does not say it needs a connection while online');
 ok(!w.eval('cardRoute.viaHome()'), 'a 404 from rdydeck.com keeps reading direct');
 NET = 'open'; await wait(3100);

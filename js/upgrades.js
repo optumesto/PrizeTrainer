@@ -252,7 +252,7 @@ function up75Html(res, hasFix) {
   // 3.5.7: "need a connection" only when the device is offline; online, the card databases did not answer.
   if (res.why === 'offline') return line(typeof navigator !== 'undefined' && navigator.onLine === false
     ? `Upgrades need a connection the first time, to read the cards to try.`
-    : `Upgrades could not read the cards to try yet. They are tried again when you open this deck.`);
+    : `Upgrades could not read the cards to try yet. School or work wifi can block card data. They are tried again when you open this deck.`);
   // 3.2.8 (Muse s5 M1): the section stays, with a line saying why there is nothing to try, so Upgrades is never
   // missing without a word. Only a format Upgrades does not cover (Expanded, prerelease, the daily list) hides it.
   if (res.why === 'rules') return line(`Upgrades show once the list follows the deck rules. Fix first says what to change.`);

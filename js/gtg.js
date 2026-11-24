@@ -115,7 +115,7 @@ async function openGtg() {
   if (!deck || ans == null) {
     showToast(typeof navigator !== 'undefined' && navigator.onLine === false
       ? 'Guess the Grade needs a connection to read today\'s list. Try again in a moment.'
-      : 'Guess the Grade could not read every card in today\'s list. Try again in a moment.');
+      : 'Guess the Grade could not read every card in today\'s list. School or work wifi can block card data. Try again in a moment.');
     return;
   }
   const S = gtgStore();

@@ -8954,7 +8954,7 @@ const WHATS_NEW = {
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Card data now loads on school and work networks' }
+    { t: 'School wifi card loading fixed' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
