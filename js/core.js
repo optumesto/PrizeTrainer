@@ -1896,6 +1896,17 @@ function gMainAttacker(deck, coh, deckName) {
   };
   const byName = pickFrom(named);
   if (byName) {
+    // 3.5.12: a named Pokemon whose Ability attaches Energy and draws cards (Teal Mask Ogerpon ex's Teal Dance)
+    // is the engine when the name also calls out a Pokemon ex without that engine that reaches a two-hit
+    // Knock Out on the format's smaller threats: Ogerpon Meganium Arboliva attacks with Arboliva ex,
+    // Ogerpon Meganium Hydrapple with Hydrapple ex and Raging Bolt Ogerpon with Raging Bolt ex.
+    const engAb = c => (c.ab || []).length > 0 && (c.provides || []).includes('draw') && (c.provides || []).includes('energy_accel');
+    if (engAb(byName.e.card)) {
+      const alt = named.filter(e => e.card.isEx && !engAb(e.card) && (b => b && b.r.top * 2 >= FMT.threatHP[0])(reachOf(e)));
+      const best = alt.length ? pickFrom(alt) : null;
+      if (best) return { key: best.e.card.key, name: best.e.name, why: 'name', named: String(deckName), among: new Set(named.map(e => e.card.key)).size,
+        engine: { name: byName.e.name, abil: (byName.e.card.ab[0] || {}).abil, p: (byName.e.card.ab[0] || {}).p } };
+    }
     // v60: a deck named for its engine (Toxtricity Box, Tera Box (Noctowl), Joltik Box): when every
     // named Pokemon is played for an Ability and hits for under half the format's smallest threat,
     // and 2 or more other Pokemon in the list each reach a two-hit Knock Out on the biggest ones,
