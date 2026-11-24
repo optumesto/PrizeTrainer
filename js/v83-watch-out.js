@@ -202,8 +202,11 @@ function wo83Section(deck) {
   const arch = wo83Arch(deck, data);
   const lines = wo83Lines(deck, R, data, arch);
   // 3.5.4: folded by default; the folded line names what to watch for.
-  const what = lines.length ? lines.map(l => `<span>${esc(l.head)}</span>`).join('<span>, </span>') : '<span>Nothing popular right now targets this deck\'s plan.</span>';
-  let h = `<details class="g-sec g29-fold" id="wo83-sec"><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Watch out for</span>${lines.length ? `<span class="g29-n">${lines.length}</span>` : ''}</span><span class="r38-line">${what}</span></span></summary>
+  // 3.5.5 (Muse brief changes 1 and 5): open on load when there is something to watch for, and the folded line
+  // names the card behind each threat with its share of top lists, so the line says where the risk comes from.
+  const src = l => l.cards.length ? ` <span class="wo83-src">(<span data-no-tr>${esc(l.cards[0][0])}</span> <b>${wo83Pc(l.cards[0][1])}</b>)</span>` : '';
+  const what = lines.length ? lines.map(l => `<span>${esc(l.head)}</span>${src(l)}`).join('<span>, </span>') : '<span>Nothing popular right now targets this deck\'s plan.</span>';
+  let h = `<details class="g-sec g29-fold" id="wo83-sec"${lines.length ? ' open data-go37-open' : ''}><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Watch out for</span>${lines.length ? `<span class="g29-n">${lines.length}</span>` : ''}</span><span class="r38-line">${what}</span></span></summary>
     <div class="g-sec-i">What the current meta can use against this deck's plan. It does not change the grade.</div>`;
   if (!lines.length) return h + `<p class="mu60-p">Nothing popular right now targets this deck's plan.</p></details>`;
   let few = false, tbl = false;

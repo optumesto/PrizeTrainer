@@ -216,7 +216,8 @@ function ads32Sync() {
   if (tl) want.tlog = after(tl.querySelector('#tlog-body .hp-actions'));
   if (on('screen-review')) {
     const gb = shown('grade-body'), ob = shown('odds-body'), cb = shown('review-body');
-    if (gb) want.grade = after(gb.querySelector('.g-hero'));                  // under Share grade
+    // 3.5.5: under how the grade was worked out, so the scores and what to fix first stay together.
+    if (gb) want.grade = after(gb.querySelector('#go37-proof') || gb.querySelector('.g-hero'));
     if (ob) { want.odds = after(ob.querySelector('.o-meta')); want.odds2 = after(ob.querySelector('#ol-wrap')); }
     if (cb) { const g = cb.querySelectorAll('.review-group'); if (g.length > 1) want.cards = after(g[0]); if (g.length > 2) want.cards2 = after(g[1]); }
   }

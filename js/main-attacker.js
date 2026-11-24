@@ -26,8 +26,9 @@ function atk62Section(deck, R) {
     : 'The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.';
   // 3.5.4: folded by default, with the attacker in use on the folded line.
   const now = cur === 'toolbox' ? '<span class="r38-line">Toolbox: several attackers</span>'
-    : (cur && R.via.main) ? `<span class="r38-line" data-no-tr>${esc(gCap(R.via.main.name))}</span>`
-    : auto ? `<span class="r38-line"><span>Auto:</span> <span data-no-tr>${esc(gCap(auto.name))}</span></span>` : '';
+    // 3.5.5 (Muse brief change 5): the line says who picked the attacker, never a bare Auto.
+    : (cur && R.via.main) ? `<span class="r38-line"><span>Set by you:</span> <span data-no-tr>${esc(gCap(R.via.main.name))}</span></span>`
+    : auto ? `<span class="r38-line"><span>Read from the cards:</span> <span data-no-tr>${esc(gCap(auto.name))}</span></span>` : '';
   return `<details class="g-sec g29-fold" id="atk62-sec"${gone ? ' open' : ''}><summary><span class="r38-t"><span class="g-sec-t">Main attacker</span>${now}</span></summary>
     <div class="g-sec-i">${say}</div>
     <select class="x-select" aria-label="Main attacker" onchange="atk62Set(this.value)">${sel}</select>

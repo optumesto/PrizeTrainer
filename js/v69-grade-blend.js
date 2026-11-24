@@ -421,9 +421,12 @@ function g79Section(deck) {
   let h = `<details class="g-sec g29-fold" id="g79-sec"><summary><span class="r38-t"><span class="g-sec-t">Grade vs win rate</span><!--g79-say--></span></summary>
     <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournaments.</div>
     <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;
+  // 3.5.5 (Muse brief change 5): the folded line carries both numbers, not only the verdict.
+  let line = `<span>Cards ${card.toFixed(1)}, too few games to judge the win rate.</span>`;
   if (n < G79_MIN || avg == null) {
     h += `<p class="mu60-p">Win rate: ${n0(n)} ${n === 1 ? 'game' : 'games'} so far, too few to judge.</p>`;
   } else {
+    line = `<span>Cards ${card.toFixed(1)}, win rate ${pct(all[0] / n * 100)}.</span>`;
     const p = all[0] / n * 100;
     // 3.0: the plain win rate over every game, and the one the grade uses when the two differ.
     const used = st && st.wrUsed != null && arch.cur ? st.wrUsed * 100 : null;
@@ -444,10 +447,11 @@ function g79Section(deck) {
       // results grades never read as one beating the other.
       const gap = gR1(gR1(card) - gR1(st.score));
       const say = gap >= G79_GAP ? 'Cards beat its results.' : gap <= -G79_GAP ? 'Results beat its cards.' : 'Cards and results agree.';
-      h = h.replace('<!--g79-say-->', `<span class="r38-line">${say}</span>`);
+      line += ` <span>${say}</span>`;
       h += `<p class="mu60-p"><b>${say}</b> ${gap >= G79_GAP ? `${esc(arch.name)} decks win less than their cards suggest.` : gap <= -G79_GAP ? `${esc(arch.name)} decks win more than their cards suggest.` : 'The cards and the record rank this deck about the same.'}</p>`;
     }
   }
+  h = h.replace('<!--g79-say-->', `<span class="r38-line">${line}</span>`);
   h += `<p class="mu60-f">Win rates are for all ${esc(arch.name)} lists, not your exact list.</p></details>`;
   return h;
 }

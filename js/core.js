@@ -4532,7 +4532,9 @@ function renderOdds() {
       parts.push(`${esc(S.groups[line.basic].name)} by turn 1, then ${esc(line.name)} by turn 2 (nothing evolves on its first turn in play)`);
     } else parts.push(`${esc(line.name)} among your first ${SIM_SEEN_T2} cards`);
     const tbN = line.toolbox && (line.why === 'box' ? line.toolbox.length >= 2 : line.why !== 'name' && line.why !== 'pick' && line.toolbox.length >= 4) ? line.toolbox.length : 0;
-    h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}</div>
+    // 3.5.5 (Muse brief change 10): the folded heading carries the chance, so a folded section still answers.
+    const atkSay = `${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' to '+oPct(AT.search):''}`;
+    h += `<div class="g-sec"><div class="g-sec-t">${tbN ? 'One of your attackers' : 'Main attacker'}<span class="fs325-line">${atkSay}</span></div>
       <div class="g-sec-i">${tbN ? `This list has ${tbN} attackers and picks the one each turn needs. Here is how often you can have ${esc(line.name)}, the one the grade leads with, ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.` : `${line.why === 'name' ? 'The attacker its meta deck is named for' : line.why === 'pick' ? 'The main attacker you set' : 'The attacker this list is built around'}, and how often you can have it ready by your ${S.atkTurn === 3 ? 'third' : 'second'} turn.`}</div>
       <div class="g-item ${onl>=0.6?'ok':onl>=0.4?'warn':'crit'}">
         <div class="gt">${esc(line.name)} ${line.cond?'in hand':'ready'} by turn ${T}: ${oPct(AT.raw)}${S.anySearch&&oPct(AT.search)!==oPct(AT.raw)?' to '+oPct(AT.search):''}</div>
@@ -8948,21 +8950,21 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.4',
+  version: 'v3.5.5',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Tidier deck tabs with more folding sections' }
+    { t: 'What to fix first now sits right under the grade' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.4', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'Tidier deck tabs with more folding sections' }
+  ] },
   { version: 'v3.5.3', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'A reordered home screen on phones' }
-  ] },
-  { version: 'v3.5.2', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'A tidier home screen on phones' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11968,8 +11970,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.4';
-const PT_BUILD = 175;
+const PT_VERSION = 'v3.5.5';
+const PT_BUILD = 176;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

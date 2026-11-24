@@ -234,7 +234,13 @@ function r29Summary(deck) {
   const out = rows.filter(r => r.st === 'out' || r.st === 'nomark'), risk = rows.filter(r => r.st === 'risk');
   out.concat(risk).forEach(r => { r.sub = sub(r); });
   // Long lists show six names, the rest one tap away.
-  const list = (title, rs) => `<div class="r29-list"><div class="r29-lh">${title}</div>${rs.slice(0, 6).map(row).join('')}${rs.length > 6
+  // 3.5.5 (Muse brief change 8): a note every card in a list shares shows once, under the list's heading.
+  const list = (title, rs) => {
+    const same = rs.length > 1 && rs[0].sub && rs.every(r => r.sub === rs[0].sub) ? rs[0].sub : '';
+    if (same) rs = rs.map(r => Object.assign({}, r, { sub: '' }));
+    return list0(title, rs, same);
+  };
+  const list0 = (title, rs, same) => `<div class="r29-list"><div class="r29-lh">${title}</div>${same ? `<div class="r29-all"><span>For every card here:</span> <span>${esc(same)}</span></div>` : ''}${rs.slice(0, 6).map(row).join('')}${rs.length > 6
     ? `<details class="g29-more r29-rest"><summary>${rs.length - 6} more</summary>${rs.slice(6).map(row).join('')}</details>` : ''}</div>`;
   if (out.length) h += list('Not Standard legal now', out);
   if (risk.length) h += list(`${ann ? 'Rotate' : 'May rotate'} in ${N.when}`, risk);
@@ -360,22 +366,22 @@ function g67SynWhy(R) {
   const nm = a => a.slice(0, 2).join('; ') + (a.length > 2 ? `; and ${a.length - 2} more` : '');
   let v = 10 * P.base0;
   if (P.total) {
-    if (P.met < P.total) out.push({ d: v - 10, t: `${P.met} of ${P.total} card need${P.total === 1 ? '' : 's'} met. Missing: ${nm(P.unmet)}.` });
-    else out.push({ d: 0, t: `${P.total === 1 ? 'The one card need is met' : `All ${P.total} card needs are met`}: every attacker has its Energy and every evolution has what it evolves from.` });
+    if (P.met < P.total) out.push({ k: 'Card needs', d: v - 10, t: `${P.met} of ${P.total} card need${P.total === 1 ? '' : 's'} met. Missing: ${nm(P.unmet)}.` });
+    else out.push({ k: 'Card needs', d: 0, t: `${P.total === 1 ? 'The one card need is met' : `All ${P.total} card needs are met`}: every attacker has its Energy and every evolution has what it evolves from.` });
   }
   if (P.noDraw) { const k = typeof P.drawKeep === 'number' ? P.drawKeep : 0.4, pc = Math.round(k * 100);
-    out.push({ d: -v * (1 - k), t: pc === 40 ? 'No real draw engine, so the score is cut to 40%.' : `No real draw engine, so the score is cut to ${pc}%. Cards that search the deck soften the cut.` }); v *= k; }
-  if (P.noAtk) { out.push({ d: -v * 0.7, t: 'No clear attacker, so the score is cut to 30%.' }); v *= 0.3; }
+    out.push({ k: 'Draw engine', d: -v * (1 - k), t: pc === 40 ? 'No real draw engine, so the score is cut to 40%.' : `No real draw engine, so the score is cut to ${pc}%. Cards that search the deck soften the cut.` }); v *= k; }
+  if (P.noAtk) { out.push({ k: 'Attacker', d: -v * 0.7, t: 'No clear attacker, so the score is cut to 30%.' }); v *= 0.3; }
   if (P.crits.length) { const d = Math.max(-v, -1.2 * P.crits.length), seen = P.crits.filter(t => P.unmet.includes(t)), other = P.crits.filter(t => !P.unmet.includes(t));
-    out.push({ d, t: seen.length === P.crits.length
+    out.push({ k: 'Problems that stop the deck', d, t: seen.length === P.crits.length
       ? (seen.length === 1 ? 'That one stops the deck, so it costs 1.2 more.' : `Those ${seen.length} stop the deck, so each costs 1.2 more.`)
       : `${P.crits.length === 1 ? 'A problem that stops the deck' : P.crits.length + ' problems that stop the deck'} (1.2 each): ${nm(other.concat(seen))}.` }); }
   const tr = R.coh.trainers, dT = 10 * (S.s1 - S.s0);
   if (tr && Math.abs(dT) >= 0.05) { const t = (tr.flaws || []).filter(f => f.sev !== 'ok').map(f => f.t);
-    out.push({ d: dT, t: `Trainers and Special Energy${t.length ? `: ${nm(t)}` : ''}.` }); }
-  else if (tr) out.push({ d: 0, t: 'Trainers and Special Energy: nothing missing or dead.' });
+    out.push({ k: 'Trainers and Special Energy', d: dT, t: `Trainers and Special Energy${t.length ? `: ${nm(t)}` : ''}.` }); }
+  else if (tr) out.push({ k: 'Trainers and Special Energy', d: 0, t: 'Trainers and Special Energy: nothing missing or dead.' });
   const fo = R.coh.focus, dF = 10 * (S.s2 - S.s1);
-  if (fo && Math.abs(dF) >= 0.05) out.push({ d: dF, t: dF < 0
+  if (fo && Math.abs(dF) >= 0.05) out.push({ k: dF < 0 ? 'How tightly the list fits' : 'Cards that work together', d: dF, t: dF < 0
     ? `How tightly the list fits${fo.why.length ? `: ${fo.why.slice(0, 2).join(', and ')}` : ''}.`
     : 'Cards that work together, which the grade found in the list.' });
   return out;
@@ -429,10 +435,16 @@ function g67WhyHtml(R, synV, powV) {
   const fmt = d => Math.abs(d) < 0.05 ? '0' : (d > 0 ? '+' : '−') + Math.abs(d).toFixed(1);
   const syn = g67SynWhy(R), pow = g67PowWhy(R);
   let h = '';
-  if (syn.length) h += `<details class="g29-fold g67-why"><summary>Why Synergy is ${synV.toFixed(1)}</summary>
+  // 3.5.5 (Muse brief change 4): each row says in one line what moved it most.
+  const cut = syn.reduce((a, x) => (a == null || x.d < a.d ? x : a), null);
+  const synSay = cut && cut.d <= -0.05 ? `<span class="r38-line"><span>Biggest cut:</span> <b>${fmt(cut.d)}</b> <span>${esc(cut.k || cut.t)}</span></span>`
+    : '<span class="r38-line"><span>Nothing takes much off it.</span></span>';
+  const lowP = pow.reduce((a, x) => (a == null || x.v < a.v ? x : a), null);
+  const powSay = lowP ? `<span class="r38-line"><span>Weakest part:</span> <span>${lowP.k}</span> <b>${lowP.v.toFixed(1)}</b></span>` : '';
+  if (syn.length) h += `<details class="g29-fold g67-why"><summary><span class="r38-t"><span>Why Synergy is ${synV.toFixed(1)}</span>${synSay}</span></summary>
     <p>Synergy starts at 10. These took it to ${synV.toFixed(1)}.</p>
     <ul>${syn.map(x => `<li><b class="${x.d <= -0.05 ? 'dn' : x.d >= 0.05 ? 'up' : ''}">${fmt(x.d)}</b><span>${esc(x.t)}</span></li>`).join('')}</ul></details>`;
-  if (pow.length) h += `<details class="g29-fold g67-why"><summary>Why Power is ${powV.toFixed(1)}</summary>
+  if (pow.length) h += `<details class="g29-fold g67-why"><summary><span class="r38-t"><span>Why Power is ${powV.toFixed(1)}</span>${powSay}</span></summary>
     <p>Power is damage (half), the prize trade (30%) and setup speed (20%), each out of 10.</p>
     <ul>${pow.map(x => `<li><b>${x.v.toFixed(1)}</b><span><strong>${x.k}</strong> (${x.w}). ${esc(x.t)}</span></li>`).join('')}</ul></details>`;
   return h;
@@ -460,7 +472,10 @@ function t68Html(R) {
   const aceLow = tr.ace && (tr.ace.fit === 'weak' || tr.ace.fit === 'dead') ? 1 : 0;
   const low = cnt('weak') + cnt('dead') + aceLow;
   const swaps = (tr.fit || []).filter(r => r.swap).length;
-  return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></summary>
+  // 3.5.5 (Muse brief change 3): folded, with a line that says how many do little here and names the ACE SPEC.
+  const say = [low ? `<span>${low === 1 ? 'One card does little here.' : low + ' cards do little here.'}</span>` : '<span>Every one works with the list.</span>'];
+  if (tr.ace) say.push(`<span>ACE SPEC:</span> <span data-no-tr>${esc(String(tr.ace.link || '').replace(/^ACE SPEC: /, ''))}</span>`);
+  return `<details class="g-sec g29-fold" id="t68-sec"><summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">Trainers</span><span class="g29-n">${rows.length}</span></span><span class="r38-line">${say.join(' ')}</span></span></summary>
     <div class="g-sec-i">How each Trainer and Special Energy fits this list, ACE SPEC first. ${low ? `${low === 1 ? 'One card does' : low + ' cards do'} little here${swaps ? `, with ${swaps === low ? 'a swap idea for each' : 'swap ideas below'}` : ''}.` : 'Every Trainer and Special Energy here works with the list.'} This explains Synergy and does not change the grade.</div>
     ${rows.join('')}</details>`;
 }
@@ -525,9 +540,12 @@ renderGrade = function () {
     ${jumps.length ? `<div class="g29-jump">${jumps.join('')}</div>` : ''}
     ${g338Parts(R, synV, powV, part)}
     ${g36KeyLine(R, weak)}
-    <details class="g29-fold g67-why" id="g36-how"><summary>How this grade was worked out</summary><div class="g29-how">${g67HowLine(R, synV, powV)}</div></details>
+  </div>`;
+  // 3.5.5 (Muse layout brief, Mason 24 Nov 2026): the working out moves out of the top box into its own block,
+  // which go37Order puts after Fix first, Upgrades and Watch out for. Each row now says in one line what is inside.
+  const proof = `<div class="g-sec go37-proof" id="go37-proof">
+    <details class="g29-fold g67-why" id="g36-how"><summary><span class="r38-t"><span>How this grade was worked out</span>${go37HowSay(R, synV, powV)}</span></summary><div class="g29-how">${g67HowLine(R, synV, powV)}</div></details>
     ${g67WhyHtml(R, synV, powV)}
-    <div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div>
   </div>`;
 
   if (R.unread > 0) h += `<div class="g-sec"><div class="g-item warn">
@@ -551,16 +569,26 @@ renderGrade = function () {
       <p>${brk.length ? 'Apart from the deck rules above, the grader found no problem in this list.' : 'The grader found no problem in this list.'} Check the odds and the rotation below before an event.</p></div></div>`;
   }
 
+  h += proof;
+
   if (rot) h += rot.html;
 
-  if (good.length) h += `<details class="g-sec g29-fold" id="g29-good"><summary><span class="g-sec-t">Working well</span><span class="g29-n">${good.length}</span></summary>
+  // 3.5.5: the folded line under each heading names its first item, so a tap is never blind.
+  const fl = (t, n, line) => `<summary><span class="r38-t"><span class="g36-tr"><span class="g-sec-t">${t}</span><span class="g29-n">${n}</span></span><span class="r38-line">${line}</span></span></summary>`;
+  if (good.length) h += `<details class="g-sec g29-fold" id="g29-good">${fl('Working well', good.length, `<span>${esc(good[0].t)}</span>`)}
     ${good.map(f => g29Item(f, 'ok')).join('')}</details>`;
 
-  if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn"><summary><span class="g-sec-t">How it plays</span><span class="g29-n">${plays.length}</span></summary>
+  // 3.5.5 (Muse brief change 7): the ACE SPEC's note is the same words as under Trainers, so here it points there.
+  const trA = R.coh && R.coh.trainers && R.coh.trainers.ace;
+  const playP = s => trA && /^ACE SPEC: /.test(s.link || '') && s.p === trA.p ? 'The full note on this ACE SPEC is under Trainers.' : s.p;
+  if (plays.length) h += `<details class="g-sec g29-fold" id="g29-syn">${fl('How it plays', plays.length, `<span>${esc(plays[0].link)}</span>`)}
     <div class="g-sec-i">${(R.plan || []).length ? 'The main attacker and the combos' : 'Combos'} the grader found between your own cards. This is what the deck is trying to do.</div>
-    ${plays.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(s.p)}</p></div>`).join('')}</details>`;
+    ${plays.map(s => `<div class="g-item syn"><div class="gt">${esc(s.link)}</div><p>${esc(playP(s))}</p></div>`).join('')}</details>`;
 
   h += t68Html(R);
+
+  // 3.5.5 (Muse brief change 6): Share grade and This grade looks off sit at the end, so they no longer split the tab.
+  h += `<div class="g-sec go37-share" id="go37-share"><div class="g45-share"><button class="btn btn-sm" onclick="v45ShareGrade()">${ic23('share')}Share grade</button></div></div>`;
 
   // 3.3.6: the full explainer lives in Questions about RdyDeck on home. The deck page keeps one line
   // that opens that same answer in a sheet, with this deck's own note and the accuracy line.
@@ -574,6 +602,13 @@ renderGrade = function () {
 // 3.5.1: Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026).
 // 3.5.4 (Mason, 24 Nov 2026: the deck tabs were "throw text at you"): what holds the grade back stays in view,
 // and the working out (Synergy times Power, the tournament share) folds under How this grade was worked out.
+/** 3.5.5: the folded line under How this grade was worked out: what the Overall is made of, with the numbers. */
+function go37HowSay(R, synV, powV) {
+  const S = typeof g338Split === 'function' ? g338Split(R) : null;
+  if (S && S.tour != null) return `<span class="r38-line">Overall ${R.overall.toFixed(1)}, from Card strength ${S.deck.toFixed(1)} and Tournament strength ${S.tour.toFixed(1)}.</span>`;
+  if (S && S.deck != null) return `<span class="r38-line">Synergy ${synV.toFixed(1)} and Power ${powV.toFixed(1)} make Card strength ${S.deck.toFixed(1)}.</span>`;
+  return `<span class="r38-line">Synergy ${synV.toFixed(1)} and Power ${powV.toFixed(1)}.</span>`;
+}
 function g36KeyLine(R, weak) {
   const held = R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : '';
   const t = (weak + held).trim();

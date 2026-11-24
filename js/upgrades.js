@@ -244,7 +244,7 @@ function up75Sig(deck) {
 function up75Html(res, hasFix) {
   // 3.0: the order the player picked (cards they own first, cheapest first). Only which swaps show changes.
   if (typeof op30UpOrder === 'function') res = op30UpOrder(res);
-  const head = n => `<details class="g-sec g29-fold" id="up75-sec"><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
+  const head = n => `<details class="g-sec g29-fold" id="up75-sec" open data-go37-open><summary><span class="g-sec-t">Upgrades</span>${n ? `<span class="g29-n">${n}</span>` : ''}</summary>`;
   // 3.3.1 (Muse 3.3 retest, section 5 M1): with nothing to list, the section is not a fold. Its one line
   // stays on screen, even where the player once folded Upgrades away (that choice is kept for every deck).
   const line = t => `<div class="g-sec" id="up75-sec"><div class="g-sec-t">Upgrades</div><div class="g-sec-i">${t}</div></div>`;
