@@ -1,0 +1,33 @@
+# One-off (3.6.0 branch only): fills top-lists.json the first time, before the weekly refresh takes over.
+# Runs when .github/top-lists-seed changes on the quick-add-top-list branch. Delete before merging.
+name: Seed top lists
+on:
+  push:
+    branches: [quick-add-top-list]
+    paths: ['.github/top-lists-seed']
+permissions:
+  contents: write
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PT_PAUSE_MS: '30000'   # about 30 requests per 15 minutes (Mason, Nov 13 2026)
+      PT_TOP_CALLS: '60'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node top-lists.mjs top-lists.json .github/top-lists-cache.json .github/matchups-cache.json matchups.json cards.json
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add top-lists.json .github/top-lists-cache.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Top lists: first fill"
+          git pull --rebase origin quick-add-top-list
+          git push
