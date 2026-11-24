@@ -2800,3 +2800,6 @@ Object.assign(I18N_MORE.fr.dict, { "Faster card loading on school wifi": "Charge
 Object.assign(I18N_MORE.fr.dict, { "De-bling is now called Cheapest Version": "Moins cher s'appelle maintenant Version la Moins Chère" });
 // 3.5.14: Legendary Stadiums are played with both halves.
 Object.assign(I18N_MORE.fr.dict, { "Legendary Stadiums need both halves": "Les Stades Légendaires demandent leurs deux moitiés" });
+
+// 3.5.15: deck guides now name the right main attacker.
+Object.assign(I18N_MORE.fr.dict, { "Deck guides now name the right main attacker": "Les guides de deck indiquent maintenant le bon attaquant principal" });

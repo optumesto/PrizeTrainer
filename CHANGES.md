@@ -1,3 +1,12 @@
+# RdyDeck 3.5.15 (build 186): deck guides fixed, main attacker for Ogerpon engine decks (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "this deckguide is incorrect, tthe main attacker is arboliva. We need to audit all of the deckguides to make sure they are correct". All guides except Arboliva and Okidogi Barbaracle (already fixed) checked against card text and Limitless lists.
+- Ogerpon Meganium Hydrapple now names Hydrapple ex as the main attacker and Teal Mask Ogerpon ex as the engine. Dragapult Blaziken leads with Dragapult ex, Blaziken ex supplies Energy and has a backup attack.
+- Card fixes: Basic Box (Talonflame ex is not Basic, Mega Kangaskhan ex added as an attacker), Slowking (Kyurem and Metagross copy targets), Greninja (Mirage Barrage hits two Pokemon for 120 each, Summoning Jutsu is an attack), N's Zoroark (Rampaging Thunder stops the copier attacking next turn), Dhelmise (Lillie's Clefairy ex Fairy Zone), Mega Rayquaza, Dragapult Dudunsparce, Crustle, Rocket's Honchkrow.
+- Grader: gMainAttacker gives way from a named engine whose Ability attaches Energy and draws (Teal Mask Ogerpon ex) to a named Pokemon ex that two hit Knock Outs the format's threats. Arboliva, Hydrapple and Raging Bolt Ogerpon decks now pick Arboliva ex, Hydrapple ex and Raging Bolt ex. No grade moved in the 132 list check.
+- tests/grade-check.mjs: new guide roles check, the first Pokemon key card of each guide must be the grader's main attacker.
+- Also: What's new in all 6 languages, PT_VERSION v3.5.15, PT_BUILD 186, softwareVersion 3.5.15, sw.js cache v186, stamps.
+
 # RdyDeck changelog
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.

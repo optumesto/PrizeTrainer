@@ -1896,6 +1896,17 @@ function gMainAttacker(deck, coh, deckName) {
   };
   const byName = pickFrom(named);
   if (byName) {
+    // 3.5.15: a named Pokemon whose Ability attaches Energy and draws cards (Teal Mask Ogerpon ex's Teal Dance)
+    // is the engine when the name also calls out a Pokemon ex without that engine that reaches a two-hit
+    // Knock Out on the format's smaller threats: Ogerpon Meganium Arboliva attacks with Arboliva ex,
+    // Ogerpon Meganium Hydrapple with Hydrapple ex and Raging Bolt Ogerpon with Raging Bolt ex.
+    const engAb = c => (c.ab || []).length > 0 && (c.provides || []).includes('draw') && (c.provides || []).includes('energy_accel');
+    if (engAb(byName.e.card)) {
+      const alt = named.filter(e => e.card.isEx && !engAb(e.card) && (b => b && b.r.top * 2 >= FMT.threatHP[0])(reachOf(e)));
+      const best = alt.length ? pickFrom(alt) : null;
+      if (best) return { key: best.e.card.key, name: best.e.name, why: 'name', named: String(deckName), among: new Set(named.map(e => e.card.key)).size,
+        engine: { name: byName.e.name, abil: (byName.e.card.ab[0] || {}).abil, p: (byName.e.card.ab[0] || {}).p } };
+    }
     // v60: a deck named for its engine (Toxtricity Box, Tera Box (Noctowl), Joltik Box): when every
     // named Pokemon is played for an Ability and hits for under half the format's smallest threat,
     // and 2 or more other Pokemon in the list each reach a two-hit Knock Out on the biggest ones,
@@ -8983,16 +8994,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.14',
+  version: 'v3.5.15',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Legendary Stadiums need both halves' }
+    { t: 'Deck guides now name the right main attacker' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.14', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'Legendary Stadiums need both halves' }
+  ] },
   { version: 'v3.5.13', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'De-bling is now called Cheapest Version' }
   ] },
@@ -9010,9 +9024,6 @@ const WHATS_PREV = [
   ] },
   { version: 'v3.5.8', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Daily games renamed: Prize Check and Quickest Win' }
-  ] },
-  { version: 'v3.5.7', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'School wifi card loading fixed' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -12032,8 +12043,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.14';
-const PT_BUILD = 185;
+const PT_VERSION = 'v3.5.15';
+const PT_BUILD = 186;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

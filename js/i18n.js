@@ -6645,6 +6645,10 @@ Object.assign(I18N_PT, { "Legendary Stadiums need both halves": "Os Estádios Le
 Object.assign(I18N_ES, { "De-bling is now called Cheapest Version": "Abaratar ahora se llama Versión Más Barata" });
 Object.assign(I18N_PT, { "De-bling is now called Cheapest Version": "Baratear agora se chama Versão Mais Barata" });
 
+// 3.5.15: deck guides now name the right main attacker.
+Object.assign(I18N_ES, { "Deck guides now name the right main attacker": "Las guías de mazos ahora nombran el atacante principal correcto" });
+Object.assign(I18N_PT, { "Deck guides now name the right main attacker": "Os guias de deck agora indicam o atacante principal certo" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
