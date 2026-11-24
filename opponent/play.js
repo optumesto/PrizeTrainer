@@ -240,7 +240,7 @@ function sideHTML(s, k, okSet) {
   const head = `<div class="sh"><span>${you ? 'You' : 'Opponent'}</span><span class="pr"><span class="pz" aria-hidden="true">${slots}</span><span class="vh">${n} Prize card${n === 1 ? '' : 's'} left</span></span></div>`;
   // 3.4.12: "In play" counts every card on the board (Pokémon with the cards under them, Energy, Tools, their Stadium),
   // so Hand, Deck, Discard pile, Prize cards and In play add up to 60.
-  const inPlay = E.mons(P).reduce((t, m) => t + m.stack.length + m.energy.length + (m.tool ? 1 : 0), 0) + (s.stadium && s.stadium.owner === k ? 1 : 0);
+  const inPlay = E.mons(P).reduce((t, m) => t + m.stack.length + m.energy.length + (m.tool ? 1 : 0), 0) + (s.stadium && s.stadium.owner === k ? (s.stadium.pair ? 2 : 1) : 0);
   const lost = (P.lost || []).length;
   const piles = `<div class="piles">${you ? '' : `<span>Hand</span> ${P.hand.length} · `}<span>Deck</span> ${P.deck.length} · <span>In play</span> ${inPlay}${lost ? ` · <span>Lost Zone</span> ${lost}` : ''} · <button type="button" class="lk" onclick="RdyPlay.pile(${k})"><span>Discard pile</span> ${P.discard.length}</button></div>`;
   const act = `<div class="zl">Active</div>${P.active ? monRow(s, P.active, k, true, okSet) : '<div class="empty">No Active Pokémon</div>'}`;
@@ -306,7 +306,7 @@ function showSheet() {
   if (s && o) {
     if (o.t === 'd') { el.className = 'open'; el.innerHTML = pileHTML(s, o.id); return; }
     if (o.t === 'm') { const f = monById(s, o.id); if (f) { m = f.m; k = f.k; ref = E.topOf(m); } }
-    else ref = s.players[0].hand.find(y => y.uid === o.id) || (s.stadium && s.stadium.ref.uid === o.id ? s.stadium.ref : null) || cardRef(s, o.id);
+    else ref = s.players[0].hand.find(y => y.uid === o.id) || (s.stadium && s.stadium.ref.uid === o.id ? s.stadium.ref : s.stadium && s.stadium.pair && s.stadium.pair.uid === o.id ? s.stadium.pair : null) || cardRef(s, o.id);
   }
   if (!ref) { el.innerHTML = ''; el.className = ''; if (S) S.open = null; return; }
   el.className = 'open';

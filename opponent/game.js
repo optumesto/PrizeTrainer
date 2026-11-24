@@ -33,7 +33,8 @@ function newGame(decks, opts) {
   // Every state of one game shares the random source (a function, so it is never saved with a game).
   s.rng = opts.rng || rngFrom(seed);
   s.players = decks.map((cards, k) => {
-    const deck = shuffle(cards.map(c => ({ uid: ++s.uid, card: c })), s.rng);
+    // Two-half cards (Legendary Stadiums) are dealt as left and right halves (puzzle/engine.js splitHalves).
+    const deck = shuffle(I.splitHalves(cards).map(c => ({ uid: ++s.uid, card: c })), s.rng);
     return { active: null, bench: [], hand: [], deck, discard: [], prizes: [], used: { energy: false, supporter: false, stadium: false, retreat: false }, lim: {}, koLastTurn: false };
   });
   // Opening hands: 7 cards, again until there is a Basic Pokemon. Each mulligan lets the other player draw 1 more.

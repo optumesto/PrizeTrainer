@@ -5378,6 +5378,7 @@ const I18N_FT_ROWS = [
   ['Not enough Energy to retreat.', 'No hay Energía suficiente para retirarse.', 'Não há Energia suficiente para recuar.', 'Pas assez d\'Énergie pour battre en retraite.', 'Nicht genug Energie für den Rückzug.', 'Energia insufficiente per la ritirata.'],
   ['Not enough Energy.', 'No hay Energía suficiente.', 'Não há Energia suficiente.', 'Pas assez d\'Énergie.', 'Nicht genug Energie.', 'Energia insufficiente.'],
   ['Only 1 of those a turn.', 'Solo 1 de esas por turno.', 'Só 1 dessas por turno.', 'Seulement 1 de ce type par tour.', 'Nur 1 davon pro Zug.', 'Solo 1 di queste per turno.'],
+  ['Needs both halves in hand.', 'Necesita las dos mitades en la mano.', 'Precisa das duas metades na mão.', 'Il faut les deux moitiés en main.', 'Braucht beide Hälften auf der Hand.', 'Servono entrambe le metà in mano.'],
   ['One Stadium a turn.', 'Un Estadio por turno.', 'Um Estádio por turno.', 'Un Stade par tour.', 'Ein Stadion pro Zug.', 'Uno Stadio per turno.'],
   ['Only during your first turn.', 'Solo durante tu primer turno.', 'Só durante o seu primeiro turno.', 'Seulement pendant votre premier tour.', 'Nur in deinem ersten Zug.', 'Solo durante il tuo primo turno.'],
   ['Only right after you evolve into it from your hand.', 'Solo justo después de evolucionar a él desde tu mano.', 'Só logo depois de evoluir para ele da sua mão.', 'Seulement juste après l\'avoir fait évoluer depuis votre main.', 'Nur direkt nachdem du es aus deiner Hand entwickelt hast.', 'Solo subito dopo averlo fatto evolvere dalla tua mano.'],
@@ -6636,6 +6637,9 @@ I18N_PAT.unshift(
 // 3.5.11: faster card loading on school wifi.
 Object.assign(I18N_ES, { "Faster card loading on school wifi": "Carga de cartas más rápida en el wifi escolar" });
 Object.assign(I18N_PT, { "Faster card loading on school wifi": "Carregamento de cartas mais rápido no wifi da escola" });
+// 3.5.14: Legendary Stadiums are played with both halves.
+Object.assign(I18N_ES, { "Legendary Stadiums need both halves": "Los Estadios Legendarios necesitan sus dos mitades" });
+Object.assign(I18N_PT, { "Legendary Stadiums need both halves": "Os Estádios Lendários precisam das duas metades" });
 
 // 3.5.13: De-bling renamed Cheapest Version.
 Object.assign(I18N_ES, { "De-bling is now called Cheapest Version": "Abaratar ahora se llama Versión Más Barata" });

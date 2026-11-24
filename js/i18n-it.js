@@ -2771,3 +2771,5 @@ Object.assign(I18N_MORE.it.dict, { "Faster card loading on school wifi": "Carica
 
 // 3.5.13: De-bling renamed Cheapest Version.
 Object.assign(I18N_MORE.it.dict, { "De-bling is now called Cheapest Version": "Risparmia ora si chiama Versione Più Economica" });
+// 3.5.14: Legendary Stadiums are played with both halves.
+Object.assign(I18N_MORE.it.dict, { "Legendary Stadiums need both halves": "Gli Stadi Leggendari richiedono entrambe le metà" });

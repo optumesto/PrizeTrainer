@@ -385,7 +385,7 @@ S.kinds = { run(s, st, c, P) { if ((c.found || 0) >= st.n) { I.reshuffle(s, P); 
 S.eri = { run(s, st, c, P, O) { if ((c.eri || 0) >= st.n) return; const seen = new Set(), o = []; O.hand.forEach(y => { if (y.card.kind === st.kind && !seen.has(y.card)) { seen.add(y.card); o.push(y.uid); } }); return o.length ? o.concat([null]) : null; },
   answer(s, st, c, v, P, O) { if (v == null) return; const x = I.take(O.hand, v); O.discard.push(x); I.log(s, 'Discarded ' + x.card.name + " from your opponent's hand"); c.eri = (c.eri || 0) + 1; return S.eri.run(s, st, c, P, O); } };
 S.blowtorch = { run(s, st, c, P, O) { const o = []; mons(O).forEach(m => { if (m.tool) o.push({ mon: m.id, tool: true }); m.energy.forEach(e => { if (!T.gfEType(e)) o.push({ mon: m.id, uid: e.uid }); }); }); if (s.stadium) o.push({ stadium: true }); return o; },
-  answer(s, st, c, v, P, O) { if (v.stadium) { s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = null; return; } const m = I.findMon(s, v.mon).m;
+  answer(s, st, c, v, P, O) { if (v.stadium) { I.discardStadium(s); return; } const m = I.findMon(s, v.mon).m;
     if (v.tool) { O.discard.push(m.tool); m.tool = null; } else O.discard.push(I.take(m.energy, v.uid)); } };
 S.topAttach = { run(s, st, c, P) { if (!c.top) { c.top = P.deck.splice(0, st.n); } const i = c.top.findIndex(y => T.gfEType(y) === st.type);
     if (i < 0 || !mons(P).length) { P.deck = P.deck.concat(c.top); c.top = null; return; } return mons(P).map(m => m.id).concat([null]); },

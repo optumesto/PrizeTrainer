@@ -2,6 +2,17 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.14 (build 185): Legendary Stadiums need both halves (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "legendary pyroduct is incorrect in how it works, it has 2 sides, it needs both sides to play it. (this is in sparring)", then "That goes for all legendary stadiums". Sparring offered Play Legendary Pyroduct with one half in hand.
+- Source, the printed card text of Legendary Pyroduct (Delta Reign 94, left half; 95 is the right half): "You cannot play this card by itself. You must combine 2 different Legendary Pyroduct from your hand to play as 1 Stadium card." Legendary Summit (96 and 97) and Legendary Trench (98 and 99) print the same rule. No rulebook text covers it, and the card data omits this line.
+- Sparring (puzzle/engine.js): each copy is a left or right half (the print number, or alternating when a deck lists them by name). Play is offered only with one left and one right half in hand; otherwise it shows "Needs both halves in hand." Both halves leave the hand together, count as one Stadium in play, and go to the discard pile together (a new Stadium, Blowtorch and the like). The log still reads "Played Legendary Pyroduct". Saved decks keep their print numbers (opponent/own.js).
+- Goldfish (3 Turns) (js/core.js): the same rule, the same reason and both halves discarded together.
+- The same check covers any Trainer marked as a half, for two half Items. None are in the card data now.
+- Not changed: the grader and the Odds tab count copies by name, as before. No grade moved.
+- tests: opponent/test/halves.mjs (new), tests/goldfish-check.cjs section 10, opponent/test/count.mjs counts both halves.
+- Also: "Needs both halves in hand." and What's new in all 6 languages, PT_VERSION v3.5.14, PT_BUILD 185, softwareVersion 3.5.14, sw.js cache v185, stamps. No Worker change.
+
 # RdyDeck 3.5.13 (build 184): De-bling is now Cheapest Version (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "debling actually does the opposite when the cards are already deblinged", with his Mega Rayquaza list at $84.18 before and $81.44 after. Cause: no price bug. De-bling always took the lowest TCGplayer market price, and for Latias ex that was SSP 220, the full art ($10.61), under the SSP 76 regular ($11.23), so a list of plain cards came back cheaper but with a full art in it. Ethan's Ho-Oh ex (DRI 39 to ASC 26), Fezandipiti ex and Iron Thorns ex went to same art reprints.

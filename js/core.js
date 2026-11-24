@@ -6198,12 +6198,34 @@ function gfTop(m) { return m.stack[m.stack.length - 1]; }
 function gfLog(s) { gf.log.push({ t: gf.turn, s }); }
 function gfMon(id) { return gfMons().find(z => z.id === id); }
 
+/* Two-half cards: Delta Reign's Legendary Stadiums are a left half and a right half (two prints). Printed on each:
+ * "You cannot play this card by itself. You must combine 2 different Legendary Pyroduct from your hand to play as
+ * 1 Stadium card." Number of the left half; the right half is the next number (same list as puzzle/engine.js HALVES). */
+const GF_HALVES = { 'legendary pyroduct': 94, 'legendary summit': 96, 'legendary trench': 98 };
+/** 'L', 'R', or null for a card that is not a half. */
+function gfHalfOf(x) {
+  const left = x && x.card && GF_HALVES[String(x.card.name || '').toLowerCase()]; if (left == null) return null;
+  if (x.half === 'L' || x.half === 'R') return x.half;
+  return parseInt(x.card.num, 10) === left + 1 ? 'R' : 'L';
+}
+/** The other half of x in your hand, or null. */
+function gfHalfMate(x) { const h = gfHalfOf(x); return h ? gf.hand.find(y => y !== x && y.card.name === x.card.name && gfHalfOf(y) && gfHalfOf(y) !== h) || null : null; }
+/** Each copy's half: a row with a half's own number keeps it; copies with no number go left, right, left, right. */
+function gfSplitHalves(pool) {
+  const n = {};
+  pool.forEach(x => {
+    const nm = String(x.card.name || '').toLowerCase(), left = GF_HALVES[nm]; if (left == null) return;
+    const num = parseInt(x.card.num, 10);
+    if (num === left || num === left + 1) { x.half = num === left ? 'L' : 'R'; return; }
+    n[nm] = (n[nm] || 0) + 1; x.half = n[nm] % 2 ? 'L' : 'R';
+  });
+}
 function gfNew(deck, groups, pool, mulls, first, anyBasic) {
   gf = {
     deckId: deck.id, groups, first: first !== false, turn: 0, mulls, anyBasic,
     hand: pool.slice(0, 7), prizes: pool.slice(7, 13), deck: pool.slice(13),
     startHand: pool.slice(0, 7), startRest: pool.slice(7).map(x => x.g),
-    active: null, bench: [], discard: [], stadium: null,
+    active: null, bench: [], discard: [], stadium: null, stadiumPair: null,
     used: { energy: false, supporter: false, stadium: false, retreat: false }, log: [], sel: null, selMon: null,
     run: null, offer: null, lim: {}, limHas: {}, handAb: {}, stadUsed: -1, turnOver: false,
     ready: {}, done: false, monId: 0,
@@ -6217,6 +6239,7 @@ function gfDeal(first) {
   const gid = {}; groups.forEach((g, i) => gid[g.key] = i);
   const pool = []; let uid = 0;
   cards.forEach(c => { const i = gid[String(c.name || '').toLowerCase()]; for (let k = 0; k < c.count; k++) pool.push({ uid: ++uid, card: c, g: i }); });
+  gfSplitHalves(pool);
   const anyBasic = groups.some(g => g.basic);
   let mulls = 0;
   for (;;) {
@@ -6364,7 +6387,7 @@ function gfActions(x) {
       opts.forEach(o => out.push({ label: `Candy: ${gfNm(o.s2)} onto ${gfMonPick(o.m)}`, fn: `gfCandy(${x.uid},${o.s2.uid},${o.m.id})`, off: !gfCanEvolveOnto(o.m),
         why: t < 2 ? 'No one can evolve on their first turn.' : 'That Pokémon came into play this turn.' }));
     } else if (kind === 'stadium') {
-      const why = gf.used.stadium ? 'One Stadium a turn.' : gf.stadium && gfKey(gf.stadium) === nm ? 'That Stadium is already in play.' : '';
+      const why = gfHalfOf(x) && !gfHalfMate(x) ? 'Needs both halves in hand.' : gf.used.stadium ? 'One Stadium a turn.' : gf.stadium && gfKey(gf.stadium) === nm ? 'That Stadium is already in play.' : '';
       out.push({ label: 'Put Stadium in play', fn: `gfStadium(${x.uid})`, off: !!why, why });
     } else if (kind === 'tool') {
       if (!mons.length) out.push({ label: 'Attach Tool', off: true, why: 'Nothing in play to attach to.' });
@@ -6373,7 +6396,8 @@ function gfActions(x) {
       const sup = kind === 'supporter';
       const P = gfTrainerPlay(x) || {};
       let why = '';
-      if (sup && gf.used.supporter) why = 'One Supporter a turn.';
+      if (gfHalfOf(x) && !gfHalfMate(x)) why = 'Needs both halves in hand.';
+      else if (sup && gf.used.supporter) why = 'One Supporter a turn.';
       else if (sup && gf.first && t === 1 && !P.firstOK) why = 'The player going first cannot play a Supporter on turn 1.';
       else if (P.firstOnly && t !== 1) why = 'Only during your first turn.';
       else if (P.noFirst && t === 1) why = 'Not during your first turn.';
@@ -6481,14 +6505,23 @@ function gfTool(uid, id) {
 }
 function gfStadium(uid) {
   if (gf.used.stadium) return;
+  const h = gf.hand.find(y => y.uid === uid), mate = gfHalfMate(h);
+  if (gfHalfOf(h) && !mate) return;
   const x = gfTake(uid); if (!x) return;
   gf.used.stadium = true;
   if (gf.stadium) gf.discard.push(gf.stadium);
+  if (gf.stadiumPair) gf.discard.push(gf.stadiumPair);
+  // A two-half Stadium: both halves go into play as one Stadium.
+  gf.stadiumPair = mate ? gfTake(mate.uid) : null;
   gf.stadium = x; gf.stadUsed = -1; gfLog('Put ' + gfNm(x) + ' in play');
   gf.sel = null; renderHand();
 }
 function gfTrainer(uid) {
+  const h = gf.hand.find(y => y.uid === uid), mate = gfHalfMate(h);
+  if (gfHalfOf(h) && !mate) return;
   const x = gfTake(uid); if (!x) return;
+  // A two-half card: its other half is played with it and goes to the discard pile with it.
+  if (mate) gf.discard.push(gfTake(mate.uid));
   const sup = gfKind(x) === 'supporter';
   if (sup) gf.used.supporter = true;
   gfLog('Played ' + gfNm(x));
@@ -6888,7 +6921,7 @@ function gfDoDiscardEnergy(uid) {
 }
 function gfDoStadiumDiscard() {
   const R = gf.run; if (!R || !R.wait || R.wait.t !== 'discardStadium' || !gf.stadium) return;
-  gf.discard.push(gf.stadium); gfLog('Discarded ' + gfNm(gf.stadium)); gf.stadium = null;
+  gf.discard.push(gf.stadium); if (gf.stadiumPair) gf.discard.push(gf.stadiumPair); gfLog('Discarded ' + gfNm(gf.stadium)); gf.stadium = null; gf.stadiumPair = null;
   gfGo();
 }
 function gfSkip() { if (gf.run) gfGo(); }
@@ -8950,16 +8983,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.13',
+  version: 'v3.5.14',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'De-bling is now called Cheapest Version' }
+    { t: 'Legendary Stadiums need both halves' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.13', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'De-bling is now called Cheapest Version' }
+  ] },
   { version: 'v3.5.12', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Titles and headings capitalized the same way everywhere' }
   ] },
@@ -11996,8 +12032,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.13';
-const PT_BUILD = 184;
+const PT_VERSION = 'v3.5.14';
+const PT_BUILD = 185;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
