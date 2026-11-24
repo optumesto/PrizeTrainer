@@ -204,7 +204,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
     w.closeSheet();
     ok(wn() === '', 'the card is gone once seen');
     w.renderWhatsNewCard(); ok(wn() === '', 'and stays gone');
-    w.openSettings(); ok(/What's new/.test(d.getElementById('x-modal').textContent) && d.getElementById('x-modal').textContent.includes('RdyDeck ' + VER), "Settings has What's new and shows " + VER); w.closeSheet();
+    w.openSettings(); ok(/What's new/.test(d.getElementById('x-modal').textContent) && d.getElementById('x-modal').textContent.includes(name), "Settings has What's new and shows " + VER); w.closeSheet();
     st.daily = keep; }
   errors.splice(0, errors.length, ...errors.filter(e => !/setting 'font'|PT error/.test(e)));
   ok(errors.length === 0, 'no page errors' + (errors.length ? ': ' + errors.slice(0, 5).join(' | ') : ''));
