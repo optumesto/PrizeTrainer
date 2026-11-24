@@ -3556,6 +3556,27 @@ document.documentElement.classList.add('rd-boot');
     html:not(#z) body .home-more .home-actions .home-action:not(:nth-child(3n)) { border-right:1px solid var(--line-2); }
     html:not(#z) body .home-more .home-actions .home-action:not(:nth-child(3n+1)) { padding-left:0.75rem; }
   }
+  /* 3.5.x: phones get a less crowded home. The page links, About and FAQ at the bottom become one grid of
+     tiles that runs on from More. About and FAQ open in place, so their text stays on the page. Wider screens
+     keep the old layout. */
+  .about41-tiles { display:none; }
+  .about41-tog::after { content:'+'; margin-left:auto; padding-left:0.6rem; color:var(--text-3); font-weight:400; }
+  .about41-tog[aria-expanded="true"]::after { content:'\2212'; }
+  @media (max-width:559px) {
+    html:not(#z) body .home-cta { margin-top:1rem !important; }
+    html:not(#z) body .home-content > .dg51 { margin-top:1.25rem !important; }
+    html:not(#z) body .home-more { margin-top:1.5rem !important; }
+    html:not(#z) body .deck-main { padding-top:0.75rem; padding-bottom:0.75rem; }
+    html:not(#z) body .home-content > .about38 { margin-top:0 !important; padding-top:0; border-top:0; }
+    html:not(#z) body .about38 > .about41-tiles { display:grid; grid-template-columns:1fr 1fr; border-top:0; margin:0 0 1rem; }
+    html:not(#z) body .about41-tiles .home-action { width:100%; font-family:inherit; text-align:left; cursor:pointer; }
+    html:not(#z) body .about38:not(.a41-about) > :is(h2, p:nth-of-type(1), p:nth-of-type(2)),
+    html:not(#z) body .about38:not(.a41-faq) > .about40-faq,
+    html:not(#z) body .about38 > .about38-links:nth-of-type(2),
+    html:not(#z) body .about38 > .about38-links:nth-of-type(3) { display:none; }
+    html:not(#z) body .about38.a41-about > h2 { margin-top:0.2rem; }
+    html:not(#z) body .about38 > .about38-links { margin-top:0.4rem; }
+  }
 </style>
 </head>
 <body>
@@ -3681,6 +3702,18 @@ document.documentElement.classList.add('rd-boot');
       </div>
     </section>
     <section class="about38" aria-labelledby="about38-h">
+      <nav class="about41-tiles home-actions">
+        <a class="home-action" href="deck-grader.html">Deck checker</a>
+        <a class="home-action" href="opening-odds.html">Opening odds</a>
+        <a class="home-action" href="prize-trainer.html">Prize trainer</a>
+        <a class="home-action" href="goldfish.html">Goldfish guide</a>
+        <a class="home-action" href="rotation.html">Rotation checker</a>
+        <a class="home-action" href="rulings.html">Rules</a>
+        <a class="home-action" href="improve-your-deck.html">Improve your deck</a>
+        <a class="home-action" href="contact.html">Contact</a>
+        <button type="button" class="home-action about41-tog" aria-expanded="false" onclick="var s=this.closest('section'),o=s.classList.toggle('a41-about');this.setAttribute('aria-expanded',o)">About RdyDeck</button>
+        <button type="button" class="home-action about41-tog" aria-expanded="false" onclick="var s=this.closest('section'),o=s.classList.toggle('a41-faq');this.setAttribute('aria-expanded',o)">FAQ</button>
+      </nav>
       <h2 id="about38-h">About RdyDeck</h2>
       <p>RdyDeck is a free Pokémon TCG deck checker and prize trainer. Paste a list from Pokémon TCG Live or Limitless to see how well the cards work together, what to fix first, your opening odds and which cards rotate out of Standard next. Grades are based on your cards and, for known decks, results from online and local in-person events.</p>
       <p>Then practice the deck: name your six prize cards, draw opening hands, run drills and keep notes on your matchups. Decks stay in your browser, it works offline and there is no account to make.</p>
@@ -4300,7 +4333,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/v36-reprint-tcgdex.js?v=e5e38d27"></script>
 <script src="js/v37-cards-per-row.js?v=03de74b4"></script>
 <script src="js/v37-save-open.js?v=819d9fe0"></script>
-<script src="js/v38-settings-home.js?v=b6e259c5"></script>
+<script src="js/v38-settings-home.js?v=3f9b010a"></script>
 <script src="js/v40-audit-fixes.js?v=b5065632"></script>
 <script src="js/v45-sample-share-daily.js?v=cda9cf72"></script>
 <script src="js/v47-prerelease.js?v=a13ae718"></script>
