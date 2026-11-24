@@ -2,6 +2,13 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.12 (build 183): De-bling is now Cheapest Version (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "debling actually does the opposite when the cards are already deblinged", with his Mega Rayquaza list at $84.18 before and $81.44 after. Cause: no price bug. De-bling always took the lowest TCGplayer market price, and for Latias ex that was SSP 220, the full art ($10.61), under the SSP 76 regular ($11.23), so a list of plain cards came back cheaper but with a full art in it. Ethan's Ho-Oh ex (DRI 39 to ASC 26), Fezandipiti ex and Iron Thorns ex went to same art reprints.
+- His call: "we can rename it to Cheapest Version not debling." Button Cheapest Version, Undo Cheapest Version, sheet title, toasts, in all six languages (es Versión Más Barata, pt Versão Mais Barata, fr Version la Moins Chère, de Günstigste Version, it Versione Più Economica). The sheet adds: "The cheapest printing can have different art, even a full art."
+- tests/debling-check.mjs: new checks with real 23 Nov prices for Latias ex (SSP 76 goes to SSP 220, the total goes down, a second run changes nothing, a list already at its cheapest stays as it is and says so, Undo puts back exactly the list before). 132 top lists rerun: no grade moved, every swap cheaper.
+- Also: What's new in six languages, PT_VERSION v3.5.12, PT_BUILD 183, softwareVersion 3.5.12, sw.js cache v183, stamps.
+
 # RdyDeck 3.5.11 (build 182): faster card loading on school wifi (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "guess the grade buffers for a long time on school wifi, but eventually works". His school network lets requests to the card databases hang instead of refusing them, so each read waited out its 10 second timeout (and card reads retry once) before 3.5.7's switch to rdydeck.com.

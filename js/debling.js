@@ -1,4 +1,4 @@
-// ═══════════ 3.3.6: De-bling ═══════════
+// ═══════════ 3.3.6: De-bling, named Cheapest Version since 3.5.12 ═══════════
 // One tap on a deck's Cards tab swaps every card to the cheapest printing that plays the same
 // (Dragapult ex TWM 200 to TWM 130), then shows what changed and what it saves, with Undo.
 //
@@ -13,6 +13,9 @@
 // A swap keeps the card's data as it was read (the printings play the same), so no grade moves.
 // Only the set, number, picture and regulation mark change. Two lines that end up the same printing
 // become one line. The grade history keeps no entry for it, since no card changed.
+// 3.5.12: renamed Cheapest Version (Mason: "we can rename it to Cheapest Version not debling"). It always
+// took the lowest market price, which is sometimes a full art (Latias ex SSP 220 at $10.61 under the
+// SSP 76 regular at $11.23), so "De-bling" read as the opposite of what it did.
 
 const DBL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>';
 let _dblData = null, _dblLoad = null;
@@ -114,7 +117,7 @@ async function dblReadPrices(deck, D) {
 async function dblRun(id) {
   const deck = dd65Find(id);
   if (!deck || _dblBusy || !dblShowable(deck)) return;
-  if (!op30PricesOn()) { showToast('Turn prices on in Settings to use De-bling.'); return; }
+  if (!op30PricesOn()) { showToast('Turn prices on in Settings to use Cheapest Version.'); return; }
   _dblBusy = true;
   showLoading('Finding the cheapest printings…');
   let D = null, priced = false;
@@ -124,7 +127,7 @@ async function dblRun(id) {
   } catch (_) {}
   hideLoading();
   _dblBusy = false;
-  if (!D) { showToast('De-bling could not load its card list. Try again when you are online.'); return; }
+  if (!D) { showToast('Cheapest Version could not load its card list. Try again when you are online.'); return; }
   const plan = dblPlan(deck, D);
   if (!plan.swaps.length) {
     if (!priced && !op30Online()) showToast('Prices could not be read. Try again when you are online.');
@@ -185,8 +188,9 @@ function dblSheet(deck, plan) {
       <span class="dbl-s">${esc(m((s.was - s.now) * s.n))}</span>
     </div>`).join('');
   const np = plan.noPrice ? `<p class="st38-p">${plan.noPrice === 1 ? '1 card has no price to compare, so it stays as it is.' : plan.noPrice + ' cards have no price to compare, so they stay as they are.'}</p>` : '';
-  openSheet(`<div class="modal-title">De-bling</div>
+  openSheet(`<div class="modal-title">Cheapest Version</div>
     <p class="st38-p">These cards now use their cheapest printing that plays the same. Each line shows what it saves.</p>
+    <p class="st38-p">The cheapest printing can have different art, even a full art.</p>
     <div class="dbl-list">${rows}</div>
     <p class="dbl-total">Estimated savings: <b>${esc(m(save))}</b></p>
     ${np}
@@ -194,7 +198,7 @@ function dblSheet(deck, plan) {
     <div class="modal-actions"><button type="button" class="btn" onclick="dblUndo()">Undo</button><button type="button" class="btn btn-primary" onclick="closeSheet()">Done</button></div>`);
 }
 
-/** Put the list back as it was before the last De-bling, while nothing else changed it. */
+/** Put the list back as it was before the last Cheapest Version, while nothing else changed it. */
 async function dblUndo() {
   closeSheet();
   const u = _dblUndo, deck = u && dd65Find(u.id);
@@ -204,10 +208,10 @@ async function dblUndo() {
   _dblUndo = null;
   await saveState();
   try { renderReview(deck); } catch (_) {}
-  showToast('De-bling undone.');
+  showToast('Cheapest Version undone.');
 }
 
-/** The button on the Cards tab, beside Mark cards you own. Undo de-bling while the last one can be undone. */
+/** The button on the Cards tab, beside Mark cards you own. Undo Cheapest Version while the last one can be undone. */
 function dblButton(deck) {
   const row = document.querySelector('#review-body .rv-edit-row');
   const old = document.getElementById('dbl-btn');
@@ -217,7 +221,7 @@ function dblButton(deck) {
   const b = document.createElement('button');
   b.id = 'dbl-btn'; b.type = 'button'; b.className = 'btn btn-sm dbl-btn';
   b.title = undo ? 'Put back the printings the list had before' : 'Swap each card to its cheapest printing that plays the same';
-  b.innerHTML = DBL_ICON + (undo ? 'Undo de-bling' : 'De-bling');
+  b.innerHTML = DBL_ICON + (undo ? 'Undo Cheapest Version' : 'Cheapest Version');
   b.onclick = undo ? dblUndo : () => dblRun(deck.id);
   const mark = document.getElementById('op30-mark');
   if (mark) mark.insertAdjacentElement('afterend', b); else row.insertBefore(b, row.firstChild);

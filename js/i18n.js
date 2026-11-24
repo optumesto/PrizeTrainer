@@ -1223,21 +1223,22 @@ const I18N_ES = {
   "Added: tap a card to play it": "Nuevo: toca una carta para jugarla",
   "Goldfish is now 5 turns": "Goldfish ahora dura 5 turnos",
   "Goldfish is back to 3 turns": "Goldfish vuelve a 3 turnos",
-  "De-bling": "Abaratar",
-  "Undo de-bling": "Deshacer Abaratar",
+  "Cheapest Version": "Versión Más Barata",
+  "Undo Cheapest Version": "Deshacer Versión Más Barata",
   "Swap each card to its cheapest printing that plays the same": "Cambia cada carta por su impresión más barata que juega igual",
   "Put back the printings the list had before": "Vuelve a poner las impresiones que tenía la lista",
   "Finding the cheapest printings…": "Buscando las impresiones más baratas…",
   "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Estas cartas ahora usan su impresión más barata que juega igual. Cada línea muestra lo que ahorras.",
   "Estimated savings:": "Ahorro estimado:",
+  "The cheapest printing can have different art, even a full art.": "La impresión más barata puede tener otra ilustración, incluso una full art.",
   "1 card has no price to compare, so it stays as it is.": "1 carta no tiene precio para comparar, así que se queda como está.",
-  "Turn prices on in Settings to use De-bling.": "Activa los precios en Ajustes para usar Abaratar.",
-  "De-bling could not load its card list. Try again when you are online.": "Abaratar no pudo cargar su lista de cartas. Inténtalo de nuevo cuando tengas conexión.",
+  "Turn prices on in Settings to use Cheapest Version.": "Activa los precios en Ajustes para usar Versión Más Barata.",
+  "Cheapest Version could not load its card list. Try again when you are online.": "Versión Más Barata no pudo cargar su lista de cartas. Inténtalo de nuevo cuando tengas conexión.",
   "Prices could not be read. Try again when you are online.": "No se pudieron leer los precios. Inténtalo de nuevo cuando tengas conexión.",
   "No cheaper printing with a price was found.": "No se encontró ninguna impresión más barata con precio.",
   "Every card is already its cheapest printing.": "Todas las cartas ya están en su impresión más barata.",
   "The list changed since, so there is nothing to undo.": "La lista cambió desde entonces, así que no hay nada que deshacer.",
-  "De-bling undone.": "Se deshizo Abaratar.",
+  "Cheapest Version undone.": "Se deshizo Versión Más Barata.",
   // 3.3.9: puzzle score share.
   "Puzzle deck search fixed": "Búsqueda en la baraja del puzzle corregida",
   "Added: share your puzzle score": "Nuevo: comparte tu resultado del puzzle",
@@ -2452,21 +2453,22 @@ const I18N_PT = {
   "Added: tap a card to play it": "Novo: toque em uma carta para jogá-la",
   "Goldfish is now 5 turns": "Goldfish agora tem 5 turnos",
   "Goldfish is back to 3 turns": "Goldfish volta a ter 3 turnos",
-  "De-bling": "Baratear",
-  "Undo de-bling": "Desfazer Baratear",
+  "Cheapest Version": "Versão Mais Barata",
+  "Undo Cheapest Version": "Desfazer Versão Mais Barata",
   "Swap each card to its cheapest printing that plays the same": "Troca cada carta pela impressão mais barata que joga igual",
   "Put back the printings the list had before": "Volta às impressões que a lista tinha antes",
   "Finding the cheapest printings…": "Buscando as impressões mais baratas…",
   "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Estas cartas agora usam a impressão mais barata que joga igual. Cada linha mostra quanto você economiza.",
   "Estimated savings:": "Economia estimada:",
+  "The cheapest printing can have different art, even a full art.": "A impressão mais barata pode ter outra ilustração, até mesmo uma full art.",
   "1 card has no price to compare, so it stays as it is.": "1 carta não tem preço para comparar, então fica como está.",
-  "Turn prices on in Settings to use De-bling.": "Ative os preços nas Configurações para usar Baratear.",
-  "De-bling could not load its card list. Try again when you are online.": "Baratear não conseguiu carregar a lista de cartas. Tente de novo quando estiver online.",
+  "Turn prices on in Settings to use Cheapest Version.": "Ative os preços nas Configurações para usar Versão Mais Barata.",
+  "Cheapest Version could not load its card list. Try again when you are online.": "Versão Mais Barata não conseguiu carregar a lista de cartas. Tente de novo quando estiver online.",
   "Prices could not be read. Try again when you are online.": "Não foi possível ler os preços. Tente de novo quando estiver online.",
   "No cheaper printing with a price was found.": "Nenhuma impressão mais barata com preço foi encontrada.",
   "Every card is already its cheapest printing.": "Todas as cartas já estão na impressão mais barata.",
   "The list changed since, so there is nothing to undo.": "A lista mudou depois disso, então não há nada para desfazer.",
-  "De-bling undone.": "Baratear desfeito.",
+  "Cheapest Version undone.": "Versão Mais Barata desfeita.",
   // 3.3.9: puzzle score share.
   "Puzzle deck search fixed": "Busca no deck do puzzle corrigida",
   "Added: share your puzzle score": "Novo: compartilhe seu resultado do puzzle",
@@ -6629,6 +6631,10 @@ I18N_PAT.unshift(
 // 3.5.11: faster card loading on school wifi.
 Object.assign(I18N_ES, { "Faster card loading on school wifi": "Carga de cartas más rápida en el wifi escolar" });
 Object.assign(I18N_PT, { "Faster card loading on school wifi": "Carregamento de cartas mais rápido no wifi da escola" });
+
+// 3.5.12: De-bling renamed Cheapest Version.
+Object.assign(I18N_ES, { "De-bling is now called Cheapest Version": "Abaratar ahora se llama Versión Más Barata" });
+Object.assign(I18N_PT, { "De-bling is now called Cheapest Version": "Baratear agora se chama Versão Mais Barata" });
 
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
