@@ -2788,3 +2788,25 @@ I18N_MORE.fr.pat.unshift(
   [/^(\d+)% wins, ([\d.]+)% of lists, new since the newest set$/, "$1 % de victoires, $2 % des listes, nouveau depuis la dernière extension"],
   [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/, (m, w) => 'Les notes sont la Force en tournoi sur 10, issue des ' + ({ 'online and local in-person': 'tournois en ligne et locaux en présentiel', online: 'tournois en ligne', 'local in-person': 'tournois locaux en présentiel' })[w] + ', mise à jour chaque semaine.'],
 );
+// 3.6.0: Quick add the top tournament list.
+Object.assign(I18N_MORE.fr.dict, {
+  "Top tournament list": "Meilleure liste de tournoi",
+  "Online event": "Tournoi en ligne",
+  "Local in-person event": "Tournoi local en présentiel",
+  "Grading the list…": "Notation de la liste…",
+  "The grade shows once card data loads. Add the list to see it.": "La note s'affiche une fois les données des cartes chargées. Ajoutez la liste pour la voir.",
+  "See the 60 cards": "Voir les 60 cartes",
+  "Add to your decks": "Ajouter à vos decks",
+  "Open my copy": "Ouvrir ma copie",
+  "The best finish in the grade's tournament window, with lists since the newest set first. Updated weekly.": "Le meilleur classement sur la période de tournois de la note, en priorité les listes depuis la dernière extension. Mis à jour chaque semaine.",
+  "No top list for this deck yet. Check back after the next weekly update.": "Pas encore de meilleure liste pour ce deck. Revenez après la prochaine mise à jour hebdomadaire.",
+  "Top lists did not load. Check your connection.": "Les meilleures listes n'ont pas chargé. Vérifiez votre connexion.",
+  "Loading the top list…": "Chargement de la meilleure liste…",
+  "You're offline. The top list can be added once you're back online.": "Vous êtes hors ligne. La meilleure liste pourra être ajoutée une fois la connexion revenue.",
+  "Tap a deck for its top tournament list. Tap + to add it to your decks.": "Touchez un deck pour voir sa meilleure liste de tournoi. Touchez + pour l'ajouter à vos decks.",
+  "Add the top list to your decks": "Ajouter la meilleure liste à vos decks",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, (m, n, p) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e') + ' sur ' + p.replace(/,/g, ' ') + ' joueurs'],
+  [/^Best finish: (\d+)(?:st|nd|rd|th)$/, (m, n) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e')],
+);

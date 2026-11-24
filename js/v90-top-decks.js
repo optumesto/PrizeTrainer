@@ -10,8 +10,8 @@
 //     up a bigger share of the lists than before. Ranked by how much its index rose. A deck already
 //     in Top rated is left out. Before and since are each scored by g68Strength on that window
 //     alone, so a change to how sources are weighed (the in-person split) carries over by itself.
-// Tapping a deck opens its deck guide, or, with no guide yet, the deck builder started from the
-// cards most of its top lists run. Every number comes from the file; nothing here is stored but
+// Tapping a deck opens its top tournament list (3.6.0, js/v91-quick-add.js), with its guide when it
+// has one; + adds that list to Your decks. Every number comes from the file; nothing here is stored but
 // the tab last picked. No ads in this section.
 const TD90_TOP_MIN = 250;   // games for Top rated (G68_FULL in js/v69-grade-blend.js)
 const TD90_UP_MIN = 100;    // games since the newest set for Up and coming
@@ -97,16 +97,16 @@ const td90Pct = v => Math.round(v * 100) + '%';
 const td90Sh = v => (Math.round(v * 1000) / 10).toFixed(1) + '%';
 const td90Num = n => Math.round(n).toLocaleString('en-US');
 function td90Row(x, i, kind) {
-  const g = TD90_GUIDES[x.id];
   const sub = kind === 'up'
     ? (x.shareP ? `${td90Pct(x.wr)} wins, ${td90Sh(x.shareC)} of lists, up from ${td90Sh(x.shareP)}` : `${td90Pct(x.wr)} wins, ${td90Sh(x.shareC)} of lists, new since the newest set`)
     : `${td90Pct(x.wr)} wins over ${td90Num(x.games)} games`;
   const score = typeof gR1 === 'function' ? gR1(x.score) : Math.round(x.score * 10) / 10;
-  const inner = `<span class="td90-rk">${i + 1}</span><span class="td90-tx"><span class="td90-nm" data-no-tr>${esc(x.name)}</span><span class="td90-sub">${sub}</span></span>
-    <span class="td90-sc">${kind === 'up' ? '<svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg>' : ''}<b>${score.toFixed(1)}</b></span><svg class="ic td90-go" aria-hidden="true"><use href="#i-next"/></svg>`;
-  const cls = `td90-row${i >= TD90_PHONE ? ' td90-x' : ''}`;
-  return g ? `<a class="${cls}" href="deck-${g}.html">${inner}</a>`
-    : `<button type="button" class="${cls}" onclick="td90Build('${x.id}')">${inner}</button>`;
+  const id = esc(x.id);
+  // 3.6.0: every row opens the deck's top tournament list (js/v91-quick-add.js); + adds it to Your decks.
+  return `<div class="td90-row td91-row${i >= TD90_PHONE ? ' td90-x' : ''}">
+    <button type="button" class="td91-open" onclick="td91Open('${id}')"><span class="td90-rk">${i + 1}</span><span class="td90-tx"><span class="td90-nm" data-no-tr>${esc(x.name)}</span><span class="td90-sub">${sub}</span></span>
+    <span class="td90-sc">${kind === 'up' ? '<svg class="ic" aria-hidden="true"><use href="#i-trend"/></svg>' : ''}<b>${score.toFixed(1)}</b></span></button>
+    <button type="button" class="td91-add" onclick="td91Add('${id}')" aria-label="Add the top list to your decks" title="Add the top list to your decks"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></button></div>`;
 }
 
 function renderTopDecks() {
@@ -132,7 +132,7 @@ function renderTopDecks() {
   const how = td90Tab === 'up'
     ? `<span>Since the newest set: at least ${TD90_UP_MIN} games, 50% wins or more, and both its results and its share of lists went up.</span>`
     : `<span>Scores are Tournament strength out of 10, from ${src} events, updated weekly.</span>`;
-  box.querySelector('.td90-body').innerHTML = list + more + `<p class="td90-note">${how} <span>Tap a deck for its guide or to build it.</span></p>`;
+  box.querySelector('.td90-body').innerHTML = list + more + `<p class="td90-note">${how} <span>Tap a deck for its top tournament list. Tap + to add it to your decks.</span></p>`;
 }
 function td90SetTab(t) {
   td90Tab = t === 'up' ? 'up' : 'top';

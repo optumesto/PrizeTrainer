@@ -38,6 +38,7 @@ const CORE_ASSETS = [
   './favicon.ico',
   './data.json',
   './matchups.json',
+  './top-lists.json',
   './deck-grader.html',
   './opening-odds.html',
   './prize-trainer.html',
@@ -158,7 +159,7 @@ self.addEventListener('fetch', event => {
   }
 
   // The weekly data files: newest copy first, the saved one with no signal.
-  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/meta-cards.json') || url.pathname.endsWith('/cards.json') || url.pathname.endsWith('/prints.json') || url.pathname.endsWith('/accuracy.json') || url.pathname.endsWith('/art-index.json') || url.pathname.endsWith('/art-index.bin'))) {
+  if (url.origin === self.location.origin && (url.pathname.endsWith('/data.json') || url.pathname.endsWith('/matchups.json') || url.pathname.endsWith('/top-lists.json') || url.pathname.endsWith('/builder.json') || url.pathname.endsWith('/meta-cards.json') || url.pathname.endsWith('/cards.json') || url.pathname.endsWith('/prints.json') || url.pathname.endsWith('/accuracy.json') || url.pathname.endsWith('/art-index.json') || url.pathname.endsWith('/art-index.bin'))) {
     event.respondWith(
       fetch(req, { cache: 'no-cache' })
         .then(resp => {

@@ -3616,6 +3616,38 @@ document.documentElement.classList.add('rd-boot');
     html:not(#z) body .home-content > .about38 { margin-top:1.25rem !important; }
   }
 </style>
+<style id="td91-css">
+  /* 3.6.0: Top decks rows open the deck's top tournament list; + adds it to Your decks. */
+  .td91-row { padding:0; gap:0.35rem; cursor:default; }
+  .td91-open { display:flex; align-items:center; gap:0.7rem; flex:1 1 auto; min-width:0; min-height:56px; padding:0.45rem 0.1rem; border:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+  .td91-open:hover .td90-nm { text-decoration:underline; text-underline-offset:3px; }
+  .td91-add { flex-shrink:0; display:grid; place-items:center; width:40px; height:40px; margin-right:0.1rem; border:1px solid var(--line-2); border-radius:999px; background:transparent; color:var(--accent); cursor:pointer; }
+  .td91-add .ic { width:18px; height:18px; }
+  .td91-add:hover { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .td91-k { font-size:var(--fs-xs); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--mark); margin:-0.2rem 0 0.35rem; }
+  .td91-res { display:flex; flex-direction:column; gap:0.15rem; font-size:var(--fs-sm); line-height:1.45; color:var(--text-2); }
+  .td91-best { color:var(--text); font-weight:600; font-size:var(--fs-md); }
+  .td91-ev { overflow-wrap:anywhere; }
+  .td91-when > span:not(:last-child)::after { content:"\00b7"; margin:0 0.45rem; color:var(--text-3); }
+  .td91-sc { display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; margin:0.9rem 0 0.2rem; }
+  .td91-t { display:flex; flex-direction:column; align-items:flex-start; gap:0.15rem; padding:0.6rem 0.7rem; border:1px solid var(--line-2); border-radius:12px; min-width:0; }
+  .td91-t b { font-family:var(--display); font-size:1.6rem; line-height:1; font-variant-numeric:tabular-nums; }
+  .td91-t span { font-size:var(--fs-xs); line-height:1.25; color:var(--text-2); }
+  .td91-main { border-color:var(--accent); }
+  .td91-main b { color:var(--mark); }
+  .td91-wait { display:block; padding:0.85rem 0.1rem; font-size:var(--fs-sm); color:var(--text-2); }
+  .td91-list { margin-top:0.85rem; border-top:1px solid var(--line-2); }
+  .td91-list summary { min-height:44px; display:flex; align-items:center; font-size:var(--fs-sm); font-weight:600; cursor:pointer; color:var(--text); }
+  .td91-grps { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.4rem 1rem; padding-bottom:0.4rem; }
+  .td91-gh { font-size:var(--fs-xs); font-weight:700; color:var(--text-2); text-transform:uppercase; letter-spacing:0.05em; margin:0.3rem 0 0.2rem; }
+  .td91-grps ul { list-style:none; margin:0; padding:0; font-size:var(--fs-sm); line-height:1.5; }
+  .td91-grps li b { display:inline-block; min-width:1.3rem; font-variant-numeric:tabular-nums; }
+  .td91-acts .btn { flex:1 1 10rem; text-decoration:none; }
+  @media (max-width:479px) { .td91-acts { flex-direction:column-reverse; } .td91-acts .btn { flex:0 0 auto; width:100%; } }
+  .td91-acts .btn .ic { width:18px; height:18px; }
+  .td91-note, .td91-msg { margin:0.75rem 0 0; font-size:var(--fs-xs); line-height:1.45; color:var(--text-3); }
+  .td91-msg { font-size:var(--fs-sm); color:var(--text-2); }
+</style>
 <style id="td90-css">
   /* 3.5.9: Top decks on home, styled like the daily games list. */
   .td90 { margin-top:1.75rem; }
@@ -4490,10 +4522,11 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/gtg.js?v=46810a4d"></script>
 <script src="js/daily-games.js?v=23a5242e"></script>
 <script src="js/dg-look.js?v=49041fe1"></script>
-<script src="js/v90-top-decks.js?v=d6c12059"></script>
-<script src="js/i18n.js?v=36af2239"></script>
+<script src="js/v90-top-decks.js?v=2158fda6"></script>
+<script src="js/v91-quick-add.js?v=44b68821"></script>
+<script src="js/i18n.js?v=f01b260d"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=b85d989b"></script><script src="js/i18n-de.js?v=2cbd0a0b"></script><script src="js/i18n-it.js?v=fe8ce069"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=883ab758"></script><script src="js/i18n-de.js?v=a52d63e5"></script><script src="js/i18n-it.js?v=5120b318"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=6dac5465"></script></template>

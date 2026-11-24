@@ -2828,3 +2828,26 @@ I18N_MORE.de.pat.unshift(
   [/^(\d+)% wins, ([\d.]+)% of lists, new since the newest set$/, "$1 % Siege, $2 % der Listen, neu seit dem neuesten Set"],
   [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/, (m, w) => 'Die Werte sind die Turnierstärke von 10, aus ' + ({ 'online and local in-person': 'Online- und lokalen Präsenzturnieren', online: 'Onlineturnieren', 'local in-person': 'lokalen Präsenzturnieren' })[w] + ', wöchentlich aktualisiert.'],
 );
+// 3.6.0: Quick add the top tournament list.
+Object.assign(I18N_MORE.de.dict, {
+  "Top tournament list": "Beste Turnierliste",
+  "Online event": "Online-Turnier",
+  "Local in-person event": "Lokales Turnier vor Ort",
+  "Grading the list…": "Liste wird bewertet…",
+  "The grade shows once card data loads. Add the list to see it.": "Die Note erscheint, sobald die Kartendaten geladen sind. Füge die Liste hinzu, um sie zu sehen.",
+  "See the 60 cards": "Die 60 Karten ansehen",
+  "Add to your decks": "Zu deinen Decks hinzufügen",
+  "Open my copy": "Meine Kopie öffnen",
+  "The best finish in the grade's tournament window, with lists since the newest set first. Updated weekly.": "Die beste Platzierung im Turnierzeitraum der Note, Listen seit der neuesten Erweiterung zuerst. Wöchentlich aktualisiert.",
+  "No top list for this deck yet. Check back after the next weekly update.": "Für dieses Deck gibt es noch keine beste Liste. Schau nach dem nächsten wöchentlichen Update wieder vorbei.",
+  "Top lists did not load. Check your connection.": "Die besten Listen wurden nicht geladen. Prüfe deine Verbindung.",
+  "Loading the top list…": "Beste Liste wird geladen…",
+  "You're offline. The top list can be added once you're back online.": "Du bist offline. Die beste Liste kannst du hinzufügen, sobald du wieder online bist.",
+  "Tap a deck for its top tournament list. Tap + to add it to your decks.": "Tippe auf ein Deck für seine beste Turnierliste. Tippe auf +, um sie zu deinen Decks hinzuzufügen.",
+  "Add the top list to your decks": "Beste Liste zu deinen Decks hinzufügen",
+  "N/A": "k. A.",
+});
+I18N_MORE.de.pat.unshift(
+  [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, (m, n, p) => 'Beste Platzierung: ' + n + '. von ' + p.replace(/,/g, '.') + ' Spielern'],
+  [/^Best finish: (\d+)(?:st|nd|rd|th)$/, 'Beste Platzierung: $1.'],
+);
