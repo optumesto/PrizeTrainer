@@ -105,7 +105,7 @@ function build(d, known) {
   const out = { id: d.id, name: String(d.name || 'My deck'), own: true, cards: null, block: '', plain: [], colorless: [], n: 0 };
   const rows = (d.cards || []).filter(c => c && c.count > 0 && c.name);
   const by = new Map();
-  rows.forEach(c => { const g = by.get(c.name); if (g) g.n += +c.count || 0; else by.set(c.name, { c, n: +c.count || 0 }); });
+  rows.forEach(c => { const g = by.get(c.name); if (g) { g.n += +c.count || 0; g.rows.push(c); } else by.set(c.name, { c, n: +c.count || 0, rows: [c] }); });
   out.n = [...by.values()].reduce((a, g) => a + g.n, 0);
   if (out.n !== 60) { out.block = 'count'; return out; }
   const recs = new Map(), missing = [];
@@ -135,7 +135,13 @@ function build(d, known) {
   });
   out.plain = [...plain].sort();
   out.cards = [];
-  by.forEach((g, name) => { const r = recs.get(name); for (let i = 0; i < g.n; i++) out.cards.push(r); });
+  by.forEach((g, name) => {
+    const r = recs.get(name), H = E.internals.HALVES, left = H && H[String(name).toLowerCase()];
+    // A two-half card keeps the halves the deck has, by each row's number; a row with no number is split later.
+    if (left != null) { g.rows.forEach(c => { const n = parseInt(c.num, 10), h = n === left ? 'L' : n === left + 1 ? 'R' : null;
+      for (let i = 0; i < (+c.count || 0); i++) out.cards.push(h ? E.internals.halfRecord(r, h) : r); }); return; }
+    for (let i = 0; i < g.n; i++) out.cards.push(r);
+  });
   return out;
 }
 

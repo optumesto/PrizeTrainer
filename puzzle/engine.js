@@ -201,6 +201,55 @@ function readAbilities(ref) {
 
 /* Passive text the engine applies. Anything passive that matches none of these (and is not on the
  * "no effect this turn" list) is unread. Each entry: a test on the normalized text. */
+/* ---------------- Two-half cards ----------------
+ * Delta Reign's Legendary Stadiums come as two prints, a left half and a right half. Printed on each half:
+ * "You cannot play this card by itself. You must combine 2 different Legendary Pyroduct from your hand to play
+ * as 1 Stadium card." So both halves leave the hand together, sit in play as one Stadium, and are discarded
+ * together. Listed by name with the number of the left half; the right half is the next number. */
+const HALVES = { 'legendary pyroduct': 94, 'legendary summit': 96, 'legendary trench': 98 };
+const HALF_MSG = 'Needs both halves in hand.';
+/** 'L', 'R', or null for a card that is not a half. */
+function halfOf(ref) {
+  const c = ref && ref.card; if (!c) return null;
+  const left = HALVES[String(c.name || '').toLowerCase()]; if (left == null) return null;
+  if (c.half === 'L' || c.half === 'R') return c.half;
+  const n = parseInt(c.num || (String(c.key || '').match(/-(\d+)$/) || [])[1], 10);
+  return n === left + 1 ? 'R' : 'L';
+}
+/** The other half of x in this hand, or null. */
+function halfMate(hand, x) {
+  const h = halfOf(x); if (!h) return null;
+  return hand.find(y => y !== x && y.card.name === x.card.name && halfOf(y) && halfOf(y) !== h) || null;
+}
+/** A card record as one given half: its number and picture follow the half. Same record back for any other card. */
+const _halfRec = new WeakMap();
+function halfRecord(c, half) {
+  const left = HALVES[String(c && c.name || '').toLowerCase()]; if (left == null || (half !== 'L' && half !== 'R')) return c;
+  let m = _halfRec.get(c); if (!m) { m = {}; _halfRec.set(c, m); }
+  if (m[half]) return m[half];
+  const from = String(c.num || (String(c.img || '').match(new RegExp('-(' + left + '|' + (left + 1) + ')/')) || [])[1] || left), to = String(half === 'R' ? left + 1 : left);
+  const r = Object.assign({}, c, { half, num: to });
+  if (c.img && from !== to) r.img = String(c.img).replace('-' + from + '/', '-' + to + '/');
+  return (m[half] = r);
+}
+/** Every copy of a deck's cards, with two-half cards split into halves: a copy already marked keeps its half,
+ *  the rest go left, right, left, right (tournament lists run the halves in equal numbers). */
+function splitHalves(cards) {
+  const n = {};
+  return cards.map(c => {
+    const nm = String(c && c.name || '').toLowerCase();
+    if (HALVES[nm] == null || c.half === 'L' || c.half === 'R') return c;
+    const i = n[nm] = (n[nm] || 0) + 1;
+    return halfRecord(c, i % 2 ? 'L' : 'R');
+  });
+}
+/** Put the Stadium in play into its owner's discard pile, both halves when it has two. */
+function discardStadium(s) {
+  if (!s.stadium) return;
+  const D = s.players[s.stadium.owner].discard; D.push(s.stadium.ref); if (s.stadium.pair) D.push(s.stadium.pair);
+  s.stadium = null;
+}
+
 const PASSIVE = {
   hpPlus: /^the pokemon this card is attached to gets \+(\d+) hp$/,
   retreatFree: /(?:have|has) no retreat cost/,
@@ -722,7 +771,13 @@ function legalActions(s, opts) {
     } else if (c.cat === 'trainer') {
       if (c.ace && aceBlocked(s)) { add({ t: 'trainer', uid: x.uid }, "Your opponent's Pokémon stops ACE SPEC cards."); continue; }
       if (c.kind === 'tool') { ms.forEach(m => add({ t: 'tool', uid: x.uid, mon: m.id }, m.tool ? 'It already has a Tool.' : '')); continue; }
-      if (c.kind === 'stadium') { add({ t: 'stadium', uid: x.uid }, P.used.stadium ? 'One Stadium a turn.' : s.stadium && s.stadium.ref.card.name === c.name ? 'That Stadium is already in play.' : ''); continue; }
+      if (c.kind === 'stadium') {
+        // A two-half Stadium: one action for the pair, played only with both halves in hand.
+        const h = halfOf(x), mate = h ? halfMate(P.hand, x) : null;
+        if (h) { if (seen.has('half:' + c.name)) continue; seen.add('half:' + c.name); }
+        const a = mate ? { t: 'stadium', uid: (h === 'L' ? x : mate).uid, mate: (h === 'L' ? mate : x).uid } : { t: 'stadium', uid: x.uid };
+        add(a, h && !mate ? HALF_MSG : P.used.stadium ? 'One Stadium a turn.' : s.stadium && s.stadium.ref.card.name === c.name ? 'That Stadium is already in play.' : ''); continue;
+      }
       if (/^rare candy$/i.test(c.name)) {
         P.hand.filter(y => y.card.stage === 'stage2').forEach(s2 => {
           // The Basic behind a Stage 2: the puzzle card table records it as `base` (as the grader does).
@@ -733,7 +788,8 @@ function legalActions(s, opts) {
       }
       const TP = readTrainer(x), sup = c.kind === 'supporter';
       let why = '';
-      if (sup && P.used.supporter) why = 'You already played a Supporter this turn.';
+      if (halfOf(x) && !halfMate(P.hand, x)) why = HALF_MSG;
+      else if (sup && P.used.supporter) why = 'You already played a Supporter this turn.';
       else if (sup && s.turn === 1 && s.first && !TP.firstOK) why = 'No Supporter on the first turn of the game.';
       else if (TP.firstOnly && s.turn !== 1) why = 'Only during your first turn.';
       else if (TP.noFirst && s.turn === 1) why = 'Not during your first turn.';
@@ -813,11 +869,15 @@ function apply(s0, a) {
     case 'energy': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.energy.push(x); P.used.energy = true; log(s, 'Attached ' + x.card.name + ' to ' + logName(s, m));
       if (REAL) for (const h of HOOKS.onEnergy) { const st = h(s, x, m); if (st) { log(s, x.card.name + ' on ' + logName(s, m) + ' took effect'); return startRun(s, st, { name: x.card.name, mon: m.id }); } } return s; }
     case 'tool': { const x = take(P.hand, a.uid), m = findMon(s, a.mon).m; m.tool = x; log(s, 'Attached ' + x.card.name + ' to ' + logName(s, m)); if (!passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return s; }
-    case 'stadium': { const x = take(P.hand, a.uid); if (s.stadium) s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = { ref: x, owner: s.cur }; P.used.stadium = true;
+    case 'stadium': { const x = take(P.hand, a.uid), mate = a.mate != null ? P.hand.find(y => y.uid === a.mate) : halfMate(P.hand, x), y = mate ? take(P.hand, mate.uid) : null;
+      if (halfOf(x) && !y) throw new Error(HALF_MSG);
+      discardStadium(s); s.stadium = y ? { ref: x, owner: s.cur, pair: y } : { ref: x, owner: s.cur }; P.used.stadium = true;
       const TP = readTrainer(x); log(s, 'Played ' + x.card.name); if (!TP.once && !passiveKnown(x.card.rtext)) { markUnread(s, x.card.name); if (REAL) log(s, "Sparring can't do " + x.card.name + "'s text yet, so nothing happened", true); } return checkKOs(s); }
     case 'stadiumUse': { P.lim.stadiumUse = s.turn; const TP = readTrainer(s.stadium.ref); return startRun(s, TP.steps, { name: s.stadium.ref.card.name }); }
     case 'trainer': {
       const x = take(P.hand, a.uid), TP = readTrainer(x);
+      // A two-half card: its other half leaves the hand with it and goes to the discard pile with it.
+      if (halfOf(x)) { const y = halfMate(P.hand, x); if (!y) throw new Error(HALF_MSG); P.discard.push(take(P.hand, y.uid)); }
       if (x.card.kind === 'supporter') P.used.supporter = true;
       log(s, 'Played ' + x.card.name);
       const steps = TP.cost ? [{ t: 'cost', n: TP.cost.n, F: TP.cost.F }].concat(TP.steps || []) : TP.steps;
@@ -855,7 +915,7 @@ function answer(s, v) {
   const next = () => { R.i = A.step + 1; return go(s); };
   switch (A.kind) {
     case 'yesno':
-      if (st.t === 'discardStadium' && v) { s.players[s.stadium.owner].discard.push(s.stadium.ref); s.stadium = null; }
+      if (st.t === 'discardStadium' && v) discardStadium(s);
       if (st.t === 'switchSelf' && v) { const m = findMon(s, c.mon).m, i = P.bench.indexOf(m); P.bench[i] = P.active; P.active = m; c.switched = true; if (REAL) log(s, monName(m) + ' is now Active'); }
       else if (st.t === 'switchSelf' && REAL) log(s, 'Chose not to switch');
       return next();
@@ -1087,7 +1147,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const internals = { provides, hitLine, logName, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const internals = { halfOf, halfMate, halfRecord, splitHalves, discardStadium, HALVES, provides, hitLine, logName, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
 const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;

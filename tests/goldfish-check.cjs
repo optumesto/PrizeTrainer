@@ -22,6 +22,9 @@ const CARDS = [
   T('Pokémon Center Lady', 'supporter', 'Heal 60 damage from 1 of your Pokémon, and it recovers from all Special Conditions.'),
   T('Tasty Rice Ball', 'item', 'Heal 30 damage from your Active Pokémon. For each Tasty Rice Ball card in your discard pile, heal 30 more damage.'),
   E('Basic Psychic Energy'), E('Basic Darkness Energy'), E('Basic Fire Energy'),
+  // Two-half Stadium: DLR 94 is the left half, DLR 95 the right half.
+  T('Legendary Pyroduct', 'stadium', "Evolution Pokémon in play (both yours and your opponent's) have no Abilities.", { count: 2, set: 'DLR', num: '94' }),
+  T('Legendary Pyroduct', 'stadium', "Evolution Pokémon in play (both yours and your opponent's) have no Abilities.", { count: 2, set: 'DLR', num: '95' }),
 ];
 (async () => {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -118,6 +121,25 @@ const CARDS = [
   w.gfAttach(uid('Basic Fire Energy'), G().active.id);
   w.gfAttack(0);
   ok(G().active.dmg === 10 && G().turnOver, 'Heat Dive does 10 damage to itself and ends the turn');
+  // 10. Legendary Pyroduct: "You cannot play this card by itself. You must combine 2 different Legendary Pyroduct
+  // from your hand to play as 1 Stadium card." One half alone can't be played; both go in and out together.
+  w.eval('gfDeal(false)');
+  rig(['Shuppet', 'Shuppet', 'Shuppet', 'Shuppet', 'Munkidori', 'Basic Fire Energy', 'Basic Fire Energy'], []);
+  const halfIn = h => w.eval(`(() => { const all = gf.deck.concat(gf.prizes); const i = all.findIndex(x => x.card.name === 'Legendary Pyroduct' && gfHalfOf(x) === '${h}');
+    const x = all[i]; gf.deck = gf.deck.filter(y => y !== x); gf.prizes = gf.prizes.filter(y => y !== x); gf.hand.push(x); return x.uid; })()`);
+  w.gfPlayBasic(uid('Shuppet'), 'active'); w.gfEndTurn();
+  const L = halfIn('L');
+  const offL = w.eval(`gfActions(gf.hand.find(x => x.uid === ${L})).find(a => /Stadium/.test(a.label))`);
+  ok(offL && offL.off && offL.why === 'Needs both halves in hand.', 'one half of Legendary Pyroduct alone can not be played: ' + JSON.stringify(offL));
+  w.gfStadium(L);
+  ok(!G().stadium && G().hand.some(x => x.uid === L), 'playing one half alone does nothing');
+  const R = halfIn('R');
+  const onL = w.eval(`gfActions(gf.hand.find(x => x.uid === ${L})).find(a => /Stadium/.test(a.label))`);
+  ok(onL && !onL.off, 'with both halves in hand it can be played');
+  const n0 = G().hand.length; w.gfStadium(L);
+  ok(G().stadium && G().stadiumPair && G().hand.length === n0 - 2 && !G().hand.some(x => x.uid === R), 'both halves go into play as one Stadium');
+  ok(/Put Legendary Pyroduct in play/.test(G().log.map(l => l.s).join(' | ')), 'the log says Put Legendary Pyroduct in play');
+  ok(w.eval('gfHalfOf(gf.stadium)') !== w.eval('gfHalfOf(gf.stadiumPair)'), 'one left half and one right half are in play');
   ok(!errors.length, 'no page errors' + (errors.length ? ': ' + errors.slice(0, 3).join(' / ') : ''));
   console.log(fails ? fails + ' failed' : 'all passed');
   process.exit(fails ? 1 : 0);

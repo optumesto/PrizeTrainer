@@ -15,7 +15,7 @@ function where(s) {
     ['deck', 'hand', 'discard', 'prizes', 'lost'].forEach(z => (P[z] || []).forEach(r => add(r.uid, k, z)));
     [P.active, ...P.bench].filter(Boolean).forEach(m => { m.stack.forEach(r => add(r.uid, k, 'stack')); m.energy.forEach(r => add(r.uid, k, 'energy')); if (m.tool) add(m.tool.uid, k, 'tool'); });
   });
-  if (s.stadium) add(s.stadium.ref.uid, s.stadium.owner, 'stadium');
+  if (s.stadium) { add(s.stadium.ref.uid, s.stadium.owner, 'stadium'); if (s.stadium.pair) add(s.stadium.pair.uid, s.stadium.owner, 'stadium'); }
   const c = s.pending && s.pending.ctx; const seen = new Set(at.keys());
   if (c) for (const key in c) { const v = c[key]; (Array.isArray(v) ? v : v && v.uid ? [v] : []).forEach(r => { if (r && typeof r === 'object' && r.uid && r.card && !seen.has(r.uid)) add(r.uid, 'ctx', key); }); }
   return at;

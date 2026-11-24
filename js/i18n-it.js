@@ -2766,3 +2766,5 @@ I18N_MORE.it.pat.unshift(
 
 // 3.5.11: faster card loading on school wifi.
 Object.assign(I18N_MORE.it.dict, { "Faster card loading on school wifi": "Caricamento delle carte più veloce sul wifi della scuola" });
+// 3.5.12: Legendary Stadiums are played with both halves.
+Object.assign(I18N_MORE.it.dict, { "Legendary Stadiums Need Both Halves": "Gli Stadi Leggendari richiedono entrambe le metà" });
