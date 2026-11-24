@@ -49,6 +49,26 @@ const num = n => Number(n).toLocaleString('en-US');
 const median = a => { const s = a.slice().sort((x, y) => x - y), h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
 const r1 = x => (Math.round(x * 10) / 10).toFixed(1);
 
+// 3.5.12: one capitalization rule. Headings (h1 to h3) and the site's link labels are in Title Case:
+// minor words stay lowercase unless first or last, card suffixes (ex, V) stay as printed, and a
+// heading that asks a question keeps sentence case. Applied to every built page as it is written, so
+// the words in this file and in .github/pages can stay as they read in a sentence. The breadcrumb and
+// structured data keep the sentence form, as on the live pages.
+const MINOR = new Set('a an the and but or nor for of in on at to by vs vs. with from as per into via'.split(' '));
+const titleCase = s => { const ws = s.split(' '); return ws.map((w, i) => {
+  if (!/^[a-z]/.test(w) || /^(ex|v|vmax|vstar)$/.test(w)) return w;
+  const first = i === 0 || /[:(]$/.test(ws[i - 1]) || /^\(/.test(w), last = i === ws.length - 1;
+  if (!first && !last && MINOR.has(w.replace(/[^a-z']/g, ''))) return w;
+  return w.replace(/^([("']?)([a-z])/, (m, p, c) => p + c.toUpperCase()).replace(/-([a-z])/g, (m, c) => '-' + c.toUpperCase());
+}).join(' '); };
+const LINK_CAPS = ['Card guides', 'Deck checker', 'Improve your deck', 'Opening hand odds', 'Rotation check', 'Rotation checker', 'Prize trainer',
+  'Rules and rulings', 'Your first deck', 'Goldfish your deck', 'Deck guides', 'How grading works', 'Delete your data', 'Opening odds'];
+const capsHtml = html => {
+  html = html.replace(/<(h[1-3])([^>]*)>([^<>]+)<\/\1>/g, (m, h, a, t) => /\?\s*$/.test(t) || a.includes('rd-age-h') ? m : `<${h}${a}>${titleCase(t)}</${h}>`);
+  for (const l of LINK_CAPS) html = html.split('>' + l + '</a>').join('>' + titleCase(l) + '</a>');
+  return html;
+};
+
 // ── the page shell, the same look as the guide pages already on the site ──────────────────────
 const NAV = [
   ['./', 'RdyDeck'], ['meta-decks.html', 'Deck Guides'], ['how-grading-works.html', 'How Grading Works'],
@@ -116,6 +136,8 @@ const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-d
   .card-art { flex:0 0 auto; width:180px; margin:0; }
   .card-art img { display:block; width:100%; height:auto; aspect-ratio:274/381; border-radius:4.5%; background:var(--line); }
   @media (max-width:520px) { .card-top { flex-direction:column; align-items:center; } .card-art { width:min(240px, 70vw); } .card-top .tw { width:100%; } }`;
+// The card guide styles, left out of the pages written by hand that never had them (cardCss: false).
+const CARD_CSS = STYLE.slice(STYLE.indexOf('\n  .card-top {'));
 
 export function footerHtml(up = '') {
   const a = ([h, t]) => `<a href="${up}${h}">${t}</a>`;
@@ -132,7 +154,7 @@ const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&eacute;/g, '\u00e
 // The question and answer pairs (<dt> then <dd>) on a page, so Google and AI assistants can read them as an FAQ.
 const faqPairs = body => [...String(body).matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)].map(m => [plain(m[1]), plain(m[2])]);
 
-function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [], index = true }) {
+function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [], index = true, cardCss = true }) {
   const url = 'https://rdydeck.com/' + file.replace(/(^|\/)index\.html$/, '$1');
   const up = '../'.repeat(file.split('/').length - 1);
   const qa = faq ? faqPairs(body) : [];
@@ -190,7 +212,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 <link rel="manifest" href="${up}manifest.json">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 <style>
-${up ? STYLE.replace(/url\((saira)/g, 'url(' + up + '$1') : STYLE}
+${(cardCss ? STYLE : STYLE.replace(CARD_CSS, '')).replace(/url\((saira)/g, 'url(' + up + '$1')}
 </style>
 <script>try { if (localStorage.getItem('ptcg_theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 <style>.rd-nosocial .rd-social { display:none !important; }
@@ -588,7 +610,7 @@ ${rows.join('\n')}
 <p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How Grading Works</a> explains exactly what the grade measures.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
-    file: 'improve-your-deck.html',
+    file: 'improve-your-deck.html', cardCss: false,
     title: 'How to Improve Your Pokémon TCG Deck: 7 Checks | RdyDeck',
     desc: 'How to make your Pokémon TCG deck better: 7 checks with typical counts from recent top 16 lists, and a free deck checker that runs them for you.',
     updated: mu.asOf,
@@ -671,7 +693,7 @@ ${rows.join('\n')}
   <dd>Yes. RdyDeck rates a 60 card deck out of 10 for free and lists what to fix first. It checks how the deck plays, not the condition of your cards.</dd>
 </dl>`;
   return page({
-    file: 'first-deck.html',
+    file: 'first-deck.html', cardCss: false,
     title: 'How to Build Your First Pokémon TCG Deck | RdyDeck',
     desc: 'Build your first Pokémon TCG deck: the official 60 card deck rules, how many Pokémon, Trainers and Energy top lists run, and a free deck checker.',
     updated: rul.asOf,
@@ -1029,6 +1051,8 @@ const out = [
   // 3.4.35: which cards have a guide, so the app's card sheet can link "Read the guide" (js/card-details.js).
   ...(cp.cards.length ? [['card-guides.json', JSON.stringify({ schema: 1, note: 'Card name to its guide at cards/<slug>.html. Written by build-pages.mjs.', guides: Object.fromEntries(cp.cards.map(c => [c.name, c.slug])) }, null, 1) + '\n']] : []),
 ];
+// 3.5.12: every page gets its headings and link labels in Title Case as it is written.
+for (const e of out) if (e[0].endsWith('.html')) e[1] = capsHtml(e[1]);
 // Nov 24 2026: Top decks on home (js/v90-top-decks.js) links a deck to its guide through TD90_GUIDES.
 // The map is written here from deck-guides.json, so a new guide is linked from home by the same run
 // that builds its page. tests/top-decks-guides-check.mjs lists Top decks that still need a guide.
