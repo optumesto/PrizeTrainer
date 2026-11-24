@@ -200,7 +200,7 @@ w.openReview('dbl-ui');
 w.showReviewTab('cards');
 await sleep(400);
 const btn = () => d.getElementById('dbl-btn');
-ok(!!btn() && btn().textContent.trim() === 'De-bling', 'De-bling button on the Cards tab');
+ok(!!btn() && btn().textContent.trim() === 'Cheapest Version', 'Cheapest Version button on the Cards tab');
 ok(!!btn() && btn().previousElementSibling && btn().previousElementSibling.id === 'op30-mark', 'beside Mark cards you own');
 const G0 = sig(w.gradeDeck(deck));
 btn().click();
@@ -218,11 +218,11 @@ ok(JSON.stringify(deck.cards.map(c => [c.count, c.name, c.set, c.num])) !== list
 ok(!!w.localStorage.getItem('pt_state') || true, 'saved');
 w.closeSheet();
 await sleep(100);
-ok(!!btn() && btn().textContent.trim() === 'Undo de-bling', 'button reads Undo de-bling after a De-bling');
+ok(!!btn() && btn().textContent.trim() === 'Undo Cheapest Version', 'button reads Undo Cheapest Version after a run');
 btn().click();
 await sleep(200);
 ok(JSON.stringify(deck.cards.map(c => [c.count, c.name, c.set, c.num])) === list0, 'Undo puts the list back exactly');
-ok(btn().textContent.trim() === 'De-bling', 'button reads De-bling again');
+ok(btn().textContent.trim() === 'Cheapest Version', 'button reads Cheapest Version again');
 ok(sig(w.gradeDeck(deck)) === G0, 'grade the same after Undo');
 // A second De-bling, then a hand edit: Undo is gone.
 btn().click();
@@ -231,7 +231,7 @@ w.closeSheet();
 deck.cards[0].count += 0;
 deck.cards.push({ name: 'Test Card', set: '', num: '', count: 0 });
 w.renderReview(deck); w.showReviewTab('cards'); await sleep(100);
-ok(btn().textContent.trim() === 'De-bling', 'after the list changes, Undo is gone');
+ok(btn().textContent.trim() === 'Cheapest Version', 'after the list changes, Undo is gone');
 deck.cards.pop();
 // Grade history: no entry for a De-bling.
 const log = deck.gradeLog;
@@ -242,12 +242,54 @@ w.renderReview(deck); w.showReviewTab('cards'); await sleep(100);
 ok(!btn(), 'prices off: no De-bling button');
 w.localStorage.removeItem('rd_prices_show');
 
+// ── 3.5.13: a list already at its cheapest printings, and Mason's example ──
+// Mason, 24 Nov 2026: on his Mega Rayquaza list it swapped Latias ex SSP 76 (regular, $11.23) to
+// SSP 220 (full art, $10.61), which read as the opposite of de-bling. It was cheaper, so the button is
+// now Cheapest Version. Prices here are TCGdex's TCGplayer market prices of 23 Nov 2026 (SSP 239 made up).
+const putPrice = (set, num, u) => { w.op30Prices()[w.op30Id(set, num)] = { t: Date.now(), u, d: null }; };
+putPrice('SSP', '76', 11.23); putPrice('SSP', '220', 10.61); putPrice('SSP', '239', 60);
+await w.eval(`(async function () {
+  const cards = await Promise.all(parseDeckList('Pokémon: 2\\n2 Latias ex SSP 76').map(c => fetchCardImage(c)));
+  const cov = await enrichDeckCards(cards);
+  state.decks.push({ id: 'dbl-lat', name: 'Latias test', cards, history: [], format: 'standard', coverage: cov, enrichVer: ENRICH_VER });
+})`)();
+{
+  const dk = w.eval(`state.decks.find(d => d.id === 'dbl-lat')`);
+  const lines = () => JSON.stringify(dk.cards.map(c => [c.count, c.name, c.set, c.num]));
+  const total = () => dk.cards.reduce((a, c) => { const p = w.op30Price(c.set, c.num); return a + (p && p.u ? p.u * c.count : 0); }, 0);
+  const L0 = lines(), T0 = total();
+  const Dx = await w.dblData();
+  const p1 = w.dblPlan(dk, Dx);
+  ok(p1.swaps.length === 1 && p1.swaps[0].to === 'SSP 220', 'Latias ex SSP 76 goes to SSP 220, the cheapest: ' + p1.swaps.map(s => s.to).join(','));
+  await w.dblApply(dk, p1); w.closeSheet();
+  const T1 = total();
+  console.log(`     Latias ex x2: $${T0.toFixed(2)} -> $${T1.toFixed(2)}`);
+  ok(T1 < T0, 'the list total went down');
+  ok(!w.dblPlan(dk, Dx).swaps.length, 'a second run changes nothing');
+  // The same list opened fresh (no Undo kept): already at its cheapest, so nothing moves.
+  const L1 = lines();
+  w.eval(`_dblUndo = null`);
+  let toast = '';
+  const st = w.showToast; w.showToast = m => { toast = m; };
+  await w.dblRun('dbl-lat');
+  w.showToast = st;
+  ok(lines() === L1 && total() === T1, 'already cheapest: the list and total stay as they are');
+  ok(toast === 'Every card is already its cheapest printing.', 'already cheapest: says so (' + toast + ')');
+  // Undo after a run puts back exactly the list before it.
+  dk.cards.forEach(c => { c.set = 'SSP'; c.num = '76'; });
+  const p2 = w.dblPlan(dk, Dx);
+  await w.dblApply(dk, p2); w.closeSheet();
+  await w.dblUndo();
+  ok(lines() === L0 && Math.abs(total() - T0) < 0.001, 'Undo puts back exactly the list before the run');
+  w.eval(`state.decks = state.decks.filter(d => d.id !== 'dbl-lat')`);
+}
+
 // ── the new text in every language ──
-const EN = ['Added: De-bling button', 'De-bling', 'Undo de-bling', 'Swap each card to its cheapest printing that plays the same', 'Put back the printings the list had before',
+const EN = ['De-bling is now called Cheapest Version', 'Cheapest Version', 'Undo Cheapest Version', 'The cheapest printing can have different art, even a full art.', 'Swap each card to its cheapest printing that plays the same', 'Put back the printings the list had before',
   'Finding the cheapest printings…', 'These cards now use their cheapest printing that plays the same. Each line shows what it saves.', 'Estimated savings:',
-  '1 card has no price to compare, so it stays as it is.', '3 cards have no price to compare, so they stay as they are.', 'Turn prices on in Settings to use De-bling.',
-  'De-bling could not load its card list. Try again when you are online.', 'Prices could not be read. Try again when you are online.',
-  'No cheaper printing with a price was found.', 'Every card is already its cheapest printing.', 'The list changed since, so there is nothing to undo.', 'De-bling undone.'];
+  '1 card has no price to compare, so it stays as it is.', '3 cards have no price to compare, so they stay as they are.', 'Turn prices on in Settings to use Cheapest Version.',
+  'Cheapest Version could not load its card list. Try again when you are online.', 'Prices could not be read. Try again when you are online.',
+  'No cheaper printing with a price was found.', 'Every card is already its cheapest printing.', 'The list changed since, so there is nothing to undo.', 'Cheapest Version undone.'];
 // jsdom here loads no script files, so a language file the app asks for is run by hand.
 { const ap = d.head.appendChild.bind(d.head);
   d.head.appendChild = el => {
@@ -264,7 +306,7 @@ for (const lang of ['es', 'pt', 'fr', 'de', 'it']) {
   const miss = EN.filter(s => { const t = w.rdI18n.t(s); return !t || t === s || /[A-Za-z]{4,}/.test(t) && t.includes('printing'); });
   ok(!miss.length, `${lang}: all ${EN.length} new strings translated` + (miss.length ? ': ' + miss.join(' | ') : ''));
   w.renderReview(deck); w.showReviewTab('cards'); await sleep(300);
-  ok(btn() && btn().textContent.trim() !== 'De-bling', `${lang}: button reads "${btn() && btn().textContent.trim()}"`);
+  ok(btn() && btn().textContent.trim() !== 'Cheapest Version', `${lang}: button reads "${btn() && btn().textContent.trim()}"`);
   console.log(`     ${lang}: ` + w.rdI18n.t('3 cards have no price to compare, so they stay as they are.'));
 }
 w.i18nPick('en'); await sleep(200);

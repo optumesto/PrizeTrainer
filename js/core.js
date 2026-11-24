@@ -8950,16 +8950,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.5.12',
+  version: 'v3.5.13',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Titles and headings capitalized the same way everywhere' }
+    { t: 'De-bling is now called Cheapest Version' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.5.12', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'Titles and headings capitalized the same way everywhere' }
+  ] },
   { version: 'v3.5.11', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Faster card loading on school wifi' }
   ] },
@@ -8974,9 +8977,6 @@ const WHATS_PREV = [
   ] },
   { version: 'v3.5.7', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'School wifi card loading fixed' }
-  ] },
-  { version: 'v3.5.6', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'The RdyDeck logo now matches our Instagram picture' }
   ] },
 ];
 const WN_KEY = 'rd_seen_version';
@@ -11996,8 +11996,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.5.12';
-const PT_BUILD = 183;
+const PT_VERSION = 'v3.5.13';
+const PT_BUILD = 184;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

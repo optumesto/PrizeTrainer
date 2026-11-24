@@ -1501,21 +1501,22 @@ I18N_MORE.it = {
     "Added: tap a card to play it": "Nuovo: tocca una carta per giocarla",
     "Goldfish is now 5 turns": "Goldfish ora dura 5 turni",
     "Goldfish is back to 3 turns": "Goldfish torna a 3 turni",
-    "De-bling": "Risparmia",
-    "Undo de-bling": "Annulla Risparmia",
+    "Cheapest Version": "Versione Più Economica",
+    "Undo Cheapest Version": "Annulla Versione Più Economica",
     "Swap each card to its cheapest printing that plays the same": "Sostituisce ogni carta con la sua stampa più economica che gioca allo stesso modo",
     "Put back the printings the list had before": "Rimette le stampe che la lista aveva prima",
     "Finding the cheapest printings…": "Ricerca delle stampe più economiche…",
     "These cards now use their cheapest printing that plays the same. Each line shows what it saves.": "Queste carte ora usano la loro stampa più economica che gioca allo stesso modo. Ogni riga mostra quanto fa risparmiare.",
     "Estimated savings:": "Risparmio stimato:",
+    "The cheapest printing can have different art, even a full art.": "La stampa più economica può avere un'altra illustrazione, anche una full art.",
     "1 card has no price to compare, so it stays as it is.": "1 carta non ha un prezzo da confrontare, quindi resta com'è.",
-    "Turn prices on in Settings to use De-bling.": "Attiva i prezzi nelle Impostazioni per usare Risparmia.",
-    "De-bling could not load its card list. Try again when you are online.": "Risparmia non è riuscito a caricare la sua lista di carte. Riprova quando sei online.",
+    "Turn prices on in Settings to use Cheapest Version.": "Attiva i prezzi nelle Impostazioni per usare Versione Più Economica.",
+    "Cheapest Version could not load its card list. Try again when you are online.": "Versione Più Economica non è riuscita a caricare la sua lista di carte. Riprova quando sei online.",
     "Prices could not be read. Try again when you are online.": "Non è stato possibile leggere i prezzi. Riprova quando sei online.",
     "No cheaper printing with a price was found.": "Non è stata trovata nessuna stampa più economica con un prezzo.",
     "Every card is already its cheapest printing.": "Ogni carta è già nella sua stampa più economica.",
     "The list changed since, so there is nothing to undo.": "Nel frattempo la lista è cambiata, quindi non c'è nulla da annullare.",
-    "De-bling undone.": "Risparmia annullato.",
+    "Cheapest Version undone.": "Versione Più Economica annullata.",
     // 3.3.9: puzzle score share.
     "Puzzle deck search fixed": "Ricerca nel mazzo del puzzle corretta",
     "Added: share your puzzle score": "Nuovo: condividi il tuo risultato del puzzle",
@@ -2767,3 +2768,6 @@ I18N_MORE.it.pat.unshift(
 
 // 3.5.11: faster card loading on school wifi.
 Object.assign(I18N_MORE.it.dict, { "Faster card loading on school wifi": "Caricamento delle carte più veloce sul wifi della scuola" });
+
+// 3.5.13: De-bling renamed Cheapest Version.
+Object.assign(I18N_MORE.it.dict, { "De-bling is now called Cheapest Version": "Risparmia ora si chiama Versione Più Economica" });
