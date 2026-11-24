@@ -2,6 +2,11 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.3 (build 174): A reordered home screen on phones (24 Nov 2026)
+
+- Phones (under 560px): home shows 4 decks before Show all (was 8), Daily games right after Import, Starter decks and Build a deck, then tiles grouped as Practice (Sparring, Tournament log, Improve your deck, Prize trainer, Goldfish guide, Opening odds), Learn (Deck guides, How grading works, Rotation checker, Rules) and More (Save and open decks, Share the app, Help and feedback, Contact, About RdyDeck, FAQ). Sparring gets a home tile. The Deck checker tile is dropped on phones; its text link stays. Wider screens unchanged (Mason, 24 Nov 2026: "I like it, push it").
+- Changed files: index.html (home42 tiles, phone CSS, softwareVersion, stamps), js/v67-edit-cards.js (phone deck cap 4), js/core.js (What's new, PT_VERSION v3.5.3, PT_BUILD 174), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache v174).
+
 # RdyDeck 3.5.2 (build 173): A tidier home screen on phones (24 Nov 2026)
 
 - Phones (under 560px): the bottom of home is one grid of tiles that runs on from More (Deck checker, Opening odds, Prize trainer, Goldfish guide, Rotation checker, Rules, Improve your deck, Contact, About RdyDeck, FAQ). About and FAQ open in place, so their text stays on the page. The disclaimer and the Terms, Privacy, Delete your data and Credits links stay. Tighter gaps between home sections and on deck rows. Wider screens unchanged (Mason, 24 Nov 2026: "Lets compress it a bit for mobile").

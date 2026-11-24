@@ -2689,6 +2689,7 @@ Object.assign(I18N_MORE.fr.dict, {
   "A note when Deck strength and Tournament strength disagree": "Une note quand la force du deck et la force en tournoi ne concordent pas",
   "Deck strength is now Card strength": "La force du deck devient la force des cartes",
   "A tidier home screen on phones": "Un écran d'accueil plus clair sur mobile",
+  "A reordered home screen on phones": "Un écran d'accueil réorganisé sur mobile",
   "Deck strength reads the cards more closely": "La force du deck lit les cartes de plus près",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Les attaques qui défaussent de l'Énergie, ne peuvent pas se répéter ou blessent l'attaquant comptent maintenant pour ce qu'elles font à chaque tour, et quatre décomptes de cartes (pioche et recherche, cartes qui paient après un K.O., réductions de dégâts et changements adverses) déplacent un peu la note. La force du deck est maintenant plus proche des résultats en tournoi.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Quand les deux scores sont écartés de 1.5 ou plus, une ligne en dessous indique lequel est le plus haut et ce que lit la force du deck.",
