@@ -769,7 +769,9 @@ function toGradeRows(deck) {
     const atks = (c.attacks && c.attacks.length)
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
-          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null, disc: a.disc || null }))
+          conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null, disc: a.disc || null,
+          // 3.5: damage the attack does to the attacker itself (Mega Golurk ex's Goliath's Punch).
+          selfd: +((String(a.text || '').match(/this pok[e\u00e9]mon also does (\d+) damage to itself/i) || [])[1] || 0) || null }))
       : null;
     const ar = t==='pkmn' ? gAbilRead(c) : { tags: [], say: [] };
     return { qty:c.count, name:c.name, card:{
@@ -1691,6 +1693,45 @@ function g273SrcF(deck, c) {
   return { f: n >= 2 ? 1 : 0.7, n };
 }
 /**
+ * 3.5: how much of a hit a list can repeat turn after turn, read from the attack's own text. Returns
+ * { f, why } with f the share of the hit the grade counts, or null when nothing in the text costs it.
+ * disc: Energy it discards (from itself, or from among your Pokemon for Inferno X) has to be attached
+ *   again before the next big hit; an Ability, Supporter or Item that attaches extra Energy (accel) helps.
+ *   A hit that grows with the Energy it discards counts what the list can attach again in a turn or two.
+ * lock: it cannot attack (or use this attack) on its next turn, so the turn between does less.
+ * self: damage it does to itself, as a share of its HP.
+ */
+const G350 = { discBig: 0.7, discBigAccel: 0.85, discOne: 0.9, discOneAccel: 0.95, escN: 2, escAccelPer: 2, escAccelMax: 3, lockAll: 0.75, lockSelf: 0.8, selfK: 0.5 };
+function g350Sus(a, c, r, accel) {
+  if (!a || !c || !r || !(r.top > 0)) return null;
+  let f = 1, why = '', worst = 1;
+  const cut = (x, w) => { if (!(x < 1)) return; f *= x; if (x < worst) { worst = x; why = w; } };
+  const es = r.escale;
+  // accel is how many cards in the list attach extra Energy: every escAccelPer of them adds one Energy a turn.
+  if (es && es.discard) { const n = Math.min(es.have || 0, G350.escN + Math.min(G350.escAccelMax, Math.floor(accel / G350.escAccelPer)));
+    const s = (es.base || 0) + es.per * n * (es.x2 ? 2 : 1); if (s > 0 && s < r.top) cut(s / r.top, 'disc'); }
+  const d = a.edisc;
+  if (d && !(es && es.discard)) { const big = d.n === 'all' || d.n >= 2;
+    const x = big ? (accel ? G350.discBigAccel : G350.discBig) : (accel ? G350.discOneAccel : G350.discOne);
+    // An optional discard costs only the bonus it adds.
+    if (!d.opt) cut(x, 'disc'); else if (d.more) cut(1 - Math.min(1, d.more / r.top) * (1 - x), 'disc'); }
+  if (a.selfd && c.hp) cut(1 - G350.selfK * Math.min(1, a.selfd / c.hp), 'self');
+  // A lock is weighed once the whole list is read (g350Lock), since another attacker can hit on the turn between.
+  if (a.lock) r.lockA = { k: a.lock, o: a.lock === 'self' ? Math.max(0, ...(c.attacks || []).filter(x => x.name !== a.name).map(x => x.max || x.dmg || 0)) : 0 };
+  return f < 1 ? { f, why } : null;
+}
+/** 3.5: an attack that cannot be used on the attacker's next turn counts the turn between at what the list can
+ *  hit with then: its own other attack, or another Pokemon that attacks. alt is that hit. */
+function g350Lock(r, alt) {
+  const L = r && r.lockA; if (!L || !(r.top > 0)) return;
+  const o = Math.min(1, Math.max(alt || 0, L.k === 'self' ? L.o : 0) / r.top);
+  const x = Math.max(L.k === 'self' ? G350.lockSelf : G350.lockAll, (1 + o) / 2);
+  if (x >= 1) return;
+  const f = (r.sus ? r.sus.f : 1) * x, why = !r.sus || x < r.sus.f ? 'lock' : r.sus.why;
+  r.sus = { f, why };
+}
+const G350_WHY = { disc: 'it discards Energy that has to be attached again before the next big hit', lock: 'it cannot hit that hard every turn', self: 'it also does damage to itself' };
+/**
  * v60: every attack this Pokemon can use. With an Ability like Mew ex's Memory Helix that is also
  * each attack of the other Pokemon in the list (they sit on the Bench), paid with Energy the list runs.
  * Returns [{ a, r }] with r the reach of each, marked as a copy for the borrowed ones.
@@ -2017,10 +2058,16 @@ function gViability(deck, coh, main) {
       return n+((ts.includes(ty)||ts.includes('any'))&&fits(x.card,who)?x.qty:0); },0)>=need[ty]); };
   // Best payable hit per attacker: its ceiling, and what it does early.
   const reach=[];
+  // 3.5: the list runs a card that attaches extra Energy, so a discarded Energy comes back sooner.
+  const accel = deck.filter(x => x.card && canPlay(x.card) && (x.card.provides || []).includes('energy_accel')).reduce((n, x) => n + x.qty, 0);
   attackers.forEach(e => { let r0=null;
     // v60: compared by gVal, so an attack that hits 3 Pokemon at once can win over a slightly bigger single hit.
-    gAtkOpts(e, deck, pay, c => canPlay(c)).forEach(({ r }) => {
-      if (!r0 || r.val>r0.val || (r.val===r0.val && r.now>r0.now)) r0=r; });
+    // 3.5: each attack is compared at what the list can repeat (g350Sus), the attack it copies read from its own card.
+    const sv = r => r.val * (r.sus ? r.sus.f : 1);
+    gAtkOpts(e, deck, pay, c => canPlay(c)).forEach(({ a, r }) => {
+      const src = r.copy && !r.copy.bench ? (((deck.find(x => x.card && x.name === r.copy.who) || {}).card || {}).attacks || []).find(x => x.name === r.copy.atk) : a;
+      r.sus = g350Sus(src, e.card, r, accel);
+      if (!r0 || sv(r)>sv(r0) || (sv(r)===sv(r0) && r.now>r0.now)) r0=r; });
     // v62: attacking twice a turn doubles what it does to the Active, when the list runs the Stadium it needs (2 or more).
     const t2 = e.card.atk2, t2n = t2 && t2.stadium ? deck.filter(x => x.card && x.card.key === t2.stadium.toLowerCase()).reduce((n, x) => n + x.qty, 0) : 0;
     if (r0 && r0.top > 0 && t2 && (!t2.stadium || t2n >= 2)) r0 = Object.assign({}, r0, { now: r0.now * 2, top: r0.top * 2, twice: { abil: t2.abil, stadium: t2.stadium, one: r0.top } });
@@ -2040,7 +2087,7 @@ function gViability(deck, coh, main) {
     findings.push({sev:'warn', t:'Too little Energy for the main attacker',
       d:`${gCap(main.name)}'s cheapest attack needs ${least} Energy, but the list runs only ${eQv} Energy cards, so it can never attack. Add Energy or pick another main attacker.`}); }
   // 2.7.3: a copied hit from a thin line is compared at what the grade counts of it.
-  const effC = r => r.eff * (r.srcF || 1);
+  const effC = r => r.eff * (r.sus ? r.sus.f : 1) * (r.srcF || 1);
   // 3.2.8: a Pokemon in a support role (gSupportMon: Mega Kangaskhan ex drawing, Fezandipiti ex) does not set
   // the damage ceiling when the deck has a main attacker that is not one itself. A copied attack (Mew ex
   // using Rapid-Fire Combo through Memory Helix) is the copier's own hit and still counts.
@@ -2055,6 +2102,8 @@ function gViability(deck, coh, main) {
   // A box (Basic Box: four or more other Pokemon that each hit for half the biggest threats) attacks
   // with whatever fits, so nothing there is left out.
   const sidePre = r => { const c = cardOf(r); return !!c && (gSupportMon(c, r.top) || sideEng(c)); };
+  // 3.5: a lock is weighed against the best hit another attacking Pokemon in the list has for the turn between.
+  reach.forEach(r => { if (r.lockA) g350Lock(r, Math.max(0, ...reach.filter(o => o.name !== r.name && !sidePre(o)).map(o => o.top * (o.sus ? o.sus.f : 1) * (o.srcF || 1)))); });
   const boxy = reach.filter(r => !sidePre(r) && effC(r) * 2 >= FMT.threatHP[1]).length >= 4;
   const sideSup = r => { const c = cardOf(r);
     if (boxy) return false;
@@ -2085,11 +2134,12 @@ function gViability(deck, coh, main) {
   // boosts from other cards (a Tool, a Supporter, a partner's Ability) count at half, since a
   // game rarely lines them all up. The full ceiling still shows in the text.
   // 2.7.3: a copied hit counts only as often as the Pokemon it copies is in play (g273SrcF).
-  const ceOf = r => !r ? 0 : Math.round((((r.cond || (r.escale && r.top > r.now)) ? (r.now + r.top) / 2 : r.top) + (r.boost || 0) / 2) * (r.srcF || 1));
+  // 3.5: and only as much of it as the list can repeat each turn (g350Sus).
+  const ceOf = r => !r ? 0 : Math.round((((r.cond || (r.escale && r.top > r.now)) ? (r.now + r.top) / 2 : r.top) * (r.sus ? r.sus.f : 1) + (r.boost || 0) / 2) * (r.srcF || 1));
   const ce = ceOf(bestR);
   const thinTxt = r => r.thinSelf ? `the list runs only ${r.srcN === 1 ? '1 copy of' : r.srcN + ' copies of'} ${gCap(r.name)}${r.srcN === 1 ? '' : ' or its line'}, so it is not always in play`
     : `${r.srcN === 1 ? 'there is only 1' : 'there are only ' + r.srcN} ${gCap(r.copy.who)}${r.srcN === 1 ? '' : ' or its line'} to copy from, so it is not always in play`;
-  const ceTxt = bestR && ce < eff ? (bestR.srcF && !bestR.boost && !bestR.cond && !bestR.escale ? ` The grade counts ${ce}, since ${thinTxt(bestR)}.`
+  const ceTxt = bestR && ce < eff ? (bestR.sus ? ` The grade counts ${ce}, since ${G350_WHY[bestR.sus.why]}.` : bestR.srcF && !bestR.boost && !bestR.cond && !bestR.escale ? ` The grade counts ${ce}, since ${thinTxt(bestR)}.`
     : ` The grade counts ${ce}, since the full hit needs ${bestR.boost && bestR.bNames && bestR.bNames.length ? bestR.bNames.join(' and ') : 'time to grow'}${bestR.boost && (bestR.cond || bestR.escale) ? ' and time to grow' : ''}${bestR.srcF ? ' and ' + thinTxt(bestR) : ''}.`) : '';
   const condTxt = r => `you have ${r.cond.n} ${r.cond.what} in your discard pile`;
   // 3.2.8: a support Pokemon left out of the ceiling can still attack in a pinch, so a harder hit of its
@@ -3658,6 +3708,126 @@ function gAtkOptions(entries, reach) {
   return [...m].map(([key, name]) => ({ key, name })).sort((a, b) => (eff.get(b.key) || 0) - (eff.get(a.key) || 0));
 }
 
+/* 3.5: the factor registry. Each factor reads the cards' own text (attacks, Abilities, Trainer and
+   Special Energy rules) and returns one raw number for the list, in the direction the game says is
+   better or worse. G351 below holds the ones kept after testing against results (each kept only if it
+   brought card-only grades closer to win rates on both the older weeks and the newest set), with its
+   weight and the reason it gives. Adding a factor means adding one entry here: nothing else is rebuilt. */
+function g351Text(c) {
+  if (!c) return '';
+  return [...(c.attacks || []).map(a => a.text || ''), ...(c.atext || []).map(x => (x && x[1]) || ''), c.rtext || '', c.etext || ''].join(' ¦ ');
+}
+/* Kept after testing (Nov 24, 128 top lists over 40 decks): each moves the grade by its weight for every
+   standard deviation the list sits above or below the average top list, capped at 3 either way. m and sd are
+   the average and spread across those lists, frozen so a grade does not move when other decks change.
+   Tested and left out, since they did not bring grades closer to results on both windows or were too
+   weak to trust: the rest of g351Factors. */
+const G351 = { cap: 3, f: {
+  draw:    { w: 0.3,  m: 9.723, sd: 2.68 },   // cards that draw or search (Trainers and Abilities)
+  koCond:  { w: 0.3,  m: 1.369, sd: 1.016 },  // cards that pay off after your Pokemon is Knocked Out (Fezandipiti ex, Unfair Stamp)
+  protect: { w: 0.1,  m: 1.138, sd: 2.544 },  // cards that cut or stop damage to your Pokemon
+  gust:    { w: 0.05, m: 5.385, sd: 1.854 }   // cards that pull up an opponent's Benched Pokemon
+} };
+function g351Adjust(F) {
+  const parts = {}; let sum = 0;
+  if (!F) return { sum, parts };
+  for (const k in G351.f) { const g = G351.f[k]; const z = gClamp(((F[k] || 0) - g.m) / g.sd, -G351.cap, G351.cap); parts[k] = g.w * z; sum += parts[k]; }
+  return { sum, parts };
+}
+function g351Factors(deck, via, main) {
+  // Reads the cards as the list holds them (full attack, Ability and rule text), not the grade's rows.
+  const rows = (deck.cards || []).filter(c => c && c.count > 0 && c.supertype).map(c => ({ qty: c.count, name: c.name, card: c }));
+  const n = rows.reduce((a, e) => a + e.qty, 0) || 60;
+  const kind = c => /pok/i.test(c.supertype || '') ? 'P' : /trainer/i.test(c.supertype || '') ? 'T' : /energy/i.test(c.supertype || '') ? 'E' : '';
+  const sub = c => (c.sub || []).map(s => String(s).toLowerCase());
+  const q = test => rows.reduce((a, e) => a + (test(e.card, e) ? e.qty : 0), 0);
+  const txt = new Map(rows.map(e => [e, g351Text(e.card)]));
+  const tq = re => rows.reduce((a, e) => a + (re.test(txt.get(e)) ? e.qty : 0), 0);
+  const prov = r => c => (c.provides || []).includes(r);
+  const F = {};
+  // Opening hand: chance of no Basic Pokemon in 7 cards (a mulligan), and pivots to start on.
+  const basics = q(c => kind(c) === 'P' && (c.stage === 'basic' || sub(c).includes('basic')));
+  let p = 1; for (let i = 0; i < 7; i++) p *= Math.max(0, n - basics - i) / (n - i);
+  F.mull = p;
+  F.pivot = q(c => kind(c) === 'P' && (c.stage === 'basic' || sub(c).includes('basic')) && (c.retreat === 0)) + tq(/switch your active pok[eé]mon with 1 of your benched|switch it with your active|this pok[eé]mon has no retreat cost/i);
+  F.heavyStart = basics ? q(c => kind(c) === 'P' && (c.stage === 'basic' || sub(c).includes('basic')) && (c.retreat || 0) >= 3) / basics : 0;
+  // Prized key cards: one-copy cards the deck leans on (Ace Spec, a Stage 1 or Stage 2 with one copy).
+  F.single = rows.filter(e => e.qty === 1 && (e.card.ace || (kind(e.card) === 'P' && e.card.stage && e.card.stage !== 'basic'))).length;
+  // Bench liabilities: multi-prize Pokemon that are not the main attacker (gust targets).
+  const mk = main && main.key ? String(main.key).toLowerCase() : '';
+  F.liab = q((c, e) => kind(c) === 'P' && (c.prizeValue || 1) >= 2 && String(e.name || c.name || '').toLowerCase() !== mk && !(via.reach || []).some(r => r.name && r.name.toLowerCase() === String(e.name || '').toLowerCase() && (r.top || 0) >= 200));
+  // HP thresholds: the main attacker's HP against common one-hit numbers.
+  const me = mk && rows.find(e => String(e.name || '').toLowerCase() === mk);
+  F.mainHp = me ? (me.card.hp || 0) : 0;
+  // Rule Box exposure: share of Pokemon copies with a Rule Box (ex, Mega).
+  const pk = q(c => kind(c) === 'P');
+  F.rulebox = pk ? q(c => kind(c) === 'P' && (sub(c).includes('ex') || sub(c).includes('mega'))) / pk : 0;
+  // Evolution risk: Stage 2 copies against the ways to reach them (Stage 1 copies, Rare Candy, evolution search).
+  const st2 = q(c => kind(c) === 'P' && c.stage === 'stage2'), st1 = q(c => kind(c) === 'P' && c.stage === 'stage1');
+  const reach2 = q(prov('evolution_access')) + tq(/search your deck for [^.]*(?:stage 1|stage 2|evolves from)[^.]*(?:put it onto|evolve)/i);
+  F.evoRisk = st2 ? st2 / Math.max(1, st1 + reach2) : 0;
+  // Draw and search.
+  F.draw = q(prov('draw'));
+  F.search = q(prov('search'));
+  F.drawEng = q(c => kind(c) === 'P' && (c.provides || []).includes('draw'));
+  // Deck-out: draw volume per turn a long game would burn (only big counts matter).
+  F.deckOut = Math.max(0, F.draw + F.search - 24);
+  // Energy acceleration, and whether it fits the main attacker's Energy.
+  const accRows = rows.filter(e => (e.card.provides || []).includes('energy_accel'));
+  F.accel = accRows.reduce((a, e) => a + e.qty, 0);
+  const needT = me ? [...new Set((me.card.attacks || []).flatMap(a => a.cost || []).map(t => String(t).toLowerCase()).filter(t => t !== 'colorless'))] : [];
+  F.accelFit = accRows.reduce((a, e) => { const t = txt.get(e).toLowerCase(); return a + ((!needT.length || needT.some(x => t.includes(x + ' energy')) || /attach (?:an?|up to \d+|\d+) (?:basic )?energy/.test(t)) ? e.qty : 0); }, 0);
+  // Gust, switching and retreat.
+  F.gust = q(prov('gust')) + tq(/switch (?:in )?1 of your opponent's benched pok[eé]mon/i);
+  F.switch = tq(/switch your active pok[eé]mon|switch (?:this pok[eé]mon|it) with 1 of your benched|retreat cost[^.]*(?:less|no retreat)/i);
+  // Disruption the deck brings.
+  F.dTool = tq(/(?:discard|choose)[^.]*pok[eé]mon tools?[^.]*(?:opponent's|yours or your opponent's)|tools? attached to[^.]*(?:yours or your opponent's)[^.]*discard/i);
+  F.dStadium = tq(/discard (?:a|that|the) stadium|discard[^.]*stadium in play/i) + q(c => kind(c) === 'T' && sub(c).includes('stadium'));
+  F.dEnergy = q(c => (c.provides || []).includes('energy_denial')) + tq(/discard (?:an?|\d+|all|up to \d+) (?:\w+ )?energy (?:cards? )?from (?:your opponent's|each of your opponent's|1 of your opponent's)/i);
+  F.dHand = tq(/your opponent shuffles their hand|opponent (?:discards|reveals their hand)[^.]*discard|until they have \d|each player shuffles their hand/i);
+  F.lock = tq(/(?:can't|cannot) (?:play|use|attack|retreat)[^.]*(?:opponent|during your opponent's next turn)|have no abilities/i);
+  // Exposure to disruption: Tools and Special Energy the deck relies on (Special Energy almost never comes back).
+  const back = tq(/attach an energy card from your discard pile|put[^.]*special energy[^.]*from your discard/i) > 0;
+  F.specE = q(c => kind(c) === 'E' && sub(c).includes('special')) * (back ? 0.5 : 1);
+  F.tools = q(c => kind(c) === 'T' && sub(c).some(s => /tool/.test(s)));
+  // Hand size pairings: the opponent's hand (Vivillon into Decidueye ex) and your own (Alakazam).
+  const oppSet = tq(/your opponent shuffles their hand|until they have \d|each player shuffles their hand|opponent draws? \d/i);
+  const oppPay = tq(/cards? in your opponent's hand|opponent has (?:exactly )?\d+ (?:or (?:more|fewer) )?cards? in their hand/i);
+  F.oppHand = oppSet && oppPay ? Math.min(oppSet, 4) * Math.min(oppPay, 4) / 16 : 0;
+  const ownPay = tq(/for each card in your hand|you have (?:exactly )?\d+ (?:or (?:more|fewer) )?cards? in your hand/i);
+  F.ownHand = ownPay ? Math.min(ownPay, 4) * Math.min(F.draw, 12) / 48 : 0;
+  // Prize count and knockout conditions.
+  F.prizeCond = tq(/prize cards? (?:your opponent has taken|remaining|left)|for each prize card|exactly \d+ prize cards? remaining|if you have more prize cards remaining/i);
+  // A Tool or Energy that reacts to damage "(even if this Pokemon is Knocked Out)" is not a knockout trigger.
+  F.koCond = rows.reduce((a, e) => a + (/knocked out[^.]*during your opponent's last turn|if (?:this|any of your) pok[e\u00e9]mon (?:is|was) knocked out|when this pok[e\u00e9]mon is knocked out/i.test(txt.get(e).replace(/\(even if this pok[e\u00e9]mon is knocked out\)/gi, '')) ? e.qty : 0), 0);
+  // Protection and walls.
+  F.protect = tq(/prevent all (?:damage|effects)[^.]*(?:done to|to) this pok[eé]mon|takes? \d+ less damage|\+\d+ hp/i);
+  // Forced Bench exposure: low HP Basics that an Accompanying Flute or Lure Out can drag into play.
+  F.lowBasic = q(c => kind(c) === 'P' && (c.stage === 'basic' || sub(c).includes('basic')) && (c.hp || 0) <= 70);
+  F.deckPkmn = tq(/discard the top card of your deck, and if that card is a pok[eé]mon/i);
+  // Stadiums: what the list's own Stadiums do for it and against it.
+  const types = new Set(rows.filter(e => kind(e.card) === 'P').flatMap(e => (e.card.types || []).map(t => String(t).toLowerCase())));
+  const evoAb = q(c => kind(c) === 'P' && c.stage && c.stage !== 'basic' && (c.atext || []).length);
+  let stad = 0;
+  for (const e of rows.filter(e => kind(e.card) === 'T' && sub(e.card).includes('stadium'))) {
+    const t = txt.get(e).toLowerCase();
+    let v = 0;
+    const tm = t.match(/^(grass|fire|water|lightning|psychic|fighting|darkness|metal|colorless) pok[eé]mon/) || t.match(/active (grass|fire|water|lightning|psychic|fighting|darkness|metal) pok[eé]mon|basic (grass|fire|water|lightning|psychic|fighting|darkness|metal) energy cards from their discard|as they have (grass|fire|water|lightning|psychic|fighting|darkness|metal) pok[eé]mon|player's (grass|fire|water|lightning|psychic|fighting|darkness|metal) pok[eé]mon/);
+    if (tm) { const ty = tm.slice(1).find(Boolean); if (types.has(ty)) v += /no abilities/.test(t) ? -1 : 1; }
+    if (/stage 2 pok[eé]mon in play[^.]*-\d+ hp/.test(t)) v -= st2 ? 1 : 0;
+    if (/pok[eé]mon tools attached[^.]*have no effect/.test(t)) v -= F.tools ? 1 : 0;
+    if (/evolution pok[eé]mon in play[^.]*have no abilities/.test(t)) v -= evoAb ? 1 : 0;
+    if (/basic pok[eé]mon in play[^.]*\+\d+ hp/.test(t)) v += basics >= 12 ? 1 : 0;
+    if (/search their deck for a (?:basic|stage 1)/.test(t)) v += 0.5;
+    stad += v * e.qty;
+  }
+  F.stadium = stad;
+  // Toolbox: attackers that hit for at least half of the best one.
+  const top = Math.max(0, ...(via.reach || []).map(r => r.eff || 0));
+  F.box = new Set((via.reach || []).filter(r => top && (r.eff || 0) * 2 >= top).map(r => r.name)).size;
+  return F;
+}
+
 function gradeDeck(deck) {
   const entries=toGradeDeck(deck);
   const coh=gCoherence(entries);
@@ -3709,14 +3879,19 @@ function gradeDeck(deck) {
   let fitF=1;
   if (foc) { coh.works=coh.score; coh.score=gClamp(coh.score*foc.score,0,1); coh.focus=foc; fitF=gClamp(1-1.5*Math.max(0,0.7-foc.score),0.3,1); }
   const cohF=Math.max((coh.works!=null?coh.works:coh.score)*fitF,0.06), viaF=Math.max(via.score,0.12);
-  const overall=gR1(cohF*viaF*10);
-  Object.assign(steps, { s2:coh.score, fitF, cohF, viaF });
+  // 3.5: the card factors kept after testing against results (G351).
+  let f351=null; try { f351=g351Factors(deck, via, main); } catch (_) {}
+  const adj=g351Adjust(f351);
+  const overall=gR1(gClamp(cohF*viaF*10+adj.sum,0,10));
+  Object.assign(steps, { s2:coh.score, fitF, cohF, viaF, f351:adj.sum });
   const unread=entries.filter(e=>!e.card).reduce((a,e)=>a+e.qty,0);
   let plan=[]; try { plan=gPlan(entries, coh, via); } catch (_) {}
   if (trn && trn.ace) plan.push({ link: trn.ace.link, p: trn.ace.p });
   if (foc && foc.score < 0.88 && foc.why.length) plan.push({ link: 'Synergy: how the cards fit',
     p: `Fewer of your cards pull the same way: ${foc.why.slice(0, 2).join(', and ')}.${foc.box ? ' A toolbox deck spreads on purpose, so this counts half.' : ''}` });
-  return { overall, coh, via, unread, entries, plan, steps };
+  if (f351 && adj.parts.draw <= -0.3) plan.push({ link: 'Draw and search',
+    p: `Only ${f351.draw} cards in the list draw or search. Top lists run about 10, so the grade takes off ${(-adj.parts.draw).toFixed(1)}.` });
+  return { overall, coh, via, unread, entries, plan, steps, f351 };
 }
 
 /** 3.2.8: noRes is true when no tournament results match the deck (R.noRes): its grade reads the cards
@@ -8773,11 +8948,13 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.42',
+  version: 'v3.5',
   date: 'Nov 24, 2026',
-  kind: 'small',
+  kind: 'generation',
   items: [
-    { t: 'A note when Deck strength and Tournament strength disagree' }
+    { t: 'Deck strength reads the cards more closely', d: 'Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.' },
+    { t: 'A note when Deck strength and Tournament strength disagree', d: 'When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.' },
+    { t: 'Newer promo cards', d: '53 promo cards missing from the card lists are now in, and the lists check each week that every card in top decks is there.' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
@@ -11793,8 +11970,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.42';
-const PT_BUILD = 170;
+const PT_VERSION = 'v3.5';
+const PT_BUILD = 171;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

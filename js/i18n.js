@@ -707,6 +707,8 @@ const I18N_ES = {
   "Switches your Active Pokemon.": "Cambia tu Pokémon Activo.",
   "Removes your opponent's Energy and gets rid of Pokemon Tools.": "Quita Energía del rival y descarta Herramientas Pokémon.",
   "Synergy: how the cards fit": "Sinergia: cómo encajan las cartas",
+  "Draw and search": "Robo y búsqueda",
+  "Four card counts then move the card grade a little: cards that draw or search, cards that pay off after one of your Pokemon is Knocked Out, cards that cut damage, and cards that pull up a Benched Pokemon. Each was kept only because it brought grades closer to tournament results.": "Después, cuatro recuentos de cartas mueven un poco la calificación de las cartas: cartas que roban o buscan, cartas que rinden después de que uno de tus Pokémon quede Fuera de Combate, cartas que reducen el daño y cartas que traen un Pokémon en Banca al Puesto Activo. Cada uno se quedó solo porque acercaba las calificaciones a los resultados de los torneos.",
   "Good": "Buena",
   "Key": "Clave",
   "Weak": "Débil",
@@ -1917,6 +1919,8 @@ const I18N_PT = {
   "Switches your Active Pokemon.": "Troca seu Pokémon Ativo.",
   "Removes your opponent's Energy and gets rid of Pokemon Tools.": "Remove Energia do oponente e descarta Ferramentas Pokémon.",
   "Synergy: how the cards fit": "Sinergia: como as cartas se encaixam",
+  "Draw and search": "Compra e busca",
+  "Four card counts then move the card grade a little: cards that draw or search, cards that pay off after one of your Pokemon is Knocked Out, cards that cut damage, and cards that pull up a Benched Pokemon. Each was kept only because it brought grades closer to tournament results.": "Depois, quatro contagens de cartas mexem um pouco na nota das cartas: cartas que compram ou buscam, cartas que rendem depois que um dos seus Pokémon é Nocauteado, cartas que reduzem dano e cartas que puxam um Pokémon do Banco para o Campo Ativo. Cada uma só ficou porque aproximava as notas dos resultados dos torneios.",
   "Good": "Boa",
   "Key": "Chave",
   "Weak": "Fraca",
@@ -2543,6 +2547,7 @@ const I18N_PAT = [
   [/^All (\d+) card needs are met: every attacker has its Energy and every evolution has what it evolves from\.$/, 'Las $1 necesidades de cartas están cubiertas: cada atacante tiene su Energía y cada evolución tiene de qué evolucionar.', 'As $1 necessidades de cartas estão atendidas: todo atacante tem sua Energia e toda evolução tem de onde evoluir.'],
   [/^The one card need is met: every attacker has its Energy and every evolution has what it evolves from\.$/, 'La única necesidad de cartas está cubierta: cada atacante tiene su Energía y cada evolución tiene de qué evolucionar.', 'A única necessidade de cartas está atendida: todo atacante tem sua Energia e toda evolução tem de onde evoluir.'],
   [/^How tightly the list fits: your Pokemon are spread over (\d+) lines\.$/, 'Qué tan compacta es la lista: tus Pokémon están repartidos en $1 líneas.', 'O quanto a lista é coesa: seus Pokémon estão espalhados em $1 linhas.'],
+  [/^Only (\d+) cards in the list draw or search\. Top lists run about 10, so the grade takes off ([\d.]+)\.$/, 'Solo $1 cartas de la lista roban o buscan. Las mejores listas llevan unas 10, así que la calificación baja $2.', 'Só $1 cartas da lista compram ou buscam. As melhores listas usam umas 10, então a nota cai $2.'],
   [/^Fewer of your cards pull the same way: your Pokemon are spread over (\d+) lines\.$/, 'Menos de tus cartas tiran para el mismo lado: tus Pokémon están repartidos en $1 líneas.', 'Menos cartas suas puxam para o mesmo lado: seus Pokémon estão espalhados em $1 linhas.'],
   [/^(A problem that stops the deck|(\d+) problems that stop the deck) \(1\.2 each\): (.+)\.$/, (m, a, n, l) => (n ? n + ' problemas que frenan la baraja' : 'Un problema que frena la baraja') + ' (1.2 cada uno): ' + l.split('; ').map(i18nTr).join('; ') + '.', (m, a, n, l) => (n ? n + ' problemas que travam o deck' : 'Um problema que trava o deck') + ' (1.2 cada): ' + l.split('; ').map(i18nTr).join('; ') + '.'],
   [/^Those (\d+) stop the deck, so each costs 1\.2 more\.$/, 'Esos $1 frenan la baraja, así que cada uno cuesta 1.2 más.', 'Esses $1 travam o deck, então cada um custa 1.2 a mais.'],
@@ -2612,6 +2617,7 @@ const I18N_PAT = [
   [/^([\d.]+) to ([\d.]+)$/, '$1 a $2', '$1 a $2'],
   [/^((?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}|\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2})$/, m => i18nGtDate(m, 'es') || m, m => i18nGtDate(m, 'pt') || m],
   [/^Synergy shows ([\d.]+) after a cut for how tightly the list fits, but that cut lowers the grade only when the fit is loose, so the grade uses Synergy before the cut, ([\d.]+): ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'Sinergia muestra $1 tras un recorte por lo compacta que es la lista, pero ese recorte solo baja la calificación cuando la lista está dispersa, así que la calificación usa Sinergia antes del recorte, que es $2: $3 por $4 entre 10 da $5.', 'A Sinergia mostra $1 depois de um corte pela coesão da lista, mas esse corte só baixa a nota quando a lista está espalhada, então a nota usa a Sinergia antes do corte, que é $2: $3 vezes $4 dividido por 10 dá $5.'],
+  [/^Draw and search, knockout payoffs, damage cuts and gusts (add|take off) ([\d.]+), so the grade is ([\d.]+)\.$/, (m, a, n, g) => 'Robo y búsqueda, cartas que pagan tras un K.O., recortes de daño y cambios del rival ' + (a === 'add' ? 'suman' : 'restan') + ' ' + n + ', así que la calificación es ' + g + '.', (m, a, n, g) => 'Compra e busca, cartas que rendem após um Nocaute, cortes de dano e trocas do oponente ' + (a === 'add' ? 'somam' : 'tiram') + ' ' + n + ', então a nota é ' + g + '.'],
   [/^The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ([\d.]+) times ([\d.]+), divided by 10, is ([\d.]+)\.$/, 'La calificación es el producto de Sinergia y Poder, dividido entre 10, así que el valor más bajo de los dos arrastra toda la calificación hacia abajo: $1 por $2 entre 10 da $3.', 'A nota é o produto de Sinergia e Poder, dividido por 10, então o valor mais baixo dos dois puxa a nota toda para baixo: $1 vezes $2 dividido por 10 dá $3.'],
   [/^(\d+)% of the grade comes from (.+)'s online tournament results(?: since (.+?))?(?: \(as of (.+?)\))?: ([\d.]+%) wins over ([\d,]+) games(, with games since the newest set counted three times)?\.$/, (m, p, n, s, a, w, g, x) => p + '% de la calificación viene de los resultados de ' + n + ' en torneos online' + (s ? ' desde ' + s : '') + (a ? ' (hasta el ' + a + ')' : '') + ': ' + w + ' de victorias en ' + g + ' partidas' + (x ? ', con las partidas desde la expansión más reciente contadas tres veces' : '') + '.', (m, p, n, s, a, w, g, x) => p + '% da nota vem dos resultados de ' + n + ' em torneios online' + (s ? ' desde ' + s : '') + (a ? ' (em ' + a + ')' : '') + ': ' + w + ' de vitórias em ' + g + ' partidas' + (x ? ', com as partidas desde a coleção mais nova contando três vezes' : '') + '.'],
   [/^Those results alone score ([\d.]+), so the list stays at ([\d.]+)\.$/, 'Esos resultados por sí solos califican $1, así que la lista se queda en $2.', 'Esses resultados sozinhos dão nota $1, então a lista continua com $2.'],
@@ -4209,6 +4215,10 @@ function i18nDmgWhy(s, T) {
   if (s === 'that is only at the very end of a game') return W.endGame();
   if (s === 'that is only before you take your first prize') return W.prize6();
   if (s === 'your list does not run all of them') return W.notAll();
+  // 3.5: the hits the grade counts lower because they cannot repeat every turn.
+  if (s === 'it discards Energy that has to be attached again before the next big hit') return W.disc ? W.disc() : null;
+  if (s === 'it cannot hit that hard every turn') return W.lock ? W.lock() : null;
+  if (s === 'it also does damage to itself') return W.self ? W.self() : null;
   if ((m = s.match(/^your list has only (\d+) Stadiums?$/))) return W.stadiums(m[1]);
   if ((m = s.match(new RegExp(`^your list has only (\\d+) (${I18N_DMG_TY}) Pokemon$`)))) return W.typeMon(m[1], m[2]);
   if ((m = s.match(new RegExp(`^your list has only (\\d+) ((?:(?:${I18N_DMG_TY}) )?Energy)$`)))) { const e = i18nDmgE(m[2], T, m[1]); return e && W.energy(m[1], e); }
@@ -4450,6 +4460,7 @@ const I18N_DMG = {
       canSet: n => `Tu lista puede preparar eso, así que la calificación cuenta ${n}.`,
       since: (n, w) => `La calificación cuenta ${n}, ya que ${w}.`,
       why: {
+        disc: () => 'descarta Energía que hay que volver a unir antes del siguiente golpe grande', lock: () => 'no puede golpear tan fuerte cada turno', self: () => 'también se hace daño a sí mismo',
         evolved: () => 'atacas en el turno en que evoluciona', next: b => `puede seguir atacando turno tras turno, pero su primer uso hace ${b}`,
         only: (n, k) => `tu lista solo tiene ${n} ${cs(n, k)}`, noCounters: () => 'nada en tu lista le pone contadores de daño antes de que ataques',
         endGame: () => 'eso solo pasa al final de la partida', prize6: () => 'eso solo vale antes de que tomes tu primer premio', notAll: () => 'tu lista no los lleva todos',
@@ -4598,6 +4609,7 @@ const I18N_DMG = {
       canSet: n => `Sua lista consegue preparar isso, então a nota conta ${n}.`,
       since: (n, w) => `A nota conta ${n}, já que ${w}.`,
       why: {
+        disc: () => 'ele descarta Energia que precisa ser ligada de novo antes do próximo golpe grande', lock: () => 'ele não consegue bater tão forte todo turno', self: () => 'ele também causa dano a si mesmo',
         evolved: () => 'você ataca no turno em que ele evolui', next: b => `ele pode continuar atacando turno após turno, mas o primeiro uso causa ${b}`,
         only: (n, k) => `sua lista só tem ${n} ${cs(n, k)}`, noCounters: () => 'nada na sua lista coloca contadores de dano nele antes de você atacar',
         endGame: () => 'isso só acontece no fim da partida', prize6: () => 'isso só vale antes de você pegar seu primeiro prêmio', notAll: () => 'sua lista não usa todos eles',
@@ -6411,6 +6423,11 @@ Object.assign(I18N_ES, {
   "Clearer grade note": "Explicación de la calificación más clara",
   "Overall, Deck strength and Tournament strength on every grade": "General, fuerza de la baraja y fuerza en torneos en cada calificación",
   "A note when Deck strength and Tournament strength disagree": "Una nota cuando la fuerza de la baraja y la fuerza en torneos no coinciden",
+  "Deck strength reads the cards more closely": "La fuerza de la baraja lee las cartas con más detalle",
+  "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Los ataques que descartan Energía, no se pueden repetir o dañan al atacante ahora cuentan por lo que pueden hacer cada turno, y cuatro recuentos de cartas (robo y búsqueda, cartas que rinden tras un K.O., recortes de daño y cambios del rival) mueven un poco la calificación. La fuerza de la baraja queda más cerca de los resultados de los torneos.",
+  "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Cuando las dos puntuaciones se separan 1.5 o más, una línea debajo dice cuál es más alta y qué lee la fuerza de la baraja.",
+  "Newer promo cards": "Cartas promocionales más nuevas",
+  "53 promo cards missing from the card lists are now in, and the lists check each week that every card in top decks is there.": "Entran 53 cartas promocionales que faltaban en las listas de cartas, y las listas comprueban cada semana que estén todas las cartas de las mejores barajas.",
   "Deck guides and How grading works in More": "Guías de barajas y Cómo funciona la calificación en Más",
   "Grade source on home page": "Origen de la calificación en Inicio",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "La calificación se basa en tus cartas y, en barajas conocidas, en los resultados de torneos online y presenciales locales.",
@@ -6458,6 +6475,11 @@ Object.assign(I18N_PT, {
   "Clearer grade note": "Explicação da nota mais clara",
   "Overall, Deck strength and Tournament strength on every grade": "Geral, força do deck e força em torneios em cada nota",
   "A note when Deck strength and Tournament strength disagree": "Uma nota quando a força do deck e a força em torneios não batem",
+  "Deck strength reads the cards more closely": "A força do deck lê as cartas com mais detalhe",
+  "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Ataques que descartam Energia, não podem se repetir ou causam dano ao atacante agora contam pelo que conseguem fazer todo turno, e quatro contagens de cartas (compra e busca, cartas que rendem após um Nocaute, cortes de dano e trocas do oponente) mexem um pouco na nota. A força do deck fica mais perto dos resultados dos torneios.",
+  "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Quando as duas pontuações ficam 1.5 ou mais distantes, uma linha abaixo diz qual é maior e o que a força do deck lê.",
+  "Newer promo cards": "Cartas promocionais mais novas",
+  "53 promo cards missing from the card lists are now in, and the lists check each week that every card in top decks is there.": "Entram 53 cartas promocionais que faltavam nas listas de cartas, e as listas verificam toda semana se todas as cartas dos melhores decks estão lá.",
   "Deck guides and How grading works in More": "Guias de decks e Como funciona a nota em Mais",
   "Grade source on home page": "Origem da nota no Início",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "A nota se baseia nas suas cartas e, em decks conhecidos, nos resultados de torneios online e presenciais locais.",

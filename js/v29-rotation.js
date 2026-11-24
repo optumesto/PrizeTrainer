@@ -408,13 +408,19 @@ function g67HowLine(R, synV, powV) {
   // and shows two decimals when one would make the sum look wrong.
   const S = R.steps, raw = R.rawOverall != null ? R.rawOverall : R.overall;
   const sU = S && S.cohF != null ? S.cohF * 10 : synV, pU = S && S.viaF != null ? S.viaF * 10 : powV;
-  const dp = gR1(+sU.toFixed(1) * +pU.toFixed(1) / 10) === raw ? 1 : 2;
+  const raw0 = S && S.f351 != null && S.cohF != null && S.viaF != null ? gR1(S.cohF * S.viaF * 10) : raw;
+  const dp = [1, 2, 3].find(d => gR1(+sU.toFixed(d) * +pU.toFixed(d) / 10) === raw0) || 3;
   const f = v => v.toFixed(dp);
   const fit = S && Math.abs(gR1(sU) - synV) >= 0.1 && S.cohF !== 0.06;
   let low = '';
   if (S && S.cohF === 0.06) low += ' Synergy under 0.6 counts as 0.6.';
   if (S && S.viaF === 0.12) low += ' Power under 1.2 counts as 1.2.';
-  const sum = `${f(sU)} times ${f(pU)}, divided by 10, is ${raw.toFixed(1)}.`;
+  // 3.5: the card factors (G351) move the grade after the product, so the sum shows the product and a
+  // second sentence says what the factors added or took off (the rounded difference, so it adds up).
+  const fx = gR1(raw - raw0);
+  const prod = raw0;
+  const fxTxt = fx ? ` Draw and search, knockout payoffs, damage cuts and gusts ${fx > 0 ? 'add' : 'take off'} ${Math.abs(fx).toFixed(1)}, so the grade is ${raw.toFixed(1)}.` : '';
+  const sum = `${f(sU)} times ${f(pU)}, divided by 10, is ${prod.toFixed(1)}.${fxTxt}`;
   // 2.7.3: name both Synergy numbers, so the one the sum uses is not a number seen nowhere else.
   if (fit) return `The grade is Synergy times Power, divided by 10. Synergy shows ${synV.toFixed(1)} after a cut for how tightly the list fits, but that cut lowers the grade only when the fit is loose, so the grade uses Synergy before the cut, ${f(sU)}: ${sum}${low}`;
   return `The grade is Synergy times Power, divided by 10, so the weaker one pulls the whole grade down: ${sum}${low}`;

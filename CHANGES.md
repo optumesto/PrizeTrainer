@@ -2,6 +2,15 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5 (build 171): Deck strength reads the cards more closely (24 Nov 2026)
+
+Includes 3.4.42 (build 170), which never went live on its own. Changed files: js/core.js (G350 repeat rules for discard, lock and self damage hits; g351Factors, the card factor registry, and G351 with the four kept factors; PT_VERSION now v3.5, What's new, PT_BUILD now 171), js/v29-rotation.js (the grade sum names what the card factors add or take off; a third decimal when two would not add up), build-cards.mjs (SVP and MEP promos missing from pokemon-tcg-data read from TCGdex's open card files; a weekly check that every card in meta-cards.json is in cards.json), cards.json and prints.json (rebuilt), index.html and deck-grader.html (How grading works names the card factors, softwareVersion, stamps), sw.js (cache v171), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (every new sentence in 5 languages), tests/grade-baseline.json.
+
+- Hits that cannot repeat count at what they can do every turn: an attack that discards Energy it needs again, one that cannot be used two turns running, and one that also hurts the attacker (Mason, 24 Nov 2026: "Start the fixes").
+- Card factors (Mason, 24 Nov 2026: "Build it"): 32 counts read from card text (mulligans, pivots, Stadiums, disruption, hand size pairings, prize count and knockout payoffs, Special Energy and Tool exposure and more). Each was tested on 128 top lists over 40 decks, weight fitted on games before the newest set and checked on games since. Kept only when it brought card-only grades closer to win rates on both, and beat shuffled data at least 9 times in 10. Four were kept: draw and search (0.3 per spread), knockout payoffs (0.3), damage cuts (0.1), gusts (0.05), each capped at 3 spreads either way. Card grades against win rates (rank match): older games +0.10 to +0.49, newest set +0.23 to +0.52, all +0.18 to +0.55.
+- A list with few draw or search cards gets a line under What to fix that says how much it costs.
+- 53 SVP and MEP promos added to cards.json (2,191 cards). The weekly build warns when a card in a top list is missing.
+
 # RdyDeck 3.4.42 (build 170): a note when the two scores disagree (24 Nov 2026)
 
 Changed files: js/v29-rotation.js (g342Gap note under the scores), index.html (note style, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.42, What's new, PT_BUILD now 170), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (note and What's new), sw.js (cache name prize-trainer-v170).
