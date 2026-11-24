@@ -6591,6 +6591,9 @@ I18N_PAT.unshift(
   [/^: ([\d.]+%) wins over ([\d,]+) matches$/, ": $1 de victorias en $2 partidas", ": $1 de vitórias em $2 partidas"],
 );
 
+// 3.5.10: two new deck guides (What's new).
+Object.assign(I18N_ES, { "Deck guides for Ogerpon Meganium Arboliva and Okidogi Barbaracle": "Guías de barajas para Ogerpon Meganium Arboliva y Okidogi Barbaracle" });
+Object.assign(I18N_PT, { "Deck guides for Ogerpon Meganium Arboliva and Okidogi Barbaracle": "Guias de decks para Ogerpon Meganium Arboliva e Okidogi Barbaracle" });
 // 3.5.9: Top decks on home.
 Object.assign(I18N_ES, {
   "Top decks": "Mejores barajas",

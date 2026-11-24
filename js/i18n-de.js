@@ -2810,6 +2810,8 @@ Object.assign(I18N_MORE.de.dict, {
 I18N_MORE.de.pat.unshift(
   [/^: ([\d.]+%) wins over ([\d,]+) matches$/, ": $1 Siege in $2 Matches"],
 );
+// 3.5.10: two new deck guides (What's new).
+Object.assign(I18N_MORE.de.dict, { "Deck guides for Ogerpon Meganium Arboliva and Okidogi Barbaracle": "Deck-Guides für Ogerpon Meganium Arboliva und Okidogi Barbaracle" });
 // 3.5.9: Top decks on home.
 Object.assign(I18N_MORE.de.dict, {
   "Top decks": "Top-Decks",
