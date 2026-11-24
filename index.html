@@ -3577,6 +3577,17 @@ document.documentElement.classList.add('rd-boot');
     html:not(#z) body .about38.a41-about > h2 { margin-top:0.2rem; }
     html:not(#z) body .about38 > .about38-links { margin-top:0.4rem; }
   }
+  /* Phones: home reordered: decks, daily games, then Practice, Learn and More tiles (home42). */
+  .home42 { display:none; }
+  @media (max-width:559px) {
+    html:not(#z) body .home-content > .home-more,
+    html:not(#z) body .about38 > .about41-tiles { display:none; }
+    html:not(#z) body .home-content > .home42 { display:block; margin-top:1.5rem; }
+    html:not(#z) body .home42 > .section-title { margin:1.1rem 0 0.45rem; }
+    html:not(#z) body .home42 > .section-title:first-child { margin-top:0; }
+    html:not(#z) body .home42 .home-action { width:100%; font-family:inherit; text-align:left; cursor:pointer; }
+    html:not(#z) body .home-content > .about38 { margin-top:1.25rem !important; }
+  }
 </style>
 </head>
 <body>
@@ -3699,6 +3710,33 @@ document.documentElement.classList.add('rd-boot');
         <button class="home-action" onclick="openBackupModal()"><span class="ha-ic"><svg class="ic"><use href="#i-save"/></svg></span>Save and open decks</button>
         <a class="home-action" href="meta-decks.html"><span class="ha-ic"><svg class="ic"><use href="#i-cards"/></svg></span>Deck guides</a>
         <a class="home-action" href="how-grading-works.html"><span class="ha-ic"><svg class="ic"><use href="#i-award"/></svg></span>How grading works</a>
+      </div>
+    </section>
+    <section class="home42" aria-label="More">
+      <h2 class="section-title">Practice</h2>
+      <div class="home-actions">
+        <a class="home-action" href="opponent/play.html">Sparring</a>
+        <button type="button" class="home-action" onclick="openTlog()">Tournament log</button>
+        <a class="home-action" href="improve-your-deck.html">Improve your deck</a>
+        <a class="home-action" href="prize-trainer.html">Prize trainer</a>
+        <a class="home-action" href="goldfish.html">Goldfish guide</a>
+        <a class="home-action" href="opening-odds.html">Opening odds</a>
+      </div>
+      <h2 class="section-title">Learn</h2>
+      <div class="home-actions">
+        <a class="home-action" href="meta-decks.html">Deck guides</a>
+        <a class="home-action" href="how-grading-works.html">How grading works</a>
+        <a class="home-action" href="rotation.html">Rotation checker</a>
+        <a class="home-action" href="rulings.html">Rules</a>
+      </div>
+      <h2 class="section-title">More</h2>
+      <div class="home-actions">
+        <button type="button" class="home-action" onclick="openBackupModal()">Save and open decks</button>
+        <button type="button" class="home-action" onclick="shareApp()">Share the app</button>
+        <button type="button" class="home-action" onclick="openHelpSheet()">Help and feedback</button>
+        <a class="home-action" href="contact.html">Contact</a>
+        <button type="button" class="home-action about41-tog" aria-expanded="false" onclick="var s=document.querySelector('.about38'),o=s.classList.toggle('a41-about');this.setAttribute('aria-expanded',o);if(o)s.scrollIntoView({block:'start',behavior:'smooth'})">About RdyDeck</button>
+        <button type="button" class="home-action about41-tog" aria-expanded="false" onclick="var s=document.querySelector('.about38'),o=s.classList.toggle('a41-faq');this.setAttribute('aria-expanded',o);if(o)s.scrollIntoView({block:'start',behavior:'smooth'})">FAQ</button>
       </div>
     </section>
     <section class="about38" aria-labelledby="about38-h">
@@ -4341,7 +4379,7 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/main-attacker.js?v=b5478c10"></script>
 <script src="js/v65-hide-delete.js?v=310c60d1"></script>
 <script src="js/v82-copy-tcg-live.js?v=78c75153"></script>
-<script src="js/v67-edit-cards.js?v=095aa513"></script>
+<script src="js/v67-edit-cards.js?v=5b16d943"></script>
 <script src="js/v83-watch-out.js?v=5572002b"></script>
 <!-- ═══════════════════════════ DECK BUILDER SCREEN (v68) -->
 <div id="screen-build" class="screen">
@@ -4388,9 +4426,9 @@ document.documentElement.classList.add('rd-boot');
 <script src="js/gtg.js?v=dd58d289"></script>
 <script src="js/daily-games.js?v=23a5242e"></script>
 <script src="js/dg-look.js?v=8dce8dad"></script>
-<script src="js/i18n.js?v=562a209a"></script>
+<script src="js/i18n.js?v=9f035cbb"></script>
 <!-- 3.0.2: more languages, downloaded only when picked (js/i18n.js loads them). -->
-<template id="i18n-files"><script src="js/i18n-fr.js?v=9a69a176"></script><script src="js/i18n-de.js?v=8ad6c46c"></script><script src="js/i18n-it.js?v=9fb220ce"></script></template>
+<template id="i18n-files"><script src="js/i18n-fr.js?v=6611f079"></script><script src="js/i18n-de.js?v=606f7d66"></script><script src="js/i18n-it.js?v=559fbd23"></script></template>
 <!-- Photo deck import: the reader downloads only when a player picks a picture (js/photo-import.js loads it). -->
 <script src="js/photo-import.js?v=b5c4543c"></script>
 <template id="photo-files"><script src="js/photo-scan.js?v=6dac5465"></script></template>

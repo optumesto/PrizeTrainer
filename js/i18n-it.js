@@ -468,6 +468,7 @@ I18N_MORE.it = {
     "Check the odds": "Controlla le probabilità",
     "Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.": "Probabilità risponde alla tua domanda, come Arven e una Ball entro il turno 2, e mostra i tuoi Pokémon Base di apertura.",
     "Practice": "Allenamento",
+    "Learn": "Imparare",
     "Prizes on a deck starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.": "Premi su un mazzo avvia una partita dei Premi: sei carte vanno coperte e tu le indovini. Le schede Mano, Esercizi e Note contengono mani iniziali, turni di goldfish, esercizi e note sui matchup.",
     "Come back daily": "Torna ogni giorno",
     "The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour.": "La sfida del giorno è lo stesso mescolamento per tutti. Registra le tue partite nel registro tornei. Aiuto, nella schermata principale, ripete questo tour.",

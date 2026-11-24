@@ -469,6 +469,7 @@ I18N_MORE.de = {
     'Check the odds': 'Prüfe die Chancen',
     'Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.': 'Chancen beantwortet deine eigene Frage, etwa Arven und ein Ball bis Zug 2, und zeigt deine Basis-Pokémon zum Start.',
     'Practice': 'Üben',
+    'Learn': 'Lernen',
     'Prizes on a deck starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.': 'Preiskarten an einem Deck startet ein Preiskartenspiel: Sechs Karten liegen verdeckt und du nennst sie. Die Tabs Hand, Übungen und Notizen enthalten Starthände, Goldfish-Züge, Übungen und Matchup-Notizen.',
     'Come back daily': 'Komm täglich wieder',
     'The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour.': 'Die tägliche Herausforderung ist für alle gleich gemischt. Trag deine Matches im Turnier-Log ein. Hilfe auf dem Startbildschirm zeigt diese Tour erneut.',

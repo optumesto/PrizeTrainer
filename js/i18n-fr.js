@@ -473,6 +473,7 @@ I18N_MORE.fr = {
     "Check the odds": "Vérifiez les probabilités",
     "Odds answers your own question, like Arven and a Ball by turn 2, and shows your opening Basics.": "Probas répond à votre propre question, comme Arven et une Ball au tour 2, et montre vos Pokémon de base d'ouverture.",
     "Practice": "Pratique",
+    "Learn": "Apprendre",
     "Prizes on a deck starts a prize game: six cards go face down and you name them. The Hand, Drills and Notes tabs hold opening hands, goldfish turns, drills and matchup notes.": "Récompenses sur un deck lance une partie de Récompenses : six cartes sont posées face cachée et vous les nommez. Les onglets Main, Exos et Notes contiennent les mains de départ, les tours de goldfish, les exercices et les notes de match-up.",
     "Come back daily": "Revenez chaque jour",
     "The daily challenge is the same shuffle for everyone. Log your matches in the tournament log. Help on the home screen replays this tour.": "Le défi du jour est le même mélange pour tout le monde. Notez vos matchs dans le journal de tournois. L'Aide sur l'écran d'accueil relance cette visite.",

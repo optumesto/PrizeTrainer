@@ -18,7 +18,8 @@
 // ═══════════ v67: deck order and a long deck list on home ═══════════
 // Decks keep the order you set (Move up, down, to the top or bottom in each deck's menu), saved on this
 // device. Past 8 decks, home shows the first 8 with Show all, and a bar to find a deck or sort the list.
-const DL67_CAP = 8;
+// Phones show 4 so the daily games stay near the top.
+const DL67_CAP = (window.matchMedia && matchMedia('(max-width:559px)').matches) ? 4 : 8;
 let dl67Q = '', dl67All = false, dl67Sort = (() => { try { return localStorage.getItem('dl67Sort') || 'mine'; } catch (_) { return 'mine'; } })();
 async function dl67Move(id, dir) {
   closeSheet();
