@@ -63,7 +63,7 @@ function g68Arch(deck, data, ctx) {
   // Archaludon list never takes Mega Excadrill's record just because they share support cards.
   const need = g68Plays(deck);
   const best = mu60Best(deck, data, need);
-  if (!best || best.score < G68_MATCH) return null;
+  if (!best || (best.top || best.score) < G68_MATCH) return null;
   // 3.2.8: a list built around another Pokemon than the one the archetype is named for (3 Palafin ex and
   // 3 Palafin against 2 Mega Starmie ex) takes the results of an archetype named for its own Pokemon when
   // one is close enough. With none, it keeps the closest match, and own names its own main card so the
@@ -72,7 +72,7 @@ function g68Arch(deck, data, ctx) {
   if (!own) return best;
   const on = ' ' + mu60Norm(own.name) + ' ';
   const alt = mu60Best(deck, data, d => need(d) && g68Named(d.name).some(p => on.includes(' ' + p + ' ')));
-  return alt && alt.score >= G68_MATCH ? alt : Object.assign({}, best, { own: own.name });
+  return alt && (alt.top || alt.score) >= G68_MATCH ? alt : Object.assign({}, best, { own: own.name });
 }
 /** Whether a deck plays every Pokemon an archetype asks for (g68Need), as a test for mu60Best. */
 function g68Plays(deck) {

@@ -2709,6 +2709,7 @@ Object.assign(I18N_MORE.de.dict, {
   "Card pictures in the deck guides": "Kartenbilder in den Deck-Guides",
   "Grade image named after deck": "Bewertungsbild mit dem Namen des Decks",
   "Deck strength and Tourney strength on every grade": "Deckstärke und Turnierstärke bei jeder Bewertung",
+  "Better archetype matching": "Bessere Archetyp-Erkennung",
   "Deck guides and How grading works in More": "Deck-Guides und So funktioniert die Note unter Mehr",
   "Grade source on home page": "Herkunft der Note auf der Startseite",
   "Grades are based on your cards and, for known decks, results from online and local in-person events.": "Die Note beruht auf deinen Karten und, bei bekannten Decks, auf Ergebnissen aus Online- und lokalen Präsenzturnieren.",

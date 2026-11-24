@@ -8777,7 +8777,8 @@ const WHATS_NEW = {
   date: 'Nov 23, 2026',
   kind: 'small',
   items: [
-    { t: 'Deck strength and Tourney strength on every grade' }
+    { t: 'Deck strength and Tourney strength on every grade' },
+    { t: 'Better archetype matching' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.

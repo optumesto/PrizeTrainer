@@ -116,34 +116,52 @@ function mu60Match(deck, data) {
   return best && best.score >= MU60_CLOSE ? best.deck : null;
 }
 /** v68: the closest archetype and how close it is (0 to 1), for callers that need a surer match. */
+const MU60_NEAR = 0.02;
 function mu60Best(deck, data, ok) {
-  const mine = new Set((deck.cards || []).filter(c => cardCategory(c) === 'pokemon').map(c => mu60Norm(c.apiName || c.name)).filter(Boolean));
+  // 3.4.38: copies count too, so a list built on 4 Dunsparce and 2 Mega Lopunny ex is Lopunny Dudunsparce,
+  // not Mega Lopunny (which plays no Dunsparce). When two archetypes fit about as well (within MU60_NEAR),
+  // the one with more lists wins, since its results rest on more games: a Dragapult list with a single
+  // Dudunsparce line is Dragapult (4,158 lists), not Dragapult Dudunsparce (435). Checked on the 132 test
+  // lists: 4 borrowed the wrong archetype's results, now 1 (a Raging Bolt Ogerpon list that fits Basic Box
+  // just as well).
+  const mine = new Map();
+  for (const c of deck.cards || []) {
+    if (cardCategory(c) !== 'pokemon') continue;
+    const n = mu60Norm(c.apiName || c.name);
+    if (n) mine.set(n, (mine.get(n) || 0) + (Number(c.count) || 1));
+  }
   if (!mine.size) return null;
   // A Pokemon most archetypes play (a support ex, say) says little about which deck this is.
   const df = {};
   data.decks.forEach(d => new Set(d.sig.map(s => mu60Norm(s[0]))).forEach(n => { df[n] = (df[n] || 0) + 1; }));
   const N = data.decks.length;
   const w = n => Math.log(1 + N / (df[n] || 0.5));
-  let best = null;
+  const fits = [];
   for (const d of data.decks) {
     // v76: "Other" is every list no named archetype claims, so its few common Pokemon (Latias ex,
     // Fezandipiti ex) match many real decks. A deck is never matched to it.
     if (d.id === 'other' || (ok && !ok(d))) continue;
     let have = 0, all = 0;
     const theirs = new Set();
-    for (const [name, , freq] of d.sig) {
+    for (const [name, avg, freq] of d.sig) {
       const n = mu60Norm(name);
       if (theirs.has(n)) continue;
       theirs.add(n);
       all += w(n) * freq;
-      if (mine.has(n)) have += w(n) * freq;
+      // Full credit at the archetype's usual count or more, part credit below it.
+      if (mine.has(n)) have += w(n) * freq * Math.min(1, mine.get(n) / Math.max(1, avg || 1));
     }
+    // How much of my own Pokemon, by copies, the archetype plays.
     let myAll = 0, myHave = 0;
-    mine.forEach(n => { const k = w(n); myAll += k; if (theirs.has(n)) myHave += k; });
+    mine.forEach((q, n) => { const k = w(n) * q; myAll += k; if (theirs.has(n)) myHave += k; });
     const score = all ? 0.7 * have / all + 0.3 * (myAll ? myHave / myAll : 0) : 0;
-    if (!best || score > best.score) best = { deck: d, score };
+    fits.push({ deck: d, score });
   }
-  return best;
+  if (!fits.length) return null;
+  const top = Math.max(...fits.map(f => f.score));
+  const pick = fits.filter(f => f.score >= top - MU60_NEAR).sort((a, b) => (b.deck.lists || 0) - (a.deck.lists || 0) || b.score - a.score)[0];
+  // top: how well the best fit scored, so a near pick still clears a match threshold the best one clears.
+  return Object.assign({}, pick, { top });
 }
 
 // v61: the open deck as the same short code refresh-matchups.mjs makes for lists that placed

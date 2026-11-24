@@ -4,12 +4,14 @@ Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each r
 
 # RdyDeck 3.4.38 (build 166): Deck strength and Tourney strength (23 Nov 2026)
 
-Changed files: js/v69-grade-blend.js (split scores, 20 game rule), js/v29-rotation.js (grade screen), js/v45-sample-share-daily.js (share card and shared text), index.html (styles, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.38, What's new, PT_BUILD now 166), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new labels and What's new), sw.js (cache name prize-trainer-v166).
+Changed files: js/v69-grade-blend.js (split scores, 20 game rule, match threshold on the best fit), js/matchups.js (archetype matching counts copies, near ties go to the more played archetype), tests/grade-baseline.json (5 intended moves), js/v29-rotation.js (grade screen), js/v45-sample-share-daily.js (share card and shared text), index.html (styles, softwareVersion, stamps), js/core.js (PT_VERSION now v3.4.38, What's new, PT_BUILD now 166), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (new labels and What's new), sw.js (cache name prize-trainer-v166).
 
 - Every grade now shows two scores under the overall grade: Deck strength (the card grade: Synergy times Power, less any build check, so how the list plays on its own) and Tourney strength (the results score alone for the archetype the list matches, the same score the grade blends in). Synergy and Power stay on the screen as one line under Deck strength.
 - Tourney strength shows N/A when no archetype with results matches the list, or the matched archetype has fewer than 20 games. Under 20 games the grade also takes nothing from those results and reads the cards alone (no archetype in this week's results is that small, so no current grade moves).
 - The share card shows Deck strength and Tourney strength in place of Synergy and Power, with an empty bar for N/A.
 - A list held at the legality cap still shows its Tourney strength.
+- Archetype matching (which archetype's results a list borrows) now counts copies, not only which Pokemon a list plays, and when two archetypes fit within 0.02 the one with more lists wins. On the 132 test lists with live data, 131 now match the archetype Limitless gives them (was 128): Lopunny Dudunsparce lists no longer borrow Mega Lopunny (tourney 3.5) or Froslass Dudunsparce, and Dragapult lists with one Dudunsparce line match Dragapult, not Dragapult Dudunsparce. One Raging Bolt Ogerpon list (2 Raging Bolt ex) now matches Basic Box, a near tie. On the pinned test data Mega Charizard X list 059 now matches Mega Charizard X, not Y.
+- Newest-set weight tested at 1x, 2x and 3x against the week of 16 to 22 Nov: a tie, so it stays at 3x.
 - Anonymous usage counts move to 3.4.39 or later.
 
 # RdyDeck 3.4.37 (build 165): Grade image named after deck (22 Nov 2026)
