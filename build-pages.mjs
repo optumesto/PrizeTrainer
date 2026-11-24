@@ -86,6 +86,8 @@ const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-d
   .cta { display:inline-block; margin:0.6rem 0 0.4rem; padding:0.75rem 1.3rem; background:var(--mark); color:var(--on-mark); font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:1.125rem; text-decoration:none; border-radius:4px; }
   .cta:hover { filter:brightness(1.08); }
   .cta-row { margin:1.2rem 0 0.4rem; }
+  .cta-row { display:flex; flex-wrap:wrap; gap:0 0.6rem; align-items:center; }
+  .cta.cta2 { background:transparent; color:var(--text); box-shadow:inset 0 0 0 2px var(--mark); }
   .tw { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; font-size:0.9375rem; margin:0.6rem 0; }
   th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem 0.5rem 0; border-bottom:1px solid var(--line); color:var(--text-2); }
@@ -434,7 +436,7 @@ ${CARD_IMG_FALLBACK}
 ${hero ? `<div class="card-top deck-top">${hero}<div class="tw">
 ${top}
 </div></div>` : top}
-<div class="cta-row"><a class="cta" href="./">Grade my ${esc(g.title)} list</a></div>
+<div class="cta-row"><a class="cta" href="./">Grade my ${esc(g.title)} list</a><a class="cta cta2" href="./#add=${esc(g.id)}">Add the top list to my decks</a></div>
 
 <h2>Game Plan</h2>
 ${g.plan.map(p => `<p>${esc(p)}</p>`).join('\n')}

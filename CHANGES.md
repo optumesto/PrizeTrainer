@@ -1,3 +1,11 @@
+# RdyDeck 3.6.0 (build 187): quick add the top tournament list (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "The guides should have a deck that is able to be quick added to the Your Decks section, the one that has the best tourney results, same with the top and up and coming decks". And: every Top decks entry should open the same screen (before, some opened a guide and some the deck builder).
+- New top-lists.mjs, run weekly in refresh-data.yml after refresh-matchups.mjs: one list per archetype, the best finish in the grade's window (back two sets), lists since the newest set first, then the best place, the bigger event, the newer one, the event id. Online and local in-person weighed the same. Every list 60 cards, Standard legal, at most 4 of a card and 1 ACE SPEC. Reads only the standings of the events it needs, cached in .github/top-lists-cache.json, 30 s apart. First fill: 77 of 78 decks (Raging Bolt had no top 16 finish in the window).
+- js/v91-quick-add.js: a Top decks row opens a sheet with the best finish, the event and date, the grade worked out on the device (Overall, Card Strength, Tournament Strength), the 60 cards, Add to your decks, and Read the guide when there is one. The + on each row adds in one tap. Saved as "<deck> (top list)"; a list you already have opens your copy. No ads in the sheet.
+- Deck guides: all 22 have "Add the top list to my decks" (rdydeck.com/#add=<deck>), build-pages.mjs to match.
+- All 6 languages. Also: What's new, PT_VERSION v3.6.0, PT_BUILD 187, softwareVersion 3.6.0, sw.js cache v187 (top-lists.json precached, network first), stamps.
+
 # RdyDeck 3.5.15 (build 186): deck guides fixed, main attacker for Ogerpon engine decks (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "this deckguide is incorrect, tthe main attacker is arboliva. We need to audit all of the deckguides to make sure they are correct". All guides except Arboliva and Okidogi Barbaracle (already fixed) checked against card text and Limitless lists.

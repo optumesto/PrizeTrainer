@@ -2803,3 +2803,27 @@ Object.assign(I18N_MORE.fr.dict, { "Legendary Stadiums need both halves": "Les S
 
 // 3.5.15: deck guides now name the right main attacker.
 Object.assign(I18N_MORE.fr.dict, { "Deck guides now name the right main attacker": "Les guides de deck indiquent maintenant le bon attaquant principal" });
+
+// 3.6.0: Quick add the top tournament list.
+Object.assign(I18N_MORE.fr.dict, { "Add any top deck's best tournament list in one tap": "Ajoutez en un geste la meilleure liste de tournoi de n'importe quel deck du moment" });
+Object.assign(I18N_MORE.fr.dict, {
+  "Top tournament list": "Meilleure liste de tournoi",
+  "Online event": "Tournoi en ligne",
+  "Local in-person event": "Tournoi local en présentiel",
+  "Grading the list…": "Notation de la liste…",
+  "The grade shows once card data loads. Add the list to see it.": "La note s'affiche une fois les données des cartes chargées. Ajoutez la liste pour la voir.",
+  "See the 60 cards": "Voir les 60 cartes",
+  "Add to your decks": "Ajouter à vos decks",
+  "Open my copy": "Ouvrir ma copie",
+  "The best finish in the grade's tournament window, with lists since the newest set first. Updated weekly.": "Le meilleur classement sur la période de tournois de la note, en priorité les listes depuis la dernière extension. Mis à jour chaque semaine.",
+  "No top list for this deck yet. Check back after the next weekly update.": "Pas encore de meilleure liste pour ce deck. Revenez après la prochaine mise à jour hebdomadaire.",
+  "Top lists did not load. Check your connection.": "Les meilleures listes n'ont pas chargé. Vérifiez votre connexion.",
+  "Loading the top list…": "Chargement de la meilleure liste…",
+  "You're offline. The top list can be added once you're back online.": "Vous êtes hors ligne. La meilleure liste pourra être ajoutée une fois la connexion revenue.",
+  "Tap a deck for its top tournament list. Tap + to add it to your decks.": "Touchez un deck pour voir sa meilleure liste de tournoi. Touchez + pour l'ajouter à vos decks.",
+  "Add the top list to your decks": "Ajouter la meilleure liste à vos decks",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, (m, n, p) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e') + ' sur ' + p.replace(/,/g, ' ') + ' joueurs'],
+  [/^Best finish: (\d+)(?:st|nd|rd|th)$/, (m, n) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e')],
+);

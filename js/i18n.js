@@ -6649,6 +6649,48 @@ Object.assign(I18N_PT, { "De-bling is now called Cheapest Version": "Baratear ag
 Object.assign(I18N_ES, { "Deck guides now name the right main attacker": "Las guías de mazos ahora nombran el atacante principal correcto" });
 Object.assign(I18N_PT, { "Deck guides now name the right main attacker": "Os guias de deck agora indicam o atacante principal certo" });
 
+// 3.6.0: Quick add the top tournament list.
+Object.assign(I18N_ES, { "Add any top deck's best tournament list in one tap": "Agrega en un toque la mejor lista de torneo de cualquier baraja top" });
+Object.assign(I18N_PT, { "Add any top deck's best tournament list in one tap": "Adicione com um toque a melhor lista de torneio de qualquer deck top" });
+Object.assign(I18N_ES, {
+  "Top tournament list": "Lista top de torneo",
+  "Online event": "Torneo online",
+  "Local in-person event": "Torneo presencial local",
+  "Grading the list…": "Calificando la lista…",
+  "The grade shows once card data loads. Add the list to see it.": "La calificación aparece cuando cargan los datos de las cartas. Agrega la lista para verla.",
+  "See the 60 cards": "Ver las 60 cartas",
+  "Add to your decks": "Agregar a tus barajas",
+  "Open my copy": "Abrir mi copia",
+  "The best finish in the grade's tournament window, with lists since the newest set first. Updated weekly.": "El mejor resultado en el periodo de torneos de la calificación, con prioridad para las listas desde la expansión más reciente. Se actualiza cada semana.",
+  "No top list for this deck yet. Check back after the next weekly update.": "Esta baraja aún no tiene lista top. Vuelve a mirar tras la próxima actualización semanal.",
+  "Top lists did not load. Check your connection.": "Las listas top no cargaron. Revisa tu conexión.",
+  "Loading the top list…": "Cargando la lista top…",
+  "You're offline. The top list can be added once you're back online.": "No tienes conexión. Podrás agregar la lista top cuando vuelvas a estar en línea.",
+  "Tap a deck for its top tournament list. Tap + to add it to your decks.": "Toca una baraja para ver su lista top de torneo. Toca + para agregarla a tus barajas.",
+  "Add the top list to your decks": "Agregar la lista top a tus barajas",
+});
+Object.assign(I18N_PT, {
+  "Top tournament list": "Lista top de torneio",
+  "Online event": "Torneio online",
+  "Local in-person event": "Torneio presencial local",
+  "Grading the list…": "Avaliando a lista…",
+  "The grade shows once card data loads. Add the list to see it.": "A nota aparece quando os dados das cartas carregarem. Adicione a lista para vê-la.",
+  "See the 60 cards": "Ver as 60 cartas",
+  "Add to your decks": "Adicionar aos seus decks",
+  "Open my copy": "Abrir minha cópia",
+  "The best finish in the grade's tournament window, with lists since the newest set first. Updated weekly.": "O melhor resultado no período de torneios da nota, com prioridade para as listas desde a coleção mais nova. Atualizado toda semana.",
+  "No top list for this deck yet. Check back after the next weekly update.": "Este deck ainda não tem lista top. Volte depois da próxima atualização semanal.",
+  "Top lists did not load. Check your connection.": "As listas top não carregaram. Verifique sua conexão.",
+  "Loading the top list…": "Carregando a lista top…",
+  "You're offline. The top list can be added once you're back online.": "Você está offline. A lista top pode ser adicionada quando você voltar a ficar online.",
+  "Tap a deck for its top tournament list. Tap + to add it to your decks.": "Toque em um deck para ver a lista top de torneio. Toque em + para adicioná-la aos seus decks.",
+  "Add the top list to your decks": "Adicionar a lista top aos seus decks",
+});
+I18N_PAT.unshift(
+  [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, 'Mejor resultado: puesto $1 de $2 jugadores', 'Melhor resultado: $1º de $2 jogadores'],
+  [/^Best finish: (\d+)(?:st|nd|rd|th)$/, 'Mejor resultado: puesto $1', 'Melhor resultado: $1º'],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
