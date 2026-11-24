@@ -269,6 +269,7 @@ async function gs45Draw(deck, R, size, info, art) {
   x.font = `700 ${Math.round(gSize * 0.23)}px ${D}`; x.fillStyle = col;
   x.fillText(band, 64, gY + Math.round(gSize * 0.33));
 
+  // 3.5.1: Card strength (was Deck strength (cards based)).
   // 3.4.41: labels Deck strength (cards based) and Tournament strength, fitted beside the value.
   // 3.4.38: Deck strength and Tourney strength with their bars (Synergy and Power before). N/A when the
   // archetype has too few games, with an empty bar. Without the split helper the old pair shows.
@@ -283,7 +284,7 @@ async function gs45Draw(deck, R, size, info, art) {
     if (v != null) { x.fillStyle = GS45.band[gs45Band(v)]; x.fillRect(px, by, pw * Math.max(0, Math.min(1, v / 10)), bh); }
   };
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
-  const P = S ? [['Deck strength (cards based)', S.deck], ['Tournament strength', S.tour]] : [['Synergy', synV], ['Power', powV]];
+  const P = S ? [['Card strength', S.deck], ['Tournament strength', S.tour]] : [['Synergy', synV], ['Power', powV]];
   if (!sq && !hasArt) { part(P[0][0], P[0][1], 700, 262, 436, true); part(P[1][0], P[1][1], 700, 392, 436, true); }
   else if (!sq) { part(P[0][0], P[0][1], 64, 474, 320, false); part(P[1][0], P[1][1], 424, 474, 320, false); }
   else if (hasArt) { part(P[0][0], P[0][1], 64, 690, 496, true); part(P[1][0], P[1][1], 64, 800, 496, true); }
@@ -316,7 +317,7 @@ async function gs45Draw(deck, R, size, info, art) {
 function gs338Text(R) {
   const S = typeof g338Split === 'function' ? g338Split(R) : null;
   if (!S) return `Synergy ${gR1(R.coh.score * 10).toFixed(1)}, Power ${gR1(R.via.score * 10).toFixed(1)}.`;
-  return `Deck strength (cards based) ${S.deck.toFixed(1)}, Tournament strength ${S.tour == null ? 'N/A' : S.tour.toFixed(1)}.`;
+  return `Card strength ${S.deck.toFixed(1)}, Tournament strength ${S.tour == null ? 'N/A' : S.tour.toFixed(1)}.`;
 }
 async function v45ShareGrade() {
   const deck = state.decks.find(d => d.id === state.activeDeckId);

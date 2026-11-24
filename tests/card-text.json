@@ -1,5 +1,5 @@
 {
- "note": "Card text of every legal Trainer and Special Energy in cards.json, from pokemon-tcg-data, for the check that RdyDeck reads every card. Written by tests/grade-check.mjs --record-text.",
+ "note": "Card text of every legal Trainer and Special Energy in cards.json, from pokemon-tcg-data (SVP and MEP promos it lacks from TCGdex), for the check that RdyDeck reads every card. Written by tests/grade-check.mjs --record-text.",
  "cards": {
   "AZ's Tranquility": {
    "kind": "supporter",
@@ -507,6 +507,16 @@
    "rules": [
     "You can use this card only when it is the last card in your hand.  Search your deck for up to 2 cards and put them into your hand. Then, shuffle your deck.",
     "You may play only 1 Supporter card during your turn."
+   ]
+  },
+  "Celebratory Fanfare": {
+   "kind": "stadium",
+   "supertype": "Trainer",
+   "subtypes": [
+    "Stadium"
+   ],
+   "rules": [
+    "Once during each player's turn, that player may heal 10 damage from each of their Pokémon. If a player healed any damage in this way, their turn ends."
    ]
   },
   "Cheren": {

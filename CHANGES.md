@@ -2,6 +2,11 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.1 (build 172): Card strength (24 Nov 2026)
+
+- Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026: "Lets fix this to only say Card Strength"): the Grade tab, the note when the two scores disagree, the share card, the saved grade image and the shared text, in all 5 languages. The score itself is unchanged. Changed files: js/v29-rotation.js, js/v45-sample-share-daily.js, js/core.js (What's new, PT_VERSION v3.5.1, PT_BUILD 172), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, index.html (softwareVersion, stamps), sw.js (cache v172).
+- Grade check: --record-text reads SVP and MEP promos that pokemon-tcg-data lacks from TCGdex, so Celebratory Fanfare (MEP 028, added in 3.5) has saved text and the card read check passes again. Changed files: tests/grade-check.mjs, tests/card-text.json.
+
 # RdyDeck 3.5 (build 171): Deck strength reads the cards more closely (24 Nov 2026)
 
 Includes 3.4.42 (build 170), which never went live on its own. Changed files: js/core.js (G350 repeat rules for discard, lock and self damage hits; g351Factors, the card factor registry, and G351 with the four kept factors; PT_VERSION now v3.5, What's new, PT_BUILD now 171), js/v29-rotation.js (the grade sum names what the card factors add or take off; a third decimal when two would not add up), build-cards.mjs (SVP and MEP promos missing from pokemon-tcg-data read from TCGdex's open card files; a weekly check that every card in meta-cards.json is in cards.json), cards.json and prints.json (rebuilt), index.html and deck-grader.html (How grading works names the card factors, softwareVersion, stamps), sw.js (cache v171), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js (every new sentence in 5 languages), tests/grade-baseline.json.

@@ -566,6 +566,7 @@ renderGrade = function () {
 
 // 3.4.41: three labeled scores (Mason, 24 Nov 2026): Overall on the big grade, which blends the other two, then
 // Deck strength (cards based) and Tournament strength (was Tourney strength).
+// 3.5.1: Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026).
 // 3.4.38: the two split scores lead the parts. Deck strength carries Synergy and Power as one small line,
 // so the hero still shows what holds the list back. Without the split helper the old parts show.
 function g338Parts(R, synV, powV, part) {
@@ -576,7 +577,7 @@ function g338Parts(R, synV, powV, part) {
       <div class="g-meter"><span style="width:0"></span></div>
       <div class="g29-ps">${S.games ? 'Fewer than 20 event games' : 'No event results match'}</div></div>`;
   return `<div class="g29-parts g338-parts">
-      ${part('Deck strength (cards based)', S.deck, sp)}
+      ${part('Card strength', S.deck, sp)}
       ${S.tour == null ? na : part('Tournament strength', S.tour, 'How decks like it do at events')}
     </div>${g342Gap(S)}`;
 }
@@ -587,8 +588,8 @@ const G342_GAP = 1.5;
 function g342Gap(S) {
   if (!S || S.tour == null || Math.abs(S.deck - S.tour) < G342_GAP) return '';
   return `<p class="g342-gap">${S.deck > S.tour
-    ? 'Your cards score higher than decks like this do at events. Deck strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'
-    : 'Decks like this do better at events than the cards alone show. Deck strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'}</p>`;
+    ? 'Your cards score higher than decks like this do at events. Card strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'
+    : 'Decks like this do better at events than the cards alone show. Card strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'}</p>`;
 }
 
 // 3.3.6: How the grade works opens the answer from Questions about RdyDeck (#faq-grade on home),

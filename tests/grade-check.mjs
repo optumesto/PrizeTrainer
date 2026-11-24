@@ -88,8 +88,21 @@ if (MODE === 'text') {
       out[n] = { kind: c.supertype === 'Energy' ? 'energy' : ({ I: 'item', S: 'supporter', D: 'stadium', O: 'tool' })[want.get(n).tk] || 'item', supertype: c.supertype, subtypes: c.subtypes || [], rules: c.rules || [] };
     }
   }
+  // 3.5.1: SVP and MEP promos that pokemon-tcg-data lacks come from TCGdex, as in build-cards.mjs.
+  const TDEX = 'https://raw.githubusercontent.com/tcgdex/cards-database/master/data';
+  const TSET = { SVP: 'Scarlet & Violet/SVP Black Star Promos', MEP: 'Mega Evolution/MEP Black Star Promos' };
+  for (const [n, c] of want) {
+    if (out[n] || !TSET[c.s] || !c.no) continue;
+    const r = await fetch(`${TDEX}/${TSET[c.s].split('/').map(encodeURIComponent).join('/')}/${String(c.no).padStart(3, '0')}.ts`, { headers: { 'User-Agent': 'RdyDeck-tests/1.0 (+https://rdydeck.com/)' } }).catch(() => null);
+    const src = r && r.ok ? await r.text() : '';
+    const m = /effect:\s*\{[^}]*?\ben:\s*"((?:[^"\\]|\\.)*)"/.exec(src);
+    if (!m) continue;
+    const kind = c.k === 'E' ? 'energy' : ({ I: 'item', S: 'supporter', D: 'stadium', O: 'tool' })[c.tk] || 'item';
+    const sub = { item: 'Item', supporter: 'Supporter', stadium: 'Stadium', tool: 'Pokémon Tool', energy: 'Special' }[kind];
+    out[n] = { kind, supertype: c.k === 'E' ? 'Energy' : 'Trainer', subtypes: [sub], rules: [m[1].replace(/\\(.)/g, '$1')] };
+  }
   const sorted = Object.fromEntries(Object.keys(out).sort().map(k => [k, out[k]]));
-  fs.writeFileSync(TEXT, JSON.stringify({ note: 'Card text of every legal Trainer and Special Energy in cards.json, from pokemon-tcg-data, for the check that RdyDeck reads every card. Written by tests/grade-check.mjs --record-text.', cards: sorted }, null, 1) + '\n');
+  fs.writeFileSync(TEXT, JSON.stringify({ note: 'Card text of every legal Trainer and Special Energy in cards.json, from pokemon-tcg-data (SVP and MEP promos it lacks from TCGdex), for the check that RdyDeck reads every card. Written by tests/grade-check.mjs --record-text.', cards: sorted }, null, 1) + '\n');
   const miss = [...want.keys()].filter(n => !out[n]);
   console.log(`Saved the text of ${Object.keys(out).length} cards to tests/card-text.json.${miss.length ? ' No text found for: ' + miss.join(', ') : ''}`);
   process.exit(0);
