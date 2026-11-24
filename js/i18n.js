@@ -6591,6 +6591,36 @@ I18N_PAT.unshift(
   [/^: ([\d.]+%) wins over ([\d,]+) matches$/, ": $1 de victorias en $2 partidas", ": $1 de vitórias em $2 partidas"],
 );
 
+// 3.5.9: Top decks on home.
+Object.assign(I18N_ES, {
+  "Top decks": "Mejores barajas",
+  "Top rated": "Más fuertes",
+  "Up and coming": "En ascenso",
+  "Loading tournament results…": "Cargando resultados de torneos…",
+  "Tournament results did not load. Check your connection.": "Los resultados de torneos no cargaron. Revisa tu conexión.",
+  "No deck is climbing right now. Check back after the next weekly update.": "Ninguna baraja va en ascenso ahora. Vuelve a mirar tras la próxima actualización semanal.",
+  "Since the newest set: at least 100 games, 50% wins or more, and both its results and its share of lists went up.": "Desde la expansión más reciente: al menos 100 partidas, 50% de victorias o más, y subieron tanto sus resultados como su parte de las listas.",
+  "Tap a deck for its guide or to build it.": "Toca una baraja para ver su guía o para armarla.",
+});
+Object.assign(I18N_PT, {
+  "Top decks": "Melhores decks",
+  "Top rated": "Mais fortes",
+  "Up and coming": "Em ascensão",
+  "Loading tournament results…": "Carregando resultados de torneios…",
+  "Tournament results did not load. Check your connection.": "Os resultados de torneios não carregaram. Verifique sua conexão.",
+  "No deck is climbing right now. Check back after the next weekly update.": "Nenhum deck está em ascensão agora. Volte depois da próxima atualização semanal.",
+  "Since the newest set: at least 100 games, 50% wins or more, and both its results and its share of lists went up.": "Desde a coleção mais nova: pelo menos 100 partidas, 50% de vitórias ou mais, e subiram tanto os resultados quanto a fatia das listas.",
+  "Tap a deck for its guide or to build it.": "Toque em um deck para ver o guia ou montá-lo.",
+});
+I18N_PAT.unshift(
+  [/^(\d+)% wins over ([\d,]+) games$/, '$1% de victorias en $2 partidas', '$1% de vitórias em $2 partidas'],
+  [/^(\d+)% wins, ([\d.]+%) of lists, up from ([\d.]+%)$/, '$1% de victorias, $2 de las listas, antes $3', '$1% de vitórias, $2 das listas, antes $3'],
+  [/^(\d+)% wins, ([\d.]+%) of lists, new since the newest set$/, '$1% de victorias, $2 de las listas, nueva desde la expansión más reciente', '$1% de vitórias, $2 das listas, novo desde a coleção mais nova'],
+  [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/,
+    (m, w) => 'Las puntuaciones son la Fuerza en torneos sobre 10, de ' + ({ 'online and local in-person': 'torneos online y presenciales locales', online: 'torneos online', 'local in-person': 'torneos presenciales locales' })[w] + ', actualizada cada semana.',
+    (m, w) => 'As notas são a Força em torneios de 0 a 10, de ' + ({ 'online and local in-person': 'torneios online e presenciais locais', online: 'torneios online', 'local in-person': 'torneios presenciais locais' })[w] + ', atualizada toda semana.'],
+);
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

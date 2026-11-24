@@ -2810,3 +2810,20 @@ Object.assign(I18N_MORE.de.dict, {
 I18N_MORE.de.pat.unshift(
   [/^: ([\d.]+%) wins over ([\d,]+) matches$/, ": $1 Siege in $2 Matches"],
 );
+// 3.5.9: Top decks on home.
+Object.assign(I18N_MORE.de.dict, {
+  "Top decks": "Top-Decks",
+  "Top rated": "Am stärksten",
+  "Up and coming": "Im Kommen",
+  "Loading tournament results…": "Turnierergebnisse werden geladen…",
+  "Tournament results did not load. Check your connection.": "Die Turnierergebnisse wurden nicht geladen. Prüfe deine Verbindung.",
+  "No deck is climbing right now. Check back after the next weekly update.": "Gerade ist kein Deck im Kommen. Schau nach dem nächsten wöchentlichen Update wieder vorbei.",
+  "Since the newest set: at least 100 games, 50% wins or more, and both its results and its share of lists went up.": "Seit dem neuesten Set: mindestens 100 Spiele, 50 % Siege oder mehr, und sowohl die Ergebnisse als auch der Anteil an den Listen sind gestiegen.",
+  "Tap a deck for its guide or to build it.": "Tippe auf ein Deck für seinen Guide oder um es zu bauen.",
+});
+I18N_MORE.de.pat.unshift(
+  [/^(\d+)% wins over ([\d,]+) games$/, "$1 % Siege in $2 Spielen"],
+  [/^(\d+)% wins, ([\d.]+)% of lists, up from ([\d.]+)%$/, "$1 % Siege, $2 % der Listen, vorher $3 %"],
+  [/^(\d+)% wins, ([\d.]+)% of lists, new since the newest set$/, "$1 % Siege, $2 % der Listen, neu seit dem neuesten Set"],
+  [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/, (m, w) => 'Die Werte sind die Turnierstärke von 10, aus ' + ({ 'online and local in-person': 'Online- und lokalen Präsenzturnieren', online: 'Onlineturnieren', 'local in-person': 'lokalen Präsenzturnieren' })[w] + ', wöchentlich aktualisiert.'],
+);

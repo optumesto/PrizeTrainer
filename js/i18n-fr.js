@@ -2770,3 +2770,20 @@ Object.assign(I18N_MORE.fr.dict, {
 I18N_MORE.fr.pat.unshift(
   [/^: ([\d.]+%) wins over ([\d,]+) matches$/, " : $1 de victoires sur $2 matchs"],
 );
+// 3.5.9: Top decks on home.
+Object.assign(I18N_MORE.fr.dict, {
+  "Top decks": "Meilleurs decks",
+  "Top rated": "Les plus forts",
+  "Up and coming": "En hausse",
+  "Loading tournament results…": "Chargement des résultats de tournois…",
+  "Tournament results did not load. Check your connection.": "Les résultats de tournois n'ont pas chargé. Vérifiez votre connexion.",
+  "No deck is climbing right now. Check back after the next weekly update.": "Aucun deck n'est en hausse pour l'instant. Revenez après la prochaine mise à jour hebdomadaire.",
+  "Since the newest set: at least 100 games, 50% wins or more, and both its results and its share of lists went up.": "Depuis la dernière extension : au moins 100 parties, 50 % de victoires ou plus, et ses résultats comme sa part des listes ont augmenté.",
+  "Tap a deck for its guide or to build it.": "Touchez un deck pour voir son guide ou le construire.",
+});
+I18N_MORE.fr.pat.unshift(
+  [/^(\d+)% wins over ([\d,]+) games$/, "$1 % de victoires sur $2 parties"],
+  [/^(\d+)% wins, ([\d.]+)% of lists, up from ([\d.]+)%$/, "$1 % de victoires, $2 % des listes, contre $3 % avant"],
+  [/^(\d+)% wins, ([\d.]+)% of lists, new since the newest set$/, "$1 % de victoires, $2 % des listes, nouveau depuis la dernière extension"],
+  [/^Scores are Tournament strength out of 10, from (online and local in-person|online|local in-person) events, updated weekly\.$/, (m, w) => 'Les notes sont la Force en tournoi sur 10, issue des ' + ({ 'online and local in-person': 'tournois en ligne et locaux en présentiel', online: 'tournois en ligne', 'local in-person': 'tournois locaux en présentiel' })[w] + ', mise à jour chaque semaine.'],
+);
