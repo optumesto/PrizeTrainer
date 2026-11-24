@@ -572,7 +572,17 @@ function g338Parts(R, synV, powV, part) {
   return `<div class="g29-parts g338-parts">
       ${part('Deck strength (cards based)', S.deck, sp)}
       ${S.tour == null ? na : part('Tournament strength', S.tour, 'How decks like it do at events')}
-    </div>`;
+    </div>${g342Gap(S)}`;
+}
+
+// 3.4.42: when the two scores sit far apart, one line says why (Mason, 24 Nov 2026: the card based grade stays
+// distinct from event results). Deck strength reads the cards alone, so it can miss what decides games.
+const G342_GAP = 1.5;
+function g342Gap(S) {
+  if (!S || S.tour == null || Math.abs(S.deck - S.tour) < G342_GAP) return '';
+  return `<p class="g342-gap">${S.deck > S.tour
+    ? 'Your cards score higher than decks like this do at events. Deck strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'
+    : 'Decks like this do better at events than the cards alone show. Deck strength reads only the cards, like how hard they hit and how they trade prizes, not matchups or the field.'}</p>`;
 }
 
 // 3.3.6: How the grade works opens the answer from Questions about RdyDeck (#faq-grade on home),

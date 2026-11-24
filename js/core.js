@@ -8773,19 +8773,18 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.4.41',
+  version: 'v3.4.42',
   date: 'Nov 24, 2026',
   kind: 'small',
   items: [
-    { t: 'Overall, Deck strength and Tournament strength on every grade' }
+    { t: 'A note when Deck strength and Tournament strength disagree' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
-  { version: 'v3.4.40', date: 'Nov 24, 2026', kind: 'small', items: [
-    { t: 'Top decks score higher on Tourney strength' },
-    { t: 'Clearer grade note' }
+  { version: 'v3.4.41', date: 'Nov 24, 2026', kind: 'small', items: [
+    { t: 'Overall, Deck strength and Tournament strength on every grade' }
   ] },
   { version: 'v3.4.39', date: 'Nov 24, 2026', kind: 'small', items: [
     { t: 'Card guide search listing fixed' }
@@ -11794,8 +11793,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.4.41';
-const PT_BUILD = 169;
+const PT_VERSION = 'v3.4.42';
+const PT_BUILD = 170;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
