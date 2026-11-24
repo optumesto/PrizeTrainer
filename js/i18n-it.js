@@ -2686,6 +2686,7 @@ Object.assign(I18N_MORE.it.dict, {
   "A reordered home screen on phones": "Una schermata iniziale riordinata sul telefono",
   "Tidier deck tabs with more folding sections": "Schede del mazzo più ordinate, con più sezioni comprimibili",
   "What to fix first now sits right under the grade": "Cosa sistemare per primo ora sta subito sotto il voto",
+  "The RdyDeck logo now matches our Instagram picture": "Il logo di RdyDeck ora è uguale alla nostra foto di Instagram",
   "Deck strength reads the cards more closely": "La forza del mazzo legge le carte più a fondo",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Gli attacchi che scartano Energia, non si possono ripetere o danneggiano chi attacca ora contano per ciò che fanno ogni turno, e quattro conteggi di carte (pesca e ricerca, carte che premiano dopo un KO, riduzioni dei danni e scambi dell'avversario) spostano un po' il voto. La forza del mazzo ora è più vicina ai risultati dei tornei.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Quando i due punteggi distano 1.5 o più, una riga sotto dice quale è più alto e cosa legge la forza del mazzo.",

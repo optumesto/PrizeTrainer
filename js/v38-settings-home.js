@@ -95,7 +95,7 @@ function rd38Fit() {
   rd38Lockup(t, document.querySelector('#screen-home .app-subtitle'));
   // The logo stands as tall as the title and tag line together.
   const m = document.querySelector('#screen-home .rd-mark'), box = t && t.parentElement;
-  if (m && box && box.offsetHeight) { const h = box.offsetHeight; m.style.height = h + 'px'; m.style.width = (h * 62 / 88).toFixed(2) + 'px'; }
+  if (m && box && box.offsetHeight) { const h = box.offsetHeight; m.style.height = h + 'px'; m.style.width = (h * 380 / 556).toFixed(2) + 'px'; }
 }
 (function () {
   rd38Fit();

@@ -113,11 +113,7 @@ async function dgCanvas(size, col, tag) {
   x.textBaseline = 'alphabetic';
   const logoY = sq ? 60 : 52;
   x.save(); x.translate(L, logoY); x.scale(0.62 * k, 0.62 * k); x.translate(-19, -6);
-  x.lineJoin = 'round'; x.lineCap = 'round';
-  x.strokeStyle = GS45.text; x.lineWidth = 7;
-  x.beginPath(); if (x.roundRect) x.roundRect(23, 10, 54, 80, 5); else x.rect(23, 10, 54, 80); x.stroke();
-  x.strokeStyle = GS45.mark; x.lineWidth = 10;
-  x.beginPath(); x.moveTo(35, 52); x.lineTo(46, 63); x.lineTo(66, 38); x.stroke();
+  rdMarkCanvas(x, GS45.text, GS45.mark);
   x.restore();
   x.font = `800 ${Math.round(50 * k)}px ${D}`;
   const lx = L + 52 * k, ly = logoY + 40 * k;

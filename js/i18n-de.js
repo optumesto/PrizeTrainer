@@ -2753,6 +2753,7 @@ Object.assign(I18N_MORE.de.dict, {
   "A reordered home screen on phones": "Ein neu geordneter Startbildschirm auf dem Handy",
   "Tidier deck tabs with more folding sections": "Aufgeräumtere Deck-Tabs mit mehr ausklappbaren Bereichen",
   "What to fix first now sits right under the grade": "Was zuerst zu beheben ist, steht jetzt direkt unter der Note",
+  "The RdyDeck logo now matches our Instagram picture": "Das Logo von RdyDeck passt jetzt zu unserem Profilbild auf Instagram",
   "Deck strength reads the cards more closely": "Die Deckstärke liest die Karten genauer",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Attacken, die Energie ablegen, sich nicht wiederholen lassen oder dem Angreifer schaden, zählen jetzt mit dem, was sie jeden Zug schaffen, und vier Kartenzählungen (Ziehen und Suchen, Karten, die nach einem K.O. belohnen, Schadensminderung und Wechsel des Gegners) verschieben die Note ein wenig. Die Deckstärke liegt jetzt näher an den Turnierergebnissen.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Liegen die beiden Werte 1.5 oder mehr auseinander, sagt eine Zeile darunter, welcher höher ist und was die Deckstärke liest.",
