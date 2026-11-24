@@ -543,7 +543,7 @@ renderGrade = function () {
       ${rest.length ? `<details class="g29-more"><summary>${rest.length} more to fix</summary>${rest.map(f => g29Item(f, f.sev)).join('')}</details>` : ''}
     </div>`;
   } else if (!brk.length) {
-    // 3.5.2: the verdict above already says no problems were found, so the box saying it again is left out.
+    // 3.5.4: the verdict above already says no problems were found, so the box saying it again is left out.
     // The empty section stays as the place later sections are put after.
     h += `<div class="g-sec g36-none" id="g29-fix"></div>`;
   } else {
@@ -572,7 +572,7 @@ renderGrade = function () {
 // 3.4.41: three labeled scores (Mason, 24 Nov 2026): Overall on the big grade, which blends the other two, then
 // Deck strength (cards based) and Tournament strength (was Tourney strength).
 // 3.5.1: Deck strength (cards based) is now Card strength (Mason, 24 Nov 2026).
-// 3.5.2 (Mason, 24 Nov 2026: the deck tabs were "throw text at you"): what holds the grade back stays in view,
+// 3.5.4 (Mason, 24 Nov 2026: the deck tabs were "throw text at you"): what holds the grade back stays in view,
 // and the working out (Synergy times Power, the tournament share) folds under How this grade was worked out.
 function g36KeyLine(R, weak) {
   const held = R.rawOverall != null ? ` It is held at ${R.overall.toFixed(1)} because some cards are not Standard legal now.` : '';

@@ -2690,6 +2690,7 @@ Object.assign(I18N_MORE.fr.dict, {
   "Deck strength is now Card strength": "La force du deck devient la force des cartes",
   "A tidier home screen on phones": "Un écran d'accueil plus clair sur mobile",
   "A reordered home screen on phones": "Un écran d'accueil réorganisé sur mobile",
+  "Tidier deck tabs with more folding sections": "Des onglets du deck plus clairs, avec plus de sections repliables",
   "Deck strength reads the cards more closely": "La force du deck lit les cartes de plus près",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Les attaques qui défaussent de l'Énergie, ne peuvent pas se répéter ou blessent l'attaquant comptent maintenant pour ce qu'elles font à chaque tour, et quatre décomptes de cartes (pioche et recherche, cartes qui paient après un K.O., réductions de dégâts et changements adverses) déplacent un peu la note. La force du deck est maintenant plus proche des résultats en tournoi.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Quand les deux scores sont écartés de 1.5 ou plus, une ligne en dessous indique lequel est le plus haut et ce que lit la force du deck.",
@@ -2733,7 +2734,7 @@ I18N_MORE.fr.pat.unshift(
   [/^Today: not solved in (\d+)$/, "Aujourd'hui : pas trouvé en $1"],
 );
 
-// 3.5.2: Grade tab sections fold to one line.
+// 3.5.4: Grade tab sections fold to one line.
 Object.assign(I18N_MORE.fr.dict, {
   "How this grade was worked out": "Comment cette note a été calculée",
   "Auto:": "Auto :",

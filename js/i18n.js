@@ -6428,6 +6428,7 @@ Object.assign(I18N_ES, {
   "Deck strength is now Card strength": "La fuerza de la baraja ahora es fuerza de las cartas",
   "A tidier home screen on phones": "Una pantalla de inicio más ordenada en el móvil",
   "A reordered home screen on phones": "Una pantalla de inicio reordenada en el móvil",
+  "Tidier deck tabs with more folding sections": "Pestañas del mazo más ordenadas, con más secciones plegables",
   "Deck strength reads the cards more closely": "La fuerza de la baraja lee las cartas con más detalle",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Los ataques que descartan Energía, no se pueden repetir o dañan al atacante ahora cuentan por lo que pueden hacer cada turno, y cuatro recuentos de cartas (robo y búsqueda, cartas que rinden tras un K.O., recortes de daño y cambios del rival) mueven un poco la calificación. La fuerza de la baraja queda más cerca de los resultados de los torneos.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Cuando las dos puntuaciones se separan 1.5 o más, una línea debajo dice cuál es más alta y qué lee la fuerza de la baraja.",
@@ -6483,6 +6484,7 @@ Object.assign(I18N_PT, {
   "Deck strength is now Card strength": "A força do deck agora é força das cartas",
   "A tidier home screen on phones": "Uma tela inicial mais organizada no celular",
   "A reordered home screen on phones": "Uma tela inicial reorganizada no celular",
+  "Tidier deck tabs with more folding sections": "Abas do deck mais organizadas, com mais seções recolhíveis",
   "Deck strength reads the cards more closely": "A força do deck lê as cartas com mais detalhe",
   "Attacks that discard Energy, cannot repeat or hurt the attacker now count at what they can do every turn, and four card counts (draw and search, knockout payoffs, damage cuts and gusts) move the grade a little. Deck strength now sits closer to tournament results.": "Ataques que descartam Energia, não podem se repetir ou causam dano ao atacante agora contam pelo que conseguem fazer todo turno, e quatro contagens de cartas (compra e busca, cartas que rendem após um Nocaute, cortes de dano e trocas do oponente) mexem um pouco na nota. A força do deck fica mais perto dos resultados dos torneios.",
   "When the two scores are 1.5 or more apart, one line under them says which is higher and what Deck strength reads.": "Quando as duas pontuações ficam 1.5 ou mais distantes, uma linha abaixo diz qual é maior e o que a força do deck lê.",
@@ -6526,7 +6528,7 @@ I18N_PAT.unshift(
   [/^Today: not solved in (\d+)$/, "Hoy: sin acertar en $1", "Hoje: não acertou em $1"],
 );
 
-// 3.5.2: Grade tab sections fold to one line (js/v29-rotation.js, js/main-attacker.js, js/matchups.js).
+// 3.5.4: Grade tab sections fold to one line (js/v29-rotation.js, js/main-attacker.js, js/matchups.js).
 Object.assign(I18N_ES, {
   "How this grade was worked out": "Cómo se calculó esta calificación",
   "Auto:": "Auto:",

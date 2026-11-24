@@ -6,12 +6,12 @@
 // time and in every language. The Grade tab's sections already fold (Upgrades, Grade history and the
 // rest); now the way they were left is kept too.
 // Open by default: the part each tab is for. Folded by default:
-//   Odds:    Opening Basics, Main attacker (3.5.2), Prize risk
+//   Odds:    Opening Basics, Main attacker (3.5.4), Prize risk
 //   Drills:  Opponent prize read
 //   Notes:   Edit log, Compare lists
 //   Builder: Suggestions, and Start from once the list has cards
 // A tab with only one section (Hand) gets no fold. Nothing here changes a grade.
-// 3.5.2 (Mason, 24 Nov 2026: "Lets do more drop downs/collapsible sections"): on the Grade tab, How this grade
+// 3.5.4 (Mason, 24 Nov 2026: "Lets do more drop downs/collapsible sections"): on the Grade tab, How this grade
 // was worked out, Main attacker, Grade history, Grade vs win rate, Against the meta and Watch out for start
 // folded too, each with one line that says what is inside. A chip that jumps to a section keeps it open.
 

@@ -417,7 +417,7 @@ function g79Section(deck) {
   for (const d of data.decks) { const r = mu60Sum(d.rec); W += r[0]; M += r[0] + r[1] + r[2]; }
   const avg = M ? W / M * 100 : null, n0 = v => v.toLocaleString('en-US'), pct = v => v.toFixed(1) + '%';
   const day = data.cur && data.cur.since ? d30Nice(data.cur.since) : '';
-  // 3.5.2: folded by default; the folded line gives the verdict (filled in below once it is known).
+  // 3.5.4: folded by default; the folded line gives the verdict (filled in below once it is known).
   let h = `<details class="g-sec g29-fold" id="g79-sec"><summary><span class="r38-t"><span class="g-sec-t">Grade vs win rate</span><!--g79-say--></span></summary>
     <div class="g-sec-i">This list's cards next to how ${esc(arch.name)} decks do in Limitless ${typeof mu60SrcWords === 'function' ? mu60SrcWords() : 'online'} tournaments.</div>
     <p class="mu60-p">Cards alone: <b>${card.toFixed(1)}</b>, against ${G79_TYP.toFixed(1)} for a typical top tournament list.</p>`;

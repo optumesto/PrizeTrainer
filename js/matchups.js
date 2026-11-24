@@ -333,7 +333,7 @@ function mu60Section(deck) {
   const from = data.sources.filter(s => !mu60Src || s.id === mu60Src);
   const events = from.reduce((a, s) => a + s.events, 0);
 
-  // 3.5.2: folded by default; the folded line gives the record of the deck it is compared with.
+  // 3.5.4: folded by default; the folded line gives the record of the deck it is compared with.
   let h = `<details class="g-sec g29-fold" id="mu60-sec"><summary><span class="r38-t"><span class="g-sec-t">Against the meta</span><!--mu60-say--></span></summary>
     <div class="g-sec-i">How ${arch ? 'decks like this one' : 'each deck'} did in ${events} Limitless ${mu60SrcWords(data)} tournaments, ${span}.</div>
     <select class="x-select" aria-label="Deck to compare" onchange="mu60SetPick(this.value)">${opts}</select>${srcSel}`;

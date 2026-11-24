@@ -170,7 +170,7 @@ function gh72Html(deck) {
   const log = gh72Log(deck);
   if (!log) return '';
   const e = log.e, first = e[0], last = e[e.length - 1];
-  // 3.5.2: folded by default; the folded line says where the grade went.
+  // 3.5.4: folded by default; the folded line says where the grade went.
   if (e.length === 1) return `<details class="g-sec g29-fold" id="gh72-sec"><summary><span class="g-sec-t">Grade history</span><span class="g29-n">1</span></summary>
     <div class="g-sec-i">The first saved grade is ${first.g.toFixed(1)}. Each time you change this list, its new grade is kept here, so you can see it climb.</div></details>`;
   const dlt = gR1(last.g - first.g), edits = e.filter(x => x.w === 'e').length;

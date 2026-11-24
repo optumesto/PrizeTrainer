@@ -2,6 +2,11 @@
 
 Versions: 2.0, 2.1 and so on for feature releases, 2.1.1 for small fixes. Each release also has a build number, which keeps counting from the 1.x builds and names the update cache in sw.js.
 
+# RdyDeck 3.5.4 (build 175): Tidier deck tabs (24 Nov 2026)
+
+- Grade tab: the long grade working out (Synergy times Power, the tournament share, the wrong deck note) folds under "How this grade was worked out". What holds the grade back stays in view. Main attacker, Grade history, Watch out for, Grade vs win rate, Against the meta and Upgrades start folded, each with one line under its heading that says what is inside (the picked attacker, the grade range, the threats, the verdict, the win rate). The separate "Nothing to fix" box is gone when the headline already says no problems were found. Open or closed state is remembered, and jump chips open what they point at. Odds tab: Main attacker starts folded. All screen sizes. (Mason, 24 Nov 2026: "Lets do more drop downs/collapsible sections".)
+- Changed files: index.html (fold CSS, softwareVersion, stamps), js/v29-rotation.js, js/main-attacker.js, js/grade-history.js, js/v83-watch-out.js, js/v69-grade-blend.js, js/matchups.js, js/upgrades.js, js/fold-sections.js, js/core.js (What's new, PT_VERSION v3.5.4, PT_BUILD 175), js/i18n.js, js/i18n-fr.js, js/i18n-de.js, js/i18n-it.js, sw.js (cache v175).
+
 # RdyDeck 3.5.3 (build 174): A reordered home screen on phones (24 Nov 2026)
 
 - Phones (under 560px): home shows 4 decks before Show all (was 8), Daily games right after Import, Starter decks and Build a deck, then tiles grouped as Practice (Sparring, Tournament log, Improve your deck, Prize trainer, Goldfish guide, Opening odds), Learn (Deck guides, How grading works, Rotation checker, Rules) and More (Save and open decks, Share the app, Help and feedback, Contact, About RdyDeck, FAQ). Sparring gets a home tile. The Deck checker tile is dropped on phones; its text link stays. Wider screens unchanged (Mason, 24 Nov 2026: "I like it, push it").

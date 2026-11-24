@@ -24,7 +24,7 @@ function atk62Section(deck, R) {
   const say = cur === 'toolbox' ? 'Set as a toolbox deck, so the plan names each attacker. The grade still counts only the hits the cards can make.'
     : cur ? 'The plan, upgrades and draw odds are built around the attacker you set. Auto is what the grade reads from the cards.'
     : 'The Pokemon the plan, upgrades and draw odds are built around. Auto reads it from the cards; set it if your deck attacks with something else, or picks its attacker each turn.';
-  // 3.5.2: folded by default, with the attacker in use on the folded line.
+  // 3.5.4: folded by default, with the attacker in use on the folded line.
   const now = cur === 'toolbox' ? '<span class="r38-line">Toolbox: several attackers</span>'
     : (cur && R.via.main) ? `<span class="r38-line" data-no-tr>${esc(gCap(R.via.main.name))}</span>`
     : auto ? `<span class="r38-line"><span>Auto:</span> <span data-no-tr>${esc(gCap(auto.name))}</span></span>` : '';
