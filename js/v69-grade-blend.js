@@ -23,40 +23,69 @@
 // 3.4.38: below this many games, Tourney strength shows N/A and the grade reads the cards alone (Mason, 23 Nov 2026).
 const G68_MIN_GAMES = 20;
 const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.115, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
+// 3.5.7 (test): online and in-person results count evenly (Mason, 24 Nov 2026: "people place heavy emphasis on
+// the inperson and online divide, so i would like to weigh them both"). Each source gets its own index against its
+// own field, and the two are blended with in person at G68_IP_SHARE. In-person data is small (about 3% of games),
+// so the in-person share grows in a straight line up to G68_IP_FULL in-person games (counted as in the results
+// score, newest set three times); below that the index leans on online results, so a few store games cannot
+// swing a deck. With one source only, that source's index is used.
+const G68_IP_SHARE = 0.5, G68_IP_FULL = 150;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
   const plus = (a, b, k) => a.map((v, i) => v + k * ((b && b[i]) || 0));
   const F0 = [0, 0, 0, 0, 0, 0];
-  let F = F0.slice();
-  for (const s of data.sources) if (s.place) F = plus(F, s.place, 1);
-  if (data.cur && data.cur.place) for (const v of Object.values(data.cur.place)) F = plus(F, v, G68_CUR - 1);
-  const rows = data.decks.map(d => {
-    let r = [0, 0, 0], p = F0.slice();
-    for (const v of Object.values(d.rec || {})) r = plus(r, v, 1);
-    for (const v of Object.values(d.place || {})) p = plus(p, v, 1);
-    if (d.cur) {
-      for (const v of Object.values(d.cur.rec || {})) r = plus(r, v, G68_CUR - 1);
-      for (const v of Object.values(d.cur.place || {})) p = plus(p, v, G68_CUR - 1);
+  const ids = (data.sources || []).map(s => s.id);
+  // One source's index for every deck: its record and finishes, pulled toward that source's field.
+  const one = only => {
+    const keep = k => !only || k === only;
+    let F = F0.slice();
+    for (const s of data.sources) if (s.place && keep(s.id)) F = plus(F, s.place, 1);
+    if (data.cur && data.cur.place) for (const [k, v] of Object.entries(data.cur.place)) if (keep(k)) F = plus(F, v, G68_CUR - 1);
+    const rows = data.decks.map(d => {
+      let r = [0, 0, 0], p = F0.slice();
+      for (const [k, v] of Object.entries(d.rec || {})) if (keep(k)) r = plus(r, v, 1);
+      for (const [k, v] of Object.entries(d.place || {})) if (keep(k)) p = plus(p, v, 1);
+      if (d.cur) {
+        for (const [k, v] of Object.entries(d.cur.rec || {})) if (keep(k)) r = plus(r, v, G68_CUR - 1);
+        for (const [k, v] of Object.entries(d.cur.place || {})) if (keep(k)) p = plus(p, v, G68_CUR - 1);
+      }
+      return { d, r, p };
+    }).filter(x => x.p[0] && x.d.id !== 'other');
+    let W = 0, M = 0;
+    rows.forEach(x => { W += x.r[0]; M += x.r[0] + x.r[1] + x.r[2]; });
+    const out = {};
+    if (rows.length >= 3 && M && F[0]) {
+      const fw = W / M, fq = F[2] / 1000 / F[0];
+      for (const x of rows) {
+        const m = x.r[0] + x.r[1] + x.r[2];
+        const wr = (x.r[0] + G68_KM * fw) / (m + G68_KM);
+        const q = (x.p[2] / 1000 + G68_K * fq) / (x.p[0] + G68_K);
+        out[x.d.id] = { idx: 100 * Math.sqrt(wr / fw * q / fq), n: m, r: x.r };
+      }
     }
-    return { d, r, p };
-  }).filter(x => x.p[0] && x.d.id !== 'other');
-  let W = 0, M = 0;
-  rows.forEach(x => { W += x.r[0]; M += x.r[0] + x.r[1] + x.r[2]; });
+    return out;
+  };
+  const split = ids.includes('online') && ids.includes('inperson');
+  const all = one(''), on = split ? one('online') : null, ip = split ? one('inperson') : null;
   const out = {};
-  if (rows.length >= 3 && M && F[0]) {
-    const fw = W / M, fq = F[2] / 1000 / F[0];
-    for (const x of rows) {
-      const m = x.r[0] + x.r[1] + x.r[2];
-      const wr = (x.r[0] + G68_KM * fw) / (m + G68_KM);
-      const q = (x.p[2] / 1000 + G68_K * fq) / (x.p[0] + G68_K);
-      const idx = 100 * Math.sqrt(wr / fw * q / fq);
-      const curR = x.d.cur ? Object.values(x.d.cur.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]) : [0, 0, 0];
-      const all = Object.values(x.d.rec || {}).reduce((a, v) => plus(a, v, 1), [0, 0, 0]);
-      out[x.d.id] = { idx, n: m, score: gClamp(G68_MID + (idx < 100 ? G68_SLOPE_LO : G68_SLOPE) * (idx - 100), 3, 10), wrUsed: m ? x.r[0] / m : null,
-        wr: (all[0] + all[1] + all[2]) ? all[0] / (all[0] + all[1] + all[2]) : null, games: all[0] + all[1] + all[2],
-        curGames: curR[0] + curR[1] + curR[2], curWr: (curR[0] + curR[1] + curR[2]) ? curR[0] / (curR[0] + curR[1] + curR[2]) : null };
+  for (const [id, a] of Object.entries(all)) {
+    const d = data.decks.find(x => x.id === id);
+    let idx = a.idx, ipShare = 0;
+    if (split) {
+      const o = on[id], i = ip[id];
+      if (o && i) {
+        ipShare = G68_IP_SHARE * Math.min(1, i.n / G68_IP_FULL);
+        idx = Math.exp((1 - ipShare) * Math.log(o.idx) + ipShare * Math.log(i.idx));
+      } else if (o) idx = o.idx;
+      else if (i) { idx = i.idx; ipShare = 1; }
     }
+    const m = a.n;
+    const curR = d.cur ? Object.values(d.cur.rec || {}).reduce((acc, v) => plus(acc, v, 1), [0, 0, 0]) : [0, 0, 0];
+    const tot = Object.values(d.rec || {}).reduce((acc, v) => plus(acc, v, 1), [0, 0, 0]);
+    out[id] = { idx, n: m, ipShare, score: gClamp(G68_MID + (idx < 100 ? G68_SLOPE_LO : G68_SLOPE) * (idx - 100), 3, 10), wrUsed: m ? a.r[0] / m : null,
+      wr: (tot[0] + tot[1] + tot[2]) ? tot[0] / (tot[0] + tot[1] + tot[2]) : null, games: tot[0] + tot[1] + tot[2],
+      curGames: curR[0] + curR[1] + curR[2], curWr: (curR[0] + curR[1] + curR[2]) ? curR[0] / (curR[0] + curR[1] + curR[2]) : null };
   }
   _g68Memo = { data, out };
   return out;

@@ -4,7 +4,7 @@
 # Then checks every starter card and the two newest sets against both card databases,
 # writes gap fixes into data.json and a plain report to card-check.md.
 # Then builds matchups.json (deck vs deck win rates) from Limitless online tournaments and local
-# in-person store events (16 to 63 players, with decklists), and from the online reads meta-cards.json (what each deck's lists run, for the deck builder).
+# in-person store events (8 or more players, with decklists), and from the online reads meta-cards.json (what each deck's lists run, for the deck builder).
 # Then refreshes the facts behind the Grade tab's Watch out for box (watch-out-data.mjs).
 # Last, checks how well grades track those results and writes grade-results.md, and the public
 # scoreboard (accuracy.json, shown on how-grading-works.html and in the app).
@@ -77,7 +77,7 @@ jobs:
           PT_SLOW: ${{ inputs.slow && '1' || '' }}
           # Nov 19 2026: local in-person store events as their own source, up to 100 requests a week (Mason, Nov 19 2026).
           PT_IP_CALLS: ${{ inputs.cards_only && '' || '100' }}
-          PT_IP_MIN: '16'
+          PT_IP_MIN: '8'
         run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
 
       - name: Refresh the Watch out for box

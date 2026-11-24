@@ -1,0 +1,44 @@
+# Test only (Nov 24 2026): one read of Limitless with the wider in-person pull (events of 8+ players,
+# every event's in-person flag checked, big ones too), on branch inperson-split. Commits the
+# matchups cache and matchups.json back to that branch only. Nothing here touches main or the site.
+# Remove this file before anything from the branch goes live.
+name: In-person split test read
+
+on:
+  push:
+    branches: [inperson-split]
+    paths: ['.github/inperson-split-run.txt']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  read:
+    if: github.ref_name == 'inperson-split'
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      PT_PAUSE_MS: '30000'   # same pace as the weekly run (Mason, Nov 13 2026)
+      PT_IP_CALLS: '450'
+      PT_IP_MIN: '8'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Read Limitless
+        run: node refresh-matchups.mjs matchups.json .github/matchups-cache.json data.json
+      - name: Commit to the test branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add matchups.json .github/matchups-cache.json .github/cards-cache.json meta-cards.json || true
+          git diff --cached --quiet && { echo "Nothing changed."; exit 0; }
+          git commit -m "In-person split test read"
+          git pull --rebase origin inperson-split
+          git push origin HEAD:inperson-split
