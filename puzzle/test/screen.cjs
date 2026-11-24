@@ -90,7 +90,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   ok(R && R.won && R.moves === pz.p.moves, 'first-try win saved with ' + (R && R.moves) + ' plays');
   ok(/won this turn in/.test(w.puzzleShareText(R, pz.key)), 'share: ' + w.puzzleShareText(R, pz.key));
   w.showScreen('home'); w.renderHome();
-  ok(/won/.test(d.getElementById('puzzle-card').textContent), 'home card shows the win: ' + d.getElementById('puzzle-card').textContent.replace(/\s+/g, ' ').trim());
+  ok(/Won/.test(d.getElementById('puzzle-card').textContent), 'home card shows the win: ' + d.getElementById('puzzle-card').textContent.replace(/\s+/g, ' ').trim());
   // Your own numbers and streaks: three earlier days played (two won in a row up to yesterday), then today.
   const P = w.eval('state').puzzle; const today = pz.key;
   const dayKey = back => { const d = new w.Date(); d.setDate(d.getDate() - back); return w.dailyKey(d.getTime()); };
@@ -110,7 +110,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); 
   ok(new RegExp('Quickest Win #' + BOARD_DAY + ': won this turn in \\d+ plays?\\. 3 wins in a row\\.').test(w.puzzleShareText(R, today)), 'share text has the day\'s number and your streak');
   w.showScreen('home'); w.renderHome(); console.log('     card: ' + cardTxt());
   P.results[today] = { won: false, moves: 5, num: 4 }; w.renderHome();
-  ok(/no win/.test(cardTxt()) && /3 days in a row/.test(w.pzTally()) && !/wins in a row/.test(w.pzTally()), 'a loss today ends the win streak, keeps the days streak: ' + cardTxt() + ' / ' + w.pzTally());
+  ok(/No win/.test(cardTxt()) && /3 days in a row/.test(w.pzTally()) && !/wins in a row/.test(w.pzTally()), 'a loss today ends the win streak, keeps the days streak: ' + cardTxt() + ' / ' + w.pzTally());
   // Card sheet opens for a Pokémon and a hand card.
   w.showScreen('puzzle');
   w.pzReset(); w.showScreen('puzzle'); w.renderPuzzle();
