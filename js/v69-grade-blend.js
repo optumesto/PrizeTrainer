@@ -15,12 +15,9 @@
 // 33% wins over 777 games, 6.5; Mega Charizard X, 32% over 167 games, 8.5). Below an average record the results
 // score now falls twice as fast (G68_SLOPE_LO), and results reach their full share at 250 games, not 500. A deck
 // at or above an average record scores exactly as before, so the top decks keep their grades.
-// 3.4.40 (proposed, 24 Nov 2026): above an average record the results score rises 0.115 a point of the index (was 0.07),
-// so the best archetype in the field reads about 10 and the most played, winning decks read above 9. At 0.07 the
-// best index anywhere (117.5, Dragapult Dudunsparce) scored 9.2 and Dragapult 8.8. Below average is unchanged.
 // 3.4.38: below this many games, Tourney strength shows N/A and the grade reads the cards alone (Mason, 23 Nov 2026).
 const G68_MIN_GAMES = 20;
-const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.115, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
+const G68_MATCH = 0.45, G68_CUR = 3, G68_WMAX = 0.5, G68_FULL = 250, G68_SLOPE = 0.07, G68_SLOPE_LO = 0.14, G68_MID = 8.0, G68_KM = 40, G68_K = 15;
 let _g68Memo = null;
 function g68Strength(data) {
   if (_g68Memo && _g68Memo.data === data) return _g68Memo.out;
