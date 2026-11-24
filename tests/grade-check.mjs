@@ -290,6 +290,8 @@ async function gradeList(w, list, i) {
   return {
     id: String(i + 1).padStart(3, '0'),
     deck: list.deckName, place: list.place, event: list.event,
+    // 3.5.11: the grade's own main attacker pick, for the deck guide roles check below.
+    deckId: list.deck, main: R.via && R.via.auto ? R.via.auto.name : null,
     grade: R.overall,
     // How much of the grade came from tournament results, and which archetype they were for.
     results: R.res ? R.res.name + ' ' + Math.round(R.res.w * 100) + '%' : undefined,
@@ -514,10 +516,29 @@ if (moved.length) {
   for (const { r, b } of moved) console.log(`  ${r.id} ${r.deck} (${r.event}, ${r.place}): ${fmt(b)} -> ${fmt(r)}`);
 }
 
+// 3.5.11: deck guide roles. The first Pokemon in a guide's key cards (deck-guides.json) must be the main
+// attacker the grade picks for most of that deck's top lists, so a guide never leads with the engine
+// (Ogerpon Meganium Arboliva once named Teal Mask Ogerpon ex where Arboliva ex attacks).
+const roleFail = [];
+if (!ONLY) {
+  const guides = JSON.parse(fs.readFileSync(path.join(ROOT, 'deck-guides.json'), 'utf8')).decks;
+  for (const g of guides) {
+    const rs = results.filter(r => r.deckId === g.id && r.main);
+    if (!rs.length) continue;
+    const mons = new Set(lists.filter(l => l.deck === g.id).flatMap(l => l.cards.filter(c => c.part === 'pokemon').map(c => c.name)));
+    const first = (g.keys.find(k => mons.has(k[0])) || [])[0];
+    const n = {}; rs.forEach(r => { n[r.main] = (n[r.main] || 0) + 1; });
+    const top = Object.keys(n).sort((x, y) => n[y] - n[x])[0];
+    if (first !== top) roleFail.push(`  ${g.slug}: the guide leads with ${first || 'no Pokemon'}, the grade picks ${top} as the main attacker (${n[top]} of ${rs.length} lists)`);
+  }
+  if (roleFail.length) console.log('Deck guide roles check FAILED: put the main attacker first in its key cards, or fix the pick.\n' + roleFail.join('\n'));
+  else console.log('Deck guide roles check passed: every guide leads with the main attacker the grade picks.');
+}
+
 if (MODE === 'check') {
   const missingBase = results.filter(r => !base.lists[r.id]).length;
   if (missingBase) console.log(`${missingBase} lists have no baseline grade yet. Run --update to set one.`);
-  const fail = moved.length || broke.length || missed.size || missingBase || readFail;
+  const fail = moved.length || broke.length || missed.size || missingBase || readFail || roleFail.length;
   if (readFail) console.log('Card read check FAILED: every card must get a label.');
   console.log(fail ? 'Grade check FAILED. If every move above is intended, run: node tests/grade-check.mjs --update' : 'Grade check passed: no grade moved.');
   process.exit(fail ? 1 : 0);
