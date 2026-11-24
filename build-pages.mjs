@@ -12,6 +12,11 @@
 //        node build-pages.mjs --check  fails if a written page would change (nothing written)
 //        node build-pages.mjs --only=how-grading-works.html   writes just that page (the weekly
 //                                      refresh does this after the grade check writes accuracy.json)
+//        node build-pages.mjs --guides  writes only the pages a deck guide shows on: meta-decks.html,
+//                                      every deck-*.html, the card guides (cards/*.html) and the guide
+//                                      links of Top decks on home (js/v90-top-decks.js). Use it
+//                                      after adding a guide to deck-guides.json, so the hand edited
+//                                      pages (FAQ, About and the rest) are left alone.
 //
 // 3.0: how-grading-works.html gets its How accurate the grades are section from accuracy.json,
 // written each week by tests/grade-check.mjs --results --board=accuracy.json.
@@ -23,6 +28,7 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const read = f => JSON.parse(readFileSync(path.join(ROOT, f), 'utf8'));
 const CHECK = process.argv.includes('--check');
 const ONLY = (process.argv.find(a => a.startsWith('--only=')) || '').slice(7);
+const GUIDES = process.argv.includes('--guides');
 
 const guides = read('deck-guides.json');
 const data = read('data.json');
@@ -447,7 +453,7 @@ ${matchupTable(g, s)}
 <p class="note">These are results for decks like this one, not one exact list.</p>
 
 <h2>How RdyDeck grades it</h2>
-${s.grade ? `<p>RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}. The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
+${s.grade ? `<p>${s.grade.n === 1 ? `RdyDeck grades the one ${esc(g.title)} list in its test set, a top 16 finish${s.gradeDates ? ` on ${day(s.gradeDates[0])}` : ''}, at ${r1(s.grade.g)} out of 10. Its Synergy is ${r1(s.grade.s)} and its Power is ${r1(s.grade.p)}.` : `RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}.`} The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
 <p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How grading works</a> explains each part.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
 <p>To test your own copy before an event, <a href="goldfish.html">goldfish it</a>: play its first turns alone in RdyDeck with real draws and see how often ${esc(g.title)} sets up on time.</p>
@@ -1021,11 +1027,25 @@ const out = [
   // 3.4.35: which cards have a guide, so the app's card sheet can link "Read the guide" (js/card-details.js).
   ...(cp.cards.length ? [['card-guides.json', JSON.stringify({ schema: 1, note: 'Card name to its guide at cards/<slug>.html. Written by build-pages.mjs.', guides: Object.fromEntries(cp.cards.map(c => [c.name, c.slug])) }, null, 1) + '\n']] : []),
 ];
+// Nov 24 2026: Top decks on home (js/v90-top-decks.js) links a deck to its guide through TD90_GUIDES.
+// The map is written here from deck-guides.json, so a new guide is linked from home by the same run
+// that builds its page. tests/top-decks-guides-check.mjs lists Top decks that still need a guide.
+{
+  const f = 'js/v90-top-decks.js';
+  const src = readFileSync(path.join(ROOT, f), 'utf8');
+  const m = /const TD90_GUIDES = \{\n[\s\S]*?\n\};\n/.exec(src);
+  if (!m) throw new Error(`${f}: TD90_GUIDES not found`);
+  const map = guides.decks.filter(g => mcById[g.id]).map(g => `  '${g.id}': '${g.slug}',`).join('\n');
+  out.push([f, src.replace(m[0], `const TD90_GUIDES = {\n${map}\n};\n`)]);
+}
 const missing = guides.decks.filter(g => !mcById[g.id]).map(g => g.title);
 if (missing.length) console.warn('No card data for: ' + missing.join(', ') + '. Their pages were not rebuilt.');
+// Nov 24 2026: --guides keeps a run to the pages that list or link deck guides.
+const guidePage = f => f === 'meta-decks.html' || f === 'js/v90-top-decks.js' || /^deck-[a-z0-9-]+\.html$/.test(f) || /^cards\/(?!index\.html$)[a-z0-9-]+\.html$/.test(f);
+const inScope = f => (!ONLY || f === ONLY) && (!GUIDES || guidePage(f));
 let changed = 0;
 for (const [file, html] of out) {
-  if (ONLY && file !== ONLY) continue;
+  if (!inScope(file)) continue;
   if (/[\u2013\u2014]/.test(html)) throw new Error(`${file} has an en or em dash`);
   const p = path.join(ROOT, file);
   if (existsSync(p) && readFileSync(p, 'utf8') === html) continue;
@@ -1043,9 +1063,9 @@ for (const [file, html] of out) {
   // The page as it will be served: what this run built if it writes (or, with --check, would write) that page,
   // otherwise the file already on disk.
   const built = new Map(out);
-  const served = f => CHECK && (!ONLY || f === ONLY) ? built.get(f) : (existsSync(path.join(ROOT, f)) ? readFileSync(path.join(ROOT, f), 'utf8') : built.get(f));
+  const served = f => CHECK && inScope(f) ? built.get(f) : (existsSync(path.join(ROOT, f)) ? readFileSync(path.join(ROOT, f), 'utf8') : built.get(f));
   const outOfSearch = f => served(f).includes(NOINDEX_HERE);
-  const html = out.map(([f]) => f).filter(f => f.endsWith('.html'));
+  const html = out.map(([f]) => f).filter(f => f.endsWith('.html') && (!GUIDES || guidePage(f)));
   const listed = html.filter(f => !outOfSearch(f));
   const add = listed.map(f => f.replace(/(^|\/)index\.html$/, '$1')).filter(f => !xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));
   const drop = html.filter(outOfSearch).filter(f => xml.includes(`<loc>https://rdydeck.com/${f}</loc>`));

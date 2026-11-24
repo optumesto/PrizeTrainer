@@ -421,6 +421,48 @@
         ["Mega Starmie ex", "Nebula Beam does 210, not changed by Weakness, Resistance or effects."]
       ],
       "grade": "RdyDeck grades Greninja a little below the top decks. Its hardest hit comes from Mega Starmie ex with Dusknoir's Cursed Blast added, and the grade notes that the biggest Pokémon in the format take two hits. Synergy reads lower than in most decks, and its online record since Delta Reign is a little under even."
+    },
+    {
+      "id": "ogerpon-meganium-arboliva",
+      "desc": "Ogerpon Meganium Arboliva deck guide: Wild Growth doubles Grass Energy for Myriad Leaf Shower, and Arboliva ex spreads damage. Core list and matchups.",
+      "slug": "ogerpon-meganium-arboliva",
+      "title": "Ogerpon Meganium Arboliva",
+      "lead": "This Grass deck shares its engine with Ogerpon Meganium Hydrapple: Teal Mask Ogerpon ex attaches Grass Energy every turn and Meganium's Wild Growth makes each Basic Grass Energy provide two. Arboliva ex takes Hydrapple ex's place as the second attacker.",
+      "plan": [
+        "Teal Mask Ogerpon ex is the main attacker. Teal Dance attaches a Basic Grass Energy from your hand to it once a turn and draws a card, and Myriad Leaf Shower does 30 plus 30 for each Energy attached to both Active Pokémon. With Meganium in play, each Basic Grass Energy provides two Grass Energy and counts twice, so four Basic Grass Energy on Ogerpon make 270 before counting the Energy on your opponent's Active Pokémon.",
+        "Arboliva ex is a 310 HP Stage 2 Pokémon that evolves from Dolliv and Smoliv. Oil Salvo costs one Grass Energy and does 20 damage six times to your opponent's Pokémon, split any way you like, and that damage is not affected by Weakness or Resistance. Aroma Shot does 160 for three Colorless and recovers Arboliva ex from all Special Conditions, and Dolliv's Nutrients heals 40 damage from one of your Pokémon.",
+        "Meganium and Arboliva ex are both Stage 2 Pokémon and the list plays no Rare Candy. Forest of Vitality lets Grass Pokémon evolve during the turn they are played, except on a player's first turn, and Dawn searches your deck for a Basic Pokémon, a Stage 1 Pokémon and a Stage 2 Pokémon. Bug Catching Set takes Grass Pokémon and Basic Grass Energy from the top 7 cards, Meowth ex's Last-Ditch Catch finds a Supporter when you bench it, and with Briar you take one more Prize card when Teal Mask Ogerpon ex, a Tera Pokémon, knocks out your opponent's Active Pokémon while they have exactly 2 Prize cards left."
+      ],
+      "keys": [
+        ["Arboliva ex", "Oil Salvo spreads 120 damage across your opponent's Pokémon for one Energy."],
+        ["Teal Mask Ogerpon ex", "Teal Dance attaches Grass Energy and draws a card, and Myriad Leaf Shower grows with every Energy."],
+        ["Meganium", "Wild Growth makes every Basic Grass Energy provide two Grass Energy."],
+        ["Forest of Vitality", "Lets Grass Pokémon evolve the turn they are played, after your first turn."],
+        ["Dawn", "Finds a Basic, a Stage 1 and a Stage 2 Pokémon with one card."],
+        ["Bug Catching Set", "Finds Grass Pokémon and Grass Energy from the top 7 cards."]
+      ],
+      "grade": "RdyDeck counts Myriad Leaf Shower as the main hit, reaching 330 with four Basic Grass Energy on Teal Mask Ogerpon ex and two Energy on your opponent's Active Pokémon, and it counts Aroma Shot for Arboliva ex. Setup speed loses points the same way as the Hydrapple build, since both Stage 2 lines evolve the long way without Rare Candy. Synergy loses a little for the number of single copies, and the deck's record above even over the last two sets lifts its grade."
+    },
+    {
+      "id": "okidogi-barbaracle",
+      "desc": "Okidogi Barbaracle deck guide: Prism Energy turns on Adrena-Power for a 230 HP Okidogi doing 170 damage. Core list, game plan and matchups.",
+      "slug": "okidogi-barbaracle",
+      "title": "Okidogi Barbaracle",
+      "lead": "A Fighting deck built around Okidogi, a Basic Pokémon that becomes a 230 HP attacker doing 170 damage once it has Darkness Energy attached. Every Pokémon in the core list gives up only one Prize card, so your opponent has to take six Knock Outs.",
+      "plan": [
+        "Okidogi's Adrena-Power gives it +100 HP and makes its attacks do 100 more damage to your opponent's Active Pokémon while it has any Darkness Energy attached. Prism Energy provides every type of Energy while attached to a Basic Pokémon, one at a time, so one Prism Energy turns Adrena-Power on, and the ACE SPEC Legacy Energy does the same. With Adrena-Power on, Good Punch does 170 for two Fighting Energy.",
+        "Barbaracle's Stone Arms attaches a Basic Fighting Energy from your hand to one of your Fighting Pokémon once a turn, on top of your normal attachment. Lunatone's Lunar Cycle discards a Basic Fighting Energy from your hand to draw 3 cards while you have Solrock in play, and Solrock's Cosmic Beam does 70 for one Fighting Energy, not affected by Weakness or Resistance, as long as Lunatone is on your Bench. Fighting Gong finds a Basic Fighting Energy or a Basic Fighting Pokémon, and Poké Pad finds any Pokémon without a Rule Box.",
+        "Bloodmoon Ursaluna's Battle-Hardened attaches up to 2 Basic Fighting Energy from your hand when you bench it, and Mad Bite does 100 plus 30 for each damage counter on your opponent's Active Pokémon, which finishes big Pokémon that Okidogi has already hit. Battle Cage stops the effects of attacks and Abilities from your opponent's Pokémon from placing damage counters on Benched Pokémon, so attacks like Phantom Dive can't put damage counters on your Bench while it is in play."
+      ],
+      "keys": [
+        ["Okidogi", "Adrena-Power adds 100 HP and 100 damage once Darkness Energy is attached."],
+        ["Prism Energy", "Provides every type on a Basic Pokémon, which turns on Adrena-Power."],
+        ["Barbaracle", "Stone Arms attaches an extra Basic Fighting Energy each turn."],
+        ["Solrock", "Cosmic Beam does 70 for one Energy, ignoring Weakness and Resistance, with Lunatone on the Bench."],
+        ["Lunatone", "Lunar Cycle discards a Basic Fighting Energy to draw 3 with Solrock in play."],
+        ["Battle Cage", "Stops your opponent's attack and Ability effects from putting damage counters on the Bench."]
+      ],
+      "grade": "RdyDeck expects this deck to need two hits for the biggest Pokémon in the format, with Bloodmoon Ursaluna's Mad Bite as its hardest single hit. Every Pokémon gives up one Prize card, so the trade stays even against decks of Pokémon ex. Synergy loses points for spreading the Pokémon over many lines with several single copies, and the deck's record above even since Delta Reign lifts its grade over what the cards alone earn."
     }
   ]
 }

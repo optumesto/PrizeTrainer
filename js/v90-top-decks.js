@@ -21,14 +21,30 @@ const TD90_TAB = 'rd_td90_tab';
 let td90Tab = (() => { try { return safeLocalGet(TD90_TAB) === 'up' ? 'up' : 'top'; } catch (_) { return 'top'; } })();
 let td90More = false, _td90Memo = null;
 
-/** Deck guide pages by archetype id, from deck-guides.json (built into the site's guide pages). */
+/** Deck guide pages by archetype id. Written by build-pages.mjs from deck-guides.json: add a guide there and run node build-pages.mjs --guides. */
 const TD90_GUIDES = {
-  'mega-rayquaza-ex': 'mega-rayquaza', 'dragapult-ex': 'dragapult', 'basic-box-m': 'basic-box', 'slowking-scr': 'slowking',
-  'alakazam-dudunsparce': 'alakazam-dudunsparce', 'ogerpon-meganium-hydrapple': 'ogerpon-meganium-hydrapple',
-  'dragapult-dudunsparce': 'dragapult-dudunsparce', 'dhelmise-pbl': 'dhelmise', 'n-zoroark': 'ns-zoroark', 'crustle-dri': 'crustle',
-  'festival-lead': 'festival-lead', 'mega-excadrill-ex': 'mega-excadrill', 'dragapult-dusknoir': 'dragapult-dusknoir',
-  'dragapult-blaziken': 'dragapult-blaziken', 'sharpedo-toxtricity': 'sharpedo-toxtricity', 'talonflame-dusknoir': 'talonflame-dusknoir',
-  'lopunny-dudunsparce': 'lopunny-dudunsparce', 'mega-lucario-ex': 'mega-lucario', 'rockets-honchkrow': 'rockets-honchkrow', 'greninja-ex': 'greninja',
+  'mega-rayquaza-ex': 'mega-rayquaza',
+  'dragapult-ex': 'dragapult',
+  'basic-box-m': 'basic-box',
+  'slowking-scr': 'slowking',
+  'alakazam-dudunsparce': 'alakazam-dudunsparce',
+  'ogerpon-meganium-hydrapple': 'ogerpon-meganium-hydrapple',
+  'dragapult-dudunsparce': 'dragapult-dudunsparce',
+  'dhelmise-pbl': 'dhelmise',
+  'n-zoroark': 'ns-zoroark',
+  'crustle-dri': 'crustle',
+  'festival-lead': 'festival-lead',
+  'mega-excadrill-ex': 'mega-excadrill',
+  'dragapult-dusknoir': 'dragapult-dusknoir',
+  'dragapult-blaziken': 'dragapult-blaziken',
+  'sharpedo-toxtricity': 'sharpedo-toxtricity',
+  'talonflame-dusknoir': 'talonflame-dusknoir',
+  'lopunny-dudunsparce': 'lopunny-dudunsparce',
+  'mega-lucario-ex': 'mega-lucario',
+  'rockets-honchkrow': 'rockets-honchkrow',
+  'greninja-ex': 'greninja',
+  'ogerpon-meganium-arboliva': 'ogerpon-meganium-arboliva',
+  'okidogi-barbaracle': 'okidogi-barbaracle',
 };
 
 const td90Add = (a, b, k) => a.map((v, i) => v + k * ((b && b[i]) || 0));

@@ -107,6 +107,13 @@ jobs:
         continue-on-error: true
         run: node build-pages.mjs --only=how-grading-works.html
 
+      - name: Top decks without a deck guide
+        if: ${{ !inputs.cards_only && !inputs.slow }}
+        # Lists any deck on the home screen's Top decks without a guide, as a notice on this run.
+        # Writes nothing and never blocks the refresh. See tests/top-decks-guides-check.mjs.
+        continue-on-error: true
+        run: node tests/top-decks-guides-check.mjs
+
       - name: Update sitemap dates
         if: ${{ !inputs.cards_only && !inputs.slow }}
         # A failed run keeps the old dates; it never blocks the refresh.
