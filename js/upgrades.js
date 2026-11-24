@@ -249,7 +249,10 @@ function up75Html(res, hasFix) {
   // stays on screen, even where the player once folded Upgrades away (that choice is kept for every deck).
   const line = t => `<div class="g-sec" id="up75-sec"><div class="g-sec-t">Upgrades</div><div class="g-sec-i">${t}</div></div>`;
   if (!res || res.busy) return line(`Checking which card swaps raise this grade.`);
-  if (res.why === 'offline') return line(`Upgrades need a connection the first time, to read the cards to try.`);
+  // 3.5.7: "need a connection" only when the device is offline; online, the card databases did not answer.
+  if (res.why === 'offline') return line(typeof navigator !== 'undefined' && navigator.onLine === false
+    ? `Upgrades need a connection the first time, to read the cards to try.`
+    : `Upgrades could not read the cards to try yet. They are tried again when you open this deck.`);
   // 3.2.8 (Muse s5 M1): the section stays, with a line saying why there is nothing to try, so Upgrades is never
   // missing without a word. Only a format Upgrades does not cover (Expanded, prerelease, the daily list) hides it.
   if (res.why === 'rules') return line(`Upgrades show once the list follows the deck rules. Fix first says what to change.`);
@@ -309,7 +312,8 @@ function up75Html(res, hasFix) {
         if (!h || h.sig !== sig) return;
         // 3.3.2: the Trainer data can arrive while the swaps are worked out; the result is kept under the new key.
         const now = up75Sig(deck);
-        _up75Cache.set(deck.id, { sig: now, res });
+        // 3.5.7: cards it could not read are tried again on the next draw, as an error is.
+        _up75Cache.set(deck.id, res && res.why === 'offline' ? { sig: now, res, err: true } : { sig: now, res });
         const live = document.getElementById('grade-body');
         if (live && String(state.activeDeckId) === String(deck.id) && live.querySelector('#g29-fix')) place(live, html(res, fixed(live)));
       }).catch(e => {

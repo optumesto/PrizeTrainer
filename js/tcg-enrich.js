@@ -1503,6 +1503,11 @@ const PT_DOWN_MS = 30 * 60 * 1000;
 let _ptDownUntil = 0;
 try { _ptDownUntil = Number(localStorage.getItem('ptcgDownUntil')) || 0; } catch (_) {}
 function ptcgDown() { return Date.now() < _ptDownUntil; }
+/** 3.5.7: a new try the player asked for (Guess the Grade's Try again) asks pokemontcg.io again too. */
+function ptcgUp() {
+  _ptDownUntil = 0;
+  try { localStorage.removeItem('ptcgDownUntil'); } catch (_) {}
+}
 function ptcgMarkDown() {
   _ptDownUntil = Date.now() + PT_DOWN_MS;
   try { localStorage.setItem('ptcgDownUntil', String(_ptDownUntil)); } catch (_) {}
@@ -1677,7 +1682,7 @@ return {
   parseRegulation, isBasicEnergy, isAceSpec,
   effectText, staticText, inferProvides, inferRequires,
   findOverride, enrichCard, fetchDeckCards, coverage, ctl63, revive115, outlet115,
-  ptcgDown, ptcgMarkDown,
+  ptcgDown, ptcgMarkDown, ptcgUp,
 };
 });
 

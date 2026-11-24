@@ -70,7 +70,11 @@ async function gtgDeck(key) {
   // Read the same way an imported list is (importDeck), so the grade is the one the Grade tab shows.
   const cards = await Promise.all(parseDeckList(p.list).map(c => fetchCardImage(c)));
   const coverage = await enrichDeckCards(cards);
-  return (_gtgDecks[key] = { id: '__gtg' + key, name: p.name, cards, history: [], format: 'standard', coverage, enrichVer: ENRICH_VER });
+  const deck = { id: '__gtg' + key, name: p.name, cards, history: [], format: 'standard', coverage, enrichVer: ENRICH_VER };
+  // 3.5.7: a list with cards the read missed is not kept, so Play reads it again. It was kept for the visit,
+  // and a game that failed to open once could not open again until the page was reloaded.
+  if (!(coverage && coverage.unresolved > 0)) _gtgDecks[key] = deck;
+  return deck;
 }
 const gtgSleep = ms => new Promise(r => setTimeout(r, ms));
 /** The grade the Grade tab would show for this list once everything it reads has loaded, or null. */
@@ -98,13 +102,22 @@ async function openGtg() {
   closeSheet();
   showLoading('Reading today\'s list…');
   let deck = null, ans = null;
+  // 3.5.7: a new try asks both card databases again, even if one did not answer a moment ago.
+  try { if (typeof _td31DownUntil !== 'undefined') _td31DownUntil = 0; if (typeof TCGEnrich !== 'undefined' && TCGEnrich.ptcgUp) TCGEnrich.ptcgUp(); if (typeof _dataTried !== 'undefined') _dataTried.delete('__gtg' + key); } catch (_) {}
   try {
     deck = await gtgDeck(key);
     const r = gtgStore().results[key];
     ans = r && typeof r.ans === 'number' ? r.ans : await gtgGrade(deck);
   } catch (e) { console.warn('[guess the grade]', e); }
   hideLoading();
-  if (!deck || ans == null) { showToast('Guess the Grade needs a connection to read today\'s list. Try again in a moment.'); return; }
+  // 3.5.7: "needs a connection" only when the device is offline. Online, a card database that could not be
+  // reached (a school or work network can block them) is a different problem, and the message says so.
+  if (!deck || ans == null) {
+    showToast(typeof navigator !== 'undefined' && navigator.onLine === false
+      ? 'Guess the Grade needs a connection to read today\'s list. Try again in a moment.'
+      : 'Guess the Grade could not read every card in today\'s list. Try again in a moment.');
+    return;
+  }
   const S = gtgStore();
   if (!S.results[key]) { S.results[key] = { ans, g: [], ts: Date.now() }; saveState(); }
   const r = S.results[key];

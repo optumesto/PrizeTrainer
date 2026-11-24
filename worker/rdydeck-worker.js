@@ -1,4 +1,4 @@
-// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.2.2).
+// RdyDeck at rdydeck.com (Cloudflare Worker "rdydeck", 3.5.7).
 // The app's files stay in the GitHub repo optumesto/PrizeTrainer and keep
 // being served at optumesto.github.io/PrizeTrainer/. This Worker shows those
 // same files at rdydeck.com, so an upload to GitHub (or the weekly data
@@ -52,6 +52,9 @@
 // owner (see takeFeedback). It needs the send_email binding FEEDBACK and the
 // plain variable FEEDBACK_TO; without them it answers 503 and the app falls
 // back to the player's own email app.
+//
+// 3.5.7 adds GET /api/cards/tcgdex/... and /api/cards/ptcg/..., which pass card data reads on to the
+// two card databases for networks that block them (see cardApi). No new bindings.
 //
 // Bindings this version expects: DB (D1 "rdydeck-reports"), LIMIT (rate limit,
 // 10 per 60 s), optionally FEEDBACK (send_email) with FEEDBACK_TO, and optionally the secret REPORTS_KEY. With no DB bound, reports
@@ -360,6 +363,43 @@ ${errs.map(r => `<tr><td>${h(r.msg)}<pre>${h(r.stack)}</pre></td><td>${h(r.v)}, 
   return new Response(page, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
 }
 
+// ── 3.5.7 card data: GET /api/cards/tcgdex/... and /api/cards/ptcg/... ──
+// The app reads card data from two public card databases straight from the browser. Some networks
+// (school and work filters) block them, and then every card read failed. When a direct read cannot get
+// through, the app (js/card-route.js) sends the same request here and this passes it on to the
+// database, unchanged, and hands back its answer. Only those two databases, only their card and set
+// reads, only GET. Answers are kept at Cloudflare's edge for a day, so repeat reads cost the databases
+// nothing. Nothing about the visitor is stored or sent on (no cookies, no IP, no headers of theirs).
+export const CARD_APIS = { tcgdex: 'https://api.tcgdex.net/v2/', ptcg: 'https://api.pokemontcg.io/v2/' };
+const CARD_PATH = { tcgdex: /^en\/(cards|sets)(\/[\w.%~-]+)?$/, ptcg: /^(cards|sets)(\/[\w.%~-]+)?$/ };
+/** The database address for an /api/cards/ path, or null when it is not one this passes on. */
+export function cardApiTarget(url) {
+  const m = /^\/api\/cards\/(tcgdex|ptcg)\/(.+)$/.exec(url.pathname);
+  if (!m || !CARD_PATH[m[1]].test(m[2]) || /\.\.|%2f|%5c/i.test(m[2]) || url.search.length > 2000) return null;
+  return CARD_APIS[m[1]] + m[2] + url.search;
+}
+async function cardApi(request, url) {
+  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, HEAD', 'X-Robots-Tag': 'noindex' };
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+  if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET, HEAD', ...cors } });
+  const target = cardApiTarget(url);
+  if (!target) return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: { 'Content-Type': 'application/json', ...cors } });
+  let up;
+  try {
+    up = await fetch(target, {
+      method: request.method,
+      headers: { Accept: 'application/json', 'User-Agent': 'RdyDeck card data relay (rdydeck.com)' },
+      cf: { cacheEverything: true, cacheTtlByStatus: { '200-299': 86400, '404': 3600, '500-599': 0 } },
+    });
+  } catch (_) {
+    return new Response(JSON.stringify({ error: 'card database did not answer' }), { status: 502, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...cors } });
+  }
+  return new Response(up.body, {
+    status: up.status,
+    headers: { 'Content-Type': up.headers.get('Content-Type') || 'application/json', 'Cache-Control': up.ok ? 'public, max-age=3600' : 'no-store', ...cors },
+  });
+}
+
 async function notFound(request) {
   let body = 'Not found';
   try { const r = await fetch(ORIGIN + '/404.html', { cf: { cacheEverything: true, cacheTtl: 300 } }); if (r.ok) body = forHome(await r.text()); } catch (_) {}
@@ -394,6 +434,7 @@ export default {
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store, private', 'X-Robots-Tag': 'noindex' },
       });
     }
+    if (url.pathname.startsWith('/api/cards/')) return cardApi(request, url);
     if (url.pathname === '/api/reports' && request.method === 'GET') {
       const r = await showReports(url, env).catch(() => null);
       return r || notFound(request);
