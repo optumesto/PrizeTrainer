@@ -6770,6 +6770,8 @@ Object.assign(I18N_PT, { "Switching languages works offline too": "Trocar de idi
 Object.assign(I18N_ES, { "Crispin Choice Labels Fixed": "Etiquetas de elección de Crispin corregidas" });
 Object.assign(I18N_PT, { "Crispin Choice Labels Fixed": "Rótulos de escolha do Crispin corrigidos" });
 
+Object.assign(I18N_ES, { "Deck Guides and Deck Grader Page Updated": "Guías de barajas y página del Calificador de barajas actualizadas" });
+Object.assign(I18N_PT, { "Deck Guides and Deck Grader Page Updated": "Guias de decks e página do Avaliador de decks atualizadas" });
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

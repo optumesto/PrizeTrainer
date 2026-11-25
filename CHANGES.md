@@ -1,3 +1,11 @@
+# RdyDeck 3.6.13 (build 200): deck guide titles lead with the deck list, and the Deck Grader page grows into a full guide (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "Start both", to (1) guide titles and snippets that earn clicks, with a link to grade your own list, and (2) a real text page for "Pokémon Deck Grader".
+- Search Console, last 28 days: the guides rank on page 1 for deck names (Talonflame Dusknoir, Rocket's Honchkrow) with few clicks, and people search "<deck> deck list".
+- build-pages.mjs: guide titles read "<Deck> Deck List and Guide, <Mon YYYY> | RdyDeck" (shorter forms past 60 characters), with the month of the latest results. Descriptions are built from the data: lists, date, win rate over games, and "Grade your own list free." H1 and breadcrumb read "<Deck> Deck List and Guide". Under the top buttons, a line links the Pokémon Deck Grader page; the button under How RdyDeck Grades It reads Grade Your List and goes there. Buttons in Title Case.
+- deck-grader.html: title "Pokémon Deck Grader: Rate Your TCG Deck Free | RdyDeck", H1 "Pokémon Deck Grader", new description. New sections: What It Grades, How to Grade Your Deck (three steps), Free, With No Account, and Questions (five, also as FAQPage data). WebApplication data for the app (same values as the home page). Event wording now says Limitless online and local in-person events.
+- Also: What's new in all 6 languages ("Deck Guides and Deck Grader Page Updated"), PT_VERSION v3.6.13, PT_BUILD 200, softwareVersion 3.6.13, sw.js cache v200, stamps. No Worker change.
+
 # RdyDeck 3.6.12 (build 199): Crispin's choice buttons name their card (25 Nov 2026)
 
 - Mason, 25 Nov 2026, Quickest Win #17: "when playing Crispin it doesnt say which energy. Now it didnt matter, but it may in the fututr". Both buttons read "Put a card into your hand".

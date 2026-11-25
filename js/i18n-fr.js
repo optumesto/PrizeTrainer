@@ -2853,3 +2853,4 @@ Object.assign(I18N_MORE.fr.dict, {"The welcome screen opens faster on a first vi
 Object.assign(I18N_MORE.fr.dict, {"Switching languages works offline too": "Changer de langue fonctionne aussi hors ligne"});
 // 3.6.12: Crispin's choice buttons name their card.
 Object.assign(I18N_MORE.fr.dict, {"Crispin Choice Labels Fixed": "Libellés des choix de Crispin corrigés"});
+Object.assign(I18N_MORE.fr.dict, {"Deck Guides and Deck Grader Page Updated": "Guides de decks et page Notation de deck mis à jour"});

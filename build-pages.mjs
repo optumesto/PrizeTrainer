@@ -458,7 +458,8 @@ ${CARD_IMG_FALLBACK}
 ${hero ? `<div class="card-top deck-top">${hero}<div class="tw">
 ${top}
 </div></div>` : top}
-<div class="cta-row"><a class="cta" href="./">Grade my ${esc(g.title)} list</a><a class="cta cta2" href="./#add=${esc(g.id)}">Add the top list to my decks</a></div>
+<div class="cta-row"><a class="cta" href="./">Grade My ${esc(g.title)} List</a><a class="cta cta2" href="./#add=${esc(g.id)}">Add the Top List to My Decks</a></div>
+<p class="note">Running your own version? Paste it into the free <a href="deck-grader.html">Pok&eacute;mon Deck Grader</a> to see its grade out of 10 and what to fix first.</p>
 
 <h2>Game Plan</h2>
 ${g.plan.map(p => `<p>${esc(p)}</p>`).join('\n')}
@@ -479,7 +480,7 @@ ${matchupTable(g, s)}
 <h2>How RdyDeck Grades It</h2>
 ${s.grade ? `<p>${s.grade.n === 1 ? `RdyDeck grades the one ${esc(g.title)} list in its test set, a top 16 finish${s.gradeDates ? ` on ${day(s.gradeDates[0])}` : ''}, at ${r1(s.grade.g)} out of 10. Its Synergy is ${r1(s.grade.s)} and its Power is ${r1(s.grade.p)}.` : `RdyDeck grades the ${s.grade.n} ${esc(g.title)} lists in its test set, all top 16 finishes${s.gradeDates ? ` from ${day(s.gradeDates[0])} to ${day(s.gradeDates[1])}` : ''}, at ${r1(s.grade.g)} out of 10 (the middle value). Their middle Synergy is ${r1(s.grade.s)} and their middle Power is ${r1(s.grade.p)}.`} The grade is not simply Synergy times Power, since it also counts the deck's online results and lowers the grade for how tightly a list fits only when the fit is loose.</p>\n` : ''}<p>${esc(g.grade)}</p>
 <p>Your own list will grade differently, since the grade reads every card you run. <a href="how-grading-works.html">How Grading Works</a> explains each part.</p>
-<div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>
+<div class="cta-row"><a class="cta" href="deck-grader.html">Grade Your List</a></div>
 <p>To test your own copy before an event, <a href="goldfish.html">goldfish it</a>: play its first turns alone in RdyDeck with real draws and see how often ${esc(g.title)} sets up on time.</p>
 
 <h2>More Deck Guides</h2>
@@ -491,15 +492,37 @@ ${guides.decks.filter(x => x.id !== g.id).map(x => `  <li><a href="deck-${x.slug
   return page({
     file: `deck-${g.slug}.html`,
     og: existsSync(path.join(ROOT, `og/deck-${g.slug}.png`)) ? `og/deck-${g.slug}.png` : 'og/deck-guide.png', ogAlt: `RdyDeck. ${g.title} deck guide.`,
-    title: [`${g.title} Deck Guide: List, Game Plan and Matchups | RdyDeck`, `${g.title} Deck Guide: List and Matchups | RdyDeck`, `${g.title} Deck Guide | RdyDeck`]
-      .find(t => t.length <= 60) || `${g.title} Deck Guide | RdyDeck`,
-    desc: g.desc || `How ${g.title} plays in the Pokémon TCG: the core list from top finishes, the game plan, key cards, matchups and how RdyDeck grades it.`,
+    title: guideTitle(g.title),
+    desc: guideDesc(g, s),
     updated: mu.asOf,
     crumb: ['Deck guides', 'meta-decks.html'],
     kicker: 'Deck guide',
-    h1: `${esc(g.title)} deck guide`,
+    h1: `${esc(g.title)} Deck List and Guide`,
     body,
   });
+}
+
+// Guide titles and snippets lead with "deck list", the words people search,
+// and carry the month of the latest results so the result reads as current.
+const MONTH_YEAR = (() => { const m = /^(\d{4})-(\d{2})/.exec(String(mu.asOf || '')); return m ? `${MON[+m[2] - 1]} ${m[1]}` : ''; })();
+function guideTitle(t) {
+  const opts = MONTH_YEAR
+    ? [`${t} Deck List and Guide, ${MONTH_YEAR} | RdyDeck`, `${t} Deck List, ${MONTH_YEAR} | RdyDeck`, `${t} Deck List and Guide | RdyDeck`]
+    : [`${t} Deck List and Guide | RdyDeck`];
+  return opts.find(x => x.length <= 60) || `${t} Deck List | RdyDeck`;
+}
+function guideDesc(g, s) {
+  const c = s.c;
+  const lists = c && c.tops ? `${num(c.tops)} top finishes` : 'top finishes';
+  const rec = s.games ? `${pct(s.rec[0], s.games)} wins over ${num(s.games)} games` : '';
+  const head = `${g.title} deck list from ${lists}, updated ${day(mu.asOf)}.`;
+  const opts = [
+    rec && `${head} ${rec}, core cards, matchups and game plan. Grade your own list free.`,
+    rec && `${head} ${rec}, matchups and game plan. Grade your own list free.`,
+    `${head} Core cards, matchups and game plan. Grade your own list free.`,
+    `${head} Core cards, matchups and game plan.`,
+  ].filter(Boolean);
+  return opts.find(x => x.length <= 155) || g.desc || head;
 }
 
 function indexPage() {
