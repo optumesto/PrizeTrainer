@@ -1,3 +1,10 @@
+# RdyDeck 3.6.6 (build 193): links to other sites open again (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "when i clickl the andorid link, nothing happens. IT says it leaves, but it doesnt".
+- Cause: on the app's pages, the "This link takes you out of RdyDeck" dialog adds a Back step while it is open (js/v38-settings-home.js) and takes it back with history.back() just after it closes. js/leave.js went to the other site in the same moment, and the step back cancelled that trip, so Continue did nothing. Every link to another site on the home page was hit, the Google Play link included.
+- Fix, js/leave.js: after Continue, go once that step back is done (its popstate), or after 600 ms when there was none. Links that open a new tab are unchanged.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.6, PT_BUILD 193, softwareVersion 3.6.6, sw.js cache v193, stamps.
+
 # RdyDeck 3.6.5 (build 192): privacy pages say the app is on Google Play (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "Yes, fix those" (the privacy and delete data pages, which still described the Play app as not released).

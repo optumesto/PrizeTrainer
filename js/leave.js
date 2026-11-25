@@ -102,8 +102,15 @@
       ? rdConfirm({ title: t[0], text: t[1], yes: t[2], no: t[3] }) : ask(t);
     q.then(function (ok) {
       if (!ok) return;
-      if (newTab) { var w = window.open(href, '_blank', 'noopener'); if (!w) location.href = href; }
-      else location.href = href;
+      if (newTab) { var w = window.open(href, '_blank', 'noopener'); if (!w) location.href = href; return; }
+      // 3.6.6: on the app's pages, the dialog takes a Back step of its own while it is open, and gives it back
+      // (history.back, js/v38-settings-home.js) just after it closes. That step back cancelled the trip to the
+      // other site, so Continue seemed to do nothing (the Google Play link on the home page). Go once the step
+      // back is done, or after a moment when there was none.
+      var gone = false;
+      var go = function () { if (gone) return; gone = true; removeEventListener('popstate', go); location.href = href; };
+      if (history.state && history.state.rd38) { addEventListener('popstate', go); setTimeout(go, 600); }
+      else setTimeout(go, 50);
     });
   }, true);   // capture, so a row that stops its click from bubbling cannot skip the notice
 })();
