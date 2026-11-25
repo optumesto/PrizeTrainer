@@ -2832,3 +2832,4 @@ Object.assign(I18N_MORE.fr.dict, { "Tournament Strength now counts local in-pers
 Object.assign(I18N_MORE.fr.dict, { "Transformation Tome needs 2 copies to play": "Transformation Tome demande 2 exemplaires pour être joué" });
 // SEO (Nov 25 2026): Card Guides on the home screen.
 Object.assign(I18N_MORE.fr.dict, { "Card guides": "Guides de cartes" });
+Object.assign(I18N_MORE.fr.dict, { "Card Guides and Daily Games links on the home screen": "Liens vers les Guides de cartes et les Jeux du jour sur l'écran d'accueil" });

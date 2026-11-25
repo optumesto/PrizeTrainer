@@ -7010,3 +7010,6 @@ rdI18n.set(rdI18n.pick(), false);
 // SEO (Nov 25 2026): Card Guides on the home screen.
 Object.assign(I18N_ES, { "Card guides": "Guías de cartas" });
 Object.assign(I18N_PT, { "Card guides": "Guias de cartas" });
+// 3.6.3: SEO update.
+Object.assign(I18N_ES, { "Card Guides and Daily Games links on the home screen": "Enlaces a las Guías de cartas y los Juegos diarios en la pantalla de inicio" });
+Object.assign(I18N_PT, { "Card Guides and Daily Games links on the home screen": "Links para os Guias de cartas e os Jogos diários na tela inicial" });

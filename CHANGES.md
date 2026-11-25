@@ -1,3 +1,14 @@
+# RdyDeck 3.6.3 (build 190): SEO update (25 Nov 2026)
+
+- Mason, 24 Nov 2026: "3. Build it." (the SEO plan), then 25 Nov: "Push those new ones."
+- New daily-games.html: what Prize Check, Quickest Win, Rare Pull and Guess the Grade are, how the daily reset works, 5 questions with FAQ markup. In the sitemap, the guide footers and llms.txt.
+- rotation.html, prize-trainer.html and opening-odds.html: real guide text (regulation marks, Standard and Expanded, checking a list before an event; prize mapping and how to practice it; how mulligan and first draw odds are worked out, with a table) and questions on each.
+- meta-decks.html: title "Pokémon TCG Meta Decks: Top Decks, Lists and Guides", a summary of the most played decks and the best win rate (300 games or more) built from the same numbers as the table, What the Meta Is, How to Pick a Meta Deck, ItemList markup.
+- Preview images: og/ holds one per deck guide (22) and one per page type, built by a Pillow script; og:image:alt on built pages. og-app.png now shows the current Grade screen. Home og and twitter titles match the page title.
+- Home: Card Guides and Daily Games in Learn, the wide screen tiles, the About links and the noscript links. 404: Page Not Found heading, line and button in all 6 languages, plus Card Guides and Daily Games links.
+- Full rebuild of the built guide pages (they were behind their data).
+- Also: What's new in all 6 languages, PT_VERSION v3.6.3, PT_BUILD 190, softwareVersion 3.6.3, sw.js cache v190, stamps. No Worker change. Not done: script defer, Play link, language URLs.
+
 # RdyDeck 3.6.2 (build 189): Transformation Tome needs 2 copies (25 Nov 2026)
 
 - Mason, 25 Nov 2026, after "There are also some items that require that": "Item is Transformation Tome."
