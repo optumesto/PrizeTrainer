@@ -2833,3 +2833,5 @@ Object.assign(I18N_MORE.fr.dict, { "Transformation Tome needs 2 copies to play":
 // SEO (Nov 25 2026): Card Guides on the home screen.
 Object.assign(I18N_MORE.fr.dict, { "Card guides": "Guides de cartes" });
 Object.assign(I18N_MORE.fr.dict, { "Card Guides and Daily Games links on the home screen": "Liens vers les Guides de cartes et les Jeux du jour sur l'écran d'accueil" });
+// 3.6.4: the Android note is the Play link.
+Object.assign(I18N_MORE.fr.dict, { "on Google Play": "sur Google Play" });
