@@ -1,3 +1,11 @@
+# RdyDeck 3.6.10 (build 197): the welcome sheet opens with the page (25 Nov 2026)
+
+- Mason's PageSpeed run, 24 Nov 2026 (mobile, rdydeck.com): Performance 74, Largest Contentful Paint 7.6 s. Then "Push it", 25 Nov 2026. The filmstrip shows the home page drawn by 1.2 s, then the first visit's welcome sheet arriving last: it opened 0.9 s after every script had loaded (v24AfterLoad), and as the largest thing on screen it set the time.
+- index.html: an inline script right after the tour sheet opens step 1 of the welcome tour while the page is drawn, on the same tests as v24AfterLoad (no tour seen, no saved decks, no hash, no query but lang or src). A tap on it before the app is ready is held and replayed.
+- js/core.js: startTour keeps the early sheet as it is and marks the tour ready; v24AfterLoad closes the early sheet whenever it decides not to show the tour (decks found in IndexedDB, another screen opened).
+- tests/grade-check.mjs: the early sheet's words, icons and buttons must match step 1 in js/v29-rotation.js and the buttons in js/easier-first-visit.js.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.10, PT_BUILD 197, softwareVersion 3.6.10, sw.js cache v197, stamps. No Worker change.
+
 # RdyDeck 3.6.9 (build 196): Bench count attacks show their full hit (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "Why does it say that Clefrairy hits for at most 180? its max hit amount is 220, but that deppends on menches being full", then "Push it".

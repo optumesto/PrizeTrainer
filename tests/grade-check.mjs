@@ -174,6 +174,19 @@ async function loadApp() {
     const { langPages } = await import('../lang-pages.mjs');
     const lb = langPages(true);
     if (lb.length) { console.error('Language pages: ' + lb.join(', ')); process.exit(1); }
+    // 3.6.10: index.html draws the first visit's welcome sheet early, by hand. It must say what step 1 of
+    // the tour says (js/v29-rotation.js) with the buttons js/easier-first-visit.js puts on it.
+    const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+    const ix = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const early = (ix.match(/<script>\n\/\/ 3\.6\.10: on a first visit[\s\S]*?<\/script>/) || [''])[0];
+    const rot = fs.readFileSync(path.join(root, 'js/v29-rotation.js'), 'utf8');
+    const ez = fs.readFileSync(path.join(root, 'js/easier-first-visit.js'), 'utf8');
+    const step = /TOUR_STEPS\.splice\(0, TOUR_STEPS\.length,\s*\{ ic: '([^']+)', t: '([^']+)', s: '([^']+)' \}/.exec(rot);
+    const count = (rot.slice(rot.indexOf('TOUR_STEPS.splice')).split(');')[0].match(/\{ ic: /g) || []).length;
+    const want = step ? [`ic('${step[1]}')`, step[2], step[3], `1 of ${count}`] : ['(step 1 of the tour not found in js/v29-rotation.js)'];
+    for (const m of ez.matchAll(/onclick="([^"]+)">\$\{ic23\('([^']+)'\)\}([^<]+)</g)) want.push(m[1], `ic('${m[2]}')`, m[3]);
+    const missing = early ? want.filter(w => !early.includes(w)) : ['the early welcome sheet script'];
+    if (missing.length) { console.error('Early welcome sheet in index.html is out of step: ' + missing.join(' | ')); process.exit(1); }
   }
   const html = readAppHtml(htmlPath);
   const errors = [];

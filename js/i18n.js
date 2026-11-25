@@ -6742,6 +6742,10 @@ Object.assign(I18N_PT, { "Each language has its own home page, like rdydeck.com/
 Object.assign(I18N_ES, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Los ataques que cuentan la Banca muestran su golpe completo, como Lillie's Clefairy ex con 220" });
 Object.assign(I18N_PT, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Ataques que contam o Banco mostram o golpe completo, como Lillie's Clefairy ex com 220" });
 
+// 3.6.10: the first visit's welcome sheet opens with the page.
+Object.assign(I18N_ES, { "The welcome screen opens faster on a first visit": "La pantalla de bienvenida se abre más rápido en la primera visita" });
+Object.assign(I18N_PT, { "The welcome screen opens faster on a first visit": "A tela de boas-vindas abre mais rápido na primeira visita" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

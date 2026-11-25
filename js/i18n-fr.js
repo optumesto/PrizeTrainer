@@ -2847,3 +2847,5 @@ Object.assign(I18N_MORE.fr.dict, {"Deck grader": "Notation de deck", "Free Poké
 Object.assign(I18N_MORE.fr.dict, {"Each language has its own home page, like rdydeck.com/es/": "Chaque langue a sa propre page d'accueil, comme rdydeck.com/fr/"});
 // 3.6.9: Bench count attacks show their full hit.
 Object.assign(I18N_MORE.fr.dict, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Les attaques qui comptent le Banc affichent leurs dégâts complets, comme Lillie's Clefairy ex à 220" });
+// 3.6.10: the first visit's welcome sheet opens with the page.
+Object.assign(I18N_MORE.fr.dict, {"The welcome screen opens faster on a first visit": "L'écran d'accueil s'ouvre plus vite lors de la première visite"});
