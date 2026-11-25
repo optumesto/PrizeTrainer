@@ -29,7 +29,7 @@
   function loadScript(src) {
     return new Promise((res, rej) => {
       const sc = document.createElement('script');
-      sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error(src));
+      sc.src = rdFile(src); sc.onload = res; sc.onerror = () => rej(new Error(src));
       document.head.appendChild(sc);
     });
   }
@@ -41,9 +41,9 @@
       if (!self.PhotoScan) await loadScript(stamped('photo-scan.js'));
       PS = self.PhotoScan;
       const [meta, bin, cards] = await Promise.all([
-        fetch('art-index.json').then(r => { if (!r.ok) throw new Error('index'); return r.json(); }),
-        fetch('art-index.bin').then(r => { if (!r.ok) throw new Error('index'); return r.arrayBuffer(); }),
-        fetch('cards.json').then(r => (r.ok ? r.json() : null)).catch(() => null),
+        fetch(rdFile('art-index.json')).then(r => { if (!r.ok) throw new Error('index'); return r.json(); }),
+        fetch(rdFile('art-index.bin')).then(r => { if (!r.ok) throw new Error('index'); return r.arrayBuffer(); }),
+        fetch(rdFile('cards.json')).then(r => (r.ok ? r.json() : null)).catch(() => null),
       ]);
       IDX = PS.loadIndex(meta, new Uint8Array(bin));
       KIND = new Map();

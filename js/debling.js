@@ -26,7 +26,7 @@ let _dblUndo = null, _dblBusy = false;
 function dblData() {
   if (_dblData) return Promise.resolve(_dblData);
   if (_dblLoad) return _dblLoad;
-  _dblLoad = fetch('prints.json').then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => {
+  _dblLoad = fetch(rdFile('prints.json')).then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => {
     _dblLoad = null;
     if (!j || !Array.isArray(j.rows)) return null;
     const by = new Map(), names = new Map(), many = new Set();

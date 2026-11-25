@@ -7,6 +7,15 @@
     console.error('PT unhandled promise:', e.reason);
     e.preventDefault(); // don't crash on IndexedDB failures etc
   });// ═══════════ STATE ═══════════
+// 3.6.11: the app's own folder, read once as the page opens. Picking a language moves the address to /es/ and
+// so on (i18nPageGo, 3.6.8), and the language home pages live there too, so a relative address read later
+// (cards.json, js/i18n-fr.js) would point into that language folder. The service worker saved those files
+// under the app's own folder, so offline they were missing: after a switch from one language to another,
+// French, German and Italian did not load. rdFile reads every app file from the app's own folder.
+const RD_ROOT = (function () {
+  try { return new URL(document.documentElement.hasAttribute('data-page-lang') ? '../' : './', document.baseURI).href; } catch (_) { return ''; }
+})();
+function rdFile(p) { try { return RD_ROOT && !/^[a-z][a-z0-9+.-]*:|^\//i.test(p) ? new URL(p, RD_ROOT).href : p; } catch (_) { return p; } }
 const STORAGE_KEY = 'ptcg_prize_trainer_v2';
 function safeLocalGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
 function safeLocalSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
@@ -2874,7 +2883,7 @@ function g76Load() {
   g76Busy = true;
   const ctl = typeof AbortController === 'function' ? new AbortController() : null;
   const t = ctl ? setTimeout(() => ctl.abort(), 8000) : 0;
-  fetch('builder.json', { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
+  fetch(rdFile('builder.json'), { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
     .then(r => r.ok ? r.json() : null)
     .then(j => { if (j && g76Set(j)) safeLocalSet(G76_KEY, JSON.stringify({ lists: j.lists, asOf: j.asOf, played: j.played })); })
     .catch(() => {})
@@ -9021,16 +9030,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.6.10',
+  version: 'v3.6.11',
   date: 'Nov 25, 2026',
   kind: 'small',
   items: [
-    { t: 'The welcome screen opens faster on a first visit' }
+    { t: 'Switching languages works offline too' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.6.10', date: 'Nov 25, 2026', kind: 'small', items: [
+    { t: 'The welcome screen opens faster on a first visit' }
+  ] },
   { version: 'v3.6.9', date: 'Nov 25, 2026', kind: 'small', items: [
     { t: "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220" }
   ] },
@@ -9196,9 +9208,9 @@ function puzzleStreakText(st) {
 }
 function loadPuzzleKit() {
   if (_pzKit) return _pzKit;
-  const add = src => new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(el); });
+  const add = src => new Promise((res, rej) => { const el = document.createElement('script'); el.src = rdFile(src); el.onload = res; el.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(el); });
   _pzKit = PUZZLE_SCRIPTS.reduce((p, src) => p.then(() => add(src)), Promise.resolve())
-    .then(() => fetch(PUZZLE_RULES.pack).then(r => { if (!r.ok) throw new Error('Could not load the puzzles'); return r.json(); }))
+    .then(() => fetch(rdFile(PUZZLE_RULES.pack)).then(r => { if (!r.ok) throw new Error('Could not load the puzzles'); return r.json(); }))
     .then(pack => ({ E: window.RdyPuzzle, pack }));
   _pzKit.catch(() => { _pzKit = null; });
   return _pzKit;
@@ -12104,8 +12116,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.6.10';
-const PT_BUILD = 197;
+const PT_VERSION = 'v3.6.11';
+const PT_BUILD = 198;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

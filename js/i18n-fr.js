@@ -2849,3 +2849,5 @@ Object.assign(I18N_MORE.fr.dict, {"Each language has its own home page, like rdy
 Object.assign(I18N_MORE.fr.dict, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Les attaques qui comptent le Banc affichent leurs dégâts complets, comme Lillie's Clefairy ex à 220" });
 // 3.6.10: the first visit's welcome sheet opens with the page.
 Object.assign(I18N_MORE.fr.dict, {"The welcome screen opens faster on a first visit": "L'écran d'accueil s'ouvre plus vite lors de la première visite"});
+// 3.6.11: app files read from the app's own folder after a language switch.
+Object.assign(I18N_MORE.fr.dict, {"Switching languages works offline too": "Changer de langue fonctionne aussi hors ligne"});

@@ -225,7 +225,7 @@ function g88Load() {
   g88Busy = true;
   const ctl = typeof AbortController === 'function' ? new AbortController() : null;
   const t = ctl ? setTimeout(() => ctl.abort(), 8000) : 0;
-  fetch('meta-cards.json', { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
+  fetch(rdFile('meta-cards.json'), { cache: 'no-cache', signal: ctl ? ctl.signal : undefined })
     .then(r => r.ok ? r.json() : null)
     .then(j => { const was = g88Data && g88Data.asOf; if (j && g88Set(j)) { safeLocalSet(G88_KEY, JSON.stringify(g88Data)); if (was !== g88Data.asOf) mu60Rerender(); } })
     .catch(() => {})

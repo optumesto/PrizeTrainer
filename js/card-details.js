@@ -88,7 +88,7 @@ function cd31Saved(c) { const e = cd31Load()[cd31Key(c)]; return e && e.d ? e.d 
 // ── rulings (rulings.json, read once) ──
 function cd31Rulings() {
   if (_cd31Rul) return Promise.resolve(_cd31Rul);
-  if (!_cd31RulP) _cd31RulP = fetch('rulings.json').then(r => r.ok ? r.json() : null)
+  if (!_cd31RulP) _cd31RulP = fetch(rdFile('rulings.json')).then(r => r.ok ? r.json() : null)
     .then(j => { _cd31Rul = j && Array.isArray(j.rulings) ? j : { rulings: [], sources: [] }; return _cd31Rul; })
     .catch(() => { _cd31RulP = null; return { rulings: [], sources: [] }; });
   return _cd31RulP;
@@ -273,7 +273,7 @@ function cd31RulHtml(list, R) {
 let _cd31Guides = null, _cd31GuidesP = null;
 function cd31GuideList() {
   if (_cd31Guides) return Promise.resolve(_cd31Guides);
-  if (!_cd31GuidesP) _cd31GuidesP = fetch('card-guides.json').then(r => r.ok ? r.json() : null)
+  if (!_cd31GuidesP) _cd31GuidesP = fetch(rdFile('card-guides.json')).then(r => r.ok ? r.json() : null)
     .then(j => { const g = {}; for (const [n, slug] of Object.entries((j && j.guides) || {})) g[cd31Nm(n)] = slug; _cd31Guides = g; return g; })
     .catch(() => { _cd31GuidesP = null; return {}; });
   return _cd31GuidesP;

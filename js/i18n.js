@@ -6746,6 +6746,10 @@ Object.assign(I18N_PT, { "Bench count attacks show their full hit, like Lillie's
 Object.assign(I18N_ES, { "The welcome screen opens faster on a first visit": "La pantalla de bienvenida se abre más rápido en la primera visita" });
 Object.assign(I18N_PT, { "The welcome screen opens faster on a first visit": "A tela de boas-vindas abre mais rápido na primeira visita" });
 
+// 3.6.11: app files read from the app's own folder after a language switch.
+Object.assign(I18N_ES, { "Switching languages works offline too": "Cambiar de idioma también funciona sin conexión" });
+Object.assign(I18N_PT, { "Switching languages works offline too": "Trocar de idioma também funciona offline" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
@@ -6780,7 +6784,9 @@ const rdI18n = (function () {
     return (loading[l] = new Promise(res => {
       const t = document.querySelector(`#i18n-files`), tag = t && t.content && t.content.querySelector(`script[src*="i18n-${l}.js"]`);
       const sc = document.createElement('script');
-      sc.src = tag ? tag.getAttribute('src') : `js/i18n-${l}.js`;
+      const src = tag ? tag.getAttribute('src') : `js/i18n-${l}.js`;
+      // 3.6.11: from the app's own folder, not the language folder the address moved to (rdFile, core.js).
+      sc.src = typeof rdFile === 'function' ? rdFile(src) : src;
       sc.onload = () => res(add(l));
       sc.onerror = () => { delete loading[l]; res(false); };
       document.head.appendChild(sc);
@@ -6816,7 +6822,7 @@ const rdI18n = (function () {
       }
     } catch (_) {}
     if (typeof fetch !== 'function') return;
-    fetch('cards.json').then(r => r.ok ? r.json() : null).then(j => {
+    fetch(typeof rdFile === 'function' ? rdFile('cards.json') : 'cards.json').then(r => r.ok ? r.json() : null).then(j => {
       if (j && Array.isArray(j.cards)) addCardNames(j.cards.map(c => c && c.n));
     }).catch(() => {});
   }

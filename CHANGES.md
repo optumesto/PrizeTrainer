@@ -1,3 +1,10 @@
+# RdyDeck 3.6.11 (build 198): app files read from the app's own folder after a language switch (25 Nov 2026)
+
+- Found by the card details check on 3.6.8 and later: in French, German and Italian the card sheet kept the previous language's labels. Card names and card text stay English in every language on purpose (since 3.1). Mason, 25 Nov 2026: "Look into it", then "Push it".
+- Cause: picking a language moves the address to /es/ and so on (3.6.8), so files the app reads by relative address later (js/i18n-fr.js, cards.json, rulings.json, card-guides.json, prints.json, builder.json, meta-cards.json, the photo import index, the puzzle files) were asked for under the language folder. Online the Worker answers those from the root; offline the service worker has them only under the root, so French, German and Italian did not load after a switch from another language.
+- js/core.js: RD_ROOT (the app's folder, read as the page opens; the parent folder on a language home page) and rdFile(). js/i18n.js (guarded: opponent/play.html has no core.js), card-details.js, debling.js, photo-import.js, v29-rotation.js, v69-grade-blend.js and the puzzle kit read through it.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.11, PT_BUILD 198, softwareVersion 3.6.11, sw.js cache v198, stamps. No Worker change.
+
 # RdyDeck 3.6.10 (build 197): the welcome sheet opens with the page (25 Nov 2026)
 
 - Mason's PageSpeed run, 24 Nov 2026 (mobile, rdydeck.com): Performance 74, Largest Contentful Paint 7.6 s. Then "Push it", 25 Nov 2026. The filmstrip shows the home page drawn by 1.2 s, then the first visit's welcome sheet arriving last: it opened 0.9 s after every script had loaded (v24AfterLoad), and as the largest thing on screen it set the time.

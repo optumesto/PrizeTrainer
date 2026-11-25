@@ -57,7 +57,7 @@ function r273Ready() {
   if (!r273) { try { const d = JSON.parse(safeLocalGet(R273_KEY) || 'null'); if (d && Array.isArray(d.n) && d.f === ROT29.firstLegal) r273 = { asOf: d.a, firstLegal: d.f, set: new Set(d.n), ef: d.e && typeof d.e === 'object' ? d.e : {} }; } catch (_) {} }
   if (!r273Tried && typeof fetch === 'function') {
     r273Tried = true;
-    fetch('cards.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => {
+    fetch(rdFile('cards.json'), { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(j => {
       const was = r273 && r273.asOf, hadEf = !!(r273 && r273.ef && Object.keys(r273.ef).length);
       if (j && r273Set(j)) {
         safeLocalSet(R273_KEY, JSON.stringify({ a: r273.asOf, f: r273.firstLegal, n: [...r273.set], e: r273.ef }));
