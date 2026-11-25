@@ -1,0 +1,29 @@
+name: Play screenshots
+on:
+  workflow_dispatch:
+  push:
+    branches: [play-shots]
+    paths:
+      - play/shots/shots.mjs
+      - .github/workflows/play-shots.yml
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install puppeteer
+        run: npm i --no-save --no-package-lock --prefix play/shots puppeteer@23
+      - name: Take screenshots of the live site
+        run: node play/shots/shots.mjs
+      - name: Commit screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -f play/shots/out
+          git commit -m "Play screenshots from the live site" && git push origin HEAD:play-shots
