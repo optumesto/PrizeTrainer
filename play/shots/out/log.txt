@@ -1,31 +1,72 @@
 phone version v3.6.1
 shot play/shots/out/phone-z-first-open.png
-phone decks  need data: none
+phone starters dragapult-ex,mega-rayquaza-ex,basic-box-m,ogerpon-meganium-hydrapple,other,talonflame-dusknoir
+[phone console] Failed to load resource: the server responded with a status of 500 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
+[phone console] Failed to load resource: the server responded with a status of 502 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
+[phone console] Failed to load resource: the server responded with a status of 500 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
+phone decks Dragapult | Mega Rayquaza | Basic Box | Ogerpon Meganium Hydrapple need data: none
 shot play/shots/out/phone-home.png
 shot play/shots/out/phone-home-topdecks.png
 shot play/shots/out/phone-quickadd-dragapult-dudunsparce.png
+shot play/shots/out/phone-grade-dragapult-ex.png
+shot play/shots/out/phone-grade-mega-rayquaza-ex.png
+shot play/shots/out/phone-grade-fix-mega-rayquaza-ex.png
+shot play/shots/out/phone-grade-basic-box-m.png
+shot play/shots/out/phone-grade-ogerpon-meganium-hydrapple.png
+shot play/shots/out/phone-odds.png
+shot play/shots/out/phone-odds-ask.png
+shot play/shots/out/phone-hand.png
+shot play/shots/out/phone-share.png
 shot play/shots/out/phone-quickest-win.png
 shot play/shots/out/phone-prize-check.png
-[phone console] Access to fetch at 'https://api.pokemontcg.io/v2/cards?q=(name%3A%22Fezandipiti%20ex%22%20OR%20name%3A%22Buddy-Buddy%20Poffin%22%20OR%20name%3A%22Night%20Stretcher%22%20OR%20name%3A%22Legacy%20Energy%22)&select=id,name,supertype,regulationMark,attacks,abilities&pageSize=250' from origin 'https://rdydeck.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
-[phone console] Failed to load resource: net::ERR_FAILED
-[phone console] Failed to load resource: the server responded with a status of 500 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
+[phone console] Failed to load resource: the server responded with a status of 429 ()
 [phone console] Failed to load resource: the server responded with a status of 502 ()
+[phone console] Failed to load resource: the server responded with a status of 500 ()
 shot play/shots/out/phone-guess.png
 tablet7 version v3.6.1
 shot play/shots/out/tablet7-z-first-open.png
-tablet7 decks  need data: none
+tablet7 starters dragapult-ex,mega-rayquaza-ex,basic-box-m,ogerpon-meganium-hydrapple,other,talonflame-dusknoir
+tablet7 decks Dragapult | Mega Rayquaza | Basic Box | Ogerpon Meganium Hydrapple need data: none
 shot play/shots/out/tablet7-home.png
 shot play/shots/out/tablet7-home-topdecks.png
 shot play/shots/out/tablet7-quickadd-dragapult-dudunsparce.png
+shot play/shots/out/tablet7-grade-dragapult-ex.png
+shot play/shots/out/tablet7-grade-mega-rayquaza-ex.png
+shot play/shots/out/tablet7-grade-fix-mega-rayquaza-ex.png
+shot play/shots/out/tablet7-grade-basic-box-m.png
+shot play/shots/out/tablet7-grade-ogerpon-meganium-hydrapple.png
+shot play/shots/out/tablet7-odds.png
+shot play/shots/out/tablet7-odds-ask.png
+shot play/shots/out/tablet7-hand.png
+shot play/shots/out/tablet7-share.png
 shot play/shots/out/tablet7-quickest-win.png
 shot play/shots/out/tablet7-prize-check.png
+[tablet7 console] Failed to load resource: the server responded with a status of 502 ()
+[tablet7 console] Failed to load resource: the server responded with a status of 429 ()
+[tablet7 console] Failed to load resource: the server responded with a status of 502 ()
+[tablet7 console] Failed to load resource: the server responded with a status of 502 ()
 shot play/shots/out/tablet7-guess.png
 tablet10 version v3.6.1
 shot play/shots/out/tablet10-z-first-open.png
-tablet10 decks  need data: none
+tablet10 starters dragapult-ex,mega-rayquaza-ex,basic-box-m,ogerpon-meganium-hydrapple,other,talonflame-dusknoir
+tablet10 decks Dragapult | Mega Rayquaza | Basic Box | Ogerpon Meganium Hydrapple need data: none
 shot play/shots/out/tablet10-home.png
 shot play/shots/out/tablet10-home-topdecks.png
 shot play/shots/out/tablet10-quickadd-dragapult-dudunsparce.png
+shot play/shots/out/tablet10-grade-dragapult-ex.png
+shot play/shots/out/tablet10-grade-mega-rayquaza-ex.png
+shot play/shots/out/tablet10-grade-fix-mega-rayquaza-ex.png
+shot play/shots/out/tablet10-grade-basic-box-m.png
+shot play/shots/out/tablet10-grade-ogerpon-meganium-hydrapple.png
+shot play/shots/out/tablet10-odds.png
+shot play/shots/out/tablet10-odds-ask.png
+shot play/shots/out/tablet10-hand.png
+shot play/shots/out/tablet10-share.png
 shot play/shots/out/tablet10-quickest-win.png
 shot play/shots/out/tablet10-prize-check.png
 shot play/shots/out/tablet10-guess.png
