@@ -2129,7 +2129,7 @@ I18N_MORE.it.dmg = (function () {
       : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage] : p.k === 'pre' ? `Pokémon di ${own(p.pre)}` : p.k === 'atk' ? `Pokémon con ${p.atk}`
       : p.k === 'name' ? `${m ? 'carte' : 'carta'} ${p.name}` : p.names.join(' o '),
     selfB: (a, e) => `${a} con ${e} assegnata`, from: (a, w, n) => `${a} di ${n ? n + ' ' : ''}${w}`,
-    hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg ? 'infligge in media' : 'infligge al massimo';
+    hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg === 'about' ? 'infligge circa' : avg ? 'infligge in media' : 'infligge al massimo';
       const C = { ex: 'contro un Pokémon-ex', poison: 'mentre è Avvelenato', behind: 'quando sei indietro nei Premi', last: 'quando quell\'Aiuto è l\'ultima carta che hai in mano' };
       return b ? `${s} ${v} ${b.eff} danni con ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' e ') : ''} (${top} senza), senza contare la Debolezza.` : `${s} ${v} ${top} danni, senza contare la Debolezza.`; },
     koUse: x => `Usarlo mette KO ${x}, e questo dà un Premio al tuo avversario.`,
@@ -2165,6 +2165,9 @@ I18N_MORE.it.dmg = (function () {
     millAvg: (n, p) => `È la media per le carte in cima al mazzo: la tua lista usa ${n} ${p}, quindi un colpo più forte o più debole dipende dalla fortuna.`,
     hand: (t, n, f) => `Conta le carte che hai in mano, quindi ${t} è la stima dell'app per circa ${n} carte${f ? ', con le Abilità di pescata della lista che riempiono la mano' : ''}, non un numero stampato.`,
     lowConf: t => `I suoi danni dipendono dal campo, quindi ${t} è la stima dell'app, non un numero stampato.`,
+    board: (a, k, max, top, n) => { const w = { both: ['i Pokémon in panchina di entrambi i lati', 'entrambe le panchine piene', 'in ogni panchina'], bench: ['i tuoi Pokémon in panchina', 'una panchina piena', 'nella tua panchina'],
+      opp: ['i Pokémon in panchina del tuo avversario', 'la panchina del tuo avversario piena', 'nella panchina del tuo avversario'], inplay: ['i tuoi Pokémon in gioco', 'una panchina piena', 'in gioco'] }[k];
+      return w && `${a} conta ${w[0]}, quindi ${max} richiede ${w[1]}, e il voto conta ${top}, con ${n} ${w[2]}.`; },
     escBoth: (x, b, p) => `${x} infligge ${b ? b + ' più ' : ''}${p} per ogni Energia assegnata a entrambi i Pokémon attivi.`,
     appCounts: (n, w, t) => `L'app ne conta ${n} su di lui${w ? `, ognuna doppia con ${w}` : ''}, e 2 sul Pokémon attivo del tuo avversario, quindi ${t} è la sua stima, non un numero stampato.`,
     escDisc: (x, e, p) => `${x} scarta ${e} dai tuoi Pokémon e infligge ${p} per ognuna scartata.`,

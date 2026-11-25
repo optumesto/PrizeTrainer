@@ -4303,6 +4303,9 @@ function i18nDmgAbil(p, l) {
   if (!x) return null;
   try { const r = i18nAbSay(x, L); return r && !/\b(?:undefined|null|NaN)\b/.test(r) ? r : null; } catch (e) { return null; }
 }
+/** 3.6.6: g366Board's sentence, and which Bench it counts. */
+const I18N_BOARD_RE = /^Its (.+?) counts (the Benched Pokemon on both sides|your Benched Pokemon|your opponent's Benched Pokemon|your Pokemon in play), so (\d+) needs (?:both Benches full|a full Bench|their Bench full), and the grade counts (\d+), for (\d+) (?:on each Bench|on your Bench|on their Bench|in play)\.$/;
+const I18N_BOARD_K = { 'the Benched Pokemon on both sides': 'both', 'your Benched Pokemon': 'bench', "your opponent's Benched Pokemon": 'opp', 'your Pokemon in play': 'inplay' };
 function i18nDmgPats(l) {
   const T = () => i18nDmgTab(l);
   const by = x => i18nCtlBy(x, T());
@@ -4311,9 +4314,9 @@ function i18nDmgPats(l) {
   const TY = `(?:${I18N_DMG_TY})`;
   return [
     // g35Hit: the hit itself.
-    [/^(.+?) (hits for at most|averages) (\d+) before Weakness\.$/, (m, h, v, top) => T().hit(i18nDmgWho(h, T()), v === 'averages', top, null)],
-    [/^(.+?) (hits for at most|averages) (\d+) with (.+) \((\d+) without\), before Weakness\.$/, (m, h, v, eff, w, top) => {
-      const x = i18nDmgWith(w, T()); return x && T().hit(i18nDmgWho(h, T()), v === 'averages', top, Object.assign(x, { eff })); }],
+    [/^(.+?) (hits for at most|hits for about|averages) (\d+) before Weakness\.$/, (m, h, v, top) => T().hit(i18nDmgWho(h, T()), v === 'averages' ? true : v === 'hits for about' ? 'about' : false, top, null)],
+    [/^(.+?) (hits for at most|hits for about|averages) (\d+) with (.+) \((\d+) without\), before Weakness\.$/, (m, h, v, eff, w, top) => {
+      const x = i18nDmgWith(w, T()); return x && T().hit(i18nDmgWho(h, T()), v === 'averages' ? true : v === 'hits for about' ? 'about' : false, top, Object.assign(x, { eff })); }],
     [/^Using it Knocks Out (.+), which gives up a prize\.$/, (m, x) => T().koUse(nm(x))],
     [/^Using it Knocks Out (.+), which gives up a prize, so it finishes a knockout rather than starting one\.$/, () => null],
     [/^Its (.+?) does (\d+) only (.+), (\d+) otherwise\.$/, (m, a, full, w, base) => { const x = i18nDmgWhen(w); return x && T().need(a, full, x, base); }],
@@ -4329,6 +4332,8 @@ function i18nDmgPats(l) {
     [/^That is the average for cards off the top of the deck: your list runs (\d+) (.+), so a bigger or smaller hit is down to luck\.$/, (m, n, w) => { const p = i18nDmgPile(w, T(), n); return p && T().millAvg(n, p); }],
     [/^It counts the cards in your hand, so (\d+) is the app's estimate for about (\d+) cards(, with the list's draw Abilities filling the hand)?, not a printed number\.$/, (m, t, n, f) => T().hand(t, n, !!f)],
     [/^Its damage depends on the board, so (\d+) is the app's estimate, not a printed number\.$/, (m, t) => T().lowConf(t)],
+    // 3.6.6: a hit that counts Benched Pokemon or Pokemon in play (g366Board).
+    [I18N_BOARD_RE, (m, a, k, max, n, c) => T().board(a, I18N_BOARD_K[k], max, n, c)],
     // Energy scaling.
     [/^(.+?) does (?:(\d+) plus )?(\d+) for each Energy attached to both Active Pokemon\.$/, (m, x, b, p) => T().escBoth(by(x), b || '', p)],
     [/^The app counts (\d+) on it(?:, each counting twice with (.+?))?, and 2 on your opponent's Active, so (\d+) is its estimate, not a printed number\.$/, (m, n, w, t) => T().appCounts(n, w ? by(w) : '', t)],
@@ -4482,7 +4487,7 @@ const I18N_DMG = {
         : p.k === 'kind' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]}` : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage][m ? 1 : 0]
         : p.k === 'pre' ? `Pokémon ${deX(p.pre)}` : p.k === 'atk' ? `Pokémon con ${p.atk}` : p.k === 'name' ? `${m ? 'cartas' : 'carta'} ${p.name}` : p.names.join(' o '),
       selfB: (a, e) => `${a} con ${e} unida`, from: (a, w, n) => `${a} de ${n ? n + ' ' : ''}${w}`,
-      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg ? 'hace de media' : 'hace como máximo';
+      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} con ${x.via},` : ''), v = avg === 'about' ? 'hace unos' : avg ? 'hace de media' : 'hace como máximo';
         const C = { ex: 'contra un Pokémon ex', poison: 'mientras está Envenenado', behind: 'cuando vas por detrás en Premios', last: 'cuando ese Partidario es la última carta de tu mano' };
         return b ? `${s} ${v} ${b.eff} de daño con ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' y ') : ''} (${top} sin eso), sin contar la Debilidad.` : `${s} ${v} ${top} de daño sin contar la Debilidad.`; },
       koUse: x => `Usarlo deja ${AT} a ${x}, lo que le da un Premio a tu rival.`,
@@ -4519,6 +4524,9 @@ const I18N_DMG = {
       millAvg: (n, p) => `Es la media según las cartas que salen de la parte superior de la baraja: tu lista lleva ${n} ${p}, así que un golpe mayor o menor depende de la suerte.`,
       hand: (t, n, f) => `Cuenta las cartas de tu mano, así que ${t} es la estimación de la app para unas ${n} cartas${f ? ', con las Habilidades de robo de la lista llenando la mano' : ''}, no un número impreso.`,
       lowConf: t => `Su daño depende de la mesa, así que ${t} es la estimación de la app, no un número impreso.`,
+      board: (a, k, max, top, n) => { const w = { both: ['los Pokémon en Banca de ambos lados', 'las dos Bancas llenas', 'en cada Banca'], bench: ['tus Pokémon en Banca', 'tu Banca llena', 'en tu Banca'],
+        opp: ['los Pokémon en Banca de tu rival', 'su Banca llena', 'en su Banca'], inplay: ['tus Pokémon en juego', 'tu Banca llena', 'en juego'] }[k];
+        return w && `${a} cuenta ${w[0]}, así que ${max} necesita ${w[1]}, y la calificación cuenta ${top}, con ${n} ${w[2]}.`; },
       escBoth: (x, b, p) => `${x} hace ${b ? b + ' más ' : ''}${p} por cada Energía unida a los dos Pokémon Activos.`,
       appCounts: (n, w, t) => `La app cuenta ${n} en él${w ? `, y cada una cuenta doble con ${w}` : ''}, y 2 en el Pokémon Activo de tu rival, así que ${t} es su estimación, no un número impreso.`,
       escDisc: (x, e, p) => `${x} descarta ${e} de tus Pokémon y hace ${p} por cada una que descarta.`,
@@ -4631,7 +4639,7 @@ const I18N_DMG = {
         : p.k === 'kind' ? `${m ? 'cartas' : 'carta'} de ${KIND[p.kind]}` : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage][m ? 1 : 0]
         : p.k === 'pre' ? `Pokémon ${deX(p.pre)}` : p.k === 'atk' ? `Pokémon com ${p.atk}` : p.k === 'name' ? `${m ? 'cartas' : 'carta'} ${p.name}` : p.names.join(' ou '),
       selfB: (a, e) => `${a} com ${e} ligada`, from: (a, w, n) => `${a} de ${n ? n + ' ' : ''}${w}`,
-      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} com ${x.via},` : ''), v = avg ? 'causa em média' : 'causa no máximo';
+      hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, copiando ${x.cp} com ${x.via},` : ''), v = avg === 'about' ? 'causa cerca de' : avg ? 'causa em média' : 'causa no máximo';
         const C = { ex: 'contra um Pokémon ex', poison: 'enquanto está Envenenado', behind: 'quando você está atrás nos Prêmios', last: 'quando esse Apoiador é a última carta da sua mão' };
         return b ? `${s} ${v} ${b.eff} de dano com ${b.b}${b.conds.length ? ' ' + b.conds.map(c => C[c]).join(' e ') : ''} (${top} sem isso), sem contar a Fraqueza.` : `${s} ${v} ${top} de dano sem contar a Fraqueza.`; },
       koUse: x => `Usar isso Nocauteia ${x}, o que dá um Prêmio ao oponente.`,
@@ -4668,6 +4676,9 @@ const I18N_DMG = {
       millAvg: (n, p) => `Essa é a média das cartas que saem do topo do deck: sua lista usa ${n} ${p}, então um golpe maior ou menor depende da sorte.`,
       hand: (t, n, f) => `Ele conta as cartas da sua mão, então ${t} é a estimativa do app para cerca de ${n} cartas${f ? ', com as Habilidades de compra da lista enchendo a mão' : ''}, não um número impresso.`,
       lowConf: t => `O dano depende da mesa, então ${t} é a estimativa do app, não um número impresso.`,
+      board: (a, k, max, top, n) => { const w = { both: ['os Pokémon no Banco dos dois lados', 'dos dois Bancos cheios', 'em cada Banco'], bench: ['seus Pokémon no Banco', 'do seu Banco cheio', 'no seu Banco'],
+        opp: ['os Pokémon no Banco do oponente', 'do Banco do oponente cheio', 'no Banco do oponente'], inplay: ['seus Pokémon em jogo', 'do seu Banco cheio', 'em jogo'] }[k];
+        return w && `${a} conta ${w[0]}, então ${max} precisa ${w[1]}, e a nota conta ${top}, com ${n} ${w[2]}.`; },
       escBoth: (x, b, p) => `${x} causa ${b ? b + ' mais ' : ''}${p} para cada Energia ligada aos dois Pokémon Ativos.`,
       appCounts: (n, w, t) => `O app conta ${n} nele${w ? `, cada uma contando em dobro com ${w}` : ''}, e 2 no Pokémon Ativo do oponente, então ${t} é a estimativa dele, não um número impresso.`,
       escDisc: (x, e, p) => `${x} descarta ${e} dos seus Pokémon e causa ${p} para cada uma descartada.`,
@@ -5055,6 +5066,8 @@ function i18nGtPats(l) {
     [/^(?!The best one here is )(Its .+?|.+?'s .+?) (hits for|averages) (\d+)( with its coin flips)?\.$/, (m, s, k, n, c) => T().hits(its(s), k === 'averages', n, !!c)],
     [/^(Its .+?|.+?'s .+?) counts the cards in your hand: about (\d+) with (\d+) cards, the app's estimate, not a printed number\.$/, (m, a, n, k) => T().handEst(its(a), n, k)],
     [/^(Its .+?|.+?'s .+?) depends on the board, so (\d+) is the app's estimate, not a printed number\.$/, (m, a, n) => T().boardEst(its(a), n)],
+    // 3.6.6: the same Bench count sentence in the plan; the hit sentence's own words say it.
+    [I18N_BOARD_RE, (m, a, k, max, n, c) => { const D = i18nDmgTab(l); return D && D.board ? D.board(a, I18N_BOARD_K[k], max, n, c) : null; }],
     [/^(Its .+?|.+?'s .+?) prevents all damage done to it by attacks from your opponent's Pokemon ex, so ex attackers cannot knock it out\.$/, (m, a) => T().wall(its(a))],
     [new RegExp(`^(Its .+?|.+?'s .+?) adds (\\d+) to its attacks while it has (${TY}) Energy attached(?:, so it hits for (\\d+))?(?:, and gives it (\\d+) more HP)?\\.$`), (m, a, n, t, h, hp) => T().boost(its(a), n, E(t + ' Energy'), h, hp)],
     [/^(Its .+?|.+?'s .+?) puts (\d+) damage counters on 1 of your opponent's Pokemon each turn( while it is Active)?\.$/, (m, a, n, act) => T().ownDmg(its(a), n, !!act)],

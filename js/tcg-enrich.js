@@ -1156,6 +1156,29 @@ function spec56(w) {
   return undefined;
 }
 /**
+ * 3.6.6: an attack that counts Benched Pokemon or Pokemon in play, read from its text, so the grade
+ * can say what it reaches with a full board and what it counts. Lillie's Clefairy ex's Full Moon
+ * Rondo does 20 more for each Benched Pokemon on both sides: 220 with both Benches full, 180 counted.
+ * k: both (both Benches), bench (your Bench), opp (your opponent's Bench), inplay (your Pokemon in play).
+ * n is the count on each side the grade uses and full the count with a full board, as parseDamage
+ * reads them; typ and max are the hits those give, so a caller can check they match what it holds.
+ * Returns null for anything else.
+ */
+function board366(text, damage) {
+  const t = String(text || '').replace(/[‘’]/g, "'").replace(/pok[eé]mon/gi, 'pokemon').toLowerCase();
+  const pm = t.match(/does (\d+) (more )?damage for each (?:of your |of your opponent's |)(?:benched pokemon|pokemon in play)[^.]*/);
+  if (!pm) return null;
+  const w = pm[0], per = parseInt(pm[1], 10);
+  let b;
+  if (/benched pokemon \(both yours and your opponent's\)/.test(w)) b = { k: 'both', n: 4, full: 5, sides: 2 };
+  else if (/of your opponent's benched pokemon$/.test(w)) b = { k: 'opp', n: 4, full: 5, sides: 1 };
+  else if (/for each (?:of your )?benched pokemon$/.test(w)) b = { k: 'bench', n: 4, full: 5, sides: 1 };
+  else if (/for each of your pokemon in play$/.test(w)) b = { k: 'inplay', n: 5, full: 6, sides: 1 };
+  else return null;
+  const base = pm[2] ? (parseInt(String(damage || ''), 10) || 0) : 0;
+  return { k: b.k, n: b.n, full: b.full, typ: base + per * b.n * b.sides, max: base + per * b.full * b.sides };
+}
+/**
  * v56: an attack that counts some of your Pokemon in play or on your Bench, read from its
  * text: "for each of your Beedrill and Beedrill ex in play", "for each of your Erika's
  * Pokemon in play", "for each of your Benched Charjabug", "for each Stage 2 Pokemon on your
@@ -1291,7 +1314,7 @@ function kox60(text) {
   if (/^knock out your opponent's active pokemon/.test(t)) return { how: 'always', basic };
   return null;
 }
-if (typeof globalThis !== 'undefined') Object.assign(globalThis, { kox60, geEffects, FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54, pile55, aboost55, gate55, spec56, group56, mill56 });
+if (typeof globalThis !== 'undefined') Object.assign(globalThis, { board366, kox60, geEffects, FIX37, fix37Get, fix37Td, fix37Card, copy37, escale53, edouble53, abDmg54, pile55, aboost55, gate55, spec56, group56, mill56 });
 
 const RT_BOILER57 = /^(you may play (only 1|any number of)|you may attach any number of pok[e\u00e9]mon tools|attach a pok[e\u00e9]mon tool to 1 of your pok[e\u00e9]mon that doesn|ace spec:|you can't have more than 1 ace spec)/i;
 /** v67: card text with Energy symbols spelled out ("{D} Energy" to "Darkness Energy"), from any source. */

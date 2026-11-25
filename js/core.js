@@ -770,6 +770,8 @@ function toGradeRows(deck) {
       ? c.attacks.map(a => ({ name:a.name||'', cost:a.cost||[], dmg:a.dmg||0,
           early: a.early != null ? a.early : (a.dmg||0), max: a.dmgMax || a.dmg || 0, cond: a.cond || null,
           conf: a.conf || 'high', flip: a.flip || null, copy: a.copy || null, escale: a.escale || null, lock: a.lock || null, edisc: a.edisc || null, pile: a.pile || null, group: a.group || null, mill: a.mill || null, fx: a.fx || null, kox: a.kox || null, hand: a.hand || null, need: a.need || null, ctl: a.ctl || null, rev: a.rev || null, disc: a.disc || null,
+          // 3.6.6: an attack that counts Benched Pokemon or Pokemon in play, with its full board hit (board366).
+          board: typeof board366 === 'function' ? board366(a.text, a.pd) : null,
           // 3.5: damage the attack does to the attacker itself (Mega Golurk ex's Goliath's Punch).
           selfd: +((String(a.text || '').match(/this pok[e\u00e9]mon also does (\d+) damage to itself/i) || [])[1] || 0) || null }))
       : null;
@@ -1295,7 +1297,11 @@ function gAtkReach(a, deck) {
   if (a.kox) return gKoReach(a, deck);
   if (a.hand && !a.cond) return gHandReach(a, deck);
   if (a.need && !a.cond) return gNeedReach(a, deck);
-  if (!a.cond) return { now: a.dmg || 0, top: a.dmg || 0, cond: null };
+  if (!a.cond) { const r = { now: a.dmg || 0, top: a.dmg || 0, cond: null };
+    // 3.6.6: a Bench count hit keeps what a full board gives, when it matches what the card read counted.
+    const b = a.board;
+    if (b && b.typ === (a.dmg || 0) && b.max === (a.max || 0) && b.max > b.typ) r.board = b;
+    return r; }
   const ab = a.cond.ability ? a.cond.ability.toLowerCase() : null;
   let have = 0;
   deck.forEach(e => { const c = e.card; if (!c) return;
@@ -1594,21 +1600,34 @@ function g35Hit(r) {
   if (r.twice) { const one = Object.assign({}, r, { twice: null, top: r.twice.one, now: r.now / 2, boost: r.boost / 2, eff: r.twice.one + r.boost / 2 });
     return g35Hit(one, nm) + ` ${g62Twice(r)}`; }
   const how = r.copy ? ` copying ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}` : '';
-  const verb = r.flip ? 'averages' : 'hits for at most';
+  // 3.6.6: an estimate the board decides (low confidence, or a hand count) is "about", not "at most".
+  const verb = r.flip ? 'averages' : !g366Bd(r) && (r.conf === 'low' || (r.hand && !r.copy)) ? 'hits for about' : 'hits for at most';
+  // 3.6.6: a hit that counts Benched Pokemon says what a full board gives, and the next sentence what the grade counts.
+  const bd = g366Bd(r), top = bd ? bd.max : r.top, eff = bd ? r.eff - r.top + bd.max : r.eff;
   let t;
   if (r.boost) {
     const when = [r.vsEx && 'against a Pokemon ex', r.poison && 'while it is Poisoned', r.behind && 'while you are behind on prizes',
       r.last && 'when that Supporter is the last card in your hand'].filter(Boolean).join(' and ');
-    t = `${nm}${how} ${verb} ${r.eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${r.top} without), before Weakness.`;
-  } else t = `${nm}${how} ${verb} ${r.top} before Weakness.`;
+    t = `${nm}${how} ${verb} ${eff} with ${r.bNames.join(' and ')}${when ? ' ' + when : ''} (${top} without), before Weakness.`;
+  } else t = `${nm}${how} ${verb} ${top} before Weakness.`;
   if (r.ko && r.ko.length) t += ` Using it Knocks Out ${r.ko.join(' and ')}, which gives up a prize.`;
   if (r.need && !r.copy && r.atk) t += ` Its ${g62Need(r, r.name)}`;
   if (r.flip === 'mill') t += ` That is the average for cards off the top of the deck: your list runs ${r.mill.have} ${g56Many(r.mill, r.mill.have)}, so a bigger or smaller hit is down to luck.`;
   else if (r.flip === 'tails') t += ' It flips coins until tails, so a bigger hit can happen but is not something to count on.';
   else if (r.flip) t += ' That counts coin flips at their average.';
   else if (r.hand && !r.copy) t += ` It counts the cards in your hand, so ${r.top} is the app's estimate for about ${r.hand} cards${r.hand > 7 ? ", with the list's draw Abilities filling the hand" : ''}, not a printed number.`;
+  else if (bd) t += ` ${g366Board(r, bd, r.top)}`;
   else if (r.conf === 'low') t += ` Its damage depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   return t;
+}
+/** 3.6.6: the Bench count of a hit (board366), when the sentence can use it: not a copy, a coin flip or a hand count. */
+function g366Bd(r) { const b = r && r.board;
+  return b && !r.copy && !r.flip && !r.hand && r.top === b.typ ? b : null; }
+/** 3.6.6: what a Bench count hit needs for its full number, and what the grade counts. */
+function g366Board(r, b, n) {
+  const k = { both: ['the Benched Pokemon on both sides', 'both Benches full', 'on each Bench'], bench: ['your Benched Pokemon', 'a full Bench', 'on your Bench'],
+    opp: ["your opponent's Benched Pokemon", 'their Bench full', 'on their Bench'], inplay: ['your Pokemon in play', 'a full Bench', 'in play'] }[b.k];
+  return `Its ${r.atk} counts ${k[0]}, so ${b.max} needs ${k[1]}, and the grade counts ${n}, for ${b.n} ${k[2]}.`;
 }
 /** How many hits the format's smallest and biggest threats take at this damage. */
 function g37Hits(eff, tw) {
@@ -2509,6 +2528,8 @@ function gPlan(entries, coh, via) {
     how = `Its ${r.copy.via} lets it use the attacks of your Benched Pokemon, paid with its own Energy. The best one here is ${gCap(r.copy.who)}'s ${r.copy.atk}, which ${r.flip ? 'averages' : 'hits for'} ${r.top}.`;
   } else if (r && r.copy) {
     how = `It copies ${gCap(r.copy.who)}'s ${r.copy.atk} with ${r.copy.via}.`;
+  } else if (r && g366Bd(r)) {
+    how = g366Board(r, g366Bd(r), r.top);
   } else if (r && r.conf === 'low') {
     how = r.hand ? `Its ${r.atk} counts the cards in your hand: about ${r.top} with ${r.hand} cards, the app's estimate, not a printed number.` : `Its ${r.atk} depends on the board, so ${r.top} is the app's estimate, not a printed number.`;
   } else if (r && r.flip === 'mill') {

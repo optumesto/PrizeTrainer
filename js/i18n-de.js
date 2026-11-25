@@ -2187,7 +2187,7 @@ I18N_MORE.de.dmg = (function () {
       : p.k === 'pokemon' ? 'Pokémon' : p.k === 'stage' ? STG[p.stage] : p.k === 'pre' ? `Pokémon von ${own(p.pre)}` : p.k === 'atk' ? `Pokémon mit ${p.atk}`
       : p.k === 'name' ? `${p.name}-${m ? 'Karten' : 'Karte'}` : p.names.join(' oder '),
     selfB: (a, e) => `${a} mit angelegter ${e}`, from: (a, w, n) => `${a} von ${n ? n + ' ' : ''}${w}`,
-    hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, das mit ${x.via} ${x.cp} kopiert,` : ''), v = avg ? 'macht im Schnitt' : 'macht höchstens';
+    hit: (x, avg, top, b) => { const s = x.nm + (x.cp ? `, das mit ${x.via} ${x.cp} kopiert,` : ''), v = avg === 'about' ? 'macht etwa' : avg ? 'macht im Schnitt' : 'macht höchstens';
       const C = { ex: 'gegen ein Pokémon-ex', poison: 'solange es vergiftet ist', behind: 'wenn du bei den Preiskarten hinten liegst', last: 'wenn dieser Unterstützer die letzte Karte auf deiner Hand ist' };
       return b ? `${s} ${v} ${b.eff} Schaden mit ${b.b}${b.conds.length ? (b.conds[0] === 'ex' ? ' ' : ', ') + b.conds.map(c => C[c]).join(' und ') : ''} (${top} ohne), Schwäche nicht eingerechnet.` : `${s} ${v} ${top} Schaden, Schwäche nicht eingerechnet.`; },
     koUse: x => `Dabei wird ${x} kampfunfähig, und dein Gegner erhält eine Preiskarte.`,
@@ -2223,6 +2223,9 @@ I18N_MORE.de.dmg = (function () {
     millAvg: (n, p) => `Das ist der Durchschnitt für die Karten, die oben vom Deck kommen. Deine Liste spielt ${n} ${p}, ob der Treffer größer oder kleiner ausfällt, ist also Glückssache.`,
     hand: (t, n, f) => `Es zählt die Karten auf deiner Hand, daher ist ${t} die Schätzung der App für etwa ${n} Karten${f ? ', wenn die Zieh-Fähigkeiten der Liste die Hand füllen' : ''}, keine aufgedruckte Zahl.`,
     lowConf: t => `Sein Schaden hängt vom Spielfeld ab, daher ist ${t} die Schätzung der App, keine aufgedruckte Zahl.`,
+    board: (a, k, max, top, n) => { const w = { both: ['die Pokémon auf der Bank beider Seiten', 'zwei volle Bänke', 'auf jeder Bank'], bench: ['deine Pokémon auf der Bank', 'eine volle Bank', 'auf deiner Bank'],
+      opp: ['die Pokémon auf der Bank deines Gegners', 'eine volle Bank bei deinem Gegner', 'auf der Bank deines Gegners'], inplay: ['deine Pokémon im Spiel', 'eine volle Bank', 'im Spiel'] }[k];
+      return w && `${a} zählt ${w[0]}, daher braucht ${max} ${w[1]}, und die Note zählt ${top}, mit ${n} ${w[2]}.`; },
     escBoth: (x, b, p) => `${x} macht ${b ? b + ' plus ' : ''}${p} für jede Energie, die an beiden Aktiven Pokémon angelegt ist.`,
     appCounts: (n, w, t) => `Die App zählt ${n} an ihm${w ? `, jede durch ${w} doppelt` : ''}, und 2 am Aktiven Pokémon deines Gegners, daher ist ${t} ihre Schätzung, keine aufgedruckte Zahl.`,
     escDisc: (x, e, p) => `${x} legt ${e} von deinen Pokémon ab und macht ${p} für jede abgelegte.`,
