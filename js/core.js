@@ -6213,14 +6213,19 @@ function gfMon(id) { return gfMons().find(z => z.id === id); }
  * "You cannot play this card by itself. You must combine 2 different Legendary Pyroduct from your hand to play as
  * 1 Stadium card." Number of the left half; the right half is the next number (same list as puzzle/engine.js HALVES). */
 const GF_HALVES = { 'legendary pyroduct': 94, 'legendary summit': 96, 'legendary trench': 98 };
-/** 'L', 'R', or null for a card that is not a half. */
+// Cards played 2 copies at once, for one effect (same list as puzzle/engine.js PAIRS): Transformation Tome.
+const GF_PAIRS = { 'transformation tome': 1 };
+/** Why a two-card play can't be made from your hand ('' when it can, or the card is not one). */
+function gfPairWhy(x) { const h = gfHalfOf(x); return !h || gfHalfMate(x) ? '' : h === 'P' ? 'Needs 2 copies in hand.' : 'Needs both halves in hand.'; }
+/** 'L', 'R', 'P' for a card played 2 at once, or null for any other card. */
 function gfHalfOf(x) {
+  if (x && x.card && GF_PAIRS[String(x.card.name || '').toLowerCase()]) return 'P';
   const left = x && x.card && GF_HALVES[String(x.card.name || '').toLowerCase()]; if (left == null) return null;
   if (x.half === 'L' || x.half === 'R') return x.half;
   return parseInt(x.card.num, 10) === left + 1 ? 'R' : 'L';
 }
 /** The other half of x in your hand, or null. */
-function gfHalfMate(x) { const h = gfHalfOf(x); return h ? gf.hand.find(y => y !== x && y.card.name === x.card.name && gfHalfOf(y) && gfHalfOf(y) !== h) || null : null; }
+function gfHalfMate(x) { const h = gfHalfOf(x); return h ? gf.hand.find(y => y !== x && y.card.name === x.card.name && gfHalfOf(y) && (h === 'P' || gfHalfOf(y) !== h)) || null : null; }
 /** Each copy's half: a row with a half's own number keeps it; copies with no number go left, right, left, right. */
 function gfSplitHalves(pool) {
   const n = {};
@@ -6407,7 +6412,7 @@ function gfActions(x) {
       const sup = kind === 'supporter';
       const P = gfTrainerPlay(x) || {};
       let why = '';
-      if (gfHalfOf(x) && !gfHalfMate(x)) why = 'Needs both halves in hand.';
+      if (gfPairWhy(x)) why = gfPairWhy(x);
       else if (sup && gf.used.supporter) why = 'One Supporter a turn.';
       else if (sup && gf.first && t === 1 && !P.firstOK) why = 'The player going first cannot play a Supporter on turn 1.';
       else if (P.firstOnly && t !== 1) why = 'Only during your first turn.';
@@ -6531,11 +6536,11 @@ function gfTrainer(uid) {
   const h = gf.hand.find(y => y.uid === uid), mate = gfHalfMate(h);
   if (gfHalfOf(h) && !mate) return;
   const x = gfTake(uid); if (!x) return;
-  // A two-half card: its other half is played with it and goes to the discard pile with it.
+  // A two-card play (two halves, or 2 copies at once): the other card is played with it and goes to the discard pile with it.
   if (mate) gf.discard.push(gfTake(mate.uid));
   const sup = gfKind(x) === 'supporter';
   if (sup) gf.used.supporter = true;
-  gfLog('Played ' + gfNm(x));
+  gfLog('Played ' + (mate && gfHalfOf(x) === 'P' ? '2 ' : '') + gfNm(x));
   gf.sel = null;
   const P = gfTrainerPlay(x);
   const steps = P && P.steps ? (P.cost ? [{ t: 'cost', n: P.cost.n, F: P.cost.F }] : []).concat(P.steps) : null;

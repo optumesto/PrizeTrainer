@@ -208,9 +208,16 @@ function readAbilities(ref) {
  * together. Listed by name with the number of the left half; the right half is the next number. */
 const HALVES = { 'legendary pyroduct': 94, 'legendary summit': 96, 'legendary trench': 98 };
 const HALF_MSG = 'Needs both halves in hand.';
-/** 'L', 'R', or null for a card that is not a half. */
+// Cards played 2 copies at once, for one effect. Transformation Tome (Crimson Rift 83): "You must play 2
+// Transformation Tome cards at once. (This effect works one time for 2 cards.)" Any 2 copies, no halves.
+const PAIRS = { 'transformation tome': 1 };
+const PAIR_MSG = 'Needs 2 copies in hand.';
+/** Why a two-card play can't be made from this hand ('' when it can, or the card is not one). */
+function pairWhy(hand, x) { const h = halfOf(x); return !h || halfMate(hand, x) ? '' : h === 'P' ? PAIR_MSG : HALF_MSG; }
+/** 'L', 'R', 'P' for a card played 2 at once, or null for any other card. */
 function halfOf(ref) {
   const c = ref && ref.card; if (!c) return null;
+  if (PAIRS[String(c.name || '').toLowerCase()]) return 'P';
   const left = HALVES[String(c.name || '').toLowerCase()]; if (left == null) return null;
   if (c.half === 'L' || c.half === 'R') return c.half;
   const n = parseInt(c.num || (String(c.key || '').match(/-(\d+)$/) || [])[1], 10);
@@ -219,7 +226,7 @@ function halfOf(ref) {
 /** The other half of x in this hand, or null. */
 function halfMate(hand, x) {
   const h = halfOf(x); if (!h) return null;
-  return hand.find(y => y !== x && y.card.name === x.card.name && halfOf(y) && halfOf(y) !== h) || null;
+  return hand.find(y => y !== x && y.card.name === x.card.name && halfOf(y) && (h === 'P' || halfOf(y) !== h)) || null;
 }
 /** A card record as one given half: its number and picture follow the half. Same record back for any other card. */
 const _halfRec = new WeakMap();
@@ -788,7 +795,7 @@ function legalActions(s, opts) {
       }
       const TP = readTrainer(x), sup = c.kind === 'supporter';
       let why = '';
-      if (halfOf(x) && !halfMate(P.hand, x)) why = HALF_MSG;
+      if (pairWhy(P.hand, x)) why = pairWhy(P.hand, x);
       else if (sup && P.used.supporter) why = 'You already played a Supporter this turn.';
       else if (sup && s.turn === 1 && s.first && !TP.firstOK) why = 'No Supporter on the first turn of the game.';
       else if (TP.firstOnly && s.turn !== 1) why = 'Only during your first turn.';
@@ -876,10 +883,12 @@ function apply(s0, a) {
     case 'stadiumUse': { P.lim.stadiumUse = s.turn; const TP = readTrainer(s.stadium.ref); return startRun(s, TP.steps, { name: s.stadium.ref.card.name }); }
     case 'trainer': {
       const x = take(P.hand, a.uid), TP = readTrainer(x);
-      // A two-half card: its other half leaves the hand with it and goes to the discard pile with it.
-      if (halfOf(x)) { const y = halfMate(P.hand, x); if (!y) throw new Error(HALF_MSG); P.discard.push(take(P.hand, y.uid)); }
+      // A two-card play (two halves, or 2 copies at once): the other card leaves the hand with it and goes to
+      // the discard pile with it, for one effect.
+      let two = false;
+      if (halfOf(x)) { const y = halfMate(P.hand, x); if (!y) { P.hand.push(x); throw new Error(pairWhy(P.hand, x) || HALF_MSG); } P.discard.push(take(P.hand, y.uid)); two = halfOf(x) === 'P'; }
       if (x.card.kind === 'supporter') P.used.supporter = true;
-      log(s, 'Played ' + x.card.name);
+      log(s, 'Played ' + (two ? '2 ' : '') + x.card.name);
       const steps = TP.cost ? [{ t: 'cost', n: TP.cost.n, F: TP.cost.F }].concat(TP.steps || []) : TP.steps;
       return startRun(s, TP.steps ? steps : null, { name: x.card.name, card: x });
     }
@@ -1147,7 +1156,7 @@ function key(s) {
     s.promote ? s.promote.join(',') : '', s.ended ? 'E' : '', s.gameOver == null ? '' : 'G' + s.gameOver].join('#');
 }
 
-const internals = { halfOf, halfMate, halfRecord, splitHalves, discardStadium, HALVES, provides, hitLine, logName, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
+const internals = { halfOf, halfMate, pairWhy, PAIRS, halfRecord, splitHalves, discardStadium, HALVES, provides, hitLine, logName, drawN, cardList, logDraw, theirView, attackList, clone, checkKOs, findMon, newMon, log, take, me, foe, benchMax, attackWhy, canEvolve, abilOff, abilTexts, ptext, toolOn, readBody, reshuffle, startRun, go, setReal: v => { REAL = !!v; } };
 const api = { HOOKS, internals, needWhy, targetWhy, abilWhy, cardProblems, HIDDEN, cardFromApi, legalActions, apply, fromPuzzle, goalMet, readCheck, key, winner, readAttack, readTrainer, readAbilities, retreatCost, costMet, damageTo, maxHp, prizeValue, mons, topOf, T };
 root.RdyPuzzle = Object.assign(root.RdyPuzzle || {}, api);
 if (typeof module !== 'undefined' && module.exports) module.exports = api;

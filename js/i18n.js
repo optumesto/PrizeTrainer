@@ -5378,6 +5378,7 @@ const I18N_FT_ROWS = [
   ['Not enough Energy to retreat.', 'No hay Energía suficiente para retirarse.', 'Não há Energia suficiente para recuar.', 'Pas assez d\'Énergie pour battre en retraite.', 'Nicht genug Energie für den Rückzug.', 'Energia insufficiente per la ritirata.'],
   ['Not enough Energy.', 'No hay Energía suficiente.', 'Não há Energia suficiente.', 'Pas assez d\'Énergie.', 'Nicht genug Energie.', 'Energia insufficiente.'],
   ['Only 1 of those a turn.', 'Solo 1 de esas por turno.', 'Só 1 dessas por turno.', 'Seulement 1 de ce type par tour.', 'Nur 1 davon pro Zug.', 'Solo 1 di queste per turno.'],
+  ['Needs 2 copies in hand.', 'Necesita 2 copias en la mano.', 'Precisa de 2 cópias na mão.', 'Il faut 2 exemplaires en main.', 'Braucht 2 Exemplare auf der Hand.', 'Servono 2 copie in mano.'],
   ['Needs both halves in hand.', 'Necesita las dos mitades en la mano.', 'Precisa das duas metades na mão.', 'Il faut les deux moitiés en main.', 'Braucht beide Hälften auf der Hand.', 'Servono entrambe le metà in mano.'],
   ['One Stadium a turn.', 'Un Estadio por turno.', 'Um Estádio por turno.', 'Un Stade par tour.', 'Ein Stadion pro Zug.', 'Uno Stadio per turno.'],
   ['Only during your first turn.', 'Solo durante tu primer turno.', 'Só durante o seu primeiro turno.', 'Seulement pendant votre premier tour.', 'Nur in deinem ersten Zug.', 'Solo durante il tuo primo turno.'],

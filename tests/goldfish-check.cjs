@@ -25,6 +25,8 @@ const CARDS = [
   // Two-half Stadium: DLR 94 is the left half, DLR 95 the right half.
   T('Legendary Pyroduct', 'stadium', "Evolution Pokémon in play (both yours and your opponent's) have no Abilities.", { count: 2, set: 'DLR', num: '94' }),
   T('Legendary Pyroduct', 'stadium', "Evolution Pokémon in play (both yours and your opponent's) have no Abilities.", { count: 2, set: 'DLR', num: '95' }),
+  // Two copies at once: Transformation Tome (CRI 83).
+  T('Transformation Tome', 'item', 'You must play 2 Transformation Tome cards at once. (This effect works one time for 2 cards.)\n \nChoose a Basic Pokémon in your discard pile and switch it with 1 of your Basic Pokémon in play. Any attached cards, damage counters, Special Conditions, turns in play, and any other effects remain on the new Pokémon.', { set: 'CRI', num: '83' }),
 ];
 (async () => {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -140,6 +142,24 @@ const CARDS = [
   ok(G().stadium && G().stadiumPair && G().hand.length === n0 - 2 && !G().hand.some(x => x.uid === R), 'both halves go into play as one Stadium');
   ok(/Put Legendary Pyroduct in play/.test(G().log.map(l => l.s).join(' | ')), 'the log says Put Legendary Pyroduct in play');
   ok(w.eval('gfHalfOf(gf.stadium)') !== w.eval('gfHalfOf(gf.stadiumPair)'), 'one left half and one right half are in play');
+  // 11. Transformation Tome: "You must play 2 Transformation Tome cards at once. (This effect works one time for 2 cards.)"
+  const tomeIn = () => w.eval(`(() => { const all = gf.deck.concat(gf.prizes); const x = all.find(y => y.card.name === 'Transformation Tome');
+    gf.deck = gf.deck.filter(y => y !== x); gf.prizes = gf.prizes.filter(y => y !== x); gf.hand.push(x); return x.uid; })()`);
+  const T1 = tomeIn();
+  const playOf = u => w.eval(`gfActions(gf.hand.find(x => x.uid === ${u})).find(a => /^Play/.test(a.label))`);
+  const off1 = playOf(T1);
+  ok(off1 && off1.off && off1.why === 'Needs 2 copies in hand.', 'one Transformation Tome alone can not be played: ' + JSON.stringify(off1));
+  w.gfTrainer(T1);
+  ok(G().hand.some(x => x.uid === T1), 'playing one Tome alone does nothing');
+  ok(w.eval(`gfHalfOf(gf.hand.find(x => x.uid === ${T1}))`) === 'P', 'Tome is a 2 copies card, not a left or right half');
+  const T2 = tomeIn();
+  const on1 = playOf(T1);
+  ok(on1 && !on1.off, 'with 2 Tomes in hand it can be played');
+  const t0 = G().hand.length, dd = G().discard.length; w.gfTrainer(T1);
+  ok(G().hand.length === t0 - 2 && !G().hand.some(x => x.uid === T1 || x.uid === T2), 'both Tomes leave the hand in one play');
+  ok(G().discard.length >= dd + 1 && G().discard.some(x => x.uid === T2), 'the second Tome goes to the discard pile');
+  ok(/Played 2 Transformation Tome/.test(G().log.map(l => l.s).join(' | ')), 'the log says Played 2 Transformation Tome');
+  w.eval('gfShut && gfShut()');
   ok(!errors.length, 'no page errors' + (errors.length ? ': ' + errors.slice(0, 3).join(' / ') : ''));
   console.log(fails ? fails + ' failed' : 'all passed');
   process.exit(fails ? 1 : 0);
