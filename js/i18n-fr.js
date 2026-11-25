@@ -2836,3 +2836,4 @@ Object.assign(I18N_MORE.fr.dict, { "Card Guides and Daily Games links on the hom
 // 3.6.4: the Android note is the Play link.
 Object.assign(I18N_MORE.fr.dict, { "on Google Play": "sur Google Play" });
 Object.assign(I18N_MORE.fr.dict, { "RdyDeck is on Google Play": "RdyDeck est sur Google Play" });
+Object.assign(I18N_MORE.fr.dict, { "Privacy pages updated for Google Play": "Pages de confidentialité mises à jour pour Google Play" });

@@ -7018,3 +7018,6 @@ Object.assign(I18N_ES, { "on Google Play": "en Google Play" });
 Object.assign(I18N_PT, { "on Google Play": "no Google Play" });
 Object.assign(I18N_ES, { "RdyDeck is on Google Play": "RdyDeck ya está en Google Play" });
 Object.assign(I18N_PT, { "RdyDeck is on Google Play": "O RdyDeck está no Google Play" });
+// 3.6.5: privacy pages say the app is on Google Play.
+Object.assign(I18N_ES, { "Privacy pages updated for Google Play": "Páginas de privacidad actualizadas para Google Play" });
+Object.assign(I18N_PT, { "Privacy pages updated for Google Play": "Páginas de privacidade atualizadas para o Google Play" });

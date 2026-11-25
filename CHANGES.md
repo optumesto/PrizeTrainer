@@ -1,3 +1,10 @@
+# RdyDeck 3.6.5 (build 192): privacy pages say the app is on Google Play (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "Yes, fix those" (the privacy and delete data pages, which still described the Play app as not released).
+- privacy.html: "The Google Play app, once released, shows no ads." is now "The Google Play app shows no ads." (twice), and "If RdyDeck is released on Google Play, that version will be the same app" is now "RdyDeck is also on Google Play. That version is the same app".
+- delete-data.html, all 6 languages: "(once released)" and "once released" taken out of the two lines that name the Play app (es cuando se publique, pt quando for lançado, fr une fois publiée, de sobald sie erscheint, it una volta pubblicata). Nothing else changed; effective dates kept.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.5, PT_BUILD 192, softwareVersion 3.6.5, sw.js cache v192, stamps.
+
 # RdyDeck 3.6.4 (build 191): the Play listing is live, linked from the site (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "I checked in an incognito tab, it showed up", then "Push the Play link". Brief change 8. The listing was checked signed out first: it loads as RdyDeck for com.rdydeck.app.
