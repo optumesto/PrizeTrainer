@@ -2886,3 +2886,5 @@ Object.assign(I18N_MORE.de.dict, { "Links to other sites, like Google Play, open
 Object.assign(I18N_MORE.de.dict, {"Deck grader": "Deck-Bewerter", "Free Pokémon TCG Deck Grader": "Kostenloser Deck-Bewerter für das Pokémon-Sammelkartenspiel", "Deck Checker is now called Deck Grader": "Auf Englisch heißt Deck Checker jetzt Deck Grader"});
 // 3.6.8: a home page for each language.
 Object.assign(I18N_MORE.de.dict, {"Each language has its own home page, like rdydeck.com/es/": "Jede Sprache hat ihre eigene Startseite, wie rdydeck.com/de/"});
+// 3.6.9: Bench count attacks show their full hit.
+Object.assign(I18N_MORE.de.dict, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Attacken, die die Bank zählen, zeigen ihren vollen Schaden, wie Lillie's Clefairy ex mit 220" });

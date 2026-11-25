@@ -1,3 +1,11 @@
+# RdyDeck 3.6.9 (build 196): Bench count attacks show their full hit (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "Why does it say that Clefrairy hits for at most 180? its max hit amount is 220, but that deppends on menches being full", then "Push it".
+- js/tcg-enrich.js: board366 reads attacks that count Benched Pokemon (both sides, yours or your opponent's) or your Pokemon in play, with the count the grade uses and the full board count.
+- js/core.js: the hit sentence says the full board number ("hits for at most 220") and g366Board says what it needs and what the grade counts ("so 220 needs both Benches full, and the grade counts 180, for 4 on each Bench"). The plan sentence says the same. Other board estimates say "hits for about", not "at most". No grade moves.
+- js/i18n.js, js/i18n-de.js, js/i18n-fr.js, js/i18n-it.js: the new sentences and "about" in all 6 languages.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.9, PT_BUILD 196, softwareVersion 3.6.9, sw.js cache v196, stamps.
+
 # RdyDeck 3.6.8 (build 195): a home page for each language (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "Push it" for the language pages (rdydeck.com/es/, /pt/, /fr/, /de/, /it/), after "Keep building for the seo".

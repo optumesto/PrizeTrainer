@@ -6738,6 +6738,9 @@ Object.assign(I18N_PT, {"Deck grader": "Avaliador de decks", "Free Pokémon TCG 
 // 3.6.8: a home page for each language.
 Object.assign(I18N_ES, { "Each language has its own home page, like rdydeck.com/es/": "Cada idioma tiene su propia página de inicio, como rdydeck.com/es/" });
 Object.assign(I18N_PT, { "Each language has its own home page, like rdydeck.com/es/": "Cada idioma tem sua própria página inicial, como rdydeck.com/pt/" });
+// 3.6.9: Bench count attacks show their full hit.
+Object.assign(I18N_ES, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Los ataques que cuentan la Banca muestran su golpe completo, como Lillie's Clefairy ex con 220" });
+Object.assign(I18N_PT, { "Bench count attacks show their full hit, like Lillie's Clefairy ex at 220": "Ataques que contam o Banco mostram o golpe completo, como Lillie's Clefairy ex com 220" });
 
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
