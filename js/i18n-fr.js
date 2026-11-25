@@ -2827,3 +2827,5 @@ I18N_MORE.fr.pat.unshift(
   [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, (m, n, p) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e') + ' sur ' + p.replace(/,/g, ' ') + ' joueurs'],
   [/^Best finish: (\d+)(?:st|nd|rd|th)$/, (m, n) => 'Meilleur classement : ' + (n === '1' ? '1er' : n + 'e')],
 );
+// 3.6.1: Tournament Strength counts local in-person events.
+Object.assign(I18N_MORE.fr.dict, { "Tournament Strength now counts local in-person events": "La Force en tournoi compte désormais les tournois locaux en présentiel" });

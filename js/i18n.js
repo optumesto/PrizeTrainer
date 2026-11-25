@@ -6691,6 +6691,10 @@ I18N_PAT.unshift(
   [/^Best finish: (\d+)(?:st|nd|rd|th)$/, 'Mejor resultado: puesto $1', 'Melhor resultado: $1º'],
 );
 
+// 3.6.1: Tournament Strength counts local in-person events.
+Object.assign(I18N_ES, { "Tournament Strength now counts local in-person events": "La Fuerza en torneos ahora cuenta los torneos locales presenciais" });
+Object.assign(I18N_PT, { "Tournament Strength now counts local in-person events": "A Força em torneios agora conta os torneios locais presenciais" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

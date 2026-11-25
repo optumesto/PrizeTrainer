@@ -31,10 +31,10 @@
 // - "online": Limitless online tournaments with MIN_PLAYERS or more.
 // - "inperson" (3.5, test, off unless PT_IP_CALLS is set): events that stores and leagues run in
 //   person on Limitless (the event's details say isOnline false), with IP_MIN players or more.
-//   The tournament list does not say which events are in person, so each organizer is looked up
-//   once, through one event's details, and kept in the cache: an organizer whose first event read
-//   is online is skipped from then on. Events of in-person organizers are each checked again
-//   (details), and only those with decklists are read. Newest first, at most PT_IP_CALLS
+//   The tournament list does not say which events are in person, so each event's details are
+//   read, and organizers are counted in the cache: one with ORG_ONLINE events read online and none
+//   in person is skipped from then on. Only in-person events with decklists are read. Big events
+//   (MIN_PLAYERS or more) are checked once too, and an in-person one moves to this source (3.5.7). Newest first, at most PT_IP_CALLS
 //   requests a run on top of the online budget, at the same pace. The deck builder's card
 //   data (meta-cards.json) stays online only.
 //
@@ -68,6 +68,8 @@ const MIN_PLAYERS = 64;    // big enough to mean something
 // 3.5 (test): in-person events, smaller ones too. Off unless PT_IP_CALLS is set.
 const IP_MIN = Number(process.env.PT_IP_MIN) > 0 ? Number(process.env.PT_IP_MIN) : 16;
 const IP_CALLS = Number(process.env.PT_IP_CALLS) > 0 ? Number(process.env.PT_IP_CALLS) : 0;
+// 3.6.1: an organizer is skipped once this many of its events read online and none in person.
+const ORG_ONLINE = 3;
 // PT_SOURCES=online builds the file from those sources only (to compare, with PT_OFFLINE=1).
 const ONLY_SRC = process.env.PT_SOURCES ? new Set(String(process.env.PT_SOURCES).split(',')) : null;
 const SRC_INFO = {
@@ -390,17 +392,27 @@ if (!process.env.PT_OFFLINE && !CARDS_ONLY) try {
   if (again) notes.push(`placements: ${again} earlier events read again`);
   // 3.5 (test): in-person events, newest first, within their own request budget.
   if (IP_CALLS) {
+    // 3.6.1: an organizer is skipped only once ORG_ONLINE of its events read online and none in
+    // person, since some stores run both (before, one online event hid the organizer for good). Counts
+    // are kept as { i, o }; the older 'i' and 'o' marks read as one event each.
     const orgs = cache.orgs || (cache.orgs = {});
+    const orgOf = org => {
+      let v = orgs[org];
+      if (v === 'i') v = { i: 1, o: 0 }; else if (v === 'o') v = { i: 0, o: 1 }; else if (!v || typeof v !== 'object') v = { i: 0, o: 0 };
+      return (orgs[org] = { i: Number(v.i) || 0, o: Number(v.o) || 0 });
+    };
+    const orgSkip = org => { if (!org) return false; const v = orgOf(org); return !v.i && v.o >= ORG_ONLINE; };
+    const orgSeen = (org, online) => { if (org) orgOf(org)[online ? 'o' : 'i']++; };
     const stop = calls + IP_CALLS;
-    let ipNew = 0, ipOnline = 0, ipNoLists = 0, ipLeft = 0;
+    let ipNew = 0, ipOnline = 0, ipNoLists = 0, ipLeft = 0, bigIn = 0, bigChecked = 0, bigLeft = 0;
     const todo = small.filter(t => !have.has(String(t.id))).sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
     for (const t of todo) {
       const org = t.organizerId == null ? '' : String(t.organizerId);
-      if (org && orgs[org] === 'o') continue;
+      if (orgSkip(org)) continue;
       if (calls + 3 > stop) { ipLeft++; continue; }
       const det = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/details`);
       if (!det || typeof det.isOnline !== 'boolean') continue;
-      if (org && !orgs[org]) orgs[org] = det.isOnline ? 'o' : 'i';
+      orgSeen(org, det.isOnline);
       // Kept as skipped, so it is not looked at again.
       if (det.isOnline) { ipOnline++; have.set(String(t.id), { id: String(t.id), date: day(t.date), skip: true, src: 'online' }); continue; }
       if (det.decklists === false) { ipNoLists++; have.set(String(t.id), { id: String(t.id), date: day(t.date), skip: true, src: 'inperson' }); continue; }
@@ -411,8 +423,25 @@ if (!process.env.PT_OFFLINE && !CARDS_ONLY) try {
       ipNew++;
       have.set(String(t.id), digest(t, standings, pairings, 'inperson') || { id: String(t.id), date: day(t.date), skip: true, src: 'inperson' });
     }
-    const orgN = Object.values(orgs);
-    notes.push(`in person: ${small.length} smaller events listed, ${ipNew} new read, ${ipOnline} found online, ${ipNoLists} without decklists, ${ipLeft} left to read; organizers known: ${orgN.filter(v => v === 'i').length} in person, ${orgN.filter(v => v === 'o').length} online`);
+    // 3.6.1: big events (MIN_PLAYERS or more) were all counted as online without a look. Each one
+    // read is now checked once through its details (one request), newest first, and an in-person one
+    // moves to the in-person source. The event's games were read already, so nothing else is fetched.
+    const bigTodo = list.filter(t => { const e = have.get(String(t.id)); return e && !e.ipChk && (e.src || 'online') === 'online'; })
+      .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+    for (const t of bigTodo) {
+      const org = t.organizerId == null ? '' : String(t.organizerId);
+      if (orgSkip(org)) continue;
+      if (calls + 1 > stop) { bigLeft++; continue; }
+      const det = await getJSON(`${LIMITLESS}/tournaments/${encodeURIComponent(t.id)}/details`);
+      if (!det || typeof det.isOnline !== 'boolean') continue;
+      orgSeen(org, det.isOnline);
+      bigChecked++;
+      const e = have.get(String(t.id));
+      e.ipChk = 1;
+      if (!det.isOnline) { e.src = 'inperson'; bigIn++; }
+    }
+    const orgN = Object.values(orgs).map(v => (v === 'i' ? { i: 1 } : v === 'o' ? { o: 1 } : v || {}));
+    notes.push(`in person: ${small.length} smaller events listed, ${ipNew} new read, ${ipOnline} found online, ${ipNoLists} without decklists, ${ipLeft} left to read; big events checked ${bigChecked}, ${bigIn} in person, ${bigLeft} left; organizers known: ${orgN.filter(v => v.i).length} in person, ${orgN.filter(v => !v.i && v.o).length} online`);
   }
   notes.push(`window: from ${day(since)}${fromName ? ' (' + fromName.name + ')' : ''}, ${list.length} big events listed`);
   notes.push(`events: ${fresh} new, ${[...have.values()].filter(e => !e.skip && Date.parse(e.date) >= since - DAY).length} in use, ${list.filter(t => !have.has(String(t.id))).length} left to read`);

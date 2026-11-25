@@ -1,3 +1,12 @@
+# RdyDeck 3.6.1 (build 188): Tournament Strength counts local in-person events (24 Nov 2026)
+
+- Mason, 24 Nov 2026: "people place heavy emphasis on the inperson and online divide, so i would like to weigh them both". The test at 50% moved grades too far ("that seems to skew sigificantly against what we have already"), so it goes live at 20% ("Push it at 20%").
+- js/v69-grade-blend.js: online and in-person results each get their own index against their own field, then blend with in person at 20% (G68_IP_SHARE), reaching the full 20% once a deck has 300 in-person games (G68_IP_FULL, newest set counted three times). Below that it leans on online results, so a few store games cannot swing a deck.
+- refresh-matchups.mjs: Limitless store events of 8 or more players (was 16 to 63) with decklists, each event's details checked for online or in person; an organizer is skipped only after 3 online events and none in person; big events are checked too. Limitless API only, no scraping, 30 second pace kept. refresh-data.yml: PT_IP_MIN 8.
+- Data: in-person 89 events and 2,794 games (was 44 and 1,925); online 277 events and 65,556 games.
+- Tournament Strength, live before and after: Dragapult 9.4 to 9.1, Basic Box 8.9 to 9.1, Slowking 8.0 to 8.1, N's Zoroark 8.2 to 8.1, Dhelmise 8.2 to 8.3. No top 25 deck moves more than 0.4.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.1, PT_BUILD 188, softwareVersion 3.6.1, sw.js cache v188, stamps. Test read workflow removed. No Worker change.
+
 # RdyDeck 3.6.0 (build 187): quick add the top tournament list (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "The guides should have a deck that is able to be quick added to the Your Decks section, the one that has the best tourney results, same with the top and up and coming decks". And: every Top decks entry should open the same screen (before, some opened a guide and some the deck builder).

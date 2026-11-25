@@ -2868,3 +2868,5 @@ I18N_MORE.de.pat.unshift(
   [/^Best finish: (\d+)(?:st|nd|rd|th) of ([\d,]+) players$/, (m, n, p) => 'Beste Platzierung: ' + n + '. von ' + p.replace(/,/g, '.') + ' Spielern'],
   [/^Best finish: (\d+)(?:st|nd|rd|th)$/, 'Beste Platzierung: $1.'],
 );
+// 3.6.1: Tournament Strength counts local in-person events.
+Object.assign(I18N_MORE.de.dict, { "Tournament Strength now counts local in-person events": "Die Turnierstärke berücksichtigt jetzt lokale Präsenzturniere" });

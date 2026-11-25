@@ -3,7 +3,7 @@
 // matchups.json sits next to the page and is rebuilt every week by
 // refresh-matchups.mjs from Limitless online tournaments and local in-person store events. It holds, per deck
 // archetype, the Pokemon its lists usually play and its record against the most
-// played decks, kept per source ("online", and "inperson" for local store events of 16 to 63 players).
+// played decks, kept per source ("online", and "inperson" for local store events of 8 or more players, 3.6.1).
 // The Grade tab matches the open deck to its closest archetype by Pokemon names and
 // shows that archetype's win rate against each of the most played decks.
 // Every number on screen comes straight from the file. The page never asks Limitless.
