@@ -6722,6 +6722,10 @@ Object.assign(I18N_PT, { "Links to other sites, like Google Play, open again": "
 Object.assign(I18N_ES, {"Deck grader": "Calificador de barajas", "Free Pokémon TCG Deck Grader": "Calificador de barajas de Pokémon TCG gratis", "Deck Checker is now called Deck Grader": "En inglés, Deck Checker ahora se llama Deck Grader"});
 Object.assign(I18N_PT, {"Deck grader": "Avaliador de decks", "Free Pokémon TCG Deck Grader": "Avaliador de decks de Pokémon TCG grátis", "Deck Checker is now called Deck Grader": "Em inglês, o Deck Checker agora se chama Deck Grader"});
 
+// 3.6.8: a home page for each language.
+Object.assign(I18N_ES, { "Each language has its own home page, like rdydeck.com/es/": "Cada idioma tiene su propia página de inicio, como rdydeck.com/es/" });
+Object.assign(I18N_PT, { "Each language has its own home page, like rdydeck.com/es/": "Cada idioma tem sua própria página inicial, como rdydeck.com/pt/" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
@@ -6768,6 +6772,9 @@ const rdI18n = (function () {
   function pick() {
     // 3.1: a Creator kit card carries its language in the link, since OBS has its own storage.
     try { const q = new URLSearchParams(location.search).get('lang'); if (q && I18N_HTML_LANG[q]) return q; } catch (_) {}
+    // 3.6.8: the home page in each language (/es/ and so on, made by lang-pages.mjs) opens in that language,
+    // over a language saved earlier, since that is the page the player chose from search or a link.
+    try { const p = i18nPageLang(); if (p) return p; } catch (_) {}
     try { const s = localStorage.getItem(I18N_KEY); if (s && I18N_HTML_LANG[s]) return s; } catch (_) {}
     try {
       const n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
@@ -7006,6 +7013,23 @@ const rdI18n = (function () {
 function i18nPick(lang) {
   rdI18n.set(lang, true);
   document.querySelectorAll('#i18n-lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.l === rdI18n.lang)));
+  i18nPageGo(lang);
+}
+/** 3.6.8: the language of a language home page (/es/, /pt/, /fr/, /de/, /it/), or null anywhere else. */
+function i18nPageLang() {
+  const m = /^\/(es|pt|fr|de|it)\/(index\.html)?$/.exec(location.pathname);
+  return m && I18N_HTML_LANG[m[1]] ? m[1] : null;
+}
+/** 3.6.8: picking a language on the home page at rdydeck.com moves the address to that language's home
+ *  page (/ for English), without reloading, so a saved or shared home link opens in that language.
+ *  The Play app keeps its own address. */
+function i18nPageGo(lang) {
+  try {
+    if (location.hostname !== 'rdydeck.com' || (typeof PT_PLAY !== 'undefined' && PT_PLAY)) return;
+    if (!/^\/((es|pt|fr|de|it)\/)?(index\.html)?$/.test(location.pathname)) return;
+    const to = lang === 'en' ? '/' : '/' + lang + '/';
+    if (to !== location.pathname) history.replaceState(history.state, '', to + location.search + location.hash);
+  } catch (_) {}
 }
 (function () {
   if (typeof openSettings !== 'function') return;

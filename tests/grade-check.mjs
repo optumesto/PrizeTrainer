@@ -169,6 +169,12 @@ async function loadApp() {
   const htmlPath = HTML ? path.resolve(HTML) : path.join(ROOT, 'index.html');
   const stale = staleStamps(htmlPath);
   if (stale.length) { console.error('Problems with the files index.html links (for stamps, run node app-file.mjs --stamp): ' + stale.join(', ')); process.exit(1); }
+  // 3.6.6: the language home pages copy index.html, so they must follow it (node app-file.mjs --stamp writes them).
+  if (!HTML) {
+    const { langPages } = await import('../lang-pages.mjs');
+    const lb = langPages(true);
+    if (lb.length) { console.error('Language pages: ' + lb.join(', ')); process.exit(1); }
+  }
   const html = readAppHtml(htmlPath);
   const errors = [];
   const vc = new VirtualConsole();

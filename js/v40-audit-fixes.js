@@ -85,7 +85,7 @@ var f40Saved;   // set further down
   const _dl = downloadAppFile;
   downloadAppFile = function () {
     if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) return _dl.apply(this, arguments);
-    const url = location.origin + location.pathname.replace(/index\.html$/, '');
+    const url = location.origin + location.pathname.replace(/index\.html$/, '').replace(/^\/(es|pt|fr|de|it)\/$/, '/');
     const done = () => showToast('Link copied. Send it to your friend.');
     try { navigator.clipboard.writeText(url).then(done, () => showToast(url)); } catch (_) { showToast(url); }
   };

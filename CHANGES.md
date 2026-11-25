@@ -1,3 +1,14 @@
+# RdyDeck 3.6.8 (build 195): a home page for each language (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "Push it" for the language pages (rdydeck.com/es/, /pt/, /fr/, /de/, /it/), after "Keep building for the seo".
+- lang-pages.mjs (new) writes es/index.html, pt/index.html, fr/index.html, de/index.html and it/index.html from index.html: own html lang, canonical, title, description, og and twitter text, image alt and structured data language. The page body is the same app, which opens in that language. node app-file.mjs --stamp writes them and --check (and tests/grade-check.mjs) fails if one is out of date.
+- index.html (and so every copy): hreflang links for all six plus x-default.
+- js/i18n.js: a language home page opens in its language (after ?lang); picking a language on the home page at rdydeck.com moves the address to that language's home page (not in the Play app). js/core.js and js/v40-audit-fixes.js: the service worker, shared links and the download link use the site root from a language page.
+- worker/rdydeck-worker.js (deployed to Cloudflare with this release): files under a language folder are answered from the site root (langFile); other pages under one move to the root page with a 301.
+- sitemap.xml lists the five pages; tests/seo-check.mjs checks them and langFile. The grade-check workflow also runs on lang-pages.mjs and the five folders.
+- The translated titles and descriptions wait on a native speaker check.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.8, PT_BUILD 195, softwareVersion 3.6.8, sw.js cache v195, stamps.
+
 # RdyDeck 3.6.7 (build 194): Deck Checker is now called Deck Grader (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "This is our next goal" (rdydeck.com on Google for "deck grader"), then "Build it" for the plan: the grader page and the home title say Deck Grader. Baseline he gave: bottom of page 2 for "pokemon deck grader", not in the first 5 pages for "deck grader".

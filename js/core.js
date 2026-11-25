@@ -5090,7 +5090,8 @@ const SHARE_HOME = 'https://rdydeck.com/';
 const SHARE_MAX_TEXT = 6000;
 
 function shareBaseUrl() {
-  if (/^https?:$/.test(location.protocol)) return location.origin + location.pathname;
+  // 3.6.8: a link shared from a language home page (/es/) opens on the main home page, in the friend's own language.
+  if (/^https?:$/.test(location.protocol)) return location.origin + location.pathname.replace(/^\/(es|pt|fr|de|it)\/(index\.html)?$/, '/');
   return SHARE_HOME;
 }
 
@@ -8999,16 +9000,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.6.7',
+  version: 'v3.6.8',
   date: 'Nov 25, 2026',
   kind: 'small',
   items: [
-    { t: 'Deck Checker is now called Deck Grader' }
+    { t: 'Each language has its own home page, like rdydeck.com/es/' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.6.7', date: 'Nov 25, 2026', kind: 'small', items: [
+    { t: 'Deck Checker is now called Deck Grader' }
+  ] },
   { version: 'v3.6.6', date: 'Nov 25, 2026', kind: 'small', items: [
     { t: 'Links to other sites, like Google Play, open again' }
   ] },
@@ -12011,7 +12015,8 @@ let deferredInstallPrompt = null;
 
 // 2.7.4: register once the page has loaded, so the offline copy downloads after the first screen.
 if ('serviceWorker' in navigator) {
-  const swGo = () => navigator.serviceWorker.register('./sw.js')
+  // 3.6.8: a language home page (/es/ and so on) uses the site's one service worker, not one of its own.
+  const swGo = () => navigator.serviceWorker.register(/^\/(es|pt|fr|de|it)\/(index\.html)?$/.test(location.pathname) ? '../sw.js' : './sw.js')
     .then(reg => console.log('SW registered:', reg.scope))
     .catch(err => console.warn('SW registration failed:', err));
   if (document.readyState === 'complete') swGo(); else window.addEventListener('load', swGo, { once: true });
@@ -12072,8 +12077,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.6.7';
-const PT_BUILD = 194;
+const PT_VERSION = 'v3.6.8';
+const PT_BUILD = 195;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

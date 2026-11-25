@@ -2881,3 +2881,5 @@ Object.assign(I18N_MORE.de.dict, { "Privacy pages updated for Google Play": "Dat
 Object.assign(I18N_MORE.de.dict, { "Links to other sites, like Google Play, open again": "Links zu anderen Seiten wie Google Play öffnen sich wieder" });
 // 3.6.7: the deck checker's English name is Deck Grader (labels and What's new).
 Object.assign(I18N_MORE.de.dict, {"Deck grader": "Deck-Bewerter", "Free Pokémon TCG Deck Grader": "Kostenloser Deck-Bewerter für das Pokémon-Sammelkartenspiel", "Deck Checker is now called Deck Grader": "Auf Englisch heißt Deck Checker jetzt Deck Grader"});
+// 3.6.8: a home page for each language.
+Object.assign(I18N_MORE.de.dict, {"Each language has its own home page, like rdydeck.com/es/": "Jede Sprache hat ihre eigene Startseite, wie rdydeck.com/de/"});

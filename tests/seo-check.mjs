@@ -4,16 +4,19 @@
 // 2. Titles and descriptions fit what Google shows; descriptions are distinct.
 // 3. Guide pages link to the tools and show a breadcrumb.
 // 4. The Worker's browser cache times.
+// 5. The language home pages (es/, pt/, fr/, de/, it/) and how the Worker answers paths under them.
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIRROR_NOINDEX, forHome, cacheFor } from '../worker/rdydeck-worker.js';
+import { MIRROR_NOINDEX, forHome, cacheFor, langFile } from '../worker/rdydeck-worker.js';
+import { LANG_PAGES, checkPage } from '../lang-pages.mjs';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 let bad = 0;
 const fail = m => { bad++; console.log('FAIL ' + m); };
 const SKIP = new Set(['404.html', 'offline.html']);
 const files = [...readdirSync(ROOT).filter(f => f.endsWith('.html') && !/^google[0-9a-f]+\.html$/.test(f)),
+  ...LANG_PAGES.map(l => l.code + '/index.html'),
   ...(() => { try { return readdirSync(path.join(ROOT, 'cards')).filter(f => f.endsWith('.html')).map(f => 'cards/' + f); } catch (_) { return []; } })()];
 const descs = new Map();
 const SITEMAP = readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
@@ -54,6 +57,14 @@ for (const f of files) {
 const c = [['/js/core.js', '?v=b95517e6', 'immutable'], ['/js/core.js', '', 'max-age=300'], ['/index.html', '', 'max-age=300'],
   ['/data.json', '', 'max-age=300'], ['/sw.js', '', 'no-cache'], ['/saira.woff2', '', '604800'], ['/', '', 'max-age=300']];
 for (const [p, q, want] of c) if (!cacheFor(p, q).includes(want)) fail(`cache ${p}${q}: ${cacheFor(p, q)}`);
+
+for (const l of LANG_PAGES) {
+  for (const b of checkPage(readFileSync(path.join(ROOT, l.code, 'index.html'), 'utf8'), l.code)) fail(b);
+}
+const lf = [['/es/', null], ['/es/index.html', null], ['/es/js/core.js', { file: '/js/core.js' }],
+  ['/de/cards.json', { file: '/cards.json' }], ['/es/rulings.html', { page: '/rulings.html' }], ['/fr/cards/', { page: '/cards/' }],
+  ['/en/', null], ['/js/core.js', null], ['/esx/core.js', null]];
+for (const [p, want] of lf) if (JSON.stringify(langFile(p)) !== JSON.stringify(want)) fail(`langFile ${p}: ${JSON.stringify(langFile(p))}, want ${JSON.stringify(want)}`);
 
 console.log(bad ? `${bad} problems` : `seo-check: ${files.length} pages OK`);
 process.exit(bad ? 1 : 0);

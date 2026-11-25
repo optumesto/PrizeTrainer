@@ -6,6 +6,7 @@
 //                               editing any js/ file, before you commit)
 //   node app-file.mjs --check   fail if any ?v= is out of date or a linked file is missing
 //                               (tests/grade-check.mjs runs this too)
+// Both also write or check the language home pages (lang-pages.mjs), which copy index.html.
 //   node app-file.mjs --single <out.html>   write the one-file app (everything inline), the same
 //                               file Share the app and Download RdyDeck.html give
 //
@@ -77,9 +78,14 @@ function stamp(htmlPath = path.join(ROOT, 'index.html')) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const a = process.argv.slice(2);
-  if (a[0] === '--stamp') console.log(stamp() ? 'index.html: file stamps updated' : 'index.html: stamps already current');
-  else if (a[0] === '--check') {
-    const bad = staleStamps();
+  // 3.6.8: the language home pages (es/index.html and so on) are copies of index.html, so they follow its stamps.
+  const { langPages } = await import('./lang-pages.mjs');
+  if (a[0] === '--stamp') {
+    console.log(stamp() ? 'index.html: file stamps updated' : 'index.html: stamps already current');
+    const lb = langPages(false);
+    if (lb.length) { console.error('Language pages: ' + lb.join(', ')); process.exit(1); }
+  } else if (a[0] === '--check') {
+    const bad = staleStamps().concat(langPages(true));
     if (bad.length) { console.error('Problems with the files index.html links (for stamps, run node app-file.mjs --stamp): ' + bad.join(', ')); process.exit(1); }
     console.log('index.html: every linked file is there and its stamp is current');
   } else if (a[0] === '--single' && a[1]) { writeFileSync(a[1], readAppHtml()); console.log('wrote ' + a[1]); }

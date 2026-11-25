@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://rdydeck.com/</loc><lastmod>2026-11-22</lastmod></url>
+  <url><loc>https://rdydeck.com/es/</loc><lastmod>2026-11-25</lastmod></url>
+  <url><loc>https://rdydeck.com/pt/</loc><lastmod>2026-11-25</lastmod></url>
+  <url><loc>https://rdydeck.com/fr/</loc><lastmod>2026-11-25</lastmod></url>
+  <url><loc>https://rdydeck.com/de/</loc><lastmod>2026-11-25</lastmod></url>
+  <url><loc>https://rdydeck.com/it/</loc><lastmod>2026-11-25</lastmod></url>
   <url><loc>https://rdydeck.com/deck-grader.html</loc><lastmod>2026-11-20</lastmod></url>
   <url><loc>https://rdydeck.com/opening-odds.html</loc><lastmod>2026-11-18</lastmod></url>
   <url><loc>https://rdydeck.com/prize-trainer.html</loc><lastmod>2026-11-18</lastmod></url>

@@ -84,6 +84,21 @@ export function adsAllowed(request) {
 export const MIRROR_NOINDEX = '<meta name="robots" content="noindex" data-mirror>';
 export const forHome = html => html.split(MIRROR_NOINDEX + '\n').join('').split(MIRROR_NOINDEX).join('');
 
+// 3.6.8: the home page has a copy for each language (/es/, /pt/, /fr/, /de/, /it/, made by
+// lang-pages.mjs). The app in those copies reads some files by relative address while it runs
+// (cards.json, rulings.json), which from /es/ is /es/cards.json. Those are the files at the site root.
+// A page under a language folder other than its home page (/es/rulings.html, a link the app builds)
+// moves to the page at the root, so each page keeps one address in search.
+export const LANG_DIRS = ['es', 'pt', 'fr', 'de', 'it'];
+/** For a path under a language folder: { file } to answer with the root file, { page } to move to it, or null. */
+export function langFile(pathname) {
+  const m = /^\/(es|pt|fr|de|it)\/(.+)$/.exec(pathname);
+  if (!m || m[2] === 'index.html') return null;
+  const rest = '/' + m[2];
+  if (/(\/|\.html)$/i.test(rest)) return { page: rest };
+  return { file: rest };
+}
+
 // How long browsers keep each file. Files the app links with ?v=<hash> change
 // name when they change, so they keep for a year. Pages and data stay short, so
 // a new upload shows within minutes. Fonts and icons keep for a week.
@@ -448,7 +463,15 @@ export default {
     try { path = decodeURIComponent(url.pathname); } catch (_) { path = url.pathname; }
     if (isBlocked(path) || path.startsWith('/api/')) return notFound(request);
 
-    const upstream = await fetch(ORIGIN + url.pathname + url.search, {
+    const lf = langFile(url.pathname);
+    if (lf && lf.page) return Response.redirect('https://' + HOME + lf.page + url.search, 301);
+    if (lf) {
+      let f;
+      try { f = decodeURIComponent(lf.file); } catch (_) { f = lf.file; }
+      if (isBlocked(f) || f.startsWith('/api/')) return notFound(request);
+    }
+
+    const upstream = await fetch(ORIGIN + (lf ? lf.file : url.pathname) + url.search, {
       method: request.method,
       redirect: 'manual',
       // Short edge cache: new uploads and the weekly data show within 5 minutes.
