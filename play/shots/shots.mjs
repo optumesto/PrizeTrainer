@@ -138,6 +138,10 @@ for (const size of only) {
       await page.evaluate(() => { v45ShareGrade(); });
       await page.waitForFunction(() => { const b = document.getElementById('gs261-save'); return b && !b.disabled; }, { timeout: 30000 }).catch(() => L(size, 'share image not ready'));
       await settle(page, 2000); await shot(page, size, 'share');
+      await page.evaluate(() => { gs261SetSize('square'); });
+      await sleep(1000);
+      await page.waitForFunction(() => { const b = document.getElementById('gs261-save'); return b && !b.disabled; }, { timeout: 30000 }).catch(() => L(size, 'square image not ready'));
+      await settle(page, 2000); await shot(page, size, 'share-square');
       await page.evaluate(() => closeSheet());
     });
   }
@@ -154,7 +158,9 @@ for (const size of only) {
   await step('gtg', async () => {
     await page.evaluate(() => { closeSheet(); showScreen('home'); renderHome(); });
     await page.evaluate(() => { openGtg(); });
-    await sleep(1500); await settle(page, 4000); await shot(page, size, 'guess');
+    await sleep(1500); await settle(page, 4000);
+    await page.waitForFunction(() => !/Reading today/i.test(document.body.innerText), { timeout: 45000 }).catch(() => L(size, 'guess still loading'));
+    await settle(page, 3000); await shot(page, size, 'guess');
   });
   await page.close();
 }
