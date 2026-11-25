@@ -5,7 +5,8 @@
 - puzzle/engine.js (Sparring): one Tome in hand can't be played and shows "Needs 2 copies in hand."; with 2 or more, one play takes 2 from the hand, both go to the discard pile, and the log says "Played 2 Transformation Tome". Legendary Stadium halves work as before.
 - js/core.js (Goldfish): the same rule and message.
 - Not changed: Sparring still can't play the Tome's swap (a Basic from the discard pile switched with a Basic in play); its log says so. No tournament deck in Sparring runs Tome.
-- Tests: opponent/test/halves.mjs 30 checks (10 new), tests/goldfish-check.cjs section 11.
+- Tests: opponent/test/halves.mjs 30 checks (10 new), tests/goldfish-check.cjs section 11; section 10 now puts back a half drawn by the turn's draw (it failed about 1 run in 6).
+- Spanish fix: the 3.6.1 What's new line said "presenciais" (Portuguese); now "presenciales".
 - Also: "Needs 2 copies in hand." and What's new in all 6 languages, PT_VERSION v3.6.2, PT_BUILD 189, softwareVersion 3.6.2, sw.js cache v189, stamps.
 
 # RdyDeck 3.6.1 (build 188): Tournament Strength counts local in-person events (24 Nov 2026)

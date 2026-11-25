@@ -6693,7 +6693,7 @@ I18N_PAT.unshift(
 );
 
 // 3.6.1: Tournament Strength counts local in-person events.
-Object.assign(I18N_ES, { "Tournament Strength now counts local in-person events": "La Fuerza en torneos ahora cuenta los torneos locales presenciais" });
+Object.assign(I18N_ES, { "Tournament Strength now counts local in-person events": "La Fuerza en torneos ahora cuenta los torneos locales presenciales" });
 Object.assign(I18N_PT, { "Tournament Strength now counts local in-person events": "A Força em torneios agora conta os torneios locais presenciais" });
 
 // 3.6.2: Transformation Tome needs 2 copies.

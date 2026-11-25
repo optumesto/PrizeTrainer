@@ -130,6 +130,8 @@ const CARDS = [
   const halfIn = h => w.eval(`(() => { const all = gf.deck.concat(gf.prizes); const i = all.findIndex(x => x.card.name === 'Legendary Pyroduct' && gfHalfOf(x) === '${h}');
     const x = all[i]; gf.deck = gf.deck.filter(y => y !== x); gf.prizes = gf.prizes.filter(y => y !== x); gf.hand.push(x); return x.uid; })()`);
   w.gfPlayBasic(uid('Shuppet'), 'active'); w.gfEndTurn();
+  // The turn's draw can be a two-card play (a Pyroduct half or a Tome): put it back so each check starts with none in hand.
+  w.eval(`gf.hand.filter(x => gfHalfOf(x)).forEach(x => { gf.hand.splice(gf.hand.indexOf(x), 1); gf.deck.push(x); })`);
   const L = halfIn('L');
   const offL = w.eval(`gfActions(gf.hand.find(x => x.uid === ${L})).find(a => /Stadium/.test(a.label))`);
   ok(offL && offL.off && offL.why === 'Needs both halves in hand.', 'one half of Legendary Pyroduct alone can not be played: ' + JSON.stringify(offL));
