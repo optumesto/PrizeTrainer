@@ -77,7 +77,7 @@ const NAV = [
 ];
 // The free tools and guides, linked from every guide page so search engines and readers find them.
 const TOOLS = [
-  ['deck-grader.html', 'Deck Checker'], ['improve-your-deck.html', 'Improve Your Deck'], ['opening-odds.html', 'Opening Hand Odds'],
+  ['deck-grader.html', 'Deck Grader'], ['improve-your-deck.html', 'Improve Your Deck'], ['opening-odds.html', 'Opening Hand Odds'],
   ['rotation.html', 'Rotation Check'], ['prize-trainer.html', 'Prize Trainer'], ['rulings.html', 'Rules and Rulings'],
   ['cards/', 'Card Guides'], ['first-deck.html', 'Your First Deck'], ['goldfish.html', 'Goldfish Your Deck'], ['daily-games.html', 'Daily Games'],
 ];

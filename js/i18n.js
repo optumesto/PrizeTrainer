@@ -6700,6 +6700,28 @@ Object.assign(I18N_PT, { "Tournament Strength now counts local in-person events"
 Object.assign(I18N_ES, { "Transformation Tome needs 2 copies to play": "Transformation Tome necesita 2 copias para jugarse" });
 Object.assign(I18N_PT, { "Transformation Tome needs 2 copies to play": "Transformation Tome precisa de 2 cópias para ser jogado" });
 
+// 3.6.7: these rows were after the dictionary is read (below), so Spanish and Portuguese never saw them. They sit here now.
+// SEO (Nov 25 2026): Card Guides on the home screen.
+Object.assign(I18N_ES, { "Card guides": "Guías de cartas" });
+Object.assign(I18N_PT, { "Card guides": "Guias de cartas" });
+// 3.6.3: SEO update.
+Object.assign(I18N_ES, { "Card Guides and Daily Games links on the home screen": "Enlaces a las Guías de cartas y los Juegos diarios en la pantalla de inicio" });
+Object.assign(I18N_PT, { "Card Guides and Daily Games links on the home screen": "Links para os Guias de cartas e os Jogos diários na tela inicial" });
+// 3.6.4: the Android note is the Play link.
+Object.assign(I18N_ES, { "on Google Play": "en Google Play" });
+Object.assign(I18N_PT, { "on Google Play": "no Google Play" });
+Object.assign(I18N_ES, { "RdyDeck is on Google Play": "RdyDeck ya está en Google Play" });
+Object.assign(I18N_PT, { "RdyDeck is on Google Play": "O RdyDeck está no Google Play" });
+// 3.6.5: privacy pages say the app is on Google Play.
+Object.assign(I18N_ES, { "Privacy pages updated for Google Play": "Páginas de privacidad actualizadas para Google Play" });
+Object.assign(I18N_PT, { "Privacy pages updated for Google Play": "Páginas de privacidade atualizadas para o Google Play" });
+// 3.6.6: links to other sites open again after Continue.
+Object.assign(I18N_ES, { "Links to other sites, like Google Play, open again": "Los enlaces a otros sitios, como Google Play, vuelven a abrirse" });
+Object.assign(I18N_PT, { "Links to other sites, like Google Play, open again": "Os links para outros sites, como o Google Play, voltam a abrir" });
+// 3.6.7: the deck checker's English name is Deck Grader (labels and What's new).
+Object.assign(I18N_ES, {"Deck grader": "Calificador de barajas", "Free Pokémon TCG Deck Grader": "Calificador de barajas de Pokémon TCG gratis", "Deck Checker is now called Deck Grader": "En inglés, Deck Checker ahora se llama Deck Grader"});
+Object.assign(I18N_PT, {"Deck grader": "Avaliador de decks", "Free Pokémon TCG Deck Grader": "Avaliador de decks de Pokémon TCG grátis", "Deck Checker is now called Deck Grader": "Em inglês, o Deck Checker agora se chama Deck Grader"});
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };
@@ -7007,20 +7029,3 @@ function i18nPick(lang) {
 
 window.rdI18n = rdI18n;
 rdI18n.set(rdI18n.pick(), false);
-// SEO (Nov 25 2026): Card Guides on the home screen.
-Object.assign(I18N_ES, { "Card guides": "Guías de cartas" });
-Object.assign(I18N_PT, { "Card guides": "Guias de cartas" });
-// 3.6.3: SEO update.
-Object.assign(I18N_ES, { "Card Guides and Daily Games links on the home screen": "Enlaces a las Guías de cartas y los Juegos diarios en la pantalla de inicio" });
-Object.assign(I18N_PT, { "Card Guides and Daily Games links on the home screen": "Links para os Guias de cartas e os Jogos diários na tela inicial" });
-// 3.6.4: the Android note is the Play link.
-Object.assign(I18N_ES, { "on Google Play": "en Google Play" });
-Object.assign(I18N_PT, { "on Google Play": "no Google Play" });
-Object.assign(I18N_ES, { "RdyDeck is on Google Play": "RdyDeck ya está en Google Play" });
-Object.assign(I18N_PT, { "RdyDeck is on Google Play": "O RdyDeck está no Google Play" });
-// 3.6.5: privacy pages say the app is on Google Play.
-Object.assign(I18N_ES, { "Privacy pages updated for Google Play": "Páginas de privacidad actualizadas para Google Play" });
-Object.assign(I18N_PT, { "Privacy pages updated for Google Play": "Páginas de privacidade atualizadas para o Google Play" });
-// 3.6.6: links to other sites open again after Continue.
-Object.assign(I18N_ES, { "Links to other sites, like Google Play, open again": "Los enlaces a otros sitios, como Google Play, vuelven a abrirse" });
-Object.assign(I18N_PT, { "Links to other sites, like Google Play, open again": "Os links para outros sites, como o Google Play, voltam a abrir" });

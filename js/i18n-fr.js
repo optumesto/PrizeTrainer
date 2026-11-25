@@ -2838,3 +2838,5 @@ Object.assign(I18N_MORE.fr.dict, { "on Google Play": "sur Google Play" });
 Object.assign(I18N_MORE.fr.dict, { "RdyDeck is on Google Play": "RdyDeck est sur Google Play" });
 Object.assign(I18N_MORE.fr.dict, { "Privacy pages updated for Google Play": "Pages de confidentialité mises à jour pour Google Play" });
 Object.assign(I18N_MORE.fr.dict, { "Links to other sites, like Google Play, open again": "Les liens vers d'autres sites, comme Google Play, s'ouvrent à nouveau" });
+// 3.6.7: the deck checker's English name is Deck Grader (labels and What's new).
+Object.assign(I18N_MORE.fr.dict, {"Deck grader": "Notation de deck", "Free Pokémon TCG Deck Grader": "Outil gratuit pour noter les decks du JCC Pokémon", "Deck Checker is now called Deck Grader": "En anglais, Deck Checker s'appelle désormais Deck Grader"});

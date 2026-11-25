@@ -1,3 +1,13 @@
+# RdyDeck 3.6.7 (build 194): Deck Checker is now called Deck Grader (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "This is our next goal" (rdydeck.com on Google for "deck grader"), then "Build it" for the plan: the grader page and the home title say Deck Grader. Baseline he gave: bottom of page 2 for "pokemon deck grader", not in the first 5 pages for "deck grader".
+- deck-grader.html: title, og and twitter titles, JSON-LD page and breadcrumb names, H1 and image alt say Pokémon TCG Deck Grader. Description and lead name it a free deck grader; the lead keeps "deck checker" as a second term. Address unchanged.
+- index.html: title "RdyDeck: Pokémon TCG Deck Grader, Rate My Deck Free" (og and twitter too), hidden H1 "Free Pokémon TCG Deck Grader", "RdyDeck Pokémon TCG Deck Grader" added to alternateName, noscript line says deck grader. Home button and links say Deck Grader.
+- Every link to the grader page that said Deck Checker now says Deck Grader (guide nav in build-pages.mjs, hand pages, card guides, 404). Prose that says deck checker is unchanged, and the FAQ and About titles are unchanged.
+- Translations: "Deck grader" and "Free Pokémon TCG Deck Grader" reuse the existing deck checker wording in es, pt, fr, de and it, which already means grader, so other languages read the same as before.
+- Fix: Spanish and Portuguese rows added after the dictionary is read in js/i18n.js (Card guides from the SEO update, the 3.6.4 to 3.6.6 Google Play and What's new rows) never loaded; moved above it.
+- Also: What's new in all 6 languages, PT_VERSION v3.6.7, PT_BUILD 194, softwareVersion 3.6.7, sw.js cache v194, stamps. No Worker change.
+
 # RdyDeck 3.6.6 (build 193): links to other sites open again (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "when i clickl the andorid link, nothing happens. IT says it leaves, but it doesnt".
