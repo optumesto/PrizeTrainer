@@ -2802,3 +2802,4 @@ I18N_MORE.it.pat.unshift(
 );
 // 3.6.1: Tournament Strength counts local in-person events.
 Object.assign(I18N_MORE.it.dict, { "Tournament Strength now counts local in-person events": "La Forza nei tornei ora conta i tornei locali in presenza" });
+Object.assign(I18N_MORE.it.dict, { "Transformation Tome needs 2 copies to play": "Transformation Tome richiede 2 copie per essere giocato" });

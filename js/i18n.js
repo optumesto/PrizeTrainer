@@ -6696,6 +6696,10 @@ I18N_PAT.unshift(
 Object.assign(I18N_ES, { "Tournament Strength now counts local in-person events": "La Fuerza en torneos ahora cuenta los torneos locales presenciais" });
 Object.assign(I18N_PT, { "Tournament Strength now counts local in-person events": "A Força em torneios agora conta os torneios locais presenciais" });
 
+// 3.6.2: Transformation Tome needs 2 copies.
+Object.assign(I18N_ES, { "Transformation Tome needs 2 copies to play": "Transformation Tome necesita 2 copias para jugarse" });
+Object.assign(I18N_PT, { "Transformation Tome needs 2 copies to play": "Transformation Tome precisa de 2 cópias para ser jogado" });
+
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

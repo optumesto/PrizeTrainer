@@ -1,3 +1,13 @@
+# RdyDeck 3.6.2 (build 189): Transformation Tome needs 2 copies (25 Nov 2026)
+
+- Mason, 25 Nov 2026, after "There are also some items that require that": "Item is Transformation Tome."
+- Card text (Transformation Tome, Crimson Rift 83, tests/card-text.json): "You must play 2 Transformation Tome cards at once. (This effect works one time for 2 cards.)" Any 2 copies, not a left and right half.
+- puzzle/engine.js (Sparring): one Tome in hand can't be played and shows "Needs 2 copies in hand."; with 2 or more, one play takes 2 from the hand, both go to the discard pile, and the log says "Played 2 Transformation Tome". Legendary Stadium halves work as before.
+- js/core.js (Goldfish): the same rule and message.
+- Not changed: Sparring still can't play the Tome's swap (a Basic from the discard pile switched with a Basic in play); its log says so. No tournament deck in Sparring runs Tome.
+- Tests: opponent/test/halves.mjs 30 checks (10 new), tests/goldfish-check.cjs section 11.
+- Also: "Needs 2 copies in hand." and What's new in all 6 languages, PT_VERSION v3.6.2, PT_BUILD 189, softwareVersion 3.6.2, sw.js cache v189, stamps.
+
 # RdyDeck 3.6.1 (build 188): Tournament Strength counts local in-person events (24 Nov 2026)
 
 - Mason, 24 Nov 2026: "people place heavy emphasis on the inperson and online divide, so i would like to weigh them both". The test at 50% moved grades too far ("that seems to skew sigificantly against what we have already"), so it goes live at 20% ("Push it at 20%").
