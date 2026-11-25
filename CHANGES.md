@@ -1,3 +1,12 @@
+# RdyDeck 3.6.12 (build 199): Crispin's choice buttons name their card (25 Nov 2026)
+
+- Mason, 25 Nov 2026, Quickest Win #17: "when playing Crispin it doesnt say which energy. Now it didnt matter, but it may in the fututr". Both buttons read "Put a card into your hand".
+- Cause: js/core.js pzRefName looked for a card in hands, decks, discard piles and attached Energy only. Crispin's two found cards wait in the effect while you choose (pending.ctx.splitPair), so the name fell back to "a card". Sparring's cardRef (opponent/play.js) already looked there.
+- js/core.js: pzRefName also reads the cards an effect holds. The buttons read "Basic Grass Energy to Hand" (Title Case), and Sparring's the same. The question is the one Sparring asks ("Choose the card that goes into your hand. The other one gets attached."), set apart from the card's name so it is translated.
+- Also found by a sweep of all 245 Quickest Win boards: two different cards with one name in the same choice gave two buttons or chips that read the same (two Riolu prints on #3, the two Legendary Pyroduct halves on #19, two Applin on #217). Each now gets a tag: the half ("Left Half", "Right Half"), the Pokémon's attacks and Abilities, or else the set code and number (pzShownName; chips in js/puzzle-extras.js too).
+- js/i18n.js: the Crispin question, "X to Hand", "Attach X to which Pokémon?" (it came out half translated) and the half tags in Spanish, Portuguese, French, German and Italian (I18N_PZ). Card names stay English.
+- Also: What's new in all 6 languages ("Crispin Choice Labels Fixed"), PT_VERSION v3.6.12, PT_BUILD 199, softwareVersion 3.6.12, sw.js cache v199, stamps. No Worker change.
+
 # RdyDeck 3.6.11 (build 198): app files read from the app's own folder after a language switch (25 Nov 2026)
 
 - Found by the card details check on 3.6.8 and later: in French, German and Italian the card sheet kept the previous language's labels. Card names and card text stay English in every language on purpose (since 3.1). Mason, 25 Nov 2026: "Look into it", then "Push it".

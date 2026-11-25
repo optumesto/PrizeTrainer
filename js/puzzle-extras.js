@@ -41,9 +41,12 @@ function pzPickHTML(s, acts, tools) {
   const chosen = st.sel.length;
   let h = `<div class="pz-q">${pzAskText(s)}</div>`;
   h += `<div class="pz-s pz-pk-hint">Tap a card to add it. Up to ${most}. Tap again for another copy, or to take it back.</div><div class="pz-pk">`;
+  // 3.6.12: two cards with one name (two prints, two Legendary Stadium halves) get a tag apiece (pzShownName, core.js).
+  const pool = typeof pzPool === 'function' ? pzPool(s) : [];
+  const shown = k => { const r = pool.find(y => y.card.key === k); return r && typeof pzShownName === 'function' ? pzShownName(s, r.uid, pool) : cards.get(k).card.name; };
   [...cards].forEach(([k, x]) => {
     const n = sel[k] || 0, add = canAdd(k);
-    h += `<button class="pz-chip pz-pk-c${n ? ' on' : ''}${!n && !add ? ' off' : ''}" onclick="pzPickTap('${esc(k)}')" ${!n && !add ? 'disabled' : ''}>${n ? `<b>${n}</b> ` : ''}${esc(x.card.name)}</button>`;
+    h += `<button class="pz-chip pz-pk-c${n ? ' on' : ''}${!n && !add ? ' off' : ''}" onclick="pzPickTap('${esc(k)}')" ${!n && !add ? 'disabled' : ''}>${n ? `<b>${n}</b> ` : ''}${esc(shown(k))}</button>`;
   });
   h += `</div><div class="pz-btns pz-pk-go">`;
   h += `<button class="btn btn-primary pz-b" onclick="pzPickGo()" ${match ? '' : 'disabled'}>${chosen ? `Take ${chosen} card${chosen === 1 ? '' : 's'}` : opts.some(o => !o.n) ? 'Take nothing' : 'Choose cards'}</button>`;

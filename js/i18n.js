@@ -5120,33 +5120,43 @@ function i18nGtSent(s, l) {
   return null;
 }
 // Puzzle buttons and the builder's card facts line: card, attack and Ability names stay English.
-const I18N_PZ_PRE = /^(?=(?:Bench [A-Z]|Evolve |Rare Candy: |Attach |Use [A-Z]|Retreat into |Make |Switch in |Bring up |Take nothing$|Basic(?:, |$)|Stage [12](?:, |$)|.+ Energy (?:to|from) |\d+ from |.+ \((?:Active|Bench \d+)\): |.+ from your hand: |(?:Item|Supporter|Stadium|Pokémon Tool|Trainer|Special Energy), ACE SPEC$))[\s\S]+$/;
+const I18N_PZ_PRE = /^(?=(?:.+ to Hand$|.*\((?:Left|Right) Half\)|Choose the card that goes into your hand\. |Bench [A-Z]|Evolve |Rare Candy: |Attach |Use [A-Z]|Retreat into |Make |Switch in |Bring up |Take nothing$|Basic(?:, |$)|Stage [12](?:, |$)|.+ Energy (?:to|from) |\d+ from |.+ \((?:Active|Bench \d+)\): |.+ from your hand: |(?:Item|Supporter|Stadium|Pokémon Tool|Trainer|Special Energy), ACE SPEC$))[\s\S]+$/;
 const I18N_PZ = {
   es: { act: 'Activo', bench: 'Banca', their: n => n + ' del rival', aMon: 'un Pokémon', aCard: 'una carta', hp: 'PS',
     benchX: x => `Poner a ${x} en la Banca`, evolve: (m, x) => `Evolucionar a ${m} en ${x}`, candy: (m, x) => `Rare Candy: ${m} en ${x}`,
     to: (x, m) => `${x} a ${m}`, attach: (x, m) => `Unir ${x} a ${m}`, use: x => `Usar ${x}`, retreat: (m, p) => `Retirarse y subir a ${m}` + (p ? `, descartando ${p}` : ''),
     make: m => `Poner a ${m} como Activo`, swIn: m => `Cambiar a ${m}`, bring: m => `Traer a ${m}`, move: (x, a, b) => `${x} de ${a} a ${b}`, from: (x, a) => `${x} de ${a}`,
-    none: 'No tomar nada', hand: (x, a) => `${x} desde tu mano: ${a}` },
+    none: 'No tomar nada', hand: (x, a) => `${x} desde tu mano: ${a}`,
+    toHand: x => `${x} a tu mano`, attachWhich: x => `¿A qué Pokémon unes ${x}?`,
+    split: 'Elige la carta que va a tu mano. La otra se une.', half: { Left: 'mitad izquierda', Right: 'mitad derecha' } },
   pt: { act: 'Ativo', bench: 'Banco', their: n => n + ' do oponente', aMon: 'um Pokémon', aCard: 'uma carta', hp: 'PS',
     benchX: x => `Colocar ${x} no Banco`, evolve: (m, x) => `Evoluir ${m} para ${x}`, candy: (m, x) => `Rare Candy: ${m} para ${x}`,
     to: (x, m) => `${x} para ${m}`, attach: (x, m) => `Ligar ${x} a ${m}`, use: x => `Usar ${x}`, retreat: (m, p) => `Recuar e trazer ${m}` + (p ? `, descartando ${p}` : ''),
     make: m => `Tornar ${m} Ativo`, swIn: m => `Trocar por ${m}`, bring: m => `Trazer ${m}`, move: (x, a, b) => `${x} de ${a} para ${b}`, from: (x, a) => `${x} de ${a}`,
-    none: 'Não pegar nada', hand: (x, a) => `${x} da sua mão: ${a}` },
+    none: 'Não pegar nada', hand: (x, a) => `${x} da sua mão: ${a}`,
+    toHand: x => `${x} para a sua mão`, attachWhich: x => `Em qual Pokémon ligar ${x}?`,
+    split: 'Escolha a carta que vai para a sua mão. A outra é ligada.', half: { Left: 'metade esquerda', Right: 'metade direita' } },
   de: { act: 'Aktiv', bench: 'Bank', their: n => n + ' des Gegners', aMon: 'ein Pokémon', aCard: 'eine Karte', hp: 'KP',
     benchX: x => `${x} auf die Bank legen`, evolve: (m, x) => `${m} zu ${x} entwickeln`, candy: (m, x) => `Rare Candy: ${m} zu ${x}`,
     to: (x, m) => `${x} an ${m}`, attach: (x, m) => `${x} an ${m} anlegen`, use: x => `${x} einsetzen`, retreat: (m, p) => `Rückzug zu ${m}` + (p ? `, dabei ${p} ablegen` : ''),
     make: m => `${m} aktiv machen`, swIn: m => `${m} einwechseln`, bring: m => `${m} nach vorne holen`, move: (x, a, b) => `${x} von ${a} auf ${b}`, from: (x, a) => `${x} von ${a}`,
-    none: 'Nichts nehmen', hand: (x, a) => `${x} aus deiner Hand: ${a}` },
+    none: 'Nichts nehmen', hand: (x, a) => `${x} aus deiner Hand: ${a}`,
+    toHand: x => `${x} auf deine Hand`, attachWhich: x => `An welches Pokémon ${x} anlegen?`,
+    split: 'Wähle die Karte, die auf deine Hand kommt. Die andere wird angelegt.', half: { Left: 'linke Hälfte', Right: 'rechte Hälfte' } },
   fr: { act: 'Actif', bench: 'Banc', their: n => n + ' adverse', aMon: 'un Pokémon', aCard: 'une carte', hp: 'PV',
     benchX: x => `Placer ${x} sur le Banc`, evolve: (m, x) => `Faire évoluer ${m} en ${x}`, candy: (m, x) => `Rare Candy : ${m} en ${x}`,
     to: (x, m) => `${x} sur ${m}`, attach: (x, m) => `Attacher ${x} à ${m}`, use: x => `Utiliser ${x}`, retreat: (m, p) => `Battre en retraite vers ${m}` + (p ? `, en défaussant ${p}` : ''),
     make: m => `Rendre ${m} Actif`, swIn: m => `Faire entrer ${m}`, bring: m => `Faire venir ${m}`, move: (x, a, b) => `${x} de ${a} sur ${b}`, from: (x, a) => `${x} de ${a}`,
-    none: 'Ne rien prendre', hand: (x, a) => `${x} depuis votre main : ${a}` },
+    none: 'Ne rien prendre', hand: (x, a) => `${x} depuis votre main : ${a}`,
+    toHand: x => `${x} dans votre main`, attachWhich: x => `À quel Pokémon attacher ${x} ?`,
+    split: 'Choisissez la carte qui va dans votre main. L\'autre est attachée.', half: { Left: 'moitié gauche', Right: 'moitié droite' } },
   it: { act: 'Attivo', bench: 'Panchina', their: n => n + ' avversario', aMon: 'un Pokémon', aCard: 'una carta', hp: 'PS',
     benchX: x => `Mettere ${x} in Panchina`, evolve: (m, x) => `Far evolvere ${m} in ${x}`, candy: (m, x) => `Rare Candy: ${m} in ${x}`,
     to: (x, m) => `${x} a ${m}`, attach: (x, m) => `Assegnare ${x} a ${m}`, use: x => `Usare ${x}`, retreat: (m, p) => `Ritirarsi su ${m}` + (p ? `, scartando ${p}` : ''),
     make: m => `Rendere Attivo ${m}`, swIn: m => `Far entrare ${m}`, bring: m => `Far avanzare ${m}`, move: (x, a, b) => `${x} da ${a} a ${b}`, from: (x, a) => `${x} da ${a}`,
-    none: 'Non prendere nulla', hand: (x, a) => `${x} dalla tua mano: ${a}` },
+    none: 'Non prendere nulla', hand: (x, a) => `${x} dalla tua mano: ${a}`,
+    toHand: x => `${x} nella tua mano`, attachWhich: x => `A quale Pokémon assegnare ${x}?`,
+    split: 'Scegli la carta che va nella tua mano. L\'altra viene assegnata.', half: { Left: 'metà sinistra', Right: 'metà destra' } },
 };
 function i18nPzSent(s, l) {
   const P = I18N_PZ[l]; if (!P) return null;
@@ -5162,6 +5172,12 @@ function i18nPzSent(s, l) {
   const card = t => t === 'a card' ? P.aCard : t;
   let m;
   if (s === 'Take nothing') return P.none;
+  // 3.6.12: a card that splits two cards (Crispin): which one goes to your hand, and where the other goes.
+  if (s === 'Choose the card that goes into your hand. The other one gets attached.') return P.split;
+  if ((m = /^(.+) to Hand$/.exec(s))) return P.toHand(card(m[1]));
+  // A Legendary Stadium half in a choice: "Legendary Pyroduct (Left Half)". The card name stays.
+  if (/\((?:Left|Right) Half\)/.test(s)) return s.replace(/\((Left|Right) Half\)/g, (x, w) => `(${P.half[w]})`);
+  if ((m = /^Attach (.+) to which Pokémon\?$/.exec(s))) return P.attachWhich(card(m[1]));
   if ((m = /^(Basic|Stage 1|Stage 2)(?:, (\d+) HP)?((?:, [^,.]+)*)$/.exec(s))) return w(m[1]) && (w(m[1]) + (m[2] ? `, ${m[2]} ${P.hp}` : '') + m[3]);
   if ((m = /^(Item|Supporter|Stadium|Pokémon Tool|Trainer|Special Energy), ACE SPEC$/.exec(s))) return w(m[1]) && w('ACE SPEC') && `${w(m[1])}, ${w('ACE SPEC')}`;
   if ((m = /^Bench ([A-Z][^.]*)$/.exec(s))) return P.benchX(m[1]);
@@ -6749,6 +6765,10 @@ Object.assign(I18N_PT, { "The welcome screen opens faster on a first visit": "A 
 // 3.6.11: app files read from the app's own folder after a language switch.
 Object.assign(I18N_ES, { "Switching languages works offline too": "Cambiar de idioma también funciona sin conexión" });
 Object.assign(I18N_PT, { "Switching languages works offline too": "Trocar de idioma também funciona offline" });
+
+// 3.6.12: Crispin's choice buttons name their card.
+Object.assign(I18N_ES, { "Crispin Choice Labels Fixed": "Etiquetas de elección de Crispin corregidas" });
+Object.assign(I18N_PT, { "Crispin Choice Labels Fixed": "Rótulos de escolha do Crispin corrigidos" });
 
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };

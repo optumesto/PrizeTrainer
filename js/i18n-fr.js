@@ -2851,3 +2851,5 @@ Object.assign(I18N_MORE.fr.dict, { "Bench count attacks show their full hit, lik
 Object.assign(I18N_MORE.fr.dict, {"The welcome screen opens faster on a first visit": "L'écran d'accueil s'ouvre plus vite lors de la première visite"});
 // 3.6.11: app files read from the app's own folder after a language switch.
 Object.assign(I18N_MORE.fr.dict, {"Switching languages works offline too": "Changer de langue fonctionne aussi hors ligne"});
+// 3.6.12: Crispin's choice buttons name their card.
+Object.assign(I18N_MORE.fr.dict, {"Crispin Choice Labels Fixed": "Libellés des choix de Crispin corrigés"});

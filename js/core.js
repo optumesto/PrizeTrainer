@@ -9030,16 +9030,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.6.11',
+  version: 'v3.6.12',
   date: 'Nov 25, 2026',
   kind: 'small',
   items: [
-    { t: 'Switching languages works offline too' }
+    { t: 'Crispin Choice Labels Fixed' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.6.11', date: 'Nov 25, 2026', kind: 'small', items: [
+    { t: 'Switching languages works offline too' }
+  ] },
   { version: 'v3.6.10', date: 'Nov 25, 2026', kind: 'small', items: [
     { t: 'The welcome screen opens faster on a first visit' }
   ] },
@@ -9263,10 +9266,40 @@ function pzMonName(s, id) {
 function pzRefName(s, uid) {
   for (const P of s.players) for (const z of [P.hand, P.deck, P.discard]) { const r = z.find(y => y.uid === uid); if (r) return r.card.name; }
   for (const P of s.players) for (const m of pzS.E.mons(P)) { const r = m.energy.find(y => y.uid === uid); if (r) return r.card.name; }
+  // 3.6.12: cards a card effect holds while you choose (Crispin's two Energy), as Sparring's cardRef reads them.
+  const c = s.pending && s.pending.ctx;
+  if (c) for (const k in c) if (Array.isArray(c[k])) { const r = c[k].find(y => y && typeof y === 'object' && y.uid === uid && y.card); if (r) return r.card.name; }
   return 'a card';
 }
+// 3.6.12: two different cards with one name in the same choice (two Riolu prints, the two halves of a Legendary
+// Stadium) made buttons that read the same. When that happens each one gets a short tag: the half, the
+// Pokémon's attacks and Abilities, or else its set code and number.
+function pzMoves(c) { return (c.abil || []).map(a => Array.isArray(a) ? a[0] : a && a.name).concat((c.attacks || []).map(a => a && a.name)).filter(Boolean).join(', '); }
+function pzTag(ref, refs) {
+  const I = pzS.E.internals, h = I && I.halfOf ? I.halfOf(ref) : null;
+  if (h === 'L') return 'Left Half';
+  if (h === 'R') return 'Right Half';
+  const c = ref.card, mv = c.cat === 'pokemon' ? pzMoves(c) : '';
+  if (mv && refs.every(o => o.card.key === c.key || pzMoves(o.card) !== mv)) return mv;
+  const m = String(c.key || '').match(/^(.+)-([^-]+)$/);
+  return m ? ((typeof ptSetAlias === 'function' && ptSetAlias(m[1])) || m[1].toUpperCase()) + ' ' + m[2] : '';
+}
+/** The cards the choice on screen picks from (where a shared name would make two buttons look alike). */
+function pzPool(s) {
+  const R = s.pending, A = R && R.ask, P = s.players[s.cur]; if (!A) return [];
+  return ({ search: P.deck, recover: P.discard, cost: P.hand, topFromHand: P.hand, splitHand: R.ctx.splitPair || [] })[A.kind] || [];
+}
+/** A card's name as its button shows it: with a tag when a different card in the same choice has the same name. */
+function pzShownName(s, uid, pool) {
+  pool = pool || pzPool(s);
+  const r = pool.find(y => y.uid === uid); if (!r) return pzRefName(s, uid);
+  const same = pool.filter(y => y.card.name === r.card.name && y.card.key !== r.card.key);
+  if (!same.length) return r.card.name;
+  const t = pzTag(r, pool.filter(y => y.card.name === r.card.name));
+  return t ? `${r.card.name} (${t})` : r.card.name;
+}
 function pzNames(s, uids) {
-  const g = new Map(); uids.forEach(u => { const n = pzRefName(s, u); g.set(n, (g.get(n) || 0) + 1); });
+  const pool = pzPool(s), g = new Map(); uids.forEach(u => { const n = pzShownName(s, u, pool); g.set(n, (g.get(n) || 0) + 1); });
   return [...g].map(([k, n]) => n > 1 ? `${n} ${k}` : k).join(', ');
 }
 /** Words for an action, as the player would say it. */
@@ -9304,23 +9337,24 @@ function pzPickLabel(s, v) {
     case 'pickUp': return mon(v);
     case 'attach': return v == null ? 'Done' : `${pzRefName(s, v.uid)} to ${mon(v.mon)}`;
     case 'cost': case 'search': case 'recover': return v.length ? pzNames(s, v) : 'Take nothing';
-    case 'topFromHand': return pzRefName(s, v);
+    case 'topFromHand': return pzShownName(s, v);
     case 'splitAttach': return mon(v);
-    case 'splitHand': return 'Put ' + pzRefName(s, v.uid) + ' into your hand';
+    case 'splitHand': return pzShownName(s, v.uid) + ' to Hand';
   }
   return String(v);
 }
 function pzAskText(s) {
-  const R = s.pending, A = R.ask, st = R.steps[A.step], who = R.ctx.name ? esc(R.ctx.name) + ': ' : '';
+  // 3.6.12: the card's name apart from the question, so the question can be translated (as in Sparring).
+  const R = s.pending, A = R.ask, st = R.steps[A.step], who = R.ctx.name ? esc(R.ctx.name) + (window.rdI18n && rdI18n.lang === 'fr' ? ' : ' : ': ') : '';
   const q = {
     yesno: A.q || (st.t === 'switchSelf' ? 'Switch it into the Active Spot?' : 'Do it?'),
     option: 'Choose one', benchMon: 'Choose Your New Active Pokémon', oppBench: 'Choose which of their Benched Pokémon comes up',
     oppMon: `Put ${st.n} damage counters on which Pokémon?`, benchHit: `Put ${st.dmg} damage on which Benched Pokémon?`, moveCounters: 'Move damage counters', moveEnergy: 'Move an Energy',
     moveToSelf: 'Move Energy to this Pokémon', pickUp: 'Choose a Pokémon to pick up', attach: 'Attach Energy',
     cost: `Discard ${st.n} card${st.n === 1 ? '' : 's'} from your hand`, search: 'Choose cards from your deck', recover: 'Choose cards from your discard pile',
-    topFromHand: 'Choose a card to put on top of your deck', splitHand: 'Which one goes to your hand? The other gets attached.', splitAttach: `Attach ${R.ctx.splitRef ? esc(R.ctx.splitRef.card.name) : 'the other card'} to which Pokémon?`,
+    topFromHand: 'Choose a card to put on top of your deck', splitHand: 'Choose the card that goes into your hand. The other one gets attached.', splitAttach: `Attach ${R.ctx.splitRef ? esc(R.ctx.splitRef.card.name) : 'the other card'} to which Pokémon?`,
   }[A.kind] || 'Choose';
-  return who + q;
+  return who + `<span>${q}</span>`;
 }
 function pzMonTile(s, m, owner, isActive) {
   const E = pzS.E, top = E.topOf(m), c = top.card, hp = E.maxHp(s, m), left = Math.max(0, hp - m.dmg), pct = hp ? Math.round(left / hp * 100) : 0;
@@ -12116,8 +12150,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.6.11';
-const PT_BUILD = 198;
+const PT_VERSION = 'v3.6.12';
+const PT_BUILD = 199;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

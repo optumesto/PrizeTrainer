@@ -126,7 +126,7 @@ function pickLabel(s, v) {
     case 'attach': return v == null ? 'Done' : `${refName(s, v.uid)} to ${mon(v.mon)}`;
     case 'cost': case 'search': case 'recover': case 'look': return v.length ? names(s, v) : 'Take nothing';
     case 'topFromHand': return refName(s, v);
-    case 'splitHand': { const r = (s.pending.ctx.splitPair || []).find(y => y.uid === v.uid); return (r ? r.card.name : 'a card') + ' into your hand'; }
+    case 'splitHand': { const r = (s.pending.ctx.splitPair || []).find(y => y.uid === v.uid); return (r ? r.card.name : 'a card') + ' to Hand'; }
   }
   return String(v);
 }
