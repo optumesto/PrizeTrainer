@@ -7016,3 +7016,5 @@ Object.assign(I18N_PT, { "Card Guides and Daily Games links on the home screen":
 // 3.6.4: the Android note is the Play link.
 Object.assign(I18N_ES, { "on Google Play": "en Google Play" });
 Object.assign(I18N_PT, { "on Google Play": "no Google Play" });
+Object.assign(I18N_ES, { "RdyDeck is on Google Play": "RdyDeck ya está en Google Play" });
+Object.assign(I18N_PT, { "RdyDeck is on Google Play": "O RdyDeck está no Google Play" });

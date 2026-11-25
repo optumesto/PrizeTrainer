@@ -1,3 +1,11 @@
+# RdyDeck 3.6.4 (build 191): the Play listing is live, linked from the site (25 Nov 2026)
+
+- Mason, 25 Nov 2026: "I checked in an incognito tab, it showed up", then "Push the Play link". Brief change 8. The listing was checked signed out first: it loads as RdyDeck for com.rdydeck.app.
+- index.html: a SoftwareApplication node in the home JSON-LD (Android, GameApplication, price 0 USD, the Play listing URL), and the Play URL added to the sameAs lists of the WebApplication and Organization nodes next to Instagram.
+- The header note "Android app coming soon to Google Play" is now the link "Android app on Google Play" to the listing. It stays hidden inside the Play app (pt-play), as before. "on Google Play" in all 6 languages.
+- Not changed: privacy.html and delete-data.html still describe the Play app as not released yet (left for Mason).
+- Also: What's new in all 6 languages, PT_VERSION v3.6.4, PT_BUILD 191, softwareVersion 3.6.4, sw.js cache v191, stamps. No Worker change.
+
 # RdyDeck 3.6.3 (build 190): SEO update (25 Nov 2026)
 
 - Mason, 24 Nov 2026: "3. Build it." (the SEO plan), then 25 Nov: "Push those new ones."
