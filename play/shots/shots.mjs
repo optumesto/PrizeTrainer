@@ -4,13 +4,13 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 
 const OUT = 'play/shots/out';
+fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 const URL = 'https://rdydeck.com/?src=play';
 const PHONE_UA = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36';
 const TAB_UA = 'Mozilla/5.0 (Linux; Android 14; SM-X510) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 const SIZES = { phone: [540, 960, PHONE_UA], tablet7: [603, 1072, TAB_UA], tablet10: [810, 1440, TAB_UA] };
 const only = process.argv[2] ? process.argv[2].split(',') : Object.keys(SIZES);
-const STARTERS = ['dragapult', 'slowking', 'honchkrow', 'alakazam'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = [];
 const L = (...a) => { const s = a.join(' '); console.log(s); log.push(s); };
@@ -78,7 +78,9 @@ for (const size of only) {
   await shot(page, size, 'z-first-open');
 
   await step('starters', async () => {
-    for (const id of STARTERS) {
+    const starters = await page.evaluate(() => STARTER_DECKS.map(s => s.id));
+    L(size, 'starters', starters.join(','));
+    for (const id of starters.slice(0, 4)) {
       await page.evaluate(async id => { await loadStarterDeck(id); }, id);
       await settle(page, 500);
     }
@@ -119,7 +121,7 @@ for (const size of only) {
       }
     });
   }
-  const drag = ids.find(x => x[1] === 'dragapult');
+  const drag = ids.find(x => /^dragapult/.test(x[1])) || ids[0];
   if (drag) {
     await step('odds', async () => {
       await page.evaluate(id => { openReview(id); showReviewTab('odds'); }, drag[0]);
