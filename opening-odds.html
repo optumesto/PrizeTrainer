@@ -211,13 +211,49 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <div class="cta-row"><a class="cta" href="./">Check my odds</a></div>
   <p>Odds say how often a hand works across thousands of shuffles. To feel it hand by hand, <a href="goldfish.html">goldfish your deck</a>: deal an opening 7 in RdyDeck and play your first turns alone.</p>
 
+  <h2>How Mulligan Odds Are Worked Out</h2>
+  <p>A mulligan happens when none of your opening 7 cards is a Basic Pok&eacute;mon. With 12 Basics, 48 cards are not Basics. There are 73,629,072 ways to draw 7 cards from those 48, and 386,206,920 ways to draw 7 cards from all 60. Divide the first by the second and you get 19.1%, about one opening hand in five. Every row in the mulligan table above comes from the same sum with a different Basic count.</p>
+
+  <h2>Your First Draw Counts Too</h2>
+  <p>Your opening hand is 7 cards, but you draw again at the start of your first turn, so by the time you act you have seen 8. That moves the odds of finding a card:</p>
+  <table>
+    <thead><tr><th>Copies</th><th>In your first 8 cards</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td class="n">13.3%</td></tr>
+      <tr><td class="n">2</td><td class="n">25.1%</td></tr>
+      <tr><td class="n">3</td><td class="n">35.4%</td></tr>
+      <tr><td class="n">4</td><td class="n">44.5%</td></tr>
+    </tbody>
+  </table>
+  <p>Even 4 copies show up in your first 8 cards less than half the time. That is why lists lean on search cards and draw Supporters: they turn a 44.5% card into one you find most games.</p>
+
+  <h2>What the Numbers Mean for Your List</h2>
+  <ul>
+    <li><strong>Basic count:</strong> most decks want enough Basics that a mulligan is rare. Each extra Basic lowers the chance, but each one is also a slot that does not draw, search or attack.</li>
+    <li><strong>Single copies:</strong> a one copy card is prized one game in ten. Once your opening 7 is drawn, a single copy you do not hold is prized 6 times in 53, about 11.3%. Keep single copies to cards you can live without for a game.</li>
+    <li><strong>Key pieces:</strong> if your attack needs a card that is easy to prize, play a second copy or a way to get it back.</li>
+    <li><strong>Setup speed:</strong> raw draw odds are a floor, since search and draw cards raise them. The Odds tab shows how often your attacker is ready from raw draws and with search.</li>
+  </ul>
+
+  <h2>Opening Odds Questions</h2>
+  <dl>
+    <dt>What are the odds of a mulligan in the Pok&eacute;mon TCG?</dt>
+    <dd>For a 60 card deck it depends on your Basic Pok&eacute;mon count: 34.6% with 8 Basics, 19.1% with 12 and 9.9% with 16.</dd>
+    <dt>How often is a card prized?</dt>
+    <dd>A single copy is prized 10% of the time. With 4 copies, at least one is prized 35.1% of the time, but all 4 almost never are.</dd>
+    <dt>Are RdyDeck's opening odds free?</dt>
+    <dd>Yes. Open any deck in RdyDeck and tap the Odds tab. It is free, needs no account and works offline.</dd>
+  </dl>
+
   <h2>More Guides</h2>
   <ul class="guides">
     <li><a href="deck-grader.html">Deck Checker</a></li>
     <li><a href="prize-trainer.html">Prize Trainer</a></li>
-    <li><a href="goldfish.html">How to goldfish a deck</a></li>
+    <li><a href="goldfish.html">How to Goldfish a Deck</a></li>
     <li><a href="rotation.html">Rotation Checker</a></li>
+    <li><a href="daily-games.html">Daily Games</a></li>
     <li><a href="meta-decks.html">Deck Guides</a></li>
+    <li><a href="cards/">Card Guides</a></li>
     <li><a href="how-grading-works.html">How Grading Works</a></li>
   </ul>
 

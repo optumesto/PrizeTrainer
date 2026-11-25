@@ -55,6 +55,8 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   .cta { display:inline-block; margin:0.6rem 0 0.4rem; padding:0.75rem 1.3rem; background:var(--mark); color:var(--on-mark); font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; font-size:1.125rem; text-decoration:none; border-radius:4px; }
   .cta:hover { filter:brightness(1.08); }
   .cta-row { margin:1.2rem 0 0.4rem; }
+  .cta-row { display:flex; flex-wrap:wrap; gap:0 0.6rem; align-items:center; }
+  .cta.cta2 { background:transparent; color:var(--text); box-shadow:inset 0 0 0 2px var(--mark); }
   .tw { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; font-size:0.9375rem; margin:0.6rem 0; }
   th, td { text-align:left; vertical-align:top; padding:0.5rem 0.6rem 0.5rem 0; border-bottom:1px solid var(--line); color:var(--text-2); }
@@ -190,7 +192,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
   <div class="cta-row"><a class="cta" href="./">Open RdyDeck</a></div>
 
   <footer>
-    <nav class="tools" aria-label="Free tools"><a href="deck-grader.html">Deck Checker</a><a href="improve-your-deck.html">Improve Your Deck</a><a href="opening-odds.html">Opening Hand Odds</a><a href="rotation.html">Rotation Check</a><a href="prize-trainer.html">Prize Trainer</a><a href="rulings.html">Rules and Rulings</a><a href="cards/">Card Guides</a><a href="first-deck.html">Your First Deck</a><a href="goldfish.html">Goldfish Your Deck</a></nav>
+    <nav class="tools" aria-label="Free tools"><a href="deck-grader.html">Deck Checker</a><a href="improve-your-deck.html">Improve Your Deck</a><a href="opening-odds.html">Opening Hand Odds</a><a href="rotation.html">Rotation Check</a><a href="prize-trainer.html">Prize Trainer</a><a href="rulings.html">Rules and Rulings</a><a href="cards/">Card Guides</a><a href="first-deck.html">Your First Deck</a><a href="goldfish.html">Goldfish Your Deck</a><a href="daily-games.html">Daily Games</a></nav>
     <p>RdyDeck is free, has no account and works offline once it has loaded. Unofficial fan-made app. Not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company. Card names, text and images are &copy; The Pok&eacute;mon Company, Nintendo, Creatures and GAME FREAK.</p>
     <nav aria-label="Site"><a href="./">RdyDeck</a><a href="meta-decks.html">Deck Guides</a><a href="how-grading-works.html">How Grading Works</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a><a href="delete-data.html">Delete Your Data</a><a class="rd-social" href="https://www.instagram.com/rdydeck/" rel="me noopener" target="_blank">Instagram</a></nav>
   </footer>

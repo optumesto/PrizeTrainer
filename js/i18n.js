@@ -7007,3 +7007,6 @@ function i18nPick(lang) {
 
 window.rdI18n = rdI18n;
 rdI18n.set(rdI18n.pick(), false);
+// SEO (Nov 25 2026): Card Guides on the home screen.
+Object.assign(I18N_ES, { "Card guides": "Guías de cartas" });
+Object.assign(I18N_PT, { "Card guides": "Guias de cartas" });

@@ -56,6 +56,7 @@ RdyDeck is an unofficial fan-made app by Optume Ventures LLC, not affiliated wit
 
 - [How to goldfish a Pokémon deck](https://rdydeck.com/goldfish.html): what goldfishing is, how to do it with real cards, and how to goldfish a list in RdyDeck (open a deck, then the Hand tab, then Goldfish)
 - [Prize trainer](https://rdydeck.com/prize-trainer.html): practice naming your prize cards with your own deck (tap Prizes on a deck, or Play under Prize game on its Drills tab; 6, 4 or 8 prizes, optional time limit, Progress shows the cards missed most)
+- [Daily Pokémon TCG games](https://rdydeck.com/daily-games.html): four free daily games on the RdyDeck home screen, the same for every player each day: Prize Check (name the six prizes from a real list), Quickest Win (find the winning line on a real board), Rare Pull (name cards few top lists run) and Guess the Grade
 
 ## Optional
 

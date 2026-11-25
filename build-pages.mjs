@@ -79,7 +79,7 @@ const NAV = [
 const TOOLS = [
   ['deck-grader.html', 'Deck Checker'], ['improve-your-deck.html', 'Improve Your Deck'], ['opening-odds.html', 'Opening Hand Odds'],
   ['rotation.html', 'Rotation Check'], ['prize-trainer.html', 'Prize Trainer'], ['rulings.html', 'Rules and Rulings'],
-  ['cards/', 'Card Guides'], ['first-deck.html', 'Your First Deck'], ['goldfish.html', 'Goldfish Your Deck'],
+  ['cards/', 'Card Guides'], ['first-deck.html', 'Your First Deck'], ['goldfish.html', 'Goldfish Your Deck'], ['daily-games.html', 'Daily Games'],
 ];
 const STYLE = `  @font-face { font-family:'RD Body'; font-weight:100 900; font-display:swap; src:url(saira.woff2) format('woff2'); }
   @font-face { font-family:'RD Display'; font-weight:700 900; font-display:swap; src:url(saira-condensed-800.woff2) format('woff2'); }
@@ -154,7 +154,7 @@ const plain = h => String(h).replace(/<[^>]+>/g, '').replace(/&eacute;/g, '\u00e
 // The question and answer pairs (<dt> then <dd>) on a page, so Google and AI assistants can read them as an FAQ.
 const faqPairs = body => [...String(body).matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)].map(m => [plain(m[1]), plain(m[2])]);
 
-function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', type = 'article', faq = false, updated = '', extraLd = [], index = true, cardCss = true }) {
+function page({ file, title, desc, crumb, kicker, h1, body, og = 'og-deck-grader.png', ogAlt = '', type = 'article', faq = false, updated = '', extraLd = [], index = true, cardCss = true }) {
   const url = 'https://rdydeck.com/' + file.replace(/(^|\/)index\.html$/, '$1');
   const up = '../'.repeat(file.split('/').length - 1);
   const qa = faq ? faqPairs(body) : [];
@@ -201,7 +201,7 @@ if (location.hostname === 'optumesto.github.io') location.replace('https://rdyde
 <meta property="og:image" content="https://rdydeck.com/${og}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="RdyDeck. Pok&eacute;mon TCG deck checker.">
+<meta property="og:image:alt" content="${ogAlt ? esc(ogAlt) : 'RdyDeck. Pok&eacute;mon TCG deck checker.'}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${t}">
 <meta name="twitter:description" content="${d}">
@@ -490,6 +490,7 @@ ${guides.decks.filter(x => x.id !== g.id).map(x => `  <li><a href="deck-${x.slug
 `;
   return page({
     file: `deck-${g.slug}.html`,
+    og: existsSync(path.join(ROOT, `og/deck-${g.slug}.png`)) ? `og/deck-${g.slug}.png` : 'og/deck-guide.png', ogAlt: `RdyDeck. ${g.title} deck guide.`,
     title: [`${g.title} Deck Guide: List, Game Plan and Matchups | RdyDeck`, `${g.title} Deck Guide: List and Matchups | RdyDeck`, `${g.title} Deck Guide | RdyDeck`]
       .find(t => t.length <= 60) || `${g.title} Deck Guide | RdyDeck`,
     desc: g.desc || `How ${g.title} plays in the Pokémon TCG: the core list from top finishes, the game plan, key cards, matchups and how RdyDeck grades it.`,
@@ -506,8 +507,18 @@ function indexPage() {
     const s = stats(g);
     return `    <tr><td><a href="deck-${g.slug}.html">${esc(g.title)}</a></td><td class="n">${s.share != null ? esc(s.share) + '%' : ''}</td><td class="n">${s.games ? pct(s.rec[0], s.games) : ''}</td><td class="n">${s.grade ? r1(s.grade.g) : ''}</td></tr>`;
   });
+  // Nov 25 2026 (SEO): a plain summary of the meta at the top, written from the same numbers as the table.
+  const st = guides.decks.map(g => [g, stats(g)]);
+  const byShare = st.filter(([, x]) => x.share != null).sort((a, b) => b[1].share - a[1].share).slice(0, 3);
+  const MIN_GAMES = 300;
+  const best = st.filter(([, x]) => x.games >= MIN_GAMES).sort((a, b) => b[1].rec[0] / b[1].games - a[1].rec[0] / a[1].games)[0];
+  const link = g => `<a href="deck-${g.slug}.html">${esc(g.title)}</a>`;
+  const listOf = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a.join('');
+  const summary = byShare.length ? `<p>The most played decks right now are ${listOf(byShare.map(([g, x]) => `${link(g)} (${esc(x.share)}%)`))}, by share of players ${FIELD}.${best
+    ? ` Of the decks with at least ${MIN_GAMES} games since ${day(mu.since)}, ${link(best[0])} has the best win rate, ${pct(best[1].rec[0], best[1].games)} over ${num(best[1].games)} games.` : ''}</p>` : '';
   const body = `
-<p class="lead">Guides to the decks winning Pok&eacute;mon TCG tournaments right now: what each one runs, how it plays, what it beats, and how RdyDeck grades it.</p>
+<p class="lead">The Pok&eacute;mon TCG meta decks winning tournaments right now: what each one runs, how it plays, what it beats, and how RdyDeck grades it. Updated every week from real tournament results.</p>
+${summary}
 <p>Each guide is built from real results. The core lists come from the top finishes of Limitless online tournaments, the matchups from every game played in them${MU_IP ? ' and in local in-person store events' : ''} since ${day(mu.since)}, and the grades from RdyDeck's own deck checker run on top 16 lists. The game plans are written from the cards' own text, so you can check every claim against the card.</p>
 
 <h2>The Decks</h2>
@@ -519,9 +530,20 @@ ${rows.join('\n')}
 </table></div>
 <p class="note">Field share is the share of players ${FIELD}. Win rate is wins over all games since ${day(mu.since)}, as of ${day(mu.asOf)}. Grade is RdyDeck's grade for the deck's top lists, out of 10.</p>
 
+<h2>What the Meta Is</h2>
+<p>The meta is the set of decks most players bring to events right now. It moves when a new set comes out, when a deck wins a big event and others copy it, and when players find an answer to the deck on top. Knowing the meta tells you what you will face, which matchups matter most, and which tech cards are worth a slot.</p>
+
 <h2>Reading the Numbers</h2>
 <p>A win rate a little over 50% is good in a format this crowded: most decks sit between 47% and 53%, and only a handful stay above 55% over thousands of games. A deck with a small share and a high win rate can be a strong pick that few people have found yet, or a deck that has only played a few events, so check the number of games before reading much into it.</p>
 <p>The grade and the record measure different things. The grade reads the cards in a list: do they work together, and can the plan win. The record shows how the deck has actually done. RdyDeck blends the two, and <a href="how-grading-works.html">How Grading Works</a> explains how much each one counts.</p>
+
+<h2>How to Pick a Meta Deck</h2>
+<ul>
+  <li><strong>Start with what you enjoy:</strong> you will play a deck better after many games with it, and you play more games with a deck you like.</li>
+  <li><strong>Check the matchups:</strong> each guide lists what the deck beats and what it struggles against. A deck that beats the most played decks can do well even with a small share.</li>
+  <li><strong>Count what you own:</strong> the core list in each guide shows the cards nearly every top list runs, so you can see what you still need before you build.</li>
+  <li><strong>Check rotation:</strong> if your event is after the next rotation, run the <a href="rotation.html">rotation checker</a> on the list first.</li>
+</ul>
 
 <h2>Rate Your Own List</h2>
 <p>Paste your list from Pok&eacute;mon TCG Live or Limitless into RdyDeck and it rates it out of 10, matches it to the closest of these decks, and shows what to fix first. It is free, needs no account and works offline.</p>
@@ -529,13 +551,15 @@ ${rows.join('\n')}
 <p class="note">Tournament numbers are from <a href="${esc(data.meta.src)}">Limitless TCG</a> ${MU_IP ? 'online tournaments and local in-person store events' : 'online tournaments'}, read once a week and credited to them.</p>
 `;
   return page({
-    file: 'meta-decks.html',
-    title: 'Pokémon TCG Meta Deck Guides: Top Decks and Lists | RdyDeck',
-    desc: 'Guides to the top Pokémon TCG decks right now: core lists from tournament top finishes, game plans, matchups and grades.',
+    file: 'meta-decks.html', og: 'og/meta-decks.png', ogAlt: 'RdyDeck. Pokémon TCG meta decks.',
+    title: 'Pokémon TCG Meta Decks: Top Decks, Lists and Guides | RdyDeck',
+    desc: 'The top Pokémon TCG meta decks right now, with field share, win rates and grades, and a guide to each deck: core list, game plan and matchups.',
     updated: mu.asOf,
     kicker: 'Deck guides',
-    h1: 'Top Pok&eacute;mon TCG decks',
+    h1: 'Pok&eacute;mon TCG meta decks',
     body,
+    extraLd: [{ '@type': 'ItemList', '@id': 'https://rdydeck.com/meta-decks.html#decks', name: 'Pokémon TCG meta deck guides',
+      itemListElement: guides.decks.filter(g => mcById[g.id]).map((g, i) => ({ '@type': 'ListItem', position: i + 1, name: g.title + ' deck guide', url: `https://rdydeck.com/deck-${g.slug}.html` })) }],
   });
 }
 
@@ -610,7 +634,7 @@ ${rows.join('\n')}
 <p>RdyDeck does every check on this page in a few seconds. It is free, has no paid tier, needs no account and works offline once it has loaded. <a href="how-grading-works.html">How Grading Works</a> explains exactly what the grade measures.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
-    file: 'improve-your-deck.html', cardCss: false,
+    file: 'improve-your-deck.html', cardCss: false, og: 'og/improve.png', ogAlt: 'RdyDeck. Improve your deck.',
     title: 'How to Improve Your Pokémon TCG Deck: 7 Checks | RdyDeck',
     desc: 'How to make your Pokémon TCG deck better: 7 checks with typical counts from recent top 16 lists, and a free deck checker that runs them for you.',
     updated: mu.asOf,
@@ -693,7 +717,7 @@ ${rows.join('\n')}
   <dd>Yes. RdyDeck rates a 60 card deck out of 10 for free and lists what to fix first. It checks how the deck plays, not the condition of your cards.</dd>
 </dl>`;
   return page({
-    file: 'first-deck.html', cardCss: false,
+    file: 'first-deck.html', cardCss: false, og: 'og/first-deck.png', ogAlt: 'RdyDeck. Your first deck.',
     title: 'How to Build Your First Pokémon TCG Deck | RdyDeck',
     desc: 'Build your first Pokémon TCG deck: the official 60 card deck rules, how many Pokémon, Trainers and Energy top lists run, and a free deck checker.',
     updated: rul.asOf,
@@ -725,7 +749,7 @@ ${rul.rulings.filter(r => r.topic === t).map(r => `  <dt id="${esc(r.id)}">${esc
 <p class="note">Rules as of ${day(rul.asOf)}. RdyDeck is an unofficial fan-made app, not affiliated with Nintendo, Creatures, GAME FREAK or The Pok&eacute;mon Company.</p>
 <div class="cta-row"><a class="cta" href="./">Rate my deck</a></div>`;
   return page({
-    file: 'rulings.html',
+    file: 'rulings.html', og: 'og/rulings.png', ogAlt: 'RdyDeck. Rules and rulings.',
     title: 'Pokémon TCG Rules: Damage, Prizes and Abilities | RdyDeck',
     desc: 'Pokémon TCG rules answered from the official rulebook: setup and mulligans, damage order, Weakness, Pokémon ex, Tera, ACE SPEC and more.',
     updated: rul.asOf,
@@ -993,6 +1017,7 @@ ${rules.map(r => `  <dt><a href="${up}rulings.html#${esc(r.id)}">${esc(r.q)}</a>
   if ([...desc].length < 70) desc = desc.replace(' in the Pokémon TCG:', ' in the Pokémon TCG, as played today:');
   return page({
     file, desc, updated: mc.asOf, crumb: ['Card guides', 'cards/'], kicker: 'Card guide', h1: esc(c.name), body, index: !thin,
+    og: 'og/card-guide.png', ogAlt: `RdyDeck. ${c.name} card guide.`,
     title: [`${c.name}: Card Text, Decks and Rulings | RdyDeck`, `${c.name}: Card Text and Decks | RdyDeck`, `${c.name} Card Guide | RdyDeck`].find(t => t.length <= 60) || `${c.name} | RdyDeck`,
   });
 }
@@ -1011,7 +1036,7 @@ ${cs.map(c => `  <li><a href="${c.slug}.html">${esc(c.name)}</a></li>`).join('\n
 <div class="cta-row"><a class="cta" href="../">Grade my deck</a></div>
 `;
   return page({
-    file: 'cards/index.html', title: 'Pokémon TCG Card Guides: Top Meta Cards | RdyDeck', updated: mc.asOf,
+    file: 'cards/index.html', title: 'Pokémon TCG Card Guides: Top Meta Cards | RdyDeck', updated: mc.asOf, og: 'og/card-index.png', ogAlt: 'RdyDeck. Pokémon TCG card guides.',
     desc: 'Guides to the Pokémon TCG cards top decks play now: card text, which decks run them and how often, and the official rules that apply.',
     kicker: 'Card guides', h1: 'Pok&eacute;mon TCG card guides', body, type: 'website',
   });

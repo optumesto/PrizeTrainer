@@ -2871,3 +2871,5 @@ I18N_MORE.de.pat.unshift(
 // 3.6.1: Tournament Strength counts local in-person events.
 Object.assign(I18N_MORE.de.dict, { "Tournament Strength now counts local in-person events": "Die Turnierstärke berücksichtigt jetzt lokale Präsenzturniere" });
 Object.assign(I18N_MORE.de.dict, { "Transformation Tome needs 2 copies to play": "Transformation Tome braucht 2 Exemplare zum Spielen" });
+// SEO (Nov 25 2026): Card Guides on the home screen.
+Object.assign(I18N_MORE.de.dict, { "Card guides": "Kartenratgeber" });
