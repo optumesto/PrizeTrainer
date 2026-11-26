@@ -1,3 +1,14 @@
+# RdyDeck 3.6.14 (build 201): Odds tab says games out of 100, adds Brick Hand, Going First or Second and Copy Counts (26 Nov 2026)
+
+- Mason, 26 Nov 2026: "Build it on a branch", to four Odds tab additions after a look at TCG Tools' hand odds (brick rate, copy count swaps, "X of 100 games" wording).
+- js/core.js renderOdds: the top tiles read as games out of 100 ("14 of 100", a range reads "31-83 of 100"), and a fourth tile, Brick Hand: kept hands with no draw or search card in the first 8 cards (opening 7 plus the first draw). Four tiles sit two by two on a phone.
+- Going First or Second (new section, open): the setup speed the grade already works out (g80Speed), split by who goes first. By your second turn, or by your third when the attacker cannot be ready sooner (a Stage 2 with no Rare Candy, a three Energy attack). g80Speed also returns first3 and second3 for this; the grade still reads t2 only.
+- Copy Counts (new section, folded): pick a card that matters for the opening and see Brick Hand, the attacker odds and Mulligan (for a Basic) or Draw card T1 (for a draw card) for fewer and more copies (up to 4, 1 for an ACE SPEC or Radiant). A copy cut becomes a card that does nothing for setup, and a copy added takes the place of one, so the list keeps its size. The attacker line stays the grade's pick for the list as it is (simulateOdds takes it as keep). Fills in only once opened, so the tab draws as fast as before.
+- simulateOdds: counts brick hands (from their own check of the shuffle, so every other number stays the same) and takes an optional keep line.
+- Grade math unchanged: grade check passes with no grade moved. The Main Attacker details keep their percents.
+- Translations for every new label in Spanish, Portuguese, French, German and Italian. Card names stay English.
+- Also: What's new in all 6 languages ("Odds Tab: Brick Hand, Copy Counts and Going First or Second"), PT_VERSION v3.6.14, PT_BUILD 201, softwareVersion 3.6.14, sw.js cache v201, stamps. No Worker change.
+
 # RdyDeck 3.6.13 (build 200): deck guide titles lead with the deck list, and the Deck Grader page grows into a full guide (25 Nov 2026)
 
 - Mason, 25 Nov 2026: "Start both", to (1) guide titles and snippets that earn clicks, with a link to grade your own list, and (2) a real text page for "Pokémon Deck Grader".

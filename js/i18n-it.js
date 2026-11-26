@@ -793,6 +793,22 @@ I18N_MORE.it = {
     "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "RdyDeck non ha ancora letto il testo di questa carta, quindi non ha un'etichetta. Apri il mazzo online per leggerlo.",
     "Mulligan": "Mulligan",
     "Opening 7 with no Basic": "Mano iniziale di 7 senza Pokémon Base",
+    // 3.6.14: Odds tab, games out of 100, going first or second, Copy Counts
+    "Brick Hand": "Mano morta",
+    "No draw or search card in your first 8": "Nessuna carta di pesca o di ricerca nelle prime 8",
+    "of 100": "su 100",
+    "Going First or Second": "Primo o secondo",
+    "How often your attacker is in play with the Energy its attack needs by your second turn.": "Quanto spesso il tuo attaccante è in gioco con l'Energia richiesta dal suo attacco entro il tuo secondo turno.",
+    "No Supporter on your first turn": "Nessun Aiuto nel tuo primo turno",
+    "A Supporter on every turn": "Un Aiuto in ogni turno",
+    "How often your attacker is in play with the Energy its attack needs by your third turn.": "Quanto spesso il tuo attaccante è in gioco con l'Energia richiesta dal suo attacco entro il tuo terzo turno.",
+    "It cannot be ready sooner.": "Non può essere pronto prima.",
+    "Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.": "Gli Aiuti di pesca, le carte di ricerca e l'Energia vengono giocati, come nella parte velocità di preparazione del tuo voto.",
+    "Copy Counts": "Numero di copie",
+    "Try more or fewer copies of a card": "Prova più o meno copie di una carta",
+    "Pick a card to see how more or fewer copies move your odds.": "Scegli una carta per vedere come più o meno copie cambiano le tue probabilità.",
+    "Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.": "Ogni copia che aggiungi o togli si scambia con una carta che non aiuta la preparazione, così la lista resta della stessa dimensione.",
+    "Games out of 100.": "Partite su 100.",
     "Draw card T1": "Carta di pesca T1",
     "A draw card you can use, in your first 8": "Una carta di pesca che puoi usare, nelle prime 8",
     "Attacker by T2, any hand": "Attaccante entro T2, qualsiasi mano",
@@ -2827,3 +2843,5 @@ Object.assign(I18N_MORE.it.dict, {"Switching languages works offline too": "Camb
 // 3.6.12: Crispin's choice buttons name their card.
 Object.assign(I18N_MORE.it.dict, {"Crispin Choice Labels Fixed": "Etichette delle scelte di Crispin corrette"});
 Object.assign(I18N_MORE.it.dict, {"Deck Guides and Deck Grader Page Updated": "Guide ai mazzi e pagina del Valutatore di mazzi aggiornate"});
+// 3.6.14
+Object.assign(I18N_MORE.it.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Scheda Probabilità: mano morta, numero di copie e primo o secondo"});

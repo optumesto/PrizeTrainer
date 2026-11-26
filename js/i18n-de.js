@@ -794,6 +794,22 @@ I18N_MORE.de = {
     'RdyDeck hasn\'t read this card\'s text yet, so it has no label. Open the deck online to read it.': 'RdyDeck hat den Text dieser Karte noch nicht gelesen, daher hat sie keine Einstufung. Öffne das Deck online, um ihn zu lesen.',
     'Mulligan': 'Mulligan',
     'Opening 7 with no Basic': 'Starthand ohne Basis-Pokémon',
+    // 3.6.14: Odds tab, games out of 100, going first or second, Copy Counts
+    'Brick Hand': 'Tote Hand',
+    'No draw or search card in your first 8': 'Keine Zieh- oder Suchkarte in deinen ersten 8',
+    'of 100': 'von 100',
+    'Going First or Second': 'Beginnen oder Zweiter sein',
+    'How often your attacker is in play with the Energy its attack needs by your second turn.': 'Wie oft dein Angreifer bis zu deinem zweiten Zug mit der Energie im Spiel ist, die seine Attacke braucht.',
+    'No Supporter on your first turn': 'Kein Unterstützer in deinem ersten Zug',
+    'A Supporter on every turn': 'Ein Unterstützer in jedem Zug',
+    'How often your attacker is in play with the Energy its attack needs by your third turn.': 'Wie oft dein Angreifer bis zu deinem dritten Zug mit der Energie im Spiel ist, die seine Attacke braucht.',
+    'It cannot be ready sooner.': 'Früher kann er nicht bereit sein.',
+    'Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.': 'Zieh-Unterstützer, Suchkarten und Energie werden ausgespielt, wie beim Aufbautempo in deiner Note.',
+    'Copy Counts': 'Anzahl der Kopien',
+    'Try more or fewer copies of a card': 'Probiere mehr oder weniger Kopien einer Karte',
+    'Pick a card to see how more or fewer copies move your odds.': 'Wähle eine Karte, um zu sehen, wie mehr oder weniger Kopien deine Chancen verändern.',
+    'Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.': 'Jede Kopie, die du hinzufügst oder streichst, tauscht mit einer Karte, die beim Aufbau nicht hilft, damit die Liste gleich groß bleibt.',
+    'Games out of 100.': 'Spiele von 100.',
     'Draw card T1': 'Ziehkarte Z1',
     'A draw card you can use, in your first 8': 'Eine nutzbare Ziehkarte in deinen ersten 8',
     'Attacker by T2, any hand': 'Angreifer bis Z2, jede Hand',
@@ -2895,3 +2911,5 @@ Object.assign(I18N_MORE.de.dict, {"Switching languages works offline too": "Der 
 // 3.6.12: Crispin's choice buttons name their card.
 Object.assign(I18N_MORE.de.dict, {"Crispin Choice Labels Fixed": "Beschriftungen bei der Auswahl von Crispin behoben"});
 Object.assign(I18N_MORE.de.dict, {"Deck Guides and Deck Grader Page Updated": "Deck-Guides und Seite des Deck-Bewerters aktualisiert"});
+// 3.6.14
+Object.assign(I18N_MORE.de.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Tab Chancen: tote Hand, Anzahl der Kopien und beginnen oder Zweiter sein"});

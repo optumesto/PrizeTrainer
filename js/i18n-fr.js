@@ -798,6 +798,22 @@ I18N_MORE.fr = {
     "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "RdyDeck n'a pas encore lu le texte de cette carte, elle n'a donc pas d'étiquette. Ouvrez le deck en ligne pour la lire.",
     "Mulligan": "Mulligan",
     "Opening 7 with no Basic": "Main sans Pokémon de base",
+    // 3.6.14: Odds tab, games out of 100, going first or second, Copy Counts
+    "Brick Hand": "Main morte",
+    "No draw or search card in your first 8": "Aucune carte de pioche ni de recherche dans vos 8 premières",
+    "of 100": "sur 100",
+    "Going First or Second": "Commencer ou jouer second",
+    "How often your attacker is in play with the Energy its attack needs by your second turn.": "À quelle fréquence votre attaquant est en jeu avec l'Énergie que demande son attaque à votre deuxième tour.",
+    "No Supporter on your first turn": "Pas de Supporter à votre premier tour",
+    "A Supporter on every turn": "Un Supporter à chaque tour",
+    "How often your attacker is in play with the Energy its attack needs by your third turn.": "À quelle fréquence votre attaquant est en jeu avec l'Énergie que demande son attaque à votre troisième tour.",
+    "It cannot be ready sooner.": "Il ne peut pas être prêt plus tôt.",
+    "Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.": "Les Supporters de pioche, les cartes de recherche et l'Énergie sont joués, comme dans la partie vitesse de mise en place de votre note.",
+    "Copy Counts": "Nombre d'exemplaires",
+    "Try more or fewer copies of a card": "Essayez plus ou moins d'exemplaires d'une carte",
+    "Pick a card to see how more or fewer copies move your odds.": "Choisissez une carte pour voir comment plus ou moins d'exemplaires changent vos chances.",
+    "Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.": "Chaque exemplaire ajouté ou retiré prend la place d'une carte qui n'aide pas la mise en place, donc la liste garde sa taille.",
+    "Games out of 100.": "Parties sur 100.",
     "Draw card T1": "Carte de pioche T1",
     "A draw card you can use, in your first 8": "Une carte de pioche jouable, dans vos 8 premières",
     "Attacker by T2, any hand": "Attaquant au T2, toute main",
@@ -2854,3 +2870,5 @@ Object.assign(I18N_MORE.fr.dict, {"Switching languages works offline too": "Chan
 // 3.6.12: Crispin's choice buttons name their card.
 Object.assign(I18N_MORE.fr.dict, {"Crispin Choice Labels Fixed": "Libellés des choix de Crispin corrigés"});
 Object.assign(I18N_MORE.fr.dict, {"Deck Guides and Deck Grader Page Updated": "Guides de decks et page Notation de deck mis à jour"});
+// 3.6.14
+Object.assign(I18N_MORE.fr.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Onglet Probas : main morte, nombre d'exemplaires et commencer ou jouer second"});

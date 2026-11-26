@@ -6,7 +6,7 @@
 // time and in every language. The Grade tab's sections already fold (Upgrades, Grade history and the
 // rest); now the way they were left is kept too.
 // Open by default: the part each tab is for. Folded by default:
-//   Odds:    Opening Basics, Main attacker (3.5.4), Prize risk
+//   Odds:    Opening Basics, Main attacker (3.5.4), Copy Counts (3.6.14), Prize risk
 //   Drills:  Opponent prize read
 //   Notes:   Edit log, Compare lists
 //   Builder: Suggestions, and Start from once the list has cards
@@ -39,7 +39,7 @@ function fs325Title(h) {
 }
 
 const FS325_SCOPES = [
-  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Main Attacker': 1, 'Prize Risk': 1 } },
+  { el: 'odds-body', name: 'odds', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opening Basics': 1, 'Main Attacker': 1, 'Copy Counts': 1, 'Prize Risk': 1 } },
   { el: 'hand-body', name: 'hand', sec: '.g-sec', head: '.g-sec-t', shut: {} },
   { el: 'drills-body', name: 'drills', sec: '.g-sec', head: '.g-sec-t', shut: { 'Opponent Prize Read': 1 } },
   { el: 'notes-body', name: 'notes', sec: '.g-sec', head: '.g-sec-t', shut: { 'Edit Log': 1, 'Compare Lists': 1 } },

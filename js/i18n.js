@@ -735,6 +735,22 @@ const I18N_ES = {
   "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "RdyDeck todavía no leyó el texto de esta carta, así que no tiene etiqueta. Abre la baraja con conexión para leerla.",
   "Mulligan": "Mulligan",
   "Opening 7 with no Basic": "Mano inicial de 7 sin Básico",
+  // 3.6.14: Odds tab, games out of 100, going first or second, Copy Counts
+  "Brick Hand": "Mano muerta",
+  "No draw or search card in your first 8": "Ninguna carta de robo ni de búsqueda en tus primeras 8",
+  "of 100": "de 100",
+  "Going First or Second": "Ir primero o segundo",
+  "How often your attacker is in play with the Energy its attack needs by your second turn.": "Con qué frecuencia tu atacante está en juego con la Energía que pide su ataque para tu segundo turno.",
+  "No Supporter on your first turn": "Sin Partidario en tu primer turno",
+  "A Supporter on every turn": "Un Partidario en cada turno",
+  "How often your attacker is in play with the Energy its attack needs by your third turn.": "Con qué frecuencia tu atacante está en juego con la Energía que pide su ataque para tu tercer turno.",
+  "It cannot be ready sooner.": "No puede estar listo antes.",
+  "Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.": "Los Partidarios de robo, las cartas de búsqueda y la Energía se juegan, como en la parte de velocidad de preparación de tu calificación.",
+  "Copy Counts": "Número de copias",
+  "Try more or fewer copies of a card": "Prueba más o menos copias de una carta",
+  "Pick a card to see how more or fewer copies move your odds.": "Elige una carta para ver cómo cambian tus probabilidades con más o menos copias.",
+  "Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.": "Cada copia que añades o quitas se cambia por una carta que no ayuda a prepararte, así que la lista mantiene su tamaño.",
+  "Games out of 100.": "Partidas de cada 100.",
   "Draw card T1": "Carta de robo T1",
   "A draw card you can use, in your first 8": "Una carta de robo que puedes usar, en tus primeras 8",
   "Attacker by T2, any hand": "Atacante para T2, cualquier mano",
@@ -1965,6 +1981,22 @@ const I18N_PT = {
   "RdyDeck hasn't read this card's text yet, so it has no label. Open the deck online to read it.": "O RdyDeck ainda não leu o texto desta carta, então ela não tem rótulo. Abra o deck com internet para ler.",
   "Mulligan": "Mulligan",
   "Opening 7 with no Basic": "Mão inicial de 7 sem Básico",
+  // 3.6.14: Odds tab, games out of 100, going first or second, Copy Counts
+  "Brick Hand": "Mão travada",
+  "No draw or search card in your first 8": "Nenhuma carta de compra nem de busca nas suas 8 primeiras",
+  "of 100": "de 100",
+  "Going First or Second": "Jogar primeiro ou segundo",
+  "How often your attacker is in play with the Energy its attack needs by your second turn.": "Com que frequência seu atacante está em jogo com a Energia que o ataque pede até o seu segundo turno.",
+  "No Supporter on your first turn": "Sem Apoiador no seu primeiro turno",
+  "A Supporter on every turn": "Um Apoiador em todo turno",
+  "How often your attacker is in play with the Energy its attack needs by your third turn.": "Com que frequência seu atacante está em jogo com a Energia que o ataque pede até o seu terceiro turno.",
+  "It cannot be ready sooner.": "Ele não fica pronto antes disso.",
+  "Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.": "Apoiadores de compra, cartas de busca e Energia são jogados, como na parte de velocidade de montagem da sua nota.",
+  "Copy Counts": "Número de cópias",
+  "Try more or fewer copies of a card": "Teste mais ou menos cópias de uma carta",
+  "Pick a card to see how more or fewer copies move your odds.": "Escolha uma carta para ver como mais ou menos cópias mudam suas chances.",
+  "Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.": "Cada cópia que você adiciona ou tira troca de lugar com uma carta que não ajuda na montagem, então a lista fica do mesmo tamanho.",
+  "Games out of 100.": "Partidas em cada 100.",
   "Draw card T1": "Carta de compra T1",
   "A draw card you can use, in your first 8": "Uma carta de compra que dá para usar, nas suas 8 primeiras",
   "Attacker by T2, any hand": "Atacante até T2, qualquer mão",
@@ -6772,6 +6804,9 @@ Object.assign(I18N_PT, { "Crispin Choice Labels Fixed": "Rótulos de escolha do 
 
 Object.assign(I18N_ES, { "Deck Guides and Deck Grader Page Updated": "Guías de barajas y página del Calificador de barajas actualizadas" });
 Object.assign(I18N_PT, { "Deck Guides and Deck Grader Page Updated": "Guias de decks e página do Avaliador de decks atualizadas" });
+// 3.6.14
+Object.assign(I18N_ES, { "Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Pestaña Probabilidades: mano muerta, número de copias e ir primero o segundo" });
+Object.assign(I18N_PT, { "Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Aba Chances: mão travada, número de cópias e jogar primeiro ou segundo" });
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

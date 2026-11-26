@@ -4142,7 +4142,23 @@ function lineFirstTurn(line, groups) {
   return line && line.stage === 'stage2' && !groups.some(g => g.candy) ? 3 : 2;
 }
 
-function simulateOdds(deck, trials) {
+/**
+ * 3.6.14: the attacker line from an earlier run, moved onto this list's groups, so Copy Counts can try
+ * other copy counts of a card without grading each try again (and without a try changing which attacker
+ * the grade leads with). keep: { line, groups } from that run.
+ */
+function simKeepLine(keep, groups) {
+  const L = keep && keep.line;
+  if (!L) return null;
+  const old = keep.groups || [];
+  const at = i => i >= 0 && old[i] ? groups.findIndex(g => g.key === old[i].key) : -1;
+  const line = Object.assign({}, L, { basic: at(L.basic), s1: at(L.s1), top: at(L.top),
+    toolbox: (L.toolbox || []).map(at).filter(i => i >= 0), engine: at(L.engine) });
+  if (line.basic < 0 || (L.top >= 0 && line.top < 0)) line.missing = true;
+  return line;
+}
+
+function simulateOdds(deck, trials, keep) {
   const cards = (deck.cards||[]).filter(c => c.count > 0);
   const groups = simGroups(cards);
   const G = groups.length;
@@ -4159,8 +4175,11 @@ function simulateOdds(deck, trials) {
   const candyIdx = groups.map((g,i) => g.candy ? i : -1).filter(i => i >= 0);
   const anyBasic = isBasic.some(Boolean);
   const anyRead  = groups.some(g => g.read);
-  const line = simAttackerLine(deck, groups);
+  const line = keep ? simKeepLine(keep, groups) : simAttackerLine(deck, groups);
   const lineOk = line && !line.missing;
+  // 3.6.14: a brick hand has nothing to draw or search with in the first 8 cards.
+  const isOut = groups.map(g => g.drawT1 || g.sBasic || g.sAny || g.sItem);
+  const anyOut = isOut.some(Boolean);
 
   const rng = simRng(simSeed(cards));
   // The turn 3 draw comes from its own stream, so adding it leaves every
@@ -4173,7 +4192,7 @@ function simulateOdds(deck, trials) {
   const anyPrized = new Float64Array(G), allPrized = new Float64Array(G);
   const isSB = groups.map(g => g.sBasic), isSA = groups.map(g => g.sAny), isSI = groups.map(g => g.sItem);
   const srchT = [null, { b: 0, a: 0, i: 0 }, { b: 0, a: 0, i: 0 }, { b: 0, a: 0, i: 0 }];
-  let mullGames = 0, mullTotal = 0, drawT1 = 0, locked = 0, capped = 0;
+  let mullGames = 0, mullTotal = 0, drawT1 = 0, locked = 0, capped = 0, brick = 0;
   let on2 = 0, on2S = 0, on3 = 0, on3S = 0;
 
   for (let t = 0; t < trials; t++) {
@@ -4207,6 +4226,10 @@ function simulateOdds(deck, trials) {
     for (let i = 0; i < 7; i++) if (isDrawT1[arr[i]]) { d1 = true; break; }
     if (!d1 && isDrawT1[arr[13]]) d1 = true;
     if (d1) drawT1++;
+    let out = false;
+    for (let i = 0; i < 7; i++) if (isOut[arr[i]]) { out = true; break; }
+    if (!out && isOut[arr[13]]) out = true;
+    if (!out) brick++;
 
     for (let g = 0; g < G; g++) {
       if (prized[g] > 0) anyPrized[g]++;
@@ -4252,6 +4275,7 @@ function simulateOdds(deck, trials) {
     mullAvg: mullTotal / trials,
     capped: capped / trials,
     drawT1: drawT1 / trials,
+    brick: anyRead ? brick / trials : null,
     online: lineOk ? on2 / trials : null,
     onlineS: lineOk ? on2S / trials : null,
     online3: lineOk && has3 ? on3 / trials : null,
@@ -4440,7 +4464,9 @@ function g80Speed(deck, att, at, board) {
     if (play(2, true)) f2++; if (play(2, false)) s2++;
     if (play(3, true)) f3++; if (play(3, false)) s3++;
   }
-  const r = { t2: (f2 + s2) / 2 / G80_TRIALS, t3: (f3 + s3) / 2 / G80_TRIALS, first2: f2 / G80_TRIALS, second2: s2 / G80_TRIALS };
+  // 3.6.14: first3 and second3 are for the Odds tab only (a deck that cannot attack before turn 3); the grade reads t2.
+  const r = { t2: (f2 + s2) / 2 / G80_TRIALS, t3: (f3 + s3) / 2 / G80_TRIALS, first2: f2 / G80_TRIALS, second2: s2 / G80_TRIALS,
+    first3: f3 / G80_TRIALS, second3: s3 / G80_TRIALS };
   _g80Cache.set(sig, r);
   return r;
 }
@@ -4496,6 +4522,17 @@ function oPct(x) {
   return (p < 10 ? p.toFixed(1) : Math.round(p)) + '%';
 }
 
+/** 3.6.14: a chance as games out of 100 (0.09 is 9), with <1 and >99 at the ends. */
+function oOf(p) {
+  if (p == null || !isFinite(p)) return '?';
+  const n = Math.round(p * 100);
+  return p > 0 && n === 0 ? '<1' : p < 1 && n === 100 ? '>99' : String(n);
+}
+/** A tile value: "9 of 100", or a range "41-56 of 100". */
+function oOfHtml(a, b) {
+  return esc(oOf(a)) + (b != null ? '-' + esc(oOf(b)) : '') + '<span class="o-of"> of 100</span>';
+}
+
 function renderOdds() {
   const el=document.getElementById('odds-body');
   const deck=state.decks.find(d=>d.id===state.activeDeckId);
@@ -4523,18 +4560,25 @@ function renderOdds() {
   const tMul = S.anyBasic ? bad(S.mulligan,0.15,0.25) : 'var(--text-3)';
   const tDraw = S.anyDrawT1 ? good(S.drawT1,0.85,0.7) : 'var(--text-3)';
   const tAtk = lineOk ? good(onl,0.6,0.4) : 'var(--text-3)';
-  let h = `<div class="o-tiles">
+  const tBrick = S.brick != null ? bad(S.brick,0.05,0.12) : 'var(--text-3)';
+  // 3.6.14: tiles say games out of 100 ("9 of 100"), the way players count, not percents.
+  const atkOf = !AT ? '?' : S.anySearch && oOf(AT.raw) !== oOf(AT.search) ? oOfHtml(AT.raw, AT.search) : oOfHtml(S.anySearch ? AT.search : AT.raw);
+  let h = `<div class="o-tiles o-four">
     <div class="o-tile" style="--tone:${tMul}">
       <div class="ol">Mulligan</div>
-      <div class="ov">${S.anyBasic?oPct(S.mulligan):'?'}</div>
+      <div class="ov">${S.anyBasic?oOfHtml(S.mulligan):'?'}</div>
       <div class="os">Opening 7 with no Basic</div></div>
+    <div class="o-tile" style="--tone:${tBrick}">
+      <div class="ol">Brick Hand</div>
+      <div class="ov">${S.brick!=null?oOfHtml(S.brick):'?'}</div>
+      <div class="os">No draw or search card in your first 8</div></div>
     <div class="o-tile" style="--tone:${tDraw}">
       <div class="ol">Draw card T1</div>
-      <div class="ov">${S.anyDrawT1?oPct(S.drawT1):'?'}</div>
+      <div class="ov">${S.anyDrawT1?oOfHtml(S.drawT1):'?'}</div>
       <div class="os">A draw card you can use, in your first ${SIM_SEEN_T1}</div></div>
     <div class="o-tile" style="--tone:${tAtk}">
       <div class="ol">Attacker by T${AT ? AT.turn : 2}, any hand</div>
-      <div class="ov">${!AT?'?':S.anySearch&&oPct(AT.raw)!==oPct(AT.search)?oPct(AT.raw).replace(/%$/,'')+'-'+oPct(AT.search):oPct(S.anySearch?AT.search:AT.raw)}</div>
+      <div class="ov">${atkOf}</div>
       <div class="os">${lineOk?esc(line.name)+(line.cond?' in hand':'')+(S.anySearch?(AT&&oPct(AT.raw)===oPct(AT.search)?', any opening hand, the same from raw draws alone or with your search cards':', any opening hand, from raw draws alone to with your search cards'):', any opening hand, raw draws'):'No attacker line read'}</div></div>
   </div>
   <div class="o-meta">${S.trials.toLocaleString('en-US')} simulated shuffles of this exact ${S.N} card list. Same list, same numbers.</div>`;
@@ -4559,6 +4603,24 @@ function renderOdds() {
     h += `<div class="g-sec">`;
     notes.forEach(n => h += `<div class="g-item ${n[0]}"><div class="gt">${n[1]}</div><p>${n[2]}</p></div>`);
     h += `</div>`;
+  }
+
+  // 3.6.14: going first and going second, from the setup speed the grade already works out (g80Speed):
+  // the attacker in play with the Energy its attack needs by your second turn, with draw Supporters,
+  // search cards and Energy played out. Shown as the grade has it, so nothing here can move a grade.
+  let sp = null;
+  try { const R = gradeDeck(deck); sp = R && R.via && R.via.parts ? R.via.parts.speed : null; } catch (_) {}
+  if (sp && sp.first2 != null && sp.second2 != null) {
+    // A deck that cannot be ready by its second turn (a Stage 2 with no Rare Candy, a three Energy attack) shows its third.
+    const t3 = !(sp.first2 + sp.second2) && sp.first3 != null;
+    const f = t3 ? sp.first3 : sp.first2, s2 = t3 ? sp.second3 : sp.second2;
+    h += `<div class="g-sec"><div class="g-sec-t">Going First or Second</div>
+      <div class="g-sec-i">${t3 ? 'How often your attacker is in play with the Energy its attack needs by your third turn. It cannot be ready sooner.' : 'How often your attacker is in play with the Energy its attack needs by your second turn.'}</div>
+      <div class="o-tiles o-two">
+        <div class="o-tile" style="--tone:${good(f,0.6,0.4)}"><div class="ol">Going first</div><div class="ov">${oOfHtml(f)}</div><div class="os">No Supporter on your first turn</div></div>
+        <div class="o-tile" style="--tone:${good(s2,0.6,0.4)}"><div class="ol">Going second</div><div class="ov">${oOfHtml(s2)}</div><div class="os">A Supporter on every turn</div></div>
+      </div>
+      <p class="o-cc-note">Draw Supporters, search cards and Energy are played out, as in the setup speed part of your grade.</p></div>`;
   }
 
   if (lineOk) {
@@ -4586,6 +4648,16 @@ function renderOdds() {
     </div>`;
   }
 
+  // 3.6.14: Copy Counts, filled in by ocFill once the tab is drawn.
+  const ccIdx = ocCandidates(S);
+  if (ccIdx.length) {
+    const cur = ocChoice(deck, S, ccIdx);
+    h += `<div class="g-sec" id="o-cc"><div class="g-sec-t">Copy Counts<span class="fs325-line">Try more or fewer copies of a card</span></div>
+      <div class="g-sec-i">Pick a card to see how more or fewer copies move your odds. Each copy you add or cut swaps with a card that does not help setup, so the list stays the same size.</div>
+      <select class="x-select o-cc-pick" data-no-tr aria-label="Card" onchange="ocPick(this.value)">${ccIdx.map(i => `<option value="${esc(S.groups[i].key)}"${S.groups[i].key === cur ? ' selected' : ''}>${esc(S.groups[i].name)}</option>`).join('')}</select>
+      <div id="o-cc-body"></div></div>`;
+  }
+
   // Prize risk: every card group that can be fully prized often enough to matter.
   const linePieces = lineOk ? [line.basic, line.s1, line.top].filter(i => i >= 0) : [];
   // Attacker pieces first, then the cards most likely to be prized.
@@ -4611,6 +4683,107 @@ function renderOdds() {
     Everything on this tab comes from shuffling your own list.</div>`;
 
   el.innerHTML = h;
+  // Copy Counts runs the shuffle again for each copy count, so it fills in after the tab is drawn, and only
+  // while its section is open (it starts folded).
+  const ccFor = deck.id;
+  setTimeout(() => { if (state.activeDeckId === ccFor) ocFill(true); }, 0);
+}
+
+/* ═══════════ 3.6.14: Copy Counts ═══════════
+   Pick a card that matters for the opening (an attacker piece, a Basic, a draw, search or Rare Candy
+   card) and see the Odds tab numbers for fewer and more copies, side by side. The list stays the same
+   size: a copy cut becomes a card that does nothing for setup, and a copy added takes the place of one
+   (a Tool, a Stadium, an Energy: cards the opening odds never look at, so which one goes does not move a
+   number). The attacker line stays the one the grade picks for the list as it is. Only the shuffle is
+   run again; nothing here grades a list or changes a grade. */
+const _ocPick = {};
+// Opening the folded section fills it in.
+if (typeof document !== 'undefined') document.addEventListener('click', e => {
+  const h = e.target && e.target.closest && e.target.closest('#o-cc > .g-sec-t');
+  if (h) setTimeout(() => { try { ocFill(true); } catch (_) {} }, 0);
+});
+function ocCandidates(S) {
+  if (!S || !S.groups) return [];
+  const L = S.line && !S.line.missing ? S.line : null;
+  const pieces = L ? [L.basic, L.s1, L.top].filter(i => i >= 0) : [];
+  return S.groups.map((g, i) => i)
+    .filter(i => { const g = S.groups[i]; return g.read && (pieces.includes(i) || g.basic || g.draw || g.sBasic || g.sAny || g.sItem || g.candy); })
+    .sort((a, b) => (pieces.includes(b) - pieces.includes(a)) || (pieces.indexOf(a) - pieces.indexOf(b)) || String(S.groups[a].name).localeCompare(String(S.groups[b].name)));
+}
+function ocChoice(deck, S, idx) {
+  const k = _ocPick[deck.id];
+  return idx.some(i => S.groups[i].key === k) ? k : S.groups[idx[0]].key;
+}
+function ocPick(key) {
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!deck) return;
+  _ocPick[deck.id] = key;
+  ocFill();
+}
+/** The Odds numbers for each copy count of the card with this key, or [] when it cannot be tried. */
+function ocRows(deck, S, key) {
+  const gi = S.groups.findIndex(g => g.key === key);
+  if (gi < 0) return [];
+  const q = S.groups[gi].qty;
+  const keyOf = c => String(c.name || '').toLowerCase();
+  const src = (deck.cards || []).filter(c => c.count > 0);
+  // One copy at most: an ACE SPEC or a Radiant Pokemon.
+  const one = /^radiant /.test(key) || src.some(c => keyOf(c) === key && c.ace);
+  const cand = new Set(ocCandidates(S).map(i => S.groups[i].key));
+  const L = S.line && !S.line.missing ? S.line : null;
+  [L && L.basic, L && L.s1, L && L.top].forEach(i => { if (i != null && i >= 0) cand.add(S.groups[i].key); });
+  const lo = Math.max(0, q - 2), hi = one ? Math.max(q, 1) : Math.max(q, Math.min(4, q + 2));
+  const T = S.atkTurn === 3 ? 3 : 2;
+  const keep = { line: S.line, groups: S.groups };
+  const rows = [];
+  for (let n = lo; n <= hi; n++) {
+    const cards = src.map(c => Object.assign({}, c));
+    if (n < q) {
+      let cut = q - n;
+      cards.forEach(c => { if (cut && keyOf(c) === key) { const d = Math.min(cut, c.count); c.count -= d; cut -= d; } });
+      cards.push({ name: '(blank)', count: q - n });
+    } else if (n > q) {
+      let add = n - q;
+      cards.find(c => keyOf(c) === key).count += add;
+      const pool = cards.filter(c => keyOf(c) !== key && !cand.has(keyOf(c)));
+      while (add > 0) {
+        pool.sort((a, b) => b.count - a.count);
+        if (!pool[0] || pool[0].count <= 0) break;
+        pool[0].count--; add--;
+      }
+      if (add > 0) break;   // nothing left that does not help setup
+    }
+    const R = n === q ? S : simulateOdds({ cards: cards.filter(c => c.count > 0), format: deck.format }, SIM_TRIALS, keep);
+    if (!R) continue;
+    const ok = R.line && !R.line.missing;
+    rows.push({ n, now: n === q, brick: R.brick, mull: R.mulligan, draw: R.drawT1,
+      raw: ok ? (T === 3 ? R.online3 : R.online) : 0, srch: ok ? (T === 3 ? R.onlineS3 : R.onlineS) : 0, anySearch: R.anySearch });
+  }
+  return rows;
+}
+function ocFill(lazy) {
+  const el = document.getElementById('o-cc-body');
+  const deck = state.decks.find(d => d.id === state.activeDeckId);
+  if (!el || !deck) return;
+  if (lazy && (el.dataset.done || el.closest('.fs325-shut'))) return;
+  el.dataset.done = '1';
+  const S = simulateOdds(deck, SIM_TRIALS);
+  if (!S) return;
+  const idx = ocCandidates(S);
+  if (!idx.length) return;
+  const key = ocChoice(deck, S, idx);
+  const g = S.groups.find(x => x.key === key);
+  const rows = ocRows(deck, S, key);
+  if (!rows.length) { el.innerHTML = ''; return; }
+  const lineOk = S.line && !S.line.missing;
+  const T = S.atkTurn === 3 ? 3 : 2;
+  const cols = [['Brick Hand', r => oOf(r.brick)]];
+  if (lineOk) cols.push([`Attacker by T${T}`, r => r.anySearch && oOf(r.raw) !== oOf(r.srch) ? oOf(r.raw) + '-' + oOf(r.srch) : oOf(r.anySearch ? r.srch : r.raw)]);
+  if (g && g.basic) cols.push(['Mulligan', r => oOf(r.mull)]);
+  else if (g && g.drawT1) cols.push(['Draw card T1', r => oOf(r.draw)]);
+  el.innerHTML = `<div class="o-table-wrap"><table class="o-table o-cc"><thead><tr><th>Copies</th>${cols.map(c => `<th>${esc(c[0])}</th>`).join('')}</tr></thead><tbody>` +
+    rows.map(r => `<tr${r.now ? ' class="o-now"' : ''}><td>${r.n}${r.now ? ' <span class="o-tag">Now</span>' : ''}</td>${cols.map(c => `<td>${esc(c[1](r))}</td>`).join('')}</tr>`).join('') +
+    `</tbody></table></div><p class="o-cc-note">Games out of 100.</p>`;
 }
 
 function startGameFromReview() {
@@ -9030,16 +9203,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.6.13',
-  date: 'Nov 25, 2026',
+  version: 'v3.6.14',
+  date: 'Nov 26, 2026',
   kind: 'small',
   items: [
-    { t: 'Deck Guides and Deck Grader Page Updated' }
+    { t: 'Odds Tab: Brick Hand, Copy Counts and Going First or Second' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.6.13', date: 'Nov 25, 2026', kind: 'small', items: [
+    { t: 'Deck Guides and Deck Grader Page Updated' }
+  ] },
   { version: 'v3.6.12', date: 'Nov 25, 2026', kind: 'small', items: [
     { t: 'Crispin Choice Labels Fixed' }
   ] },
@@ -12153,8 +12329,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.6.13';
-const PT_BUILD = 200;
+const PT_VERSION = 'v3.6.14';
+const PT_BUILD = 201;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.
