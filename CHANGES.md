@@ -1,3 +1,11 @@
+# RdyDeck 3.6.15 (build 202): How RdyDeck Works, a short visible text block on the home page (27 Nov 2026)
+
+- Mason, 27 Nov 2026: "Build it", to a short visible How RdyDeck Works block on home, in all 6 languages, after the AdSense content check found home has about 150 visible words and the About text sits behind a toggle on phones.
+- index.html: new section .hw44 at the top of the About section, so on phones it sits right under the Practice, Learn and More buttons and the top of the screen does not change. A heading and three short paragraphs (about 200 words): what the grade reads (Card Strength, Tournament Strength), the fixes, odds and rotation check, and the practice modes. Always visible, no toggle. On wide screens it spans the full width in three columns above the About and FAQ columns (the About grid gains one row; everything else keeps its place).
+- Translations for the heading and paragraphs in Spanish, Portuguese, French, German and Italian, using the terms the app already uses (Fuerza de las cartas, Kartenstärke, mano morta and so on).
+- No change to ads, grades or any other page. No Worker change.
+- Also: What's new in all 6 languages ("Home Page: How RdyDeck Works Section"), PT_VERSION v3.6.15, PT_BUILD 202, softwareVersion 3.6.15, sw.js cache v202, stamps.
+
 # RdyDeck 3.6.14 (build 201): Odds tab says games out of 100, adds Brick Hand, Going First or Second and Copy Counts (26 Nov 2026)
 
 - Mason, 26 Nov 2026: "Build it on a branch", to four Odds tab additions after a look at TCG Tools' hand odds (brick rate, copy count swaps, "X of 100 games" wording).
