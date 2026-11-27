@@ -9203,16 +9203,19 @@ function handleDailyHash() {
 // used an older version. A brand new user never sees the home card.
 // Dates are the release day in US Eastern time (3.3 went live Nov 17 at 9:19 PM Eastern, which is Nov 18 in UTC).
 const WHATS_NEW = {
-  version: 'v3.6.16',
+  version: 'v3.6.17',
   date: 'Nov 27, 2026',
   kind: 'small',
   items: [
-    { t: 'Phones: Easier Links to Guides and FAQ' }
+    { t: 'Install App Button Translated' }
   ]
 };
 // 3.3: What's new shows the two versions before the latest too, each with its date.
 // At each release, move the old WHATS_NEW to the top of this list and keep two.
 const WHATS_PREV = [
+  { version: 'v3.6.16', date: 'Nov 27, 2026', kind: 'small', items: [
+    { t: 'Phones: Easier Links to Guides and FAQ' }
+  ] },
   { version: 'v3.6.15', date: 'Nov 27, 2026', kind: 'small', items: [
     { t: 'Home Page: How RdyDeck Works Section' }
   ] },
@@ -12300,7 +12303,7 @@ function showInstallButton() {
     btn = document.createElement('button');
     btn.id = 'pwa-install-btn';
     btn.className = 'btn btn-primary btn-block';
-    btn.innerHTML = '<svg class="ic"><use href="#i-save"/></svg>Install app';
+    btn.innerHTML = '<svg class="ic"><use href="#i-save"/></svg>Install App';
     btn.onclick = triggerInstall;
     // Insert before the import button
     const cta = document.querySelector('#screen-home .home-cta');
@@ -12335,8 +12338,8 @@ if (window.matchMedia('(display-mode: standalone)').matches || navigator.standal
 // ═══════════ v24: tour, Practice tab, starter decks, help and feedback ═══════════
 // v2.0: versions people see follow 2.0, 2.1 (feature releases), 2.1.1 (small fixes). 1.x was the PrizeTrainer era.
 // PT_BUILD keeps counting every release and matches the sw.js cache name (prize-trainer-v plus PT_BUILD, so build 93 is prize-trainer-v93); it shows only in feedback mail.
-const PT_VERSION = 'v3.6.16';
-const PT_BUILD = 203;
+const PT_VERSION = 'v3.6.17';
+const PT_BUILD = 204;
 const TOUR_KEY = 'pt_tour_v24';
 // v42: feedback goes by email from the player's own mail app; no public GitHub issues.
 // While this is empty, Send feedback is hidden.

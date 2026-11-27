@@ -1,3 +1,10 @@
+# RdyDeck 3.6.17 (build 204): Install App button translated (27 Nov 2026)
+
+- Mason, 27 Nov 2026: "Fix Install App text", after the 3.6.16 live check showed the Install app button in English on /es/.
+- js/i18n.js, i18n-fr/de/it: "Install App" added (English button now Title Case too) next to the existing Install entries: Instalar la app, Instalar o app, Installer l'appli, App installieren, Installa l'app.
+- Checked home in the 5 other languages at 390 and 1366 wide, with the Install button and the welcome window showing: nothing else is left in English apart from names kept on purpose (deck names, Rare Pull, Sparring) and words that are the same in that language (FAQ, Contact, Credits).
+- Also: What's new in all 6 languages ("Install App Button Translated"), PT_VERSION v3.6.17, PT_BUILD 204, softwareVersion 3.6.17, sw.js cache v204, stamps.
+
 # RdyDeck 3.6.16 (build 203): phones reach the guides, FAQ and worked example faster (27 Nov 2026)
 
 - Mason, 27 Nov 2026: "Build it", to three fixes after a check of the paths an AdSense Community member named (deck guide, How Grading Works, worked example, reachable on a phone without entering a deck).

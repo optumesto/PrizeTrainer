@@ -1157,6 +1157,7 @@ const I18N_ES = {
   "Add some cards first.": "Primero agrega algunas cartas.",
   "Prerelease decks have a build check, not a grade to share.": "Las barajas de presentación tienen una revisión de construcción, no una calificación para compartir.",
   "Install": "Instalar",
+  "Install App": "Instalar la app",
   "✓ App installed!": "✓ ¡App instalada!",
   "✓ Installing...": "✓ Instalando...",
   "Right-click the page and choose": "Haz clic derecho en la página y elige",
@@ -2407,6 +2408,7 @@ const I18N_PT = {
   "Add some cards first.": "Adicione algumas cartas primeiro.",
   "Prerelease decks have a build check, not a grade to share.": "Decks de pré-lançamento têm verificação de montagem, não uma nota para compartilhar.",
   "Install": "Instalar",
+  "Install App": "Instalar o app",
   "✓ App installed!": "✓ App instalado!",
   "✓ Installing...": "✓ Instalando...",
   "Right-click the page and choose": "Clique com o botão direito na página e escolha",
@@ -6819,6 +6821,8 @@ Object.assign(I18N_ES, { "Home Page: How RdyDeck Works Section": "Inicio: nueva 
 Object.assign(I18N_PT, { "Home Page: How RdyDeck Works Section": "Início: nova seção Como o RdyDeck funciona" });
 Object.assign(I18N_ES, { "Phones: Easier Links to Guides and FAQ": "Móvil: enlaces más fáciles a las guías y preguntas frecuentes" });
 Object.assign(I18N_PT, { "Phones: Easier Links to Guides and FAQ": "Celular: links mais fáceis para os guias e perguntas frequentes" });
+Object.assign(I18N_ES, { "Install App Button Translated": "Botón Instalar la app traducido" });
+Object.assign(I18N_PT, { "Install App Button Translated": "Botão Instalar o app traduzido" });
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

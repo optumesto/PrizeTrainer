@@ -1215,6 +1215,7 @@ I18N_MORE.it = {
     "Add some cards first.": "Prima aggiungi qualche carta.",
     "Prerelease decks have a build check, not a grade to share.": "I mazzi Prerelease hanno un controllo di costruzione, non un voto da condividere.",
     "Install": "Installa",
+    "Install App": "Installa l'app",
     "✓ App installed!": "✓ App installata!",
     "✓ Installing...": "✓ Installazione...",
     "Right-click the page and choose": "Fai clic destro sulla pagina e scegli",
@@ -2851,3 +2852,4 @@ Object.assign(I18N_MORE.it.dict, {"Deck Guides and Deck Grader Page Updated": "G
 Object.assign(I18N_MORE.it.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Scheda Probabilità: mano morta, numero di copie e primo o secondo"});
 Object.assign(I18N_MORE.it.dict, {"Home Page: How RdyDeck Works Section": "Home: nuova sezione Come funziona RdyDeck"});
 Object.assign(I18N_MORE.it.dict, {"Phones: Easier Links to Guides and FAQ": "Smartphone: link più comodi a guide e domande frequenti"});
+Object.assign(I18N_MORE.it.dict, {"Install App Button Translated": "Pulsante Installa l'app tradotto"});

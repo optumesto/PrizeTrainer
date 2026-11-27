@@ -1216,6 +1216,7 @@ I18N_MORE.de = {
     'Add some cards first.': 'Füge zuerst ein paar Karten hinzu.',
     'Prerelease decks have a build check, not a grade to share.': 'Prerelease-Decks haben einen Bau-Check, keine Note zum Teilen.',
     'Install': 'Installieren',
+    'Install App': 'App installieren',
     '✓ App installed!': '✓ App installiert!',
     '✓ Installing...': '✓ Wird installiert...',
     'Right-click the page and choose': 'Rechtsklicke auf die Seite und wähle',
@@ -2919,3 +2920,4 @@ Object.assign(I18N_MORE.de.dict, {"Deck Guides and Deck Grader Page Updated": "D
 Object.assign(I18N_MORE.de.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Tab Chancen: tote Hand, Anzahl der Kopien und beginnen oder Zweiter sein"});
 Object.assign(I18N_MORE.de.dict, {"Home Page: How RdyDeck Works Section": "Startseite: neuer Abschnitt So funktioniert RdyDeck"});
 Object.assign(I18N_MORE.de.dict, {"Phones: Easier Links to Guides and FAQ": "Handy: einfachere Links zu Guides und FAQ"});
+Object.assign(I18N_MORE.de.dict, {"Install App Button Translated": "Schaltfläche App installieren übersetzt"});
