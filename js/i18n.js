@@ -6817,6 +6817,8 @@ Object.assign(I18N_ES, { "Odds Tab: Brick Hand, Copy Counts and Going First or S
 Object.assign(I18N_PT, { "Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Aba Chances: mão travada, número de cópias e jogar primeiro ou segundo" });
 Object.assign(I18N_ES, { "Home Page: How RdyDeck Works Section": "Inicio: nueva sección Cómo funciona RdyDeck" });
 Object.assign(I18N_PT, { "Home Page: How RdyDeck Works Section": "Início: nova seção Como o RdyDeck funciona" });
+Object.assign(I18N_ES, { "Phones: Easier Links to Guides and FAQ": "Móvil: enlaces más fáciles a las guías y preguntas frecuentes" });
+Object.assign(I18N_PT, { "Phones: Easier Links to Guides and FAQ": "Celular: links mais fáceis para os guias e perguntas frequentes" });
 const rdI18n = (function () {
   const DICT = { es: I18N_ES, pt: I18N_PT };
   const PAT = { es: I18N_PAT.map(p => [p[0], p[1]]), pt: I18N_PAT.map(p => [p[0], p[2]]) };

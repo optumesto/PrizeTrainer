@@ -1,3 +1,13 @@
+# RdyDeck 3.6.16 (build 203): phones reach the guides, FAQ and worked example faster (27 Nov 2026)
+
+- Mason, 27 Nov 2026: "Build it", to three fixes after a check of the paths an AdSense Community member named (deck guide, How Grading Works, worked example, reachable on a phone without entering a deck).
+- index.html: phones get a short Learn row right under Import, Starter decks and Build a deck: How Grading Works, Deck Guides, FAQ (plain links, translated like the Learn tiles). Hidden on wider screens, which already show these links.
+- index.html: on phones the About RdyDeck and FAQ tiles in the More group now open about.html and faq.html. Before, they only opened the short in-page text, and the links to the full pages sat in a row phones hide.
+- how-grading-works.html (source in .github/pages): a See a Worked Example button next to Grade my deck jumps to the A Worked Example section (#worked-example). The page is English only, like the other reading pages.
+- Welcome window unchanged, as Mason asked.
+- No change to ads, grades or any other page. No Worker change.
+- Also: What's new in all 6 languages ("Phones: Easier Links to Guides and FAQ"), PT_VERSION v3.6.16, PT_BUILD 203, softwareVersion 3.6.16, sw.js cache v203, stamps.
+
 # RdyDeck 3.6.15 (build 202): How RdyDeck Works, a short visible text block on the home page (27 Nov 2026)
 
 - Mason, 27 Nov 2026: "Build it", to a short visible How RdyDeck Works block on home, in all 6 languages, after the AdSense content check found home has about 150 visible words and the About text sits behind a toggle on phones.

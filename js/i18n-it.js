@@ -2850,3 +2850,4 @@ Object.assign(I18N_MORE.it.dict, {"Deck Guides and Deck Grader Page Updated": "G
 // 3.6.14
 Object.assign(I18N_MORE.it.dict, {"Odds Tab: Brick Hand, Copy Counts and Going First or Second": "Scheda Probabilità: mano morta, numero di copie e primo o secondo"});
 Object.assign(I18N_MORE.it.dict, {"Home Page: How RdyDeck Works Section": "Home: nuova sezione Come funziona RdyDeck"});
+Object.assign(I18N_MORE.it.dict, {"Phones: Easier Links to Guides and FAQ": "Smartphone: link più comodi a guide e domande frequenti"});
